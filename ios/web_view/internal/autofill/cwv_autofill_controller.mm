@@ -903,20 +903,12 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   CWVPassword* password =
       [[CWVPassword alloc] initWithPasswordForm:credentials];
 
+  __weak CWVAutofillController* weakSelf = self;
   [self.delegate autofillController:self
         decideSavePolicyForPassword:password
                     decisionHandler:^(CWVPasswordUserDecision decision) {
-                      switch (decision) {
-                        case CWVPasswordUserDecisionYes:
-                          formPtr->Save();
-                          break;
-                        case CWVPasswordUserDecisionNever:
-                          formPtr->Blocklist();
-                          break;
-                        case CWVPasswordUserDecisionNotThisTime:
-                          // Do nothing.
-                          break;
-                      }
+                      [weakSelf onDecidedSavePolicy:decision
+                                    forPasswordForm:formPtr.get()];
                     }];
 }
 
@@ -938,17 +930,12 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   CWVPassword* password =
       [[CWVPassword alloc] initWithPasswordForm:credentials];
 
+  __weak CWVAutofillController* weakSelf = self;
   [self.delegate autofillController:self
       decideUpdatePolicyForPassword:password
                     decisionHandler:^(CWVPasswordUserDecision decision) {
-                      // Marking a password update as "never" makes no sense as
-                      // the password has already been saved.
-                      DCHECK_NE(decision, CWVPasswordUserDecisionNever)
-                          << "A password update can only be accepted or "
-                             "ignored.";
-                      if (decision == CWVPasswordUserDecisionYes) {
-                        formPtr->Save();
-                      }
+                      [weakSelf onDecidedUpdatePolicy:decision
+                                      forPasswordForm:formPtr.get()];
                     }];
 }
 
@@ -1050,6 +1037,48 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
 - (void)sharedPasswordController:(SharedPasswordController*)controller
              didAcceptSuggestion:(FormSuggestion*)suggestion {
   // No op.
+}
+
+#pragma mark - Private
+
+- (void)onDecidedSavePolicy:(CWVPasswordUserDecision)decision
+            forPasswordForm:(password_manager::PasswordFormManagerForUI*)form {
+  // The state may be invalid by the time this is called.
+  if (![self hasValidState]) {
+    return;
+  }
+  switch (decision) {
+    case CWVPasswordUserDecisionYes:
+      form->Save();
+      break;
+    case CWVPasswordUserDecisionNever:
+      form->Blocklist();
+      break;
+    case CWVPasswordUserDecisionNotThisTime:
+      // Do nothing.
+      break;
+  }
+}
+
+- (void)onDecidedUpdatePolicy:(CWVPasswordUserDecision)decision
+              forPasswordForm:
+                  (password_manager::PasswordFormManagerForUI*)form {
+  // The state may be invalid by the time this is called.
+  if (![self hasValidState]) {
+    return;
+  }
+  // Marking a password update as "never" makes no sense as
+  // the password has already been saved.
+  DCHECK_NE(decision, CWVPasswordUserDecisionNever)
+      << "A password update can only be accepted or "
+         "ignored.";
+  if (decision == CWVPasswordUserDecisionYes) {
+    form->Save();
+  }
+}
+
+- (BOOL)hasValidState {
+  return _webState && _passwordManagerClient;
 }
 
 @end
