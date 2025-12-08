@@ -18,6 +18,7 @@
 namespace password_manager {
 struct CredentialUIEntry;
 struct InsecurePasswordCounts;
+enum class PasswordCheckReferrer;
 }  // namespace password_manager
 class GURL;
 enum class SafetyCheckItemType;
@@ -30,10 +31,13 @@ void HandleSafetyCheckUpdateChromeTap(
     id<ApplicationCommands> applicationHandler);
 
 // Fires the proper UI command based on the current `insecure_credentials`
-// and `insecure_password_counts`.
+// and `insecure_password_counts`, logging the navigation with the provided
+// `referrer`, which must be either `kSafetyCheckMagicStack` or
+// `kSafetyCheckNotification`.
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& insecure_credentials,
     password_manager::InsecurePasswordCounts insecure_password_counts,
+    password_manager::PasswordCheckReferrer referrer,
     id<ApplicationCommands> applicationHandler,
     id<SettingsCommands> settingsHandler);
 

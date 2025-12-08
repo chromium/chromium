@@ -14,14 +14,15 @@ namespace password_manager {
 //
 // LINT.IfChange(PasswordCheckReferrer)
 enum class PasswordCheckReferrer {
-  kSafetyCheck = 0,             // Web UI, recorded in JavaScript.
-  kPasswordSettings = 1,        // Web UI, recorded in JavaScript.
-  kPhishGuardDialog = 2,        // Native UI, recorded in C++.
-  kPasswordBreachDialog = 3,    // Native UI, recorded in C++.
-  kMoreToFixBubble = 4,         // Native UI, recorded in C++.
-  // kUnsafeStateBubble = 5,    // Obsolete.
-  kSafetyCheckMagicStack = 6,   // Native UI, recorded in C++.
-  kMaxValue = kSafetyCheckMagicStack,
+  kSafetyCheck = 0,               // Web UI, recorded in JavaScript.
+  kPasswordSettings = 1,          // Web UI, recorded in JavaScript.
+  kPhishGuardDialog = 2,          // Native UI, recorded in C++.
+  kPasswordBreachDialog = 3,      // Native UI, recorded in C++.
+  kMoreToFixBubble = 4,           // Native UI, recorded in C++.
+  // kUnsafeStateBubble = 5,      // Obsolete.
+  kSafetyCheckMagicStack = 6,     // Native UI, recorded in C++.
+  kSafetyCheckNotification = 7,   // Native UI, recorded in C++.
+  kMaxValue = kSafetyCheckNotification,
 };
 // LINT.ThenChange(
 //     //chrome/browser/resources/settings/autofill_page/password_manager_proxy.ts:PasswordCheckReferrer,

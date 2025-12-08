@@ -420,6 +420,7 @@ using password_manager::PasswordCheckReferrer;
     case PasswordCheckReferrer::kPasswordBreachDialog:
     case PasswordCheckReferrer::kMoreToFixBubble:
     case PasswordCheckReferrer::kSafetyCheckMagicStack:
+    case PasswordCheckReferrer::kSafetyCheckNotification:
       return YES;
     case PasswordCheckReferrer::kPasswordSettings:
       return NO;

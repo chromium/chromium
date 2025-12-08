@@ -28995,6 +28995,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileSafetyCheckNotificationOpenPasswordCheckup">
+  <owner>noemies@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <description>
+    Reported when the user opens the Password Checkup page from a Safety Check
+    notification. iOS only.
+  </description>
+</action>
+
 <action name="MobileSaveToDriveAccountPickerAddAccountCompleted">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@google.com</owner>

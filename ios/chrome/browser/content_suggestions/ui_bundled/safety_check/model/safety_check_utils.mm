@@ -68,6 +68,23 @@ int UniqueWarningTypeCount(
   return UniqueWarningTypeCount(insecure_password_counts);
 }
 
+// Records the user action corresponding to the password check `referrer`.
+void RecordPasswordCheckReferrerUserAction(
+    password_manager::PasswordCheckReferrer referrer) {
+  switch (referrer) {
+    case password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack:
+      base::RecordAction(
+          base::UserMetricsAction("MobileMagicStackOpenPasswordCheckup"));
+      break;
+    case password_manager::PasswordCheckReferrer::kSafetyCheckNotification:
+      base::RecordAction(base::UserMetricsAction(
+          "MobileSafetyCheckNotificationOpenPasswordCheckup"));
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 using password_manager::WarningType;
@@ -96,6 +113,7 @@ void HandleSafetyCheckUpdateChromeTap(
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& insecure_credentials,
     password_manager::InsecurePasswordCounts insecure_password_counts,
+    password_manager::PasswordCheckReferrer referrer,
     id<ApplicationCommands> applicationHandler,
     id<SettingsCommands> settingsHandler) {
   // If there's only one compromised credential, navigate users to the detail
@@ -122,24 +140,19 @@ void HandleSafetyCheckPasswordTap(
                            : password_manager::GetWarningOfHighestPriority(
                                  insecure_credentials);
 
-    [applicationHandler
-        showPasswordIssuesWithWarningType:type
-                                 referrer:password_manager::
-                                              PasswordCheckReferrer::
-                                                  kSafetyCheckMagicStack];
+    [applicationHandler showPasswordIssuesWithWarningType:type
+                                                 referrer:referrer];
 
     return;
   }
 
+  RecordPasswordCheckReferrerUserAction(referrer);
+
   // If there are multiple passwords (with multiple warning types), or no
   // compromised credentials at all, navigate users to the Password Checkup
   // overview screen.
-  base::RecordAction(
-      base::UserMetricsAction("MobileMagicStackOpenPasswordCheckup"));
-
   [applicationHandler
-      dismissModalsAndShowPasswordCheckupPageForReferrer:
-          password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
+      dismissModalsAndShowPasswordCheckupPageForReferrer:referrer];
 }
 
 bool InvalidUpdateChromeState(UpdateChromeSafetyCheckState state) {

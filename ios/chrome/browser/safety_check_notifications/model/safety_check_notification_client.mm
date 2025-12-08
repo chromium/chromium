@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
+#import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_utils.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
@@ -650,8 +651,10 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
     password_manager::InsecurePasswordCounts insecure_password_counts =
         safety_check_manager->GetInsecurePasswordCounts();
 
-    HandleSafetyCheckPasswordTap(insecure_credentials, insecure_password_counts,
-                                 applicationHandler, settingsHandler);
+    HandleSafetyCheckPasswordTap(
+        insecure_credentials, insecure_password_counts,
+        password_manager::PasswordCheckReferrer::kSafetyCheckNotification,
+        applicationHandler, settingsHandler);
 
     return;
   }

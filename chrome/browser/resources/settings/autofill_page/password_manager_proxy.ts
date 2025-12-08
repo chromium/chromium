@@ -35,15 +35,16 @@ export interface PasswordManagerProxy {
  */
 // LINT.IfChange(PasswordCheckReferrer)
 export enum PasswordCheckReferrer {
-  SAFETY_CHECK = 0,             // Web UI, recorded in JavaScript.
-  PASSWORD_SETTINGS = 1,        // Web UI, recorded in JavaScript.
-  PHISH_GUARD_DIALOG = 2,       // Native UI, recorded in C++.
-  PASSWORD_BREACH_DIALOG = 3,   // Native UI, recorded in C++.
-  MORE_TO_FIX_BUBBLE = 4,       // Native UI, recorded in C++.
-  // UNSAFE_STATE_BUBBLE = 5,   // Deprecated.
-  SAFETY_CHECK_MAGIC_STACK = 6, // Native UI, recorded in C++.
+  SAFETY_CHECK = 0,               // Web UI, recorded in JavaScript.
+  PASSWORD_SETTINGS = 1,          // Web UI, recorded in JavaScript.
+  PHISH_GUARD_DIALOG = 2,         // Native UI, recorded in C++.
+  PASSWORD_BREACH_DIALOG = 3,     // Native UI, recorded in C++.
+  MORE_TO_FIX_BUBBLE = 4,         // Native UI, recorded in C++.
+  // UNSAFE_STATE_BUBBLE = 5,     // Deprecated.
+  SAFETY_CHECK_MAGIC_STACK = 6,   // Native UI, recorded in C++.
+  SAFETY_CHECK_NOTIFICATION = 7,  // Native UI, recorded in C++.
   // Must be last.
-  COUNT = 7,
+  COUNT = 8,
 }
 // LINT.ThenChange(
 // //components/password_manager/core/browser/ui/password_check_referrer.h:PasswordCheckReferrer,

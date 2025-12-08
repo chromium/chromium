@@ -92,8 +92,9 @@ TEST_F(SafetyCheckUtilsTest,
                                referrer:PasswordCheckReferrer::
                                             kSafetyCheckMagicStack];
 
-  HandleSafetyCheckPasswordTap(credentials, counts, mock_application_handler_,
-                               mock_settings_handler_);
+  HandleSafetyCheckPasswordTap(
+      credentials, counts, PasswordCheckReferrer::kSafetyCheckMagicStack,
+      mock_application_handler_, mock_settings_handler_);
 
   [mock_application_handler_ verify];
 }
@@ -112,8 +113,9 @@ TEST_F(SafetyCheckUtilsTest, HandlePasswordTapWithMixedTypesOpensCheckupPage) {
       dismissModalsAndShowPasswordCheckupPageForReferrer:
           PasswordCheckReferrer::kSafetyCheckMagicStack];
 
-  HandleSafetyCheckPasswordTap(credentials, counts, mock_application_handler_,
-                               mock_settings_handler_);
+  HandleSafetyCheckPasswordTap(
+      credentials, counts, PasswordCheckReferrer::kSafetyCheckMagicStack,
+      mock_application_handler_, mock_settings_handler_);
 
   [mock_application_handler_ verify];
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -311,5 +313,39 @@ TEST_F(SafetyCheckUtilsTest, SafetyCheckItemTypeNameMapping) {
 
     EXPECT_NSEQ(NameForSafetyCheckItemType(type), expected_name);
     EXPECT_EQ(SafetyCheckItemTypeForName(expected_name), type);
+  }
+}
+
+// Tests the correct metric specific to the referrer provided (Magic Stack vs.
+// Safety Check Notification) is logged.
+TEST_F(SafetyCheckUtilsTest, HandlePasswordTapRecordsCorrectMetricForReferrer) {
+  const struct {
+    PasswordCheckReferrer referrer;
+    std::string expected_metric;
+  } referrer_mappings[] = {
+      {PasswordCheckReferrer::kSafetyCheckMagicStack,
+       "MobileMagicStackOpenPasswordCheckup"},
+      {PasswordCheckReferrer::kSafetyCheckNotification,
+       "MobileSafetyCheckNotificationOpenPasswordCheckup"},
+  };
+
+  for (const auto& mapping : referrer_mappings) {
+    base::UserActionTester user_action_tester;
+
+    std::vector<CredentialUIEntry> empty_credentials;
+    InsecurePasswordCounts empty_counts = {};
+
+    [[mock_application_handler_ expect]
+        dismissModalsAndShowPasswordCheckupPageForReferrer:mapping.referrer];
+
+    HandleSafetyCheckPasswordTap(empty_credentials, empty_counts,
+                                 mapping.referrer, mock_application_handler_,
+                                 mock_settings_handler_);
+
+    [mock_application_handler_ verify];
+
+    EXPECT_EQ(1, user_action_tester.GetActionCount(mapping.expected_metric))
+        << "Failed to record correct metric for referrer: "
+        << (int)mapping.referrer;
   }
 }

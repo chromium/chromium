@@ -1140,9 +1140,10 @@ using segmentation_platform::TipIdentifier;
       password_manager::InsecurePasswordCounts insecure_password_counts =
           safetyCheckManager->GetInsecurePasswordCounts();
 
-      HandleSafetyCheckPasswordTap(insecure_credentials,
-                                   insecure_password_counts, applicationHandler,
-                                   settingsHandler);
+      HandleSafetyCheckPasswordTap(
+          insecure_credentials, insecure_password_counts,
+          password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack,
+          applicationHandler, settingsHandler);
 
       break;
     }
