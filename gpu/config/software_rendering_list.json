@@ -1450,15 +1450,15 @@
     },
     {
       "id": 184,
-      "cr_bugs": [383521542],
+      "cr_bugs": [383521542, 458062283],
       "description": "Disable Graphite on very old Intel drivers",
       "os": {
         "type": "win"
       },
       "vendor_id": "0x8086",
       "driver_version": {
-        "op": "<=",
-        "value": "10.18.10.5161"
+        "op": "<",
+        "value": "31.0.101.2121"
       },
       "features": [
         "skia_graphite"
@@ -1491,6 +1491,22 @@
       ],
       "features": [
         "webgpu_on_vk_via_gl_interop"
+      ]
+    },
+    {
+      "id": 187,
+      "cr_bugs": [458062283],
+      "description": "Disable Graphite on very old Intel GPU generations due to crashiness",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": "<=",
+        "value": "8"
+      },
+      "features": [
+        "skia_graphite"
       ]
     }
   ]
