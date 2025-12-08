@@ -95,6 +95,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   base::Time expiry_time;
   if (base::FeatureList::IsEnabled(blink::features::kCookieStoreAPIMaxAge) &&
       options->hasMaxAge()) {
+    UseCounter::Count(execution_context, WebFeature::kCookieStoreMaxAge);
     if (options->expires().has_value()) {
       // If both maxAge and expires are provided, throw an error.
       exception_state.ThrowTypeError(

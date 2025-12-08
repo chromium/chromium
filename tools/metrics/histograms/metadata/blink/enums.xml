@@ -6384,6 +6384,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5743" label="V8Element_ContainerTimingIgnore_AttributeSetter"/>
   <int value="5744" label="ContainerTimingObserverRegistered"/>
   <int value="5745" label="ContainerTimingObserverReportedEntries"/>
+  <int value="5746" label="CookieStoreMaxAge"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

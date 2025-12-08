@@ -415,6 +415,8 @@ TEST_F(CookieStoreTest, MaxAgeFeatureDisabled) {
   EXPECT_EQ("cookie-name", cookie.Name());
   EXPECT_EQ("cookie-value", cookie.Value());
   EXPECT_FALSE(cookie.IsPersistent());
+  EXPECT_FALSE(v8_testing_scope.GetDocument().IsUseCounted(
+      WebFeature::kCookieStoreMaxAge));
 }
 
 TEST_F(CookieStoreTest, MaxAgeSupported) {
@@ -451,6 +453,8 @@ TEST_F(CookieStoreTest, MaxAgeSupported) {
   EXPECT_LT((cookie.ExpiryDate() - cookie.CreationDate() - base::Seconds(300))
                 .magnitude(),
             base::Seconds(1));
+  EXPECT_TRUE(v8_testing_scope.GetDocument().IsUseCounted(
+      WebFeature::kCookieStoreMaxAge));
 }
 
 TEST_F(CookieStoreTest, MaxAgeNegativeValue) {
@@ -479,6 +483,8 @@ TEST_F(CookieStoreTest, MaxAgeNegativeValue) {
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_TRUE(promise_tester.IsFulfilled());
   EXPECT_THAT(GetAllCookies(), IsEmpty());
+  EXPECT_TRUE(v8_testing_scope.GetDocument().IsUseCounted(
+      WebFeature::kCookieStoreMaxAge));
 }
 
 TEST_F(CookieStoreTest, MaxAgeAndExpiry) {
@@ -511,6 +517,8 @@ TEST_F(CookieStoreTest, MaxAgeAndExpiry) {
   EXPECT_EQ("Cookie expires and maxAge cannot both be specified",
             exception_state.Message());
   EXPECT_THAT(GetAllCookies(), IsEmpty());
+  EXPECT_TRUE(v8_testing_scope.GetDocument().IsUseCounted(
+      WebFeature::kCookieStoreMaxAge));
 }
 
 }  // namespace
