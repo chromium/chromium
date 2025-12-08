@@ -47,6 +47,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAndroidDesktopZoomScaling,
     &features::kAndroidFallbackToNextSlot,
     &features::kAndroidMediaInsertion,
+    &features::kAndroidPkAutocorrectUnderline,
     &features::kStrictHighRankProcessLRU,
     &features::kFedCm,
     &features::kHidePastePopupOnGSB,

@@ -13559,6 +13559,13 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kAdpfEfficiencyChoices)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-android-physical-keyboard-autocorrect-underline",
+     flag_descriptions::kAndroidPkAutocorrectUnderlineName,
+     flag_descriptions::kAndroidPkAutocorrectUnderlineDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidPkAutocorrectUnderline)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -1125,6 +1125,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "PartitionAllocLockTuneSpin",
                 "When enabled, PartitionAlloc's SpinningMutex will use a different spin count."),
+        Flag.baseFeature(
+                ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
+                "When enabled, physical keyboard autocorrect underline will display"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 

@@ -3025,6 +3025,16 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-android-physical-keyboard-autocorrect-underline",
+    "owners": [
+      "wesleygwang@google.com",
+      "mlcui@google.com",
+      "hdchuong@google.com",
+      "essential-inputs-team@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "enable-android-spellcheck-full-api-blink",
     "owners": [
       "jhtin@google.com",

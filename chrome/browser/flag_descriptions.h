@@ -5032,6 +5032,13 @@ inline constexpr char kAndroidPinnedTabsTabletTabStripDescription[] =
     "Enables the ability to pin tabs through tab context menu on tablet tab "
     "strip in the tabbed layout. This is M1 of Android Pinned Tabs";
 
+inline constexpr char kAndroidPkAutocorrectUnderlineName[] =
+    "Enable Android physical keyboard autocorrect underline";
+inline constexpr char kAndroidPkAutocorrectUnderlineDescription[] =
+    "Provides visual feedback for physical keyboard autocorrect on Android "
+    "by underlining the original typo after a correction is made, which then "
+    "disappears as typing resumes.";
+
 inline constexpr char kAndroidSpellcheckFullApiBlinkName[] =
     "Enable full Android Spellchecker API support for Blink";
 inline constexpr char kAndroidSpellcheckFullApiBlinkDescription[] =

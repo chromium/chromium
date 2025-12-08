@@ -9142,6 +9142,7 @@ from previous Chrome versions.
   <int value="-1782684481"
       label="AutofillAutoTriggerManualFallbackForCards:disabled"/>
   <int value="-1781675786" label="SparklesForESB:enabled"/>
+  <int value="-1781265248" label="AndroidPkAutocorrectUnderline:disabled"/>
   <int value="-1781115843"
       label="EnableFingerprintingProtectionFilterInIncognito:enabled"/>
   <int value="-1780306716"
@@ -17683,6 +17684,7 @@ from previous Chrome versions.
   <int value="1205929554" label="SendTabToSelfOmniboxSendingAnimation:enabled"/>
   <int value="1206140820" label="RelatedSearchesInBar:disabled"/>
   <int value="1206486242" label="UseDnsHttpsSvcbAlpn:enabled"/>
+  <int value="1206533520" label="AndroidPkAutocorrectUnderline:enabled"/>
   <int value="1206725424" label="UpstreamTrustedReportsFirmware:disabled"/>
   <int value="1208280226" label="PermissionsAIv3:enabled"/>
   <int value="1210118915" label="ShelfAutoHideSeparation:disabled"/>
