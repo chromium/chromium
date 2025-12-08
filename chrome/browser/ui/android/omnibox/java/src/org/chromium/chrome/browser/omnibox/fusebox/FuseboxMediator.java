@@ -620,10 +620,15 @@ public class FuseboxMediator {
     /**
      * Add an attachment to the Fusebox toolbar.
      *
-     * @param attachmentDetails The details of the attachment to add.
+     * @param attachment Contains information about the input that will be added as context.
      */
     /* package */ void uploadAndAddAttachment(FuseboxAttachment attachment) {
-        // Use FuseboxModelList's unified add method
+        // Image generation is only allowed to have a single piece of context.
+        if (mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.IMAGE_GENERATION) {
+            mModelList.clear();
+        }
+
+        // Use FuseboxModelList's unified add method.
         if (!mModelList.add(attachment)) {
             warnForMaxAttachments();
         }
