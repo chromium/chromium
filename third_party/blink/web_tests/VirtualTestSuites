@@ -2799,7 +2799,7 @@
     "args": [
       "--enable-features=AllowSameSiteNoneCookiesInSandbox,ForceThirdPartyCookieBlockingEnabled"
     ],
-    "expires": "Dec 1, 2025",
+    "expires": "May 1, 2026",
     "owners": [
       "anushamuley@chromium.org",
       "dylancutler@google.com"
