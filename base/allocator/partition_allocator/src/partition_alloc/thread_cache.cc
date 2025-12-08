@@ -621,38 +621,54 @@ void ThreadCache::FillBucket(size_t bucket_index) {
   PA_UNSAFE_TODO(PA_DCHECK(!root_->buckets[bucket_index].is_direct_mapped()));
 
   size_t allocated_slots = 0;
-  // Same as calling RawAlloc() |count| times, but acquires the lock only once.
-  internal::ScopedGuard guard(internal::PartitionRootLock(root_));
-  for (int i = 0; i < count; i++) {
-    // Thread cache fill should not trigger expensive operations, to not grab
-    // the lock for a long time needlessly, but also to not inflate memory
-    // usage. Indeed, without AllocFlags::kFastPathOrReturnNull, cache
-    // fill may activate a new PartitionPage, or even a new SuperPage, which is
-    // clearly not desirable.
-    //
-    // |raw_size| is set to the slot size, as we don't know it. However, it is
-    // only used for direct-mapped allocations and single-slot ones anyway,
-    // which are not handled here.
-    size_t ret_slot_size;
-    internal::UntaggedSlotStart slot_start = root_->AllocFromBucket<
-        AllocFlags::kFastPathOrReturnNull | AllocFlags::kReturnNull>(
-        &PA_UNSAFE_TODO(root_->buckets[bucket_index]),
-        PA_UNSAFE_TODO(root_->buckets[bucket_index]).slot_size /* raw_size */,
-        internal::PartitionPageSize(), &usable_size, &ret_slot_size,
-        &is_already_zeroed);
-    // Either the previous allocation would require a slow path allocation, or
-    // the central allocator is out of memory. If the bucket was filled with
-    // some objects, then the allocation will be handled normally. Otherwise,
-    // this goes to the central allocator, which will service the allocation,
-    // return nullptr or crash.
-    if (!slot_start) {
-      break;
-    }
-    PA_UNSAFE_TODO(
-        PA_DCHECK(ret_slot_size == root_->buckets[bucket_index].slot_size));
 
-    allocated_slots++;
-    PutInBucket(bucket, slot_start);
+  // limit is uint8_t, so max 255. count <= 255/8 = 31.
+  // Use a slightly larger buffer to be safe.
+  constexpr size_t kMaxBatchSize = 64;
+  count = std::min(count, static_cast<int>(kMaxBatchSize));
+  internal::UntaggedSlotStart slot_starts[kMaxBatchSize];
+
+  {
+    // Same as calling RawAlloc() |count| times, but acquires the lock only
+    // once.
+    internal::ScopedGuard guard(internal::PartitionRootLock(root_));
+    for (int i = 0; i < count; i++) {
+      // Thread cache fill should not trigger expensive operations, to not grab
+      // the lock for a long time needlessly, but also to not inflate memory
+      // usage. Indeed, without AllocFlags::kFastPathOrReturnNull, cache
+      // fill may activate a new PartitionPage, or even a new SuperPage, which
+      // is clearly not desirable.
+      //
+      // |raw_size| is set to the slot size, as we don't know it. However, it is
+      // only used for direct-mapped allocations and single-slot ones anyway,
+      // which are not handled here.
+      size_t ret_slot_size;
+      internal::UntaggedSlotStart slot_start = root_->AllocFromBucket<
+          AllocFlags::kFastPathOrReturnNull | AllocFlags::kReturnNull>(
+          &PA_UNSAFE_TODO(root_->buckets[bucket_index]),
+          PA_UNSAFE_TODO(root_->buckets[bucket_index]).slot_size /* raw_size */,
+          internal::PartitionPageSize(), &usable_size, &ret_slot_size,
+          &is_already_zeroed);
+      // Either the previous allocation would require a slow path allocation, or
+      // the central allocator is out of memory. If the bucket was filled with
+      // some objects, then the allocation will be handled normally. Otherwise,
+      // this goes to the central allocator, which will service the allocation,
+      // return nullptr or crash.
+      if (!slot_start) {
+        break;
+      }
+      PA_UNSAFE_TODO(
+          PA_DCHECK(ret_slot_size == root_->buckets[bucket_index].slot_size));
+
+      PA_UNSAFE_TODO(slot_starts[allocated_slots++]) = slot_start;
+    }
+  }
+
+  for (size_t i = 0; i < allocated_slots; ++i) {
+    root_->IncreaseTotalSizeOfAllocatedBytes(
+        PA_UNSAFE_TODO(slot_starts[i]).value(), bucket.slot_size,
+        bucket.slot_size);
+    PutInBucket(bucket, PA_UNSAFE_TODO(slot_starts[i]));
   }
 
   cached_memory_ += allocated_slots * bucket.slot_size;
