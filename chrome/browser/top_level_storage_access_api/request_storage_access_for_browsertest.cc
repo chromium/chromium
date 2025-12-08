@@ -27,6 +27,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_util.h"
@@ -614,6 +615,13 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
     // problematic for tests that check histograms, because
     // ScopedAlwaysSampleForTesting doesn't affect other processes.
     content::ForceInProcessNetworkService();
+  }
+
+  void SetUpOnMainThread() override {
+    RequestStorageAccessForBaseBrowserTest::SetUpOnMainThread();
+    // Explicitly enable Related Website Sets (formerly First Party Sets).
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

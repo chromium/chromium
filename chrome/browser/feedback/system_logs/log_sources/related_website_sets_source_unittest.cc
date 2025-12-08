@@ -49,6 +49,9 @@ class RelatedWebsiteSetsSourceTest : public BrowserWithTestWindowTest {
     service_->WaitForFirstInitCompleteForTesting(run_loop.QuitClosure());
     run_loop.Run();
     service_->ResetForTesting();
+
+    // Explicitly enable Related Website Sets.
+    SetRwsEnabledViaPref(true);
   }
 
   void TearDown() override {

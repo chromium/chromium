@@ -171,6 +171,9 @@ class FirstPartySetsPolicyServiceTest
         FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile_);
     ASSERT_NE(service_, nullptr);
 
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
+
     // We can't avoid eagerly initializing the service, due to
     // indirection/caching in the factory infrastructure. So we wait for the
     // initialization to complete, and then reset the instance so that we can

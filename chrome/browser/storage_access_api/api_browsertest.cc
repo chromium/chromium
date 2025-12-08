@@ -49,6 +49,7 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
@@ -2438,6 +2439,13 @@ INSTANTIATE_TEST_SUITE_P(
 class StorageAccessAPIWithFirstPartySetsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
+  void SetUpOnMainThread() override {
+    StorageAccessAPIBaseBrowserTest::SetUpOnMainThread();
+    // Explicitly enable Related Website Sets (formerly First Party Sets).
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     StorageAccessAPIBaseBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(

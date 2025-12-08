@@ -18,6 +18,8 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
@@ -224,6 +226,9 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
              net::FirstPartySetEntry(top_level, net::SiteType::kPrimary)},
         },
         /*aliases=*/{}));
+
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   }
 
  private:

@@ -39,6 +39,7 @@
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/btm_service.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
@@ -801,6 +802,9 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
   void SetUp() override {
     StorageAccessGrantPermissionContextTest::SetUp();
 
+    // Enable Related Website Sets (formerly First Party Sets).
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
     // Create a FPS with https://requester.example.com as the member and
     // https://embedder.com as the primary.
     first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets(

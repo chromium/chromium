@@ -58,14 +58,6 @@ class EnabledPolicyBrowsertest
         {}, {content_settings::features::kTrackingProtection3pcd});
   }
 
-  void SetBlockThirdPartyCookies(bool value) {
-    browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kCookieControlsMode,
-        static_cast<int>(
-            value ? content_settings::CookieControlsMode::kBlockThirdParty
-                  : content_settings::CookieControlsMode::kOff));
-  }
-
   void SetUpOnMainThread() override {
     PolicyTest::SetUpOnMainThread();
     // Add content/test/data for cross_site_iframe_factory.html
@@ -82,7 +74,14 @@ class EnabledPolicyBrowsertest
     prompt_factory_->set_response_type(
         permissions::PermissionRequestManager::DISMISS);
 
-    SetBlockThirdPartyCookies(true);
+    // Block third-party cookies.
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+    // Explicitly enable Related Website Sets (formerly First Party Sets).
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   }
 
   void TearDownOnMainThread() override { prompt_factory_.reset(); }
