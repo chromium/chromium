@@ -1377,6 +1377,23 @@ void AppendToCommaSeparatedSwitch(base::CommandLine* command_line,
                        : base::StrCat({existing_values, ",", new_value}));
 }
 
+size_t GetOutermostMainFrameCountForFastShutdown(RenderProcessHost* process) {
+  std::set<RenderFrameHost*> outermost_main_frames;
+  process->ForEachRenderFrameHost(
+      [&outermost_main_frames](RenderFrameHost* rfh) {
+        // Only consider active frames. Speculative and pending-commit frames
+        // are handled by `pending_views_` and frames processing unload handlers
+        // are checked by `HasSuddenTerminationDisabler()`.
+        RenderFrameHostImpl* const outermost_rfh =
+            static_cast<RenderFrameHostImpl*>(rfh)->GetOutermostMainFrame();
+        if (outermost_rfh->lifecycle_state() ==
+            RenderFrameHostImpl::LifecycleStateImpl::kActive) {
+          outermost_main_frames.insert(outermost_rfh);
+        }
+      });
+  return outermost_main_frames.size();
+}
+
 }  // namespace
 
 RenderProcessHostImpl::IOThreadHostImpl::IOThreadHostImpl(
@@ -4003,15 +4020,29 @@ bool RenderProcessHostImpl::ShutdownRequested() {
   return shutdown_requested_;
 }
 
-bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
-                                                   bool skip_unload_handlers,
-                                                   bool ignore_workers,
-                                                   bool ignore_keep_alive) {
+bool RenderProcessHostImpl::FastShutdownIfPossible(
+    size_t page_count,
+    bool skip_unload_handlers,
+    bool ignore_workers,
+    bool ignore_keep_alive,
+    bool use_outermost_main_frame_check) {
   base::UmaHistogramBoolean(
       "BrowserRenderProcessHost.FastShutdownIfPossible.Total", true);
+
+  // TODO(crbug.com/463513005): When switching to checking outermost main frame
+  // counts by default consider eliminating `pending_views_` - capturing these
+  // in the count returned by the function instead (`pending_views_` covers
+  // speculative and pending-commit RFHs, and this could be checked by RFH
+  // lifecycle state instead).
+  const size_t view_or_outermost_frame_count =
+      use_outermost_main_frame_check
+          ? GetOutermostMainFrameCountForFastShutdown(this)
+          : GetActiveViewCount();
+
   // Do not shut down the process if there are active or pending views other
   // than the ones we're shutting down.
-  if (page_count && page_count != (GetActiveViewCount() + pending_views_)) {
+  if (page_count &&
+      page_count != (view_or_outermost_frame_count + pending_views_)) {
     LogDelayReasonForFastShutdown(
         DelayShutdownReason::kOtherActiveOrPendingViews);
     return false;

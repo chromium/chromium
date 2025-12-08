@@ -255,10 +255,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
   StoragePartitionImpl* GetStoragePartition() override;
   bool Shutdown(int exit_code) override;
   bool ShutdownRequested() override;
-  bool FastShutdownIfPossible(size_t page_count = 0,
-                              bool skip_unload_handlers = false,
-                              bool ignore_workers = false,
-                              bool ignore_keep_alive = false) override;
+  bool FastShutdownIfPossible(
+      size_t page_count = 0,
+      bool skip_unload_handlers = false,
+      bool ignore_workers = false,
+      bool ignore_keep_alive = false,
+      bool use_outermost_main_frame_check = false) override;
   const base::Process& GetProcess() override;
   bool IsReady() override;
   BrowserContext* GetBrowserContext() override;
