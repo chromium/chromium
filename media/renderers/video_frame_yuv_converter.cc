@@ -101,7 +101,6 @@ gpu::SyncToken ConvertYuvVideoFrameToRgbSharedImage(
 
   // This SharedImage will be written to (and later read from) via the raster
   // interface.
-  CHECK(raster_context_provider->ContextCapabilities().gpu_rasterization);
   gpu::SharedImageUsageSet src_usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                        gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
 
