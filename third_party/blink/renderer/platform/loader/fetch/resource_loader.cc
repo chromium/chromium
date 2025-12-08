@@ -622,7 +622,8 @@ bool ResourceLoader::WillFollowRedirect(
 
     if (Context().CalculateIfAdSubresource(
             *new_request, /*alias_url=*/std::nullopt, resource_type,
-            options.initiator_info, /*out_rule=*/nullptr)) {
+            options.initiator_info, /*scan_stack_for_ads=*/false,
+            /*out_rule=*/nullptr)) {
       new_request->SetIsAdResource();
     }
 
@@ -1539,7 +1540,8 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
     if (!resource_->GetResourceRequest().IsAdResource() &&
         Context().CalculateIfAdSubresource(
             resource_->GetResourceRequest(), alias_url, resource_type,
-            options.initiator_info, /*out_rule=*/nullptr)) {
+            options.initiator_info, /*scan_stack_for_ads=*/false,
+            /*out_rule=*/nullptr)) {
       resource_->SetIsAdResource();
       cname_alias_info_for_testing_.was_ad_tagged_based_on_alias = true;
     }

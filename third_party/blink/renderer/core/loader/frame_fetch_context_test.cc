@@ -294,6 +294,7 @@ class FrameFetchContextSubresourceFilterTest
     EXPECT_EQ(expect_is_ad, GetFetchContext()->CalculateIfAdSubresource(
                                 request, std::nullopt /* alias_url */,
                                 ResourceType::kMock, initiator_info,
+                                /*scan_stack_for_ads=*/false,
                                 /*out_rule=*/nullptr));
     return reason;
   }
@@ -1750,6 +1751,7 @@ TEST_P(FrameFetchContextSubresourceFilterTest,
               GetFetchContext()->CalculateIfAdSubresource(
                   resource_request, alias_url, ResourceType::kScript,
                   options.initiator_info,
+                  /*scan_stack_for_ads=*/false,
                   /*out_rule=*/nullptr));
   }
 }

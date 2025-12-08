@@ -196,10 +196,11 @@ class TestAdTracker : public AdTracker {
       ResourceType resource_type,
       const FetchInitiatorInfo& initiator_info,
       bool known_ad,
+      bool scan_stack_for_ads,
       const subresource_filter::ScopedRule& rule) override {
     bool observed_result = AdTracker::CalculateIfAdSubresource(
         execution_context, request_url, resource_type, initiator_info, known_ad,
-        rule);
+        scan_stack_for_ads, rule);
 
     String resource_url = request_url.GetString();
     is_ad_.insert(resource_url, observed_result);

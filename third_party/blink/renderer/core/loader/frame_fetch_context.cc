@@ -1388,13 +1388,18 @@ bool FrameFetchContext::CalculateIfAdSubresource(
     base::optional_ref<const KURL> alias_url,
     ResourceType type,
     const FetchInitiatorInfo& initiator_info,
+    bool scan_stack_for_ads,
     subresource_filter::ScopedRule* out_rule) {
   CHECK(!out_rule);
 
   // Mark the resource as an Ad if the BaseFetchContext thinks it's an ad.
+  // `scan_stack_for_ads` is only used by the `AdTracker` and is used later in
+  // this function, `BaseFetchContext::CalculateIfAdSubresource` doesn't need
+  // it.
   subresource_filter::ScopedRule rule;
   bool known_ad = BaseFetchContext::CalculateIfAdSubresource(
-      resource_request, alias_url, type, initiator_info, /*out_rule=*/&rule);
+      resource_request, alias_url, type, initiator_info,
+      /*scan_stack_for_ads=*/false, /*out_rule=*/&rule);
   if (GetResourceFetcherProperties().IsDetached() ||
       !GetFrame()->GetAdTracker()) {
     return known_ad;
@@ -1405,7 +1410,8 @@ bool FrameFetchContext::CalculateIfAdSubresource(
   const KURL& url =
       alias_url.has_value() ? alias_url.value() : resource_request.Url();
   return GetFrame()->GetAdTracker()->CalculateIfAdSubresource(
-      document_->domWindow(), url, type, initiator_info, known_ad, rule);
+      document_->domWindow(), url, type, initiator_info, known_ad,
+      scan_stack_for_ads, rule);
 }
 
 void FrameFetchContext::DidObserveLoadingBehavior(

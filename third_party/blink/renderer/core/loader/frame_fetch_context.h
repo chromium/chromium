@@ -141,6 +141,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info,
+      bool scan_stack_for_ads,
       subresource_filter::ScopedRule* out_rule) override;
 
   // LoadingBehaviorObserver overrides:

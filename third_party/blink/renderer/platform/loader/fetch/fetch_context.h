@@ -220,11 +220,14 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   // which case it checks the latter. If `out_rule` is non-null and the
   // SubresourceFilter identifies the current resource as an ad based on its
   // URL, then `out_rule` will be populated with the matching filterlist rule.
+  // `scan_stack_for_ads` should be true once per request, and should be called
+  // while the v8 stack that triggered this request is still available.
   virtual bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info,
+      bool scan_stack_for_ads,
       subresource_filter::ScopedRule* out_rule) {
     return false;
   }
