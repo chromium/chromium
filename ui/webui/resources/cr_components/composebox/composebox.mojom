@@ -26,6 +26,10 @@ interface PageHandler {
 
   // Called when the Lens button is clicked in the composebox.
   HandleLensButtonClick();
+
+  // Called when a file upload button is clicked in the composebox
+  // triggering the file upload dialog.
+  HandleFileUpload(bool is_image);
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.

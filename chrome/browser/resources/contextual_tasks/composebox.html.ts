@@ -21,6 +21,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       ?autofocus="${false}"
       carousel-on-top_
       lens-button-disabled_$="${false}"
+      entrypoint-name="ContextualTasks"
     >
     </cr-composebox>
   </div>

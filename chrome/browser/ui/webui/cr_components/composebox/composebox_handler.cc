@@ -207,6 +207,10 @@ void ComposeboxHandler::HandleLensButtonClick() {
   // Ignore, intentionally unimplemented for NTP.
 }
 
+void ComposeboxHandler::HandleFileUpload(bool is_image) {
+  // Ignore, intentionally unimplemented for NTP.
+}
+
 void ComposeboxHandler::ExecuteAction(uint8_t line,
                                       uint8_t action_index,
                                       const GURL& url,

@@ -609,8 +609,10 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(!!lensIcon);
 
     lensIcon.click();
-    await handler.whenCalled('handleLensButtonClick');
-    assertEquals(1, handler.getCallCount('handleLensButtonClick'));
+    await handler.whenCalled('handleFileUpload');
+    assertEquals(1, handler.getCallCount('handleFileUpload'));
+    const [isImage] = handler.getArgs('handleFileUpload');
+    assertTrue(isImage);
   });
 
   test('lens icon mousedown prevents default', async () => {
@@ -626,6 +628,38 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     assertTrue(event.defaultPrevented);
+  });
+
+  test('onRequestFileUpload calls handler for image', async () => {
+    createComposeboxElement();
+
+    composeboxElement.$.context.dispatchEvent(
+        new CustomEvent('open-file-dialog', {
+          detail: {isImage: true},
+          bubbles: true,
+          composed: true,
+        }));
+
+    await handler.whenCalled('handleFileUpload');
+    assertEquals(1, handler.getCallCount('handleFileUpload'));
+    const [isImage] = handler.getArgs('handleFileUpload');
+    assertTrue(isImage);
+  });
+
+  test('onRequestFileUpload calls handler for file', async () => {
+    createComposeboxElement();
+
+    composeboxElement.$.context.dispatchEvent(
+        new CustomEvent('open-file-dialog', {
+          detail: {isImage: false},
+          bubbles: true,
+          composed: true,
+        }));
+
+    await handler.whenCalled('handleFileUpload');
+    assertEquals(1, handler.getCallCount('handleFileUpload'));
+    const [isImage] = handler.getArgs('handleFileUpload');
+    assertFalse(isImage);
   });
 
   test('set and delete visual selection thumbnail', async () => {

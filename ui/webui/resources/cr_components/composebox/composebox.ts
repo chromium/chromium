@@ -707,7 +707,11 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onLensClick_() {
-    this.pageHandler_.handleLensButtonClick();
+    this.pageHandler_.handleFileUpload(/*is_image=*/ true);
+  }
+
+  protected onOpenFileDialog_(e: CustomEvent<{isImage: boolean}>) {
+    this.pageHandler_.handleFileUpload(e.detail.isImage);
   }
 
   protected onLensIconMouseDown_(e: MouseEvent) {

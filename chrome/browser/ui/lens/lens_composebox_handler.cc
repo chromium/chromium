@@ -150,18 +150,26 @@ void LensComposeboxHandler::FocusChanged(bool focused) {
 }
 
 void LensComposeboxHandler::SetDeepSearchMode(bool enabled) {
-  // Ignore, intentionally unimplemented for Lens. Deep search not implemented
+  // Intentionally unimplemented for Lens. Deep search not yet implemented
   // in Lens.
+  NOTREACHED();
 }
 
 void LensComposeboxHandler::SetCreateImageMode(bool enabled,
                                                bool image_present) {
-  // Ignore, intentionally unimplemented for Lens. Create image not implemented
+  // Intentionally unimplemented for Lens. Create image not yet implemented
   // in Lens.
+  NOTREACHED();
 }
 
 void LensComposeboxHandler::HandleLensButtonClick() {
   lens_composebox_controller_->ShowLensSelectionOverlay();
+}
+
+void LensComposeboxHandler::HandleFileUpload(bool is_image) {
+  // Intentionally unimplemented for Lens, file upload is not yet
+  // implemented in Lens.
+  NOTREACHED();
 }
 
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
