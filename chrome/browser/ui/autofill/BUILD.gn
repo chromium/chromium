@@ -356,12 +356,17 @@ source_set("test_support") {
     "test/test_autofill_bubble_handler.h",
   ]
 
-  public_deps = [ ":autofill" ]
+  public_deps = [
+    ":autofill",
+    "//testing/gmock",
+  ]
 
   if (is_android) {
     sources += [
       "autofill_keyboard_accessory_controller_impl_test_api.h",
       "autofill_message_controller_test_api.h",
+      "mock_autofill_message_controller.cc",
+      "mock_autofill_message_controller.h",
     ]
   } else {
     sources += [
@@ -371,10 +376,7 @@ source_set("test_support") {
       "mock_autofill_popup_controller.cc",
       "mock_autofill_popup_controller.h",
     ]
-    public_deps += [
-      "//testing/gmock",
-      "//ui/gfx:test_support",
-    ]
+    public_deps += [ "//ui/gfx:test_support" ]
   }
 }
 

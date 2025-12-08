@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
+#include "chrome/browser/ui/autofill/mock_autofill_message_controller.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/android_bnpl_strategy.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
@@ -127,13 +128,6 @@ class MockAutofillSnackbarControllerImpl
                const CreditCard& filled_card,
                base::OnceClosure),
               (override));
-};
-
-class MockAutofillMessageController : public AutofillMessageController {
- public:
-  MockAutofillMessageController() = default;
-
-  MOCK_METHOD(void, Show, (std::unique_ptr<AutofillMessageModel>), (override));
 };
 #else  //! BUILDFLAG(IS_ANDROID)
 class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
