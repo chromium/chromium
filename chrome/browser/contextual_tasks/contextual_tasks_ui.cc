@@ -249,15 +249,16 @@ void ContextualTasksUI::CreatePageHandler(
   page_.Bind(std::move(page));
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
       std::move(page_handler), this, ui_service_, context_controller_);
-  // TODO(crbug.com/461595196): Currently, this grabs the OAuth token once,
-  // but it should be refreshed if it expires.
+
+  // Request the initial OAuth token to be used by the embedded page.
   RequestOAuthToken();
 }
 
 void ContextualTasksUI::RequestOAuthToken() {
+  token_refresh_timer_.Stop();
+
   auto* profile = Profile::FromWebUI(web_ui());
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     if (page_) {
@@ -295,6 +296,13 @@ void ContextualTasksUI::OnOAuthTokenReceived(
     return;
   }
   page_->SetOAuthToken(access_token_info.token);
+
+  if (!access_token_info.expiration_time.is_null()) {
+    token_refresh_timer_.Start(
+        FROM_HERE, access_token_info.expiration_time - base::Time::Now(),
+        base::BindOnce(&ContextualTasksUI::RequestOAuthToken,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
