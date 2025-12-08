@@ -31,6 +31,7 @@ class OAuthConsumerRegistry {
 
  protected:
   virtual OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress() const = 0;
+  virtual OAuthConsumer GetOAuthConsumerForGlicUserStatus() const = 0;
 };
 
 }  // namespace signin

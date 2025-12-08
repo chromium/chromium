@@ -792,6 +792,7 @@ chromium-metrics-reviews@google.com.
   <int value="77" label="YouTube Music"/>
   <int value="78" label="Contextual Tasks"/>
   <int value="79" label="Enterprise Plus Address"/>
+  <int value="80" label="Glic User Status"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

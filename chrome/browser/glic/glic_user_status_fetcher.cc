@@ -85,7 +85,6 @@ GlicUserStatusFetcher::GlicUserStatusFetcher(Profile* profile,
                                              base::RepeatingClosure callback)
     : profile_(profile), callback_(std::move(callback)) {
   endpoint_ = GURL(features::kGlicUserStatusUrl.Get());
-  oauth2_scope_ = features::kGeminiOAuth2Scope.Get();
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
@@ -290,7 +289,7 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
           identity_manager,
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
           profile_->GetURLLoaderFactory(),
-          std::vector<std::string>{oauth2_scope_}),
+          signin::OAuthConsumerId::kGlicUserStatus),
       profile_->GetURLLoaderFactory(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,

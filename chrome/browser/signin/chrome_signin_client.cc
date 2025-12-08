@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/metrics/metrics_service.h"
@@ -196,6 +197,17 @@ class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
     return signin::OAuthConsumer(
         signin::oauth_consumer_name::kEnterprisePlusAddressName,
         {plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get()});
+  }
+
+  signin::OAuthConsumer GetOAuthConsumerForGlicUserStatus() const override {
+#if BUILDFLAG(ENABLE_GLIC)
+    CHECK(base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kGlicUserStatusName,
+        {features::kGeminiOAuth2Scope.Get()});
+#else
+    NOTREACHED();
+#endif
   }
 };
 

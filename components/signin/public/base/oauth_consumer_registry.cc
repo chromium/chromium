@@ -479,6 +479,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
                       GaiaConstants::kClearCutOAuth2Scope});
     case OAuthConsumerId::kEnterprisePlusAddress:
       return GetOAuthConsumerForEnterprisePlusAddress();
+    case OAuthConsumerId::kGlicUserStatus:
+      return GetOAuthConsumerForGlicUserStatus();
   }
 }
 

@@ -32,6 +32,10 @@ class IOSChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
         signin::oauth_consumer_name::kEnterprisePlusAddressName,
         {plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get()});
   }
+
+  signin::OAuthConsumer GetOAuthConsumerForGlicUserStatus() const override {
+    NOTREACHED();
+  }
 };
 
 }  // namespace

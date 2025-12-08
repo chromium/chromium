@@ -142,7 +142,6 @@ class GlicUserStatusFetcher : public signin::IdentityManager::Observer {
   raw_ptr<Profile> profile_;
   const base::RepeatingClosure callback_;
   GURL endpoint_;
-  std::string oauth2_scope_;
 
   // Ensures we run a request at least as often as
   // `features::kGlicUserStatusRequestDelay`. Reset on browser start, when a
