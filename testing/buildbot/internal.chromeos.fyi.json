@@ -106,13 +106,12 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
-        "autotest_name": "tast.chrome-from-gcs",
+        "autotest_name": "chromium",
         "cros_board": "brya",
         "cros_model": "kano",
         "name": "chrome_all_tast_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
         "shards": 15,
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
@@ -121,14 +120,13 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
-        "autotest_name": "tast.chrome-from-gcs",
+        "autotest_name": "chromium",
         "ci_only": true,
         "cros_board": "brya",
         "cros_model": "kano",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests RELEASE_LKGM",
         "shards": 3,
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
@@ -137,14 +135,13 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
-        "autotest_name": "tast.chrome-from-gcs",
+        "autotest_name": "chromium",
         "ci_only": true,
         "cros_board": "brya",
         "cros_model": "kano",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests RELEASE_LKGM",
         "shards": 2,
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_disabled_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
@@ -483,12 +480,11 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
-        "autotest_name": "tast.chrome-from-gcs",
+        "autotest_name": "chromium",
         "cros_board": "jacuzzi",
         "name": "chrome_all_tast_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
         "shards": 30,
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
@@ -497,13 +493,12 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
-        "autotest_name": "tast.chrome-from-gcs",
+        "autotest_name": "chromium",
         "ci_only": true,
         "cros_board": "jacuzzi",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests RELEASE_LKGM",
         "shards": 3,
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "test_level_retries": 2,
@@ -512,13 +507,12 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
-        "autotest_name": "tast.chrome-from-gcs",
+        "autotest_name": "chromium",
         "ci_only": true,
         "cros_board": "jacuzzi",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests RELEASE_LKGM",
         "shards": 2,
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_disabled_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "test_level_retries": 1,
@@ -556,12 +550,11 @@
         "variant_id": "RELEASE_LKGM"
       },
       {
-        "autotest_name": "tast.chrome-from-gcs",
+        "autotest_name": "chromium",
         "cros_board": "trogdor",
         "name": "chrome_all_tast_tests RELEASE_LKGM",
         "shard_level_retries_on_ctp": 1,
         "shards": 20,
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "test_level_retries": 2,
