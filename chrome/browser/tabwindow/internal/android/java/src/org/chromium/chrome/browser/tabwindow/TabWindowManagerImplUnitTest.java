@@ -52,6 +52,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -1115,7 +1116,8 @@ public class TabWindowManagerImplUnitTest {
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
                         /* closedByUser= */ false));
-        when(mMultiInstanceManager.getInstanceInfo()).thenReturn(instanceInfoList);
+        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY))
+                .thenReturn(instanceInfoList);
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -1174,7 +1176,8 @@ public class TabWindowManagerImplUnitTest {
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
                         /* closedByUser= */ false));
-        when(mMultiInstanceManager.getInstanceInfo()).thenReturn(instanceInfoList);
+        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY))
+                .thenReturn(instanceInfoList);
 
         // The default mock TabModelSelectorFactory is hard to verify
         // broadcastSessionRestoreComplete with. So this test creates just enough to verify it
@@ -1210,7 +1213,8 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         // This is the behavior a pre-31 device would exhibit.
-        when(mMultiInstanceManager.getInstanceInfo()).thenReturn(Collections.emptyList());
+        when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY))
+                .thenReturn(Collections.emptyList());
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();

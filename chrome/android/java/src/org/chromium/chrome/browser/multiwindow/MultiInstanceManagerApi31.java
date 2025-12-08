@@ -204,7 +204,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     private void showInstanceSwitcherDialog() {
-        List<InstanceInfo> info = getInstanceInfo();
+        List<InstanceInfo> info = getInstanceInfo(PersistedInstanceType.ANY);
         boolean isIncognitoWindow =
                 IncognitoUtils.shouldOpenIncognitoAsWindow()
                         && mActivity instanceof ChromeTabbedActivity
@@ -719,7 +719,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public int getCurrentInstanceId() {
-        List<InstanceInfo> allInstances = getInstanceInfo();
+        List<InstanceInfo> allInstances = getInstanceInfo(PersistedInstanceType.ANY);
         if (allInstances == null || allInstances.isEmpty()) return INVALID_WINDOW_ID;
         // Current instance is at top of list.
         return allInstances.get(0).instanceId;
@@ -1756,7 +1756,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         }
         if (destinationWindowTaskId == INVALID_TASK_ID) return null;
 
-        List<InstanceInfo> allInstances = getInstanceInfo();
+        List<InstanceInfo> allInstances = getInstanceInfo(PersistedInstanceType.ANY);
         for (InstanceInfo instanceInfo : allInstances) {
             if (instanceInfo.taskId == destinationWindowTaskId) {
                 return instanceInfo;

@@ -335,11 +335,12 @@ public class MultiInstanceManagerApi31UnitTest {
         protected void installTabModelObserver() {}
 
         @Override
-        public List<InstanceInfo> getInstanceInfo() {
+        public List<InstanceInfo> getInstanceInfo(
+                @PersistedInstanceType int persistedInstanceType) {
             if (mTestBuildInstancesList) {
                 return mTestInstanceInfos;
             }
-            return super.getInstanceInfo();
+            return super.getInstanceInfo(persistedInstanceType);
         }
 
         @Override
@@ -785,12 +786,12 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Advancing time by well over six months.
         mFakeTimeTestRule.advanceMillis(MultiInstanceManagerApi31.SIX_MONTHS_MS + 5000000);
         // Closing the two other instances that are not managing the current activity.
-        assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
         verify(mMultiInstanceManager, times(2))
                 .closeWindow(anyInt(), eq(CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION));
     }
@@ -803,19 +804,19 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
         mMultiInstanceManager.setAdjacentInstance(mActivityTask57);
 
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Removing a task from recent screen doesn't affect instance info list.
         removeTaskOnRecentsScreen(mActivityTask58);
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Activity destroyed in the background due to memory constraint has no impact either.
         softCloseInstance(mActivityTask57, TASK_ID_57);
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Closing an instance removes the entry.
         mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.OTHER);
-        assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
     }
 
     @Test
@@ -826,20 +827,21 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
         mMultiInstanceManager.setAdjacentInstance(mActivityTask57);
 
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Removing a task from recent screen doesn't affect instance info list.
         removeTaskOnRecentsScreen(mActivityTask58);
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Trigger a soft closure on this window.
         softCloseInstance(mActivityTask57, TASK_ID_57);
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Soft closing an instance does not remove the entry.
         mMultiInstanceManager.closeWindow(1, CloseWindowAppSource.WINDOW_MANAGER);
-        assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
-        for (InstanceInfo instanceInfo : mMultiInstanceManager.getInstanceInfo()) {
+        assertEquals(3, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
+        for (InstanceInfo instanceInfo :
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY)) {
             if (instanceInfo.instanceId == 1) {
                 assertTrue(instanceInfo.closedByUser);
                 break;
@@ -851,25 +853,24 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testGetInstanceInfo_currentInfoAtTop() {
         // Ensure the single instance at non-zero position is handled okay.
         assertEquals(2, allocInstanceIndex(2, mActivityTask56));
-        List<InstanceInfo> info = mMultiInstanceManager.getInstanceInfo();
+        List<InstanceInfo> info = mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         assertEquals(1, info.size());
         assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
 
         assertEquals(1, allocInstanceIndex(1, mActivityTask58));
-        info = mMultiInstanceManager.getInstanceInfo();
+        info = mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         assertEquals(2, info.size());
         // Current instance (56) is always positioned at the top of the list.
         assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
 
         assertEquals(0, allocInstanceIndex(0, mActivityTask57));
-        info = mMultiInstanceManager.getInstanceInfo();
+        info = mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         assertEquals(3, info.size());
         assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
     }
 
     @Test
     public void testGetInstanceInfo_filters() {
-        mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
 
         // Instance 0: Active, Regular
@@ -1447,7 +1448,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Allocate and create two instances.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62, true));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63, true));
-        assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(2, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
     }
 
     private void setupMaxInstances() {
@@ -1460,7 +1461,7 @@ public class MultiInstanceManagerApi31UnitTest {
         }
         assertEquals(
                 mMultiInstanceManager.mMaxInstances,
-                mMultiInstanceManager.getInstanceInfo().size());
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         doNothing()
                 .when(mMultiInstanceManager)
@@ -1963,7 +1964,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Create an empty instance before asking it to close. The flag that provides permission to
         // close is enabled.
         assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
-        assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         // Action
         assertTrue(
@@ -1982,7 +1983,7 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         // Create an empty instance before asking it to close.
         assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
-        assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
         // Assume that Chrome is in a desktop window.
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
 
@@ -2005,7 +2006,8 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Failed to alloc INSTANCE_ID_1.",
                 INSTANCE_ID_1,
                 allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
-        List<InstanceInfo> instanceInfo = mMultiInstanceManager.getInstanceInfo();
+        List<InstanceInfo> instanceInfo =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
         assertEquals("Expected one instance.", 1, instanceInfo.size());
         assertEquals(
                 "First instance should be INSTANCE_ID_1.",
@@ -2019,7 +2021,10 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Failed to alloc INSTANCE_ID_2.",
                 INSTANCE_ID_2,
                 allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, true));
-        assertEquals("Expected two instances.", 2, mMultiInstanceManager.getInstanceInfo().size());
+        assertEquals(
+                "Expected two instances.",
+                2,
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY).size());
 
         mMultiInstanceManager.cleanupSyncedTabGroupsIfLastInstance();
         // Verify this is not called a second time.

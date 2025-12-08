@@ -341,14 +341,6 @@ public abstract class MultiInstanceManager {
     }
 
     /**
-     * @return List of {@link InstanceInfo} structs for an activity that can be switched to, or
-     *     newly launched.
-     */
-    public List<InstanceInfo> getInstanceInfo() {
-        return getInstanceInfo(PersistedInstanceType.ANY);
-    }
-
-    /**
      * @return List of {@link InstanceInfo} structs with {@link PersistedInstanceType} {@param type}
      *     for an activity that can be switched to, or newly launched.
      */

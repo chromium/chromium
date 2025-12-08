@@ -1173,7 +1173,8 @@ public class ChromeTabbedActivityTest {
         final AtomicReference<InstanceInfo> instanceInfo2Ref = new AtomicReference<>();
         CriteriaHelper.pollUiThread(
                 () -> {
-                    List<InstanceInfo> instanceInfos = mim1.getInstanceInfo();
+                    List<InstanceInfo> instanceInfos =
+                            mim1.getInstanceInfo(PersistedInstanceType.ANY);
                     for (InstanceInfo info : instanceInfos) {
                         if (info.taskId == activity2.getTaskId()) {
                             instanceInfo2Ref.set(info);
