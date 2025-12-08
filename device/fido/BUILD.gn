@@ -76,6 +76,7 @@ component("fido") {
       "//device/base",
       "//device/fido/strings",
       "//services/data_decoder/public/cpp",
+      "//third_party/blink/public/mojom:authenticator_mojo_bindings",
       "//ui/base",
     ]
 
@@ -339,8 +340,8 @@ if (use_blink) {
       ":fido",
       "//components/cbor",
       "//components/device_event_log",
-      "//content/public/common",  # for authenticator.mojom
       "//services/network/public/mojom",
+      "//third_party/blink/public/mojom:authenticator_mojo_bindings",
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
@@ -355,11 +356,11 @@ if (use_blink) {
       ":cablev2_authenticator",
       ":fido",
       "//components/cbor",
-      "//content/public/common",  # for authenticator.mojom
       "//crypto",
       "//net/traffic_annotation:test_support",
       "//services/network:test_support",
       "//services/network/public/mojom",
+      "//third_party/blink/public/mojom:authenticator_mojo_bindings",
     ]
   }
 

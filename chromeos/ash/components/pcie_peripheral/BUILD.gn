@@ -21,6 +21,8 @@ component("pcie_peripheral") {
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom:usb",
   ]
+
+  configs += [ "//build/config/linux/dbus" ]
 }
 
 source_set("unit_tests") {
@@ -37,4 +39,6 @@ source_set("unit_tests") {
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
   ]
+
+  configs += [ "//build/config/linux/dbus" ]
 }
