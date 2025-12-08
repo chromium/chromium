@@ -1153,12 +1153,35 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         ax::mojom::IntListAttribute::kMarkerStarts);
     const std::vector<int>& markerEnds = markers_anchor->GetIntListAttribute(
         ax::mojom::IntListAttribute::kMarkerEnds);
+    const std::vector<int32_t>& highlightTypes =
+        markers_anchor->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kHighlightTypes);
+
     DCHECK_EQ(markerTypes.size(), markerStarts.size());
     DCHECK_EQ(markerTypes.size(), markerEnds.size());
+    DCHECK_EQ(markerTypes.size(), highlightTypes.size());
 
     for (size_t i = 0; i < markerTypes.size(); ++i) {
-      if (!(markerTypes[i] &
-            static_cast<int32_t>(ax::mojom::MarkerType::kSpelling))) {
+      const bool is_spelling_marker =
+          (markerTypes[i] &
+           static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)) ||
+          ((markerTypes[i] &
+            static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) &&
+           (highlightTypes[i] ==
+            static_cast<int32_t>(ax::mojom::HighlightType::kSpellingError)));
+
+      const bool is_custom_highlight_marker =
+          (markerTypes[i] &
+           static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) &&
+          (highlightTypes[i] ==
+           static_cast<int32_t>(ax::mojom::HighlightType::kHighlight));
+
+      NSString* attribute;
+      if (is_spelling_marker) {
+        attribute = NSAccessibilityMarkedMisspelledTextAttribute;
+      } else if (is_custom_highlight_marker) {
+        attribute = @"AXHighlight";
+      } else {
         continue;
       }
 
@@ -1182,10 +1205,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
                      markersTextRange.anchor()->text_offset() +
                      anchorStartOffset;
       int rangeLength = rangeEnd - rangeStart;
-      [attributedString
-          addAttribute:NSAccessibilityMarkedMisspelledTextAttribute
-                 value:@YES
-                 range:NSMakeRange(rangeStart, rangeLength)];
+      [attributedString addAttribute:attribute
+                               value:@YES
+                               range:NSMakeRange(rangeStart, rangeLength)];
     }
 
     CollectAncestorRoles(*anchor, ancestor_roles);
