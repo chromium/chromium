@@ -26,7 +26,7 @@ inline constexpr char kChromeUIFlagsURL[] = "chrome://flags/";
 inline constexpr char kChromeUIHistoryURL[] = "chrome://history/";
 inline constexpr char kChromeUIInspectURL[] = "chrome://inspect/";
 inline constexpr char kChromeUIInterstitialsURL[] = "chrome://interstitials";
-inline constexpr char kChromeUIManagementURL[] = "chrome://management";
+inline constexpr char kChromeUIManagementURL[] = "chrome://management/";
 inline constexpr char kChromeUINewTabURL[] = "chrome://newtab/";
 inline constexpr char kChromeUINTPTilesInternalsURL[] =
     "chrome://ntp-tiles-internals/";

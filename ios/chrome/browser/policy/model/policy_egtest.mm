@@ -452,9 +452,7 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
                                         IDS_IOS_MANAGEMENT_UI_DESC)];
 
   // Check the navigation.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          kChromeUIManagementURL)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIManagementURL)];
 }
 
 // Tests whether the managed item will be shown if UserPolicy is enabled and
@@ -482,9 +480,7 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 
   // Check the navigation without assert the content (which is done in another
   // test case).
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          kChromeUIManagementURL)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIManagementURL)];
 }
 
 // Tests the chrome://management page when no machine level policy is set.
