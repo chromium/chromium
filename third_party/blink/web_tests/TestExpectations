@@ -6296,7 +6296,6 @@ crbug.com/1141206 scrollbars/overflow-scrollbar-combinations.html [ Failure Pass
 crbug.com/40728742 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Failure Pass Timeout ]
 
 # Sheriff 2020-11-16
-crbug.com/40732030 http/tests/devtools/sources/debugger-ui/debugger-inline-values-frames.js [ Failure Pass Timeout ]
 crbug.com/40732030 http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Failure Pass Timeout ]
 crbug.com/1150475 fast/dom/open-and-close-by-DOM.html [ Failure Pass ]
 
@@ -6417,9 +6416,6 @@ crbug.com/40761284 http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Fa
 
 # Started failing after rolling new version of check-layout-th.js
 css3/flexbox/perpendicular-writing-modes-inside-flex-item.html [ Failure ]
-
-# Sheriff 2021-11-15
-crbug.com/40205355 http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Failure Pass Timeout ]
 
 # The wpt_flags=h2 variants of these tests fail on content shell but pass on
 # headless shell. Use test expectations so that the results for headless shell
