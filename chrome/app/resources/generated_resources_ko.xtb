@@ -1916,6 +1916,7 @@
 <translation id="2287617382468007324">인쇄 IPP 주소</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{데이터 보호를 위해 최근에 방문하지 않은 사이트에서 권한이 삭제됨}other{데이터 보호를 위해 최근에 방문하지 않은 사이트에서 권한이 삭제됨}}</translation>
 <translation id="2287944065963043964">로그인 화면</translation>
+<translation id="2289567621059034186">아래에 새 탭</translation>
 <translation id="2290615375132886363">태블릿 탐색 버튼</translation>
 <translation id="2290703778620332549">그룹을 바꾸거나 새로 만드시겠어요?</translation>
 <translation id="2291452790265535215">북마크, 탐색 여정 등에 측면 패널을 사용해 보세요.</translation>
@@ -3281,6 +3282,7 @@
 <translation id="322708765617468434">설정 후 언제든지 다른 사용자를 기기에 추가할 수 있습니다. 모든 사용자는 자신의 환경을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
 <translation id="3227137524299004712">마이크</translation>
 <translation id="3227701057281907159">패치</translation>
+<translation id="3228962656492373217">아래 탭 닫기</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{<ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />의 유사한 확장 프로그램으로 대체하거나 삭제하세요}other{<ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />의 유사한 확장 프로그램으로 대체하거나 삭제하세요}}</translation>
 <translation id="3229254977651514276">날짜를 확인하세요.</translation>
 <translation id="3230539834943294477">도움말 보기 또는 기기 지원 찾기</translation>
@@ -5015,6 +5017,7 @@
 <translation id="4404843640767531781">부모님이 <ph name="APP_NAME" /> 앱을 차단했습니다. 이 앱을 사용하려면 부모님에게 권한을 요청하세요.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
+<translation id="4405580203042711503">아래에 새 탭</translation>
 <translation id="4405781821077215583">텍스트를 포함하여 화면에 표시된 항목을 작게 또는 크게 표시합니다.</translation>
 <translation id="4406308048672435032">이 탭을 비활성화하거나 새로고침하여 전체 목록을 다시 볼 수 있습니다.</translation>
 <translation id="4406881185911439342">그룹 포커스</translation>
@@ -6733,6 +6736,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5609231933459083978">애플리케이션이 잘못된 것 같습니다.</translation>
 <translation id="5610867721023328944">다시 시도하거나 아래에서 사용 가능한 테마 중 하나를 선택하세요.</translation>
 <translation id="5611398002774823980">계정에 저장</translation>
+<translation id="5611474372949142946">아래 탭 닫기</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">사용자 알림</translation>
 <translation id="5614553682702429503">비밀번호를 저장하시겠습니까?</translation>
@@ -11987,6 +11991,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9215742531438648683">Google Play 스토어 제거</translation>
 <translation id="9218430445555521422">기본값으로 설정</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" />(지원되지 않는 앱)</translation>
+<translation id="9219103736887031265">이미지</translation>
 <translation id="9219572436491982747">Chrome AI 기술을 개선하기 위해 Google로 전송된 데이터를 인적 검토자가 확인할 수 있습니다.</translation>
 <translation id="9219741625496141320">인터넷 사용 기록이 자동으로 삭제되었습니다</translation>
 <translation id="9220525904950070496">계정 삭제</translation>

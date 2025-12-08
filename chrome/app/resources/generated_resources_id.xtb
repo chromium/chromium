@@ -1915,6 +1915,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2287617382468007324">Mencetak Alamat IPP</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka baru-baru ini}other{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka baru-baru ini}}</translation>
 <translation id="2287944065963043964">Layar login</translation>
+<translation id="2289567621059034186">Tab baru di bawah</translation>
 <translation id="2290615375132886363">Tombol navigasi tablet</translation>
 <translation id="2290703778620332549">Ganti atau Buat Grup Baru?</translation>
 <translation id="2291452790265535215">Coba gunakan panel samping untuk bookmark, perjalanan, dan lainnya</translation>
@@ -3279,6 +3280,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="322708765617468434">Anda dapat menambahkan pengguna lain ke perangkat setelah penyiapan kapan saja. Setiap pengguna dapat mempersonalisasi pengalaman dan menjaga privasi datanya.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3227701057281907159">Sedang memberikan patch</translation>
+<translation id="3228962656492373217">Tutup tab di bawah</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Hapus atau ganti dengan ekstensi serupa dari <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Hapus atau ganti dengan ekstensi serupa dari <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Periksa tanggal</translation>
 <translation id="3230539834943294477">Lihat artikel bantuan atau temukan dukungan perangkat</translation>
@@ -5015,6 +5017,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4404843640767531781"><ph name="APP_NAME" /> diblokir oleh orang tuamu. Minta izin orang tuamu untuk menggunakan aplikasi ini.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Pindahkan ke…</translation>
+<translation id="4405580203042711503">Tab Baru di Bawah</translation>
 <translation id="4405781821077215583">Membuat item di layar Anda, termasuk teks, menjadi lebih kecil atau lebih besar</translation>
 <translation id="4406308048672435032">Anda dapat menonaktifkan tab ini atau memuat ulang untuk melihat kembali daftar lengkapnya</translation>
 <translation id="4406881185911439342">Fokuskan grup</translation>
@@ -6732,6 +6735,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5609231933459083978">Tampaknya aplikasi ini tidak valid.</translation>
 <translation id="5610867721023328944">Coba lagi atau pilih salah satu tema yang tersedia di bawah.</translation>
 <translation id="5611398002774823980">Simpan di akun</translation>
+<translation id="5611474372949142946">Tutup Tab di Bawah</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notifikasi Pengguna</translation>
 <translation id="5614553682702429503">Simpan sandi?</translation>
@@ -11985,6 +11989,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9215742531438648683">Uninstal Google Play Store</translation>
 <translation id="9218430445555521422">Jadikan default</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (aplikasi tidak didukung)</translation>
+<translation id="9219103736887031265">Gambar</translation>
 <translation id="9219572436491982747">Data yang dikirim ke Google mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas teknologi AI Chrome</translation>
 <translation id="9219741625496141320">Data penjelajahan otomatis dihapus</translation>
 <translation id="9220525904950070496">Hapus akun</translation>

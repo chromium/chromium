@@ -874,6 +874,7 @@
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="397726367135689299">ການສາກແບັດເຕີຣີອາດບໍ່ສະຖຽນ.</translation>
 <translation id="3977512764614765090">ແບັດເຕີຣີຢູ່ທີ່ <ph name="PERCENTAGE" />% ແລະ ກຳລັງສາກ.</translation>
+<translation id="3978162107953847778">ແຊກລິ້ງຈາກບ່ອນຕ່າງໆ ເຊັ່ນ: ປະຫວັດການທ່ອງເວັບ ແລະ Google Drive ຂອງທ່ານ. ທ່ານສາມາດແຊກອີໂມຈິ, ໄຟລ໌ຮູບ ແລະ ອື່ນໆໄດ້ນຳ. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">ປ່ຽນເອົ້າພຸດສຽງບໍ?</translation>
 <translation id="3984536049089846927">ໜ້າຕໍ່ໄປ</translation>
 <translation id="3986082989454912832">ຮັບສາຍ</translation>
@@ -1600,6 +1601,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6274422179279280249">ແຊກລິ້ງ, ອີໂມຈິ ແລະ ອື່ນໆ. ທ່ານສາມາດຂໍຄວາມຊ່ວຍເຫຼືອໃນການຂຽນດ້ວຍ Google AI ໄດ້ນຳ. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">ເບິ່ງແຫຼ່ງທີ່ມາຂອງຫນ້າ</translation>
 <translation id="6285871695023807425">ເພີ່ມໃສ່ປະຕິທິນ</translation>
 <translation id="6288235558961782912">ສາມາດເພີ່ມ <ph name="USER_EMAIL_ADDRESS" /> ຄືນໃໝ່ໃນພາຍຫຼັງໄດ້ໂດຍມີການອະນຸຍາດຂອງພໍ່ແມ່.</translation>
@@ -2190,6 +2192,7 @@
 <translation id="8237964652943995219">ໂຕະຕໍ່ໄປ: <ph name="DESK_NAME" />. ໂຕະທີ <ph name="DESK_INDEX" /> ຈາກທັງໝົດ <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">ເບິ່ງຄຳແນະນຳສັ້ນໆເພື່ອສຶກສາວິທີໄປຫາພາກສ່ວນຕ່າງໆຂອງ <ph name="PRODUCT_NAME" /> ຂອງທ່ານ. ເລີ່ມຕົ້ນ ແລະ ພ້ອມໃຊ້ໄດ້ໃນ 5 ຂັ້ນຕອນ.</translation>
 <translation id="8239034820133090126">ເປີດນຳໃຊ້ໂຕະຢູ່ທາງຂວາ</translation>
+<translation id="8241650983304689286">ເພີ່ມແຖບໄປໃສ່ມຸມມອງແບບແຍກໃໝ່</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" /></translation>
 <translation id="825129991941217170">ສະແດງເນື້ອຫາ Google Drive ທັງໝົດ</translation>
 <translation id="8257510091797044096">ຕັ້ງຄ່າອຸປະກອນຂອງທ່ານ</translation>

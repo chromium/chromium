@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" /> 사이트의 알림 수신을 거부했습니다. 다음에 사이트를 방문할 때 설정을 다시 확인합니다.</translation>
 <translation id="1340839264183302272">그룹 나가기</translation>
 <translation id="1342886103232377846">유출된 비밀번호가 있는지 확인하려면 Google 비밀번호 관리자로 이동하세요</translation>
+<translation id="1343830902827845050">Chrome에 로그인하세요</translation>
 <translation id="1344653310988386453">하이라이트 링크 포함</translation>
 <translation id="1347468774581902829">활동 관리</translation>
 <translation id="1355088659320425659">방문 기록 및 탭</translation>
@@ -718,6 +719,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="414128724510021958">기본적으로 요청되는 데스크톱 사이트</translation>
 <translation id="4162867837470729563">공유 옵션 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="4170011742729630528">서비스를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
+<translation id="4170577491341606575">데이터를 가져오는 중\u2026</translation>
 <translation id="4177222230309051052">모든 북마크 가져오기</translation>
 <translation id="4177501066905053472">광고 주제</translation>
 <translation id="417865198503699526">설정을 검색합니다.</translation>
@@ -1457,6 +1459,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7115358764509798967">시스템 기본값</translation>
 <translation id="7117485132243600300">추천 주제, 검색어, 팔로우하는 콘텐츠 관리</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> 닫기</translation>
+<translation id="7121179479711575744">Chrome에 로그인</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{사이트 1개의 권한이 검토됨}other{사이트 #개의 권한이 검토됨}}</translation>
 <translation id="7138678301420049075">기타</translation>
 <translation id="7140829094791862589">직접 정렬</translation>

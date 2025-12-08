@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" />-с захиалгаа цуцаллаа. Танаас дараагийн удаа зочлоход тань дахин асууна.</translation>
 <translation id="1340839264183302272">Бүлгээс гарах</translation>
 <translation id="1342886103232377846">Алдагдсан нууц үгнүүд байгаа эсэхийг шалгахын тулд Google Password Manager лүү очно уу</translation>
+<translation id="1343830902827845050">Chrome-д нэвтрэх</translation>
 <translation id="1344653310988386453">Тодруулсан текстийн холбоосыг багтаах</translation>
 <translation id="1347468774581902829">Үйл ажиллагааг удирдах</translation>
 <translation id="1355088659320425659">Түүх, табууд</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">Өгөгдмөлөөр хүссэн компьютерын сайтууд</translation>
 <translation id="4162867837470729563">Бүтэн хэмжээтэйгээр хуваалцах сонголтын жагсаалт.</translation>
 <translation id="4170011742729630528">Энэ үйлчилгээг авах боломжгүй байна; Та дараа дахин оролдоно уу.</translation>
+<translation id="4170577491341606575">Таны юмнуудыг авч байна\u2026</translation>
 <translation id="4177222230309051052">Бүх хавчуургаа аваарай</translation>
 <translation id="4177501066905053472">Зарын сэдвүүд</translation>
 <translation id="417865198503699526">Тохиргоо хайх</translation>
@@ -1457,6 +1459,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7115358764509798967">Системийн өгөгдмөл</translation>
 <translation id="7117485132243600300">Дагадаг контент, санал болгосон сэдэв, хайлтаа удирдана уу</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />-г хаах</translation>
+<translation id="7121179479711575744">Chrome-д нэвтрэх</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 сайтын зөвшөөрлийг хянасан}other{# сайтын зөвшөөрлийг хянасан}}</translation>
 <translation id="7138678301420049075">Бусад</translation>
 <translation id="7140829094791862589">Гар дарааллаар эрэмбэлэх</translation>

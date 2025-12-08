@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Berhenti berlangganan dari <ph name="SITE_NAME" />. Anda akan ditanyai lagi pada kunjungan berikutnya.</translation>
 <translation id="1340839264183302272">Keluar dari grup</translation>
 <translation id="1342886103232377846">Untuk memeriksa sandi yang telah dibobol, buka Pengelola Sandi Google</translation>
+<translation id="1343830902827845050">Login ke Chrome</translation>
 <translation id="1344653310988386453">Sertakan link ke sorotan</translation>
 <translation id="1347468774581902829">Kelola aktivitas</translation>
 <translation id="1355088659320425659">Histori dan tab</translation>
@@ -718,6 +719,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="414128724510021958">Situs desktop diminta secara default</translation>
 <translation id="4162867837470729563">Daftar opsi berbagi terbuka sepenuhnya.</translation>
 <translation id="4170011742729630528">Layanan tidak tersedia; coba lagi nanti.</translation>
+<translation id="4170577491341606575">Mengambil data Anda\u2026</translation>
 <translation id="4177222230309051052">Dapatkan semua bookmark Anda</translation>
 <translation id="4177501066905053472">Topik iklan</translation>
 <translation id="417865198503699526">Telusuri setelan</translation>
@@ -1457,6 +1459,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7115358764509798967">Default sistem</translation>
 <translation id="7117485132243600300">Kelola konten yang Anda ikuti serta topik dan penelusuran yang disarankan</translation>
 <translation id="7119984597597798764">Tutup <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Login ke Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Izin ditinjau untuk 1 situs}other{Izin ditinjau untuk # situs}}</translation>
 <translation id="7138678301420049075">Lainnya</translation>
 <translation id="7140829094791862589">Urutkan secara manual</translation>
