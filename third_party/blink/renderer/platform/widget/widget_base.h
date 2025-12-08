@@ -433,24 +433,28 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Called after the delay given in `RequestAnimationAfterDelay()`.
   void RequestAnimationAfterDelayTimerFired(TimerBase*);
 
+  // Mojo interfaces and params for a new LayerTreeFrameSink.
+  struct NewLayerTreeFrameSinkParams {
+    KURL url;
+    mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
+        compositor_frame_sink_receiver;
+    mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
+        compositor_frame_sink_client;
+    mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
+        render_frame_metadata_observer_client_receiver;
+    mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
+        render_frame_metadata_observer_remote;
+    std::unique_ptr<RenderFrameMetadataObserverImpl>
+        render_frame_metadata_observer;
+    std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>
+        embedder_params;
+    LayerTreeFrameSinkCallback callback;
+  };
+
   // Finishes the call to RequestNewLayerTreeFrameSink() once the
   // |gpu_channel_host| is available.
-  // TODO(crbug.com/40208065): Clean up these parameters using a struct.
   void FinishRequestNewLayerTreeFrameSink(
-      const KURL& url,
-      mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
-          compositor_frame_sink_receiver,
-      mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
-          compositor_frame_sink_client,
-      mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
-          render_frame_metadata_observer_client_receiver,
-      mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserver>
-          render_frame_metadata_observer_remote,
-      std::unique_ptr<RenderFrameMetadataObserverImpl>
-          render_frame_metadata_observer,
-      std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>
-          params,
-      LayerTreeFrameSinkCallback callback,
+      NewLayerTreeFrameSinkParams params,
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
 
   // This will do exactly one of these, depending on the params:
