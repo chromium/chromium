@@ -2421,6 +2421,12 @@ void WebRequestEventRouter::LoadPersistedLazyListeners(
     return;
   }
 
+  const base::Value::List* persisted_listeners =
+      prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
+  if (!persisted_listeners) {
+    return;
+  }
+
   // If there's already listeners registered for this extension, somehow
   // its context has already been executed, and we don't need to load
   // the listeners from the prefs.
@@ -2430,16 +2436,13 @@ void WebRequestEventRouter::LoadPersistedLazyListeners(
     for (const auto& [event_name, listeners] : *listener_map) {
       for (const auto& listener : listeners) {
         if (listener->id.extension_id == extension_id) {
+          // TODO(crbug.com/448893426): remove these for loops if we can verify
+          // this never happens.
+          base::debug::DumpWithoutCrashing();
           return;
         }
       }
     }
-  }
-
-  const base::Value::List* persisted_listeners =
-      prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
-  if (!persisted_listeners) {
-    return;
   }
 
   // Load all listeners or none at all. If the list is corrupted for any reason,
