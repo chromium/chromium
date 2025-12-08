@@ -2491,6 +2491,9 @@ void WebRequestEventRouter::LoadPersistedLazyListeners(
     if (listener->HasExtraHeaders()) {
       IncrementExtraHeadersListenerCount(browser_context);
     }
+    if (listener->HasSecurityInfo()) {
+      IncrementSecurityInfoListenerCount(browser_context);
+    }
     std::string event_name =
         EventRouter::GetBaseEventName(listener->id.sub_event_name);
     data.inactive_listeners[event_name].push_back(std::move(listener));
