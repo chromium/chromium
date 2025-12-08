@@ -50,6 +50,7 @@ import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.password_manager.BrowserAssistedLoginType;
 import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
@@ -1356,12 +1357,25 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
             }
         }
 
+        Integer browserAssistedLoginType = null;
+        if (WebauthnFeatureMap.getInstance()
+                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)) {
+            if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM;
+            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY;
+            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_UNKNOWN;
+            }
+        }
+
         handleFido2Response(
                 errorCode,
                 response,
                 /* getAssertionOutcome= */ null,
                 /* makeCredentialOutcome= */ null,
-                requestType);
+                requestType,
+                browserAssistedLoginType);
     }
 
     private @Nullable Integer getCredentialRequestResult(
@@ -1451,8 +1465,25 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                 break;
         }
 
+        Integer browserAssistedLoginType = null;
+        if (WebauthnFeatureMap.getInstance()
+                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)) {
+            if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM;
+            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY;
+            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_UNKNOWN;
+            }
+        }
+
         handleFido2Response(
-                errorCode, response, getAssertionOutcome, makeCredentialOutcome, requestType);
+                errorCode,
+                response,
+                getAssertionOutcome,
+                makeCredentialOutcome,
+                requestType,
+                browserAssistedLoginType);
     }
 
     private void handleFido2Response(
@@ -1460,7 +1491,8 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
             @Nullable Object response,
             @Nullable @GetAssertionOutcome Integer getAssertionOutcome,
             @Nullable @MakeCredentialOutcome Integer makeCredentialOutcome,
-            @Fido2ApiRequestType int requestType) {
+            @Fido2ApiRequestType int requestType,
+            @Nullable Integer browserAssistedLoginType) {
         log(TAG, "handleFido2Response");
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         if (mCancellableUiState != CancellableUiState.NONE) {
@@ -1561,6 +1593,9 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                                 .setGetAssertionOutcome(GetAssertionOutcome.SUCCESS);
                 if (getAssertionResult != null) {
                     builder.setGetAssertionResult(getAssertionResult);
+                }
+                if (browserAssistedLoginType != null) {
+                    builder.setBrowserAssistedLoginType(browserAssistedLoginType);
                 }
                 requestCallback.onComplete(
                         WebauthnRequestResponse.forSuccessfulGetAssertion(r, builder.build()));

@@ -90,7 +90,8 @@ import java.util.List;
         })
 @DisableFeatures({
     WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV,
-    BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS
+    BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS,
+    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE
 })
 public class Fido2CredentialRequestRobolectricTest {
     private static final String TEST_CHANNEL_EXTRA = "stable";
