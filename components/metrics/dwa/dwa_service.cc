@@ -454,6 +454,10 @@ DwaService::EncryptPrivateMetricReport(
   *encrypted_report.mutable_report_header() = std::move(report_header);
   encrypted_report.set_report_type(
       ::private_metrics::EncryptedPrivateMetricReport::DWA);
+  *encrypted_report.mutable_encrypted_symmetric_key() =
+      std::move(result.value().encrypted_symmetric_key);
+  *encrypted_report.mutable_encapsulated_public_key() =
+      std::move(result.value().encapped_key);
   return encrypted_report;
 }
 
