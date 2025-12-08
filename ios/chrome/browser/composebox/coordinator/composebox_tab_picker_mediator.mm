@@ -164,6 +164,23 @@
   [super userTappedOnItemID:itemID];
 }
 
+- (GridItemIdentifier*)activeIdentifier {
+  WebStateList* webStateList = self.webStateList;
+  if (!webStateList) {
+    return nil;
+  }
+
+  int webStateIndex = webStateList->active_index();
+  if (webStateIndex == WebStateList::kInvalidIndex) {
+    return nil;
+  }
+
+  // Since the tab picker flattens groups to display tabs individually, this
+  // method is overridden to bypass standard group cell logic.
+  return [GridItemIdentifier
+      tabIdentifier:webStateList->GetWebStateAt(webStateIndex)];
+}
+
 #pragma mark - ComposeboxTabPickerMutator
 
 - (void)attachSelectedTabs {
@@ -273,6 +290,13 @@
   }
 
   [_gridConsumer populateItems:items selectedItemIdentifier:nil];
+
+  // Defer scrolling until the next run loop to ensure the collection view
+  // layout is finalized.
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf bringActiveGridItemIntoView];
+  });
 }
 
 - (void)cancelPlaceholderForRealizedWebState:
@@ -329,6 +353,11 @@
   [_failedLoadedItemIDs addObject:itemID];
   [self removeFromSelectionItemID:itemID];
   [self reconfigureGridItem:itemID];
+}
+
+/// Brings the active grid item into view.
+- (void)bringActiveGridItemIntoView {
+  [_gridConsumer bringItemIntoView:[self activeIdentifier] animated:NO];
 }
 
 @end
