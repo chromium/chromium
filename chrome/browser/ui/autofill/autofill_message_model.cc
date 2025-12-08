@@ -65,7 +65,7 @@ AutofillMessageModel::CreateForVirtualCardEnrollFailure(
 }
 
 messages::MessageWrapper& AutofillMessageModel::GetMessage(
-    base::PassKey<AutofillMessageController> pass_key) {
+    base::PassKey<AutofillMessageControllerImpl> pass_key) {
   return *message_;
 }
 

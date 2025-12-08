@@ -13,7 +13,7 @@
 
 namespace autofill {
 
-class AutofillMessageController;
+class AutofillMessageControllerImpl;
 
 // AutofillMessageModel is used to create autofill Android Messages to be used
 // with the AutofillMessageController.
@@ -43,7 +43,7 @@ class AutofillMessageModel {
   CreateForVirtualCardEnrollFailure(std::u16string card_label);
 
   messages::MessageWrapper& GetMessage(
-      base::PassKey<AutofillMessageController> pass_key);
+      base::PassKey<AutofillMessageControllerImpl> pass_key);
   const Type& GetType() const;
   std::string_view GetTypeAsString() const;
 

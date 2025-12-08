@@ -60,6 +60,7 @@ source_set("autofill") {
       "autofill_keyboard_accessory_controller_impl.h",
       "autofill_keyboard_accessory_view.h",
       "autofill_message_controller.h",
+      "autofill_message_controller_impl.h",
       "autofill_message_model.h",
       "autofill_snackbar_controller.h",
       "autofill_snackbar_controller_impl.h",
@@ -184,7 +185,7 @@ source_set("impl") {
     sources += [
       "autofill_keyboard_accessory_controller.cc",
       "autofill_keyboard_accessory_controller_impl.cc",
-      "autofill_message_controller.cc",
+      "autofill_message_controller_impl.cc",
       "autofill_message_model.cc",
       "autofill_snackbar_controller_impl.cc",
     ]
@@ -316,7 +317,7 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "autofill_keyboard_accessory_controller_impl_unittest.cc",
-      "autofill_message_controller_unittest.cc",
+      "autofill_message_controller_impl_unittest.cc",
       "autofill_message_model_unittest.cc",
       "autofill_snackbar_controller_impl_unittest.cc",
     ]

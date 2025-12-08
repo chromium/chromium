@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_MESSAGE_CONTROLLER_TEST_API_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_MESSAGE_CONTROLLER_TEST_API_H_
 
-#include "chrome/browser/ui/autofill/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 
 namespace autofill {
 
 class AutofillMessageControllerTestApi {
  public:
   explicit AutofillMessageControllerTestApi(
-      AutofillMessageController& controller)
+      AutofillMessageControllerImpl& controller)
       : controller_(controller) {}
 
   ~AutofillMessageControllerTestApi() = default;
@@ -40,11 +40,11 @@ class AutofillMessageControllerTestApi {
   void Dismiss() { controller_->Dismiss(); }
 
  private:
-  const raw_ref<AutofillMessageController> controller_;
+  const raw_ref<AutofillMessageControllerImpl> controller_;
 };
 
 inline AutofillMessageControllerTestApi test_api(
-    AutofillMessageController& controller) {
+    AutofillMessageControllerImpl& controller) {
   return AutofillMessageControllerTestApi(controller);
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 
 #include <memory>
 
@@ -14,26 +14,26 @@
 
 namespace autofill {
 
-AutofillMessageController::AutofillMessageController(
+AutofillMessageControllerImpl::AutofillMessageControllerImpl(
     content::WebContents* web_contents)
     : web_contents_(*web_contents) {}
 
-AutofillMessageController::~AutofillMessageController() {
+AutofillMessageControllerImpl::~AutofillMessageControllerImpl() {
   Dismiss();
 }
 
-void AutofillMessageController::Show(
+void AutofillMessageControllerImpl::Show(
     std::unique_ptr<AutofillMessageModel> message_model) {
   AutofillMessageModel* message_model_ptr = message_model.get();
   message_models_.insert(std::move(message_model));
 
   message_model_ptr->GetMessage(/*pass_key=*/{})
       .SetActionClick(
-          base::BindOnce(&AutofillMessageController::OnActionClicked,
+          base::BindOnce(&AutofillMessageControllerImpl::OnActionClicked,
                          weak_ptr_factory_.GetWeakPtr(), message_model_ptr));
   message_model_ptr->GetMessage(/*pass_key=*/{})
       .SetDismissCallback(
-          base::BindOnce(&AutofillMessageController::OnDismissed,
+          base::BindOnce(&AutofillMessageControllerImpl::OnDismissed,
                          weak_ptr_factory_.GetWeakPtr(), message_model_ptr));
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
@@ -47,7 +47,7 @@ void AutofillMessageController::Show(
       true);
 }
 
-void AutofillMessageController::OnActionClicked(
+void AutofillMessageControllerImpl::OnActionClicked(
     AutofillMessageModel* message_model_ptr) {
   auto message_model_it = message_models_.find(message_model_ptr);
   CHECK(message_model_it != message_models_.end());
@@ -58,7 +58,7 @@ void AutofillMessageController::OnActionClicked(
       true);
 }
 
-void AutofillMessageController::OnDismissed(
+void AutofillMessageControllerImpl::OnDismissed(
     AutofillMessageModel* message_model_ptr,
     messages::DismissReason reason) {
   auto message_model_it = message_models_.find(message_model_ptr);
@@ -72,7 +72,7 @@ void AutofillMessageController::OnDismissed(
   message_models_.erase(message_model_it);
 }
 
-void AutofillMessageController::Dismiss() {
+void AutofillMessageControllerImpl::Dismiss() {
   for (auto it = message_models_.begin(); it != message_models_.end();) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
         &(*it++)->GetMessage(/*pass_key=*/{}),

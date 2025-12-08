@@ -92,7 +92,7 @@
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#include "chrome/browser/ui/autofill/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
@@ -1225,7 +1225,7 @@ AutofillMessageController&
 ChromePaymentsAutofillClient::GetAutofillMessageController() {
   if (!autofill_message_controller_) {
     autofill_message_controller_ =
-        std::make_unique<AutofillMessageController>(web_contents());
+        std::make_unique<AutofillMessageControllerImpl>(web_contents());
   }
 
   return *autofill_message_controller_;

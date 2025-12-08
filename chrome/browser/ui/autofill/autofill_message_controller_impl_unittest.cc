@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 
 #include <memory>
 
@@ -14,9 +14,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
-class AutofillMessageControllerTest : public ChromeRenderViewHostTestHarness {
+class AutofillMessageControllerImplTest
+    : public ChromeRenderViewHostTestHarness {
  public:
-  AutofillMessageControllerTest() = default;
+  AutofillMessageControllerImplTest() = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -59,9 +60,9 @@ class AutofillMessageControllerTest : public ChromeRenderViewHostTestHarness {
     return (*it).get();
   }
 
-  AutofillMessageController& controller() {
+  AutofillMessageControllerImpl& controller() {
     if (!controller_) {
-      controller_ = new AutofillMessageController(web_contents());
+      controller_ = new AutofillMessageControllerImpl(web_contents());
     }
     return *controller_;
   }
@@ -71,11 +72,11 @@ class AutofillMessageControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  raw_ptr<AutofillMessageController> controller_;
+  raw_ptr<AutofillMessageControllerImpl> controller_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
 };
 
-TEST_F(AutofillMessageControllerTest, Show) {
+TEST_F(AutofillMessageControllerImplTest, Show) {
   ExpectEnqueueMessageCall();
 
   raw_ptr<AutofillMessageModel> message = CreateAndShowNewMessage();
@@ -83,7 +84,7 @@ TEST_F(AutofillMessageControllerTest, Show) {
   EXPECT_EQ(FindMessageModel(message), message);
 }
 
-TEST_F(AutofillMessageControllerTest, ShowTwiceWithoutDismiss) {
+TEST_F(AutofillMessageControllerImplTest, ShowTwiceWithoutDismiss) {
   ExpectEnqueueMessageCall(/*times=*/2);
 
   CreateAndShowNewMessage();
@@ -92,7 +93,7 @@ TEST_F(AutofillMessageControllerTest, ShowTwiceWithoutDismiss) {
   EXPECT_THAT(message_models(), testing::SizeIs(2));
 }
 
-TEST_F(AutofillMessageControllerTest, OnDismissed) {
+TEST_F(AutofillMessageControllerImplTest, OnDismissed) {
   raw_ptr<AutofillMessageModel> first_message = CreateAndShowNewMessage();
   raw_ptr<AutofillMessageModel> second_message = CreateAndShowNewMessage();
 
@@ -103,7 +104,7 @@ TEST_F(AutofillMessageControllerTest, OnDismissed) {
   EXPECT_EQ(FindMessageModel(second_message), second_message);
 }
 
-TEST_F(AutofillMessageControllerTest, Dismiss) {
+TEST_F(AutofillMessageControllerImplTest, Dismiss) {
   CreateAndShowNewMessage();
   CreateAndShowNewMessage();
 
@@ -113,14 +114,14 @@ TEST_F(AutofillMessageControllerTest, Dismiss) {
   test_api(controller()).Dismiss();
 }
 
-TEST_F(AutofillMessageControllerTest, DismissWithoutMessages) {
+TEST_F(AutofillMessageControllerImplTest, DismissWithoutMessages) {
   ExpectDismissMessageCallWithReason(messages::DismissReason::UNKNOWN,
                                      /*times=*/0);
 
   test_api(controller()).Dismiss();
 }
 
-TEST_F(AutofillMessageControllerTest, Metrics_Show) {
+TEST_F(AutofillMessageControllerImplTest, Metrics_Show) {
   base::HistogramTester histogram_tester;
   raw_ptr<AutofillMessageModel> message = CreateAndShowNewMessage();
 
@@ -129,7 +130,7 @@ TEST_F(AutofillMessageControllerTest, Metrics_Show) {
       true, 1);
 }
 
-TEST_F(AutofillMessageControllerTest, Metrics_OnActionClicked) {
+TEST_F(AutofillMessageControllerImplTest, Metrics_OnActionClicked) {
   base::HistogramTester histogram_tester;
   raw_ptr<AutofillMessageModel> message = CreateAndShowNewMessage();
 
@@ -141,7 +142,7 @@ TEST_F(AutofillMessageControllerTest, Metrics_OnActionClicked) {
       true, 1);
 }
 
-TEST_F(AutofillMessageControllerTest, Metrics_OnDismissed) {
+TEST_F(AutofillMessageControllerImplTest, Metrics_OnDismissed) {
   base::HistogramTester histogram_tester;
   messages::DismissReason dismiss_reason =
       messages::DismissReason::PRIMARY_ACTION;

@@ -131,8 +131,7 @@ class MockAutofillSnackbarControllerImpl
 
 class MockAutofillMessageController : public AutofillMessageController {
  public:
-  explicit MockAutofillMessageController(content::WebContents* web_contents)
-      : AutofillMessageController(web_contents) {}
+  MockAutofillMessageController() = default;
 
   MOCK_METHOD(void, Show, (std::unique_ptr<AutofillMessageModel>), (override));
 };
@@ -255,7 +254,7 @@ class ChromePaymentsAutofillClientTest
 
   MockAutofillMessageController* InjectMockAutofillMessageController() {
     std::unique_ptr<MockAutofillMessageController> mock =
-        std::make_unique<MockAutofillMessageController>(web_contents());
+        std::make_unique<MockAutofillMessageController>();
     MockAutofillMessageController* pointer = mock.get();
     chrome_payments_client()->SetAutofillMessageControllerForTesting(
         std::move(mock));
