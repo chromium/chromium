@@ -11,9 +11,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/same_origin_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -40,7 +43,7 @@ class InfoBar;
 class Profile;
 
 class TabSharingUIViews : public TabSharingUI,
-                          public BrowserListObserver,
+                          public BrowserCollectionObserver,
                           public TabStripModelObserver,
                           public infobars::InfoBarManager::Observer,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -81,9 +84,8 @@ class TabSharingUIViews : public TabSharingUI,
   // recording "no-interaction" by the others.
   ScreensharingControlsHistogramLogger& GetUmaLogger() override;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -217,6 +219,9 @@ class TabSharingUIViews : public TabSharingUI,
 
   bool captured_surface_control_active_ = false;
   std::unique_ptr<CapturedSurfaceControlObserver> csc_observer_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observer_{this};
 
   ScreensharingControlsHistogramLogger uma_logger_;
 };
