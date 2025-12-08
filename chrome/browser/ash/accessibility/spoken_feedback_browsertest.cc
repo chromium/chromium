@@ -1834,6 +1834,41 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowLinksList) {
   sm()->Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowTablesList) {
+  chromevox_test_utils()->EnableChromeVox();
+
+  sm()->Call([this]() {
+    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
+        <button autofocus>Start here</button>
+        <table>
+          <caption>Can Collection Drive Results</caption>
+          <tr><th>Name</th> <th>Date</th> <th>Cans collected</th></tr>
+          <tr><td>Joey</td> <td>12/1</td> <td>177</td></tr>
+          <tr><td>Moss</td> <td>12/2</td> <td>122</td></tr>
+        </table>
+        <table>
+          <caption>Types of Can Received</caption>
+          <tr><th>Food</th>   <th>Count</th></tr>
+          <tr><td>Soup</td>   <td>101</td></tr>
+          <tr><td>Beans</td>  <td>88</td></tr>
+          <tr><td>Pumpkin</td><td>87</td></tr>
+        </table>)"));
+  });
+
+  sm()->ExpectSpeech("Start here");
+  // Open the Tables menu.
+  sm()->Call([this]() { SendKeyPressWithSearchAndControl(ui::VKEY_T); });
+  sm()->ExpectSpeech("Table Menu");
+  sm()->ExpectSpeech("Can Collection Drive Results");
+  sm()->ExpectSpeech("Menu item 1 of 2");
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm()->ExpectSpeech("Types of Can Received");
+  sm()->ExpectSpeech("Menu item 2 of 2");
+  sm()->Call([this]() { SendKeyPress(ui::VKEY_UP); });
+  sm()->ExpectSpeech("Can Collection Drive Results");
+  sm()->Replay();
+}
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
                        TouchExploreRightEdgeVolumeSliderOn) {
   chromevox_test_utils()->EnableChromeVox();
