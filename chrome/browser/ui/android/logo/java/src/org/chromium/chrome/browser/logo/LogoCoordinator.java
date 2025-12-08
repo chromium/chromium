@@ -70,10 +70,7 @@ public class LogoCoordinator {
         if (ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()) {
             defaultGoogleLogoDrawable =
                     ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
-            if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
-                NtpCustomizationUtils.setTintForDefaultGoogleLogo(
-                        context, defaultGoogleLogoDrawable);
-            }
+            NtpCustomizationUtils.setTintForDefaultGoogleLogo(context, defaultGoogleLogoDrawable);
         }
 
         mMediator =
