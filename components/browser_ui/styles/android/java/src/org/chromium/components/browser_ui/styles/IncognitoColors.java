@@ -82,6 +82,13 @@ public class IncognitoColors {
                 : SemanticColorUtils.getDividerLineBgColor(context);
     }
 
+    /** {@see SemanticColorUtils#getColorOnPrimary} */
+    public static @ColorInt int getColorOnPrimary(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.baseline_primary_20)
+                : SemanticColorUtils.getColorOnPrimary(context);
+    }
+
     /** Returns the correct text appearance style res for primary colored medium text. */
     public static @StyleRes int getTextMediumPrimary(boolean isIncognito) {
         return isIncognito
