@@ -96,7 +96,9 @@ if (use_clang_modules) {
       if (target_name == "std_stdatomic_h" && use_cxx23) {
         # In cxx23, stdatomic.h uses libcxx's stdatomic rather than the
         # builtin.
-        public_deps -= [ ":_Builtin_stdatomic" ]
+        if (!is_win) {
+          public_deps -= [ ":_Builtin_stdatomic" ]
+        }
         public_deps += [ ":std" ]
       }
     }

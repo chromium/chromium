@@ -7,10 +7,6 @@
 
 
 module sys_stage1 [system] {
-  module __msvc_cxx_stdatomic_hpp {
-    header "$msvc/__msvc_cxx_stdatomic.hpp"
-    export *
-  }
   module concurrencysal_h {
     header "$msvc/concurrencysal.h"
     export *
@@ -79,10 +75,6 @@ module sys_stage1 [system] {
     header "$windows_kits/ucrt/corecrt_wtime.h"
     export *
   }
-  module crtdbg_h {
-    header "$windows_kits/ucrt/crtdbg.h"
-    export *
-  }
   module crtdefs_h {
     header "$msvc/crtdefs.h"
     export *
@@ -93,6 +85,10 @@ module sys_stage1 [system] {
   }
   module fcntl_h {
     header "$windows_kits/ucrt/fcntl.h"
+    export *
+  }
+  module float_h {
+    header "$windows_kits/ucrt/float.h"
     export *
   }
   module locale_h {
@@ -143,10 +139,6 @@ module sys_stage1 [system] {
     header "$windows_kits/ucrt/time.h"
     export *
   }
-  module use_ansi_h {
-    header "$msvc/use_ansi.h"
-    export *
-  }
   module vadefs_h {
     header "$msvc/vadefs.h"
     export *
@@ -181,18 +173,6 @@ module sys_stage1 [system] {
   }
   module winpackagefamily_h {
     header "$windows_kits/shared/winpackagefamily.h"
-    export *
-  }
-  module xkeycheck_h {
-    header "$msvc/xkeycheck.h"
-    export *
-  }
-  module yvals_h {
-    header "$msvc/yvals.h"
-    export *
-  }
-  module yvals_core_h {
-    header "$msvc/yvals_core.h"
     export *
   }
 }
