@@ -1726,10 +1726,8 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
          eligible_features) {
       switch (eligible_feature) {
         case AmountExtractionManager::EligibleFeature::kBnpl:
-          if (base::FeatureList::IsEnabled(
+          if (!base::FeatureList::IsEnabled(
                   features::kAutofillEnableAiBasedAmountExtraction)) {
-            GetAmountExtractionManager().FetchAiPageContent();
-          } else {
             GetPaymentsBnplManager()->NotifyOfSuggestionGeneration(
                 trigger_source);
             GetAmountExtractionManager().TriggerCheckoutAmountExtraction();

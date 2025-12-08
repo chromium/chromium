@@ -984,7 +984,6 @@ class MockAmountExtractionManager : public payments::AmountExtractionManager {
         .WillByDefault(Return(true));
   }
 
-  MOCK_METHOD(void, FetchAiPageContent, (), (override));
   MOCK_METHOD(DenseSet<EligibleFeature>,
               GetEligibleFeatures,
               (bool is_autofill_payments_enabled,
@@ -3409,117 +3408,6 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Verify at suggestions are not generated.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
-}
-
-// Tests that `AmountExtractionManager` should trigger `FetchAiPageContent` if
-// a credit card form is clicked when BNPL is available.
-TEST_F(BrowserAutofillManagerTest, AiAmountExtraction_TriggerPageContentFetch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
-                            features::kAutofillEnableBuyNowPayLaterSyncing,
-                            features::kAutofillEnableBuyNowPayLater,
-                            features::kAutofillEnableAiBasedAmountExtraction},
-      /*disabled_features=*/{});
-  personal_data().test_payments_data_manager().AddBnplIssuer(
-      test::GetTestUnlinkedBnplIssuer());
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  FormsSeen({form});
-
-  // Test case for credit-card-number field.
-  const FormFieldData& card_number_field = form.fields()[1];
-  ASSERT_EQ(card_number_field.name(), u"cardnumber");
-
-  DenseSet<MockAmountExtractionManager::EligibleFeature> features = {
-      MockAmountExtractionManager::EligibleFeature::kBnpl};
-  ON_CALL(amount_extraction_manager(), GetEligibleFeatures)
-      .WillByDefault(Return(features));
-
-  if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-                BUILDFLAG(IS_CHROMEOS)) {
-    EXPECT_CALL(amount_extraction_manager(), FetchAiPageContent);
-  }
-  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction)
-      .Times(0);
-
-  OnAskForValuesToFill(form, card_number_field);
-
-  // Verify that suggestions are returned as normal.
-  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-}
-
-// Tests that `AmountExtractionManager` should not trigger `FetchAiPageContent`
-// if a credit card form is clicked but the feature flag
-// `kAutofillEnableAiBasedAmountExtraction` is disabled.
-TEST_F(BrowserAutofillManagerTest, AiAmountExtractionFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
-                            features::kAutofillEnableBuyNowPayLaterSyncing,
-                            features::kAutofillEnableBuyNowPayLater},
-      /*disabled_features=*/{features::kAutofillEnableAiBasedAmountExtraction});
-  personal_data().test_payments_data_manager().AddBnplIssuer(
-      test::GetTestUnlinkedBnplIssuer());
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  FormsSeen({form});
-
-  // Test case for credit-card-number field.
-  const FormFieldData& card_number_field = form.fields()[1];
-  ASSERT_EQ(card_number_field.name(), u"cardnumber");
-
-  DenseSet<MockAmountExtractionManager::EligibleFeature> features = {
-      MockAmountExtractionManager::EligibleFeature::kBnpl};
-  ON_CALL(amount_extraction_manager(), GetEligibleFeatures)
-      .WillByDefault(Return(features));
-
-  EXPECT_CALL(amount_extraction_manager(), FetchAiPageContent).Times(0);
-  EXPECT_CALL(amount_extraction_manager(), TriggerCheckoutAmountExtraction);
-  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              NotifyOfSuggestionGeneration);
-
-  OnAskForValuesToFill(form, card_number_field);
-
-  // Verify that suggestions are returned as normal.
-  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
-}
-
-// Tests that `AmountExtractionManager` should not trigger `FetchAiPageContent`
-// if a credit card form is clicked but there is no BNPL suggestion.
-TEST_F(BrowserAutofillManagerTest,
-       AiAmountExtraction_TriggerPageContentFetch_WithoutBnplSuggestion) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
-                            features::kAutofillEnableBuyNowPayLaterSyncing,
-                            features::kAutofillEnableBuyNowPayLater,
-                            features::kAutofillEnableAiBasedAmountExtraction},
-      /*disabled_features=*/{});
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  FormsSeen({form});
-
-  // Test case for credit-card-number field.
-  const FormFieldData& card_number_field = form.fields()[1];
-  ASSERT_EQ(card_number_field.name(), u"cardnumber");
-
-  // Verify that `FetchAiPageContent` won't be triggered as there is no BNPL
-  // suggestion. This test case is set up by do not add any BNPL issuer to the
-  // `PaymentsDataManager`.
-  EXPECT_CALL(amount_extraction_manager(), FetchAiPageContent).Times(0);
-
-  ON_CALL(amount_extraction_manager(), GetEligibleFeatures)
-      .WillByDefault(
-          Return(DenseSet<MockAmountExtractionManager::EligibleFeature>{}));
-
-  OnAskForValuesToFill(form, card_number_field);
-
-  // Verify that suggestions are returned as normal.
-  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
 
 struct LogAblationTestParams {

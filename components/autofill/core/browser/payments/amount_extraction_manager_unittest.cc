@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
@@ -51,6 +52,8 @@ using ::testing::Test;
 using ModelExecutionCallback = base::OnceCallback<void(
     optimization_guide::OptimizationGuideModelExecutionResult,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry>)>;
+using ApcFetchCallback = base::OnceCallback<void(
+    std::optional<optimization_guide::proto::AnnotatedPageContent>)>;
 }  // namespace
 
 class MockAutofillDriver : public TestAutofillDriver {
@@ -72,12 +75,7 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient() = default;
   ~MockAutofillClient() override = default;
 
-  MOCK_METHOD(
-      void,
-      GetAiPageContent,
-      (base::OnceCallback<void(
-           std::optional<optimization_guide::proto::AnnotatedPageContent>)>),
-      (override));
+  MOCK_METHOD(void, GetAiPageContent, (ApcFetchCallback), (override));
   MOCK_METHOD(optimization_guide::RemoteModelExecutor*,
               GetRemoteModelExecutor,
               (),
@@ -957,109 +955,27 @@ TEST_F(AmountExtractionManagerTest,
   FakeCheckoutAmountReceivedFromAi(123.45, "USD", true);
 }
 
-// This test checks AutofillClient::GetAiPageContent is called when no page
-// content is present and not currently fetching.
-TEST_F(AmountExtractionManagerTest, FetchAiPageContent_StartsFetching) {
-  EXPECT_FALSE(
-      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
-  EXPECT_EQ(test_api(*amount_extraction_manager_).GetAiPageContent(), nullptr);
-
-  EXPECT_CALL(autofill_client(), GetAiPageContent);
-  amount_extraction_manager_->FetchAiPageContent();
-
-  EXPECT_TRUE(
-      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
-}
-
-// This test checks AutofillClient::GetAiPageContent is not called when a fetch
-// is already in progress.
-TEST_F(AmountExtractionManagerTest, FetchAiPageContent_AlreadyFetching) {
-  test_api(*amount_extraction_manager_).SetIsFetchingAiPageContent(true);
-
-  EXPECT_CALL(autofill_client(), GetAiPageContent).Times(0);
-  amount_extraction_manager_->FetchAiPageContent();
-
-  EXPECT_TRUE(
-      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
-}
-
-// This test checks AutofillClient::GetAiPageContent is called and the callback
-// receives a valid value.
-TEST_F(AmountExtractionManagerTest, OnAiPageContentReceived_ValidValue) {
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ApcFetchAndModelExecutionSucceeded) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  ApcFetchCallback fetch_callback;
   optimization_guide::proto::AnnotatedPageContent test_proto;
-  test_proto.set_tab_id(1234);  // Example data
-  EXPECT_FALSE(
-      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+  test_proto.set_tab_id(1234);
 
   EXPECT_CALL(autofill_client(), GetAiPageContent)
-      .WillOnce([&](base::OnceCallback<void(
-                        std::optional<
-                            optimization_guide::proto::AnnotatedPageContent>)>
-                        callback) {
-        EXPECT_TRUE(
-            test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
-        std::move(callback).Run(std::make_optional(test_proto));
-      });
+      .WillOnce(MoveArg<0>(&fetch_callback));
 
-  amount_extraction_manager_->FetchAiPageContent();
-
-  EXPECT_FALSE(
-      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
-  EXPECT_NE(test_api(*amount_extraction_manager_).GetAiPageContent(), nullptr);
-  EXPECT_THAT(
-      test_api(*amount_extraction_manager_).GetAiPageContent()->tab_id(),
-      Eq(1234));
-}
-
-// This test checks AutofillClient::GetAiPageContent is called and the callback
-// receives nullptr.
-TEST_F(AmountExtractionManagerTest, OnAiPageContentReceived_NullOpt) {
-  EXPECT_FALSE(
-      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
-
-  EXPECT_CALL(autofill_client(), GetAiPageContent)
-      .WillOnce([&](base::OnceCallback<void(
-                        std::optional<
-                            optimization_guide::proto::AnnotatedPageContent>)>
-                        callback) {
-        EXPECT_TRUE(
-            test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
-        std::move(callback).Run(std::nullopt);
-      });
-
-  amount_extraction_manager_->FetchAiPageContent();
-
-  EXPECT_FALSE(
-      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
-  EXPECT_THAT(test_api(*amount_extraction_manager_).GetAiPageContent(),
-              nullptr);
-}
-
-// Verify that if the page content is not fetched, `ExecuteModel` should not be
-// called.
-TEST_F(AmountExtractionManagerTest, ShouldNotCallExecuteModel) {
-  ASSERT_EQ(test_api(*amount_extraction_manager_).GetAiPageContent(), nullptr);
-  EXPECT_CALL(*model_executor(), ExecuteModel).Times(0);
   amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
-}
 
-// Verify that when `TriggerCheckoutAmountExtractionWithAi` is called with
-// annotated page contents present, `ExecuteModel` from
-// `RemoteModelExecutor` should be invoked.
-TEST_F(AmountExtractionManagerTest, ShouldCallExecuteModel) {
-  test_api(*amount_extraction_manager_).SetAiPageContent();
+  ASSERT_TRUE(fetch_callback);
+
+  ModelExecutionCallback model_callback;
   optimization_guide::proto::AmountExtractionRequest expected_request;
-  *expected_request.mutable_annotated_page_content() =
-      optimization_guide::proto::AnnotatedPageContent();
-
+  *expected_request.mutable_annotated_page_content() = test_proto;
   optimization_guide::ModelExecutionOptions expected_options{
       .execution_timeout =
           AmountExtractionManager::kAiBasedAmountExtractionWaitTime};
-
-  optimization_guide::proto::AmountExtractionResponse response;
-  response.set_final_checkout_amount(123.45);
-  response.set_currency("USD");
-  response.set_is_successful(true);
 
   EXPECT_CALL(
       *model_executor(),
@@ -1067,15 +983,132 @@ TEST_F(AmountExtractionManagerTest, ShouldCallExecuteModel) {
           optimization_guide::ModelBasedCapabilityKey::kAmountExtraction,
           EqualsProto(expected_request), Eq(expected_options),
           A<ModelExecutionCallback>()))
-      .WillOnce(base::test::RunOnceCallback<3>(
-          optimization_guide::OptimizationGuideModelExecutionResult(
-              optimization_guide::AnyWrapProto(response),
-              /*execution_info=*/nullptr),
-          /*log_entry=*/nullptr));
+      .WillOnce(MoveArg<3>(&model_callback));
+
+  std::move(fetch_callback).Run(std::make_optional(test_proto));
+
+  ASSERT_TRUE(model_callback);
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi(
+                  testing::Optional(100 * kMicrosPerDollar),
+                  /*timeout_reached=*/false));
+
+  // Construct response
+  optimization_guide::proto::AmountExtractionResponse response_proto;
+  response_proto.set_final_checkout_amount(100.00);
+  response_proto.set_currency("USD");
+  response_proto.set_is_successful(true);
+
+  std::move(model_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               optimization_guide::AnyWrapProto(response_proto), nullptr),
+           nullptr);
+}
+
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_TimeoutDuringFetch) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  ApcFetchCallback fetch_callback;
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(1234);
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
 
   amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
 
-  ASSERT_EQ(test_api(*amount_extraction_manager_).GetAiPageContent(), nullptr);
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi(Eq(std::nullopt),
+                                               /*timeout_reached=*/true));
+
+  // Fast forward past the timeout limit.
+  task_environment_.FastForwardBy(
+      AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
+      base::Seconds(1));
+
+  // Model should NOT execute because the request already timed out.
+  EXPECT_CALL(*model_executor(), ExecuteModel).Times(0);
+  ASSERT_TRUE(fetch_callback);
+
+  std::move(fetch_callback).Run(std::make_optional(test_proto));
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_TimeoutDuringModelExecution) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  ApcFetchCallback fetch_callback;
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(1234);
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  ASSERT_TRUE(fetch_callback);
+
+  ModelExecutionCallback model_callback;
+  optimization_guide::proto::AmountExtractionRequest expected_request;
+  *expected_request.mutable_annotated_page_content() = test_proto;
+  optimization_guide::ModelExecutionOptions expected_options{
+      .execution_timeout =
+          AmountExtractionManager::kAiBasedAmountExtractionWaitTime};
+
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kAmountExtraction,
+          EqualsProto(expected_request), Eq(expected_options),
+          A<ModelExecutionCallback>()))
+      .WillOnce(MoveArg<3>(&model_callback));
+
+  std::move(fetch_callback).Run(std::make_optional(test_proto));
+
+  ASSERT_TRUE(model_callback);
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi(Eq(std::nullopt),
+                                               /*timeout_reached=*/true));
+
+  // Fast forward past the timeout limit.
+  task_environment_.FastForwardBy(
+      AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
+      base::Seconds(1));
+
+  // Construct a valid response
+  optimization_guide::proto::AmountExtractionResponse response_proto;
+  response_proto.set_final_checkout_amount(100.00);
+  response_proto.set_currency("USD");
+  response_proto.set_is_successful(true);
+
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi)
+      .Times(0);
+
+  // Model execution still returns and verifies its response is ignored.
+  std::move(model_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               optimization_guide::AnyWrapProto(response_proto), nullptr),
+           nullptr);
+}
+
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_FetchReturnsEmpty) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  ApcFetchCallback fetch_callback;
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi(Eq(std::nullopt),
+                                               /*timeout_reached=*/false));
+
+  EXPECT_CALL(*model_executor(), ExecuteModel).Times(0);
+  ASSERT_TRUE(fetch_callback);
+
+  std::move(fetch_callback).Run(std::nullopt);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||

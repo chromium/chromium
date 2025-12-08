@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -166,18 +167,9 @@ class AmountExtractionManager {
   // search.
   bool search_request_pending_ = false;
 
-  // Member variable to store the fetched page content temporarily. This data is
-  // generated when credit card form is clicked and BNPL feature is available
-  // for this profile. It is about 10Kb in size depending on the merchant
-  // checkout page.
-  std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
-      ai_page_content_;
-
-  // Flag to indicate if an AI page content fetch is in progress. If set, do not
-  // trigger the next request to generate the page content. This is to avoid
-  // multiple page content requests when a user quickly clicks on the payment
-  // form multiple times or by scripts.
-  bool is_fetching_ai_page_content_ = false;
+  // The timer to enforce the timeout on client-side for AI-based amount
+  // extraction.
+  base::OneShotTimer timeout_timer_;
 
   base::WeakPtrFactory<AmountExtractionManager> weak_ptr_factory_{this};
 };

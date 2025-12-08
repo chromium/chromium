@@ -173,10 +173,9 @@ AmountExtractionManager::GetEligibleFeatures(
 }
 
 void AmountExtractionManager::FetchAiPageContent() {
-  if (is_fetching_ai_page_content_) {
-    return;
-  }
-  is_fetching_ai_page_content_ = true;
+  CHECK(base::FeatureList::IsEnabled(
+      features::kAutofillEnableAiBasedAmountExtraction));
+
   autofill_manager_->client().GetAiPageContent(
       base::BindOnce(&AmountExtractionManager::OnAiPageContentReceived,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -184,27 +183,20 @@ void AmountExtractionManager::FetchAiPageContent() {
 
 void AmountExtractionManager::OnAiPageContentReceived(
     std::optional<optimization_guide::proto::AnnotatedPageContent> result) {
-  if (result) {
-    ai_page_content_ =
-        std::make_unique<optimization_guide::proto::AnnotatedPageContent>(
-            std::move(*result));
-  }
-  is_fetching_ai_page_content_ = false;
-  // TODO(crbug.com/444683986): Log ApcGenerationResult to UMA.
-}
-
-void AmountExtractionManager::TriggerCheckoutAmountExtractionWithAi() {
-  if (!ai_page_content_) {
-    // TODO(crbug.com/444685164) If the member variable `ai_page_content_` is
-    // not initialized, another attempt to fetch it will be made. Retry only
-    // once.
+  if (!result) {
+    if (BnplManager* bnpl_manager =
+            autofill_manager_->GetPaymentsBnplManager()) {
+      bnpl_manager->OnAmountExtractionReturnedFromAi(
+          /*extracted_amount_in_micros=*/std::nullopt,
+          /*timeout_reached=*/false);
+    }
+    // Stop the timer because amount extraction is finished with a failure.
+    timeout_timer_.Stop();
     return;
   }
 
-  // Construct request
   optimization_guide::proto::AmountExtractionRequest request;
-  *request.mutable_annotated_page_content() = std::move(*ai_page_content_);
-  ai_page_content_.reset();
+  *request.mutable_annotated_page_content() = std::move(*result);
 
   autofill_manager_->client().GetRemoteModelExecutor()->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kAmountExtraction,
@@ -212,6 +204,17 @@ void AmountExtractionManager::TriggerCheckoutAmountExtractionWithAi() {
       {.execution_timeout = kAiBasedAmountExtractionWaitTime},
       base::BindOnce(&AmountExtractionManager::OnCheckoutAmountReceivedFromAi,
                      weak_ptr_factory_.GetWeakPtr()));
+  // TODO(crbug.com/444683986): Log ApcGenerationResult to UMA.
+}
+
+void AmountExtractionManager::TriggerCheckoutAmountExtractionWithAi() {
+  // In case of timeout, cancel the request and show the error dialog.
+  timeout_timer_.Start(
+      FROM_HERE, kAiBasedAmountExtractionWaitTime,
+      base::BindOnce(&AmountExtractionManager::OnTimeoutReached,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  FetchAiPageContent();
 }
 
 void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
@@ -278,6 +281,10 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
 void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  // If no timeout, it means the server response came back in time, stop the
+  // timer.
+  timeout_timer_.Stop();
+
   if (!result.response.has_value()) {
     return;
   }
@@ -308,26 +315,45 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
 
   bnpl_manager->OnAmountExtractionReturnedFromAi(parsed_extracted_amount,
                                                  /*timeout_reached=*/false);
+  // TODO(crbug.com/466136350): Add AmountExtractionManager::Reset() function
+  // and apply here.
 }
 
 void AmountExtractionManager::OnTimeoutReached() {
-  // If the amount is found, ignore this callback.
-  if (!search_request_pending_) {
-    return;
-  }
-  search_request_pending_ = false;
+  // Once timeout is reached, cancel all the pending function calls.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  if (!has_logged_amount_extraction_result_) {
-    autofill_metrics::LogAmountExtractionResult(
-        /*latency=*/std::nullopt,
-        autofill_metrics::AmountExtractionResult::kTimeout,
-        GetMainFrameDriver()->GetPageUkmSourceId());
-    has_logged_amount_extraction_result_ = true;
+
+  if (base::FeatureList::IsEnabled(
+          ::autofill::features::kAutofillEnableAiBasedAmountExtraction)) {
+    if (BnplManager* bnpl_manager =
+            autofill_manager_->GetPaymentsBnplManager()) {
+      bnpl_manager->OnAmountExtractionReturnedFromAi(
+          /*extracted_amount_in_micros=*/std::nullopt,
+          /*timeout_reached=*/true);
+    }
+    // TODO(crbug.com/444683986): Log the metric for the timeout event in
+    // AI-based amount extraction.
+  } else {
+    // If the amount is found, ignore this callback.
+    if (!search_request_pending_) {
+      return;
+    }
+    search_request_pending_ = false;
+    if (BnplManager* bnpl_manager =
+            autofill_manager_->GetPaymentsBnplManager()) {
+      bnpl_manager->OnAmountExtractionReturned(
+          /*extracted_amount=*/std::nullopt,
+          /*timeout_reached=*/true);
+    }
+    if (!has_logged_amount_extraction_result_) {
+      autofill_metrics::LogAmountExtractionResult(
+          /*latency=*/std::nullopt,
+          autofill_metrics::AmountExtractionResult::kTimeout,
+          GetMainFrameDriver()->GetPageUkmSourceId());
+      has_logged_amount_extraction_result_ = true;
+    }
   }
-  if (BnplManager* bnpl_manager = autofill_manager_->GetPaymentsBnplManager()) {
-    bnpl_manager->OnAmountExtractionReturned(/*extracted_amount=*/std::nullopt,
-                                             /*timeout_reached=*/true);
-  }
+
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
                 BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)) {
     if (base::FeatureList::IsEnabled(
@@ -338,6 +364,8 @@ void AmountExtractionManager::OnTimeoutReached() {
               << " reached a timeout.";
     }
   }
+  // TODO(crbug.com/466136350): Add AmountExtractionManager::Reset() function
+  // and apply here.
 }
 
 DenseSet<AmountExtractionManager::EligibleFeature>
