@@ -29,10 +29,10 @@ namespace {
 
 const CGFloat kImageContainerCornerRadius = 12.0;
 
-// Image container with Salient image constants
-const CGFloat kImageSalientContainerSize = 72.0;
+// Image container with Content image constants
+const CGFloat kImageContentContainerSize = 72.0;
 
-// Image container without Salient image constants
+// Image container without Content image constants
 const CGFloat kImageEmptyContainerSize = 56.0;
 
 // Center Favicon constants.
@@ -61,7 +61,7 @@ const CGFloat kTitleLineSpacing = 18.0;
 const CGFloat kPriceDropOverlayStartAlpha = 0.0;
 const CGFloat kPriceDropOverlayEndAlpha = 0.14;
 
-// Adds the fallback image that should be used if there is no salient nor
+// Adds the fallback image that should be used if there is no content nor
 // favicon image.
 void SetFallbackImageToImageView(UIImageView* image_view,
                                  UIView* background_view,
@@ -232,7 +232,7 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
 }
 
 // Configures and returns the leading UIView that may contain the favicon image.
-- (UIView*)configuredFaviconViewWithSalientImage:(BOOL)hasSalientImage {
+- (UIView*)configuredFaviconViewWithContentImage:(BOOL)hasContentImage {
   UIView* faviconBackgroundView = [[UIView alloc] init];
   faviconBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   faviconBackgroundView.backgroundColor = UIColor.whiteColor;
@@ -242,7 +242,7 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   CGFloat faviconCornerRadius;
   CGFloat faviconBackgoundSize;
   CGFloat faviconBackgroundCornerRadius;
-  if (hasSalientImage) {
+  if (hasContentImage) {
     faviconSize = kCornerFaviconSize;
     faviconCornerRadius = kCornerFaviconCornerRadius;
     faviconBackgoundSize = kCornerFaviconBackgroundSize;
@@ -278,7 +278,7 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   ]];
   AddSameCenterConstraints(faviconBackgroundView, faviconImageView);
 
-  if (hasSalientImage) {
+  if (hasContentImage) {
     UIRectCorner bottomTrail = UIRectCornerBottomRight;
     if (base::i18n::IsRTL()) {
       bottomTrail = UIRectCornerBottomLeft;
@@ -299,9 +299,9 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   return faviconBackgroundView;
 }
 
-// Configures and returns the leading UIView that may contain the Salient image.
-- (UIView*)configuredSalientImageViewWithSize:(CGFloat)containerSize {
-  UIImageView* salientView = [[UIImageView alloc] init];
+// Configures and returns the leading UIView that may contain the Content image.
+- (UIView*)configuredContentImageViewWithSize:(CGFloat)containerSize {
+  UIImageView* contentImageView = [[UIImageView alloc] init];
 
   // Compute the size of the image.
   CGFloat width = _item.contentImage.size.width;
@@ -314,7 +314,7 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
     width = containerSize;
   }
 
-  // Resize the salient image.
+  // Resize the content image.
   UIGraphicsImageRendererFormat* format =
       [UIGraphicsImageRendererFormat preferredFormat];
   format.scale = 0.0;
@@ -326,11 +326,11 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
       [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
         [_item.contentImage drawInRect:CGRectMake(0, 0, width, height)];
       }];
-  [salientView setImage:scaledImage];
+  [contentImageView setImage:scaledImage];
 
-  salientView.translatesAutoresizingMaskIntoConstraints = NO;
+  contentImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  salientView.contentMode = UIViewContentModeTop;
+  contentImageView.contentMode = UIViewContentModeTop;
 
   // Add a gradient overlay.
   CAGradientLayer* gradientLayer = [CAGradientLayer layer];
@@ -352,8 +352,8 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
       static_cast<id>([UIColor colorWithWhite:0 alpha:0.2].CGColor)
     ];
   }
-  [salientView.layer insertSublayer:gradientLayer atIndex:0];
-  return salientView;
+  [contentImageView.layer insertSublayer:gradientLayer atIndex:0];
+  return contentImageView;
 }
 
 // Configures and returns the leading UIView that contains the image.
@@ -363,18 +363,16 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
   containerView.layer.cornerRadius = kImageContainerCornerRadius;
   containerView.clipsToBounds = YES;
 
-  BOOL hasSalientImage = NO;
+  BOOL hasContentImage = NO;
   CGFloat containerSize;
   if (_item.contentImage &&
-      (IsTabResumptionImagesSalientEnabled() ||
-       IsTabResumptionImagesThumbnailsEnabled() || HasPriceDropOnTab(_item)) &&
       _item.contentImage.size.width && _item.contentImage.size.height) {
-    hasSalientImage = YES;
-    containerSize = kImageSalientContainerSize;
-    UIView* salientView =
-        [self configuredSalientImageViewWithSize:containerSize];
-    [containerView addSubview:salientView];
-    AddSameConstraints(salientView, containerView);
+    hasContentImage = YES;
+    containerSize = kImageContentContainerSize;
+    UIView* contentImageView =
+        [self configuredContentImageViewWithSize:containerSize];
+    [containerView addSubview:contentImageView];
+    AddSameConstraints(contentImageView, containerView);
   } else {
     containerView.backgroundColor = [UIColor colorNamed:kGrey100Color];
     containerSize = kImageEmptyContainerSize;
@@ -385,14 +383,14 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
     [containerView.heightAnchor constraintEqualToConstant:containerSize],
   ]];
 
-  if (hasSalientImage && !_item.faviconImage) {
+  if (hasContentImage && !_item.faviconImage) {
     return containerView;
   }
 
   UIView* faviconView =
-      [self configuredFaviconViewWithSalientImage:hasSalientImage];
+      [self configuredFaviconViewWithContentImage:hasContentImage];
   [containerView addSubview:faviconView];
-  if (!hasSalientImage) {
+  if (!hasContentImage) {
     AddSameCenterConstraints(faviconView, containerView);
   } else {
     [NSLayoutConstraint activateConstraints:@[

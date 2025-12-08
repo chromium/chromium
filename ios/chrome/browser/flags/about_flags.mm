@@ -456,18 +456,6 @@ const FeatureEntry::FeatureVariation kIOSDockingPromoVariations[] = {
     {"Display promo during FRE", kIOSDockingPromoDisplayedDuringFRE,
      std::size(kIOSDockingPromoDisplayedDuringFRE), nullptr}};
 
-const FeatureEntry::FeatureParam kTabResumptionImagesOnlyThumbnail[] = {
-    {kTabResumptionImagesTypes, kTabResumptionImagesTypesThumbnails}};
-const FeatureEntry::FeatureParam kTabResumptionImagesOnlySalient[] = {
-    {kTabResumptionImagesTypes, kTabResumptionImagesTypesSalient}};
-
-const FeatureEntry::FeatureVariation kTabResumptionImagesVariations[] = {
-    {"Only thumbnails", kTabResumptionImagesOnlyThumbnail,
-     std::size(kTabResumptionImagesOnlyThumbnail), nullptr},
-    {"Only salient", kTabResumptionImagesOnlySalient,
-     std::size(kTabResumptionImagesOnlySalient), nullptr},
-};
-
 // Uses int values from Lens filters ablation mode enum.
 const FeatureEntry::FeatureParam kLensFiltersAblationModeDisabled[] = {
     {kLensFiltersAblationMode, "0"}};
@@ -1872,9 +1860,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kSpotlightNeverRetainIndexName,
      flag_descriptions::kSpotlightNeverRetainIndexDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSpotlightNeverRetainIndex)},
-    {"tab-resumption", flag_descriptions::kTabResumptionName,
-     flag_descriptions::kTabResumptionDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabResumption)},
     {"bottom-omnibox-evolution", flag_descriptions::kBottomOmniboxEvolutionName,
      flag_descriptions::kBottomOmniboxEvolutionDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxEvolution,
@@ -2139,11 +2124,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSSoftLock,
                                     kIOSSoftLockVariations,
                                     "IOSSoftLock")},
-    {"tab-resumption-images", flag_descriptions::kTabResumptionImagesName,
-     flag_descriptions::kTabResumptionImagesDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabResumptionImages,
-                                    kTabResumptionImagesVariations,
-                                    "TabResumption1_5")},
     {"segmentation-platform-tips-ephemeral-card",
      flag_descriptions::kSegmentationPlatformTipsEphemeralCardName,
      flag_descriptions::kSegmentationPlatformTipsEphemeralCardDescription,

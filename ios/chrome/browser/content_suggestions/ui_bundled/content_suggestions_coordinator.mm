@@ -362,34 +362,31 @@ using segmentation_platform::TipIdentifier;
   [moduleMediators addObject:_shortcutsMediator];
   self.contentSuggestionsMediator.shortcutsMediator = _shortcutsMediator;
 
-  if (IsTabResumptionEnabled()) {
-    _tabResumptionMediator = [[TabResumptionMediator alloc]
-              initWithLocalState:GetApplicationContext()->GetLocalState()
-                     prefService:prefs
-                 identityManager:identityManager
-                         browser:self.browser
-        optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
-                                     profile)
-          impressionLimitService:
-              base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits)
-                  ? ImpressionLimitServiceFactory::GetForProfile(profile)
-                  : nil
-                 shoppingService:commerce::ShoppingServiceFactory::
-                                     GetForProfile(profile)
-                   bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
-                                     profile)
-         pushNotificationService:GetApplicationContext()
-                                     ->GetPushNotificationService()
-           authenticationService:self.authService];
-    _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
-    _tabResumptionMediator.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
-    _tabResumptionMediator.dispatcher = static_cast<
-        id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>>(
-        self.browser->GetCommandDispatcher());
+  _tabResumptionMediator = [[TabResumptionMediator alloc]
+            initWithLocalState:GetApplicationContext()->GetLocalState()
+                   prefService:prefs
+               identityManager:identityManager
+                       browser:self.browser
+      optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
+                                   profile)
+        impressionLimitService:
+            base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits)
+                ? ImpressionLimitServiceFactory::GetForProfile(profile)
+                : nil
+               shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                   profile)
+                 bookmarkModel:ios::BookmarkModelFactory::GetForProfile(profile)
+       pushNotificationService:GetApplicationContext()
+                                   ->GetPushNotificationService()
+         authenticationService:self.authService];
+  _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
+  _tabResumptionMediator.contentSuggestionsMetricsRecorder =
+      self.contentSuggestionsMetricsRecorder;
+  _tabResumptionMediator.dispatcher = static_cast<
+      id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>>(
+      self.browser->GetCommandDispatcher());
 
-    [moduleMediators addObject:_tabResumptionMediator];
-  }
+  [moduleMediators addObject:_tabResumptionMediator];
   if (IsPriceTrackingPromoCardEnabled(shoppingService, self.authService,
                                       prefs)) {
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]

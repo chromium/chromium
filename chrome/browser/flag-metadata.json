@@ -9899,16 +9899,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "tab-resumption",
-    "owners": [ "olivierrobin@chromium.org", "gambard@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 142
-  },
-  {
-    "name": "tab-resumption-images",
-    "owners": [ "gambard@chromium.org", "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "tab-search-position-setting",
     "owners": [ "top-chrome-desktop-ui@google.com", "dpenning@chromium.org" ],
     "expiry_milestone": 137

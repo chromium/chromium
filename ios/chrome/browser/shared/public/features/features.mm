@@ -651,53 +651,6 @@ bool IsIOSKeyboardAccessoryTwoBubbleEnabled() {
   return base::FeatureList::IsEnabled(kIOSKeyboardAccessoryTwoBubble);
 }
 
-BASE_FEATURE(kTabResumption, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// A parameter to indicate whether the native UI is enabled for the discover
-// feed.
-const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
-
-const char kTabResumptionThresholdParameterName[] =
-    "tab-resumption-sync-threshold";
-
-bool IsTabResumptionEnabled() {
-  return base::FeatureList::IsEnabled(kTabResumption);
-}
-
-const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
-  // Default to 12 hours.
-  int threshold = base::GetFieldTrialParamByFeatureAsInt(
-      kTabResumption, kTabResumptionThresholdParameterName,
-      /*default_value*/ 12 * 3600);
-  return base::Seconds(threshold);
-}
-
-BASE_FEATURE(kTabResumptionImages, base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kTabResumptionImagesTypes[] = "tr-images-type";
-const char kTabResumptionImagesTypesSalient[] = "salient";
-const char kTabResumptionImagesTypesThumbnails[] = "thumbnails";
-
-bool IsTabResumptionImagesSalientEnabled() {
-  if (!base::FeatureList::IsEnabled(kTabResumptionImages)) {
-    return false;
-  }
-  std::string image_type = base::GetFieldTrialParamByFeatureAsString(
-      kTabResumptionImages, kTabResumptionImagesTypes, "");
-
-  return image_type == kTabResumptionImagesTypesSalient;
-}
-
-bool IsTabResumptionImagesThumbnailsEnabled() {
-  if (!base::FeatureList::IsEnabled(kTabResumptionImages)) {
-    return false;
-  }
-  std::string image_type = base::GetFieldTrialParamByFeatureAsString(
-      kTabResumptionImages, kTabResumptionImagesTypes, "");
-
-  return image_type == kTabResumptionImagesTypesThumbnails || image_type == "";
-}
-
 BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
              "kInactiveNavigationAfterAppLaunchKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);

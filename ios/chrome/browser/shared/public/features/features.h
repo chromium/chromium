@@ -648,46 +648,10 @@ bool IsIOSKeyboardAccessoryDefaultViewEnabled();
 // enabled.
 bool IsIOSKeyboardAccessoryTwoBubbleEnabled();
 
-// Feature that enables tab resumption.
-BASE_DECLARE_FEATURE(kTabResumption);
-
-// Whether the tab resumption feature is enabled.
-bool IsTabResumptionEnabled();
-
-// Feature that enables images for Tab Resumption.
-BASE_DECLARE_FEATURE(kTabResumptionImages);
-
-// A parameter to choose what type of images are enabled in
-// `kTabResumptionImages` experiment (default to all).
-extern const char kTabResumptionImagesTypes[];
-
-// A parameter value for `kTabResumptionImagesTypes` to only enable salient
-// images images for tab resumption.
-extern const char kTabResumptionImagesTypesSalient[];
-
-// A parameter value for `kTabResumptionImagesTypes` to only enable thumbnails
-// images images for tab resumption.
-extern const char kTabResumptionImagesTypesThumbnails[];
-
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 // TODO(crbug.com/40246814): Remove this.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
-
-// Feature parameters for the tab resumption feature. The threshold for tabs
-// fetched from sync in seconds. Default to 12 hours.
-extern const char kTabResumptionThresholdParameterName[];
-
-// Whether the tab resumption with salient images for distant tabs (or fallback
-// for local tabs) is enabled.
-bool IsTabResumptionImagesSalientEnabled();
-
-// Whether the tab resumption with salient images for local tabs is enabled.
-bool IsTabResumptionImagesThumbnailsEnabled();
-
-// Convenience method for determining the tab resumption time threshold for
-// X-Devices tabs only.
-const base::TimeDelta TabResumptionForXDevicesTimeThreshold();
 
 // Kill switch for disabling the navigations when the application is in
 // foreground inactive state after opening an external app.

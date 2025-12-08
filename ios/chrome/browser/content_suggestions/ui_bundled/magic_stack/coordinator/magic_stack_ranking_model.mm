@@ -387,7 +387,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 #pragma mark - TabResumptionMediatorDelegate
 
 - (void)tabResumptionMediatorDidReceiveItem {
-  CHECK(IsTabResumptionEnabled());
   if (tab_resumption_prefs::IsTabResumptionDisabled(_prefService)) {
     return;
   }
@@ -1046,8 +1045,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 
 // Returns YES if the tab resumption module should added into the Magic Stack.
 - (BOOL)shouldShowTabResumption {
-  return IsTabResumptionEnabled() &&
-         !tab_resumption_prefs::IsTabResumptionDisabled(_prefService) &&
+  return !tab_resumption_prefs::IsTabResumptionDisabled(_prefService) &&
          _tabResumptionMediator.itemConfig;
 }
 

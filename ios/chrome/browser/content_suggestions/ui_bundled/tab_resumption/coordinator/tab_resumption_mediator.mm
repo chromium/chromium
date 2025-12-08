@@ -110,6 +110,21 @@
 
 namespace {
 
+// A command line flag to override the default sync threshold.
+const char kTabResumptionThresholdParameter[] = "tab-resumption-sync-threshold";
+
+const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  std::string paramter =
+      command_line->GetSwitchValueASCII(kTabResumptionThresholdParameter);
+  int threshold = 0;
+  if (!base::StringToInt(kTabResumptionThresholdParameter, &threshold)) {
+    threshold = 12 * 3600;
+  }
+  return base::Seconds(threshold);
+}
+
 // Whether the item should be displayed immediately (before fetching an image).
 bool ShouldShowItemImmediately() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -422,7 +437,6 @@ class TabResumptionMediatorProxy {
        authenticationService:(AuthenticationService*)authenticationService {
   self = [super init];
   if (self) {
-    CHECK(IsTabResumptionEnabled());
     _profilePrefs = prefService;
     _browser = browser;
     _tabId = SessionID::InvalidValue();
@@ -947,8 +961,6 @@ class TabResumptionMediatorProxy {
   } else {
     if (item.itemType == kMostRecentTab) {
       [self fetchSnapshotForItem:item];
-    } else {
-      [self fetchSalientImageForItem:item];
     }
   }
   [self fetchFaviconForItem:item];
@@ -1008,8 +1020,8 @@ class TabResumptionMediatorProxy {
 
 // Fetches the snapshot of the tab showing `item`.
 - (void)fetchSnapshotForItem:(TabResumptionItem*)item {
-  if (!IsTabResumptionImagesThumbnailsEnabled() || !item.localWebState) {
-    return [self fetchSalientImageForItem:item];
+  if (!item.localWebState) {
+    return;
   }
 
   web::WebState* webState = item.localWebState.get();
@@ -1028,35 +1040,18 @@ class TabResumptionMediatorProxy {
                                    [weakSelf snapshotFetched:image
                                                      forItem:item];
                                  });
-    return;
   }
-  return [self fetchSalientImageForItem:item];
 }
 
 // The snapshot of the tab showing `item` was fetched.
 - (void)snapshotFetched:(UIImage*)image forItem:(TabResumptionItem*)item {
   if (!image) {
-    return [self fetchSalientImageForItem:item];
+    return;
   }
   item.contentImage = image;
   [self showItem:item];
 }
 
-// Fetches the salient image for `item`.
-- (void)fetchSalientImageForItem:(TabResumptionItem*)item {
-  if (!IsTabResumptionImagesSalientEnabled() || !_pageImageService) {
-    return;
-  }
-  __weak TabResumptionMediator* weakSelf = self;
-  page_image_service::mojom::Options options;
-  options.optimization_guide_images = true;
-  options.suggest_images = false;
-  _pageImageService->FetchImageFor(
-      page_image_service::mojom::ClientId::NtpTabResumption, item.tabURL,
-      options, base::BindOnce(^(const GURL& URL) {
-        [weakSelf salientImageURLReceived:URL forItem:item updateImage:NO];
-      }));
-}
 
 // The URL for the salient image has been received. Download the image if it
 // is valid or fallbacks to favicon.
