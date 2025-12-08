@@ -94,10 +94,6 @@ targets.legacy_basic_suite(
     tests = {
         "chrome_all_tast_tests": targets.legacy_test_config(
             skylab = targets.skylab(
-                # TODO(fqj): Remove stub tast_expr.
-                # Currently, recipe_module/chromium_tests has some
-                # tast-specific logic relying on tast_expr to be non-empty.
-                tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
                 timeout_sec = 14400,
                 cros_ctp_suite_name = "chrome-uprev-hw",
                 cros_test_names_exclude_from_file = ["chromeos/tast_control_disabled_tests.txt"],
@@ -115,10 +111,6 @@ targets.legacy_basic_suite(
         "chrome_criticalstaging_tast_tests": targets.legacy_test_config(
             ci_only = True,
             skylab = targets.skylab(
-                # TODO(fqj): Remove stub tast_expr.
-                # Currently, recipe_module/chromium_tests has some
-                # tast-specific logic relying on tast_expr to be non-empty.
-                tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
                 timeout_sec = 14400,
                 cros_test_names_exclude_from_file = ["chromeos/tast_control_disabled_tests.txt"],
                 cros_test_tags = ["group:mainline", "dep:chrome", "informational", "group:criticalstaging"],
@@ -137,10 +129,6 @@ targets.legacy_basic_suite(
         "chrome_disabled_tast_tests": targets.legacy_test_config(
             ci_only = True,
             skylab = targets.skylab(
-                # TODO(fqj): Remove stub tast_expr.
-                # Currently, recipe_module/chromium_tests has some
-                # tast-specific logic relying on tast_expr to be non-empty.
-                tast_expr = "STUB_STRING_TO_RUN_TAST_TESTS",
                 timeout_sec = 14400,
                 cros_test_names_from_file = ["chromeos/tast_control_disabled_tests.txt"],
             ),
