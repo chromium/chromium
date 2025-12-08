@@ -34,7 +34,6 @@ class PaintFlags;
 }  // namespace cc
 
 namespace blink {
-class CanvasResourceProvider;
 class CanvasSnapshotProvider;
 class StaticBitmapImage;
 
@@ -93,11 +92,11 @@ PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
 PLATFORM_EXPORT scoped_refptr<viz::RasterContextProvider>
 GetRasterContextProvider();
 
-// Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame
+// Creates a CanvasSnapshotProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
 // their resource providers. If |raster_context_provider| is null a software
 // resource provider will be returned.
-PLATFORM_EXPORT std::unique_ptr<CanvasResourceProvider>
+PLATFORM_EXPORT std::unique_ptr<CanvasSnapshotProvider>
 CreateResourceProviderForVideoFrame(
     gfx::Size size,
     viz::SharedImageFormat format,

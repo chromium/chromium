@@ -298,8 +298,6 @@ TEST_P(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
 
   image = DoCreateImageFromVideoFrame(texture_frame, provider.get());
   EXPECT_TRUE(image->IsTextureBacked());
-
-  ASSERT_FALSE(provider->Recorder().HasRecordedDrawOps());
 }
 
 TEST_P(VideoFrameImageUtilTest, CreateResourceProviderForVideoFrame) {
