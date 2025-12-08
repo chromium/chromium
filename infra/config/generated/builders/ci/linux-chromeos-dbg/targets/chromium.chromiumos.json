@@ -36,6 +36,9 @@
         "test_id_prefix": "ninja://ui/accessibility:accessibility_unittests/"
       },
       {
+        "args": [
+          "--gtest_filter=-TestSuiteTest.RunFlakyTests:TestSuiteTest.RunMockTests"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

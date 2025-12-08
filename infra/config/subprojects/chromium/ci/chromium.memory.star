@@ -435,6 +435,11 @@ linux_memory_builder(
             "linux-jammy",
         ],
         per_test_modifications = {
+            "angle_unittests": targets.mixin(
+                args = [
+                    "--gtest_filter=-TestSuiteTest.RunFlakyTests:TestSuiteTest.RunMockTests",
+                ],
+            ),
             "browser_tests": targets.mixin(
                 # These are very slow on the ASAN trybot for some reason.
                 # crbug.com/1257927

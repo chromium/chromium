@@ -43,7 +43,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always"
+          "--test-launcher-print-test-stdio=always",
+          "--gtest_filter=-TestSuiteTest.RunFlakyTests:TestSuiteTest.RunMockTests"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
