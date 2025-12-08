@@ -267,7 +267,7 @@ vars = {
   # pathname relative to build/config/siso/backend_config, or absolute path.
   'reapi_backend_config_path': Str(''),
   # siso CIPD package version.
-  'siso_version': 'git_revision:41351d34a647bb3f390000f021786db0a6ad2430',
+  'siso_version': 'git_revision:49dcca5d2be985d8ac6d512e59ee59e315264fb8',
 
   # reclient options.
   # download reclient binaries, required for 'use_reclient` gn arg.
