@@ -1388,15 +1388,8 @@ constexpr std::array kActionableItems_SyncEnabled = {
     // there are no other buttons at the end.
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton};
 
-// TODO(crbug.com/341975308): re-enable test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ProfileMenuClickTest_SyncEnabled \
-  DISABLED_ProfileMenuClickTest_SyncEnabled
-#else
-#define MAYBE_ProfileMenuClickTest_SyncEnabled ProfileMenuClickTest_SyncEnabled
-#endif
 PROFILE_MENU_CLICK_TEST(kActionableItems_SyncEnabled,
-                        MAYBE_ProfileMenuClickTest_SyncEnabled) {
+                        ProfileMenuClickTest_SyncEnabled) {
   EnableSync();
   RunTest();
 }
@@ -1450,15 +1443,8 @@ constexpr std::array kActionableItems_SyncPaused = {
     // there are no other buttons at the end.
     ProfileMenuViewBase::ActionableItem::kSyncErrorButton};
 
-// TODO(crbug.com/40822972): flaky on Windows and Mac
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_ProfileMenuClickTest_SyncPaused \
-  DISABLED_ProfileMenuClickTest_SyncPaused
-#else
-#define MAYBE_ProfileMenuClickTest_SyncPaused ProfileMenuClickTest_SyncPaused
-#endif
 PROFILE_MENU_CLICK_TEST(kActionableItems_SyncPaused,
-                        MAYBE_ProfileMenuClickTest_SyncPaused) {
+                        ProfileMenuClickTest_SyncPaused) {
   EnableSync();
   sync_harness()->EnterSyncPausedStateForPrimaryAccount();
   // Check that the setup was successful.
@@ -2058,17 +2044,9 @@ constexpr std::array
         // there are no other buttons at the end.
         ProfileMenuViewBase::ActionableItem::kSigninReauthButton};
 
-// TODO(crbug.com/40822972): flaky on Windows and Mac
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosEnabled \
-  DISABLED_ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosEnabled
-#else
-#define MAYBE_ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosEnabled \
-  ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosEnabled
-#endif
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_WithPendingAccount_ReplaceSyncPromosEnabled,
-    MAYBE_ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosEnabled,
+    ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosEnabled,
     {syncer::kReplaceSyncPromosWithSignInPromos},
     {}) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
@@ -2107,17 +2085,9 @@ constexpr std::array
         // there are no other buttons at the end.
         ProfileMenuViewBase::ActionableItem::kSigninReauthButton};
 
-// TODO(crbug.com/40822972): flaky on Windows and Mac
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosDisabled \
-  DISABLED_ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosDisabled
-#else
-#define MAYBE_ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosDisabled \
-  ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosDisabled
-#endif
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_WithPendingAccount_ReplaceSyncPromosDisabled,
-    MAYBE_ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosDisabled,
+    ProfileMenuClickTest_WithPendingAccount_ReplaceSyncPromosDisabled,
     {},
     {syncer::kReplaceSyncPromosWithSignInPromos}) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
