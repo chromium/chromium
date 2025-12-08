@@ -74,9 +74,11 @@
     <li>
       <a href="enterprise-block">Block</a>
     </li>
-    <li>
-      <a href="managed-profile-required">Managed profile required</a>
-    </li>
+    <if expr="not is_ios">
+      <li>
+        <a href="managed-profile-required">Managed profile required</a>
+      </li>
+    </if>
   </ul>
   <h3>SafeBrowsing</h3>
   <h4>Loud</h4>
