@@ -26,7 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ActiveGpuDisplayInfo">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Likely Built-in"/>
+  <int value="2" label="Likely External"/>
+</enum>
+
 <enum name="ActiveGpuInfo">
+  <int value="0" label="None"/>
   <int value="1" label="Intel"/>
   <int value="2" label="NVIDIA"/>
   <int value="4" label="AMD"/>
@@ -1261,6 +1268,14 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="One"/>
   <int value="2" label="Two or more"/>
+</enum>
+
+<enum name="GpuVendorId">
+  <int value="-1" label="Unknown"/>
+  <int value="4098" label="AMD"/>
+  <int value="4318" label="NVIDIA"/>
+  <int value="5140" label="Microsoft"/>
+  <int value="32902" label="Intel"/>
 </enum>
 
 <enum name="HighlightedTabDiscardStatus">
