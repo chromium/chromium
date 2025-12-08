@@ -323,7 +323,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/win-rel", "no_reclient"]),
-        "no_clnag_modules": gn_args.config(configs = ["try/win-rel", "no_reclient", "no_clang_modules"]),
+        "no_clang_modules": gn_args.config(configs = ["try/win-rel", "no_reclient", "no_clang_modules"]),
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -354,7 +354,7 @@ ci_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["ci/Win x64 Builder", "no_reclient"]),
-        "no_clnag_modules": gn_args.config(configs = ["ci/Win x64 Builder", "no_reclient", "no_clang_modules"]),
+        "no_clang_modules": gn_args.config(configs = ["ci/Win x64 Builder", "no_reclient", "no_clang_modules"]),
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -420,7 +420,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/linux-chromeos-rel", "no_reclient"]),
-        "no_clnag_modules": gn_args.config(configs = ["try/linux-chromeos-rel", "no_reclient", "no_clang_modules"]),
+        "no_clang_modules": gn_args.config(configs = ["try/linux-chromeos-rel", "no_reclient", "no_clang_modules"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -486,7 +486,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/mac-rel", "no_reclient"]),
-        "no_clnag_modules": gn_args.config(configs = ["try/mac-rel", "no_reclient", "no_clang_modules"]),
+        "no_clang_modules": gn_args.config(configs = ["try/mac-rel", "no_reclient", "no_clang_modules"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -557,7 +557,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": gn_args.config(configs = ["try/ios-simulator", "no_reclient"]),
-        "no_clnag_modules": gn_args.config(configs = ["try/ios-simulator", "no_reclient", "no_clang_modules"]),
+        "no_clang_modules": gn_args.config(configs = ["try/ios-simulator", "no_reclient", "no_clang_modules"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,

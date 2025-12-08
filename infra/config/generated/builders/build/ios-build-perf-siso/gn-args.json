@@ -17,7 +17,7 @@
         "use_siso": true
       }
     },
-    "no_clnag_modules": {
+    "no_clang_modules": {
       "gn_args": {
         "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "enable_run_ios_unittests_with_xctest": true,

@@ -15,7 +15,7 @@
         "use_siso": true
       }
     },
-    "no_clnag_modules": {
+    "no_clang_modules": {
       "gn_args": {
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",

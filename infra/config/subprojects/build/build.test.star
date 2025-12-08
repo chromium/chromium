@@ -7,6 +7,7 @@ load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//builders.star", "os")
 load("@chromium-luci//ci.star", "ci")
 load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//html.star", "linkify_builder")
 load("//lib/ci_constants.star", "ci_constants")
 load("//lib/siso.star", "siso")
@@ -80,6 +81,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": "try/linux-rel",
+        "no_clang_modules": gn_args.config(configs = ["try/linux-rel", "no_clang_modules"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -110,6 +112,7 @@ cq_build_perf_builder(
     ),
     gn_args = {
         "builtin": "try/win-rel",
+        "no_clang_modules": gn_args.config(configs = ["try/win-rel", "no_clang_modules"]),
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -145,6 +148,7 @@ ci_build_perf_builder(
     ),
     gn_args = {
         "builtin": "ci/Linux Builder",
+        "no_clang_modules": gn_args.config(configs = ["ci/Linux Builder", "no_clang_modules"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -176,6 +180,7 @@ ci_build_perf_builder(
     ),
     gn_args = {
         "builtin": "ci/Win x64 Builder",
+        "no_clang_modules": gn_args.config(configs = ["ci/Win x64 Builder", "no_clang_modules"]),
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
