@@ -553,39 +553,6 @@ namespace {
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
 
-// Deprecated 12/2024.
-inline constexpr char kDeleteTimePeriodV2[] =
-    "browser.clear_data.time_period_v2";
-inline constexpr char kDeleteTimePeriodV2Basic[] =
-    "browser.clear_data.time_period_v2_basic";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 12/2024
-inline const char kCryptAuthDeviceSyncIsRecoveringFromFailure[] =
-    "cryptauth.device_sync.is_recovering_from_failure";
-inline const char kCryptAuthDeviceSyncLastSyncTimeSeconds[] =
-    "cryptauth.device_sync.last_device_sync_time_seconds";
-inline const char kCryptAuthDeviceSyncReason[] = "cryptauth.device_sync.reason";
-inline const char kCryptAuthDeviceSyncUnlockKeys[] =
-    "cryptauth.device_sync.unlock_keys";
-inline const char kCryptAuthEnrollmentIsRecoveringFromFailure[] =
-    "cryptauth.enrollment.is_recovering_from_failure";
-inline const char kCryptAuthEnrollmentLastEnrollmentTimeSeconds[] =
-    "cryptauth.enrollment.last_enrollment_time_seconds";
-inline const char kCryptAuthEnrollmentReason[] = "cryptauth.enrollment.reason";
-inline const char kCryptAuthEnrollmentUserPublicKey[] =
-    "cryptauth.enrollment.user_public_key";
-inline const char kCryptAuthEnrollmentUserPrivateKey[] =
-    "cryptauth.enrollment.user_private_key";
-inline const char kLacrosLaunchOnLogin[] = "lacros.launch_on_login";
-inline const char kLacrosLaunchSwitch[] = "lacros_launch_switch";
-inline const char kLacrosSelection[] = "lacros_selection";
-#endif
-
-// Deprecated 12/2024.
-inline constexpr char kPageContentCollectionEnabled[] =
-    "page_content_collection.enabled";
-
 // Deprecated 01/2025.
 inline constexpr char kCompactModeEnabled[] = "compact_mode";
 
@@ -941,11 +908,6 @@ constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 12/2024.
-  registry->RegisterIntegerPref(kLacrosLaunchSwitch, 0);
-  registry->RegisterIntegerPref(kLacrosSelection, 0);
-#endif
 
   // Deprecated 02/2025.
   registry->RegisterBooleanPref(kUserAgentClientHintsGREASEUpdateEnabled, true);
@@ -1042,34 +1004,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  // Deprecated 12/2024.
-  registry->RegisterIntegerPref(kDeleteTimePeriodV2, -1);
-  registry->RegisterIntegerPref(kDeleteTimePeriodV2Basic, -1);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 12/2024
-  registry->RegisterDoublePref(kCryptAuthDeviceSyncLastSyncTimeSeconds, 0.0);
-  registry->RegisterBooleanPref(kCryptAuthDeviceSyncIsRecoveringFromFailure,
-                                false);
-  registry->RegisterIntegerPref(kCryptAuthDeviceSyncReason,
-                                cryptauth::INVOCATION_REASON_UNKNOWN);
-  registry->RegisterListPref(kCryptAuthDeviceSyncUnlockKeys);
-  registry->RegisterBooleanPref(kCryptAuthEnrollmentIsRecoveringFromFailure,
-                                false);
-  registry->RegisterDoublePref(kCryptAuthEnrollmentLastEnrollmentTimeSeconds,
-                               0.0);
-  registry->RegisterIntegerPref(kCryptAuthEnrollmentReason,
-                                cryptauth::INVOCATION_REASON_UNKNOWN);
-  registry->RegisterStringPref(kCryptAuthEnrollmentUserPublicKey,
-                               std::string());
-  registry->RegisterStringPref(kCryptAuthEnrollmentUserPrivateKey,
-                               std::string());
-  registry->RegisterBooleanPref(kLacrosLaunchOnLogin, false);
-#endif
-
-  // Deprecated 12/2024.
-  registry->RegisterBooleanPref(kPageContentCollectionEnabled, false);
 
   // Deprecated 01/2025.
   registry->RegisterBooleanPref(kCompactModeEnabled, false);
@@ -2139,12 +2073,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 12/2024
-#if BUILDFLAG(IS_CHROMEOS)
-  local_state->ClearPref(kLacrosLaunchSwitch);
-  local_state->ClearPref(kLacrosSelection);
-#endif
-
   // Added 02/2025.
   local_state->ClearPref(kUserAgentClientHintsGREASEUpdateEnabled);
 
@@ -2297,27 +2225,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   MigrateDefaultBrowserLastDeclinedPref(profile_prefs);
 #endif
-
-  // Added 12/2024.
-  profile_prefs->ClearPref(kDeleteTimePeriodV2);
-  profile_prefs->ClearPref(kDeleteTimePeriodV2Basic);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 12/2024
-  profile_prefs->ClearPref(kCryptAuthDeviceSyncLastSyncTimeSeconds);
-  profile_prefs->ClearPref(kCryptAuthDeviceSyncIsRecoveringFromFailure);
-  profile_prefs->ClearPref(kCryptAuthDeviceSyncReason);
-  profile_prefs->ClearPref(kCryptAuthDeviceSyncUnlockKeys);
-  profile_prefs->ClearPref(kCryptAuthEnrollmentIsRecoveringFromFailure);
-  profile_prefs->ClearPref(kCryptAuthEnrollmentLastEnrollmentTimeSeconds);
-  profile_prefs->ClearPref(kCryptAuthEnrollmentReason);
-  profile_prefs->ClearPref(kCryptAuthEnrollmentUserPublicKey);
-  profile_prefs->ClearPref(kCryptAuthEnrollmentUserPrivateKey);
-  profile_prefs->ClearPref(kLacrosLaunchOnLogin);
-#endif
-
-  // Added 12/2024.
-  profile_prefs->ClearPref(kPageContentCollectionEnabled);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Added 01/2025.
