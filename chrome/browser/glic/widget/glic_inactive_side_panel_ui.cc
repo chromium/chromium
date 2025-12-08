@@ -139,10 +139,7 @@ GlicInactiveSidePanelUi::CreateInactiveEmbedder() const {
 
 GlicSidePanelCoordinator* GlicInactiveSidePanelUi::GetGlicSidePanelCoordinator()
     const {
-  if (!tab_ || !tab_->GetTabFeatures()) {
-    return nullptr;
-  }
-  return tab_->GetTabFeatures()->glic_side_panel_coordinator();
+  return GlicSidePanelCoordinator::GetForTab(tab_.get());
 }
 
 bool GlicInactiveSidePanelUi::HasFocus() {

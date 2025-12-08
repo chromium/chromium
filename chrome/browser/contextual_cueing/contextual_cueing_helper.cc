@@ -321,10 +321,7 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   }
 
   auto* glic_side_panel_coordinator =
-      tab_interface->GetTabFeatures() &&
-              tab_interface->GetTabFeatures()->glic_side_panel_coordinator()
-          ? tab_interface->GetTabFeatures()->glic_side_panel_coordinator()
-          : nullptr;
+      glic::GlicSidePanelCoordinator::GetForTab(tab_interface);
   if (glic_side_panel_coordinator && glic_side_panel_coordinator->IsShowing()) {
     recorder->set_nudge_decision(
         NudgeDecision::kNudgeNotShownSidePanelForTabShowing);
