@@ -15,7 +15,7 @@ namespace content {
 
 class PipScreenCaptureCoordinatorImpl;
 
-class PipScreenCaptureCoordinatorProxyImpl
+class CONTENT_EXPORT PipScreenCaptureCoordinatorProxyImpl
     : public PipScreenCaptureCoordinatorProxy {
  public:
   PipScreenCaptureCoordinatorProxyImpl(
@@ -29,6 +29,9 @@ class PipScreenCaptureCoordinatorProxyImpl
   std::optional<NativeWindowId> PipWindowId() const override;
   GlobalRenderFrameHostId GetPipOwnerRenderFrameHostId() const override;
   const std::vector<CaptureInfo>& Captures() const override;
+
+  std::vector<NativeWindowId> WindowsToExclude(
+      const DesktopMediaID& media_id) const override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

@@ -3480,7 +3480,10 @@ test("content_unittests") {
       "../browser/renderer_host/media/sub_capture_target_id_web_contents_helper_unittest.cc",
     ]
     if (is_mac) {
-      sources += [ "../browser/media/capture/pip_screen_capture_coordinator_impl_unittest.cc" ]
+      sources += [
+        "../browser/media/capture/pip_screen_capture_coordinator_impl_unittest.cc",
+        "../browser/media/capture/pip_screen_capture_coordinator_proxy_impl_unittest.cc",
+      ]
     }
     if (!is_android && !is_ios) {
       deps += [

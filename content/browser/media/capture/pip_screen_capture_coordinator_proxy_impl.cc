@@ -104,6 +104,27 @@ PipScreenCaptureCoordinatorProxyImpl::Captures() const {
   return captures_;
 }
 
+std::vector<NativeWindowId>
+PipScreenCaptureCoordinatorProxyImpl::WindowsToExclude(
+    const DesktopMediaID& media_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!pip_window_id_) {
+    return {};
+  }
+
+  // The PiP window should not be excluded if there are other
+  // applications capturing the screen.
+  for (const auto& capture : captures_) {
+    if (capture.desktop_media_id == media_id &&
+        capture.render_frame_host_id != pip_owner_render_frame_host_id_) {
+      return {};
+    }
+  }
+
+  return {*pip_window_id_};
+}
+
 void PipScreenCaptureCoordinatorProxyImpl::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!bound_sequence_task_runner_) {
