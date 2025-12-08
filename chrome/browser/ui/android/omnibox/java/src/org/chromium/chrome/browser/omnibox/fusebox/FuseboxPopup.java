@@ -41,6 +41,7 @@ class FuseboxPopup {
         mPopupWindow.setDesiredContentSize(
                 context.getResources().getDimensionPixelSize(R.dimen.fusebox_popup_width), 0);
         mPopupWindow.setHorizontalOverlapAnchor(true);
+        mPopupWindow.setVerticalOverlapAnchor(true);
         mTabButton = contentView.findViewById(R.id.fusebox_pick_tabs_button);
         if (ChromeFeatureList.sChromeItemPickerUi.isEnabled()) {
             mTabButton.setVisibility(View.VISIBLE);

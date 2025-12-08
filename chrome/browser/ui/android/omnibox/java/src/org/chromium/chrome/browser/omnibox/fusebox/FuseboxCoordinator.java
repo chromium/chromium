@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -38,6 +42,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
+import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
@@ -98,19 +104,30 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         templateUrlServiceSupplier.onAvailable(this::onTemplateUrlServiceAvailable);
 
         var contextButton = parent.findViewById(R.id.location_bar_attachments_add);
-        var rectProvider = new ViewRectProvider(contextButton);
+        var rectProvider = new ViewRectProvider(parent);
+        rectProvider.setInsetPx(
+                0,
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_vertical_space_above_popup),
+                0,
+                0);
         var popupView = LayoutInflater.from(context).inflate(R.layout.fusebox_context_popup, null);
-        var popupWindow =
-                new AnchoredPopupWindow(
+        @Nullable RectProvider viewportRectProvider = new ViewportRectProvider(mContext);
+
+        var popupWindowBuilder =
+                new AnchoredPopupWindow.Builder(
                         mContext,
                         contextButton.getRootView(),
                         AppCompatResources.getDrawable(context, R.drawable.menu_bg_tinted),
-                        popupView,
+                        () -> popupView,
                         rectProvider);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setAnimateFromAnchor(true);
+        popupWindowBuilder.setOutsideTouchable(true);
+        popupWindowBuilder.setAnimateFromAnchor(true);
+        popupWindowBuilder.setPreferredHorizontalOrientation(
+                HorizontalOrientation.LAYOUT_DIRECTION);
+        popupWindowBuilder.setViewportRectProvider(viewportRectProvider);
 
-        var popup = new FuseboxPopup(mContext, popupWindow, popupView);
+        var popup = new FuseboxPopup(mContext, popupWindowBuilder.build(), popupView);
         mViewHolder = new FuseboxViewHolder(parent, popup);
 
         var adapter = new FuseboxAttachmentRecyclerViewAdapter(mModelList);
@@ -339,5 +356,33 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     /** Returns whether the Fusebox Attachments list contains any user-added entries. */
     public boolean hasUserAddedAttachments() {
         return !mModelList.isEmpty();
+    }
+
+    /**
+     * Provider of the viewport for the fusebox popup window. This implementation treats the entire
+     * window as available, ignoring e.g. ime insets which can reduce the available height to a very
+     * small quantity using PopupWindow's default viewport rect.
+     */
+    static class ViewportRectProvider extends RectProvider implements ComponentCallbacks {
+        private final Context mContext;
+
+        public ViewportRectProvider(Context context) {
+            mContext = context;
+            mContext.registerComponentCallbacks(this);
+            updateRect();
+        }
+
+        @Override
+        public void onConfigurationChanged(@NonNull Configuration configuration) {
+            updateRect();
+        }
+
+        private void updateRect() {
+            DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+            mRect.set(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        }
+
+        @Override
+        public void onLowMemory() {}
     }
 }

@@ -178,8 +178,9 @@ found in the LICENSE file.
     <dimen name ="fusebox_attachment_loading_width">132dp</dimen>
     <dimen name ="fusebox_attachment_file_width">132dp</dimen>
     <dimen name ="fusebox_attachment_image_width">80dp</dimen>
+    <dimen name ="fusebox_vertical_space_above_popup">32dp</dimen>
 
-    <!-- Search engine logo. -->
+  <!-- Search engine logo. -->
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
 
     <!-- Button highlight dimensions. -->
