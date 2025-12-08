@@ -178,7 +178,13 @@ class KeyboardAccessoryMediator
         List<BarItem> fixedBarItems = new ArrayList<BarItem>();
         if (showFloatingKeyboardAccessory()) {
             fixedBarItems.add(mModel.get(SHEET_OPENER_ITEM));
-            fixedBarItems.add(mModel.get(DISMISS_ITEM));
+            // Dismiss button shouldn't be added when dynamic positioning is used.
+            // TODO(crbug.com/458610269): Delete the the dismiss button after dynamic positioning is
+            // launched.
+            if (!ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+                fixedBarItems.add(mModel.get(DISMISS_ITEM));
+            }
         } else {
             scrollableItems.add(mModel.get(SHEET_OPENER_ITEM));
         }

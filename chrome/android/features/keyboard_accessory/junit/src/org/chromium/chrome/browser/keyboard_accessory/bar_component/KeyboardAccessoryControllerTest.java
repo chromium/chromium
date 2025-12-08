@@ -11,7 +11,9 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -50,6 +52,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -97,6 +100,7 @@ import java.util.function.Supplier;
         shadows = {CustomShadowAsyncTask.class})
 @Features.EnableFeatures({
     ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP,
+    ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING,
     ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN,
     ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_WIDTH_ADJUSTMENT,
 })
@@ -658,6 +662,7 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
     public void testLargeFormFactorHasDismissButton() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
 
@@ -670,6 +675,19 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
+    public void testLargeFormFactorDynamicPositioningHasNoDismissButton() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
+
+        mCoordinator.setSuggestions(List.of(mock(AutofillSuggestion.class)), mMockAutofillDelegate);
+
+        assertThat(mModel.get(BAR_ITEMS), contains(instanceOf(AutofillBarItem.class)));
+
+        assertThat(mModel.get(BAR_ITEMS_FIXED), not(hasItem(instanceOf(DismissBarItem.class))));
+        assertThat(mModel.get(BAR_ITEMS_FIXED), contains(instanceOf(SheetOpenerBarItem.class)));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
     public void testLargeFormFactorHasFixedItems() {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
         Provider<Action[]> generationProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
