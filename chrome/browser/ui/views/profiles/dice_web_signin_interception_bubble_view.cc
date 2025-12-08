@@ -60,9 +60,14 @@ constexpr int kInterceptionBubbleWidth = 290;
 constexpr int kInterceptionChromeSigninBubbleWidth = 320;
 
 AvatarToolbarButton* GetAvatarToolbarButton(const Browser& browser) {
-  return BrowserView::GetBrowserViewForBrowser(&browser)
-      ->toolbar_button_provider()
-      ->GetAvatarToolbarButton();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(&browser);
+  // WebUI Browser does not use BrowserView.
+  // TODO(webium): make a framework-agnostic way to get the avatar button.
+  if (!browser_view) {
+    return nullptr;
+  }
+
+  return browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
 }
 
 std::u16string InterceptionTypeToIdentityPillText(
