@@ -1686,6 +1686,9 @@ public abstract class ChromeFeatureList {
                             "activity_creation_timestamp_diff_threshold_ms",
                             1000);
 
+    public static final IntCachedFeatureParam sTopControlsRefactorNarrowWidthTransitionThreshold =
+            newIntCachedFeatureParam(TOP_CONTROLS_REFACTOR, "min_width_transition_threshold", 0);
+
     /** Always register to push notification service. */
     public static final BooleanCachedFeatureParam sUseChimeAndroidSdkAlwaysRegister =
             newBooleanCachedFeatureParam(USE_CHIME_ANDROID_SDK, "always_register", false);
@@ -1781,6 +1784,7 @@ public abstract class ChromeFeatureList {
                     sTabGroupListContainment,
                     sTabStorageSqlitePrototypeAuthoritativeReadSource,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
+                    sTopControlsRefactorNarrowWidthTransitionThreshold,
                     sTouchToSearchCalloutIph,
                     sTouchToSearchCalloutSnippetAsSubtitle,
                     sUseChimeAndroidSdkAlwaysRegister,

@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
@@ -503,6 +504,12 @@ class HeightTransitionHandler {
                                     ChromeSwitches.TAB_STRIP_HEIGHT_TRANSITION_THRESHOLD, "0");
             int threshold = Integer.parseInt(commandLineThreshold);
             if (threshold > 0) return threshold;
+        }
+
+        int minThresholdOverride =
+                ChromeFeatureList.sTopControlsRefactorNarrowWidthTransitionThreshold.getValue();
+        if (minThresholdOverride > 0) {
+            return minThresholdOverride;
         }
 
         return TRANSITION_THRESHOLD_DP;
