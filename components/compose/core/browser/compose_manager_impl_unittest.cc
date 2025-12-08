@@ -59,8 +59,6 @@ class MockComposeClient : public compose::ComposeClient {
               ShowComposeDialog,
               (UiEntryPoint ui_entry_point,
                const autofill::FormFieldData& trigger_field,
-               std::optional<autofill::AutofillClient::PopupScreenLocation>
-                   popup_screen_location,
                ComposeCallback callback),
               (override));
   MOCK_METHOD(bool,
@@ -114,7 +112,7 @@ class ComposeManagerImplTest
     ON_CALL(mock_compose_client(), GetPageUkmTracker)
         .WillByDefault(testing::Return(page_ukm_tracker_.get()));
     // Record the FormFieldData sent to the client.
-    ON_CALL(mock_compose_client(), ShowComposeDialog(_, _, _, _))
+    ON_CALL(mock_compose_client(), ShowComposeDialog)
         .WillByDefault(testing::WithArg<1>(
             [&](const autofill::FormFieldData& trigger_field) {
               last_form_field_to_client_ = trigger_field;
@@ -300,10 +298,9 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
       .WillOnce(base::test::RunOnceCallback<1>(&autofill_driver(), form_data));
 
   const UiEntryPoint ui_entry_point = UiEntryPoint::kContextMenu;
-  EXPECT_CALL(
-      mock_compose_client(),
-      ShowComposeDialog(/*ui_entry_point=*/ui_entry_point, /*trigger_field=*/_,
-                        /*popup_screen_location=*/_, /*callback=*/_));
+  EXPECT_CALL(mock_compose_client(),
+              ShowComposeDialog(/*ui_entry_point=*/ui_entry_point,
+                                /*trigger_field=*/_, /*callback=*/_));
 
   base::RunLoop run_loop;
   compose_manager_impl().OpenCompose(
@@ -345,10 +342,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
   EXPECT_CALL(autofill_driver(), ExtractFormWithField)
       .WillOnce(base::test::RunOnceCallback<1>(nullptr, std::nullopt));
   // There should be no attempt to open the dialog.
-  EXPECT_CALL(mock_compose_client(),
-              ShowComposeDialog(/*ui_entry_point=*/_, /*trigger_field=*/_,
-                                /*popup_screen_location=*/_, /*callback=*/_))
-      .Times(0);
+  EXPECT_CALL(mock_compose_client(), ShowComposeDialog).Times(0);
 
   base::RunLoop run_loop;
   compose_manager_impl().OpenCompose(autofill_driver(),
@@ -388,10 +382,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
   EXPECT_CALL(autofill_driver(), ExtractFormWithField)
       .WillOnce(base::test::RunOnceCallback<1>(&autofill_driver(), form_data));
   // There should be no attempt to open the dialog.
-  EXPECT_CALL(mock_compose_client(),
-              ShowComposeDialog(/*ui_entry_point=*/_, /*trigger_field=*/_,
-                                /*popup_screen_location=*/_, /*callback=*/_))
-      .Times(0);
+  EXPECT_CALL(mock_compose_client(), ShowComposeDialog).Times(0);
 
   base::RunLoop run_loop;
   compose_manager_impl().OpenCompose(autofill_driver(),

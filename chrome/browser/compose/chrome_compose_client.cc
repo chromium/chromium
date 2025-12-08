@@ -251,8 +251,6 @@ void ChromeComposeClient::BindComposeDialog(
 void ChromeComposeClient::ShowComposeDialog(
     EntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field,
-    std::optional<autofill::AutofillClient::PopupScreenLocation>
-        popup_screen_location,
     ComposeCallback callback) {
   active_compose_ids_ = std::make_optional<FieldIdentifier>(
       trigger_field.global_id(), trigger_field.renderer_form_id());

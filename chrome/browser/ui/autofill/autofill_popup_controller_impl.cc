@@ -571,12 +571,6 @@ FillingProduct AutofillPopupControllerImpl::GetMainFillingProduct() const {
   return delegate_->GetMainFillingProduct();
 }
 
-std::optional<AutofillClient::PopupScreenLocation>
-AutofillPopupControllerImpl::GetPopupScreenLocation() const {
-  return view_ ? view_->GetPopupScreenLocation()
-               : std::make_optional<AutofillClient::PopupScreenLocation>();
-}
-
 bool AutofillPopupControllerImpl::HasSuggestions() const {
   return !GetSuggestions().empty() &&
          IsStandaloneSuggestionType(GetSuggestions()[0].type);

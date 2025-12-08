@@ -909,13 +909,6 @@ base::span<const Suggestion> ChromeAutofillClient::GetAutofillSuggestions()
                                 : base::span<const Suggestion>();
 }
 
-std::optional<AutofillClient::PopupScreenLocation>
-ChromeAutofillClient::GetPopupScreenLocation() const {
-  return suggestion_controller_
-             ? suggestion_controller_->GetPopupScreenLocation()
-             : std::make_optional<AutofillClient::PopupScreenLocation>();
-}
-
 std::optional<AutofillClient::SuggestionUiSessionId>
 ChromeAutofillClient::GetSessionIdForCurrentAutofillSuggestions() const {
   return suggestion_controller_ ? suggestion_controller_->GetUiSessionId()

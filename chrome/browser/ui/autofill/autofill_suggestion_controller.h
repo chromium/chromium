@@ -76,9 +76,6 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // Returns the main filling product corresponding to the controller.
   virtual FillingProduct GetMainFillingProduct() const = 0;
 
-  virtual std::optional<AutofillClient::PopupScreenLocation>
-  GetPopupScreenLocation() const = 0;
-
   // Shows the suggestion UI, or updates the existing suggestion UI with the
   // given values.
   virtual void Show(UiSessionId session_id,

@@ -234,23 +234,6 @@ class AutofillClient {
     PopupAnchorType anchor_type = PopupAnchorType::kField;
   };
 
-  // Describes the position of the Autofill popup on the screen.
-  struct PopupScreenLocation {
-    // The bounds of the popup in the screen coordinate system.
-    gfx::Rect bounds;
-    // Describes the position of the arrow on the popup's border and corresponds
-    // to a subset of the available options in `views::BubbleBorder::Arrow`.
-    enum class ArrowPosition {
-      kTopRight,
-      kTopLeft,
-      kBottomRight,
-      kBottomLeft,
-      kLeftTop,
-      kRightTop,
-      kMax = kRightTop
-    };
-    ArrowPosition arrow_position;
-  };
   using EntityImportPromptResultCallback =
       base::OnceCallback<void(AutofillAiBubbleClosedReason close_reason)>;
 
@@ -531,10 +514,6 @@ class AutofillClient {
   // Update the data list values shown by the Autofill suggestions, if visible.
   virtual void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) = 0;
-
-  // Returns the information of the popup on the screen, if there is one that is
-  // showing. Note that this implemented only on Desktop.
-  virtual std::optional<PopupScreenLocation> GetPopupScreenLocation() const;
 
   // Returns the identifier of the suggestion UI that is currently showing or
   // `std::nullopt` is there is none.

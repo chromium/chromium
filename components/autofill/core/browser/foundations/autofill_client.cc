@@ -232,12 +232,6 @@ void AutofillClient::HideAutofillFieldIph() {}
 
 void AutofillClient::NotifyIphFeatureUsed(AutofillClient::IphFeature feature) {}
 
-std::optional<AutofillClient::PopupScreenLocation>
-AutofillClient::GetPopupScreenLocation() const {
-  NOTIMPLEMENTED();
-  return std::nullopt;
-}
-
 std::optional<AutofillClient::SuggestionUiSessionId>
 AutofillClient::GetSessionIdForCurrentAutofillSuggestions() const {
   return std::nullopt;

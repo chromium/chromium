@@ -552,11 +552,6 @@ FillingProduct AutofillKeyboardAccessoryControllerImpl::GetMainFillingProduct()
   return delegate_->GetMainFillingProduct();
 }
 
-std::optional<AutofillClient::PopupScreenLocation>
-AutofillKeyboardAccessoryControllerImpl::GetPopupScreenLocation() const {
-  return std::nullopt;
-}
-
 void AutofillKeyboardAccessoryControllerImpl::Show(
     UiSessionId ui_session_id,
     std::vector<Suggestion> suggestions,

@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, LifetimeOfBubbleWrapper) {
   auto* client = ChromeComposeClient::FromWebContents(web_contents);
   client->ShowComposeDialog(
       autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-      field_data, std::nullopt, base::NullCallback());
+      field_data, base::NullCallback());
 
   // close window right away
   browser()->tab_strip_model()->CloseWebContentsAt(0,
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
   auto* client = ChromeComposeClient::FromWebContents(web_contents);
   client->ShowComposeDialog(
       autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-      field_data, std::nullopt, base::NullCallback());
+      field_data, base::NullCallback());
 
   client->OpenFeedbackPageForTest("test_id");
 
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
 
   client->ShowComposeDialog(
       autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-      field_data, std::nullopt, base::NullCallback());
+      field_data, base::NullCallback());
 
   EXPECT_TRUE(client->IsDialogShowing());
 
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, SettingsLaunchedTest) {
   auto* client = ChromeComposeClient::FromWebContents(web_contents);
   client->ShowComposeDialog(
       autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-      field_data, std::nullopt, base::NullCallback());
+      field_data, base::NullCallback());
 
   client->OpenComposeSettings();
 

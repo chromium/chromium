@@ -428,19 +428,6 @@ TEST_F(AutofillPopupControllerImplTest,
                   .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
 }
 
-// Tests that the popup controller queries the view for its screen location.
-TEST_F(AutofillPopupControllerImplTest, GetPopupScreenLocationCallsView) {
-  ShowSuggestions(manager(), {SuggestionType::kComposeResumeNudge});
-
-  using PopupScreenLocation = AutofillClient::PopupScreenLocation;
-  constexpr gfx::Rect kSampleRect = gfx::Rect(123, 234);
-  EXPECT_CALL(*client().popup_view(), GetPopupScreenLocation)
-      .WillOnce(Return(PopupScreenLocation{.bounds = kSampleRect}));
-  EXPECT_THAT(
-      client().suggestion_controller(manager()).GetPopupScreenLocation(),
-      Optional(Field(&PopupScreenLocation::bounds, kSampleRect)));
-}
-
 // Tests that Compose saved state notification popup gets hidden after 2
 // seconds, but not after 1 second.
 TEST_F(AutofillPopupControllerImplTest,

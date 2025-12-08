@@ -136,8 +136,6 @@ class PopupViewViews : public PopupBaseView,
   void AxAnnounce(const std::u16string& text) override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillSuggestionController> controller) override;
-  std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
-      const override;
   bool HasFocus() const override;
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
 

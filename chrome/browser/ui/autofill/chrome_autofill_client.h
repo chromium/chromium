@@ -173,7 +173,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) final;
   base::span<const Suggestion> GetAutofillSuggestions() const final;
-  std::optional<PopupScreenLocation> GetPopupScreenLocation() const final;
   std::optional<SuggestionUiSessionId>
   GetSessionIdForCurrentAutofillSuggestions() const final;
   void UpdateAutofillSuggestions(

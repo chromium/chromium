@@ -723,41 +723,6 @@ base::WeakPtr<AutofillPopupView> PopupViewViews::CreateSubPopupView(
   return nullptr;
 }
 
-std::optional<AutofillClient::PopupScreenLocation>
-PopupViewViews::GetPopupScreenLocation() const {
-  if (!GetWidget()) {
-    return std::nullopt;
-  }
-
-  using ArrowPosition = AutofillClient::PopupScreenLocation::ArrowPosition;
-  auto convert_arrow_enum =
-      [](views::BubbleBorder::Arrow arrow) -> ArrowPosition {
-    switch (arrow) {
-      case views::BubbleBorder::Arrow::TOP_RIGHT:
-        return ArrowPosition::kTopRight;
-      case views::BubbleBorder::Arrow::TOP_LEFT:
-        return ArrowPosition::kTopLeft;
-      case views::BubbleBorder::Arrow::BOTTOM_RIGHT:
-        return ArrowPosition::kBottomRight;
-      case views::BubbleBorder::Arrow::BOTTOM_LEFT:
-        return ArrowPosition::kBottomLeft;
-      case views::BubbleBorder::Arrow::LEFT_TOP:
-        return ArrowPosition::kLeftTop;
-      case views::BubbleBorder::Arrow::RIGHT_TOP:
-        return ArrowPosition::kRightTop;
-      default:
-        NOTREACHED();
-    }
-  };
-  views::Border* border = GetWidget()->GetRootView()->GetBorder();
-  CHECK(border);
-
-  return AutofillClient::PopupScreenLocation{
-      .bounds = GetWidget()->GetWindowBoundsInScreen(),
-      .arrow_position = convert_arrow_enum(
-          static_cast<views::BubbleBorder*>(border)->arrow())};
-}
-
 bool PopupViewViews::HasFocus() const {
   if (!GetWidget()) {
     return false;

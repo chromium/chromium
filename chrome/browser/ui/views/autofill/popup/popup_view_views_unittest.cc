@@ -2062,27 +2062,6 @@ TEST_F(PopupViewViewsTest,
   task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
 }
 
-// TODO(crbug.com/40284129): Enable once the view shows itself properly.
-#if !BUILDFLAG(IS_MAC)
-// Tests that `GetPopupScreenLocation` returns the bounds and arrow position of
-// the popup.
-TEST_F(PopupViewViewsTest, GetPopupScreenLocation) {
-  CreateAndShowView({SuggestionType::kComposeResumeNudge});
-
-  using PopupScreenLocation = AutofillClient::PopupScreenLocation;
-  auto MatchesScreenLocation =
-      [](gfx::Rect bounds, PopupScreenLocation::ArrowPosition arrow_position) {
-        return Optional(
-            AllOf(Field(&PopupScreenLocation::bounds, bounds),
-                  Field(&PopupScreenLocation::arrow_position, arrow_position)));
-      };
-  EXPECT_THAT(
-      view().GetPopupScreenLocation(),
-      MatchesScreenLocation(widget().GetWindowBoundsInScreen(),
-                            PopupScreenLocation::ArrowPosition::kTopLeft));
-}
-#endif  // !BUILDFLAG(IS_MAC)
-
 // TODO(crbug.com/41496626): Rework into pixel tests and run on all available
 // platforms. The test below is a temporary solution to cover positioning
 // calculations in the popup. The exact numbers were obtained by observing

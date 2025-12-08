@@ -283,8 +283,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
       ComposeCallback callback = base::NullCallback(),
       autofill::AutofillComposeDelegate::UiEntryPoint entry_point =
           autofill::AutofillComposeDelegate::UiEntryPoint::kContextMenu) {
-    client().ShowComposeDialog(entry_point, field_data, std::nullopt,
-                               std::move(callback));
+    client().ShowComposeDialog(entry_point, field_data, std::move(callback));
 
     BindMojo();
   }

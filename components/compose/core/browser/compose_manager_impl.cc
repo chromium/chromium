@@ -153,17 +153,15 @@ void ComposeManagerImpl::OpenComposeWithFormData(
                      form_data.value(), *form_field_data);
 
   OpenComposeWithFormFieldData(ui_entry_point, *form_field_data,
-                               manager.client().GetPopupScreenLocation(),
                                std::move(compose_callback));
 }
 
 void ComposeManagerImpl::OpenComposeWithFormFieldData(
     UiEntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field,
-    std::optional<PopupScreenLocation> popup_screen_location,
     ComposeCallback callback) {
   client_->ShowComposeDialog(ui_entry_point, trigger_field,
-                             popup_screen_location, std::move(callback));
+                             std::move(callback));
 }
 
 Suggestion ComposeManagerImpl::GetSuggestion(

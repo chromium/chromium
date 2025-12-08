@@ -70,9 +70,6 @@ class AutofillPopupView {
   virtual base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillSuggestionController> sub_controller) = 0;
 
-  virtual std::optional<AutofillClient::PopupScreenLocation>
-  GetPopupScreenLocation() const = 0;
-
   // Indicates whether any of the view elements currently has focus.
   virtual bool HasFocus() const = 0;
 

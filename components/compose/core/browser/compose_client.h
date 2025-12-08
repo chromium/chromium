@@ -38,8 +38,6 @@ class ComposeClient {
   virtual void ShowComposeDialog(
       autofill::AutofillComposeDelegate::UiEntryPoint ui_entry_point,
       const autofill::FormFieldData& trigger_field,
-      std::optional<autofill::AutofillClient::PopupScreenLocation>
-          popup_screen_location,
       ComposeCallback callback) = 0;
 
   // Checks if the popup (aka nudge) should be presented for the provided field.

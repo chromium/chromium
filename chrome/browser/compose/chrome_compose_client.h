@@ -108,8 +108,6 @@ class ChromeComposeClient
   void ShowComposeDialog(
       EntryPoint ui_entry_point,
       const autofill::FormFieldData& trigger_field,
-      std::optional<autofill::AutofillClient::PopupScreenLocation>
-          popup_screen_location,
       ComposeCallback callback) override;
   bool HasSession(const autofill::FieldGlobalId& trigger_field_id) override;
   bool ShouldTriggerPopup(
