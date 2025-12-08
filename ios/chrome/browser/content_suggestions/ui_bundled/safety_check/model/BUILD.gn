@@ -40,3 +40,24 @@ source_set("utils") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safety_check_utils_unittest.mm" ]
+  deps = [
+    ":utils",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/public:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui:item_types",
+    "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}
