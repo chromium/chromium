@@ -257,6 +257,15 @@ if (is_android) {
   }
 }
 
+if (target_os == "chromeos") {
+  declare_args() {
+    # Setting this value selects a specific CPU type among the broader
+    # class selected by target_cpu. For example, a build with
+    # target_cpu="arm64" may set cros_target_cpu_arch="armv8-a+crc+crypto").
+    cros_target_cpu_arch = ""
+  }
+}
+
 declare_args() {
   # Turn off the --call-graph-profile-sort flag for lld by default. Enable
   # selectively for targets where it's beneficial.
@@ -1292,6 +1301,11 @@ config("compiler_cpu_abi") {
         ldflags += [ "-m64" ]
       }
       cflags += [ "-msse3" ]
+      if (target_os == "chromeos" && cros_target_cpu_arch != "" &&
+          current_cpu == target_cpu) {
+        cflags += [ "-march=$cros_target_cpu_arch" ]
+        ldflags += [ "-march=$cros_target_cpu_arch" ]
+      }
     } else if (current_cpu == "x86") {
       if (is_clang && !is_android && !is_chromeos_device) {
         cflags += [ "--target=i386-unknown-linux-gnu" ]
@@ -1320,6 +1334,11 @@ config("compiler_cpu_abi") {
       if (is_clang && !is_android && !is_fuchsia && !is_chromeos_device) {
         cflags += [ "--target=aarch64-linux-gnu" ]
         ldflags += [ "--target=aarch64-linux-gnu" ]
+      }
+      if (target_os == "chromeos" && cros_target_cpu_arch != "" &&
+          current_cpu == target_cpu) {
+        cflags += [ "-march=$cros_target_cpu_arch" ]
+        ldflags += [ "-march=$cros_target_cpu_arch" ]
       }
     } else if (current_cpu == "mipsel") {
       ldflags += [ "-Wl,--hash-style=sysv" ]
