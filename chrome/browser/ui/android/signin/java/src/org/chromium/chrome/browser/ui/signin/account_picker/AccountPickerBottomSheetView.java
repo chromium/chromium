@@ -79,7 +79,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final ViewFlipper mViewFlipper;
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
-    private final ButtonCompat mDismissButton;
+    private final ButtonCompat mAccountPickerDismissButton;
     private final Space mDismissButtonGoneMarginSpace;
     private @Nullable @ViewState Integer mCurrentViewState;
 
@@ -108,7 +108,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_selected_account);
-        mDismissButton =
+        mAccountPickerDismissButton =
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_dismiss_button);
@@ -160,9 +160,9 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         }
     }
 
-    /** The button to dismiss the bottom sheet. */
-    ButtonCompat getDismissButton() {
-        return mDismissButton;
+    /** The button to dismiss the account picker bottom sheet. */
+    ButtonCompat getAccountPickerDismissButton() {
+        return mAccountPickerDismissButton;
     }
 
     /** Sets the displayed view according to the given {@link ViewState}. */
@@ -234,10 +234,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         }
 
         if (cancelButton == null) {
-            showDismissButton(false);
+            showAccountPickerDismissButton(false);
         } else {
-            mDismissButton.setText(cancelButton);
-            showDismissButton(true);
+            mAccountPickerDismissButton.setText(cancelButton);
+            showAccountPickerDismissButton(true);
         }
     }
 
@@ -350,12 +350,12 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         }
     }
 
-    private void showDismissButton(boolean shouldShow) {
+    private void showAccountPickerDismissButton(boolean shouldShow) {
         if (shouldShow) {
-            mDismissButton.setVisibility(View.VISIBLE);
+            mAccountPickerDismissButton.setVisibility(View.VISIBLE);
             mDismissButtonGoneMarginSpace.setVisibility(View.GONE);
         } else {
-            mDismissButton.setVisibility(View.GONE);
+            mAccountPickerDismissButton.setVisibility(View.GONE);
             mDismissButtonGoneMarginSpace.setVisibility(View.VISIBLE);
         }
     }

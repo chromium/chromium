@@ -37,10 +37,13 @@ class AccountPickerBottomSheetViewBinder {
         } else if (propertyKey == AccountPickerBottomSheetProperties.ON_CONTINUE_AS_CLICKED) {
             view.setOnClickListenerOfContinueButton(
                     model.get(AccountPickerBottomSheetProperties.ON_CONTINUE_AS_CLICKED));
-        } else if (propertyKey == AccountPickerBottomSheetProperties.ON_DISMISS_CLICKED) {
-            view.getDismissButton()
+        } else if (propertyKey
+                == AccountPickerBottomSheetProperties.ON_ACCOUNT_PICKER_DISMISS_CLICKED) {
+            view.getAccountPickerDismissButton()
                     .setOnClickListener(
-                            model.get(AccountPickerBottomSheetProperties.ON_DISMISS_CLICKED));
+                            model.get(
+                                    AccountPickerBottomSheetProperties
+                                            .ON_ACCOUNT_PICKER_DISMISS_CLICKED));
         } else if (propertyKey == AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS) {
             AccountPickerBottomSheetStrings bottomSheetStrings =
                     model.get(AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS);

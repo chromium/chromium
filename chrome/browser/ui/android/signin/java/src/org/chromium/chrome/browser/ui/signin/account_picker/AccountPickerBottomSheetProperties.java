@@ -126,9 +126,9 @@ class AccountPickerBottomSheetProperties {
     static final ReadableObjectPropertyKey<OnClickListener> ON_CONTINUE_AS_CLICKED =
             new ReadableObjectPropertyKey<>("on_continue_as_clicked");
 
-    // PropertyKey for the button to dismiss the bottom sheet
-    static final ReadableObjectPropertyKey<OnClickListener> ON_DISMISS_CLICKED =
-            new ReadableObjectPropertyKey<>("on_dismiss_clicked");
+    // PropertyKey for the button to dismiss the account picker bottom sheet.
+    static final ReadableObjectPropertyKey<OnClickListener> ON_ACCOUNT_PICKER_DISMISS_CLICKED =
+            new ReadableObjectPropertyKey<>("on_account_picker_dismiss_clicked");
 
     // PropertyKey indicates the view state of the account picker bottom sheet
     static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey("view_state");
@@ -143,7 +143,7 @@ class AccountPickerBottomSheetProperties {
                 SELECTED_ACCOUNT_DATA,
                 SELECTED_ACCOUNT_DOMAIN,
                 ON_CONTINUE_AS_CLICKED,
-                ON_DISMISS_CLICKED,
+                ON_ACCOUNT_PICKER_DISMISS_CLICKED,
                 VIEW_STATE,
                 BOTTOM_SHEET_STRINGS,
             };
@@ -157,13 +157,13 @@ class AccountPickerBottomSheetProperties {
     static PropertyModel createModel(
             Runnable onSelectedAccountClicked,
             Runnable onContinueAsClicked,
-            OnClickListener onDismissClicked,
+            OnClickListener onAccountPickerDismissClicked,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
-                .with(ON_DISMISS_CLICKED, onDismissClicked)
+                .with(ON_ACCOUNT_PICKER_DISMISS_CLICKED, onAccountPickerDismissClicked)
                 .with(VIEW_STATE, ViewState.NO_ACCOUNTS)
                 .with(BOTTOM_SHEET_STRINGS, accountPickerBottomSheetStrings)
                 .build();
