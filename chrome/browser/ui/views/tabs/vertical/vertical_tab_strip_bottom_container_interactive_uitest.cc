@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/check_op.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -19,16 +17,7 @@
 namespace base::test {
 
 class VerticalTabStripBottomContainerInteractiveUiTest
-    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
-    VerticalTabsInteractiveTestMixin::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {};
 
 // This test checks that we can click the new tab button in the bottom container
 // of the vertical tab strip

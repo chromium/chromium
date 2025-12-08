@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
@@ -29,11 +27,6 @@ namespace {
 class VerticalTabStripTopContainerInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
-    VerticalTabsInteractiveTestMixin::SetUp();
-  }
-
   auto SendTabSearchAccelerator() {
 #if BUILDFLAG(IS_MAC)
     constexpr int kModifiers = ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN;
@@ -43,9 +36,6 @@ class VerticalTabStripTopContainerInteractiveUiTest
     return SendAccelerator(kBrowserViewElementId,
                            ui::Accelerator(ui::VKEY_A, kModifiers));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This test checks that we can click the tab search button starting from the

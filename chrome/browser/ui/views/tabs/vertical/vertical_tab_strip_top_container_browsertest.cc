@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -17,11 +16,6 @@
 class VerticalTabStripTopContainerTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({tabs::kVerticalTabs}, {});
-    VerticalTabsBrowserTestMixin::SetUp();
-  }
-
   VerticalTabStripTopContainer* top_container() {
     return browser()
         ->GetBrowserView()
@@ -53,9 +47,6 @@ class VerticalTabStripTopContainerTest
     views::ViewTestApi frame_view_test_api(frame_view);
     browser()->GetBrowserView().GetWidget()->LayoutRootViewIfNecessary();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerTest,

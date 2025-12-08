@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
@@ -38,9 +36,6 @@ class VerticalTabStripControllerInteractiveUiTest
     }
     return false;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{tabs::kVerticalTabs};
 };
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,

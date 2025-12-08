@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -23,12 +22,6 @@
 class VerticalSplitTabViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {tabs::kVerticalTabs, features::kSideBySide}, {});
-    VerticalTabsBrowserTestMixin::SetUp();
-  }
-
   void CreateSplitTab() {
     // Add pinned split tabs.
     content::WebContents* contents1 = AppendTab();
@@ -55,9 +48,6 @@ class VerticalSplitTabViewTest
     tab_strip_model()->AppendWebContents(std::move(contents), true);
     return raw_contents;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {

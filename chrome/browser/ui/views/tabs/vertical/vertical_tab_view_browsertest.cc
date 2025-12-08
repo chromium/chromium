@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
@@ -49,16 +48,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
 };
 
 class VerticalTabViewTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({tabs::kVerticalTabs}, {});
-    VerticalTabsBrowserTestMixin::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {};
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
