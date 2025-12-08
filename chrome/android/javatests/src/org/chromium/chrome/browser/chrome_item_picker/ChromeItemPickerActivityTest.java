@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMediator;
@@ -79,6 +80,7 @@ public class ChromeItemPickerActivityTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/463427787")
     public void testActivityThemeColorIsDefault() {
         doTestActivityThemeColor(false);
     }
