@@ -130,6 +130,7 @@ class BwgTabHelper : public web::WebStateObserver,
   // Callback for the OptimizationGuide with the result of whether the
   // zero-state suggestions should be shown for the current URL.
   void OnCanApplyZeroStateSuggestionsDecision(
+      const GURL& url,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
