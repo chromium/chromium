@@ -88,8 +88,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
 // Tests the presence of the different buttons in the drive file picker.
 - (void)testDriveFilePicker {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -108,8 +107,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
 // Tests identity change from the root.
 - (void)testIdentityChangeFromTheRoot {
   FakeSystemIdentity* primaryIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:primaryIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:primaryIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:primaryIdentity];
 
   FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:secondaryIdentity];
@@ -135,8 +133,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
 // Tests identity change when browsing a drive folder.
 - (void)testIdentityChangeAfterBrowsing {
   FakeSystemIdentity* primaryIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:primaryIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:primaryIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:primaryIdentity];
 
   FakeSystemIdentity* secondaryIdentity = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:secondaryIdentity];
@@ -170,8 +167,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
 // Tests the sort button context menu options are present.
 - (void)testSortButtonContextMenuItems {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -202,8 +198,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
 // Tests the filter button context menu options are present.
 - (void)testFilterButtonContextMenuItems {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -263,8 +258,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
 
   // Initialize the Drive file picker.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [DriveFilePickerAppInterface startChoosingSingleFileInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -290,8 +284,7 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
 - (void)testMultifileSelection {
   // Initialize the Drive file picker.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [DriveFilePickerAppInterface startChoosingMultipleFilesInCurrentWebState];
   [DriveFilePickerAppInterface showDriveFilePicker];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
