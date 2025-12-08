@@ -7034,11 +7034,6 @@ crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customiz
 
 crbug.com/366415131 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.html [ Failure ]
 
-# Temporarily disabled to unblock DevTools roll.
-crbug.com/407751574 http/tests/devtools/a11y-axe-core/sources/call-stack-a11y-test.js [ Failure Pass Timeout ]
-crbug.com/407751574 http/tests/devtools/sources/debugger-ui/async-call-stack-async-function.js [ Failure Pass Timeout ]
-crbug.com/407751574 http/tests/devtools/sources/debugger-ui/call-stack-show-more.js [ Failure Pass Timeout ]
-
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/customizable-select-in-page-appearance.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/customizable-select-in-page-keyboard-behavior.tentative.html [ Failure ]
 crbug.com/357649033 virtual/customizable-select-in-page-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-in-page/customizable-select-in-page-mouse-behavior.tentative.html [ Failure ]
