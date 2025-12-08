@@ -894,6 +894,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         if (item.getItemId() == android.R.id.home) {
             if (mMultiColumnSettings != null) {
+                if (mMultiColumnSettings.isTwoPane()) {
+                    // In two pane mode, selecting back always exits from the settings activity.
+                    finish();
+                    return true;
+                }
                 // PreferenceHeaderFragmentCompat implements back button behavior.
                 // In order to forward the event to there, translate the event to the back button.
                 onBackPressed();

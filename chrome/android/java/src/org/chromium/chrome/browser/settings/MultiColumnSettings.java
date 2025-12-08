@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceHeaderFragmentCompat;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
@@ -78,6 +79,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
      * mode changes
      */
     private boolean mSlideable;
+
+    private boolean mCanBeBackToMain;
 
     private SlideStateTracker mSlideStateTracker;
 
@@ -156,6 +159,20 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         }
 
         super.onResume();
+
+        if (getChildFragmentManager().findFragmentById(R.id.preferences_header)
+                instanceof MainSettings mainSettings) {
+            mainSettings.addObserver(mOnBackPressedCallback);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (getChildFragmentManager().findFragmentById(R.id.preferences_header)
+                instanceof MainSettings mainSettings) {
+            mainSettings.removeObserver(mOnBackPressedCallback);
+        }
+        super.onPause();
     }
 
     /**
@@ -355,7 +372,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     }
 
     private class InnerOnBackPressedCallback extends OnBackPressedCallback
-            implements SlidingPaneLayout.PanelSlideListener {
+            implements SlidingPaneLayout.PanelSlideListener, MainSettings.Observer {
         InnerOnBackPressedCallback() {
             super(true);
         }
@@ -378,14 +395,23 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             updateEnabled();
         }
 
+        @Override
+        public void onPreferenceSelected(Preference preference) {
+            // If a preferene of the main menu is selected, navigate user back to the main
+            // menu, even if in single column mode.
+            mCanBeBackToMain = true;
+        }
+
         void updateEnabled() {
             // Trigger closePane() when
+            // - the first page was the main menu
             // - in one-column mode
             // - the detailed pane is open (i.e., not on the main menu)
             // - the fragment back stack is empty (i.e., with the above condition
             //   this means the subpage directly under the main menu).
             boolean enabled =
-                    getSlidingPaneLayout().isSlideable()
+                    mCanBeBackToMain
+                            && getSlidingPaneLayout().isSlideable()
                             && getSlidingPaneLayout().isOpen()
                             && (getChildFragmentManager().getBackStackEntryCount() == 0);
             setEnabled(enabled);
@@ -646,6 +672,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
         requireActivity().getOnBackPressedDispatcher().addCallback(this, mOnBackPressedCallback);
 
+        mCanBeBackToMain = getSlidingPaneLayout().isSlideable() && !getSlidingPaneLayout().isOpen();
         mSlideStateTracker = new SlideStateTracker();
         getSlidingPaneLayout().addPanelSlideListener(mSlideStateTracker);
         getSlidingPaneLayout().addOnLayoutChangeListener(mSlideStateTracker);
