@@ -60,11 +60,6 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
   std::optional<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
 
-  // True while we are in the process of discarding tab(s) in response to a
-  // memory pressure notification. It becomes false once we're done responding
-  // to this notification.
-  bool handling_memory_pressure_notification_ = false;
-
   // Determines if the system is in a sustained memory pressure state.
   std::optional<SustainedMemoryPressureEvaluator>
       sustained_memory_pressure_evaluator_;

@@ -58,7 +58,6 @@ UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() = default;
 
 void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!handling_memory_pressure_notification_);
   DCHECK(PageDiscardingHelper::GetFromGraph(graph))
       << "A PageDiscardingHelper instance should be registered against the "
          "graph in order to use this policy.";
@@ -84,8 +83,6 @@ void UrgentPageDiscardingPolicy::OnReclaimTarget(
               reclaim_target, discard_protected_pages,
               DiscardEligibilityPolicy::DiscardReason::URGENT);
 
-  DCHECK(handling_memory_pressure_notification_);
-  handling_memory_pressure_notification_ = false;
   if (origin_time && first_discarded_at) {
     base::TimeDelta reclaim_arrival_duration =
         on_memory_pressure_at - *origin_time;
@@ -135,13 +132,6 @@ void UrgentPageDiscardingPolicy::HandleMemoryPressureEvent() {
     return;
   }
 
-  // The Memory Pressure Monitor will send notifications at regular interval,
-  // |handling_memory_pressure_notification_| prevents this class from trying to
-  // reply to multiple notifications at the same time.
-  if (handling_memory_pressure_notification_) {
-    return;
-  }
-
   // Don't discard a page if urgent discarding is disabled. The feature state is
   // checked here instead of at policy creation time so that only clients that
   // experience memory pressure are enrolled in the experiment.
@@ -149,8 +139,6 @@ void UrgentPageDiscardingPolicy::HandleMemoryPressureEvent() {
           performance_manager::features::kUrgentPageDiscarding)) {
     return;
   }
-
-  handling_memory_pressure_notification_ = true;
 
 #if BUILDFLAG(IS_CHROMEOS)
   base::TimeTicks on_memory_pressure_at = base::TimeTicks::Now();
@@ -161,8 +149,6 @@ void UrgentPageDiscardingPolicy::HandleMemoryPressureEvent() {
 #else
   PageDiscardingHelper::GetFromGraph(GetOwningGraph())
       ->DiscardAPage(DiscardEligibilityPolicy::DiscardReason::URGENT);
-  DCHECK(handling_memory_pressure_notification_);
-  handling_memory_pressure_notification_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
