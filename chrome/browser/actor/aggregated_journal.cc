@@ -171,6 +171,10 @@ base::SafeRef<AggregatedJournal> AggregatedJournal::GetSafeRef() {
   return weak_ptr_factory_.GetSafeRef();
 }
 
+base::WeakPtr<AggregatedJournal> AggregatedJournal::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 uint64_t AggregatedJournal::AllocateDynamicTrackUUID() {
   static uint64_t next_track_id = 1000;
   return ++next_track_id;

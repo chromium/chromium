@@ -132,6 +132,7 @@ class AggregatedJournal {
                             std::vector<mojom::JournalEntryPtr> entries);
   EntryBuffer::Iterator Items() { return entries_.Begin(); }
   base::SafeRef<AggregatedJournal> GetSafeRef();
+  base::WeakPtr<AggregatedJournal> GetWeakPtr();
   void AddEndEvent(base::PassKey<AggregatedJournal>,
                    TaskId task_id,
                    const std::string& event_name,

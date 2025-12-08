@@ -86,6 +86,9 @@ extern const base::FeatureParam<
     page_content_annotations::ScreenshotIframeRedactionScope>
     kScreenshotIframeRedaction;
 
+// Kill switch for binding the created tab to the task that created it.
+BASE_DECLARE_FEATURE(kActorBindCreatedTabToTask);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_
