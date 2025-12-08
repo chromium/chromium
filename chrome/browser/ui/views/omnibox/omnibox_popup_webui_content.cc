@@ -50,15 +50,16 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
 OmniboxPopupWebUIContent::~OmniboxPopupWebUIContent() = default;
 
 void OmniboxPopupWebUIContent::ShowUI() {
-  auto* webui_controller = contents_wrapper()->GetWebUIController();
-  if (webui_controller) {
-    auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
-    if (omnibox_popup_ui && omnibox_popup_ui->omnibox_handler()) {
-      omnibox_popup_ui->omnibox_handler()->OnShow();
-    }
-  }
-
   OmniboxPopupWebUIBaseContent::ShowUI();
+
+  if (auto* handler = omnibox_handler()) {
+    handler->OnShow();
+  }
+}
+
+WebuiOmniboxHandler* OmniboxPopupWebUIContent::omnibox_handler() {
+  auto* webui_controller = contents_wrapper()->GetWebUIController();
+  return webui_controller ? webui_controller->omnibox_handler() : nullptr;
 }
 
 BEGIN_METADATA(OmniboxPopupWebUIContent)
