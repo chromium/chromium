@@ -10012,13 +10012,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "third-party-disable-chrome-autofill-settings-screen",
-    "owners": [
-      "izuzic@google.com",
-      "anki-team@google.com" ],
-    "expiry_milestone": 141
-  },
-  {
     "name": "three-button-password-save-dialog",
     "owners": [
       "cjgrant@chromium.org",

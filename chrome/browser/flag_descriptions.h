@@ -136,12 +136,6 @@ inline constexpr char kHistoryOptInEducationalTipName[] =
 inline constexpr char kHistoryOptInEducationalTipDescription[] =
     "Enables a history sync promo in the magic stack on NTP";
 
-inline constexpr char kThirdPartyDisableChromeAutofillSettingsScreenName[] =
-    "Chrome Autofill Settings Screen in 3P Mode";
-inline constexpr char
-    kThirdPartyDisableChromeAutofillSettingsScreenDescription[] =
-        "Chrome's Address and Payments Autofill are disabled in third party "
-        "mode.";
 inline constexpr char kGroupPromoPrototypeCpaName[] =
     "Group Promo Prototype - Contextual page action";
 inline constexpr char kGroupPromoPrototypeCpaDescription[] =
