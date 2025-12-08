@@ -61,6 +61,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
     TabIterator(base::PassKey<TabCollection>,
                 const tabs::TabCollection* root,
                 bool is_end = false);
+    explicit TabIterator(TabInterface* tab);
     TabIterator(const TabIterator& iterator);
     ~TabIterator();
 

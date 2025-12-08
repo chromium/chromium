@@ -4,8 +4,10 @@
 
 #include "components/tabs/public/tab_collection.h"
 
+#include <memory>
 #include <optional>
 #include <set>
+#include <variant>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
@@ -22,6 +24,57 @@ DEFINE_HANDLE_FACTORY(TabCollection);
 // This does not create a useful iterator, but providing a default constructor
 // is required for forward iterators by the C++ spec.
 TabCollection::TabIterator::TabIterator() : TabIterator(nullptr, true) {}
+
+TabCollection::TabIterator::TabIterator(TabInterface* tab)
+    : TabIterator(nullptr, true) {
+  CHECK(tab);
+
+  // Set the current tab, and then construct the frame stack that
+  // corresponds to an iterator to the current tab.
+  cur_ = tab;
+
+  std::vector<Frame> tmp_stack;
+  ChildPtr last_child_ptr{tab};
+  const TabCollection* current_parent = tab->GetParentCollection();
+
+  // We should only iterate on tabs that are in a collection hierarchy.
+  CHECK(current_parent);
+  do {
+    const ChildrenVector& frame_children = current_parent->GetChildren();
+    // Compute the index i such that |last_child_ptr| is the i-th child of
+    // its parent.
+    size_t found_index = 0;
+    auto it = frame_children.cbegin();
+
+    for (; it != frame_children.cend(); ++it) {
+      const Child& p = *it;
+      if (std::holds_alternative<TabInterface*>(last_child_ptr)) {
+        if (auto* tab_ptr = std::get_if<std::unique_ptr<TabInterface>>(&p)) {
+          if (tab_ptr->get() == std::get<TabInterface*>(last_child_ptr)) {
+            break;
+          }
+        }
+      } else if (std::holds_alternative<TabCollection*>(last_child_ptr)) {
+        if (auto* col_ptr = std::get_if<std::unique_ptr<TabCollection>>(&p)) {
+          if (col_ptr->get() == std::get<TabCollection*>(last_child_ptr)) {
+            break;
+          }
+        }
+      }
+      ++found_index;
+    }
+
+    CHECK(it != frame_children.cend());
+
+    // The index should point to the item *after* the one we just found.
+    tmp_stack.emplace_back(current_parent, found_index + 1);
+
+    last_child_ptr = const_cast<TabCollection*>(current_parent);
+    current_parent = current_parent->GetParentCollection();
+  } while (current_parent != nullptr);
+
+  stack_ = {tmp_stack.rbegin(), tmp_stack.rend()};
+}
 
 TabCollection::TabIterator::TabIterator(base::PassKey<TabCollection>,
                                         const TabCollection* root,
