@@ -238,6 +238,8 @@ typedef enum _FcType {
     FcTypeRange
 } FcType;
 
+typedef int FcObject;
+
 typedef struct _FcMatrix {
     double xx, xy, yx, yy;
 } FcMatrix;
@@ -312,9 +314,11 @@ typedef struct _FcFontSet {
 } FcFontSet;
 
 typedef struct _FcObjectSet {
-    int          nobject;
+    int          nobject; /* deprecated */
     int          sobject;
-    const char **objects;
+    const char **objects; /* deprecated */
+    int          nobjIds;
+    FcObject    *objIds;
 } FcObjectSet;
 
 typedef enum _FcMatchKind {
@@ -680,13 +684,6 @@ FcDirCacheLoadFile (const FcChar8 *cache_file, struct stat *file_stat);
 FcPublic void
 FcDirCacheUnload (FcCache *cache);
 
-/* fcfreetype.c */
-FcPublic FcPattern *
-FcFreeTypeQuery (const FcChar8 *file, unsigned int id, FcBlanks *blanks, int *count);
-
-FcPublic unsigned int
-FcFreeTypeQueryAll (const FcChar8 *file, unsigned int id, FcBlanks *blanks, int *count, FcFontSet *set);
-
 /* fcfs.c */
 
 FcPublic FcFontSet *
@@ -908,6 +905,9 @@ FcNameGetConstantFor (const FcChar8 *string, const char *object);
 
 FcPublic FcBool
 FcNameConstant (const FcChar8 *string, int *result);
+
+FcPublic const FcChar8 *
+FcNameGetConstantNameFrom (const char *object, int value);
 
 FcPublic FcPattern *
 FcNameParse (const FcChar8 *name);
@@ -1197,6 +1197,13 @@ FcPublic FcBool
 FcConfigParseAndLoadFromMemory (FcConfig      *config,
                                 const FcChar8 *buffer,
                                 FcBool         complain);
+
+/* fcconffile.c */
+FcPublic FcChar8 *
+FcConfigFileGenerate (FcConfig      *config,
+                      FcPattern     *pat,
+                      const FcChar8 *font_path);
+
 
 _FCFUNCPROTOEND
 

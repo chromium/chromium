@@ -82,6 +82,7 @@ if (use_bundled_fontconfig) {
       "BINDGEN_IGNORE_VISIBILITY=1",
       "FC_NO_MT=1",
       "FLEXIBLE_ARRAY_MEMBER=1",
+      "HAVE_VASPRINTF=1",
     ]
   }
 
@@ -99,7 +100,6 @@ if (use_bundled_fontconfig) {
       "src/src/fcdir.c",
       "src/src/fcfontations.c",
       "src/src/fcformat.c",
-      "src/src/fcfreetype.c",
       "src/src/fcfs.c",
       "src/src/fchash.c",
       "src/src/fcinit.c",
@@ -118,8 +118,6 @@ if (use_bundled_fontconfig) {
       "src/src/fcstr.c",
       "src/src/fcweight.c",
       "src/src/fcxml.c",
-      "src/src/ftglue.c",
-      "src/src/ftglue.h",
     ]
 
     include_dirs = [
@@ -143,7 +141,6 @@ if (use_bundled_fontconfig) {
 
     deps = [
       ":fontconfig_fontations_ffi",
-      "//build/config/freetype",
       "//third_party/libxml",
       "//third_party/zlib",
     ]

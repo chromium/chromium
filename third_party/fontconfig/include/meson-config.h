@@ -36,9 +36,9 @@
 
 #define FONTCONFIG_PATH "/etc/fonts"
 
-#define FREETYPE_PCF_LONG_FAMILY_NAMES
-
 #define GETTEXT_PACKAGE "fontconfig"
+
+#define HAVE_C99_VSNPRINTF 1
 
 #define HAVE_DCGETTEXT 1
 
@@ -86,8 +86,6 @@
 
 #define HAVE_MKDTEMP 1
 
-#define HAVE_MKOSTEMP 1
-
 #define HAVE_MKSTEMP 1
 
 #define HAVE_MMAP 1
@@ -111,6 +109,8 @@
 #define HAVE_STDIO_H 1
 
 #define HAVE_STDLIB_H 1
+
+#define HAVE_STRDUP 1
 
 #define HAVE_STRERROR 1
 
@@ -141,6 +141,8 @@
 #define HAVE_TIME_H 1
 
 #define HAVE_UNISTD_H 1
+
+#define HAVE_VASPRINTF 1
 
 #define HAVE_VPRINTF 1
 

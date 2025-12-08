@@ -10,3 +10,7 @@ extern __typeof (FcPatternAddFTFace) IA__FcPatternAddFTFace FC_ATTRIBUTE_VISIBIL
 #define FcPatternAddFTFace IA__FcPatternAddFTFace
 extern __typeof (FcFreeTypeQueryFace) IA__FcFreeTypeQueryFace FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcFreeTypeQueryFace IA__FcFreeTypeQueryFace
+extern __typeof (FcFreeTypeQuery) IA__FcFreeTypeQuery FC_ATTRIBUTE_VISIBILITY_HIDDEN;
+#define FcFreeTypeQuery IA__FcFreeTypeQuery
+extern __typeof (FcFreeTypeQueryAll) IA__FcFreeTypeQueryAll FC_ATTRIBUTE_VISIBILITY_HIDDEN;
+#define FcFreeTypeQueryAll IA__FcFreeTypeQueryAll

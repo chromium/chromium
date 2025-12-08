@@ -162,10 +162,6 @@ extern __typeof (FcDirCacheLoadFile) IA__FcDirCacheLoadFile FC_ATTRIBUTE_VISIBIL
 #define FcDirCacheLoadFile IA__FcDirCacheLoadFile
 extern __typeof (FcDirCacheUnload) IA__FcDirCacheUnload FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcDirCacheUnload IA__FcDirCacheUnload
-extern __typeof (FcFreeTypeQuery) IA__FcFreeTypeQuery FC_ATTRIBUTE_VISIBILITY_HIDDEN;
-#define FcFreeTypeQuery IA__FcFreeTypeQuery
-extern __typeof (FcFreeTypeQueryAll) IA__FcFreeTypeQueryAll FC_ATTRIBUTE_VISIBILITY_HIDDEN;
-#define FcFreeTypeQueryAll IA__FcFreeTypeQueryAll
 extern __typeof (FcFontSetCreate) IA__FcFontSetCreate FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcFontSetCreate IA__FcFontSetCreate
 extern __typeof (FcFontSetDestroy) IA__FcFontSetDestroy FC_ATTRIBUTE_VISIBILITY_HIDDEN;
@@ -288,6 +284,8 @@ extern __typeof (FcNameGetConstantFor) IA__FcNameGetConstantFor FC_ATTRIBUTE_VIS
 #define FcNameGetConstantFor IA__FcNameGetConstantFor
 extern __typeof (FcNameConstant) IA__FcNameConstant FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcNameConstant IA__FcNameConstant
+extern __typeof (FcNameGetConstantNameFrom) IA__FcNameGetConstantNameFrom FC_ATTRIBUTE_VISIBILITY_HIDDEN;
+#define FcNameGetConstantNameFrom IA__FcNameGetConstantNameFrom
 extern __typeof (FcNameParse) IA__FcNameParse FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcNameParse IA__FcNameParse
 extern __typeof (FcNameUnparse) IA__FcNameUnparse FC_ATTRIBUTE_VISIBILITY_HIDDEN;
@@ -460,6 +458,8 @@ extern __typeof (FcConfigParseAndLoad) IA__FcConfigParseAndLoad FC_ATTRIBUTE_VIS
 #define FcConfigParseAndLoad IA__FcConfigParseAndLoad
 extern __typeof (FcConfigParseAndLoadFromMemory) IA__FcConfigParseAndLoadFromMemory FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcConfigParseAndLoadFromMemory IA__FcConfigParseAndLoadFromMemory
+extern __typeof (FcConfigFileGenerate) IA__FcConfigFileGenerate FC_ATTRIBUTE_VISIBILITY_HIDDEN;
+#define FcConfigFileGenerate IA__FcConfigFileGenerate
 extern __typeof (FcConfigGetRescanInverval) IA__FcConfigGetRescanInverval FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcConfigGetRescanInverval IA__FcConfigGetRescanInverval
 extern __typeof (FcConfigSetRescanInverval) IA__FcConfigSetRescanInverval FC_ATTRIBUTE_VISIBILITY_HIDDEN;

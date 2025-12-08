@@ -183,12 +183,6 @@ extern __typeof (FcDirCacheLoadFile) FcDirCacheLoadFile __attribute((alias("IA__
 # undef FcDirCacheUnload
 extern __typeof (FcDirCacheUnload) FcDirCacheUnload __attribute((alias("IA__FcDirCacheUnload"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 #endif /* __fccache__ */
-#ifdef __fcfreetype__
-# undef FcFreeTypeQuery
-extern __typeof (FcFreeTypeQuery) FcFreeTypeQuery __attribute((alias("IA__FcFreeTypeQuery"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
-# undef FcFreeTypeQueryAll
-extern __typeof (FcFreeTypeQueryAll) FcFreeTypeQueryAll __attribute((alias("IA__FcFreeTypeQueryAll"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
-#endif /* __fcfreetype__ */
 #ifdef __fcfs__
 # undef FcFontSetCreate
 extern __typeof (FcFontSetCreate) FcFontSetCreate __attribute((alias("IA__FcFontSetCreate"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
@@ -326,6 +320,8 @@ extern __typeof (FcNameGetConstant) FcNameGetConstant __attribute((alias("IA__Fc
 extern __typeof (FcNameGetConstantFor) FcNameGetConstantFor __attribute((alias("IA__FcNameGetConstantFor"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcNameConstant
 extern __typeof (FcNameConstant) FcNameConstant __attribute((alias("IA__FcNameConstant"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
+# undef FcNameGetConstantNameFrom
+extern __typeof (FcNameGetConstantNameFrom) FcNameGetConstantNameFrom __attribute((alias("IA__FcNameGetConstantNameFrom"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcNameParse
 extern __typeof (FcNameParse) FcNameParse __attribute((alias("IA__FcNameParse"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcNameUnparse
@@ -513,6 +509,10 @@ extern __typeof (FcConfigParseAndLoad) FcConfigParseAndLoad __attribute((alias("
 # undef FcConfigParseAndLoadFromMemory
 extern __typeof (FcConfigParseAndLoadFromMemory) FcConfigParseAndLoadFromMemory __attribute((alias("IA__FcConfigParseAndLoadFromMemory"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 #endif /* __fcxml__ */
+#ifdef __fcconffile__
+# undef FcConfigFileGenerate
+extern __typeof (FcConfigFileGenerate) FcConfigFileGenerate __attribute((alias("IA__FcConfigFileGenerate"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
+#endif /* __fcconffile__ */
 #ifdef __fccfg__
 # undef FcConfigGetRescanInverval
 extern __typeof (FcConfigGetRescanInverval) FcConfigGetRescanInverval __attribute((alias("IA__FcConfigGetRescanInverval"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
