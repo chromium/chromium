@@ -77,7 +77,6 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -111,7 +110,6 @@ public class FuseboxMediatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
-    @Captor private ArgumentCaptor<IntentCallback> mIntentCallbackCaptor;
 
     private ActivityController<TestActivity> mActivityController;
     private Context mContext;
@@ -223,9 +221,6 @@ public class FuseboxMediatorUnitTest {
     }
 
     private void addTabAttachment(Tab tab) {
-        int id = tab.getId();
-        String title = tab.getTitle();
-
         mAttachments.add(FuseboxAttachment.forTab(tab, mResources));
     }
 
@@ -366,9 +361,7 @@ public class FuseboxMediatorUnitTest {
         doReturn("token").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
         mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run();
         verify(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
-        assertEquals(
-                mBitmap,
-                ((BitmapDrawable) ((FuseboxAttachment) mAttachments.get(0)).thumbnail).getBitmap());
+        assertEquals(mBitmap, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
         mMediator.onToggleAttachmentsPopup();
@@ -867,10 +860,10 @@ public class FuseboxMediatorUnitTest {
 
         assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS, mAttachments.size());
 
-        Tab tab1 = mockTab(101, true);
-        Tab tab2 = mockTab(102, false);
-        Tab tab3 = mockTab(103, true);
-        Tab tab4 = mockTab(104, false);
+        mockTab(101, true);
+        mockTab(102, false);
+        mockTab(103, true);
+        mockTab(104, false);
         Set<Integer> newlySelectedIds = new HashSet<>();
         newlySelectedIds.add(102);
         newlySelectedIds.add(103);
@@ -891,8 +884,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnTabPickerResult_modelListNotEmpty_activatesAiMode() {
-        Tab tab1 = mockTab(101, true);
-        Tab tab2 = mockTab(102, false);
+        mockTab(101, true);
+        mockTab(102, false);
         ArrayList<Integer> selectedTabIds = new ArrayList<>(Arrays.asList(101, 102));
         Intent resultIntent = createTabPickerResultIntent(selectedTabIds);
 
