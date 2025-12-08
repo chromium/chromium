@@ -3190,6 +3190,10 @@ crbug.com/462821200 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-content/quotes-035.html [ Failure ]
+external/wpt/css/css-text-decor/text-emphasis-position-auto-002.html [ Failure ]
+[ Win ] external/wpt/css/css-text/hyphens/lang-tag-case-insensitive.html [ Failure ]
+[ Android ] external/wpt/webdriver/tests/bidi/script/realm_created/window_open.py [ Failure ]
 crbug.com/466401982 external/wpt/css/css-fonts/matching/font-weight-search-direction.html [ Failure ]
 crbug.com/466395258 [ Mac ] external/wpt/css/css-highlight-api/highlight-text-across-elements.html [ Failure ]
 crbug.com/466442690 [ Android ] external/wpt/webdriver/tests/bidi/emulation/combined/multiple_emulations.py [ Failure ]

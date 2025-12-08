@@ -8418,6 +8418,17 @@
       ]
      }
     },
+    "links": {
+     "icon": {
+      "empty-href-crash.html": [
+       "538a64d500516046ca5884a5bc9f6d329bb2aa11",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
+    },
     "obsolete": {
      "requirements-for-implementations": {
       "the-marquee-element-0": {
@@ -11271,6 +11282,24 @@
        ]
       }
      },
+     "the-iirfilternode-interface": {
+      "iir-filter-silent-block-crash.html": [
+       "9148ac30d59d3ca9e6d41493fcef40c05b4080f1",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
+     "the-mediaelementaudiosourcenode-interface": {
+      "mediaElementAudioSource_closed_context-crash.html": [
+       "88753f22066a81c943ae61d2885091ae27e36aa9",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "the-oscillatornode-interface": {
       "crashtests": {
        "stop-before-start.html": [
@@ -11287,6 +11316,15 @@
    "webcodecs": {
     "image-decoder-disconnect-readable-stream-crash.https.html": [
      "d04c3e70190773418fdea86af38baafc042b29b2",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
+   "webgl": {
+    "basic-unused-context-crash.html": [
+     "cd2241946f9239e2844d53a2b4e9dcfc2cc614c7",
      [
       null,
       {}
@@ -117051,6 +117089,19 @@
        {}
       ]
      ],
+     "quotes-035.html": [
+      "a2157a5d624532a2d45faa60f2f03a74062bea06",
+      [
+       null,
+       [
+        [
+         "/css/css-content/reference/quotes-035-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "quotes-first-letter-001.html": [
       "651615f5259d0cf4b972552e6e6a454c1127b7e3",
       [
@@ -215279,6 +215330,19 @@
         ]
        ]
       },
+      "lang-tag-case-insensitive.html": [
+       "d72ad298d73d69bb86c75afa5eba62098d65a6fa",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hyphens/reference/hyphens-character-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "shy-styling-001.html": [
        "f579e2377837a0878a0654f288e0724dfee2b13f",
        [
@@ -225722,6 +225786,19 @@
         {}
        ]
       ],
+      "text-transform-tailoring-001a.html": [
+       "722807d742da10878a37fa2f0abbe15fd87f172b",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-transform/reference/text-transform-tailoring-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-transform-tailoring-002.html": [
        "090ed9349c5cf9967743ed8fc5de43cb05862c4c",
        [
@@ -235554,6 +235631,19 @@
      ],
      "text-emphasis-position-auto-001.html": [
       "09e4be9515f60056e8898693f299a6d83154e71f",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-auto-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-emphasis-position-auto-002.html": [
+      "44c1ef6ac1f4c05a70ab77675a2efa112cb0b8bf",
       [
        null,
        [
@@ -291293,6 +291383,19 @@
        {}
       ]
      ],
+     "backdrop-filter-corner-shape-change.html": [
+      "9e55d9f033ffd26135b1116b7eda6b9fd13f0112",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-corner-shape-change-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "backdrop-filter-edge-behavior.html": [
       "7649bfd8f968860f9e7307fcf601c9beb4f03884",
       [
@@ -293503,6 +293606,19 @@
        [
         [
          "/css/filter-effects/filter-hue_rotate-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "filter-hue_rotate-002-test.html": [
+      "e3388cccd1ced158cc841ac44c4e3e5c0d350e0d",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/filter-hue_rotate-002-ref.html",
          "=="
         ]
        ],
@@ -358486,6 +358602,10 @@
        "bfe7163f13276f181c2aeb765f20dad74c0cf204",
        []
       ],
+      "quotes-035-ref.html": [
+       "e23450f36d0c6ac917ba5ae8b16d0424dc9cc454",
+       []
+      ],
       "quotes-first-letter-001-ref.html": [
        "c68334b8da72b7d72a9c4539fb06dad06530f82f",
        []
@@ -400363,6 +400483,10 @@
       "389802b5778edaadaee90da30bbbd65d7624b717",
       []
      ],
+     "backdrop-filter-corner-shape-change-ref.html": [
+      "2b6026a8081b2c1018b8b5e4a22f8e39c9dd44b5",
+      []
+     ],
      "backdrop-filter-edge-behavior-ref.html": [
       "11246d799658499721e56d8dc1d8b023abc1fa1f",
       []
@@ -400657,6 +400781,10 @@
      ],
      "filter-hue_rotate-001-ref.html": [
       "dcb4fb6b3facd908e94643c2e951c53d588fa2ff",
+      []
+     ],
+     "filter-hue_rotate-002-ref.html": [
+      "843cd8ea7d5520d7b4aa5b67b0080c22245fd407",
       []
      ],
      "filter-invalid-ref.html": [
@@ -711480,6 +711608,20 @@
        {}
       ]
      ],
+     "precommitHandler-addHandler-throws.html": [
+      "227de19226c59a1bfe42cfc56fb31e0088edbc47",
+      [
+       null,
+       {}
+      ]
+     ],
+     "precommitHandler-addHandler.html": [
+      "8362ed5ce789c73c46f3297c6aea990b0a89a2c2",
+      [
+       null,
+       {}
+      ]
+     ],
      "precommitHandler-new-navigation-before-commit.html": [
       "89e9895534f4583d3bf19b2c3d756c5cf58da487",
       [
@@ -879110,6 +879252,13 @@
           {
            "timeout": "long"
           }
+         ]
+        ],
+        "window_open.py": [
+         "b5c159f457ff1e99ab703f07e4b97937f56cb8b4",
+         [
+          null,
+          {}
          ]
         ]
        },
