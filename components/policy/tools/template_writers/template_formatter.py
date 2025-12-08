@@ -241,7 +241,11 @@ def main():
         # Run the template writer on th policy data.
         writer = GetWriter(writer_desc.type, config)
         output_data = policy_generator.GetTemplateText(writer)
-        newline = '\r\n' if writer_desc.force_windows_line_ending else None
+        # Make sure the file uses Windows line endings if needed.  This is
+        # important here because codecs.open() opens files in binary more and
+        # will not do line ending conversion.
+        if writer_desc.force_windows_line_ending:
+          output_data = re.sub(r'([^\r])\n', r'\1\r\n', output_data)
 
         # Make output directory if it doesn't exist yet.
         output_dir = os.path.split(output_path)[0]
@@ -252,7 +256,7 @@ def main():
         with open(output_path,
                   'w',
                   encoding=writer_desc.encoding,
-                  newline=newline) as output_file:
+                  newline='\n') as output_file:
           output_file.write(output_data)
 
 
