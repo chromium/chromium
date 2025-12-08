@@ -50,8 +50,6 @@ class TrackingProtectionSettings : public KeyedService {
   bool AreAllThirdPartyCookiesBlocked() const;
 
  private:
-  void OnEnterpriseControlForPrefsChanged();
-
   // Callbacks for pref observation.
   void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();

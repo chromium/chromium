@@ -102,21 +102,6 @@ TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedFalseOutside3pcd) {
       tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
 }
 
-// Sets prefs
-
-TEST_F(TrackingProtectionSettingsTest,
-       DisablesTrackingProtection3pcdWhenEnterpriseControlEnabled) {
-  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  EXPECT_TRUE(
-      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
-
-  prefs()->SetManagedPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-                          std::make_unique<base::Value>(false));
-  EXPECT_FALSE(
-      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
-}
-
 // Calls observers
 
 TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {

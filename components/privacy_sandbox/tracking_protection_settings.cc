@@ -45,27 +45,6 @@ TrackingProtectionSettings::TrackingProtectionSettings(
       base::BindRepeating(
           &TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged,
           base::Unretained(this)));
-  // For enterprise status
-  pref_change_registrar_.Add(
-      prefs::kCookieControlsMode,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged,
-          base::Unretained(this)));
-
-// This logic accesses prefs that aren't registered on iOS.
-#if !BUILDFLAG(IS_IOS)
-  // It's possible enterprise status changed while profile was shut down.
-  OnEnterpriseControlForPrefsChanged();
-  // Set Mode B pref to force rollback flow.
-  if (privacy_sandbox::kRollBackModeBForced.Get()) {
-    pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  }
-#endif
 }
 
 TrackingProtectionSettings::~TrackingProtectionSettings() = default;
@@ -87,19 +66,6 @@ bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
   return IsTrackingProtection3pcdEnabled() &&
          (pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
           is_incognito_);
-}
-
-// TODO(https://b/333527273): Delete with Mode B cleanup
-void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
-  if (!IsTrackingProtection3pcdEnabled()) {
-    return;
-  }
-  // Stop showing users new UX and using new prefs if old prefs become managed.
-  if (pref_service_->IsManagedPreference(prefs::kCookieControlsMode) ||
-      pref_service_->IsManagedPreference(
-          prefs::kPrivacySandboxRelatedWebsiteSetsEnabled)) {
-    pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
-  }
 }
 
 void TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged() {
