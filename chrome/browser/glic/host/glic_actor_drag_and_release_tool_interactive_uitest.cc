@@ -56,16 +56,10 @@ class GlicActorDragDSFTest : public GlicActorUiTest,
  public:
   GlicActorDragDSFTest() {
     display::Display::SetForceDeviceScaleFactor(DeviceScaleFactor());
-    // TODO (crbug.com/454665367): This test only fails on Windows when the
-    // Multi-Instance flag is enabled. Needs further investigation as to why.
-    scoped_feature_list_.InitAndDisableFeature(features::kGlicMultiInstance);
   }
   ~GlicActorDragDSFTest() override = default;
 
   int DeviceScaleFactor() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensure the drag tool sends the expected mouse down, move and up events.
@@ -76,7 +70,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorDragDSFTest, Events) {
   // The values are provided in DIPs. Since there is no browser zoom, this is
   // equivalent to CSS pixels so should be the same values provided to web APIs,
   // regardless of device scale.
-  const gfx::Vector2d delta(100, 150);
+  const gfx::Vector2d delta(50, 50);
   const gfx::Point start(10, 20);
   const gfx::Point end = start + delta;
 
