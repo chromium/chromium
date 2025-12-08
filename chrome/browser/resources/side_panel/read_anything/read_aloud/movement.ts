@@ -76,28 +76,35 @@ export class MovementGranularity {
     // using word boundaries to know when we've reached the bottom of the
     // window and need to scroll so the rest of the current highlight is
     // showing.
-    const firstHighlight = this.getHighlightElements_().at(0);
+    const firstHighlight = this.getCurrentHighlights_().at(0);
     if (!firstHighlight) {
       return;
     }
 
     const highlightBounds = this.getBounds_();
-    if (highlightBounds.height > (window.innerHeight / 2)) {
+    if ((highlightBounds.bottom > window.innerHeight) ||
+        (highlightBounds.top < 0)) {
       // If the bottom of the highlight would be offscreen if we center it,
       // scroll the first highlight to the top instead of centering it.
-      firstHighlight.scrollIntoView({block: 'start'});
-    } else if (
-        (highlightBounds.bottom > window.innerHeight) ||
-        (highlightBounds.top < 0)) {
+      const block =
+          highlightBounds.height > window.innerHeight / 2 ? 'start' : 'center';
       // Otherwise center the current highlight if part of it would be cut
       // off.
-      firstHighlight.scrollIntoView({block: 'center'});
+      firstHighlight.scrollIntoView({block});
     }
+  }
+
+  // Returns the first highlight in the list of current read highlights.
+  private getCurrentHighlights_() {
+    const allHighlights = this.getHighlightElements_();
+    const currentHighlights = allHighlights.filter(
+        highlight => highlight.classList.contains(currentReadHighlightClass));
+    return currentHighlights;
   }
 
   private getBounds_(): DOMRect {
     const bounds = new DOMRect();
-    const currentHighlights = this.getHighlightElements_();
+    const currentHighlights = this.getCurrentHighlights_();
     if (!currentHighlights || !currentHighlights.length) {
       return bounds;
     }

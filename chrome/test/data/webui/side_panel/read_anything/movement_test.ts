@@ -4,8 +4,8 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {currentReadHighlightClass, MovementGranularity, NodeStore, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {currentReadHighlightClass, isRectVisible, MovementGranularity, NodeStore, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertGT, assertLE, assertLT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 
@@ -222,6 +222,78 @@ suite('Movement', () => {
       bounds = element.getBoundingClientRect();
       assertGT(bounds.top, 0);
       assertLT(bounds.bottom, container.scrollTop + window.innerHeight);
+
+      // Reset window.innerHeight after it's modified to not cause flakiness
+      // with other tests relying on window.innerHeight.
+      window.innerHeight = document.documentElement.clientHeight;
+    });
+
+    test('scrollIntoView scrolls to make the current highlight visible', () => {
+      // Create a scrollable container to act as our "viewport".
+      const container = document.createElement('div');
+      container.style.height = window.innerHeight + 'px';
+      container.style.overflow = 'scroll';
+      document.body.appendChild(container);
+
+      // Add an on-screen paragraph.
+      const onscreenWord = document.createTextNode('On-screen ');
+      container.appendChild(onscreenWord);
+      const ONSCREEN_WORD_ID = 1;
+      nodeStore.setDomNode(onscreenWord, ONSCREEN_WORD_ID);
+
+      // Add content to push the next element off-screen.
+      const spacer = document.createElement('div');
+      spacer.style.height = window.innerHeight + 'px';
+      container.appendChild(spacer);
+
+      // Add an off-screen paragraph.
+      const offscreenWord = document.createTextNode('off-screen');
+      container.appendChild(offscreenWord);
+      const OFFSCREEN_PARAGRAPH_ID = 2;
+      nodeStore.setDomNode(offscreenWord, OFFSCREEN_PARAGRAPH_ID);
+
+      const granularity = new MovementGranularity();
+
+      // The previous highlight that is on-screen.
+      const segments1 = [{
+        node: ReadAloudNode.create(onscreenWord)!,
+        start: 0,
+        length: onscreenWord.textContent.length,
+      }];
+      const highlight1 =
+          new WordHighlight(segments1, onscreenWord.textContent.length);
+      highlight1.setPrevious();
+      granularity.addHighlight(highlight1);
+
+      // The initially off-screen highlight representing the currently
+      // spoken text.
+      const segments2 = [{
+        node: ReadAloudNode.create(offscreenWord)!,
+        start: 0,
+        length: offscreenWord.textContent.length,
+      }];
+      const highlight2 =
+          new WordHighlight(segments2, offscreenWord.textContent.length);
+      granularity.addHighlight(highlight2);
+
+      const currentHighlightElement = highlight2.getElements().at(0);
+      assertTrue(!!currentHighlightElement);
+
+      // Before scrolling, the current highlight should be off-screen.
+      assertEquals(0, container.scrollTop);
+      let bounds = currentHighlightElement.getBoundingClientRect();
+      assertFalse(isRectVisible(bounds));
+      assertGT(bounds.top, window.innerHeight);
+
+      // Scroll into view.
+      granularity.scrollIntoView();
+
+      // After scrolling, the current highlight should be on-screen.
+      assertGT(container.scrollTop, 0);
+      bounds = currentHighlightElement.getBoundingClientRect();
+      assertTrue(isRectVisible(bounds));
+      assertGT(bounds.top, 0);
+      assertLE(bounds.bottom, window.innerHeight);
     });
 
     suite('onWillHighlightWordOrPhrase', () => {
