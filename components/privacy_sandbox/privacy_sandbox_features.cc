@@ -105,7 +105,7 @@ BASE_FEATURE(kRelatedWebsiteSetsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRelatedWebsiteSetsUi, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRollBackModeB, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRollBackModeB, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kRollBackModeBForcedName[] = "force";
 const base::FeatureParam<bool> kRollBackModeBForced{
