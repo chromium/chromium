@@ -378,14 +378,8 @@ void AppShimRegistry::SaveCdHashForApp(const std::string& app_id,
 void AppShimRegistry::DoSaveCdHashForApp(const std::string& app_id,
                                          std::vector<uint8_t> cd_hash,
                                          os_crypt_async::Encryptor encryptor) {
-  HmacKey hmac_key = GetCdHashHmacKey(encryptor);
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(hmac_key));
-
-  std::array<uint8_t, 32> cd_hash_hmac;
-  CHECK(hmac.Sign(cd_hash, cd_hash_hmac));
-
-  std::string cd_hash_hmac_base64 = base::Base64Encode(cd_hash_hmac);
+  std::string cd_hash_hmac_base64 = base::Base64Encode(
+      crypto::hmac::SignSha256(GetCdHashHmacKey(encryptor), cd_hash));
   SetAppInfo(app_id, /*installed_profiles=*/nullptr,
              /*last_active_profiles=*/nullptr, /*handlers=*/nullptr,
              &cd_hash_hmac_base64,
@@ -428,10 +422,15 @@ bool AppShimRegistry::DoVerifyCdHashForApp(
     return false;
   }
 
-  HmacKey hmac_key = GetCdHashHmacKey(encryptor);
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  CHECK(hmac.Init(hmac_key));
-  return hmac.Verify(cd_hash, *cd_hash_hmac);
+  auto cd_hash_hmac_span =
+      base::span(*cd_hash_hmac).to_fixed_extent<crypto::hash::kSha256Size>();
+  if (!cd_hash_hmac_span) {
+    LOG(WARNING) << "App shim's code directory hash is unexpected size";
+    return false;
+  }
+
+  return crypto::hmac::VerifySha256(GetCdHashHmacKey(encryptor), cd_hash,
+                                    *cd_hash_hmac_span);
 }
 
 void AppShimRegistry::SaveNotificationPermissionStatusForApp(
