@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,13 +37,6 @@ namespace captions {
 
 // Request constants.
 const size_t kMaxMessageSize = 1024 * 1024;  // 1MB
-constexpr char kTranslateBodyRequestTemplate[] =
-    "{"
-    "\"q\":\"%s\","
-    "\"source\":\"%s\","
-    "\"target\":\"%s\","
-    "\"format\":\"text\""
-    "}";
 constexpr char kTranslateUrl[] =
     "https://translation.googleapis.com/language/translate/v2?key=%s";
 constexpr char kUploadContentType[] = "application/json";
@@ -148,10 +142,17 @@ void TranslationDispatcher::GetTranslation(absl::string_view result,
         })");
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
-  url_loader_->AttachStringForUpload(
-      base::StringPrintf(kTranslateBodyRequestTemplate, result.data(),
-                         source_language.data(), target_language.data()),
-      kUploadContentType);
+
+  base::Value::Dict request_dict;
+  request_dict.Set("q", result);
+  request_dict.Set("source", source_language);
+  request_dict.Set("target", target_language);
+  request_dict.Set("format", "text");
+
+  std::string request_body;
+  base::JSONWriter::Write(request_dict, &request_body);
+
+  url_loader_->AttachStringForUpload(request_body, kUploadContentType);
 
   // Unretained is safe because |this| owns |url_loader_|.
   url_loader_->DownloadToString(

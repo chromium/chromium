@@ -22,9 +22,8 @@ namespace cast_streaming {
 StreamConsumer::BufferDataWrapper::~BufferDataWrapper() = default;
 
 base::span<uint8_t> StreamConsumer::BufferDataWrapper::Get() {
-  return UNSAFE_TODO(
-      base::span<uint8_t>(&pending_buffer_[pending_buffer_offset_],
-                          pending_buffer_remaining_bytes_));
+  return base::span(pending_buffer_)
+      .subspan(pending_buffer_offset_, pending_buffer_remaining_bytes_);
 }
 
 base::span<uint8_t> StreamConsumer::BufferDataWrapper::Consume(
@@ -36,8 +35,7 @@ base::span<uint8_t> StreamConsumer::BufferDataWrapper::Consume(
 
   pending_buffer_offset_ += read_size;
   pending_buffer_remaining_bytes_ -= read_size;
-  return UNSAFE_TODO(
-      base::span<uint8_t>(&pending_buffer_[current_offset], read_size));
+  return base::span(pending_buffer_).subspan(current_offset, read_size);
 }
 
 bool StreamConsumer::BufferDataWrapper::Reset(uint32_t new_size) {
