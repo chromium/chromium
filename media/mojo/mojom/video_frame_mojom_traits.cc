@@ -129,12 +129,12 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image.value()), std::move(sync_token),
-            /*is_mappable_si_enabled=*/true, std::move(input->ycbcr_info())));
+            /*is_mappable=*/true, std::move(input->ycbcr_info())));
 #else
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image.value()), std::move(sync_token),
-            /*is_mappable_si_enabled=*/true));
+            /*is_mappable=*/true));
 #endif
   }
 
@@ -144,12 +144,12 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image), input->acquire_sync_token(),
-            /*is_mappable_si_enabled=*/false, std::move(input->ycbcr_info())));
+            /*is_mappable=*/false, std::move(input->ycbcr_info())));
 #else
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image), input->acquire_sync_token(),
-            /*is_mappable_si_enabled=*/false));
+            /*is_mappable=*/false));
 #endif
   }
 
@@ -350,9 +350,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    bool is_mappable_si_enabled = shared_image_data.is_mappable_si_enabled();
-    if (is_mappable_si_enabled) {
-      // VideoFrame should have buffer usage if Mappable SharedImage is enabled.
+    bool is_mappable = shared_image_data.is_mappable();
+    if (is_mappable) {
+      // VideoFrame should have buffer usage if its SI is mappable.
       // NOTE: This isn't exactly correct for software SharedImages can be
       // mappable but do not have buffer usage. But since, such software
       // SharedImages are not used with VideoFrames this should work.
