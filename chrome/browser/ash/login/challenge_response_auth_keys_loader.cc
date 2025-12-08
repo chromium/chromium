@@ -283,7 +283,14 @@ class ExtensionLoadObserver final
       return;
     }
 
+    // OnExtensionInstalled() can cause `this` to be destroyed.
+    // Use a `WeakPtr` to prevent a use-after-free here.
+    base::WeakPtr<ExtensionLoadObserver> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
     for (const std::string& extension_id : extension_ids_to_wait_for) {
+      if (!weak_this) {
+        break;
+      }
       const extensions::Extension* extension =
           GetExtensionRegistry()->GetInstalledExtension(extension_id);
       if (extension) {
