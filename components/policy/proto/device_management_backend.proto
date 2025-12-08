@@ -3494,7 +3494,7 @@ message CertificateBasedDeviceRegistrationData {
 message RegisterBrowserRequest {
   // The name of the machine within its local network. Deprecated, use
   // `browser_device_identifier` instead.
-  optional string machine_name = 1  [deprecated = true];
+  optional string machine_name = 1 [deprecated = true];
   // Platform, e.g., Windows or Mac.
   optional string os_platform = 2;
   // Platform specific version number, e.g., 6.1.7601.0 or 10.12.6
