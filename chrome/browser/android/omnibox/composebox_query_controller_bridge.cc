@@ -64,6 +64,11 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
   query_controller_config_params->enable_multi_context_input_flow =
       OmniboxFieldTrial::kOmniboxMultimodalInputMultiContext.Get();
   query_controller_config_params->enable_viewport_images = true;
+  query_controller_config_params
+      ->prioritize_suggestions_for_the_first_attached_document =
+      OmniboxFieldTrial::kOmniboxMultimodalPrioritizeSuggestionsForFirstDocument
+          .Get();
+
   query_controller_ = std::make_unique<ComposeboxQueryController>(
       IdentityManagerFactory::GetForProfile(profile),
       g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),

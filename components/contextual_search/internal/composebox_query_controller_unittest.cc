@@ -114,7 +114,8 @@ class ComposeboxQueryControllerTest
       bool enable_multi_context_input_flow = false,
       bool enable_viewport_images = true,
       bool use_separate_request_ids_for_multi_context_viewport_images = true,
-      bool enable_cluster_info_ttl = false) {
+      bool enable_cluster_info_ttl = false,
+      bool prioritize_suggestions_for_the_first_attached_document = false) {
     // Create the config params.
     auto config_params =
         std::make_unique<ContextualSearchContextController::ConfigParams>();
@@ -126,6 +127,8 @@ class ComposeboxQueryControllerTest
     config_params->enable_viewport_images = enable_viewport_images;
     config_params->use_separate_request_ids_for_multi_context_viewport_images =
         use_separate_request_ids_for_multi_context_viewport_images;
+    config_params->prioritize_suggestions_for_the_first_attached_document =
+        prioritize_suggestions_for_the_first_attached_document;
 
     // Create the controller.
     controller_ = std::make_unique<TestComposeboxQueryController>(
@@ -283,6 +286,65 @@ class ComposeboxQueryControllerTest
     }
   }
 
+  // Initialize controller, ensuring cluster info is set up.
+  void StartSession() {
+    controller().InitializeIfNeeded();
+    WaitForClusterInfo();
+  }
+
+  base::UnguessableToken UploadSimpleTestAttachment(lens::MimeType mime_type) {
+    // Act: Start the file upload flow.
+    auto file_token = base::UnguessableToken::Create();
+    switch (mime_type) {
+      case lens::MimeType::kPdf: {
+        StartPdfFileUploadFlow(file_token,
+                               /*file_data=*/std::vector<uint8_t>());
+        WaitForFileUpload(file_token, mime_type);
+        break;
+      }
+
+      case lens::MimeType::kImage: {
+        lens::ImageEncodingOptions image_options{.max_size = 1000,
+                                                 .max_height = 10,
+                                                 .max_width = 10,
+                                                 .compression_quality = 10};
+        StartImageFileUploadFlow(file_token, GetSimpleJPGBytes(),
+                                 image_options);
+        // NOTE: WaitForFileUpload() never completes/hangs the test.
+        break;
+      }
+
+      case lens::MimeType::kAnnotatedPageContent: {
+        auto input_data = std::make_unique<lens::ContextualInputData>();
+        input_data->primary_content_type =
+            lens::MimeType::kAnnotatedPageContent;
+        input_data->context_input = std::vector<lens::ContextualInput>();
+        input_data->page_url = GURL("https://page.url");
+        input_data->page_title = "Page Title";
+        input_data->context_input->emplace_back(lens::ContextualInput(
+            std::vector<uint8_t>(), lens::MimeType::kAnnotatedPageContent));
+        input_data->is_page_context_eligible = true;
+        controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                         std::nullopt);
+        WaitForFileUpload(file_token, mime_type);
+        break;
+      }
+
+      default:
+        EXPECT_TRUE(false) << "Unsupported Lens MIME Type";
+    }
+
+    // Assert: Validate file upload request and status changes.
+    EXPECT_TRUE(controller().GetFileInfoForTesting(file_token));
+    return file_token;
+  }
+
+  std::string GetEncodedRequestInfoForToken(
+      const base::UnguessableToken& token) {
+    return lens::Base64EncodeRequestId(
+        controller().GetFileInfoForTesting(token)->GetRequestIdForTesting());
+  }
+
   TestComposeboxQueryController& controller() { return *controller_; }
 
   void OnQueryControllerStateChanged(QueryControllerState new_state) {
@@ -308,6 +370,23 @@ class ComposeboxQueryControllerTest
     return image_bytes.value();
   }
 #endif  // !BUILDFLAG(IS_IOS)
+
+  std::vector<uint8_t> GetSimpleJPGBytes() {
+    // Returns 1x1 progressive jpg image.
+    // https://stackoverflow.com/questions/2253404
+    return {
+        0xFF, 0xD8, 0xFF, 0xDB, 0x00, 0x43, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0xFF,
+        0xC2, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11, 0x00,
+        0xFF, 0xC4, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xFF, 0xDA,
+        0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x00, 0x01, 0x3F, 0xFF, 0xD9,
+    };
+  }
 
   lens::LensOverlayRequestId DecodeRequestIdFromVsrid(std::string vsrid_param) {
     std::string serialized_proto;
@@ -2119,72 +2198,105 @@ TEST_F(ComposeboxQueryControllerTest,
                                           &gsession_id_value));
 }
 
-TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
-  // Act: Start the session.
-  controller().InitializeIfNeeded();
+TEST_F(ComposeboxQueryControllerTest, SuggestInputsForFirstDocument) {
+  CreateController(
+      /* send_lns_surface= */ false,
+      /* suppress_lns_surface_param_if_no_image= */ true,
+      /* enable_multi_context_input_flow= */ false,
+      /* enable_viewport_images= */ true,
+      /* use_separate_request_ids_for_multi_context_viewport_images= */ true,
+      /* enable_cluster_info_ttl= */ false,
+      /* prioritize_suggestions_for_the_first_attached_document= */ true);
+  StartSession();
 
-  // Assert: Validate cluster info request and state changes.
-  WaitForClusterInfo();
+  auto pdf_token = UploadSimpleTestAttachment(lens::MimeType::kPdf);
+  auto tab_token =
+      UploadSimpleTestAttachment(lens::MimeType::kAnnotatedPageContent);
+  auto image_token = UploadSimpleTestAttachment(lens::MimeType::kImage);
 
-  // Act: Start the file upload flow.
-  const base::UnguessableToken first_file_token =
-      base::UnguessableToken::Create();
-  StartPdfFileUploadFlow(first_file_token,
-                         /*file_data=*/std::vector<uint8_t>());
+  {
+    // Verify that when [1] pdf and [2] tab are attached, the [1] pdf is
+    // used to serve suggestions.
+    auto inputs = controller().CreateSuggestInputs({pdf_token, tab_token});
 
-  // Assert: Validate file upload request and status changes.
-  WaitForFileUpload(first_file_token, lens::MimeType::kPdf);
+    EXPECT_EQ(inputs->encoded_request_id(),
+              GetEncodedRequestInfoForToken(pdf_token));
+    EXPECT_EQ(inputs->contextual_visual_input_type(), "pdf");
+  }
 
-  // Check that file is in cache.
-  EXPECT_TRUE(controller().GetFileInfoForTesting(first_file_token));
+  {
+    // Verify that when [1] tab and [2] pdf are attached, the [1] tab is
+    // used to serve suggestions.
+    auto inputs = controller().CreateSuggestInputs({tab_token, pdf_token});
 
-  // Check that the request id is set correctly in the suggest inputs.
-  auto first_suggest_inputs =
-      controller().CreateSuggestInputs({first_file_token});
-  EXPECT_EQ(
-      first_suggest_inputs->encoded_request_id(),
-      lens::Base64EncodeRequestId(controller()
-                                      .GetFileInfoForTesting(first_file_token)
-                                      ->GetRequestIdForTesting()));
-  EXPECT_EQ(first_suggest_inputs->contextual_visual_input_type(), "pdf");
+    EXPECT_EQ(inputs->encoded_request_id(),
+              GetEncodedRequestInfoForToken(tab_token));
+    EXPECT_EQ(inputs->contextual_visual_input_type(), "wp");
+  }
 
-  // Act: Start the second file upload flow.
-  const base::UnguessableToken second_file_token =
-      base::UnguessableToken::Create();
-  StartPdfFileUploadFlow(second_file_token,
-                         /*file_data=*/std::vector<uint8_t>());
+  {
+    // Verify that when [1] image and [2] pdf are attached, the [2] pdf is
+    // used to serve suggestions.
+    auto inputs = controller().CreateSuggestInputs({image_token, pdf_token});
 
-  // Assert: Validate file upload request and status changes.
-  WaitForFileUpload(second_file_token, lens::MimeType::kPdf);
+    EXPECT_EQ(inputs->encoded_request_id(),
+              GetEncodedRequestInfoForToken(pdf_token));
+    EXPECT_EQ(inputs->contextual_visual_input_type(), "pdf");
+  }
 
-  // Check that file is in cache.
-  EXPECT_TRUE(controller().GetFileInfoForTesting(second_file_token));
+  {
+    // Verify that when [1] image and [2] tab are attached, the [2] tab is
+    // used to serve suggestions.
+    auto inputs = controller().CreateSuggestInputs({image_token, tab_token});
 
-  // Check that the suggest inputs are clearne if there are two files in
-  // the request, since multiple context suggest is not supported.
-  auto second_suggest_inputs =
-      controller().CreateSuggestInputs({first_file_token, second_file_token});
-  EXPECT_EQ(second_suggest_inputs->encoded_request_id(), "");
+    EXPECT_EQ(inputs->encoded_request_id(),
+              GetEncodedRequestInfoForToken(tab_token));
+    EXPECT_EQ(inputs->contextual_visual_input_type(), "wp");
+  }
 
-  EXPECT_EQ(second_suggest_inputs->search_session_id(), "");
+  {
+    // Verify that when image is the sole attachment, it is used to serve
+    // suggestions.
+    auto inputs = controller().CreateSuggestInputs({image_token});
 
-  // Delete file.
-  const bool deleted = controller().DeleteFile(second_file_token);
+    EXPECT_EQ(inputs->encoded_request_id(),
+              GetEncodedRequestInfoForToken(image_token));
+    EXPECT_EQ(inputs->contextual_visual_input_type(), "img");
+  }
+}
 
-  // Check that file is no longer in cache.
-  EXPECT_TRUE(deleted);
-  EXPECT_FALSE(controller().GetFileInfoForTesting(second_file_token));
+TEST_F(ComposeboxQueryControllerTest, SuggestInputsForOnlyAttachment) {
+  // Use the Controller with implicit parameters set to prioritize the only
+  // attachment.
+  StartSession();
 
-  // Check that the request id in the suggest inputs is set correctly to the
-  // first file's request id.
-  auto third_suggest_inputs =
-      controller().CreateSuggestInputs({first_file_token});
-  EXPECT_EQ(
-      third_suggest_inputs->encoded_request_id(),
-      lens::Base64EncodeRequestId(controller()
-                                      .GetFileInfoForTesting(first_file_token)
-                                      ->GetRequestIdForTesting()));
-  EXPECT_EQ(third_suggest_inputs->contextual_visual_input_type(), "pdf");
+  auto pdf_token = UploadSimpleTestAttachment(lens::MimeType::kPdf);
+  auto tab_token =
+      UploadSimpleTestAttachment(lens::MimeType::kAnnotatedPageContent);
+
+  {
+    // Check that the request id is set correctly with a single pdf attachment
+    auto inputs = controller().CreateSuggestInputs({pdf_token});
+    EXPECT_EQ(inputs->encoded_request_id(),
+              GetEncodedRequestInfoForToken(pdf_token));
+    EXPECT_EQ(inputs->contextual_visual_input_type(), "pdf");
+  }
+
+  {
+    // Check that the request id is set correctly with a single tab attachment
+    auto inputs = controller().CreateSuggestInputs({tab_token});
+    EXPECT_EQ(inputs->encoded_request_id(),
+              GetEncodedRequestInfoForToken(tab_token));
+    EXPECT_EQ(inputs->contextual_visual_input_type(), "wp");
+  }
+
+  {
+    // Check that multiple attachments result in no suggest inputs.
+    auto inputs = controller().CreateSuggestInputs({pdf_token, tab_token});
+
+    EXPECT_FALSE(inputs->has_encoded_request_id());
+    EXPECT_FALSE(inputs->has_search_session_id());
+  }
 }
 
 TEST_F(ComposeboxQueryControllerTest, DeleteFile_Failed) {

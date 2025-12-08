@@ -61,6 +61,10 @@ class ContextualSearchContextController {
     // Does nothing if `enable_multi_context_input_flow` is false or if
     // `enable_viewport_images` is false.
     bool use_separate_request_ids_for_multi_context_viewport_images = true;
+    // Whether to offer ZPS for the first document attachment, when multiple
+    // attachments are available (true), or the only attachment if exactly one
+    // attachment is available (false).
+    bool prioritize_suggestions_for_the_first_attached_document = false;
   };
 
   // Observer interface for the Page Handler to get updates on file upload
