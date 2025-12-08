@@ -149,6 +149,18 @@ MediaStreamRequestResult2 MapResultToResult2(
       // TODO(crbug.com/453600255): Add a new value once all new enum values are
       // added.
       return MediaStreamRequestResult2::kInvalidState;
+    case MediaStreamRequestResult::SAFE_BROWSING_OBSERVER:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kPermissionDenied;
+    case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kInvalidState;
+    case MediaStreamRequestResult::CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kInvalidState;
   }
   NOTREACHED();
 }

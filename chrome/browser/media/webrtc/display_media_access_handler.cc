@@ -221,7 +221,7 @@ void DisplayMediaAccessHandler::HandleRequest(
           web_contents);
   if (observer) {
     std::move(callback).Run(blink::mojom::StreamDevicesSet(),
-                            MediaStreamRequestResult::PERMISSION_DENIED,
+                            MediaStreamRequestResult::SAFE_BROWSING_OBSERVER,
                             /*ui=*/nullptr);
     observer->OnDesktopCaptureRequest();
     return;
@@ -243,9 +243,10 @@ void DisplayMediaAccessHandler::HandleRequest(
       !web_contents->HasPictureInPictureDocument() &&
       request.request_type != blink::MEDIA_DEVICE_UPDATE) {
     LOG(ERROR) << "Do not allow getDisplayMedia() on a backgrounded page.";
-    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
-                            MediaStreamRequestResult::INVALID_STATE,
-                            /*ui=*/nullptr);
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        MediaStreamRequestResult::CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC,
+        /*ui=*/nullptr);
     return;
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -500,7 +501,9 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   // it is unlikely that valid domains are excluded by this check.
   if (base::FeatureList::IsEnabled(kDisplayMediaRejectLongDomains) &&
       GetApplicationTitle(web_contents).size() > 255u) {
-    RejectRequest(web_contents, MediaStreamRequestResult::INVALID_STATE);
+    RejectRequest(
+        web_contents,
+        MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS);
     return;
   }
 

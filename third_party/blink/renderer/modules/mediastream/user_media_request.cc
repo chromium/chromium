@@ -942,6 +942,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::PERMISSION_DENIED:
     case Result::PERMISSION_DENIED_BY_SYSTEM:
     case Result::PERMISSION_DISMISSED:
+    case Result::SAFE_BROWSING_OBSERVER:
     case Result::INVALID_DEVICE_TYPE_REQUEST:
       // TODO(crbug.com/453600255): Use `result_enum` kAbortError for
       // INVALID_DEVICE_TYPE_REQUEST once all new enum values are added.
@@ -978,6 +979,10 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       // TODO(crbug.com/453600255): Use `result_enum` kNotFoundError for
       // CAPTURED_TAB_DESTROYED once all new enum values are added.
     case Result::CAPTURE_NOT_ENABLED:
+    case Result::CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS:
+    case Result::CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC:
+      // TODO(crbug.com/453600255): Use `result_enum` kInvalidStateError for
+      // CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC once all new enum values are added.
     case Result::TAB_CAPTURE_FAILURE:
     case Result::STREAM_NOT_FOUND_IN_REGISTRY:
     case Result::REGISTRY_REQUEST_UNVERIFIED:

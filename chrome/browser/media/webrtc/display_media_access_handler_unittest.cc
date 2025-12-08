@@ -378,7 +378,9 @@ TEST_F(DisplayMediaAccessHandlerTest, OverMaxLengthDomainRejected) {
   ProcessRequest(content::DesktopMediaID(content::DesktopMediaID::TYPE_WINDOW,
                                          content::DesktopMediaID::kFakeId),
                  &result, devices, false /* request_audio */);
-  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::INVALID_STATE, result);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::
+                CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS,
+            result);
 }
 
 class DisplayMediaAccessHandlerActiveRfhTest

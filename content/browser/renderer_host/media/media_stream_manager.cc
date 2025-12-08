@@ -352,6 +352,14 @@ const char* RequestResultToString(
       return "CAPTURED_TAB_DESTROYED";
     case blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ENABLED:
       return "CAPTURE_NOT_ENABLED";
+    case blink::mojom::MediaStreamRequestResult::SAFE_BROWSING_OBSERVER:
+      return "SAFE_BROWSING_OBSERVER";
+    case blink::mojom::MediaStreamRequestResult::
+        CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS:
+      return "CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS";
+    case blink::mojom::MediaStreamRequestResult::
+        CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC:
+      return "CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC";
   }
   NOTREACHED();
 }

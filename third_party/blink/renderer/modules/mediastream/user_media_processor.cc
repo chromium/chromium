@@ -188,6 +188,12 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "INVALID_EXTENSION_TYPE_REQUEST";
     case MediaStreamRequestResult::CAPTURED_TAB_DESTROYED:
       return "CAPTURED_TAB_DESTROYED";
+    case MediaStreamRequestResult::SAFE_BROWSING_OBSERVER:
+      return "SAFE_BROWSING_OBSERVER";
+    case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS:
+      return "CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS";
+    case MediaStreamRequestResult::CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC:
+      return "CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC";
   }
   NOTREACHED();
 }
@@ -346,6 +352,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY:
     case MediaStreamRequestResult::PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
     case MediaStreamRequestResult::DLP_PERMISSION_DENIED:
+    case MediaStreamRequestResult::SAFE_BROWSING_OBSERVER:
       return "Permission denied";
     case MediaStreamRequestResult::PERMISSION_DISMISSED:
       return "Permission dismissed";
@@ -355,6 +362,8 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST:
     case MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
     case MediaStreamRequestResult::CAPTURE_NOT_ENABLED:
+    case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS:
+    case MediaStreamRequestResult::CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC:
       return "Invalid state";
     case MediaStreamRequestResult::NO_HARDWARE:
       return "Requested device not found";
