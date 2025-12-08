@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_selection_adapter.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -36,12 +37,10 @@ class FakeBaseTabStripController : public TabStripController {
   void MoveTabIntoGroup(int index,
                         std::optional<tab_groups::TabGroupId> new_group);
 
-  ui::ListSelectionModel* selection_model() { return &selection_model_; }
-
   void set_tab_strip(TabStrip* tab_strip) { tab_strip_ = tab_strip; }
 
   // TabStripController overrides:
-  const ui::ListSelectionModel& GetSelectionModel() const override;
+  ui::ListSelectionModel GetSelectionModel() const override;
   int GetCount() const override;
   bool IsValidIndex(int index) const override;
   bool IsActiveTab(int index) const override;

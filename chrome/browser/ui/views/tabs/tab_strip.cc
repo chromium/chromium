@@ -263,7 +263,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
   void MaybeStartDrag(TabSlotView* source,
                       const ui::LocatedEvent& event,
-                      const ui::ListSelectionModel& original_selection) {
+                      ui::ListSelectionModel original_selection) {
     std::vector<TabSlotView*> dragging_views;
     int x = source->GetMirroredXInView(event.x());
     int y = event.y();
@@ -1657,7 +1657,7 @@ std::optional<tab_groups::TabGroupId> TabStrip::GetFocusedGroup() const {
   return controller_->GetFocusedGroup();
 }
 
-const ui::ListSelectionModel& TabStrip::GetSelectionModel() const {
+ui::ListSelectionModel TabStrip::GetSelectionModel() const {
   return controller_->GetSelectionModel();
 }
 
@@ -1875,10 +1875,9 @@ bool TabStrip::ShouldCompactLeadingEdge() const {
          tabs::GetTabSearchTrailingTabstrip(controller_->GetProfile());
 }
 
-void TabStrip::MaybeStartDrag(
-    TabSlotView* source,
-    const ui::LocatedEvent& event,
-    const ui::ListSelectionModel& original_selection) {
+void TabStrip::MaybeStartDrag(TabSlotView* source,
+                              const ui::LocatedEvent& event,
+                              ui::ListSelectionModel original_selection) {
   // Don't accidentally start any drag operations during animations if the
   // mouse is down... during an animation tabs are being resized automatically,
   // so the View system can misinterpret this easily if the mouse is down that

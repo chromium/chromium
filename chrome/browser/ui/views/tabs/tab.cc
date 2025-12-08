@@ -568,8 +568,8 @@ bool Tab::OnMousePressed(const ui::MouseEvent& event) {
   // Allow a right click from touch to drag, which corresponds to a long click.
   if (event.IsOnlyLeftMouseButton() ||
       (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
-    ui::ListSelectionModel original_selection;
-    original_selection = controller_->GetSelectionModel();
+    ui::ListSelectionModel original_selection =
+        controller_->GetSelectionModel();
     // Changing the selection may cause our bounds to change. If that happens
     // the location of the event may no longer be valid. Create a copy of the
     // event in the parents coordinate, which won't change, and recreate an
@@ -722,8 +722,8 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
       // See comment in OnMousePressed() as to why we copy the event.
       ui::GestureEvent event_in_parent(*event, static_cast<View*>(this),
                                        parent());
-      ui::ListSelectionModel original_selection;
-      original_selection = controller_->GetSelectionModel();
+      ui::ListSelectionModel original_selection =
+          controller_->GetSelectionModel();
       if (!IsSelected()) {
         controller_->SelectTab(this, *event);
       }

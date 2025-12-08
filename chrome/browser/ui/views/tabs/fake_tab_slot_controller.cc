@@ -11,7 +11,7 @@ FakeTabSlotController::FakeTabSlotController(
     TabStripController* tab_strip_controller)
     : tab_strip_controller_(tab_strip_controller) {}
 
-const ui::ListSelectionModel& FakeTabSlotController::GetSelectionModel() const {
+ui::ListSelectionModel FakeTabSlotController::GetSelectionModel() const {
   return selection_model_;
 }
 

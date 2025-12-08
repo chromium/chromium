@@ -61,8 +61,9 @@ void BrowserTabStripTracker::MaybeTrackBrowser(
   }
 
   TabStripModelChange change(std::move(insert));
-  TabStripSelectionChange selection(tab_strip_model->GetActiveTab(),
-                                    tab_strip_model->selection_model());
+  TabStripSelectionChange selection(
+      tab_strip_model->GetActiveTab(),
+      tab_strip_model->selection_model().ToListSelectionModel());
   tab_strip_model_observer_->OnTabStripModelChanged(tab_strip_model, change,
                                                     selection);
 }

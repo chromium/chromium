@@ -25,6 +25,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_selection_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/common/buildflags.h"
@@ -569,7 +570,7 @@ class TabStripModel {
   // Sets the selection to match that of |source|.
   void SetSelectionFromModel(ui::ListSelectionModel source);
 
-  const ui::ListSelectionModel& selection_model() const;
+  const TabStripModelSelectionAdapter& selection_model() const;
 
   // Features that want to show tabstrip-modal UI are mutually exclusive.
   // Before showing a modal UI first check `CanShowModalUI`. Then call
@@ -1029,8 +1030,11 @@ class TabStripModel {
 
   // Helper method for updating the selection model after detaching a collection
   // from `contents_data_`.
-  void UpdateSelectionModelForDetach(gfx::Range tab_indices,
-                                     std::optional<int> next_selected_index);
+  void UpdateSelectionModelForCollectionDetach(
+      const std::vector<tabs::TabInterface*>& already_detached_tabs,
+      int detach_start_index,
+      std::optional<int> next_selected_index,
+      bool active_tab_removed);
 
   // Attaches a tab collection to `contents_data_` using
   // `execute_insert_detached_tabs_operation`. Also sends collection specific
@@ -1144,6 +1148,9 @@ class TabStripModel {
   // above. When it's |triggered_by_other_operation|, This won't notify
   // observers that selection was changed. Callers should notify it by
   // themselves.
+  // TODO(crbug.com/435179292): Replace the ListSelectionModel parameter here
+  // and similar member with a TabStripModelSelectionAdapter type, or a
+  // TabStripModelSelectionState type.
   TabStripSelectionChange SetSelection(
       ui::ListSelectionModel new_model,
       TabStripModelObserver::ChangeReason reason,
@@ -1281,6 +1288,7 @@ class TabStripModel {
   // Clears any previous selection and sets the selected index. This takes into
   // account split tabs so both will be selected if `index` is a split tab.
   void SetSelectedIndex(ui::ListSelectionModel* selection, int index);
+  void SetSelectedIndex(TabStripModelSelectionAdapter* selection, int index);
 
   // Returns the range of indices between the anchor and a provided index, that
   // takes into account split tabs. If the anchor or the tab at index is part of
@@ -1403,7 +1411,7 @@ class TabStripModel {
   bool closing_all_ = false;
 
   // This must be kept in sync with |contents_data_|.
-  std::unique_ptr<ui::ListSelectionModel> selection_model_;
+  std::unique_ptr<TabStripModelSelectionAdapter> selection_model_;
 
   // TabStripModel is not re-entrancy safe. This member is used to guard public
   // methods that mutate state of |selection_model_| or |contents_data_|.

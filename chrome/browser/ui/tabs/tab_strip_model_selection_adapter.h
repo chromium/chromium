@@ -43,6 +43,7 @@ class TabStripModelSelectionAdapter {
   virtual void AddSelectionFromAnchorTo(size_t index) = 0;
   virtual void Move(size_t old_index, size_t new_index, size_t length) = 0;
   virtual void Clear() = 0;
+  virtual void SetSelectionFrom(const ui::ListSelectionModel& source) = 0;
   virtual ui::ListSelectionModel ToListSelectionModel() const = 0;
   virtual ui::ListSelectionModel::SelectedIndices selected_indices() const = 0;
 };
@@ -74,6 +75,7 @@ class TabStripModelSelectionStateAdapter final
   void AddSelectionFromAnchorTo(size_t index) override;
   void Move(size_t old_index, size_t new_index, size_t length) override;
   void Clear() override;
+  void SetSelectionFrom(const ui::ListSelectionModel& source) override;
   ui::ListSelectionModel ToListSelectionModel() const override;
   ui::ListSelectionModel::SelectedIndices selected_indices() const override;
 
@@ -108,6 +110,7 @@ class ListSelectionModelAdapter final : public TabStripModelSelectionAdapter {
   void AddSelectionFromAnchorTo(size_t index) override;
   void Move(size_t old_index, size_t new_index, size_t length) override;
   void Clear() override;
+  void SetSelectionFrom(const ui::ListSelectionModel& source) override;
   ui::ListSelectionModel ToListSelectionModel() const override;
   ui::ListSelectionModel::SelectedIndices selected_indices() const override;
 

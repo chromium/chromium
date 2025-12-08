@@ -43,16 +43,10 @@ void TabStripModelSelectionState::RemoveTabFromSelection(TabInterface* tab) {
 
 void TabStripModelSelectionState::SetActiveTab(TabInterface* tab) {
   active_tab_ = tab;
-  if (tab) {
-    AddTabToSelection(tab);
-  }
 }
 
 void TabStripModelSelectionState::SetAnchorTab(TabInterface* tab) {
   anchor_tab_ = tab;
-  if (tab) {
-    AddTabToSelection(tab);
-  }
 }
 
 bool TabStripModelSelectionState::AppendTabsToSelection(
@@ -96,8 +90,7 @@ bool TabStripModelSelectionState::Valid() {
   if (selected_tabs_.empty()) {
     return active_tab_ == nullptr && anchor_tab_ == nullptr;
   }
-  return active_tab_ && anchor_tab_ && IsSelected(active_tab_) &&
-         IsSelected(anchor_tab_);
+  return active_tab_ && anchor_tab_;
 }
 
 }  // namespace tabs

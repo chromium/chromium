@@ -32,9 +32,9 @@ class TabGroupId;
 }  // namespace tab_groups
 namespace ui {
 class Event;
-class ListSelectionModel;
 class LocatedEvent;
 class MouseEvent;
+class ListSelectionModel;
 }  // namespace ui
 namespace views {
 class View;
@@ -55,7 +55,7 @@ class TabSlotController {
 
   enum class Liveness { kAlive, kDeleted };
 
-  virtual const ui::ListSelectionModel& GetSelectionModel() const = 0;
+  virtual ui::ListSelectionModel GetSelectionModel() const = 0;
 
   // Returns the tab at `index`.
   virtual Tab* tab_at(int index) const = 0;
@@ -133,10 +133,9 @@ class TabSlotController {
   virtual bool ShouldCompactLeadingEdge() const = 0;
 
   // Potentially starts a drag for the specified Tab.
-  virtual void MaybeStartDrag(
-      TabSlotView* source,
-      const ui::LocatedEvent& event,
-      const ui::ListSelectionModel& original_selection) = 0;
+  virtual void MaybeStartDrag(TabSlotView* source,
+                              const ui::LocatedEvent& event,
+                              ui::ListSelectionModel original_selection) = 0;
 
   // Continues dragging a Tab. May enter a nested event loop - returns
   // Liveness::kDeleted if `this` was destroyed during this nested event loop,

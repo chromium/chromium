@@ -263,7 +263,7 @@ class TabStrip : public views::View,
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
 
   // TabSlotController:
-  const ui::ListSelectionModel& GetSelectionModel() const override;
+  ui::ListSelectionModel GetSelectionModel() const override;
   Tab* tab_at(int index) const override;
   void SelectTab(Tab* tab, const ui::Event& event) override;
   void ExtendSelectionTo(Tab* tab) override;
@@ -291,10 +291,9 @@ class TabStrip : public views::View,
   bool IsFocusInTabs() const override;
   bool ShouldCompactLeadingEdge() const override;
 
-  void MaybeStartDrag(
-      TabSlotView* source,
-      const ui::LocatedEvent& event,
-      const ui::ListSelectionModel& original_selection) override;
+  void MaybeStartDrag(TabSlotView* source,
+                      const ui::LocatedEvent& event,
+                      ui::ListSelectionModel original_selection) override;
   [[nodiscard]] Liveness ContinueDrag(views::View* view,
                                       const ui::LocatedEvent& event) override;
   bool EndDrag(EndDragReason reason) override;

@@ -164,6 +164,16 @@ void TabStripModelSelectionStateAdapter::Clear() {
   selection_state_.SetAnchorTab(nullptr);
 }
 
+void TabStripModelSelectionStateAdapter::SetSelectionFrom(
+    const ui::ListSelectionModel& source) {
+  Clear();
+  for (const auto& index : source.selected_indices()) {
+    AddIndexToSelection(index);
+  }
+  set_active(source.active());
+  set_anchor(source.anchor());
+}
+
 ui::ListSelectionModel
 TabStripModelSelectionStateAdapter::ToListSelectionModel() const {
   ui::ListSelectionModel list_selection_model;
@@ -274,6 +284,11 @@ void ListSelectionModelAdapter::Move(size_t old_index,
 
 void ListSelectionModelAdapter::Clear() {
   model_.Clear();
+}
+
+void ListSelectionModelAdapter::SetSelectionFrom(
+    const ui::ListSelectionModel& source) {
+  model_ = source;
 }
 
 ui::ListSelectionModel ListSelectionModelAdapter::ToListSelectionModel() const {

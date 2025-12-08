@@ -198,10 +198,8 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
 bool BrowserTabStripController::IsTabPinned(const Tab* tab) const {
   return IsTabPinned(tabstrip_->GetModelIndexOf(tab).value());
 }
-
-const ui::ListSelectionModel& BrowserTabStripController::GetSelectionModel()
-    const {
-  return model_->selection_model();
+ui::ListSelectionModel BrowserTabStripController::GetSelectionModel() const {
+  return model_->selection_model().ToListSelectionModel();
 }
 
 int BrowserTabStripController::GetCount() const {

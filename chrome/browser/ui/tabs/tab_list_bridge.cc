@@ -112,7 +112,8 @@ void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
   CHECK(tabs.contains(tab_to_activate))
       << "Tab to activate is not included in tabs to highlight.";
 
-  ui::ListSelectionModel selected_tabs = tab_strip_->selection_model();
+  ui::ListSelectionModel selected_tabs =
+      tab_strip_->selection_model().ToListSelectionModel();
   for (const auto& tab_handle : tabs) {
     auto index = tab_strip_->GetIndexOfTab(tab_handle.Get());
     CHECK_NE(index, TabStripModel::kNoTab)

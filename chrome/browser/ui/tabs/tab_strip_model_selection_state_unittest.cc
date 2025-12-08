@@ -80,8 +80,8 @@ TEST_F(TabStripModelSelectionStateTest, SetActiveTab) {
                                               tab1_.get());
   selection_state.SetActiveTab(tab2_.get());
   EXPECT_EQ(tab2_.get(), selection_state.active_tab());
-  EXPECT_TRUE(selection_state.IsSelected(tab2_.get()));
-  EXPECT_EQ(2u, selection_state.selected_tabs().size());
+  EXPECT_FALSE(selection_state.IsSelected(tab2_.get()));
+  EXPECT_EQ(1u, selection_state.selected_tabs().size());
   EXPECT_TRUE(selection_state.Valid());
 }
 
@@ -90,8 +90,8 @@ TEST_F(TabStripModelSelectionStateTest, SetAnchorTab) {
                                               tab1_.get());
   selection_state.SetAnchorTab(tab2_.get());
   EXPECT_EQ(tab2_.get(), selection_state.anchor_tab());
-  EXPECT_TRUE(selection_state.IsSelected(tab2_.get()));
-  EXPECT_EQ(2u, selection_state.selected_tabs().size());
+  EXPECT_FALSE(selection_state.IsSelected(tab2_.get()));
+  EXPECT_EQ(1u, selection_state.selected_tabs().size());
   EXPECT_TRUE(selection_state.Valid());
 }
 
@@ -152,12 +152,6 @@ TEST_F(TabStripModelSelectionStateTest, Valid) {
 }
 
 TEST_F(TabStripModelSelectionStateTest, InvalidStates) {
-  // Empty selection with active tab is invalid.
-  EXPECT_FALSE(TabStripModelSelectionState({}, tab1_.get(), nullptr).Valid());
-
-  // Empty selection with anchor tab is invalid.
-  EXPECT_FALSE(TabStripModelSelectionState({}, nullptr, tab1_.get()).Valid());
-
   // Non-empty selection with null active tab is invalid.
   EXPECT_FALSE(
       TabStripModelSelectionState({tab1_.get()}, nullptr, tab1_.get()).Valid());
@@ -165,16 +159,6 @@ TEST_F(TabStripModelSelectionStateTest, InvalidStates) {
   // Non-empty selection with null anchor tab is invalid.
   EXPECT_FALSE(
       TabStripModelSelectionState({tab1_.get()}, tab1_.get(), nullptr).Valid());
-
-  // Active tab not in selection is invalid.
-  EXPECT_FALSE(
-      TabStripModelSelectionState({tab1_.get()}, tab2_.get(), tab1_.get())
-          .Valid());
-
-  // Anchor tab not in selection is invalid.
-  EXPECT_FALSE(
-      TabStripModelSelectionState({tab1_.get()}, tab1_.get(), tab2_.get())
-          .Valid());
 }
 
 }  // namespace tabs

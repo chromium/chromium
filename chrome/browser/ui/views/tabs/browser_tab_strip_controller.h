@@ -36,10 +36,6 @@ class TabGroupId;
 class TabGroupVisualData;
 }  // namespace tab_groups
 
-namespace ui {
-class ListSelectionModel;
-}
-
 // An implementation of TabStripController that sources data from the
 // WebContentses in a TabStripModel.
 class BrowserTabStripController : public TabStripController,
@@ -61,7 +57,8 @@ class BrowserTabStripController : public TabStripController,
   bool IsTabPinned(const Tab* tab) const;
 
   // TabStripController implementation:
-  const ui::ListSelectionModel& GetSelectionModel() const override;
+  ui::ListSelectionModel GetSelectionModel() const override;
+
   int GetCount() const override;
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() override;
