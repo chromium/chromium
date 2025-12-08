@@ -27,8 +27,8 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -310,7 +310,7 @@ void MarkAsCleanShutdown() {
 }
 
 bool AreAllBrowsersCloseable() {
-  if (BrowserList::GetInstance()->empty()) {
+  if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
     return true;
   }
 

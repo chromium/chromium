@@ -31,9 +31,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
@@ -303,7 +303,7 @@ class MultiProfilePolicyProviderHelper {
   // The test should call this after the initial profile is created by chrome.
   void AfterInitialProfileCreated() {
     // Mimics what InProcessBrowserTest does to get the first created Profile.
-    ASSERT_FALSE(BrowserList::GetInstance()->empty());
+    ASSERT_FALSE(GlobalBrowserCollection::GetInstance()->IsEmpty());
     BrowserWindowInterface* const first_browser =
         GetLastActiveBrowserWindowInterfaceWithAnyProfile();
     profile_1_ = first_browser->GetProfile();

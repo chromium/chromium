@@ -55,7 +55,7 @@
 #include "ui/gfx/image/image.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck crbug.com/40147906
 #endif
 
 namespace {
@@ -801,7 +801,8 @@ void ProfileAttributesStorage::RecordDeletedProfileState(
   bool is_last_profile = GetNumberOfProfiles() <= 1u;
   // If the profile has windows opened, they are still open at this moment.
   // Thus, this really means that only the profile manager is open.
-  bool no_browser_windows = BrowserList::GetInstance()->empty();
+  const bool no_browser_windows =
+      GlobalBrowserCollection::GetInstance()->IsEmpty();
   profile_metrics::LogProfileDeletionContext(is_last_profile,
                                              no_browser_windows);
 }

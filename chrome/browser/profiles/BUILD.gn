@@ -234,7 +234,10 @@ source_set("profile_util_impl") {
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_list" ]
+    deps += [
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/browser_window",
+    ]
   }
 
   if (is_chromeos) {

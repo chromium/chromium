@@ -52,14 +52,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/common/chrome_constants.h"
@@ -885,8 +884,8 @@ void InProcessBrowserTest::PostRunTestOnMainThread() {
 
   QuitBrowsers();
 
-  // BrowserList should be empty at this point.
-  CHECK(BrowserList::GetInstance()->empty());
+  // There should be no browsers at this point.
+  CHECK(GlobalBrowserCollection::GetInstance()->IsEmpty());
 }
 
 void InProcessBrowserTest::QuitBrowsers() {

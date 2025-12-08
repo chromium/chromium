@@ -94,9 +94,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
@@ -1268,7 +1268,7 @@ class ExtensionWindowCreateIwaTest
   }
 
   void TearDownOnMainThread() override {
-    if (BrowserList::GetInstance()->empty()) {
+    if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
       // Tests crash during teardown if no browser has opened combined with the
       // command line switches above. Open a browser to avoid the crash.
       CreateBrowser(profile());

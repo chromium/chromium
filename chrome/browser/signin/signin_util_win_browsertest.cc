@@ -27,6 +27,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -477,7 +478,7 @@ IN_PROC_BROWSER_TEST_F(SigninUtilWinNoStartingWindowBrowserTest,
                        FRESigninFlow) {
   // First run and no browser is active yet.
   ASSERT_TRUE(first_run::IsChromeFirstRun());
-  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+  ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   ASSERT_FALSE(g_browser_process->IsShuttingDown());
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();

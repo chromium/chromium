@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 namespace metrics {
 
@@ -66,7 +67,7 @@ void ChromeVisibilityObserver::OnBrowserNoLongerActive(Browser* browser) {
 void ChromeVisibilityObserver::OnBrowserRemoved(Browser* browser) {
   // If there are no browser instances left then we should notify that browser
   // is not visible anymore immediately without waiting.
-  if (BrowserList::GetInstance()->empty()) {
+  if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
     CancelVisibilityChange();
     SendVisibilityChangeEvent(false, base::TimeDelta());
   }

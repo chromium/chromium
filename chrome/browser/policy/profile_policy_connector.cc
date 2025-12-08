@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif
 
 namespace policy {
@@ -196,7 +197,7 @@ class LocalTestInfoBarVisibilityManager :
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     CHECK(browser);
 
-    if (BrowserList::GetInstance()->empty()) {
+    if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
       BrowserList::GetInstance()->RemoveObserver(this);
     }
     browser->tab_strip_model()->RemoveObserver(this);

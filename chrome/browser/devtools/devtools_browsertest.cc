@@ -135,9 +135,9 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -3343,12 +3343,13 @@ class KeepAliveDevToolsTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(KeepAliveDevToolsTest, KeepsAliveUntilBrowserClose) {
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  const auto* global_colection = GlobalBrowserCollection::GetInstance();
+  EXPECT_TRUE(global_colection->IsEmpty());
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
   EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::REMOTE_DEBUGGING));
   chrome::NewEmptyWindow(ProfileManager::GetLastUsedProfile());
-  EXPECT_FALSE(BrowserList::GetInstance()->empty());
+  EXPECT_FALSE(global_colection->IsEmpty());
   BrowserHandler handler(nullptr, std::string());
   handler.Close();
   ui_test_utils::WaitForBrowserToClose();

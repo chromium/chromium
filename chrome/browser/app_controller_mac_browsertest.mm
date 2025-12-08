@@ -54,10 +54,10 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
@@ -774,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   Profile* profile = browser()->profile();
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   // Create an incognito browser and check that it is the last active browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
   Profile* profile = browser()->profile();
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   // Force incognito mode.
   IncognitoModePrefs::SetAvailability(
       profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   Profile* profile = browser()->profile();
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   // Force incognito mode.
   IncognitoModePrefs::SetAvailability(
       profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
@@ -1230,7 +1230,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   Profile* profile = browser()->profile();
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   // Force incognito mode.
   IncognitoModePrefs::SetAvailability(
       profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);

@@ -12,8 +12,8 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   browser_shutdown::RecordShutdownMetrics();
 
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   EXPECT_EQ(browser_shutdown::GetShutdownType(),
             browser_shutdown::ShutdownType::kWindowClose);
 
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
   exit_waiter.Run();
 
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   EXPECT_EQ(browser_shutdown::GetShutdownType(),
             browser_shutdown::ShutdownType::kWindowClose);
 
