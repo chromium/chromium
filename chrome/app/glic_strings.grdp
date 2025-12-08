@@ -340,6 +340,13 @@
     Gemini
   </message>
 
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL" desc="Label on the button used to open Gemini in Chrome.">
+    Ask Gemini
+  </message>
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_BROWSE_LABEL" desc="Label on the button used to open Gemini in Chrome.">
+    Browse with AI
+  </message>
+
   <!-- Content area context menu. -->
   <if expr="use_titlecase">
     <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt">Create Image with Gemini</message>
