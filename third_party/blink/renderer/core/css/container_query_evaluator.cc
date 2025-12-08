@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/container_state.h"
@@ -975,7 +977,9 @@ StyleRecalcChange ContainerQueryEvaluator::ApplyScrollStateAndStyleChanges(
   // the container values and invalidate style for any changed queries.
   bool invalidate_for_font =
       (unit_flags_ & MediaQueryExpValue::kFontRelative) &&
-      !base::ValuesEquivalent(old_style.GetFont(), new_style.GetFont());
+      (base::FeatureList::IsEnabled(blink::features::kCSSFontComparisonFix)
+           ? !base::ValuesEquivalent(old_style.GetFont(), new_style.GetFont())
+           : old_style.GetFont() != new_style.GetFont());
 
   // Writing direction changes may affect how logical queries match for size and
   // scroll-state() queries even when the physical size or scroll-state do not

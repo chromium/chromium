@@ -649,7 +649,9 @@ void CanvasRenderingContext2D::PruneLocalFontCache(size_t target_size) {
 void CanvasRenderingContext2D::StyleDidChange(const ComputedStyle* old_style,
                                               const ComputedStyle& new_style) {
   if (old_style &&
-      base::ValuesEquivalent(old_style->GetFont(), new_style.GetFont())) {
+      (base::FeatureList::IsEnabled(blink::features::kCSSFontComparisonFix)
+           ? base::ValuesEquivalent(old_style->GetFont(), new_style.GetFont())
+           : old_style->GetFont() == new_style.GetFont())) {
     return;
   }
   PruneLocalFontCache(0);

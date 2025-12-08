@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
@@ -274,7 +276,9 @@ bool InlineBoxState::CanAddTextOfStyle(const ComputedStyle& text_style) const {
     return false;
   DCHECK(style);
   if (style == &text_style ||
-      base::ValuesEquivalent(style->GetFont(), text_style.GetFont()) ||
+      (base::FeatureList::IsEnabled(blink::features::kCSSFontComparisonFix)
+           ? base::ValuesEquivalent(style->GetFont(), text_style.GetFont())
+           : style->GetFont() == text_style.GetFont()) ||
       style->GetFont()->PrimaryFont() == text_style.GetFont()->PrimaryFont()) {
     return true;
   }
