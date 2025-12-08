@@ -833,7 +833,12 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
           // ComputedStyle, i.e. a ComputedStyle that wasn't updated during a
           // style update because the element isn't currently being rendered,
           // but is not discarded either. We ignore these links as well.
-          if (stale_links_.Contains(link)) {
+          // We also check LockedAncestorPreventingStyle here
+          // because stale_links_ may not be populated for newly inserted links
+          // (AddLink doesn't check for locked ancestors to avoid triggering
+          // slot assignment during node insertion).
+          if (stale_links_.Contains(link) ||
+              DisplayLockUtilities::LockedAncestorPreventingStyle(*link)) {
             return;
           }
 
@@ -966,11 +971,11 @@ void DocumentSpeculationRules::AddLink(HTMLAnchorElementBase* link) {
   DCHECK(!base::Contains(stale_links_, link));
 
   pending_links_.insert(link);
-  // TODO(crbug.com/1371522): A stale link is guaranteed to not match, so we
-  // should put it into |unmatched_links_| directly and skip queueing an update.
-  if (DisplayLockUtilities::LockedAncestorPreventingStyle(*link)) {
-    stale_links_.insert(link);
-  }
+  // We don't check LockedAncestorPreventingStyle here because this
+  // function can be called during node insertion (InsertedInto), at which point
+  // slot assignment recalculation is forbidden. The check for display-locked
+  // ancestors is done later in AddLinkBasedSpeculationCandidates when we
+  // actually process the links.
 }
 
 void DocumentSpeculationRules::RemoveLink(HTMLAnchorElementBase* link) {
