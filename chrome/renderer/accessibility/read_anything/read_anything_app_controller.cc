@@ -1147,6 +1147,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
+      .SetProperty("isImmersiveEnabled",
+                   &ReadAnythingAppController::IsImmersiveEnabled)
       .SetProperty("isTsTextSegmentationEnabled",
                    &ReadAnythingAppController::IsTsTextSegmentationEnabled)
       .SetProperty("isReadabilityEnabled",
@@ -1628,6 +1630,10 @@ bool ReadAnythingAppController::IsLeafNode(ui::AXNodeID ax_node_id) const {
 
 bool ReadAnythingAppController::IsReadAloudEnabled() const {
   return features::IsReadAnythingReadAloudEnabled();
+}
+
+bool ReadAnythingAppController::IsImmersiveEnabled() const {
+  return features::IsImmersiveReadAnythingEnabled();
 }
 
 bool ReadAnythingAppController::IsTsTextSegmentationEnabled() const {

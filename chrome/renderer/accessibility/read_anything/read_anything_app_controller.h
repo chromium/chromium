@@ -256,6 +256,7 @@ class ReadAnythingAppController
   void OnDistilled(int word_count);
   bool IsGoogleDocs() const;
   bool IsReadAloudEnabled() const;
+  bool IsImmersiveEnabled() const;
   bool IsTsTextSegmentationEnabled() const;
   bool IsReadabilityEnabled() const;
   bool IsChromeOsAsh() const;
