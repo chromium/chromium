@@ -102,8 +102,6 @@ ExtensionProvider::CreateProvidedFileSystem(
     return std::make_unique<ThrottledFileSystem>(
         std::make_unique<ProvidedFileSystem>(profile, file_system_info));
   }
-  // TODO(b/317137739): Check the file system has a CLOUD source before
-  // creating a CloudFileSystem.
   // Cache type is only set when the
   // `FileSystemProviderCloudFileSystemEnabled` and
   // `FileSystemProviderContentCache` feature flags are enabled and the
