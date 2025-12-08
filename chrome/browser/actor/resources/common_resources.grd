@@ -21,6 +21,9 @@
       <message name="IDS_GIVE_TASK_BACK_A11Y_LABEL" desc="[Placeholder Description]" translateable="false">
         Give task back
       </message>
+      <message name="IDS_TASK_IN_PROGRESS_TOAST_BODY" desc="Text on a toast notification that is shown when an actor is working on a task" translateable="false">
+        Your task is still in progress
+      </message>
     </messages>
   </release>
 </grit>
