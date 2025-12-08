@@ -63,7 +63,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/resource/video_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -351,7 +351,7 @@ void HTMLVideoElement::ReportVisibility(bool meets_visibility_threshold) {
 }
 
 void HTMLVideoElement::ResetCache(TimerBase*) {
-  resource_provider_.reset();
+  snapshot_provider_.reset();
 }
 
 bool HTMLVideoElement::IsPersistent() const {
@@ -575,12 +575,12 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   gfx::ColorSpace dest_color_space =
       reinterpret_as_srgb ? gfx::ColorSpace::CreateSRGB()
                           : media_video_frame->CompatRGBColorSpace();
-  if (!resource_provider_ ||
-      (resource_provider_->IsAccelerated() &&
-       resource_provider_->IsGpuContextLost()) ||
+  if (!snapshot_provider_ ||
+      (snapshot_provider_->IsAccelerated() &&
+       snapshot_provider_->IsGpuContextLost()) ||
       allow_accelerated_images != allow_accelerated_images_ ||
-      dest_size != resource_provider_->Size() ||
-      dest_color_space != resource_provider_->GetColorSpace()) {
+      dest_size != snapshot_provider_->Size() ||
+      dest_color_space != snapshot_provider_->GetColorSpace()) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (allow_accelerated_images) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -588,22 +588,23 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
             wrapper->ContextProvider().RasterContextProvider();
       }
     }
-    resource_provider_.reset();
+    snapshot_provider_.reset();
     // Providing a null |raster_context_provider| creates a software provider.
     // TODO(https://crbug.com/1341235): The choice of color type and alpha type
     // is inappropriate in many circumstances.
-    resource_provider_ = CreateSnapshotProviderForVideoFrame(
+    snapshot_provider_ = CreateSnapshotProviderForVideoFrame(
         dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
         dest_color_space, raster_context_provider);
-    if (!resource_provider_)
+    if (!snapshot_provider_) {
       return nullptr;
+    }
     allow_accelerated_images_ = allow_accelerated_images;
   }
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
                                      FROM_HERE);
 
   auto image = CreateImageFromVideoFrame(
-      std::move(media_video_frame), resource_provider_.get(), video_renderer,
+      std::move(media_video_frame), snapshot_provider_.get(), video_renderer,
       /*prefer_tagged_orientation=*/true, reinterpret_as_srgb);
   if (image)
     image->SetOriginClean(!WouldTaintOrigin());

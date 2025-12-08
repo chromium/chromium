@@ -98,7 +98,7 @@ class CORE_EXPORT HTMLVideoElement final : public HTMLMediaElement,
 
   // Helper for GetSourceImageForCanvas() and other external callers who want a
   // StaticBitmapImage of the current VideoFrame. If `allow_accelerated_images`
-  // is set to false a software backed CanvasResourceProvider will be used to
+  // is set to false a software backed CanvasSnapshotProvider will be used to
   // produce the StaticBitmapImage. If `size` is specified, the image will be
   // scaled to it, otherwise the image will be in its natural size. If
   // `reinterpret_as_srgb` is true, then reinterpret the video as thought it
@@ -279,7 +279,7 @@ class CORE_EXPORT HTMLVideoElement final : public HTMLMediaElement,
 
   // Used to fulfill blink::Image requests (CreateImage(),
   // GetSourceImageForCanvas(), etc). Created on demand.
-  std::unique_ptr<CanvasSnapshotProvider> resource_provider_;
+  std::unique_ptr<CanvasSnapshotProvider> snapshot_provider_;
   bool allow_accelerated_images_ = true;
   HeapTaskRunnerTimer<HTMLVideoElement> cache_deleting_timer_;
 
