@@ -22,9 +22,6 @@ struct AXNodeData {
   map<ax.mojom.StringAttribute, string> string_attributes;
   map<ax.mojom.IntAttribute, int32> int_attributes;
   map<ax.mojom.FloatAttribute, float> float_attributes;
-  // If bool_attributes_data is present, bool_attributes will be ignored.
-  // TODO: crbug.com/422234724 - Deprecate when the AXBitset experiment is over.
-  map<ax.mojom.BoolAttribute, bool>? bool_attributes;
   map<ax.mojom.IntListAttribute, array<int32>>
       intlist_attributes;
   map<ax.mojom.StringListAttribute, array<string>>
