@@ -679,8 +679,6 @@ void DataAggregatorService::InitiateEnqueueRequest() {
 
   enqueue_in_progress_ = true;
 
-  // TODO(b/339455254): have each data source specify a priority instead
-  // of assuming kLow for every enqueue.
   uploader_remote_->Enqueue(
       pending_transport_payloads_.front().SerializeAsString(),
       chromeos::cfm::mojom::EnqueuePriority::kLow,
