@@ -20688,47 +20688,6 @@
             ]
         }
     ],
-    "ReclaimOldPrepaintTiles": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReclaimOldPrepaintTiles"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReclaimPrepaintTilesWhenIdle": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReclaimPrepaintTilesWhenIdle"
-                    ]
-                }
-            ]
-        }
-    ],
     "RedWarningSurvey": [
         {
             "platforms": [
