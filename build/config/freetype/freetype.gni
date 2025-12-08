@@ -21,13 +21,8 @@ declare_args() {
   # FreeType is completely replaced with the Rust-based Fontations set of
   # libraries plus Skia path rendering.
   #
-  # Ideally, this should be set with the same value as `enable_pdf` in
-  # //pdf/features.gni, but:
-  #
-  # - Cast on Linux depends on Fontconfig, and Fontconfig depends on FreeType:
-  #   https://crbug.com/370816215
-  #
-  # Note: //build should not import directly from //pdf for layering reasons.
-  enable_freetype =
-      !is_android && !is_ios && (is_linux || !is_castos) && !is_fuchsia
+  # This should be kept in sync with the value of `enable_pdf` in
+  # //pdf/features.gni, but for layering reasons,
+  # we can't import pdf's features.gni here.
+  enable_freetype = !is_android && !is_ios && !is_castos && !is_fuchsia
 }
