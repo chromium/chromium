@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -279,7 +279,7 @@ class CORE_EXPORT HTMLVideoElement final : public HTMLMediaElement,
 
   // Used to fulfill blink::Image requests (CreateImage(),
   // GetSourceImageForCanvas(), etc). Created on demand.
-  std::unique_ptr<CanvasResourceProvider> resource_provider_;
+  std::unique_ptr<CanvasSnapshotProvider> resource_provider_;
   bool allow_accelerated_images_ = true;
   HeapTaskRunnerTimer<HTMLVideoElement> cache_deleting_timer_;
 

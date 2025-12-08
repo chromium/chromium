@@ -235,7 +235,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // rate.
   virtual bool IsSingleBuffered() const = 0;
 
-  bool IsGpuContextLost() const;
+  bool IsGpuContextLost() const override;
 
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,

@@ -6,6 +6,7 @@
 
 #include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -26,6 +27,7 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
   virtual gfx::ColorSpace GetColorSpace() const = 0;
   virtual SkAlphaType GetAlphaType() const = 0;
   virtual bool IsValid() const = 0;
+  virtual bool IsGpuContextLost() const = 0;
   virtual bool IsExternalBitmapProvider() const { return false; }
 };
 
