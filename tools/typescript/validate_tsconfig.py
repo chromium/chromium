@@ -147,9 +147,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, platform):
         'ash/webui/help_app_ui/',
         # TODO(b/267329383): Migrate A11y to TypeScript.
         'chrome/browser/resources/chromeos/accessibility',
-        'chrome/browser/resources/chromeos/crostini_installer',
-        'chrome/browser/resources/chromeos/crostini_upgrader',
-        'chrome/browser/resources/chromeos/gaia_action_buttons',
+        'chrome/browser/resources/chromeos/password_change',
         'chrome/test/data/webui/chromeos',
         'chrome/test/data/webui/chromeos/ash_common',
         'chrome/test/data/webui/chromeos/nearby_share',
