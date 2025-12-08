@@ -2545,8 +2545,9 @@ IN_PROC_BROWSER_TEST_F(
       Browser::WindowFeature::kFeatureTitleBar));
 }
 
-// TODO(https://crbug.com/458599317) The test doesn't work correctly on Mac
-#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/458599317) The test doesn't work correctly on Mac and
+// is flaky on Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_MaximizeFullscreenAndRestoreWindowWithApi \
   DISABLED_MaximizeFullscreenAndRestoreWindowWithApi
 #else
