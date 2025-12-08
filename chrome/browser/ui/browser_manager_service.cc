@@ -22,6 +22,14 @@ void BrowserManagerService::Shutdown() {
   browsers_and_subscriptions_.clear();
 }
 
+bool BrowserManagerService::IsEmpty() const {
+  return browsers_and_subscriptions_.empty();
+}
+
+size_t BrowserManagerService::GetSize() const {
+  return browsers_and_subscriptions_.size();
+}
+
 void BrowserManagerService::AddBrowser(std::unique_ptr<Browser> browser) {
   CHECK(browsers_and_subscriptions_for_testing_.empty());
   BrowserWindowInterface* const browser_ptr = browser.get();

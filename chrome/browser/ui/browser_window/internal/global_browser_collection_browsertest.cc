@@ -138,6 +138,10 @@ class GlobalBrowserCollectionTestWithOrder
     browsers_.push_back(browser());
     browsers_.push_back(CreateBrowserWithNewProfile());
     browsers_.push_back(CreateBrowserWithNewProfile());
+
+    const auto* global_colection = GlobalBrowserCollection::GetInstance();
+    EXPECT_FALSE(global_colection->IsEmpty());
+    EXPECT_EQ(global_colection->GetSize(), 3u);
   }
   void TearDownOnMainThread() override {
     browsers_.clear();

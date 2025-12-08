@@ -32,6 +32,10 @@ class BrowserManagerService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
+  // BrowserCollection:
+  bool IsEmpty() const override;
+  size_t GetSize() const override;
+
   // Adds a new Browser to be owned by the service.
   void AddBrowser(std::unique_ptr<Browser> browser);
 

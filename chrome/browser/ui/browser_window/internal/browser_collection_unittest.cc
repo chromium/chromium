@@ -16,6 +16,8 @@ class TestBrowserCollection : public BrowserCollection {
   ~TestBrowserCollection() override = default;
 
   // BrowserCollection:
+  bool IsEmpty() const override { return browsers_.empty(); }
+  size_t GetSize() const override { return browsers_.size(); }
   BrowserVector GetBrowsers(Order order) override { return browsers_; }
 
   void SetBrowsers(BrowserVector browsers) { browsers_ = std::move(browsers); }
@@ -39,6 +41,8 @@ TEST_F(BrowserCollectionTest, ForEachIteratesOverAllBrowsers) {
   MockBrowserWindowInterface browser1;
   MockBrowserWindowInterface browser2;
   collection.SetBrowsers({&browser1, &browser2});
+  EXPECT_FALSE(collection.IsEmpty());
+  EXPECT_EQ(collection.GetSize(), 2u);
 
   std::vector<BrowserWindowInterface*> visited;
   collection.ForEach(
@@ -58,6 +62,8 @@ TEST_F(BrowserCollectionTest, ForEachStopsWhenCallbackReturnsFalse) {
   MockBrowserWindowInterface browser1;
   MockBrowserWindowInterface browser2;
   collection.SetBrowsers({&browser1, &browser2});
+  EXPECT_FALSE(collection.IsEmpty());
+  EXPECT_EQ(collection.GetSize(), 2u);
 
   std::vector<BrowserWindowInterface*> visited;
   collection.ForEach(
@@ -77,6 +83,8 @@ TEST_F(BrowserCollectionTest, ForEachResilientToBrowserDestruction) {
   MockBrowserWindowInterface browser2;
   MockBrowserWindowInterface browser3;
   collection.SetBrowsers({&browser1, &browser2, &browser3});
+  EXPECT_FALSE(collection.IsEmpty());
+  EXPECT_EQ(collection.GetSize(), 3u);
 
   std::vector<BrowserWindowInterface*> visited;
   collection.ForEach(

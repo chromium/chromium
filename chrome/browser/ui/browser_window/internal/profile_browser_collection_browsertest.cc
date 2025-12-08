@@ -21,6 +21,11 @@ class ProfileBrowserCollectionTest
     browsers_.push_back(browser());
     browsers_.push_back(CreateBrowser(GetProfile()));
     browsers_.push_back(CreateBrowser(GetProfile()));
+
+    const auto* profile_colection =
+        ProfileBrowserCollection::GetForProfile(GetProfile());
+    EXPECT_FALSE(profile_colection->IsEmpty());
+    EXPECT_EQ(profile_colection->GetSize(), 3u);
   }
   void TearDownOnMainThread() override {
     browsers_.clear();

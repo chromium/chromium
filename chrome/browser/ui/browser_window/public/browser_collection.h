@@ -46,6 +46,12 @@ class BrowserCollection {
   void ForEach(base::FunctionRef<bool(BrowserWindowInterface*)> on_browser,
                Order order);
 
+  // True if there are no BrowserWindowInterfaces belonging to this collection.
+  virtual bool IsEmpty() const = 0;
+
+  // Returns the number of BrowserWindowInterfaces belonging to this collection.
+  virtual size_t GetSize() const = 0;
+
  protected:
   BrowserCollection();
   virtual ~BrowserCollection();

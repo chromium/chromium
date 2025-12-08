@@ -31,6 +31,10 @@ class GlobalBrowserCollection final : public BrowserCollection,
 
   static GlobalBrowserCollection* GetInstance();
 
+  // BrowserCollection:
+  bool IsEmpty() const override;
+  size_t GetSize() const override;
+
  protected:
   // BrowserCollection:
   BrowserVector GetBrowsers(Order order) override;
