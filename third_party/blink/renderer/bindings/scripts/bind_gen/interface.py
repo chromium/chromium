@@ -2846,11 +2846,7 @@ return ${class_name}::NamedPropertySetterCallback(
 // 3.9.2. [[Set]]
 // https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // step 1. If O and Receiver are the same object, then:
-// (V8 calls this callback only when that's the case).\
-"""),
-        TextNode("// TODO(https://crbug.com/455600234): remove this CHECK."),
-        TextNode("CHECK(${info}.HolderV2() == ${info}.This());"),
-        TextNode("""\
+// (V8 calls this callback only when that's the case).
 // step 1.1.1. Invoke the indexed property setter with P and V.\
 """),
         make_steps_of_ce_reactions(cg_context),
@@ -3238,11 +3234,7 @@ return v8::Intercepted::kNo;
 // 3.9.2. [[Set]]
 // https://webidl.spec.whatwg.org/#legacy-platform-object-set
 // step 1. If O and Receiver are the same object, then:
-// (V8 calls this callback only when that's the case).\
-"""),
-        TextNode("// TODO(https://crbug.com/455600234): remove this CHECK."),
-        TextNode("CHECK(${info}.HolderV2() == ${info}.This());"),
-        TextNode("""\
+// (V8 calls this callback only when that's the case).
 // step 1.2.1. Invoke the named property setter with P and V.\
 """),
         make_steps_of_ce_reactions(cg_context),
