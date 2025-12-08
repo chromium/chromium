@@ -1,6 +1,7 @@
 caption: Choose whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature should be enabled.
 default: null
-desc: |- # TODO(b/416726104): Move the considerations and other details to a help center article.
+deprecated: true
+desc: |-
   A policy to control whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> <ph name="IP_PROTECTION_NAME">IP Protection</ph> feature should be enabled.
 
   <ph name="IP_PROTECTION_NAME">IP Protection</ph> is a feature that limits availability of a user's original IP address for certain third-party network requests made while browsing in Incognito mode, enhancing protections against cross-site tracking during Incognito browsing sessions.
@@ -28,9 +29,9 @@ features:
   dynamic_refresh: true
   per_profile: true
 supported_on:
-- android:138-
-- chrome.*:138-
-- chrome_os:138-
+- android:138-143
+- chrome.*:138-143
+- chrome_os:138-143
 items:
 - caption: Disable the <ph name="IP_PROTECTION_NAME">IP Protection</ph> feature.
   value: false
