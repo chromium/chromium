@@ -7801,9 +7801,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CONFIRM_MSG_RESTORE_ENTERPRISE_DEFAULTS" desc="The text label of the restore default shortcuts button when editing an enterprise shortcuts. (On the New Tab Page)">
         Restore organization shortcuts
       </message>
-      <message name="IDS_NTP_CUSTOM_BG_CHROME_WALLPAPERS" desc="The text label of the Chrome backgrounds option for background customization.(On the New Tab Page)">
-        Chrome backgrounds
-      </message>
       <message name="IDS_NTP_CUSTOM_BG_UPLOAD_AN_IMAGE" desc="The text label of the upload an image option for background customization. (On the New Tab Page)">
         Upload an image
       </message>
