@@ -6,6 +6,8 @@ source_set("public") {
   sources = [
     "accessibility_utils.h",
     "accessibility_utils.mm",
+    "conflict_item_identifier.h",
+    "conflict_item_identifier.mm",
     "import_data_item.h",
     "import_data_item.mm",
     "import_data_item_consumer.h",
