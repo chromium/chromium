@@ -11,9 +11,11 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "components/legion/crypto/constants.h"
 #include "components/legion/mojom/oak_session.mojom.h"
 #include "content/public/browser/service_process_host.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
@@ -73,6 +75,17 @@ std::vector<uint8_t> ConvertToBytes(
 
 }  // namespace
 
+// static
+std::unique_ptr<SecureSessionAsyncImpl>
+SecureSessionAsyncImpl::CreateForTesting(  // IN-TEST
+    mojo::Remote<mojom::OakSession> service) {
+  return base::WrapUnique(new SecureSessionAsyncImpl(std::move(service)));
+}
+
+SecureSessionAsyncImpl::SecureSessionAsyncImpl(
+    mojo::Remote<mojom::OakSession> service)
+    : service_(std::move(service)) {}
+
 SecureSessionAsyncImpl::SecureSessionAsyncImpl()
     : service_(content::ServiceProcessHost::Launch<mojom::OakSession>(
           content::ServiceProcessHost::Options()
@@ -105,20 +118,25 @@ void SecureSessionAsyncImpl::ProcessHandshakeResponse(
 }
 
 void SecureSessionAsyncImpl::Encrypt(const Request& data,
-                                     EncryptOnceCallback callback) {
-  service_->Encrypt(
-      data,
+                                     EncryptOnceCallback original_callback) {
+  auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       base::BindOnce(
           [](EncryptOnceCallback callback,
              const std::optional<std::vector<uint8_t>>& encrypted_data) {
             std::move(callback).Run(ConvertToEncryptedMessage(encrypted_data));
           },
-          std::move(callback)));
+          std::move(original_callback)),
+      std::nullopt);
+
+  service_->Encrypt(data, std::move(callback));
 }
 
 void SecureSessionAsyncImpl::Decrypt(
     const oak::session::v1::EncryptedMessage& data,
-    DecryptOnceCallback callback) {
+    DecryptOnceCallback original_callback) {
+  auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(original_callback), std::nullopt);
+
   service_->Decrypt(ConvertToBytes(data), std::move(callback));
 }
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_LEGION_SECURE_SESSION_ASYNC_IMPL_H_
 #define COMPONENTS_LEGION_SECURE_SESSION_ASYNC_IMPL_H_
 
+#include <memory>
 #include <optional>
 
 #include "components/legion/mojom/oak_session.mojom.h"
@@ -16,6 +17,9 @@ namespace legion {
 
 class SecureSessionAsyncImpl : public SecureSession {
  public:
+  static std::unique_ptr<SecureSessionAsyncImpl> CreateForTesting(
+      mojo::Remote<mojom::OakSession> service);
+
   SecureSessionAsyncImpl();
   ~SecureSessionAsyncImpl() override;
 
@@ -30,6 +34,8 @@ class SecureSessionAsyncImpl : public SecureSession {
                DecryptOnceCallback callback) override;
 
  private:
+  explicit SecureSessionAsyncImpl(mojo::Remote<mojom::OakSession> service);
+
   mojo::Remote<mojom::OakSession> service_;
 };
 

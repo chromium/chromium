@@ -73,6 +73,7 @@ source_set("unit_tests") {
     "attestation_handler_impl_unittest.cc",
     "client_impl_unittest.cc",
     "secure_channel_impl_unittest.cc",
+    "secure_session_async_impl_unittest.cc",
   ]
   deps = [
     ":legion",
@@ -80,7 +81,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/legion/crypto:unit_tests",
+    "//components/legion/mojom",
     "//components/legion/phosphor:unit_tests",
+    "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/oak:oak_proto",
