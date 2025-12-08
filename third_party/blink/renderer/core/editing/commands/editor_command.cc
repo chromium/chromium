@@ -956,8 +956,7 @@ static bool ExecuteTranspose(LocalFrame& frame,
   if (text.length() != 2) {
     return false;
   }
-  const String& transposed =
-      StrCat({StringView(text, text.length() - 1, 1), StringView(text, 0, 1)});
+  const String& transposed = text.Right(1) + text.Left(1);
 
   if (DispatchBeforeInputInsertText(EventTargetNodeForDocument(document),
                                     transposed,
@@ -988,9 +987,7 @@ static bool ExecuteTranspose(LocalFrame& frame,
   if (new_text.length() != 2) {
     return false;
   }
-  const String& new_transposed =
-      StrCat({StringView(new_text, new_text.length() - 1, 1),
-              StringView(new_text, 0, 1)});
+  const String& new_transposed = new_text.Right(1) + new_text.Left(1);
 
   const SelectionInDOMTree& new_selection =
       SelectionInDOMTree::Builder().SetBaseAndExtent(new_range).Build();

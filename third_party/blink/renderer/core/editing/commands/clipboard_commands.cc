@@ -644,8 +644,8 @@ class CORE_EXPORT PasteImageResourceObserver final
   }
 
   String BuildMarkup() const {
-    return StrCat({"<img src=\"", src_.GetString(),
-                   "\" referrerpolicy=\"no-referrer\" />"});
+    return "<img src=\"" + src_.GetString() +
+           "\" referrerpolicy=\"no-referrer\" />";
   }
 
   DocumentFragment* BuildFragment() const {
