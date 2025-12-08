@@ -587,6 +587,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   // PipScreenCaptureCoordinatorProxy::Observer:
   void OnStateChanged(
       const std::optional<NativeWindowId>& new_pip_window_id,
+      const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id,
       const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
           captures) override {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());

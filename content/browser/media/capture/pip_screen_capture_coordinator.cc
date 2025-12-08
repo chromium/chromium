@@ -40,7 +40,8 @@ PipScreenCaptureCoordinator::~PipScreenCaptureCoordinator() = default;
 void PipScreenCaptureCoordinator::OnPipShown(WebContents& pip_web_contents) {
 #if BUILDFLAG(IS_MAC)
   if (auto* instance = PipScreenCaptureCoordinatorImpl::GetInstance()) {
-    instance->OnPipShown(pip_web_contents);
+    instance->OnPipShown(pip_web_contents,
+                         GetWebContents().GetPrimaryMainFrame()->GetGlobalId());
   }
 #endif
 }

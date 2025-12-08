@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/capture/capture_switches.h"
 
@@ -60,21 +61,25 @@ PipScreenCaptureCoordinatorImpl::PipScreenCaptureCoordinatorImpl() = default;
 PipScreenCaptureCoordinatorImpl::~PipScreenCaptureCoordinatorImpl() = default;
 
 void PipScreenCaptureCoordinatorImpl::OnPipShown(
-    WebContents& pip_web_contents) {
+    WebContents& pip_web_contents,
+    const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id) {
   std::optional<NativeWindowId> new_pip_window_id;
   new_pip_window_id = GetNativeWindowIdMac(pip_web_contents);
   if (new_pip_window_id) {
-    OnPipShown(*new_pip_window_id);
+    OnPipShown(*new_pip_window_id, new_pip_owner_render_frame_host_id);
   }
 }
 
 void PipScreenCaptureCoordinatorImpl::OnPipShown(
-    NativeWindowId new_pip_window_id) {
-  if (pip_window_id_ == new_pip_window_id) {
+    NativeWindowId new_pip_window_id,
+    const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id) {
+  if (pip_window_id_ == new_pip_window_id &&
+      pip_owner_render_frame_host_id_ == new_pip_owner_render_frame_host_id) {
     return;
   }
 
   pip_window_id_ = new_pip_window_id;
+  pip_owner_render_frame_host_id_ = new_pip_owner_render_frame_host_id;
   NotifyStateChanged();
 }
 
@@ -83,12 +88,18 @@ void PipScreenCaptureCoordinatorImpl::OnPipClosed() {
     return;
   }
   pip_window_id_ = std::nullopt;
+  pip_owner_render_frame_host_id_ = {};
   NotifyStateChanged();
 }
 
 std::optional<NativeWindowId> PipScreenCaptureCoordinatorImpl::PipWindowId()
     const {
   return pip_window_id_;
+}
+
+GlobalRenderFrameHostId
+PipScreenCaptureCoordinatorImpl::GetPipOwnerRenderFrameHostId() const {
+  return pip_owner_render_frame_host_id_;
 }
 
 std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>
@@ -114,14 +125,16 @@ void PipScreenCaptureCoordinatorImpl::RemoveCaptureOnUIThread(
 
 void PipScreenCaptureCoordinatorImpl::NotifyStateChanged() {
   for (Observer& obs : observers_) {
-    obs.OnStateChanged(pip_window_id_, captures_);
+    obs.OnStateChanged(pip_window_id_, pip_owner_render_frame_host_id_,
+                       captures_);
   }
 }
 
 std::unique_ptr<PipScreenCaptureCoordinatorProxy>
 PipScreenCaptureCoordinatorImpl::CreateProxy() {
   return std::make_unique<PipScreenCaptureCoordinatorProxyImpl>(
-      weak_factory_.GetWeakPtr(), PipWindowId(), captures_);
+      weak_factory_.GetWeakPtr(), PipWindowId(), GetPipOwnerRenderFrameHostId(),
+      captures_);
 }
 
 void PipScreenCaptureCoordinatorImpl::AddObserver(Observer* observer) {
@@ -134,6 +147,7 @@ void PipScreenCaptureCoordinatorImpl::RemoveObserver(Observer* observer) {
 
 void PipScreenCaptureCoordinatorImpl::ResetForTesting() {
   pip_window_id_ = std::nullopt;
+  pip_owner_render_frame_host_id_ = {};
   observers_.Clear();
   captures_.clear();
   weak_factory_.InvalidateWeakPtrs();
