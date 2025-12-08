@@ -112,11 +112,19 @@
 - (void)addToSelectionItemID:(GridItemIdentifier*)itemID {
   [super addToSelectionItemID:itemID];
   [_tabPickerConsumer setSelectedTabsCount:self.selectedEditingItems.tabsCount];
+  [self updateDoneButtonState];
 }
 
 - (void)removeFromSelectionItemID:(GridItemIdentifier*)itemID {
   [super removeFromSelectionItemID:itemID];
   [_tabPickerConsumer setSelectedTabsCount:self.selectedEditingItems.tabsCount];
+  [self updateDoneButtonState];
+}
+
+- (void)updateDoneButtonState {
+  BOOL selectionChanged = self.selectedEditingItems.allTabs !=
+                          [_tabsAttachmentDelegate preselectedWebStateIDs];
+  [_tabPickerConsumer setDoneButtonEnabled:selectionChanged];
 }
 
 - (void)userTappedOnItemID:(GridItemIdentifier*)itemID {
@@ -184,19 +192,23 @@
 #pragma mark - ComposeboxTabPickerMutator
 
 - (void)attachSelectedTabs {
-  if (self.selectedEditingItems.itemsIdentifiers.count) {
-    std::set<web::WebStateID> cachedWebStateIDs;
-    for (const auto& webStateID : self.selectedEditingItems.allTabs) {
-      if (_validAPCwebStatesIDs.contains(
-              base::NumberToString(webStateID.identifier()))) {
-        cachedWebStateIDs.insert(webStateID);
-      }
-    }
-    [_tabsAttachmentDelegate
-         attachSelectedTabs:self
-        selectedWebStateIDs:self.selectedEditingItems.allTabs
-          cachedWebStateIDs:cachedWebStateIDs];
+  BOOL selectionChanged = self.selectedEditingItems.allTabs !=
+                          [_tabsAttachmentDelegate preselectedWebStateIDs];
+  if (!selectionChanged) {
+    return;
   }
+  std::set<web::WebStateID> cachedWebStateIDs;
+  for (const auto& webStateID : self.selectedEditingItems.allTabs) {
+    if (_validAPCwebStatesIDs.contains(
+            base::NumberToString(webStateID.identifier()))) {
+      cachedWebStateIDs.insert(webStateID);
+    }
+  }
+  // Call this even if `selectedEditingItems` is empty as you can remove tabs
+  // from tab picker.
+  [_tabsAttachmentDelegate attachSelectedTabs:self
+                          selectedWebStateIDs:self.selectedEditingItems.allTabs
+                            cachedWebStateIDs:cachedWebStateIDs];
 }
 
 #pragma mark - private

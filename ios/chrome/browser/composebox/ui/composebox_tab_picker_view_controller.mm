@@ -41,7 +41,7 @@
   [self.view addSubview:gridView];
   [_gridViewController didMoveToParentViewController:self];
 
-  [self configureNavigationBar];
+  [self configureNavigationBarIfNeeded];
 
   AddSameConstraints(gridView, self.view);
 }
@@ -55,7 +55,6 @@
 
 - (void)setSelectedTabsCount:(NSUInteger)tabsCount {
   _tabsCount = tabsCount;
-  _doneButton.enabled = _tabsCount > 0;
   self.navigationItem.title =
       _tabsCount > 0 ? l10n_util::GetPluralNSStringF(
                            IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE, _tabsCount)
@@ -63,14 +62,19 @@
                            IDS_IOS_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE);
 }
 
+- (void)setDoneButtonEnabled:(BOOL)enabled {
+  if (!_doneButton) {
+    [self configureNavigationBarIfNeeded];
+  }
+  _doneButton.enabled = enabled;
+}
+
 #pragma mark - Private helpers
 
 /// Performs action when the button to add the selected tabs has been pressed.
 - (void)attachSelectedTabsButtonTapped {
-  if (_doneButton.enabled) {
-    [self.mutator attachSelectedTabs];
-    [self.composeboxTabPickerHandler hideComposeboxTabPicker];
-  }
+  [self.mutator attachSelectedTabs];
+  [self.composeboxTabPickerHandler hideComposeboxTabPicker];
 }
 
 /// Dismisses the view.
@@ -79,11 +83,16 @@
 }
 
 /// Creates the navigation bar.
-- (void)configureNavigationBar {
+- (void)configureNavigationBarIfNeeded {
+  if (_doneButton) {
+    return;
+  }
+
   _doneButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
                            action:@selector(attachSelectedTabsButtonTapped)];
+  _doneButton.enabled = NO;
 
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
