@@ -20,6 +20,10 @@ class GURL;
 - (void)sadTabViewController:(SadTabViewController*)sadTabViewController
     showSuggestionsPageWithURL:(const GURL&)URL;
 
+// Returns the context menu configuration for the suggestions page.
+- (UIMenu*)sadTabViewController:(SadTabViewController*)sadTabViewController
+    contextMenuConfigurationForURL:(const GURL&)URL;
+
 // Instructs the delegate to reload this page.
 - (void)sadTabViewControllerReload:(SadTabViewController*)sadTabViewController;
 @end

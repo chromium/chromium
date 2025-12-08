@@ -312,6 +312,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 - (UITextView*)footerLabel {
   if (!_footerLabel) {
     _footerLabel = CreateUITextViewWithTextKit1();
+    _footerLabel.editable = NO;
     _footerLabel.backgroundColor = self.backgroundColor;
     _footerLabel.delegate = self;
 
@@ -520,6 +521,19 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     [weakSelf.delegate sadTabView:weakSelf
         showSuggestionsPageWithURL:net::GURLWithNSURL(textItem.link)];
   }];
+}
+
+- (UITextItemMenuConfiguration*)textView:(UITextView*)textView
+            menuConfigurationForTextItem:(UITextItem*)textItem
+                             defaultMenu:(UIMenu*)defaultMenu {
+  CHECK_EQ(textView, self.footerLabel);
+  CHECK(textItem.link);
+  UIMenu* menu = [self.delegate sadTabView:self
+            contextMenuConfigurationForURL:net::GURLWithNSURL(textItem.link)];
+  if (!menu) {
+    return nil;
+  }
+  return [UITextItemMenuConfiguration configurationWithPreview:nil menu:menu];
 }
 
 @end

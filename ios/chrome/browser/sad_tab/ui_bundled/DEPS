@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/overscroll_actions/ui_bundled",
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h",

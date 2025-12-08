@@ -168,6 +168,8 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
       return kContextMenuReaderModeLinkActionsHistogram;
     case kMenuScenarioHistogramTabGroupOverflowMenu:
       return kContextMenuTabGroupOverflowMenuHistogram;
+    case kMenuScenarioHistogramSadTab:
+      return KContextMenuLinkActionsHistogram;
     case kMenuScenarioHistogramCount:
       NOTREACHED();
   }

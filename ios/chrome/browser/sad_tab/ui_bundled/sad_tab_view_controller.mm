@@ -99,6 +99,12 @@
   [self.delegate sadTabViewController:self showSuggestionsPageWithURL:URL];
 }
 
+- (UIMenu*)sadTabView:(SadTabView*)sadTabView
+    contextMenuConfigurationForURL:(const GURL&)URL {
+  return [self.delegate sadTabViewController:self
+              contextMenuConfigurationForURL:URL];
+}
+
 - (void)sadTabViewReload:(SadTabView*)sadTabView {
   [self.delegate sadTabViewControllerReload:self];
 }

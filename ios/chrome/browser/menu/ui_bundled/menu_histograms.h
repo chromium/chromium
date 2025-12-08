@@ -48,6 +48,7 @@ enum MenuScenarioHistogram {
   kMenuScenarioHistogramReaderModeContextMenuImageLink = 35,
   kMenuScenarioHistogramReaderModeContextMenuLink = 36,
   kMenuScenarioHistogramTabGroupOverflowMenu = 37,
+  kMenuScenarioHistogramSadTab = 38,
   kMenuScenarioHistogramCount,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
