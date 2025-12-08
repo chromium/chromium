@@ -109,6 +109,7 @@ if (!is_android && !is_ios) {
 
     sources = [
       "caption_controller_base_unittest.cc",
+      "caption_util_unittest.cc",
       "greedy_text_stabilizer_unittest.cc",
       "live_caption_bubble_settings_unittest.cc",
       "translation_util_unittest.cc",
@@ -124,10 +125,12 @@ if (!is_android && !is_ios) {
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/sync_preferences:test_support",
+      "//media",
       "//media/mojo/mojom:speech_recognition",
       "//mojo/public/cpp/bindings",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/base",
       "//ui/gfx/geometry",
     ]
 
