@@ -130,7 +130,7 @@ class MockContextualTasksUiService
     : public contextual_tasks::ContextualTasksUiService {
  public:
   explicit MockContextualTasksUiService(Profile* profile)
-      : ContextualTasksUiService(profile, nullptr) {}
+      : ContextualTasksUiService(profile, nullptr, nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(void,

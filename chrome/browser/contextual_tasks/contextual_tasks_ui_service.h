@@ -27,6 +27,10 @@ struct OpenURLParams;
 class WebContents;
 }  // namespace content
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -40,9 +44,9 @@ class ContextualTasksContextController;
 // sidepanel and omnibox will be routed here.
 class ContextualTasksUiService : public KeyedService {
  public:
-  ContextualTasksUiService(
-      Profile* profile,
-      ContextualTasksContextController* context_controller);
+  ContextualTasksUiService(Profile* profile,
+                           ContextualTasksContextController* context_controller,
+                           signin::IdentityManager* identity_manager);
   ContextualTasksUiService(const ContextualTasksUiService&) = delete;
   ContextualTasksUiService operator=(const ContextualTasksUiService&) = delete;
   ~ContextualTasksUiService() override;
@@ -160,11 +164,16 @@ class ContextualTasksUiService : public KeyedService {
                                     tabs::TabInterface* tab,
                                     bool is_to_new_tab);
 
+  // Returns whether the provided URL is for the primary account in Chrome.
+  virtual bool IsUrlForPrimaryAccount(const GURL& url);
+
  private:
   const raw_ptr<Profile> profile_;
 
   raw_ptr<contextual_tasks::ContextualTasksContextController>
       context_controller_;
+
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // The host of the AI page that is loaded into the WebUI.
   GURL ai_page_host_;

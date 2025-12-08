@@ -14,7 +14,7 @@ class FakeContextualTasksUiService
     : public contextual_tasks::ContextualTasksUiService {
  public:
   explicit FakeContextualTasksUiService(Profile* profile)
-      : contextual_tasks::ContextualTasksUiService(profile, nullptr) {}
+      : contextual_tasks::ContextualTasksUiService(profile, nullptr, nullptr) {}
   GURL GetDefaultAiPageUrl() override { return GURL(url::kAboutBlankURL); }
 
   static std::unique_ptr<KeyedService> BuildFakeService(

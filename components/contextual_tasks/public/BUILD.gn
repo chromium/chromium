@@ -12,6 +12,8 @@ source_set("feature_list") {
 
 source_set("public") {
   sources = [
+    "account_utils.cc",
+    "account_utils.h",
     "context_decoration_params.cc",
     "context_decoration_params.h",
     "context_decorator.cc",
@@ -28,6 +30,9 @@ source_set("public") {
     "//base",
     "//components/keyed_service/core",
     "//components/sessions:session_id",
+    "//components/signin/public/identity_manager",
+    "//net",
+    "//third_party/re2",
     "//ui/gfx",
     "//url",
   ]
@@ -56,6 +61,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "account_utils_unittest.cc",
     "contextual_task_context_unittest.cc",
     "contextual_task_unittest.cc",
   ]
@@ -64,6 +70,7 @@ source_set("unit_tests") {
     ":public",
     "//base/test:test_support",
     "//components/sessions:session_id",
+    "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
     "//url",
   ]
