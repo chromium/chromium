@@ -17,8 +17,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -154,32 +152,33 @@ Browser* CreateBrowser() {
 
 // Finds the first tab with given url on the desk with the given `index` and
 // returns the source browser and the tab index.
-BrowserWindowInterface* FindTabOnDeskAtIndex(const GURL& url,
-                                             int& out_tab_index,
-                                             size_t src_desk_index) {
+ash::BrowserDelegate* FindTabOnDeskAtIndex(const GURL& url,
+                                           int& out_tab_index,
+                                           size_t src_desk_index) {
   out_tab_index = -1;
   auto* desks_helper = chromeos::DesksHelper::Get();
-  BrowserWindowInterface* found_browser = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
+  ash::BrowserDelegate* found_browser = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& browser) {
         // Guarantee the window belongs to the desk with the given `index`.
-        if (!desks_helper->BelongsToDesk(
-                browser->GetWindow()->GetNativeWindow(), src_desk_index)) {
-          return true;
+        if (!desks_helper->BelongsToDesk(browser.GetNativeWindow(),
+                                         src_desk_index)) {
+          return ash::BrowserController::kContinueIteration;
         }
 
-        if (browser->GetProfile()->IsIncognitoProfile()) {
-          return true;
+        if (browser.GetBrowser().GetProfile()->IsIncognitoProfile()) {
+          return ash::BrowserController::kContinueIteration;
         }
 
-        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
-        for (int idx = 0; idx < tab_strip_model->count(); idx++) {
-          if (tab_strip_model->GetWebContentsAt(idx)->GetVisibleURL() == url) {
+        for (size_t idx = 0; idx < browser.GetWebContentsCount(); idx++) {
+          if (browser.GetWebContentsAt(idx)->GetVisibleURL() == url) {
             out_tab_index = idx;
-            found_browser = browser;
+            found_browser = &browser;
           }
         }
-        return !found_browser;
+        return found_browser ? ash::BrowserController::kBreakIteration
+                             : ash::BrowserController::kContinueIteration;
       });
   return found_browser;
 }
@@ -235,8 +234,7 @@ void CoralDelegateImpl::MoveTabsInGroupToNewDesk(
     const auto& tab_url = tab.url;
     int tab_index = -1;
     ash::BrowserDelegate* source_browser =
-        ash::BrowserController::GetInstance()->GetDelegate(
-            FindTabOnDeskAtIndex(tab_url, tab_index, src_desk_index));
+        FindTabOnDeskAtIndex(tab_url, tab_index, src_desk_index);
     if (source_browser) {
       // Create a browser on the new desk if there is none.
       if (!target_browser) {
