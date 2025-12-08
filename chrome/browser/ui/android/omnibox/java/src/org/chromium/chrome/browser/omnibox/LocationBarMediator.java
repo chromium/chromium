@@ -1504,7 +1504,8 @@ class LocationBarMediator
         boolean hasText =
                 mUrlCoordinator != null
                         && !TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete());
-        return hasText && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
+        return (hasText || mFuseboxCoordinator.hasUserAddedAttachments())
+                && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
     }
 
     @VisibleForTesting
