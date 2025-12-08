@@ -726,8 +726,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ForwardResponseToClient(
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   // OnReceiveResponse() can be called at most once. This check is added to
   // debug crbug.com/463388771.
-  SCOPED_CRASH_KEY_STRING1024("crbug463388771", "race_url",
-                              resource_request_url_.spec());
   CHECK(!has_forwarded_response_);
   has_forwarded_response_ = true;
   forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),

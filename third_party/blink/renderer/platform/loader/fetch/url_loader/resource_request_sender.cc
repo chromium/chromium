@@ -495,8 +495,6 @@ void ResourceRequestSender::OnReceivedResponse(
 
   // OnReceivedResponse() can be called at most once. This check is added to
   // debug crbug.com/463388771.
-  SCOPED_CRASH_KEY_STRING1024("crbug463388771", "response_url",
-                              request_info_->response_url.GetString().Utf8());
   CHECK(!response_sent_to_client_);
   response_sent_to_client_ = true;
 

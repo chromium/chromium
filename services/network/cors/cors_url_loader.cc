@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/dcheck_is_on.h"
-#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -631,8 +630,6 @@ void CorsURLLoader::OnReceiveResponse(
 
   // OnReceiveResponse() can be called at most once. This check is added to
   // debug crbug.com/463388771.
-  SCOPED_CRASH_KEY_STRING1024("crbug463388771", "cors_url_loader_url",
-                              request_.url.spec());
   CHECK(!has_forwarded_response_);
   has_forwarded_response_ = true;
   timing_allow_failed_flag_ = !PassesTimingAllowOriginCheck(*response_head);
