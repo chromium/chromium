@@ -90,6 +90,13 @@ constexpr int kAirlineLength = 3;
 constexpr int kFlightCodeLength = 5;
 constexpr int kDateLength = 3;
 
+// Removes leading zeros from a string, e.g., "007" becomes "7". If the string
+// is "000", it becomes "0".
+std::string RemoveLeadingZeros(std::string_view s) {
+  std::string_view trimmed = base::TrimString(s, "0", base::TRIM_LEADING);
+  return (trimmed.empty() && !s.empty()) ? "0" : std::string(trimmed);
+}
+
 }  // namespace
 
 // static
@@ -122,7 +129,7 @@ std::optional<BoardingPass> BoardingPass::FromBarcode(
   pass.origin = value.GetStripped(kOriginLength);
   pass.destination = value.GetStripped(kDestinationLength);
   pass.airline = value.GetStripped(kAirlineLength);
-  pass.flight_code = value.GetStripped(kFlightCodeLength);
+  pass.flight_code = RemoveLeadingZeros(value.GetStripped(kFlightCodeLength));
   pass.date = value.GetStripped(kDateLength);
   pass.barcode = barcode;
 

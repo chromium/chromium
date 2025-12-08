@@ -92,8 +92,30 @@ TEST(BoardingPassTest, TestGenericTwoLegs) {
       ExpectedBoardingPass{.origin = "PPT",
                            .destination = "CDG",
                            .airline = "AF",
-                           .flight_code = "0077",
+                           .flight_code = "77",
                            .date = "137"});
+}
+
+TEST(BoardingPassTest, ParseBoardingPass_FlightCodeLeadingZeros) {
+  // Flight codes with leading zeros should have them removed.
+  TestValue("M1PASSENGER NAME      EABCDEFGSFOJFKUA 0007 123Y12A 00001100",
+            ExpectedBoardingPass{.origin = "SFO",
+                                 .destination = "JFK",
+                                 .airline = "UA",
+                                 .flight_code = "7",
+                                 .date = "123"});
+  TestValue("M1PASSENGER NAME      EABCDEFGSFOJFKUA 0707 123Y12A 00001100",
+            ExpectedBoardingPass{.origin = "SFO",
+                                 .destination = "JFK",
+                                 .airline = "UA",
+                                 .flight_code = "707",
+                                 .date = "123"});
+  TestValue("M1PASSENGER NAME      EABCDEFGSFOJFKUA 0000 123Y12A 00001100",
+            ExpectedBoardingPass{.origin = "SFO",
+                                 .destination = "JFK",
+                                 .airline = "UA",
+                                 .flight_code = "0",
+                                 .date = "123"});
 }
 
 }  // namespace wallet
