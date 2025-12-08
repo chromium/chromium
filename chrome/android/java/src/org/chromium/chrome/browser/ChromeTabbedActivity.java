@@ -4904,6 +4904,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     @Override
     public void onPreAttachIntentAvailable(Intent intent) {
-        setHasIncognitoExtra(intent);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            setHasIncognitoExtra(intent);
+        }
     }
 }
