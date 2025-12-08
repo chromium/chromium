@@ -687,6 +687,7 @@ tabs::TabModel* TabStripModel::GetTabModelAtIndex(int index) const {
 
 void TabStripModel::OnChange(const TabStripModelChange& change,
                              const TabStripSelectionChange& selection) {
+  ValidateTabStripModel();
   OnActiveTabChanged(selection);
 
   for (auto& observer : observers_) {
@@ -804,8 +805,6 @@ std::unique_ptr<tabs::TabCollection> TabStripModel::DetachTabCollectionImpl(
       tabs_in_collection, collection_start_index, next_selected_index,
       active_tab_removed);
 
-  ValidateTabStripModel();
-
   // Call the callback for collection detached.
   std::move(execute_tabs_notify_observer_operation).Run();
 
@@ -868,8 +867,6 @@ gfx::Range TabStripModel::InsertDetachedCollectionImpl(
   } else if (tab_strip_empty_initially) {
     SetSelectedIndex(selection_model_.get(), collection_insertion_index);
   }
-
-  ValidateTabStripModel();
 
   for (tabs::TabInterface* tab : *collection) {
     static_cast<tabs::TabModel*>(tab)->DidInsert(
@@ -3810,7 +3807,6 @@ TabStripSelectionChange TabStripModel::SetSelection(
       }
     }
 
-    ValidateTabStripModel();
 
     TabStripModelChange change;
     OnChange(change, selection);
@@ -4064,8 +4060,6 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
     }
   }
 
-  ValidateTabStripModel();
-
   if (old_selection_model != selection_model().ToListSelectionModel()) {
     TabStripSelectionChange selection(GetActiveTab(), old_selection_model);
 
@@ -4095,8 +4089,6 @@ void TabStripModel::RemoveSplitImpl(
       selection_model_->RemoveIndexFromSelection(i);
     }
   }
-
-  ValidateTabStripModel();
 
   // If there was an update to the selection model, notify observers.
   if (old_selection_model != selection_model().ToListSelectionModel()) {
@@ -4399,8 +4391,6 @@ void TabStripModel::InsertTabAtIndexImpl(
                  /*triggered_by_other_operation=*/true);
   }
 
-  ValidateTabStripModel();
-
   tab_ptr->DidInsert(base::PassKey<TabStripModel>());
 
   selection.new_model = selection_model().ToListSelectionModel();
@@ -4468,8 +4458,6 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
     }
   }
 
-  ValidateTabStripModel();
-
   if (group_model_ && old_group) {
     TabGroupStateChanged(index, tab, old_group, std::nullopt);
   }
@@ -4524,8 +4512,6 @@ void TabStripModel::MoveTabToIndexImpl(
   }
 
   UpdateSelectionModelForMove(initial_index, final_index, select_after_move);
-
-  ValidateTabStripModel();
 
   selection.new_model = selection_model().ToListSelectionModel();
   selection.new_tab = GetActiveTab();
@@ -4619,6 +4605,7 @@ void TabStripModel::TabGroupStateChanged(
       NotifyTabGroupClosed(initial_group.value());
       group_model_->RemoveTabGroup(initial_group.value(),
                                    base::PassKey<TabStripModel>());
+      ValidateTabStripModel();
       contents_data_->CloseDetachedTabGroup(initial_group.value());
     }
   }
@@ -4661,6 +4648,11 @@ void TabStripModel::AddTabToGroupModel(const tab_groups::TabGroupId& group) {
 }
 
 void TabStripModel::ValidateTabStripModel() {
+  contents_data_->ValidateData();
+
+  // Send the notifications for the root collection.
+  contents_data_->DispatchPendingNotifications();
+
   if (empty()) {
     return;
   }
@@ -4694,11 +4686,6 @@ void TabStripModel::ValidateTabStripModel() {
                         return IsTabSelected(tab.second);
                       }));
   }
-
-  contents_data_->ValidateData();
-
-  // Send the notifications for the root collection.
-  contents_data_->DispatchPendingNotifications();
 }
 
 void TabStripModel::SendMoveNotificationForTab(
