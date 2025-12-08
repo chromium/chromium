@@ -40,7 +40,7 @@
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #import "media/capture/video/mac/video_capture_metrics_mac.h"
 #endif
 
