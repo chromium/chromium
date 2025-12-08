@@ -40,6 +40,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "chrome/browser/webauthn/enclave_keys_waiter.h"
 #include "chrome/browser/webauthn/fake_magic_arch.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
@@ -234,36 +235,6 @@ std::vector<uint8_t> DecryptWrappedPin(
   CHECK(pin.has_value());
   return *pin;
 }
-
-// A utility class for waiting for completion of the operation of storing the
-// passkey secret retrieved from an out-of-context flow (e.g., an opportunistic
-// retrieval). This class observes enclave manager, starts a RunLoop, and allows
-// to wait for the completion of the out-of-context recovery.
-class EnclaveKeysWaiter : public EnclaveManager::Observer {
- public:
-  explicit EnclaveKeysWaiter(EnclaveManager* enclave_manager)
-      : enclave_manager_(enclave_manager) {
-    enclave_manager->AddObserver(this);
-  }
-  ~EnclaveKeysWaiter() override { enclave_manager_->RemoveObserver(this); }
-
-  EnclaveManager::OutOfContextRecoveryOutcome Wait() {
-    run_loop_->Run();
-    return outcome_;
-  }
-
- private:
-  // EnclaveManager::Observer:
-  void OnOutOfContextRecoveryCompletion(
-      EnclaveManager::OutOfContextRecoveryOutcome outcome) override {
-    run_loop_->Quit();
-    outcome_ = outcome;
-  }
-
-  raw_ptr<EnclaveManager> enclave_manager_;
-  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
-  EnclaveManager::OutOfContextRecoveryOutcome outcome_;
-};
 
 }  // namespace
 

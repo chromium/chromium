@@ -155,6 +155,8 @@ if (!is_android) {
     sources = [
       "enclave_authenticator_browsertest_base.cc",
       "enclave_authenticator_browsertest_base.h",
+      "enclave_keys_waiter.cc",
+      "enclave_keys_waiter.h",
       "fake_magic_arch.cc",
       "fake_magic_arch.h",
       "fake_recovery_key_store.cc",
