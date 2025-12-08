@@ -34,8 +34,16 @@ void AttemptFastKillForDiscard(
   content::RenderProcessHost* render_process_host = main_frame->GetProcess();
   CHECK(render_process_host);
 
+  const bool web_contents_discard_enabled =
+      base::FeatureList::IsEnabled(features::kWebContentsDiscard);
+
   // First try to fast-kill the process, if it's just running a single tab.
-  bool succeed = render_process_host->FastShutdownIfPossible(1u, false);
+  bool succeed = render_process_host->FastShutdownIfPossible(
+      1u,
+      /*skip_unload_handlers=*/false,
+      /*ignore_workers=*/false,
+      /*ignore_keep_alive=*/false,
+      /*use_outermost_main_frame_check=*/web_contents_discard_enabled);
   AttemptFastKillForDiscardResult result =
       succeed ? AttemptFastKillForDiscardResult::kKilled
               : AttemptFastKillForDiscardResult::kSkipped;
@@ -52,7 +60,9 @@ void AttemptFastKillForDiscard(
                 kBeforeUnloadHandler) &&
         render_process_host->FastShutdownIfPossible(
             1u, /*skip_unload_handlers=*/true,
-            /*ignore_workers=*/should_ignore_workers)) {
+            /*ignore_workers=*/should_ignore_workers,
+            /*ignore_keep_alive=*/false,
+            /*use_outermost_main_frame_check=*/web_contents_discard_enabled)) {
       result =
           should_ignore_workers
               ? AttemptFastKillForDiscardResult::
