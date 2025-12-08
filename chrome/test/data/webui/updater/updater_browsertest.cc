@@ -15,3 +15,7 @@ typedef UpdaterBrowserTest UpdaterAppTest;
 IN_PROC_BROWSER_TEST_F(UpdaterAppTest, EventHistoryTest) {
   RunTest("updater/event_history_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(UpdaterAppTest, FilterBarTest) {
+  RunTest("updater/event_list/filter_bar_test.js", "mocha.run();");
+}

@@ -9,17 +9,25 @@ assert(is_mac || is_win || is_linux)
 build_webui("build") {
   grd_prefix = "updater"
 
-  static_files = [ "updater.html" ]
+  static_files = [
+    "updater.html",
+    "updater.css",
+  ]
 
   ts_files = [
     "app.html.ts",
     "app.ts",
     "event_history.ts",
+    "known_apps.ts",
+    "event_list/filter_bar.html.ts",
+    "event_list/filter_bar.ts",
     "event_list/raw_event_details.html.ts",
     "event_list/raw_event_details.ts",
+    "icons.html.ts",
   ]
   css_files = [
     "app.css",
+    "event_list/filter_bar.css",
     "event_list/raw_event_details.css",
   ]
 

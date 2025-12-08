@@ -284,7 +284,7 @@ chromium_strings.grd. -->
       <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chrome application short name" translateable="false">
         Chrome
       </message>
-      <if expr="is_win">
+      <if expr="is_linux or is_macosx or is_win">
         <message name="IDS_SXS_SHORTCUT_NAME" desc="The Chrome shortcut name for canary channel">
           Google Chrome Canary
         </message>
@@ -294,6 +294,8 @@ chromium_strings.grd. -->
         <message name="IDS_SHORTCUT_NAME_DEV" desc="The Chrome shortcut name for dev channel">
           Google Chrome Dev
         </message>
+      </if>
+      <if expr="is_win">
         <message name="IDS_PRODUCT_DESCRIPTION" desc="Browser description">
           Google Chrome is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Google Chrome.
         </message>

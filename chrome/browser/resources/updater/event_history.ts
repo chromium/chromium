@@ -12,6 +12,8 @@
  * See //docs/updater/history_log.md for details on the serialization format.
  */
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
 // ---------------------------------------------------------------------------
 // Common Types
 // ---------------------------------------------------------------------------
@@ -133,6 +135,24 @@ export interface PolicySet {
 export interface PolicyData {
   valuesBySource: {[key: string]: unknown};
   prevailingSource: string;
+}
+
+/**
+ * Returns the localized title of an event type.
+ */
+export function localizeEventType(eventType: EventType) {
+  return loadTimeData.getString(`eventType${eventType}`);
+}
+
+export const COMMON_UPDATE_OUTCOMES =
+    ['UPDATED', 'NO_UPDATE', 'UPDATE_ERROR'] as const;
+export type CommonUpdateOutcome = (typeof COMMON_UPDATE_OUTCOMES)[number];
+
+/**
+ * Returns the localized title of a common update outcome.
+ */
+export function localizeUpdateOutcome(outcome: CommonUpdateOutcome) {
+  return loadTimeData.getString(`updateOutcome${outcome}`);
 }
 
 // ---------------------------------------------------------------------------
