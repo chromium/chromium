@@ -308,6 +308,10 @@ BASE_FEATURE(kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion,
 BASE_FEATURE(kGlicHandoffButtonHiddenClientControl,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, reset handoff button focus and hover state on button close.
+BASE_FEATURE(kGlicHandoffButtonResetFocusAndHoverStatus,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kGlicActorUiTaskIconName[] = "glic-actor-ui-task-icon";
 const char kGlicActorUiOverlayName[] = "glic-actor-ui-overlay";
 const char kGlicActorUiOverlayMagicCursorName[] =

@@ -357,6 +357,13 @@ void HandoffButtonController::OnWidgetDestroying(
 }
 
 void HandoffButtonController::CloseButton(views::Widget::ClosedReason reason) {
+  // Before closing the button, reset hover and focus status to prevent stale
+  // state propagation.
+  if (base::FeatureList::IsEnabled(
+          features::kGlicHandoffButtonResetFocusAndHoverStatus)) {
+    UpdateButtonHoverStatus(false);
+    UpdateButtonFocusStatus(false);
+  }
   if (widget_ && !widget_->IsClosed()) {
     widget_->CloseWithReason(reason);
   }
@@ -420,18 +427,19 @@ bool HandoffButtonController::IsHovering() {
   return is_hovering_;
 }
 
-void HandoffButtonController::OnViewFocused(views::View* observed_view) {
-  is_focused_ = true;
+void HandoffButtonController::UpdateButtonFocusStatus(bool is_focused) {
+  is_focused_ = is_focused;
   if (auto* tab_controller = GetTabController()) {
     tab_controller->OnHandoffButtonFocusStatusChanged();
   }
 }
 
+void HandoffButtonController::OnViewFocused(views::View* observed_view) {
+  UpdateButtonFocusStatus(/*is_focused=*/true);
+}
+
 void HandoffButtonController::OnViewBlurred(views::View* observed_view) {
-  is_focused_ = false;
-  if (auto* tab_controller = GetTabController()) {
-    tab_controller->OnHandoffButtonFocusStatusChanged();
-  }
+  UpdateButtonFocusStatus(/*is_focused=*/false);
 }
 
 bool HandoffButtonController::IsFocused() {

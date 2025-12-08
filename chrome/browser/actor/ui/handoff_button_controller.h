@@ -82,6 +82,7 @@ class HandoffButtonController : public views::ViewObserver {
   void OnButtonPressed();
   gfx::Rect GetHandoffButtonBounds();
   void UpdateButtonHoverStatus(bool is_hovered);
+  void UpdateButtonFocusStatus(bool is_focused);
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
