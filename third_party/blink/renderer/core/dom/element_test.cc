@@ -1498,31 +1498,27 @@ TEST_F(ElementTest, OverscrollPseudoElementLayoutStructure) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* scroller = GetElementById("scroller");
-  PseudoElement* overscroll_client_area =
-      scroller->GetPseudoElement(kPseudoIdOverscrollClientArea);
   PseudoElement* overscroll_parent_foo = scroller->GetPseudoElement(
       kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
   PseudoElement* overscroll_parent_bar = scroller->GetPseudoElement(
       kPseudoIdOverscrollAreaParent, AtomicString("--bar"));
 
-  ASSERT_TRUE(overscroll_client_area);
   ASSERT_TRUE(overscroll_parent_foo);
   ASSERT_TRUE(overscroll_parent_bar);
   EXPECT_FALSE(scroller->GetPseudoElement(kPseudoIdOverscrollAreaParent,
                                           AtomicString("--baz")));
 
-  // Parentage of children and pseudos within content:
-  EXPECT_EQ(
-      scroller->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject()->Parent(),
-      overscroll_client_area->GetLayoutObject());
+  // Order of children and pseudos within content:
+  EXPECT_EQ(scroller->GetPseudoElement(kPseudoIdBefore)
+                ->GetLayoutObject()
+                ->PreviousSibling(),
+            overscroll_parent_bar->GetLayoutObject());
   EXPECT_EQ(GetElementById("child")->GetLayoutObject()->PreviousSibling(),
             scroller->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject());
 
-  // Nesting of overscroll client area and overscroll area parents:
-  EXPECT_EQ(overscroll_client_area->GetLayoutObject()->Parent(),
-            overscroll_parent_bar->GetLayoutObject());
+  // Overscroll area parents:
   EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->Parent(),
-            overscroll_parent_foo->GetLayoutObject());
+            scroller->GetLayoutObject());
   EXPECT_EQ(overscroll_parent_foo->GetLayoutObject()->Parent(),
             scroller->GetLayoutObject());
 
@@ -1547,23 +1543,24 @@ TEST_F(ElementTest, ReorderOverscrollPseudoElements) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* scroller = GetElementById("scroller");
-  PseudoElement* overscroll_client_area =
-      scroller->GetPseudoElement(kPseudoIdOverscrollClientArea);
   PseudoElement* overscroll_parent_foo = scroller->GetPseudoElement(
       kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
   PseudoElement* overscroll_parent_bar = scroller->GetPseudoElement(
       kPseudoIdOverscrollAreaParent, AtomicString("--bar"));
-  ASSERT_TRUE(overscroll_client_area);
   ASSERT_TRUE(overscroll_parent_foo);
   ASSERT_TRUE(overscroll_parent_bar);
 
-  // Nesting of overscroll client area and overscroll area parents:
-  EXPECT_EQ(overscroll_client_area->GetLayoutObject()->Parent(),
-            overscroll_parent_bar->GetLayoutObject());
+  // Overscroll area parents:
   EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->Parent(),
-            overscroll_parent_foo->GetLayoutObject());
+            scroller->GetLayoutObject());
   EXPECT_EQ(overscroll_parent_foo->GetLayoutObject()->Parent(),
             scroller->GetLayoutObject());
+
+  // Overscroll area order:
+  EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->PreviousSibling(),
+            overscroll_parent_foo->GetLayoutObject());
+  EXPECT_EQ(overscroll_parent_foo->GetLayoutObject()->PreviousSibling(),
+            nullptr);
 
   // Change the order of --foo and --bar and ensure the pseudo-element
   // structure is updated appropriately.
@@ -1571,23 +1568,18 @@ TEST_F(ElementTest, ReorderOverscrollPseudoElements) {
                                    AtomicString("--bar, --foo"));
   UpdateAllLifecyclePhasesForTest();
 
-  overscroll_client_area =
-      scroller->GetPseudoElement(kPseudoIdOverscrollClientArea);
   overscroll_parent_foo = scroller->GetPseudoElement(
       kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
   overscroll_parent_bar = scroller->GetPseudoElement(
       kPseudoIdOverscrollAreaParent, AtomicString("--bar"));
-  ASSERT_TRUE(overscroll_client_area);
   ASSERT_TRUE(overscroll_parent_foo);
   ASSERT_TRUE(overscroll_parent_bar);
 
-  // Nesting of overscroll client area and overscroll area parents:
-  EXPECT_EQ(overscroll_client_area->GetLayoutObject()->Parent(),
-            overscroll_parent_foo->GetLayoutObject());
-  EXPECT_EQ(overscroll_parent_foo->GetLayoutObject()->Parent(),
+  // Overscroll area order:
+  EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->PreviousSibling(),
+            nullptr);
+  EXPECT_EQ(overscroll_parent_foo->GetLayoutObject()->PreviousSibling(),
             overscroll_parent_bar->GetLayoutObject());
-  EXPECT_EQ(overscroll_parent_bar->GetLayoutObject()->Parent(),
-            scroller->GetLayoutObject());
 }
 
 TEST_F(ElementTest, OverscrollPseudoElementStyles) {
@@ -1606,28 +1598,16 @@ TEST_F(ElementTest, OverscrollPseudoElementStyles) {
       #non-scroller::-internal-overscroll-area-parent(*) {
         backface-visibility: hidden;
       }
-      #scroller::-internal-overscroll-client-area,
-      #non-scroller::-internal-overscroll-client-area {
-        backface-visibility: hidden;
-      }
     </style>
     <div id="scroller"></div>
-    <div id="non-scroller"></div>
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
 
   Element* scroller = GetElementById("scroller");
-  Element* non_scroller = GetElementById("non-scroller");
-  PseudoElement* scroller_client_area =
-      scroller->GetPseudoElement(kPseudoIdOverscrollClientArea);
-  PseudoElement* non_scroller_client_area =
-      non_scroller->GetPseudoElement(kPseudoIdOverscrollClientArea);
   PseudoElement* overscroll_parent_foo = scroller->GetPseudoElement(
       kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
 
-  ASSERT_TRUE(scroller_client_area);
-  ASSERT_TRUE(non_scroller_client_area);
   ASSERT_TRUE(overscroll_parent_foo);
 
   // Computed style of the overscroll area parent pseudo-elements
@@ -1638,10 +1618,6 @@ TEST_F(ElementTest, OverscrollPseudoElementStyles) {
   EXPECT_EQ(EScrollbarWidth::kNone,
             overscroll_parent_foo->GetComputedStyle()->ScrollbarWidth());
 
-  // The scroller client area should be scrollable
-  EXPECT_EQ(EOverflow::kAuto,
-            scroller_client_area->GetComputedStyle()->OverflowY());
-
   // Computed style of the overscroll area parent pseudo-elements
   EXPECT_EQ(EOverflow::kAuto,
             overscroll_parent_foo->GetComputedStyle()->OverflowX());
@@ -1650,16 +1626,10 @@ TEST_F(ElementTest, OverscrollPseudoElementStyles) {
   EXPECT_EQ(EScrollbarWidth::kNone,
             overscroll_parent_foo->GetComputedStyle()->ScrollbarWidth());
 
-  // The non scroller client area is not scrollable
-  EXPECT_EQ(EOverflow::kVisible,
-            non_scroller_client_area->GetComputedStyle()->OverflowY());
-
   // Only UA selectors can match these pseudo-elements,
   // backface-visibility should be unchanged.
   EXPECT_EQ(EBackfaceVisibility::kVisible,
             overscroll_parent_foo->GetComputedStyle()->BackfaceVisibility());
-  EXPECT_EQ(EBackfaceVisibility::kVisible,
-            scroller_client_area->GetComputedStyle()->BackfaceVisibility());
 }
 
 TEST_F(ElementTest, GenerateScrollMarkerGroup) {

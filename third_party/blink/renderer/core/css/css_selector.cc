@@ -405,8 +405,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdViewTransitionNew;
     case kPseudoOverscrollAreaParent:
       return kPseudoIdOverscrollAreaParent;
-    case kPseudoOverscrollClientArea:
-      return kPseudoIdOverscrollClientArea;
     case kPseudoActive:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
@@ -577,8 +575,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-menulist-popover-with-menulist-anchor",
      CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
-    {"-internal-overscroll-client-area",
-     CSSSelector::kPseudoOverscrollClientArea},
     {"-internal-popover-in-top-layer", CSSSelector::kPseudoPopoverInTopLayer},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
     {"-internal-selector-fragment-anchor",
@@ -845,8 +841,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoOverscrollAreaParent ||
-       match->type == CSSSelector::kPseudoOverscrollClientArea) &&
+  if (match->type == CSSSelector::kPseudoOverscrollAreaParent &&
       !RuntimeEnabledFeatures::CSSOverscrollGesturesEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
@@ -971,7 +966,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       }
       break;
     case kPseudoOverscrollAreaParent:
-    case kPseudoOverscrollClientArea:
     case kPseudoBlinkInternalElement:
       if (Match() != kPseudoElement || mode != kUASheetMode) {
         bits_.set<PseudoTypeField>(kPseudoUnknown);
@@ -1704,7 +1698,6 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoViewTransitionOld ||
           GetPseudoType() == kPseudoViewTransitionNew ||
           GetPseudoType() == kPseudoOverscrollAreaParent ||
-          GetPseudoType() == kPseudoOverscrollClientArea ||
           IsElementBackedPseudoElement(GetPseudoType()));
 }
 
@@ -1770,7 +1763,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoViewTransitionNew:
     case kPseudoViewTransitionOld:
     case kPseudoOverscrollAreaParent:
-    case kPseudoOverscrollClientArea:
       return true;
 
     // It's possible that we should support ::slotted() after ::part().

@@ -2477,8 +2477,7 @@ class ComputedStyle final : public ComputedStyleBase {
         pseudo == kPseudoIdScrollButtonBlockEnd) {
       return HasPseudoElementStyle(kPseudoIdScrollButton);
     }
-    if (pseudo == kPseudoIdOverscrollClientArea ||
-        pseudo == kPseudoIdOverscrollAreaParent) {
+    if (pseudo == kPseudoIdOverscrollAreaParent) {
       return HasOverscrollArea();
     }
     if (!HasPseudoElementStyle(pseudo)) {

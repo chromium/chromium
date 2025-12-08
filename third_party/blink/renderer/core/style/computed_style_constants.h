@@ -98,7 +98,6 @@ enum PseudoId : uint8_t {
   kPseudoIdViewTransitionNew,
 
   kPseudoIdOverscrollAreaParent,
-  kPseudoIdOverscrollClientArea,
 
   // Internal IDs follow:
   kPseudoIdFirstLineInherited,
@@ -126,7 +125,7 @@ enum PseudoId : uint8_t {
   kPseudoIdInvalid,
   kFirstPublicPseudoId = kPseudoIdFirstLine,
   kLastTrackedPublicPseudoId = kPseudoIdGrammarError,
-  kLastPublicPseudoId = kPseudoIdOverscrollClientArea,
+  kLastPublicPseudoId = kPseudoIdOverscrollAreaParent,
   kFirstInternalPseudoId = kPseudoIdFirstLineInherited,
 };
 

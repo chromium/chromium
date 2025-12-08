@@ -134,8 +134,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
          pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdPickerIcon ||
          pseudo_id == kPseudoIdInterestHint || pseudo_id == kPseudoIdBackdrop ||
          pseudo_id == kPseudoIdMarker || pseudo_id == kPseudoIdColumn ||
-         pseudo_id == kPseudoIdOverscrollAreaParent ||
-         pseudo_id == kPseudoIdOverscrollClientArea);
+         pseudo_id == kPseudoIdOverscrollAreaParent);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
                                              pseudo_argument);
 }
@@ -187,11 +186,6 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
       DEFINE_STATIC_LOCAL(QualifiedName, overscroll_area_parent,
                           (AtomicString("::internal-overscroll-area-parent")));
       return overscroll_area_parent;
-    }
-    case kPseudoIdOverscrollClientArea: {
-      DEFINE_STATIC_LOCAL(QualifiedName, overscroll_client_area,
-                          (AtomicString("::internal-overscroll-client-area")));
-      return overscroll_client_area;
     }
     case kPseudoIdScrollMarkerGroup: {
       DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker_group,
@@ -304,7 +298,6 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
         return RuntimeEnabledFeatures::CSSMarkerNestedPseudoElementEnabled();
       return true;
     case kPseudoIdOverscrollAreaParent:
-    case kPseudoIdOverscrollClientArea:
       return false;
     default:
       return true;
@@ -755,7 +748,6 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdViewTransitionOld:
     case kPseudoIdColumn:
     case kPseudoIdOverscrollAreaParent:
-    case kPseudoIdOverscrollClientArea:
       return true;
     case kPseudoIdCheckMark:
     case kPseudoIdBefore:

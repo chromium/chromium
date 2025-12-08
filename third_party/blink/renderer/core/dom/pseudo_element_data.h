@@ -239,7 +239,6 @@ inline void PseudoElementData::SetPseudoElement(
       generated_first_letter_ = element;
       break;
     case kPseudoIdOverscrollAreaParent:
-    case kPseudoIdOverscrollClientArea:
       CHECK(element);
       if (!overscroll_data_) {
         overscroll_data_ = MakeGarbageCollected<OverscrollPseudoElementData>();
@@ -321,8 +320,7 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
                ? transition_data_->GetPseudoElement(pseudo_id, pseudo_argument)
                : nullptr;
   }
-  if (overscroll_data_ && (pseudo_id == kPseudoIdOverscrollAreaParent ||
-                           pseudo_id == kPseudoIdOverscrollClientArea)) {
+  if (overscroll_data_ && pseudo_id == kPseudoIdOverscrollAreaParent) {
     return overscroll_data_->GetPseudoElement(pseudo_id, pseudo_argument);
   }
   return nullptr;

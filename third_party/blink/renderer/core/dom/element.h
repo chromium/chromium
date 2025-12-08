@@ -2253,6 +2253,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void AttachPrecedingPseudoElements(AttachContext& context) {
     AttachDocumentElementPrecedingPseudoElements(context);
+    AttachOverscrollPseudoElements(context);
     AttachPseudoElement(kPseudoIdScrollMarker, context);
     AttachPseudoElement(kPseudoIdMarker, context);
     AttachPseudoElement(kPseudoIdCheckMark, context);
@@ -2295,7 +2296,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     AttachPseudoElement(kPseudoIdScrollMarkerGroupAfter, context);
   }
 
-  // These pseudo-elements are added as layout parents of the contents of this
+  // These pseudo-elements are added as siblings of the contents of this
   // element's layout children.
   void AttachOverscrollPseudoElements(AttachContext& context);
 

@@ -157,7 +157,6 @@ bool IsPseudoElementWithUAStyle(PseudoId pseudo_id) {
     case kPseudoIdScrollButtonBlockEnd:
     case kPseudoIdScrollMarker:
     case kPseudoIdOverscrollAreaParent:
-    case kPseudoIdOverscrollClientArea:
       return true;
     default:
       return false;

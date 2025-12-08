@@ -76,7 +76,6 @@ domain DOM
       picker
       permission-icon
       overscroll-area-parent
-      overscroll-client-area
 
   # Shadow root type.
   type ShadowRootType extends string

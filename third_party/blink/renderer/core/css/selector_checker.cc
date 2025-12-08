@@ -662,7 +662,6 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoScrollMarkerGroup:
     case CSSSelector::kPseudoScrollButton:
     case CSSSelector::kPseudoOverscrollAreaParent:
-    case CSSSelector::kPseudoOverscrollClientArea:
       // These pseudos are not allowed to match featureless elements. When
       // adding new pseudos here, they would typically be allowed if they are
       // logical pseudos which take selector arguments.
@@ -3145,8 +3144,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       result.dynamic_pseudo = context.pseudo_id;
       return true;
     }
-    case CSSSelector::kPseudoOverscrollAreaParent:
-    case CSSSelector::kPseudoOverscrollClientArea: {
+    case CSSSelector::kPseudoOverscrollAreaParent: {
       return element.GetPseudoIdForStyling() == pseudo_id;
     }
     case CSSSelector::kPseudoScrollButton:

@@ -408,7 +408,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoScrollButton,
 
     kPseudoOverscrollAreaParent,
-    kPseudoOverscrollClientArea,
 
     // :link-to(<navigation-location>)
     // TODO(crbug.com/436805487): Should be :link-to(<link-condition>)

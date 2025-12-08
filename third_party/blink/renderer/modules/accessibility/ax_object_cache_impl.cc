@@ -1422,7 +1422,6 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
   switch (To<PseudoElement>(node).GetPseudoId()) {
     case kPseudoIdBackdrop:
     case kPseudoIdOverscrollAreaParent:
-    case kPseudoIdOverscrollClientArea:
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionGroupChildren:

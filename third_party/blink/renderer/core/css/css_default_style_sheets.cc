@@ -472,8 +472,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       rule_set_group_cache_.clear();
       return true;
     }
-    case kPseudoIdOverscrollAreaParent:
-    case kPseudoIdOverscrollClientArea: {
+    case kPseudoIdOverscrollAreaParent: {
       if (overscroll_style_sheet_) {
         return false;
       }

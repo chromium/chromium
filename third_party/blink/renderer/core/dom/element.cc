@@ -4403,8 +4403,6 @@ void Element::AttachLayoutTree(AttachContext& context) {
     context.counters_context.EnterObject(*layout_object);
   }
 
-  AttachOverscrollPseudoElements(children_context);
-
   AttachColumnPseudoElements(children_context);
   AttachPrecedingPseudoElements(children_context);
 
@@ -5699,20 +5697,7 @@ void Element::AttachOverscrollPseudoElements(AttachContext& context) {
     CHECK(pseudo_element);
     pseudo_element->AttachLayoutTree(context);
     CHECK(pseudo_element->GetLayoutObject());
-    context.previous_in_flow = nullptr;
-    context.parent = pseudo_element->GetLayoutObject();
-    context.next_sibling = nullptr;
-    context.next_sibling_valid = true;
   }
-  PseudoElement* pseudo_element =
-      GetPseudoElement(kPseudoIdOverscrollClientArea);
-  CHECK(pseudo_element);
-  pseudo_element->AttachLayoutTree(context);
-  CHECK(pseudo_element->GetLayoutObject());
-  context.previous_in_flow = nullptr;
-  context.parent = pseudo_element->GetLayoutObject();
-  context.next_sibling = nullptr;
-  context.next_sibling_valid = true;
 }
 
 void Element::AttachTransitionPseudoElements(AttachContext& context) {
@@ -12080,8 +12065,6 @@ void Element::UpdateOverscrollPseudoElements(
   const ScopedCSSNameList* overscroll_area =
       GetComputedStyle()->OverscrollArea();
   data = &EnsureElementRareData();
-  UpdatePseudoElement(kPseudoIdOverscrollClientArea, style_recalc_change,
-                      style_recalc_context);
   for (const ScopedCSSName* name : overscroll_area->GetNames()) {
     UpdatePseudoElement(kPseudoIdOverscrollAreaParent, style_recalc_change,
                         style_recalc_context, name->GetName());
@@ -12892,7 +12875,6 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollButtonInlineEnd:
       case kPseudoIdScrollButtonBlockEnd:
       case kPseudoIdOverscrollAreaParent:
-      case kPseudoIdOverscrollClientArea:
         if (RuntimeEnabledFeatures::
                 OriginatingElementIsImplicitAnchorEnabled()) {
           return parentElement();

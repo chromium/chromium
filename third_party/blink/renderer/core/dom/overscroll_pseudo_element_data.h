@@ -22,17 +22,12 @@ class PseudoElement;
 // overscroll-area property associated with their originating element.
 // In particular, when an element has `overscroll-area: --name1, --name2;`
 // we will create an ::overscroll-area-parent for each of --name1 and
-// --name2 which allow scrolling into those overscroll areas, and a single
-// ::overscroll-client-area for the originating element's content,
+// --name2 which allow scrolling into those overscroll areas,
 // producing the following layout tree structure:
 // <div id="scroller">
-//   <::overscroll-area-parent(--foo)>
-//     <::overscroll-area-parent(--bar)>
-//       <::overscroll-client-area>
-//         <div id="scroller-child"></div>
-//       </::overscroll-client-area>
-//     </::overscroll-area-parent(--bar)>
-//   </::overscroll-area-parent(--foo)>
+//   <::overscroll-area-parent(--foo)></::overscroll-area-parent(--foo)>
+//   <::overscroll-area-parent(--bar)></::overscroll-area-parent(--bar)>
+//   <div id="scroller-child"></div>
 // </div>
 
 class OverscrollPseudoElementData final
@@ -55,25 +50,20 @@ class OverscrollPseudoElementData final
 
   bool HasPseudoElements() const;
   void ClearPseudoElements();
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(overscroll_client_area_);
-    visitor->Trace(overscroll_parents_);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(overscroll_parents_); }
 
   size_t size() const { return overscroll_parents_.size(); }
 
  private:
-  Member<PseudoElement> overscroll_client_area_;
   HeapVector<Member<PseudoElement>> overscroll_parents_;
   HashMap<AtomicString, size_t> overscroll_parent_id_map_;
 };
 
 inline bool OverscrollPseudoElementData::HasPseudoElements() const {
-  return overscroll_client_area_ || !overscroll_parents_.empty();
+  return !overscroll_parents_.empty();
 }
 
 inline void OverscrollPseudoElementData::ClearPseudoElements() {
-  overscroll_client_area_ = nullptr;
   for (PseudoElement* pseudo : overscroll_parents_) {
     pseudo->Dispose();
   }
@@ -86,10 +76,6 @@ inline void OverscrollPseudoElementData::AddPseudoElement(
     PseudoElement* element,
     const AtomicString& overscroll_area_name) {
   switch (pseudo_id) {
-    case kPseudoIdOverscrollClientArea:
-      CHECK(!overscroll_client_area_);
-      overscroll_client_area_ = element;
-      break;
     case kPseudoIdOverscrollAreaParent: {
       DCHECK(overscroll_area_name);
       overscroll_parents_.push_back(element);
@@ -107,8 +93,6 @@ inline PseudoElement* OverscrollPseudoElementData::GetPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& overscroll_area_name) const {
   switch (pseudo_id) {
-    case kPseudoIdOverscrollClientArea:
-      return overscroll_client_area_.Get();
     case kPseudoIdOverscrollAreaParent: {
       auto it = overscroll_parent_id_map_.find(overscroll_area_name);
       if (it == overscroll_parent_id_map_.end()) {
