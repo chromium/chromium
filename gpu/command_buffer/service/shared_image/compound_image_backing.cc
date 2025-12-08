@@ -92,6 +92,8 @@ SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream) {
              SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE;
     case SharedImageAccessStream::kDawn:
       return SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+    case SharedImageAccessStream::kDawnBuffer:
+      return SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
     case SharedImageAccessStream::kOverlay:
       return SHARED_IMAGE_USAGE_SCANOUT;
     case SharedImageAccessStream::kVaapi:
@@ -337,6 +339,37 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
 
  private:
   std::unique_ptr<DawnImageRepresentation> wrapped_;
+};
+
+class WrappedDawnBufferCompoundImageRepresentation
+    : public DawnBufferRepresentation {
+ public:
+  WrappedDawnBufferCompoundImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::unique_ptr<DawnBufferRepresentation> wrapped)
+      : DawnBufferRepresentation(manager, backing, tracker),
+        wrapped_(std::move(wrapped)) {
+    DCHECK(wrapped_);
+  }
+
+ private:
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
+  }
+
+  wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) final {
+    AccessMode access_mode = usage & wgpu::BufferUsage::MapWrite
+                                 ? AccessMode::kWrite
+                                 : AccessMode::kRead;
+    compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode);
+    return wrapped_->BeginAccess(usage);
+  }
+
+  void EndAccess() final { wrapped_->EndAccess(); }
+
+  std::unique_ptr<DawnBufferRepresentation> wrapped_;
 };
 
 class WrappedOverlayCompoundImageRepresentation
@@ -808,6 +841,28 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     return nullptr;
 
   return std::make_unique<WrappedDawnCompoundImageRepresentation>(
+      manager, this, tracker, std::move(real_rep));
+}
+
+std::unique_ptr<DawnBufferRepresentation>
+CompoundImageBacking::ProduceDawnBuffer(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    const wgpu::Device& device,
+    wgpu::BackendType backend_type,
+    scoped_refptr<SharedContextState> context_state) {
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kDawnBuffer);
+  if (!backing) {
+    return nullptr;
+  }
+
+  auto real_rep = backing->ProduceDawnBuffer(manager, tracker, device,
+                                             backend_type, context_state);
+  if (!real_rep) {
+    return nullptr;
+  }
+
+  return std::make_unique<WrappedDawnBufferCompoundImageRepresentation>(
       manager, this, tracker, std::move(real_rep));
 }
 

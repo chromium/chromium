@@ -903,7 +903,8 @@ class GPU_GLES2_EXPORT DawnBufferRepresentation
   // Allows passing usages to the created Dawn buffer.
   std::unique_ptr<ScopedAccess> BeginScopedAccess(wgpu::BufferUsage usage);
 
- private:
+ protected:
+  friend class WrappedDawnBufferCompoundImageRepresentation;
   virtual wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) = 0;
   virtual void EndAccess() = 0;
 };

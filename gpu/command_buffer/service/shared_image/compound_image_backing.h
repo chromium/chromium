@@ -35,6 +35,7 @@ enum class SharedImageAccessStream {
   kOverlay,
   kGL,
   kDawn,
+  kDawnBuffer,
   kMemory,
   kVaapi
 };
@@ -151,6 +152,12 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       const wgpu::Device& device,
       wgpu::BackendType backend_type,
       std::vector<wgpu::TextureFormat> view_formats,
+      scoped_refptr<SharedContextState> context_state) override;
+  std::unique_ptr<DawnBufferRepresentation> ProduceDawnBuffer(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      const wgpu::Device& device,
+      wgpu::BackendType backend_type,
       scoped_refptr<SharedContextState> context_state) override;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
