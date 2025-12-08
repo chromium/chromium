@@ -139,6 +139,13 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kChromeIdentitySurveyLaunchWithDelayDuration);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_ANDROID)
+// After an account is added via the ADD_SESSION header it will be redirected to
+// the specified URL.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableAddSessionRedirect);
+#endif
+
 #if BUILDFLAG(IS_IOS)
 // Features to enable using the ASWebAuthenticationSession to add accounts to
 // device.

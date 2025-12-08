@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/android/tab_android.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -27,7 +28,7 @@ class SigninBridge : public KeyedService {
 
   // Opens a add account flow pre-filled with |prefilled_email| that opens
   // the specified |continue_url| upon completion.
-  virtual void StartAddAccountFlow(ui::WindowAndroid* window,
+  virtual void StartAddAccountFlow(TabAndroid* tab,
                                    const std::string& prefilled_email,
                                    const GURL& continue_url);
 

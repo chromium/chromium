@@ -5,12 +5,14 @@
 #include "chrome/browser/signin/android//web_signin_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "google_apis/gaia/core_account_id.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/signin/services/android/jni_headers/WebSigninBridge_jni.h"
@@ -29,7 +31,7 @@ void ForwardOnSigninCompletedToJava(
 WebSigninBridge::WebSigninBridge(
     signin::IdentityManager* identity_manager,
     AccountReconcilor* account_reconcilor,
-    CoreAccountId signin_account,
+    std::variant<CoreAccountId, std::string> signin_account,
     base::OnceCallback<void(signin::WebSigninTracker::Result)> callback)
     : tracker_(identity_manager,
                account_reconcilor,
@@ -38,12 +40,12 @@ WebSigninBridge::WebSigninBridge(
 
 WebSigninBridge::~WebSigninBridge() = default;
 
-static jlong JNI_WebSigninBridge_Create(
+static jlong JNI_WebSigninBridge_CreateWithCoreAccountId(
     JNIEnv* env,
     Profile* profile,
-    CoreAccountInfo& account,
+    CoreAccountId& account_id,
     const JavaRef<jobject>& j_listener) {
-  DCHECK(j_listener) << "Listener should be non-null";
+  CHECK(j_listener) << "Listener should be non-null";
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -54,8 +56,28 @@ static jlong JNI_WebSigninBridge_Create(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
   return reinterpret_cast<intptr_t>(
-      new WebSigninBridge(identity_manager, account_reconcilor,
-                          account.account_id, std::move(on_signin_completed)));
+      new WebSigninBridge(identity_manager, account_reconcilor, account_id,
+                          std::move(on_signin_completed)));
+}
+
+static jlong JNI_WebSigninBridge_CreateWithEmail(
+    JNIEnv* env,
+    Profile* profile,
+    std::string& account_email,
+    const JavaRef<jobject>& j_listener) {
+  CHECK(j_listener) << "Listener should be non-null";
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  AccountReconcilor* account_reconcilor =
+      AccountReconcilorFactory::GetForProfile(profile);
+  base::OnceCallback<void(signin::WebSigninTracker::Result)>
+      on_signin_completed = base::BindOnce(
+          &ForwardOnSigninCompletedToJava,
+          base::android::ScopedJavaGlobalRef<jobject>(j_listener));
+  return reinterpret_cast<intptr_t>(
+      new WebSigninBridge(identity_manager, account_reconcilor, account_email,
+                          std::move(on_signin_completed)));
 }
 
 static void JNI_WebSigninBridge_Destroy(JNIEnv* env, jlong web_signin_bridge) {

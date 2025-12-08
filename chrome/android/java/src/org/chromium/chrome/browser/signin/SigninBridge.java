@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.signin;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.annotation.SuppressLint;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -42,10 +43,14 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -86,19 +91,24 @@ final class SigninBridge {
     /**
      * Starts a flow to add a Google account to the device.
      *
-     * @param windowAndroid The window to use for the flow.
+     * @param tab The target tab for the continueUrl navigation.
      * @param prefilledEmail The email address to prefill in the add account flow, or null if no
      *     email should be prefilled.
      * @param continueUrl The URL to navigate to after the account is added.
      */
-    // TODO(crbug.com/432009825): Remove when the redirection will be implemented.
-    @SuppressLint("UnusedVariable")
     @CalledByNative
     private static void startAddAccountFlow(
-            WindowAndroid windowAndroid,
+            Tab tab,
             @Nullable @JniType("std::string") String prefilledEmail,
             @JniType("GURL") GURL continueUrl) {
         ThreadUtils.assertOnUiThread();
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null || !tab.isUserInteractable()) {
+            // The page is opened in the background, ignore the header. See
+            // https://crbug.com/1145031#c5 and https://crbug.com/323424409 for details.
+            return;
+        }
+        GURL initialTabURL = tab.getUrl();
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
         accountManagerFacade.createAddAccountIntent(
                 prefilledEmail,
@@ -115,11 +125,53 @@ final class SigninBridge {
                     windowAndroid.showIntent(
                             intent,
                             (int resultCode, @Nullable Intent data) -> {
-                                // TODO(crbug.com/432009825): Wait for the Cookies to be available,
-                                // and navigate to the continue URL.
+                                @Nullable String addedAccountEmail =
+                                        data == null
+                                                ? prefilledEmail
+                                                : data.getStringExtra(
+                                                        AccountManager.KEY_ACCOUNT_NAME);
+                                if (SigninFeatureMap.isEnabled(
+                                                SigninFeatures.ENABLE_ADD_SESSION_REDIRECT)
+                                        && resultCode == Activity.RESULT_OK) {
+                                    waitForCookiesAndRedirect(
+                                            tab, addedAccountEmail, continueUrl, initialTabURL);
+                                }
                             },
                             null);
                 });
+    }
+
+    /**
+     * Redirects to the continueUrl in the given tab if refresh tokens and cookies are minted for
+     * the account associated with the prefilledEmail.
+     */
+    private static void waitForCookiesAndRedirect(
+            Tab tab, @Nullable String prefilledEmail, GURL continueUrl, GURL initialTabURL) {
+        assert prefilledEmail != null;
+        new WebSigninBridge.Factory()
+                .createWithEmail(
+                        tab.getProfile(),
+                        prefilledEmail,
+                        createWebSigninBridgeCallback(tab, continueUrl, initialTabURL));
+    }
+
+    private static Callback<@WebSigninTrackerResult Integer> createWebSigninBridgeCallback(
+            Tab tab, GURL continueUrl, GURL initialTabURL) {
+        return (result) -> {
+            ThreadUtils.assertOnUiThread();
+            switch (result) {
+                case WebSigninTrackerResult.SUCCESS:
+                    if (!tab.isDestroyed() && tab.getUrl().equals(initialTabURL)) {
+                        tab.loadUrl(new LoadUrlParams(continueUrl));
+                    }
+                    break;
+                // TODO(crbug.com/456445865): Handle cases where WebSigninTracker returns an error.
+                case WebSigninTrackerResult.AUTH_ERROR:
+                    break;
+                case WebSigninTrackerResult.OTHER_ERROR:
+                    break;
+            }
+        };
     }
 
     /** Opens account management screen. */
