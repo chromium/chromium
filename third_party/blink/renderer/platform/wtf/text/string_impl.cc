@@ -139,6 +139,10 @@ void StringImpl::operator delete(void* ptr) {
   Partitions::BufferFree(ptr);
 }
 
+void StringImpl::operator delete(void* ptr, size_t size) {
+  Partitions::BufferFreeWithSize(ptr, size);
+}
+
 inline StringImpl::~StringImpl() {
   DCHECK(!IsStatic());
 }
@@ -148,7 +152,9 @@ void StringImpl::DestroyIfNeeded() const {
     // TODO: Remove const_cast
     if (AtomicStringTable::Instance().ReleaseAndRemoveIfNeeded(
             const_cast<StringImpl*>(this))) {
-      delete this;
+      // Use sized deallocation. We explicitly pass `GetAllocatedSize()` because
+      // StringImpl instances are allocated with a dynamic size
+      operator delete(const_cast<StringImpl*>(this), GetAllocatedSize());
     } else {
       // AtomicStringTable::Add() revived this before we started really
       // killing it.
@@ -159,7 +165,7 @@ void StringImpl::DestroyIfNeeded() const {
     // of changing the load memory order to minimize perf impact.
     int ref_count = ref_count_.load(std::memory_order_acquire);
     DCHECK_EQ(ref_count, 1);
-    delete this;
+    operator delete(const_cast<StringImpl*>(this), GetAllocatedSize());
   }
 }
 

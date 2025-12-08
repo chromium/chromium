@@ -335,6 +335,11 @@ void Partitions::BufferFree(void* p) {
 }
 
 // static
+void Partitions::BufferFreeWithSize(void* p, size_t size) {
+  BufferPartition()->FreeWithSize(p, size);
+}
+
+// static
 size_t Partitions::BufferPotentialCapacity(size_t n) {
   return BufferPartition()->AllocationCapacityFromRequestedSize(n);
 }
