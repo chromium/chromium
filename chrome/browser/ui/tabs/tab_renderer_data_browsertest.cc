@@ -77,7 +77,8 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, FromTabInModel) {
   EXPECT_EQ(data.visible_url, GURL(url::kAboutBlankURL));
   EXPECT_EQ(data.last_committed_url, GURL(url::kAboutBlankURL));
   EXPECT_EQ(data.title,
-            data.tab_interface->GetTabFeatures()->tab_ui_helper()->GetTitle());
+            TabUIHelper::From(browser()->GetTabStripModel()->GetTabAtIndex(0))
+                ->GetTitle());
   EXPECT_FALSE(data.blocked);
   EXPECT_FALSE(data.should_hide_throbber);
   EXPECT_FALSE(data.is_tab_discarded);
@@ -116,6 +117,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabInterfaceWeakPtr) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
   content::WebContents* wc1 = tab_strip_model->GetWebContentsAt(0);
+
   UpdateTitleForEntry(wc1, u"First Tab");
 
   TabRendererData data1 = TabRendererData::FromTabInModel(tab_strip_model, 0);
@@ -184,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, FaviconAndIconFlags) {
     TabRendererData data = TabRendererData::FromTabInModel(tab_strip_model, 0);
     EXPECT_EQ(
         data.favicon,
-        data.tab_interface->GetTabFeatures()->tab_ui_helper()->GetFavicon());
+        TabUIHelper::From(tab_strip_model->GetTabAtIndex(0))->GetFavicon());
     EXPECT_FALSE(data.should_themify_favicon);
     EXPECT_FALSE(data.is_monochrome_favicon);
     EXPECT_TRUE(data.show_icon);
@@ -338,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldHideThrobber) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   TabUIHelper* const helper =
-      tab_strip_model->GetTabAtIndex(1)->GetTabFeatures()->tab_ui_helper();
+      TabUIHelper::From(tab_strip_model->GetTabAtIndex(1));
   ASSERT_NE(nullptr, helper);
   helper->set_created_by_session_restore(true);
   TabRendererData data = TabRendererData::FromTabInModel(tab_strip_model, 1);
@@ -384,8 +386,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Thumbnail) {
   EXPECT_EQ(data_initial, data_updated);
 }
 
-// TODO(crbug.com/443125652): Creating a test for
-// deferred functionality
+// TODO(crbug.com/443125652): Creating a test for deferred functionality
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabLifecycleManagement) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,

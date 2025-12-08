@@ -33,10 +33,24 @@ BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
 
 }  // namespace
 
+DEFINE_USER_DATA(TabUIHelper);
+
 TabUIHelper::TabUIHelper(tabs::TabInterface& tab_interface)
-    : ContentsObservingTabFeature(tab_interface) {}
+    : ContentsObservingTabFeature(tab_interface),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+}
 
 TabUIHelper::~TabUIHelper() = default;
+
+// static
+const TabUIHelper* TabUIHelper::From(const tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
+
+// static
+TabUIHelper* TabUIHelper::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
 
 std::u16string TabUIHelper::GetTitle() const {
   const tab_groups::SavedTabGroupWebContentsListener* wc_listener =

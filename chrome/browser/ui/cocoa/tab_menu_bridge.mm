@@ -35,8 +35,7 @@ void UpdateItemForWebContents(NSMenuItem* item,
                               TabStripModel* tab_strip_model) {
   tabs::TabInterface* const tab_interface =
       tabs::TabInterface::GetFromContents(web_contents);
-  TabUIHelper* const tab_ui_helper =
-      tab_interface->GetTabFeatures()->tab_ui_helper();
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
 
   auto* audio_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
   if (audio_helper && audio_helper->WasRecentlyAudible()) {

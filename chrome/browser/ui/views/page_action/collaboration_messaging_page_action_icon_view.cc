@@ -74,11 +74,11 @@ CollaborationMessagingPageActionIconView::GetCollaborationTabData() const {
   }
 
   auto* tab = tabs::TabInterface::GetFromContents(web_contents);
-  if (!tab || !tab->GetTabFeatures()) {
+  if (!tab) {
     return nullptr;
   }
 
-  return tab->GetTabFeatures()->collaboration_messaging_tab_data();
+  return tab_groups::CollaborationMessagingTabData::From(tab);
 }
 
 void CollaborationMessagingPageActionIconView::UpdateContent(

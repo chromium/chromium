@@ -452,7 +452,6 @@ class ContextualSearchboxHandlerTestTabsTest
   }
 
   void TearDown() override {
-    tab_interface_to_alert_controller_.clear();
     tab_strip_model()->CloseAllTabs();
     ContextualSearchboxHandlerTest::TearDown();
   }
@@ -484,8 +483,10 @@ class ContextualSearchboxHandlerTestTabsTest
     tabs::TabInterface* tab_interface =
         tab_strip_model()->GetTabForWebContents(content_ptr);
     tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
-    tab_features->SetTabUIHelperForTesting(
-        std::make_unique<TabUIHelper>(*tab_interface));
+    std::unique_ptr<TabUIHelper> tab_ui_helper =
+        tabs::TabFeatures::GetUserDataFactoryForTesting()
+            .CreateInstance<TabUIHelper>(*tab_interface, *tab_interface);
+    tab_features->SetTabUIHelperForTesting(std::move(tab_ui_helper));
     std::unique_ptr<lens::TabContextualizationController>
         tab_contextualization_controller =
             tabs::TabFeatures::GetUserDataFactoryForTesting()
@@ -497,9 +498,8 @@ class ContextualSearchboxHandlerTestTabsTest
         tabs::TabFeatures::GetUserDataFactoryForTesting()
             .CreateInstance<tabs::TabAlertController>(*tab_interface,
                                                       *tab_interface);
-    tab_interface_to_alert_controller_.insert(
-        {tab_interface, std::move(tab_alert_controller)});
-
+    tab_features->SetTabAlertControllerForTesting(
+        std::move(tab_alert_controller));
     return tab_interface;
   }
 
@@ -510,8 +510,6 @@ class ContextualSearchboxHandlerTestTabsTest
   ui::UnownedUserDataHost user_data_host_;
   MockBrowserWindowInterface browser_window_interface_;
   base::HistogramTester histogram_tester_;
-  std::map<tabs::TabInterface* const, std::unique_ptr<tabs::TabAlertController>>
-      tab_interface_to_alert_controller_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 

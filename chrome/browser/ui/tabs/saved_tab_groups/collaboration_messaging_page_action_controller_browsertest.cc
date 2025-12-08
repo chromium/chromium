@@ -94,9 +94,8 @@ class CollaborationMessagingPageActionControllerBrowserTest
   tab_groups::CollaborationMessagingTabData* GetTabDataAtIndex(
       Browser* target_browser,
       int index) {
-    return GetTabInterface(target_browser, index)
-        ->GetTabFeatures()
-        ->collaboration_messaging_tab_data();
+    return tab_groups::CollaborationMessagingTabData::From(
+        GetTabInterface(target_browser, index));
   }
 
   RecentActivityBubbleCoordinator* GetBubbleCoordinator(

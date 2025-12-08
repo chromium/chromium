@@ -269,8 +269,6 @@ class TabFeatures {
     return memory_saver_chip_helper_.get();
   }
 
-  TabUIHelper* tab_ui_helper() { return tab_ui_helper_.get(); }
-
   TabUIHelper* SetTabUIHelperForTesting(
       std::unique_ptr<TabUIHelper> tab_ui_helper);
 
@@ -278,6 +276,9 @@ class TabFeatures {
   SetTabContextualizationControllerForTesting(
       std::unique_ptr<lens::TabContextualizationController>
           tab_contextualization_controller);
+
+  TabAlertController* SetTabAlertControllerForTesting(
+      std::unique_ptr<TabAlertController> tab_alert_controller);
 
   TabCreationMetricsController* tab_creation_metrics_controller() {
     return tab_creation_metrics_controller_.get();

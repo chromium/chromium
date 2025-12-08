@@ -190,8 +190,7 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
     // the throbber when a background restored tab is loading.
     tabs::TabInterface* const tab_interface =
         tabs::TabInterface::GetFromContents(raw_web_contents);
-    tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
-    tab_features->tab_ui_helper()->set_created_by_session_restore(true);
+    TabUIHelper::From(tab_interface)->set_created_by_session_restore(true);
   }
 
   // We set the size of the view here, before Blink does its initial layout.
@@ -316,8 +315,7 @@ WebContents* ReplaceRestoredTab(
     // the throbber when a background restored tab is loading.
     tabs::TabInterface* const tab_interface =
         tabs::TabInterface::GetFromContents(raw_web_contents);
-    tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
-    tab_features->tab_ui_helper()->set_created_by_session_restore(true);
+    TabUIHelper::From(tab_interface)->set_created_by_session_restore(true);
   }
 
   tab_strip->CloseWebContentsAt(insertion_index, TabCloseTypes::CLOSE_NONE);

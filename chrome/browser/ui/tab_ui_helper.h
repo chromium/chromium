@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace tabs {
 class TabInterface;
@@ -30,8 +31,13 @@ class Page;
 // when the WebContents hasn't loaded.
 class TabUIHelper : public tabs::ContentsObservingTabFeature {
  public:
+  DECLARE_USER_DATA(TabUIHelper);
+
   explicit TabUIHelper(tabs::TabInterface& tab);
   ~TabUIHelper() override;
+
+  static TabUIHelper* From(tabs::TabInterface* tab);
+  static const TabUIHelper* From(const tabs::TabInterface* tab);
 
   // Get the title of the tab. When the associated WebContents' title is empty,
   // a customized title is used.
@@ -71,6 +77,8 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   bool created_by_session_restore_ = false;
 
   TitleUpdatedCallbackList title_change_callbacks_;
+
+  ui::ScopedUnownedUserData<TabUIHelper> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_UI_HELPER_H_

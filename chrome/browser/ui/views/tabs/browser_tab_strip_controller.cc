@@ -648,9 +648,8 @@ std::u16string BrowserTabStripController::GetGroupContentString(
   std::u16string format_string = l10n_util::GetPluralStringFUTF16(
       IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, tab_group->tab_count() - 1);
   std::u16string short_title;
-  gfx::ElideString(
-      tab_group->GetFirstTab()->GetTabFeatures()->tab_ui_helper()->GetTitle(),
-      kContextMenuTabTitleMaxLength, &short_title);
+  gfx::ElideString(TabUIHelper::From(tab_group->GetFirstTab())->GetTitle(),
+                   kContextMenuTabTitleMaxLength, &short_title);
   return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
 }
 
@@ -821,9 +820,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
     tabs::TabInterface* const new_tab_interface = selection.new_tab;
     std::optional<size_t> index = selection.new_model.active();
     if (new_contents && new_tab_interface && index.has_value()) {
-      new_tab_interface->GetTabFeatures()
-          ->tab_ui_helper()
-          ->SetWasActiveAtLeastOnce();
+      TabUIHelper::From(new_tab_interface)->SetWasActiveAtLeastOnce();
       SetTabDataAt(new_contents, index.value());
     }
   }

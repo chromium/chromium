@@ -198,9 +198,8 @@ class CollaborationMessagingObserverBrowserTest
 
   CollaborationMessagingTabData* GetTabDataAtIndex(Browser* target_browser,
                                                    int index) {
-    return GetTabInterface(target_browser, index)
-        ->GetTabFeatures()
-        ->collaboration_messaging_tab_data();
+    return tab_groups::CollaborationMessagingTabData::From(
+        GetTabInterface(target_browser, index));
   }
 
   bool AddTab(Browser* target_browser) {

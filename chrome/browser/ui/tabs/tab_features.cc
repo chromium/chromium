@@ -436,7 +436,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   tab_creation_metrics_controller_ =
       std::make_unique<TabCreationMetricsController>(&tab);
 
-  tab_ui_helper_ = std::make_unique<TabUIHelper>(tab);
+  tab_ui_helper_ = GetUserDataFactory().CreateInstance<TabUIHelper>(tab, tab);
 
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
 
@@ -579,6 +579,12 @@ TabFeatures::SetCustomizeChromeSidePanelControllerForTesting(
   customize_chrome_side_panel_controller_ =
       std::move(customize_chrome_side_panel_controller);
   return customize_chrome_side_panel_controller_.get();
+}
+
+TabAlertController* TabFeatures::SetTabAlertControllerForTesting(
+    std::unique_ptr<TabAlertController> tab_alert_controller) {
+  tab_alert_controller_ = std::move(tab_alert_controller);
+  return tab_alert_controller_.get();
 }
 
 // static

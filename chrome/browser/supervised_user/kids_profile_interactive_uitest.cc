@@ -47,12 +47,10 @@ bool IsYouTubeInterstitialDisplayedInIframe(Browser& browser,
   content::WebContents* web_contents = nullptr;
   TabStripModel* const tab_strip_model = browser.tab_strip_model();
   for (int i = 0; i < tab_strip_model->count(); ++i) {
-    const std::u16string wc_title = tab_strip_model->GetTabAtIndex(i)
-                                        ->GetTabFeatures()
-                                        ->tab_ui_helper()
-                                        ->GetTitle();
+    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+    const std::u16string wc_title = TabUIHelper::From(tab)->GetTitle();
     if (wc_title == tab_title) {
-      web_contents = browser.GetTabStripModel()->GetWebContentsAt(i);
+      web_contents = tab->GetContents();
       break;
     }
   }

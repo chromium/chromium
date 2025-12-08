@@ -12,7 +12,6 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -155,10 +154,9 @@ void CollaborationMessagingObserver::HandleChip(PersistentMessage message,
   if (tabs::TabInterface* tab = SavedTabGroupUtils::GetGroupedTab(
           tab_info->local_tab_group_id, tab_info->local_tab_id)) {
     if (display == MessageDisplayStatus::kDisplay) {
-      tab->GetTabFeatures()->collaboration_messaging_tab_data()->SetMessage(
-          message);
+      tab_groups::CollaborationMessagingTabData::From(tab)->SetMessage(message);
     } else {
-      tab->GetTabFeatures()->collaboration_messaging_tab_data()->ClearMessage(
+      tab_groups::CollaborationMessagingTabData::From(tab)->ClearMessage(
           message);
     }
   }

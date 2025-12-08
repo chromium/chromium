@@ -596,9 +596,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
   // Opens "chrome://version/" page, which uses default favicon.
   const GURL version_url(chrome::kChromeUIVersionURL);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), version_url));
-  auto* const tab_features =
-      browser()->tab_strip_model()->GetActiveTab()->GetTabFeatures();
-  auto* const helper = tab_features->tab_ui_helper();
+  auto* const tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* const helper = TabUIHelper::From(tab);
   ASSERT_TRUE(helper);
 
   const auto favicon = helper->GetFavicon();

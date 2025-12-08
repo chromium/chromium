@@ -54,9 +54,8 @@ std::u16string GetContentString(const TabGroup& group) {
   std::u16string format_string = l10n_util::GetPluralStringFUTF16(
       IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, group.tab_count() - 1);
   std::u16string short_title;
-  gfx::ElideString(
-      group.GetFirstTab()->GetTabFeatures()->tab_ui_helper()->GetTitle(),
-      kContextMenuTabTitleMaxLength, &short_title);
+  gfx::ElideString(TabUIHelper::From(group.GetFirstTab())->GetTitle(),
+                   kContextMenuTabTitleMaxLength, &short_title);
   return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
 }
 

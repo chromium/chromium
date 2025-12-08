@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -80,8 +79,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
 
   TabRendererData data;
 
-  tabs::TabFeatures* const features = tab->GetTabFeatures();
-  TabUIHelper* const tab_ui_helper = features->tab_ui_helper();
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab);
   data.favicon = tab_ui_helper->GetFavicon();
   data.title = tab_ui_helper->GetTitle();
   auto* const bwi = tab->GetBrowserWindowInterface();

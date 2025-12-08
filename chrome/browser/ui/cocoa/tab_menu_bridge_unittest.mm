@@ -90,8 +90,12 @@ class TabMenuBridgeTest : public ::testing::Test {
         std::make_unique<tabs::TabModel>(CreateWebContents(name),
                                          tab_strip_model);
     tabs::TabFeatures* const tab_features = tab_model->GetTabFeatures();
-    tab_features->SetTabUIHelperForTesting(
-        std::make_unique<TabUIHelper>(*tab_model));
+
+    std::unique_ptr<TabUIHelper> tab_ui_helper =
+        tabs::TabFeatures::GetUserDataFactoryForTesting()
+            .CreateInstance<TabUIHelper>(*tab_model, *tab_model);
+
+    tab_features->SetTabUIHelperForTesting(std::move(tab_ui_helper));
     tab_strip_model->AppendTab(std::move(tab_model), true);
   }
 
