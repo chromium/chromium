@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkAccountStorageMoveDialog.Download.{Action}"
-    enum="BooleanHit" expires_after="2026-01-01">
+    enum="BooleanHit" expires_after="2026-06-01">
   <owner>amelies@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkAccountStorageMoveDialog.Upload.{Action}"
-    enum="BookmarkAccountStorageMoveDialogType" expires_after="2026-01-01">
+    enum="BookmarkAccountStorageMoveDialogType" expires_after="2026-06-01">
   <owner>amelies@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
