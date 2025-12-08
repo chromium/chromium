@@ -209,6 +209,10 @@ class VIEWS_EXPORT TextfieldModel {
   // if any text is pasted.
   bool Paste();
 
+  // Pastes the given text at the current cursor position. Returns true if any
+  // text is pasted.
+  bool Paste(std::u16string text);
+
   // Transposes the characters to either side of the insertion point and
   // advances the insertion point past both of them. Returns true if text is
   // changed.

@@ -2996,14 +2996,31 @@ bool Textfield::Copy() {
 }
 
 bool Textfield::Paste() {
-  if (!GetReadOnly() && model_->Paste()) {
-    if (controller_) {
-      controller_->OnAfterPaste();
-    }
-    UpdateAccessibleTextSelection();
-    return true;
+  if (GetReadOnly()) {
+    return false;
   }
-  return false;
+
+  bool pasted = false;
+  std::u16string text;
+  // Allow the controller to intercept paste and provide text; if not provided,
+  // fall back to the model's default clipboard handling.
+  if (controller_ && controller_->OnBeforePaste(this, &text)) {
+    pasted = model_->Paste(std::move(text));
+  } else {
+    pasted = model_->Paste();
+  }
+
+  if (!pasted) {
+    return false;
+  }
+
+  if (controller_) {
+    controller_->OnAfterPaste();
+  }
+
+  UpdateAccessibleTextSelection();
+
+  return true;
 }
 
 void Textfield::UpdateContextMenu() {

@@ -47,4 +47,12 @@ bool TextfieldController::AllowStartDragEvent(const std::u16string_view&) {
   return true;
 }
 
+bool TextfieldController::OnBeforePaste(Textfield* sender,
+                                        std::u16string* paste_contents) {
+  // Default implementation does not intercept paste. Controllers may override
+  // this to supply paste contents and return true to bypass default clipboard
+  // read.
+  return false;
+}
+
 }  // namespace views

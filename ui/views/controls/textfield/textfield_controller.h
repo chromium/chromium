@@ -65,6 +65,15 @@ class VIEWS_EXPORT TextfieldController {
   // Called after performing a Cut or Copy operation.
   virtual void OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {}
 
+  // Called before performing a paste operation, allowing the controller to
+  // intercept and provide paste contents. Implementations can populate
+  // `paste_contents` and return true to override the default clipboard read;
+  // returning false will cause the textfield to use its standard clipboard
+  // handling.
+  // NOTE: This hook runs before OnAfterPaste() and only affects the paste
+  // content source; it does not change how the content is inserted.
+  virtual bool OnBeforePaste(Textfield* sender, std::u16string* paste_contents);
+
   // Called after performing a Paste operation.
   virtual void OnAfterPaste() {}
 
