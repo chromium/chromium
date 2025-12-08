@@ -168,6 +168,8 @@ void GlicSidePanelUi::SidePanelStateChanged(
   // by side panel coordinator when replacing glic with another entry.
   if (state != GlicSidePanelCoordinator::State::kShown && tab_) {
     instance_metrics_->OnSidePanelClosed(tab_.get());
+    panel_state_.kind = mojom::PanelStateKind::kHidden;
+    delegate_->NotifyPanelStateChanged();
     // NOTE: `this` will be destroyed after this call.
     delegate_->WillCloseFor(tab_.get());
   }
@@ -223,8 +225,6 @@ void GlicSidePanelUi::Close() {
   if (!glic_side_panel_coordinator || !IsShowing()) {
     return;
   }
-  panel_state_.kind = mojom::PanelStateKind::kHidden;
-  delegate_->NotifyPanelStateChanged();
   // NOTE: `this` will be destroyed after this call.
   glic_side_panel_coordinator->Close();
 }
