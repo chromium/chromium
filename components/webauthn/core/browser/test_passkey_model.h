@@ -38,9 +38,6 @@ class TestPasskeyModel : public PasskeyModel {
       std::variant<AnyRp, std::string_view> rp_id,
       std::string_view credential_id,
       ShadowedCredentials shadowed_credentials) const override;
-  std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByCredentialId(
-      const std::string& rp_id,
-      const std::string& credential_id) const override;
   std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByUserId(
       const std::string& rp_id,
       const std::string& user_id) const override;

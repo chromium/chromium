@@ -91,27 +91,6 @@ TestPasskeyModel::GetPasskey(std::variant<AnyRp, std::string_view> rp_id,
 }
 
 std::optional<sync_pb::WebauthnCredentialSpecifics>
-TestPasskeyModel::GetPasskeyByCredentialId(
-    const std::string& rp_id,
-    const std::string& credential_id) const {
-  std::vector<sync_pb::WebauthnCredentialSpecifics> rp_passkeys;
-  std::ranges::copy_if(
-      credentials_, std::back_inserter(rp_passkeys),
-      [&rp_id](const auto& passkey) { return passkey.rp_id() == rp_id; });
-  rp_passkeys = passkey_model_utils::FilterShadowedCredentials(rp_passkeys);
-  std::vector<sync_pb::WebauthnCredentialSpecifics> result;
-  std::ranges::copy_if(rp_passkeys, std::back_inserter(result),
-                       [&credential_id](const auto& passkey) {
-                         return passkey.credential_id() == credential_id;
-                       });
-  if (result.empty()) {
-    return std::nullopt;
-  }
-  CHECK_EQ(result.size(), 1u);
-  return result.front();
-}
-
-std::optional<sync_pb::WebauthnCredentialSpecifics>
 TestPasskeyModel::GetPasskeyByUserId(const std::string& rp_id,
                                      const std::string& user_id) const {
   std::vector<sync_pb::WebauthnCredentialSpecifics> rp_passkeys;

@@ -432,15 +432,17 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
       GetModel().GetPasskeys(passkey1a.rp_id(), ShadowedCredentials::kExclude),
       UnorderedElementsAre(PasskeyHasSyncId(sync_id1a),
                            PasskeyHasSyncId(sync_id1b)));
-  EXPECT_THAT(GetModel().GetPasskeyByCredentialId(passkey1a.rp_id(),
-                                                  passkey1a.credential_id()),
-              Optional(PasskeyHasSyncId(sync_id1a)));
-  EXPECT_THAT(GetModel().GetPasskeyByCredentialId(passkey1b.rp_id(),
-                                                  passkey1b.credential_id()),
-              Optional(PasskeyHasSyncId(sync_id1b)));
-  EXPECT_EQ(
-      GetModel().GetPasskeyByCredentialId(kRpId2, passkey1a.credential_id()),
-      std::nullopt);
+  EXPECT_THAT(
+      GetModel().GetPasskey(passkey1a.rp_id(), passkey1a.credential_id(),
+                            ShadowedCredentials::kExclude),
+      Optional(PasskeyHasSyncId(sync_id1a)));
+  EXPECT_THAT(
+      GetModel().GetPasskey(passkey1b.rp_id(), passkey1b.credential_id(),
+                            ShadowedCredentials::kExclude),
+      Optional(PasskeyHasSyncId(sync_id1b)));
+  EXPECT_EQ(GetModel().GetPasskey(kRpId2, passkey1a.credential_id(),
+                                  ShadowedCredentials::kExclude),
+            std::nullopt);
 
   EXPECT_THAT(GetModel().GetPasskeys(kRpId2, ShadowedCredentials::kExclude),
               ElementsAre(PasskeyHasSyncId(sync_id2)));
@@ -471,18 +473,19 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
   EXPECT_THAT(
       GetModel().GetPasskeys(passkey1.rp_id(), ShadowedCredentials::kExclude),
       ElementsAre(PasskeyHasSyncId(sync_id1)));
-  EXPECT_THAT(GetModel().GetPasskeyByCredentialId(passkey1.rp_id(),
-                                                  passkey1.credential_id()),
+  EXPECT_THAT(GetModel().GetPasskey(passkey1.rp_id(), passkey1.credential_id(),
+                                    ShadowedCredentials::kExclude),
               Optional(PasskeyHasSyncId(sync_id1)));
-  EXPECT_EQ(GetModel().GetPasskeyByCredentialId(
-                passkey1_shadow.rp_id(), passkey1_shadow.credential_id()),
+  EXPECT_EQ(GetModel().GetPasskey(passkey1_shadow.rp_id(),
+                                  passkey1_shadow.credential_id(),
+                                  ShadowedCredentials::kExclude),
             std::nullopt);
   EXPECT_THAT(
       GetModel().GetPasskeys(passkey2.rp_id(), ShadowedCredentials::kExclude),
       ElementsAre(PasskeyHasSyncId(sync_id2)));
-  EXPECT_THAT(
-      GetModel().GetPasskeyByCredentialId(kRpId2, passkey2.credential_id()),
-      Optional(PasskeyHasSyncId(sync_id2)));
+  EXPECT_THAT(GetModel().GetPasskey(kRpId2, passkey2.credential_id(),
+                                    ShadowedCredentials::kExclude),
+              Optional(PasskeyHasSyncId(sync_id2)));
 }
 
 // Deleting a local passkey should remove from the server.

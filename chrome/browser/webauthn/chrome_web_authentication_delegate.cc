@@ -447,7 +447,9 @@ void ChromeWebAuthenticationDelegate::PasskeyUnrecognized(
   std::string credential_id(passkey_credential_id.begin(),
                             passkey_credential_id.end());
   std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
-      passkey_store->GetPasskeyByCredentialId(relying_party_id, credential_id);
+      passkey_store->GetPasskey(
+          relying_party_id, credential_id,
+          webauthn::PasskeyModel::ShadowedCredentials::kExclude);
   if (!credential_specifics) {
     LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyNotFound);
     return;

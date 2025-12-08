@@ -107,8 +107,9 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
             static_cast<const char*>(credential.credentialId.bytes),
             credential.credentialId.length);
         std::optional<sync_pb::WebauthnCredentialSpecifics>
-            credential_specifics =
-                _passkeyStore->GetPasskeyByCredentialId(rpId, credentialId);
+            credential_specifics = _passkeyStore->GetPasskey(
+                rpId, credentialId,
+                webauthn::PasskeyModel::ShadowedCredentials::kExclude);
         if (!credential_specifics.has_value()) {
           continue;
         }

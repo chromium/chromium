@@ -122,13 +122,6 @@ class PasskeyModel : public KeyedService {
       std::string_view credential_id,
       ShadowedCredentials shadowed_credentials) const = 0;
 
-  // Returns the passkey matching the given Relying Party and credential ID, if
-  // any. Shadowed entities, which aren't suitable for generating assertions,
-  // are ignored.
-  virtual std::optional<sync_pb::WebauthnCredentialSpecifics>
-  GetPasskeyByCredentialId(const std::string& rp_id,
-                           const std::string& credential_id) const = 0;
-
   // Returns the passkey for the given Relying Party and user IDs, if any.
   // Shadowed entities, which aren't suitable for generating assertions, are
   // ignored.

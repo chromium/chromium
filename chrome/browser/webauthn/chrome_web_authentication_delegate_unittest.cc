@@ -60,6 +60,7 @@ static constexpr char kUserName2[] = "reimu";
 static constexpr char kUserDisplayName2[] = "Reimu Hakurei";
 static constexpr char kRpId[] = "example.com";
 
+using ShadowedCredentials = ::webauthn::PasskeyModel::ShadowedCredentials;
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
 
@@ -386,7 +387,8 @@ TEST_F(ChromeWebAuthenticationDelegateTest, DeletePasskey) {
     base::HistogramTester histogram_tester;
     delegate.PasskeyUnrecognized(web_contents(), test_origin,
                                  ToByteVector(kCredentialId2), kRpId);
-    EXPECT_TRUE(passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1));
+    EXPECT_TRUE(passkey_model->GetPasskey(kRpId, kCredentialId1,
+                                          ShadowedCredentials::kExclude));
     histogram_tester.ExpectUniqueSample(
         "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
         ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
@@ -398,8 +400,8 @@ TEST_F(ChromeWebAuthenticationDelegateTest, DeletePasskey) {
     base::HistogramTester histogram_tester;
     delegate.PasskeyUnrecognized(web_contents(), test_origin,
                                  ToByteVector(kCredentialId1), kRpId);
-    EXPECT_FALSE(
-        passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1));
+    EXPECT_FALSE(passkey_model->GetPasskey(kRpId, kCredentialId1,
+                                           ShadowedCredentials::kExclude));
     histogram_tester.ExpectBucketCount(
         "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
         ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
@@ -425,7 +427,8 @@ TEST_F(ChromeWebAuthenticationDelegateTest, DeleteUnacceptedPasskey) {
     delegate.SignalAllAcceptedCredentials(web_contents(), test_origin, kRpId,
                                           ToByteVector(kUserId),
                                           {ToByteVector(kCredentialId1)});
-    EXPECT_TRUE(passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1));
+    EXPECT_TRUE(passkey_model->GetPasskey(kRpId, kCredentialId1,
+                                          ShadowedCredentials::kExclude));
     histogram_tester.ExpectUniqueSample(
         "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
         ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
@@ -438,8 +441,8 @@ TEST_F(ChromeWebAuthenticationDelegateTest, DeleteUnacceptedPasskey) {
     delegate.SignalAllAcceptedCredentials(web_contents(), test_origin, kRpId,
                                           ToByteVector(kUserId),
                                           {ToByteVector(kCredentialId2)});
-    EXPECT_FALSE(
-        passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1));
+    EXPECT_FALSE(passkey_model->GetPasskey(kRpId, kCredentialId1,
+                                           ShadowedCredentials::kExclude));
     histogram_tester.ExpectUniqueSample(
         "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
         ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
@@ -485,8 +488,8 @@ TEST_F(ChromeWebAuthenticationDelegateTest, UpdatePasskey) {
         ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult::
             kPasskeyUpdated,
         1);
-    sync_pb::WebauthnCredentialSpecifics passkey =
-        *passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1);
+    sync_pb::WebauthnCredentialSpecifics passkey = *passkey_model->GetPasskey(
+        kRpId, kCredentialId1, ShadowedCredentials::kExclude);
     EXPECT_EQ(kUserName2, passkey.user_name());
     EXPECT_EQ(kUserDisplayName2, passkey.user_display_name());
   }
@@ -501,8 +504,8 @@ TEST_F(ChromeWebAuthenticationDelegateTest, UpdatePasskey) {
     base::HistogramTester histogram_tester;
     delegate.UpdateUserPasskeys(web_contents(), test_origin, kRpId, user_id,
                                 kUserName1, kUserDisplayName1);
-    sync_pb::WebauthnCredentialSpecifics passkey =
-        *passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1);
+    sync_pb::WebauthnCredentialSpecifics passkey = *passkey_model->GetPasskey(
+        kRpId, kCredentialId1, ShadowedCredentials::kExclude);
     EXPECT_NE(kUserName1, passkey.user_name());
     EXPECT_NE(kUserDisplayName1, passkey.user_display_name());
     histogram_tester.ExpectUniqueSample(
@@ -549,7 +552,8 @@ class ChromeWebAuthenticationSignalApiHidePasskeysTest
 
  protected:
   sync_pb::WebauthnCredentialSpecifics GetPasskey(const std::string& cred_id) {
-    return *passkey_model_->GetPasskeyByCredentialId(kRpId, cred_id);
+    return *passkey_model_->GetPasskey(kRpId, cred_id,
+                                       ShadowedCredentials::kExclude);
   }
 
   const url::Origin test_origin_ =

@@ -82,9 +82,10 @@ const CGFloat kMinFaviconSize = 16.0;
         std::string credentialId(credential.passkey_credential_id.begin(),
                                  credential.passkey_credential_id.end());
         std::string rpId = credential.rp_id;
-
         std::optional<sync_pb::WebauthnCredentialSpecifics> passkey =
-            _passkeyModel->GetPasskeyByCredentialId(rpId, credentialId);
+            _passkeyModel->GetPasskey(
+                rpId, credentialId,
+                webauthn::PasskeyModel::ShadowedCredentials::kExclude);
 
         if (passkey.has_value() && !passkey->hidden()) {
           passkeysToExport.push_back(*std::move(passkey));

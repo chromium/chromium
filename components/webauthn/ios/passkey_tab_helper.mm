@@ -233,7 +233,9 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
 
 bool PasskeyTabHelper::HasCredential(const std::string& rp_id,
                                      const std::string& credential_id) const {
-  return passkey_model_->GetPasskeyByCredentialId(rp_id, credential_id)
+  return passkey_model_
+      ->GetPasskey(rp_id, credential_id,
+                   webauthn::PasskeyModel::ShadowedCredentials::kExclude)
       .has_value();
 }
 
