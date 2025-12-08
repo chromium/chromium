@@ -20,8 +20,6 @@ group("freetype") {
   visibility = [
     "//chrome/test:*",
     "//content/test:*",
-    "//skia",
-    "//third_party/fontconfig",
 
     # The path/label of the PDFium target that depends on `freetype` is
     # different when building PDFium during Chromium build and during
@@ -29,7 +27,8 @@ group("freetype") {
     "//:freetype_common",  # Building standalone PDFium
     "//third_party/pdfium:freetype_common",  # Building Chromium
 
-    # Other dependencies that we think are PDFium-related:
+    # Other dependencies that are PDFium-related:
     "//components/services/font:font_service_unittests",
+    "//skia",
   ]
 }
