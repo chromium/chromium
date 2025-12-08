@@ -15,6 +15,7 @@ class BoxFragmentBuilder;
 class ConstraintSpace;
 class GridLayoutTrackCollection;
 class GridTrackList;
+class LogicalBoxFragment;
 
 enum class AxisEdge;
 struct BoxStrut;
@@ -22,6 +23,23 @@ struct GridItemData;
 struct LogicalSize;
 struct LogicalStaticPosition;
 struct MinMaxSizesResult;
+
+// Base class for accumulating baseline information across grid and grid-lanes
+// layouts. Provides a unified interface for handling baselines in both grid
+// axis and stacking axis.
+class BaselineAccumulator {
+ public:
+  virtual ~BaselineAccumulator() = default;
+
+  // Accumulates baseline information for a given item.
+  virtual void Accumulate(const GridItemData& item,
+                          const LogicalBoxFragment& fragment,
+                          const LayoutUnit block_offset,
+                          LayoutUnit item_stacking_position) = 0;
+
+  virtual std::optional<LayoutUnit> FirstBaseline() const = 0;
+  virtual std::optional<LayoutUnit> LastBaseline() const = 0;
+};
 
 // Update the provided `available_size`, `min_available_size`, and
 // `max_available_size` to their appropriate values.

@@ -9,6 +9,7 @@
 
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
@@ -20,12 +21,19 @@ namespace blink {
 // opposed to DOM order). The baseline of the grid is determined by the first
 // grid item with baseline alignment in the first row. If no items have
 // baseline alignment, fall back to the first item in row-major order.
-class GridBaselineAccumulator {
+class GridBaselineAccumulator : public BaselineAccumulator {
   STACK_ALLOCATED();
 
  public:
   explicit GridBaselineAccumulator(FontBaseline font_baseline)
       : font_baseline_(font_baseline) {}
+
+  void Accumulate(const GridItemData& grid_item,
+                  const LogicalBoxFragment& fragment,
+                  const LayoutUnit block_offset,
+                  LayoutUnit item_stacking_position) override {
+    Accumulate(grid_item, fragment, block_offset);
+  }
 
   void Accumulate(const GridItemData& grid_item,
                   const LogicalBoxFragment& fragment,
@@ -115,7 +123,7 @@ class GridBaselineAccumulator {
     }
   }
 
-  std::optional<LayoutUnit> FirstBaseline() const {
+  std::optional<LayoutUnit> FirstBaseline() const override {
     if (first_major_baseline_ &&
         first_major_baseline_->set_index == first_set_index_) {
       return first_major_baseline_->baseline;
@@ -130,7 +138,7 @@ class GridBaselineAccumulator {
     return std::nullopt;
   }
 
-  std::optional<LayoutUnit> LastBaseline() const {
+  std::optional<LayoutUnit> LastBaseline() const override {
     if (last_minor_baseline_ &&
         last_minor_baseline_->set_index == last_set_index_) {
       return last_minor_baseline_->baseline;

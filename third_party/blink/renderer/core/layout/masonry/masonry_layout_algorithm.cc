@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
+#include "third_party/blink/renderer/core/layout/masonry/stacking_baseline_accumulator.h"
 
 namespace blink {
 
@@ -284,7 +285,7 @@ LayoutUnit MasonryLayoutAlgorithm::CalculateItemInlineContribution(
 }
 
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
-    const GridLayoutTrackCollection& track_collection,
+    GridSizingTrackCollection& track_collection,
     GridItems& masonry_items,
     wtf_size_t start_offset,
     MasonryRunningPositions& running_positions,
@@ -301,9 +302,17 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
   const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
       style, masonry_available_size_, is_for_columns ? kForRows : kForColumns);
 
-  // TODO(kschmi): Handle baselines in the stacking direction, depending on the
-  // resolution for https://github.com/w3c/csswg-drafts/issues/9530.
-  GridBaselineAccumulator baseline_accumulator(style.GetFontBaseline());
+  std::optional<StackingBaselineAccumulator> stacking_baseline_accumulator;
+  std::optional<GridBaselineAccumulator> grid_baseline_accumulator;
+  BaselineAccumulator* baseline_accumulator;
+  if (is_for_columns) {
+    stacking_baseline_accumulator.emplace(&track_collection);
+    baseline_accumulator = &stacking_baseline_accumulator.value();
+  } else {
+    grid_baseline_accumulator.emplace(style.GetFontBaseline());
+    baseline_accumulator = &grid_baseline_accumulator.value();
+  }
+  CHECK(baseline_accumulator);
 
   for (auto& masonry_item : masonry_items) {
     // Get the starting offset of where we want the item placed in the stacking
@@ -461,15 +470,18 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     }
 
     container_builder_.AddResult(*result, containing_rect.offset, margins);
-    baseline_accumulator.Accumulate(masonry_item, fragment,
-                                    containing_rect.offset.block_offset);
+    // TODO(yanlingwang): Update negative margin handling if needed once we
+    // resolve on https://github.com/w3c/csswg-drafts/issues/13165.
+    baseline_accumulator->Accumulate(masonry_item, fragment,
+                                     containing_rect.offset.block_offset,
+                                     start_offset_in_stacking_axis);
   }
 
   // Propagate the baselines to the container.
-  if (auto first_baseline = baseline_accumulator.FirstBaseline()) {
+  if (auto first_baseline = baseline_accumulator->FirstBaseline()) {
     container_builder_.SetFirstBaseline(*first_baseline);
   }
-  if (auto last_baseline = baseline_accumulator.LastBaseline()) {
+  if (auto last_baseline = baseline_accumulator->LastBaseline()) {
     container_builder_.SetLastBaseline(*last_baseline);
   }
 
@@ -500,7 +512,7 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
         is_for_columns ? intrinsic_block_size_ : intrinsic_inline_size,
         is_for_columns ? ChildAvailableSize().block_size
                        : ChildAvailableSize().inline_size,
-        baseline_accumulator.FirstBaseline().value_or(LayoutUnit()),
+        baseline_accumulator->FirstBaseline().value_or(LayoutUnit()),
         content_alignment);
 
     if (is_for_columns) {

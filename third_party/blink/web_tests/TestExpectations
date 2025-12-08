@@ -1237,7 +1237,10 @@ crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-00
 crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-004.html [ Failure ]
 
 # CSS Grid Lanes failing tests
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/baseline/* [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/baseline/grid-lanes-grid-item-content-baseline-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/baseline/grid-lanes-grid-item-self-baseline-001.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/baseline/grid-lanes-grid-item-self-baseline-002a.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/baseline/grid-lanes-grid-item-self-baseline-002b.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/fragmentation/* [ Failure Skip ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/subgrid/* [ Failure ]
 # Grid Lanes sizing test failures dependent on https://github.com/w3c/csswg-drafts/issues/12843#issuecomment-3482172845

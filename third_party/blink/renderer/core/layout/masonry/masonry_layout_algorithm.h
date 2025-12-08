@@ -54,7 +54,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   // parameter that can be used to find the intrinsic inline size when the
   // stacking axis is the inline axis.
   void PlaceMasonryItems(
-      const GridLayoutTrackCollection& track_collection,
+      GridSizingTrackCollection& track_collection,
       GridItems& masonry_items,
       wtf_size_t start_offset,
       MasonryRunningPositions& running_positions,
