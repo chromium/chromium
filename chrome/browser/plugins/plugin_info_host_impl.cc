@@ -234,8 +234,10 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   PluginUtils::GetPluginContentSetting(
       host_content_settings_map_, plugin, main_frame_origin, url,
       plugin_identifier, &plugin_setting, &is_managed);
-
-  DCHECK(plugin_setting != CONTENT_SETTING_DEFAULT);
+  // GetPluginContentSetting() reads the JS setting, which only allows these 2
+  // values.
+  CHECK(plugin_setting == CONTENT_SETTING_ALLOW ||
+        plugin_setting == CONTENT_SETTING_BLOCK);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If an app has explicitly made internal resources available by listing them
@@ -249,10 +251,9 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  if (plugin_setting == CONTENT_SETTING_ASK ||
-      plugin_setting == CONTENT_SETTING_ALLOW) {
+  if (plugin_setting == CONTENT_SETTING_ALLOW) {
     *status = chrome::mojom::PluginStatus::kPlayImportantContent;
-  } else if (plugin_setting == CONTENT_SETTING_BLOCK) {
+  } else {
     *status = is_managed ? chrome::mojom::PluginStatus::kBlockedByPolicy
                          : chrome::mojom::PluginStatus::kBlocked;
   }
