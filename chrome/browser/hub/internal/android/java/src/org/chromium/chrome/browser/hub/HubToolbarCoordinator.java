@@ -16,7 +16,6 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -110,9 +109,7 @@ public class HubToolbarCoordinator {
                 activity.getString(R.string.accessibility_tab_switcher_toolbar_btn_menu));
         menuButtonCoordinator.setMenuButton(mMenuButton);
 
-        if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-            mIsAnimatingSupplier.addSyncObserver(mIsAnimatingObserver);
-        }
+        mIsAnimatingSupplier.addSyncObserver(mIsAnimatingObserver);
     }
 
     private void tryToTriggerAddToGroupIph(boolean isAnimating) {

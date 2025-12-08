@@ -170,7 +170,6 @@ import java.util.List;
 })
 @EnableFeatures({
     ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID,
-    ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
     ChromeFeatureList.SUBMENUS_IN_APP_MENU,
     ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS
 })
@@ -992,33 +991,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "sw320dp")
-    @DisableFeatures({
-        ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
-    public void testOverviewMenuItems_Phone_SelectTabs() {
-        setUpMocksForOverviewMenu();
-        when(mIncognitoTabModel.getCount()).thenReturn(0);
-        Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());
-        assertEquals(MenuGroup.OVERVIEW_MODE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
-
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-
-        Integer[] expectedItems = {
-            R.id.new_tab_menu_id,
-            R.id.new_incognito_tab_menu_id,
-            R.id.close_all_tabs_menu_id,
-            R.id.menu_select_tabs,
-            R.id.quick_delete_menu_id,
-            R.id.preferences_id
-        };
-        assertMenuItemsAreEqual(modelList, expectedItems);
-    }
-
-    @Test
     @Config(qualifiers = "sw600dp")
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID})
     @EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testOverviewMenuItems_Tablet_SelectTabs_incognitoWindowEnabled() {
         when(mTabModel.getCount()).thenReturn(1);
@@ -1035,6 +1008,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         Integer[] expectedItems = {
+            R.id.new_tab_group_menu_id,
             R.id.new_tab_menu_id,
             R.id.new_window_menu_id,
             R.id.new_incognito_window_menu_id,
@@ -1048,10 +1022,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @DisableFeatures({
-        ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
+    @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testOverviewMenuItems_Phone_IncognitoWindow() {
         when(mIncognitoTabModel.getCount()).thenReturn(1);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
@@ -1068,6 +1039,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {
             R.id.new_tab_menu_id,
             R.id.new_incognito_tab_menu_id,
+            R.id.new_tab_group_menu_id,
             R.id.close_all_incognito_tabs_menu_id,
             R.id.menu_select_tabs,
             R.id.preferences_id
@@ -1077,7 +1049,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID})
     @EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testOverviewMenuItems_Tablet_IncognitoWindow_incognitoWindowEnabled() {
         when(mIncognitoTabModel.getCount()).thenReturn(1);
@@ -1096,6 +1067,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         Integer[] expectedItems = {
             R.id.new_incognito_tab_menu_id,
+            R.id.new_tab_group_menu_id,
             R.id.new_window_menu_id,
             R.id.new_incognito_window_menu_id,
             R.id.close_all_incognito_tabs_menu_id,
@@ -1107,10 +1079,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @DisableFeatures({
-        ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
+    @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testOverviewMenuItems_Phone_NoTabs() {
         setUpMocksForOverviewMenu();
         when(mTabModelSelector.getTotalTabCount()).thenReturn(0);
@@ -1122,6 +1091,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         Integer[] expectedItems = {
             R.id.new_tab_menu_id,
+            R.id.new_tab_group_menu_id,
             R.id.new_incognito_tab_menu_id,
             R.id.close_all_tabs_menu_id,
             R.id.menu_select_tabs,
@@ -1129,7 +1099,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             R.id.preferences_id
         };
         assertMenuItemsAreEqual(modelList, expectedItems);
-        PropertyModel closeAllTabsModel = modelList.get(2).model;
+        PropertyModel closeAllTabsModel = modelList.get(3).model;
         assertEquals(
                 R.id.close_all_tabs_menu_id,
                 closeAllTabsModel.get(AppMenuItemProperties.MENU_ITEM_ID));
@@ -1138,10 +1108,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @DisableFeatures({
-        ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
+    @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testOverviewMenuItems_Phone_NoIncognitoTabs() {
         setUpMocksForOverviewMenu();
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
@@ -1155,12 +1122,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {
             R.id.new_tab_menu_id,
             R.id.new_incognito_tab_menu_id,
+            R.id.new_tab_group_menu_id,
             R.id.close_all_incognito_tabs_menu_id,
             R.id.menu_select_tabs,
             R.id.preferences_id
         };
         assertMenuItemsAreEqual(modelList, expectedItems);
-        PropertyModel closeAllTabsModel = modelList.get(2).model;
+        PropertyModel closeAllTabsModel = modelList.get(3).model;
         assertEquals(
                 R.id.close_all_incognito_tabs_menu_id,
                 closeAllTabsModel.get(AppMenuItemProperties.MENU_ITEM_ID));
@@ -1169,9 +1137,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testOverviewMenuItems_Phone_SelectTabs_tabGroupEntryPointsFeatureEnabled() {
+    public void testOverviewMenuItems_Phone_SelectTabs() {
         setUpMocksForOverviewMenu();
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         Assert.assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowPageMenu());

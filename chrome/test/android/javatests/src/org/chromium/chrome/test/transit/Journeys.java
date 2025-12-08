@@ -17,7 +17,6 @@ import org.chromium.base.Token;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -390,8 +389,6 @@ public class Journeys {
     public static <HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
             NewTabGroupDialogFacility<HostStationT> beginNewTabGroupUiFlow(
                     TripBuilder tripBuilder) {
-        assertTrue(ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled());
-
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         NewTabGroupDialogFacility<HostStationT> dialog =
                 new NewTabGroupDialogFacility<>(softKeyboard);

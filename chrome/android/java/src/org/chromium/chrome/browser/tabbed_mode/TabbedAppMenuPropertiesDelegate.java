@@ -464,9 +464,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildNewWindowItem());
             modelList.add(buildNewIncognitoWindowItem());
         }
-        if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-            modelList.add(buildNewTabGroupItem());
-        }
+        modelList.add(buildNewTabGroupItem());
         modelList.add(buildCloseAllTabsItem());
         if (shouldShowTinkerTank()) modelList.add(buildTinkerTankItem());
         modelList.add(buildSelectTabsItem());

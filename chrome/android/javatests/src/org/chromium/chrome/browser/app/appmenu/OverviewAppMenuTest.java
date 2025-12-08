@@ -20,12 +20,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
@@ -47,7 +44,6 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
 @Batch(Batch.PER_CLASS)
 public class OverviewAppMenuTest {
     @Rule
@@ -80,27 +76,7 @@ public class OverviewAppMenuTest {
 
         try {
             List<Integer> expectedItems =
-                    buildExpectedMenuItemIds(
-                            /* isIncognitoSwitcher= */ false, /* expectNewTabGroup= */ false);
-            menu.verifyModelItems(expectedItems);
-
-            menu.verifyPresentItems();
-        } finally {
-            menu.closeProgrammatically();
-        }
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Browser", "Main"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
-    public void testAllMenuItems_tabGroupEntryPointsFeatureEnabled() {
-        TabSwitcherAppMenuFacility menu = mTabSwitcher.openAppMenu();
-
-        try {
-            List<Integer> expectedItems =
-                    buildExpectedMenuItemIds(
-                            /* isIncognitoSwitcher= */ false, /* expectNewTabGroup= */ true);
+                    buildExpectedMenuItemIds(/* isIncognitoSwitcher= */ false);
             menu.verifyModelItems(expectedItems);
 
             menu.verifyPresentItems();
@@ -118,9 +94,7 @@ public class OverviewAppMenuTest {
         TabSwitcherAppMenuFacility menu = incognitoTabSwitcher.openAppMenu();
 
         try {
-            List<Integer> expectedItems =
-                    buildExpectedMenuItemIds(
-                            /* isIncognitoSwitcher= */ true, /* expectNewTabGroup= */ false);
+            List<Integer> expectedItems = buildExpectedMenuItemIds(/* isIncognitoSwitcher= */ true);
             menu.verifyModelItems(expectedItems);
 
             menu.verifyPresentItems();
@@ -157,8 +131,7 @@ public class OverviewAppMenuTest {
         }
     }
 
-    private List<Integer> buildExpectedMenuItemIds(
-            boolean isIncognitoSwitcher, boolean expectNewTabGroup) {
+    private List<Integer> buildExpectedMenuItemIds(boolean isIncognitoSwitcher) {
         List<Integer> expectedItems = new ArrayList<>();
 
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
@@ -176,9 +149,8 @@ public class OverviewAppMenuTest {
             expectedItems.add(R.id.new_incognito_tab_menu_id);
         }
 
-        if (expectNewTabGroup) {
-            expectedItems.add(R.id.new_tab_group_menu_id);
-        }
+        expectedItems.add(R.id.new_tab_group_menu_id);
+
         if (isIncognitoSwitcher) {
             expectedItems.add(R.id.close_all_incognito_tabs_menu_id);
         } else {

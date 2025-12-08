@@ -5,14 +5,12 @@
 package org.chromium.chrome.test.transit.hub;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.Journeys;
@@ -66,9 +64,7 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
                 mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
             }
 
-            if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-                mNewTabGroup = declareMenuItem(items, NEW_TAB_GROUP_ID);
-            }
+            mNewTabGroup = declareMenuItem(items, NEW_TAB_GROUP_ID);
 
             int tabCount =
                     ThreadUtils.runOnUiThreadBlocking(() -> mHostStation.getTabModel().getCount());
@@ -99,9 +95,7 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
                 mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
             }
 
-            if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-                mNewTabGroup = declareMenuItem(items, NEW_TAB_GROUP_ID);
-            }
+            mNewTabGroup = declareMenuItem(items, NEW_TAB_GROUP_ID);
 
             // If there are no incognito tabs, the incognito tab switcher pane disappears so
             // "Close Incognito Tabs" and "Select tabs" are always present and
@@ -133,7 +127,6 @@ public class TabSwitcherAppMenuFacility<HostStationT extends TabSwitcherStation>
 
     /** Select "New tab group" from the app menu. */
     public NewTabGroupDialogFacility<HostStationT> openNewTabGroup() {
-        assertTrue(ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled());
         assertNotNull(mNewTabGroup);
         return Journeys.beginNewTabGroupUiFlow(mNewTabGroup.scrollToAndSelectTo());
     }

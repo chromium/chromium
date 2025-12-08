@@ -9844,11 +9844,6 @@
     "expiry_milestone": 147
   },
   {
-    "name": "tab-group-entry-points-android",
-    "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "tab-group-home",
     "owners": [ "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 146

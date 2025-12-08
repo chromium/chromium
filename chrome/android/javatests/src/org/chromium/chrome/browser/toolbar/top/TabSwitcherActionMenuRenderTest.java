@@ -36,9 +36,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -123,28 +120,6 @@ public class TabSwitcherActionMenuRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
-    public void testRender_TabSwitcherActionMenu() throws TimeoutException, IOException {
-        IncognitoUtils.setEnabledForTesting(true);
-        showMenu();
-        mRenderTestRule.render(mView, "tab_switcher_action_menu");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
-    public void testRender_TabSwitcherActionMenu_IncognitoDisabled()
-            throws TimeoutException, IOException {
-        IncognitoUtils.setEnabledForTesting(false);
-        showMenu();
-        mRenderTestRule.render(mView, "tab_switcher_action_menu_incognito_disabled");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void testRender_TabSwitcherActionMenu_NoTabGroup() throws TimeoutException, IOException {
         IncognitoUtils.setEnabledForTesting(true);
         showMenu();
@@ -154,7 +129,6 @@ public class TabSwitcherActionMenuRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void testRender_TabSwitcherActionMenu_NoTabGroup_IncognitoDisabled()
             throws TimeoutException, IOException {
         IncognitoUtils.setEnabledForTesting(false);
@@ -166,7 +140,6 @@ public class TabSwitcherActionMenuRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void testRender_TabSwitcherActionMenu_TabGroupExists()
             throws TimeoutException, IOException {
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
@@ -178,7 +151,6 @@ public class TabSwitcherActionMenuRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void testRender_TabSwitcherActionMenu_TabGroupExists_IncognitoDisabled()
             throws TimeoutException, IOException {
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);

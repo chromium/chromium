@@ -19,7 +19,6 @@ import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.LoadHint;
@@ -84,22 +83,20 @@ public class TabGroupsPane extends PaneBase {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mDataSharingTabManager = dataSharingTabManager;
-        if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
-            TabGroupCreationUiDelegate flow =
-                    new TabGroupCreationUiDelegate(
-                            context,
-                            modalDialogManagerSupplier,
-                            paneManagerSupplier,
-                            mTabGroupModelFilterSupplier::get,
-                            TabGroupCreationDialogManager::new);
-            mActionButtonSupplier.set(
-                    new DelegateButtonData(
-                            new ResourceButtonData(
-                                    R.string.button_new_tab_group,
-                                    R.string.button_new_tab_group,
-                                    R.drawable.new_tab_icon),
-                            flow::newTabGroupFlow));
-        }
+        TabGroupCreationUiDelegate flow =
+                new TabGroupCreationUiDelegate(
+                        context,
+                        modalDialogManagerSupplier,
+                        paneManagerSupplier,
+                        mTabGroupModelFilterSupplier::get,
+                        TabGroupCreationDialogManager::new);
+        mActionButtonSupplier.set(
+                new DelegateButtonData(
+                        new ResourceButtonData(
+                                R.string.button_new_tab_group,
+                                R.string.button_new_tab_group,
+                                R.drawable.new_tab_icon),
+                        flow::newTabGroupFlow));
         mReferenceButtonDataSupplier.set(
                 new ResourceButtonData(
                         R.string.accessibility_tab_groups,

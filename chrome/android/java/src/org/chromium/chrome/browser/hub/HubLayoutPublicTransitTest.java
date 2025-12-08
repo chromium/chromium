@@ -109,7 +109,6 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     // TODO(crbug.com/461916575): Test disabled for Incognito windowing, delete once fixed
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testTabGroupPane_newTabGroup() {
@@ -138,7 +137,6 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void testRegularTabSwitcher_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularNewTabPageStation finalPage =
@@ -155,7 +153,6 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void testIncognitoTabSwitcherStation_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         IncognitoNewTabPageStation incognitoNewTabPageStation =

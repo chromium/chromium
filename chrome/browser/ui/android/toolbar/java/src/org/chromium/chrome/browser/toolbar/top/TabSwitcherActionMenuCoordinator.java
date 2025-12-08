@@ -240,8 +240,6 @@ public class TabSwitcherActionMenuCoordinator {
     }
 
     private void maybeBuildAddToGroup(ModelList itemList) {
-        if (!ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) return;
-
         if (ChromeFeatureList.sTabModelInitFixes.isEnabled()) {
             TabModelSelector selector = mTabModelSelectorSupplier.get();
             if (selector == null || !selector.isTabStateInitialized()) return;

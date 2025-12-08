@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -33,7 +32,6 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
@@ -72,7 +70,6 @@ import java.util.function.Supplier;
 /** Unit tests for {@link TabGroupsPane}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.DATA_SHARING})
-@DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
 public class TabGroupsPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -209,19 +206,11 @@ public class TabGroupsPaneUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
-    public void testNewTabGroupButtonDisabled() {
-        assertNull(mTabGroupsPane.getActionButtonDataSupplier().get());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void testNewTabGroupButtonEnabled() {
         assertNotNull(mTabGroupsPane.getActionButtonDataSupplier().get());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ENTRY_POINTS_ANDROID)
     public void testNewTabGroupButton() {
         when(mTabCreator.createNewTab(any(), anyInt(), any())).thenReturn(mTab);
         FullButtonData actionButtonData = mTabGroupsPane.getActionButtonDataSupplier().get();

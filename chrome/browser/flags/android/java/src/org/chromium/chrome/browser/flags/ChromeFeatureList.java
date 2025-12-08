@@ -646,7 +646,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_FREEZING_USES_DISCARD = "TabFreezingUsesDiscard";
     public static final String TAB_GROUP_ANDROID_VISUAL_DATA_CLEANUP =
             "TabGroupAndroidVisualDataCleanup";
-    public static final String TAB_GROUP_ENTRY_POINTS_ANDROID = "TabGroupEntryPointsAndroid";
     public static final String TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID =
             "TabGroupParityBottomSheetAndroid";
     public static final String TAB_MODEL_INIT_FIXES = "TabModelInitFixes";
@@ -1353,8 +1352,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_ARCHIVAL_DRAG_DROP_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabFreezingUsesDiscard =
             newMutableFlagWithSafeDefault(TAB_FREEZING_USES_DISCARD, false);
-    public static final MutableFlagWithSafeDefault sTabGroupEntryPointsAndroid =
-            newMutableFlagWithSafeDefault(TAB_GROUP_ENTRY_POINTS_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabGroupParityBottomSheetAndroid =
             newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherGroupSuggestionsAndroid =

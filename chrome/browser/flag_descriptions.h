@@ -4151,11 +4151,6 @@ inline constexpr char kTabFreezingUsesDiscardName[] =
 inline constexpr char kTabFreezingUsesDiscardDescription[] =
     "When enabled, tab freezing will use discarding instead of freezing.";
 
-inline constexpr char kTabGroupEntryPointsAndroidName[] =
-    "Tab Group Entry Points";
-inline constexpr char kTabGroupEntryPointsAndroidDescription[] =
-    "Enables additional entry points for creating tab groups";
-
 inline constexpr char kTabGroupParityBottomSheetAndroidName[] =
     "Tab Group Parity Bottom Sheet";
 inline constexpr char kTabGroupParityBottomSheetAndroidDescription[] =
