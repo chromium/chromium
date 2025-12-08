@@ -8,5 +8,6 @@
 // TODO(crbug.com/458741717): Remove this file once on swift 6.3
 
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 
 #endif  // IOS_CHROME_TEST_SWIFT_INTEROP_CHROMIUM_CHROMIUM_UMBRELLA_H_

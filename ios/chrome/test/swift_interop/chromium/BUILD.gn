@@ -15,7 +15,10 @@ source_set("umbrella_header") {
 swift_source_set("tests") {
   testonly = true
 
-  sources = [ "sys_info_xctest.swift" ]
+  sources = [
+    "sys_info_xctest.swift",
+    "time_xctest.swift",
+  ]
   cxx_modulemaps = [ "chromium.modulemap" ]
 
   deps = [
