@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
 
@@ -290,7 +291,8 @@ void StyleElement::AddImportMapEntry(Element& element, const String& text) {
     // string size in memory (at the expense of decoding on the CPU).
     url_string = StrCat({"data:text/css,", EncodeWithURLEscapeSequences(text)});
   } else {
-    auto* blob = Blob::Create(text.Span8(), "text/css");
+    StringUtf8Adaptor utf8(text, Utf8ConversionMode::kLenient);
+    auto* blob = Blob::Create(base::as_byte_span(utf8), "text/css");
     CHECK(blob);
     url_string = DOMURL::CreatePublicURL(context, blob);
   }
