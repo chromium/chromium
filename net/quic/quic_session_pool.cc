@@ -825,7 +825,7 @@ int QuicSessionPool::RequestSession(
             std::make_unique<ConnectionChangeNotifier>();
       }
       connection_change_notifier_[session_key]->AddObserver(
-          management_config->connection_change_observer);
+          management_config->connection_change_observer.get());
     }
   }
 

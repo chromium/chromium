@@ -14867,7 +14867,7 @@ TEST_P(QuicSessionPoolTest, NotifyConnectionChangeOnSessionClose) {
   // Build request with the ConnectionChangeObserver.
   auto connection_management_config = ConnectionManagementConfig();
   connection_management_config.connection_change_observer =
-      connection_change_observer_.get();
+      connection_change_observer_->GetWeakPtr();
   builder.connection_management_config =
       std::move(connection_management_config);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
@@ -14912,7 +14912,7 @@ TEST_P(QuicSessionPoolTest, NotifyConnectionChangeOnConnectionFailure) {
   // Build request with the ConnectionChangeObserver.
   auto connection_management_config = ConnectionManagementConfig();
   connection_management_config.connection_change_observer =
-      connection_change_observer_.get();
+      connection_change_observer_->GetWeakPtr();
   builder.connection_management_config =
       std::move(connection_management_config);
 
@@ -14957,7 +14957,7 @@ TEST_P(QuicSessionPoolTest, NotifyConnectionChangeOnNetworkChangeEvent) {
   // Build request with the ConnectionChangeObserver.
   auto connection_management_config = ConnectionManagementConfig();
   connection_management_config.connection_change_observer =
-      connection_change_observer_.get();
+      connection_change_observer_->GetWeakPtr();
   builder.connection_management_config =
       std::move(connection_management_config);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());

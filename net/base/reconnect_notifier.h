@@ -11,6 +11,7 @@
 #include <set>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "net/base/net_export.h"
@@ -57,6 +58,8 @@ class NET_EXPORT ConnectionChangeNotifier {
     // Notify on a network change event.
     virtual void OnNetworkEvent(NetworkChangeEvent event) = 0;
 
+    base::WeakPtr<Observer> GetWeakPtr();
+
    private:
     friend class ConnectionChangeNotifier;
 
@@ -66,6 +69,8 @@ class NET_EXPORT ConnectionChangeNotifier {
     void OnAttach(base::WeakPtr<ConnectionChangeNotifier> notifier);
 
     base::WeakPtr<ConnectionChangeNotifier> notifier_;
+
+    base::WeakPtrFactory<Observer> weak_factory_{this};
   };
 
   ConnectionChangeNotifier();
@@ -143,8 +148,7 @@ struct NET_EXPORT ConnectionManagementConfig {
   std::optional<ConnectionKeepAliveConfig> keep_alive_config;
 
   // A reference to the `ConnectionChangeNotifier::Observer`.
-  raw_ptr<ConnectionChangeNotifier::Observer> connection_change_observer =
-      nullptr;
+  base::WeakPtr<ConnectionChangeNotifier::Observer> connection_change_observer;
 };
 
 }  // namespace net

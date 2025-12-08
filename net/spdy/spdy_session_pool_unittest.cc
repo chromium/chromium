@@ -2139,7 +2139,7 @@ TEST_F(SpdySessionPoolTest, NotifyConnectionChangeOnSessionClose) {
   base::WeakPtr<SpdySession> session;
   auto connection_management_config = ConnectionManagementConfig();
   connection_management_config.connection_change_observer =
-      connection_change_observer.get();
+      connection_change_observer->GetWeakPtr();
   rv = spdy_session_pool_->CreateAvailableSessionFromSocketHandle(
       test_key, std::move(connection), net_log,
       MultiplexedSessionCreationInitiator::kUnknown, &session,
@@ -2227,7 +2227,7 @@ TEST_F(SpdySessionPoolTest, NotifyConnectionChangeOnConnectionFailure) {
   base::WeakPtr<SpdySession> session;
   auto connection_management_config = ConnectionManagementConfig();
   connection_management_config.connection_change_observer =
-      connection_change_observer.get();
+      connection_change_observer->GetWeakPtr();
   rv = spdy_session_pool_->CreateAvailableSessionFromSocketHandle(
       test_key, std::move(connection), net_log,
       MultiplexedSessionCreationInitiator::kUnknown, &session,

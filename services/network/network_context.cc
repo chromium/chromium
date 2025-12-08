@@ -2392,7 +2392,7 @@ void NetworkContext::PreconnectSockets(
           std::move(connection_change_observer_client), this);
 
       request_info.connection_management_config->connection_change_observer =
-          change_observer.get();
+          change_observer->GetWeakPtr();
       connection_change_observers_.insert(std::move(change_observer));
     }
   }

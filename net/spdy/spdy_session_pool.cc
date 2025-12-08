@@ -952,7 +952,7 @@ void SpdySessionPool::AddConnectionManagementConfig(
           std::make_unique<ConnectionChangeNotifier>();
     }
     connection_change_notifier_map_[key]->AddObserver(
-        connection_management_config.connection_change_observer);
+        connection_management_config.connection_change_observer.get());
   }
 }
 

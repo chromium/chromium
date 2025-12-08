@@ -23,6 +23,11 @@ void ConnectionChangeNotifier::Observer::OnAttach(
   notifier_ = notifier;
 }
 
+base::WeakPtr<ConnectionChangeNotifier::Observer>
+ConnectionChangeNotifier::Observer::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void ConnectionChangeNotifier::OnSessionClosed() {
   observer_list_.Notify(&ConnectionChangeNotifier::Observer::OnSessionClosed);
 }
