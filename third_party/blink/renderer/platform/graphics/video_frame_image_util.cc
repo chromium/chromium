@@ -207,7 +207,7 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
       wrapper->ContextProvider().RasterContextProvider());
 }
 
-std::unique_ptr<CanvasSnapshotProvider> CreateResourceProviderForVideoFrame(
+std::unique_ptr<CanvasSnapshotProvider> CreateSnapshotProviderForVideoFrame(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,

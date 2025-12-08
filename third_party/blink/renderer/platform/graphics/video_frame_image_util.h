@@ -94,10 +94,10 @@ GetRasterContextProvider();
 
 // Creates a CanvasSnapshotProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
-// their resource providers. If |raster_context_provider| is null a software
-// resource provider will be returned.
+// their snapshot providers. If |raster_context_provider| is null a software
+// snapshot provider will be returned.
 PLATFORM_EXPORT std::unique_ptr<CanvasSnapshotProvider>
-CreateResourceProviderForVideoFrame(
+CreateSnapshotProviderForVideoFrame(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,

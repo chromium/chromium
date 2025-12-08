@@ -123,7 +123,7 @@ class VideoFrameImageUtilTest
 
     if (!snapshot_provider) {
       auto frame_color_space = frame->CompatRGBColorSpace();
-      local_snapshot_provider = CreateResourceProviderForVideoFrame(
+      local_snapshot_provider = CreateSnapshotProviderForVideoFrame(
           dest_rect.size(), GetN32FormatForCanvas(), kPremul_SkAlphaType,
           frame_color_space, raster_context_provider());
       if (!local_snapshot_provider) {
@@ -287,7 +287,7 @@ TEST_P(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
       raster_context_provider(), kTestSize, gfx::Rect(kTestSize),
       base::DoNothing());
 
-  auto provider = CreateResourceProviderForVideoFrame(
+  auto provider = CreateSnapshotProviderForVideoFrame(
       kTestSize, kTestFormat, kTestAlphaType, kTestColorSpace,
       raster_context_provider());
   ASSERT_TRUE(provider);
@@ -300,8 +300,8 @@ TEST_P(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
   EXPECT_TRUE(image->IsTextureBacked());
 }
 
-TEST_P(VideoFrameImageUtilTest, CreateResourceProviderForVideoFrame) {
-  auto provider = CreateResourceProviderForVideoFrame(
+TEST_P(VideoFrameImageUtilTest, CreateSnapshotProviderForVideoFrame) {
+  auto provider = CreateSnapshotProviderForVideoFrame(
       kTestSize, kTestFormat, kTestAlphaType, kTestColorSpace,
       raster_context_provider());
   ASSERT_TRUE(provider);

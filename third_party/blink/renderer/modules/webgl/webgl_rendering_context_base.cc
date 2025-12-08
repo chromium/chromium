@@ -8809,7 +8809,7 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
       raster_context_provider =
           wrapper->ContextProvider().RasterContextProvider();
     }
-    temp = CreateResourceProviderForVideoFrame(
+    temp = CreateSnapshotProviderForVideoFrame(
         size, format, alpha_type, color_space, raster_context_provider);
   } else {
     temp = CanvasResourceProvider::CreateExternalBitmapProvider(

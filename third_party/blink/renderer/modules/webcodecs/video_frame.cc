@@ -365,7 +365,7 @@ class CanvasResourceProviderCache
     if (info_to_provider_.size() >= kMaxSize)
       info_to_provider_.clear();
 
-    auto provider = CreateResourceProviderForVideoFrame(
+    auto provider = CreateSnapshotProviderForVideoFrame(
         size, viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()),
         info.alphaType(), SkColorSpaceToGfxColorSpace(info.refColorSpace()),
         GetRasterContextProvider().get());

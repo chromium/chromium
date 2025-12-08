@@ -592,7 +592,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     // Providing a null |raster_context_provider| creates a software provider.
     // TODO(https://crbug.com/1341235): The choice of color type and alpha type
     // is inappropriate in many circumstances.
-    resource_provider_ = CreateResourceProviderForVideoFrame(
+    resource_provider_ = CreateSnapshotProviderForVideoFrame(
         dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
         dest_color_space, raster_context_provider);
     if (!resource_provider_)
