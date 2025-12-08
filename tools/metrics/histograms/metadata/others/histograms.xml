@@ -4527,31 +4527,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FirstPartySets.NavigationThrottle.ResumeDelta" units="ms"
-    expires_after="M149">
-  <owner>shuuran@google.com</owner>
-  <owner>kaustubhag@google.com</owner>
-  <summary>
-    Measures the length of time between when a navigation was deferred and then
-    resumed due to timeout or First-Party Sets is ready. Recorded when a
-    deferred navigation is resumed.
-
-    Warning: this histogram was expired from M125 to M128; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="FirstPartySets.NavigationThrottle.ResumeOnTimeout"
-    enum="BooleanTimedOut" expires_after="M149">
-  <owner>shuuran@google.com</owner>
-  <owner>kaustubhag@google.com</owner>
-  <summary>
-    Measures the deferred navigations that are resumed due to timeout. Recorded
-    when a deferred navigation is resumed.
-
-    Warning: this histogram was expired from M125 to M128; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="FirstRun.ImportBookmarksDict"
     enum="FirstRunImportBookmarksResult" expires_after="M150">
   <owner>atharvmaan@chromium.org</owner>
