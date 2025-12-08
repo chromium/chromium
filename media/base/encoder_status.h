@@ -60,7 +60,22 @@ struct EncoderStatusTraits {
     kOutOfPlatformEncoders = 21,
     // The client provided a non-existing reference buffer.
     kBadReferenceBuffer = 22,
-    kMaxValue = kBadReferenceBuffer,
+    // Provided GPU command buffer is null
+    kGPUCommandBufferNotAvailable = 23,
+    // Failed to get the EGL display.
+    kMissingGLDisplay = 24,
+    // Failed to initialize the GL surface.
+    kGLSurfaceInitializationFailed = 25,
+    // Failed to create the GL context.
+    kGLContextCreationFailed = 26,
+    // Failed to make the GL context current.
+    kGLMakeCurrentFailed = 27,
+    // Required GL features or extensions are missing.
+    kUnsupportedGLFeature = 28,
+    // A GL error occurred during initialization.
+    kGLInitializationError = 29,
+
+    kMaxValue = kGLInitializationError,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };

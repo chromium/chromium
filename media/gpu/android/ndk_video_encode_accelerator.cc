@@ -512,17 +512,6 @@ std::string GetInitStatusHistogramName(VideoCodecProfile profile) {
       {kInitStatusHistogramPrefix,
        GetCodecNameForUMA(VideoCodecProfileToVideoCodec(profile))});
 }
-
-bool ShouldUseSurfaceInput() {
-  if (__builtin_available(android 35, *)) {
-    // Limit surface input to Android 15+ (API Level: 35), because we see issues
-    // on older devices.
-    if (base::FeatureList::IsEnabled(media::kSurfaceInputForAndroidVEA)) {
-      return true;
-    }
-  }
-  return false;
-}
 }  // namespace
 
 NdkVideoEncodeAccelerator::PendingEncode::PendingEncode(
@@ -788,8 +777,7 @@ void NdkVideoEncodeAccelerator::OnCommandBufferHelperAvailable(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   command_buffer_helper_ = std::move(command_buffer_helper);
   if (!command_buffer_helper_) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
-                       "Can't obtain CommandBufferHelper"});
+    NotifyErrorStatus({EncoderStatus::Codes::kGPUCommandBufferNotAvailable});
     return;
   }
   gl_renderer_->SetSharedImageManager(
@@ -1487,6 +1475,18 @@ void NdkVideoEncodeAccelerator::SetEncoderColorSpace() {
   }
 
   DVLOG(1) << "Set color space to: " << encoder_color_space_->ToString();
+}
+
+// static
+bool NdkVideoEncodeAccelerator::ShouldUseSurfaceInput() {
+  if (__builtin_available(android 35, *)) {
+    // Limit surface input to Android 15+ (API Level: 35), because we see issues
+    // on older devices.
+    if (base::FeatureList::IsEnabled(media::kSurfaceInputForAndroidVEA)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace media

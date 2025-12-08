@@ -54,6 +54,20 @@ const char* EncoderStatusCodeToString(const EncoderStatus& error_status) {
       return "The system ran out of platform encoders.";
     case EncoderStatus::Codes::kBadReferenceBuffer:
       return "Invalid reference buffer index is specified.";
+    case EncoderStatus::Codes::kGPUCommandBufferNotAvailable:
+      return "Provided GPU command buffer is null.";
+    case EncoderStatus::Codes::kMissingGLDisplay:
+      return "Failed to get the EGL display.";
+    case EncoderStatus::Codes::kGLSurfaceInitializationFailed:
+      return "Failed to initialize the GL surface.";
+    case EncoderStatus::Codes::kGLContextCreationFailed:
+      return "Failed to create the GL context.";
+    case EncoderStatus::Codes::kGLMakeCurrentFailed:
+      return "Failed to make the GL context current.";
+    case EncoderStatus::Codes::kUnsupportedGLFeature:
+      return "Required GL features or extensions are missing.";
+    case EncoderStatus::Codes::kGLInitializationError:
+      return "A GL error occurred during initialization.";
     case EncoderStatus::Codes::kOk:
       NOTREACHED();
   }

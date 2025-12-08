@@ -73,6 +73,10 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   void OnOutputAvailable() override;
   void OnError(media_status_t error) override;
 
+  // Returns `true` if NdkVideoEncodeAccelerator will be using the Surface
+  // instead of input buffers as a way to send frames to the MediaCodec.
+  static bool ShouldUseSurfaceInput();
+
  private:
   struct FrameTimestampInfo {
     // The original timestamp of the input VideoFrame, it's used for

@@ -3962,6 +3962,15 @@ shown properly on the user-facing crash UI.
   <int value="18" label="kPostBitstreamConversionError"/>
   <int value="19" label="kOutOfMemoryError"/>
   <int value="20" label="kEncoderAccelerationSupportMissing"/>
+  <int value="21" label="kOutOfPlatformEncoders"/>
+  <int value="22" label="kBadReferenceBuffer"/>
+  <int value="23" label="kGPUCommandBufferNotAvailable"/>
+  <int value="24" label="kMissingGLDisplay"/>
+  <int value="25" label="kGLSurfaceInitializationFailed"/>
+  <int value="26" label="kGLContextCreationFailed"/>
+  <int value="27" label="kGLMakeCurrentFailed"/>
+  <int value="28" label="kUnsupportedGLFeature"/>
+  <int value="29" label="kGLInitializationError"/>
 </enum>
 
 <enum name="EncryptionScheme">

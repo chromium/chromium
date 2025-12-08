@@ -170,15 +170,13 @@ EncoderStatus VideoFrameGLSurfaceRenderer::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
   if (!display) {
-    return {EncoderStatus::Codes::kEncoderInitializationError,
-            "gl::GetDefaultDisplayEGL failed"};
+    return EncoderStatus::Codes::kMissingGLDisplay;
   }
 
   gl_surface_ = base::MakeRefCounted<gl::NativeViewGLSurfaceEGL>(
       display->GetAs<gl::GLDisplayEGL>(), std::move(window_), nullptr, true);
   if (!gl_surface_->Initialize(gl::GLSurfaceFormat())) {
-    return {EncoderStatus::Codes::kEncoderInitializationError,
-            "GLSurface Initialize failed"};
+    return EncoderStatus::Codes::kGLSurfaceInitializationFailed;
   }
 
   gl::GLContextAttribs attribs;
@@ -186,32 +184,28 @@ EncoderStatus VideoFrameGLSurfaceRenderer::Initialize() {
       gl::AngleContextVirtualizationGroup::kAndroidVideoEncoder;
   gl_context_ = gl::init::CreateGLContext(nullptr, gl_surface_.get(), attribs);
   if (!gl_context_) {
-    return {EncoderStatus::Codes::kEncoderInitializationError,
-            "gl::init::CreateGLContext failed"};
+    return EncoderStatus::Codes::kGLContextCreationFailed;
   }
 
   ui::ScopedMakeCurrent smc(gl_context_.get(), gl_surface_.get());
   if (!smc.IsContextCurrent()) {
-    return {EncoderStatus::Codes::kEncoderInitializationError,
-            "gl::GLContext::MakeCurrent() failed"};
+    return EncoderStatus::Codes::kGLMakeCurrentFailed;
   }
 
   auto& ext = gl_context_->GetCurrentGL()->Driver->ext;
 
   if (!ext.b_GL_EXT_texture_format_BGRA8888) {
-    return {EncoderStatus::Codes::kEncoderInitializationError,
-            "GL_EXT_texture_format_BGRA8888 is not supported"};
+    return EncoderStatus::Codes::kUnsupportedGLFeature;
   }
   if (!ext.b_GL_OES_EGL_image) {
-    return {EncoderStatus::Codes::kEncoderInitializationError,
-            "GL_OES_EGL_image is not supported"};
+    return EncoderStatus::Codes::kUnsupportedGLFeature;
   }
   InitializeGL();
 
   const GLenum error = glGetError();
   if (error != GL_NO_ERROR) {
     DLOG(ERROR) << "GL initialization error: " << error;
-    return {EncoderStatus::Codes::kEncoderInitializationError,
+    return {EncoderStatus::Codes::kGLInitializationError,
             base::StringPrintf("GL initialization error: 0x%x", error)};
   }
 
