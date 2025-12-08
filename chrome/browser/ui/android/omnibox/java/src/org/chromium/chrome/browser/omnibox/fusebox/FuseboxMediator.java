@@ -464,7 +464,7 @@ public class FuseboxMediator {
         boolean allowNonImage = type != AutocompleteRequestType.IMAGE_GENERATION;
         mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED, allowNonImage);
         mModel.set(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED, allowNonImage);
-        // TODO(https://www.crbug.com/456274957): Also set enabled on select tabs button.
+        mModel.set(FuseboxProperties.POPUP_TAB_PICKER_ENABLED, allowNonImage);
     }
 
     @VisibleForTesting

@@ -484,6 +484,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
 
         mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
@@ -491,6 +492,7 @@ public class FuseboxMediatorUnitTest {
         assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
     }
 
     @Test
