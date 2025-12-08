@@ -12,7 +12,7 @@ desc: |-
 default: 0
 example_value: 1
 features:
-  dynamic_refresh: true
+  dynamic_refresh: false
   per_profile: true
 future_on:
 - fuchsia
