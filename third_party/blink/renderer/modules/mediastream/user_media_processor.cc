@@ -176,6 +176,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "ANDROID_CANT_REQUEST_PERMISSION";
     case MediaStreamRequestResult::PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
       return "PERMISSION_DENIED_BY_EMBEDDER_CONTEXT";
+    case MediaStreamRequestResult::CAPTURE_NOT_ENABLED:
+      return "CAPTURE_NOT_ENABLED";
     case MediaStreamRequestResult::DLP_PERMISSION_DENIED:
       return "DLP_PERMISSION_DENIED";
     case MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
@@ -352,6 +354,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
     case MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST:
     case MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
+    case MediaStreamRequestResult::CAPTURE_NOT_ENABLED:
       return "Invalid state";
     case MediaStreamRequestResult::NO_HARDWARE:
       return "Requested device not found";

@@ -247,13 +247,22 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
       pending_request->is_allowlisted_extension ||
       IsBuiltInFeedbackUI(pending_request->request.security_origin);
 
+  if (!screen_capture_enabled) {
+    std::move(pending_request->callback)
+        .Run(blink::mojom::StreamDevicesSet(),
+             MediaStreamRequestResult::CAPTURE_NOT_ENABLED, /*ui=*/nullptr);
+    return;
+  }
+
   const bool origin_is_secure =
       network::IsUrlPotentiallyTrustworthy(
           pending_request->request.security_origin) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAllowHttpScreenCapture);
 
-  if (!screen_capture_enabled || !origin_is_secure) {
+  if (!origin_is_secure) {
+    // TODO(crbug.com/453600255): Use result INVALID_SECURITY_ORIGIN instead of
+    // INVALID_STATE once all new enum values are added.
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
              MediaStreamRequestResult::INVALID_STATE,

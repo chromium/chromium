@@ -145,6 +145,10 @@ MediaStreamRequestResult2 MapResultToResult2(
       // TODO(crbug.com/453600255): Add a new value once all new enum values are
       // added.
       return MediaStreamRequestResult2::kTabCaptureFailure;
+    case MediaStreamRequestResult::CAPTURE_NOT_ENABLED:
+      // TODO(crbug.com/453600255): Add a new value once all new enum values are
+      // added.
+      return MediaStreamRequestResult2::kInvalidState;
   }
   NOTREACHED();
 }

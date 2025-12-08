@@ -110,6 +110,7 @@ enum MediaStreamRequestResult {
   INVALID_DEVICE_TYPE_REQUEST,
   INVALID_EXTENSION_TYPE_REQUEST,
   CAPTURED_TAB_DESTROYED,
+  CAPTURE_NOT_ENABLED,
 };
 
 // Type of state change for the corresponding requests.

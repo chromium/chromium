@@ -977,6 +977,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
     case Result::CAPTURED_TAB_DESTROYED:
       // TODO(crbug.com/453600255): Use `result_enum` kNotFoundError for
       // CAPTURED_TAB_DESTROYED once all new enum values are added.
+    case Result::CAPTURE_NOT_ENABLED:
     case Result::TAB_CAPTURE_FAILURE:
     case Result::STREAM_NOT_FOUND_IN_REGISTRY:
     case Result::REGISTRY_REQUEST_UNVERIFIED:
