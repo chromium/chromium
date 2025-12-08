@@ -2377,7 +2377,7 @@ Nota: Si se omite un campo, todos los valores coincidirán con ese campo en part
 
       Para obtener información detallada sobre los patrones de entrada válidos, consulta https://chromeenterprise.google/policies/url-patterns/. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política. Esta política solo establece coincidencias basadas en el origen; por lo tanto, se ignoran todas las rutas de acceso que se incluyan en el patrón de URL.</translation>
 <translation id="2568488785376704318">Esta política es obsoleta. En su lugar, utiliza <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
-<translation id="2570059561924004903">Inhabilitar los comentarios por voz</translation>
+<translation id="2570059561924004903">Inhabilitar las descripciones por voz</translation>
 <translation id="2570181623957732921">Habilitar <ph name="DESK_API_NAME" /> para una lista de dominios de terceros</translation>
 <translation id="2571821662934804440">Permitir el uso de la función sin mejorar los modelos de IA</translation>
 <translation id="2573850437942404034">No permitir</translation>
@@ -2495,7 +2495,7 @@ Podemos garantizar al usuario que ninguna app adicional capturará las pantallas
 
 Si inhabilitas la política, el dispositivo no utilizará la certificación remota para la protección del contenido. Es posible que el dispositivo no pueda reproducir contenido protegido.</translation>
 <translation id="262740370354162807">Habilitar el envío de documentos a <ph name="CLOUD_PRINT_NAME" /></translation>
-<translation id="2633084400146331575">Habilitar los comentarios de voz</translation>
+<translation id="2633084400146331575">Habilitar las descripciones por voz</translation>
 <translation id="2633907568797306353">Permitir que se habiliten las notificaciones de Phone Hub</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> puede enviar
 las solicitudes de creación de llaves de acceso o WebAuthn directamente al llavero de iCloud en macOS 13.5
@@ -3436,7 +3436,7 @@ Si inhabilitas <ph name="NTPCARDSVISIBLE" />, no se mostrará la tarjeta de Outl
 <translation id="3268090369868832496">Cerrar la sesión anterior del usuario cuando acceda en un dispositivo nuevo solo si las ventanas o las cookies están sincronizadas</translation>
 <translation id="3269198556438453775">Impedir que los administradores empresariales establezcan conexiones de asistencia remota con esta máquina</translation>
 <translation id="3273221114520206906">Configuración de JavaScript predeterminada</translation>
-<translation id="3278042410658310805">Inhabilitar los comentarios por voz en la pantalla de acceso y permitir que el usuario los habilite temporalmente</translation>
+<translation id="3278042410658310805">Inhabilitar las descripciones por voz en la pantalla de acceso y permitir que el usuario las habilite temporalmente</translation>
 <translation id="328347261792478720">De forma predeterminada, el navegador mostrará recomendaciones de contenido multimedia personalizadas para el usuario. Si inhabilitas esta política, el usuario no verá estas recomendaciones. Si la habilitas o no la estableces, el usuario verá las recomendaciones de contenido multimedia.</translation>
 <translation id="3284094172359247914">Controla el uso de la API de WebUSB</translation>
 <translation id="3285231260918855067">Opacidad del contorno del texto de la marca de agua, de 0 (transparente) a 100 (opaco).</translation>
@@ -4383,7 +4383,7 @@ La política puede combinarse con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFO
 <translation id="3927291637826333102">Permitir que estos orígenes capturen pestañas, ventanas y escritorios</translation>
 <translation id="3928726028264020458">Habilitar los informes de los VPD del dispositivo</translation>
 <translation id="3935592079035695061">Milisegundos desde la medianoche.</translation>
-<translation id="3941289958028934630">Inhabilitar los comentarios por voz en la pantalla de acceso</translation>
+<translation id="3941289958028934630">Inhabilitar las descripciones por voz en la pantalla de acceso</translation>
 <translation id="3943930334592166130">Esta política controla si se le solicita al usuario que seleccione un certificado de cliente cuando más de un certificado coincide con <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Si habilitas esta política, se le solicitará al usuario que seleccione un certificado de cliente cada vez que la política de selección automática coincida con múltiples certificados.
       Si inhabilitas esta política o no la estableces, solo se le solicitará al usuario que haga una elección cuando ningún certificado coincida con la selección automática.</translation>
@@ -4679,15 +4679,15 @@ Si estableces la política como <ph name="DISABLE_UNPUBLISHED" /> (1), se inhabi
 <translation id="416817811987180750">Habilitar la función de lista de compras para los usuarios</translation>
 <translation id="4168880975307014079">Habilitar el teclado virtual táctil</translation>
 <translation id="4169094969938998854">No permitir el bloqueo de la pantalla</translation>
-<translation id="4169692397912242417">Habilita la función de accesibilidad de comentarios por voz en la pantalla de acceso.
+<translation id="4169692397912242417">Habilita la función de accesibilidad de descripciones por voz en la pantalla de acceso.
 
-          Si se establece la política como verdadera, los comentarios por voz estarán siempre habilitados en la pantalla de acceso.
+          Si se establece la política como verdadera, las descripciones por voz estarán siempre habilitadas en la pantalla de acceso.
 
           Si se establece como falsa, esta función estará siempre inhabilitada.
 
           Si estableces esta política, los usuarios no podrán cambiar ni anular la configuración.
 
-          Si no la estableces, los comentarios por voz estarán inicialmente inhabilitados en la pantalla de acceso, pero el usuario podrá habilitarlos en cualquier momento.</translation>
+          Si no la estableces, las descripciones por voz estarán inicialmente inhabilitadas en la pantalla de acceso, pero el usuario podrá habilitarlas en cualquier momento.</translation>
 <translation id="4173974507809462880">Mostrar la pantalla de dirección de desplazamiento del panel táctil durante el acceso</translation>
 <translation id="4175770453187201981">Esta política controla las integraciones del Modo IA de Google en la barra de direcciones y el cuadro de búsqueda de la página Nueva pestaña.
 
@@ -5954,11 +5954,11 @@ El establecimiento de esta política permite controlar la presentación de conte
 <translation id="4933780993367313536">Permitir que los administradores empresariales establezcan conexiones de acceso remoto con esta máquina</translation>
 <translation id="4937423591320233496">Inhabilitar el contenido sugerido</translation>
 <translation id="4942096314850617489">Inhabilitar la certificación remota para el usuario</translation>
-<translation id="4942681160308347946">Si estableces el valor "True" para la política, se activarán los comentarios por voz en la pantalla de acceso. Si estableces el valor "False", no se activarán los comentarios por voz en esa pantalla.
+<translation id="4942681160308347946">Si estableces el valor "True" para la política, se activarán las descripciones por voz en la pantalla de acceso. Si estableces el valor "False", no se activarán las descripciones por voz en esa pantalla.
 
-      Si configuras la política, los usuarios podrán activar o desactivar los comentarios por voz de forma temporal. Cuando la pantalla de acceso se actualice o permanezca inactiva durante un minuto, los comentarios se revertirán a su estado original.
+      Si configuras la política, los usuarios podrán activar o desactivar las descripciones por voz de forma temporal. Cuando la pantalla de acceso se actualice o permanezca inactiva durante un minuto, las descripciones se revertirán a su estado original.
 
-      Si no la configuras, se desactivarán los comentarios por voz en la pantalla de acceso. Los usuarios podrán activarlos en cualquier momento y su estado para la pantalla de acceso se mantendrá entre los diferentes usuarios.
+      Si no la configuras, se desactivarán las descripciones por voz en la pantalla de acceso. Los usuarios podrán activarlas en cualquier momento y su estado para la pantalla de acceso se mantendrá entre los diferentes usuarios.
 
           Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" />, anulará esta política.</translation>
 <translation id="4945419595339133946">Especifica si se muestra (o se oculta) siempre la información del sistema (p. ej., la versión de ChromeOS o el número
@@ -6640,7 +6640,7 @@ La primera entrada accesible de la lista se usará como proxy. Se ignorarán las
 El campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene una lista de condiciones que se deben cumplir para que se use su regla de anulación a la hora de decidir el proxy que se usará. Si no se establece, la entrada se usará siempre que coincida al menos un host en <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
 
 La condición <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica si el DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> proporcionado puede resolverse en una dirección IP. Si el valor de <ph name="PROXY_OVERRIDE_RULES_RESULT" /> es "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />", se considera que se cumple la condición. Si el valor se establece en <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condición se considera cumplida si la resolución falló.</translation>
-<translation id="5323200200131319468">Habilita los comentarios por voz en la pantalla de acceso</translation>
+<translation id="5323200200131319468">Habilita las descripciones por voz en la pantalla de acceso</translation>
 <translation id="5323271643727095577">No mostrar el diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload Mostrar el diálogo de cancelación cuando beforeunload event.returnValue sea la cadena vacía del evento beforeunload</translation>
 <translation id="5324430722441910403">Configuración de las búsquedas en sitios</translation>
 <translation id="5326431956495937408">Si habilitas la política, los usuarios podrán enviar sus contraseñas a miembros de la familia y recibir las de ellos (según el servicio familiar).
@@ -7459,7 +7459,7 @@ Se podrán agregar más restricciones de cuentas con la política <ph name="MICR
 
       Esta política requiere configuración adicional para tener efecto. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para obtener más información.</translation>
 <translation id="5812539307212402176">Ocultar todas las insignias empresariales</translation>
-<translation id="5814301096961727113">Establece el estado predeterminado de los comentarios por voz en la pantalla de acceso.</translation>
+<translation id="5814301096961727113">Establece el estado predeterminado de las descripciones por voz en la pantalla de acceso.</translation>
 <translation id="5815129011704381141">Reinicia automáticamente después de la actualización.</translation>
 <translation id="5815990343032461023">Comportamiento heredado: las apps de Chrome para kiosco recibirán actualizaciones del sistema de extensiones (mediante las URL de actualización del manifiesto de la extensión) y del administrador del almacenamiento en caché (mediante las URL de actualización de la política)</translation>
 <translation id="5816688024515869030">Inhabilitar el proveedor de <ph name="UIA_NAME" />.</translation>
@@ -7818,7 +7818,7 @@ Si la estableces como falsa, se suprimirá la atribución a la extensión en el 
 <translation id="6048199181629830227">Habilita la administración de carga fuera del horario de mayor consumo</translation>
 <translation id="6048690591359317353">No permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6049117606554031363">Habilitar los informes de estado de la placa del dispositivo</translation>
-<translation id="6050796253724099706">Habilitar los comentarios por voz en la pantalla de acceso</translation>
+<translation id="6050796253724099706">Habilitar las descripciones por voz en la pantalla de acceso</translation>
 <translation id="605132676434455096">No permitir que se agreguen perfiles nuevos</translation>
 <translation id="6053260874233331700">No permitir el acceso a la ubicación geográfica en la pantalla de acceso</translation>
 <translation id="6053681087509103368">Permitir que WebRTC use versiones obsoletas del protocolo TLD/DTLS</translation>
@@ -11142,7 +11142,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8171924760436219650">Cambia el botón principal del mouse al botón derecho en la pantalla de acceso</translation>
 <translation id="81724933026241365">Permitir que los usuarios desactiven el dispositivo con el ícono de apagado o el botón de encendido físico</translation>
 <translation id="8173864651667424191">Cuando la opción Imprimir como imagen está disponible, se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
-<translation id="8175922758834816585">Habilitar los comentarios por voz en la pantalla de acceso y permitir que el usuario los inhabilite temporalmente</translation>
+<translation id="8175922758834816585">Habilitar las descripciones por voz en la pantalla de acceso y permitir que el usuario las inhabilite temporalmente</translation>
 <translation id="8176035528522326671">Permitir que el usuario de empresa sea solo usuario principal en la sesión de perfiles múltiples (comportamiento predeterminado para usuarios administrados por empresas)</translation>
 <translation id="817717947404114735">Habilitar el almacenamiento en búfer adaptable de Web Audio.</translation>
 <translation id="8179082421668183060">Si estableces la política como una lista de cadenas, estas se unen con espacios y se transfieren de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de la línea de comandos. Si un parámetro contiene <ph name="URL_PLACEHOLDER" />, se reemplazará <ph name="URL_PLACEHOLDER" /> por la URL de la página que se abrirá. Si ningún parámetro contiene <ph name="URL_PLACEHOLDER" />, se agregará la URL al final de la línea de comandos.
@@ -11908,9 +11908,9 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="8650974590712548439">Ubicación del registro de Windows para clientes de Windows:</translation>
 <translation id="8653085952260859632">Enviar información sobre la memoria</translation>
 <translation id="8653212052128283886">Mostrar una vista del historial de Chrome con grupos de páginas</translation>
-<translation id="8653561013005884087">Si estableces el valor "True" para la política, se activarán los comentarios por voz. Si estableces el valor "False", se desactivarán estos comentarios.
+<translation id="8653561013005884087">Si estableces el valor "True" para la política, se activarán las descripciones por voz. Si estableces el valor "False", se desactivarán estas descripciones.
 
-      Si configuras la política, los usuarios no podrán cambiarla. Si no la configuras, los comentarios por voz estarán desactivados al principio, pero los usuarios podrán activarlos en cualquier momento.</translation>
+      Si configuras la política, los usuarios no podrán cambiarla. Si no la configuras, las descripciones por voz estarán desactivadas al principio, pero los usuarios podrán activarlas en cualquier momento.</translation>
 <translation id="8656110680728938054">Habilita Seleccionar para pronunciar</translation>
 <translation id="8657026983981036230">Si estableces la política, se configurará el directorio que usa Chrome para descargar archivos. Utilizará el directorio proporcionado ya sea que los usuarios hayan especificado uno o no, o activado la marca para que siempre se les pregunte dónde quieren realizar las descargas.
 

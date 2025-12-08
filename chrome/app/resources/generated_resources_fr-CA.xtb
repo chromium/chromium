@@ -7248,7 +7248,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5979421442488174909">&amp;Traduire en <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Pour ajouter des pages aux favoris, cliquez sur l'étoile située dans la barre d'adresse</translation>
 <translation id="5982578203375898585">Afficher les téléchargements lorsqu'ils sont terminés</translation>
-<translation id="598347738324022917">Favori enregistré sur cet appareil</translation>
 <translation id="5983716913605894570">Génération en cours…</translation>
 <translation id="5984222099446776634">Dossiers récents</translation>
 <translation id="5984334442529819751">Erreur lors de l'installation du CT (un redémarrage est souvent nécessaire, consultez Paramètres &gt; À propos de ChromeOS pour en savoir plus).</translation>
@@ -7613,7 +7612,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6238923052227198598">Afficher la dernière note sur l'écran de verrouillage</translation>
 <translation id="6238982280403036866">Autorisés à utiliser JavaScript</translation>
 <translation id="6239558157302047471">Actualiser le &amp;cadre</translation>
-<translation id="6240637845286751292">Autorisé. Activez l'<ph name="LINK_BEGIN" />accès à la localisation système<ph name="LINK_END" />.</translation>
+<translation id="6240637845286751292">Autorisé. Activez l‘<ph name="LINK_BEGIN" />accès à la localisation système<ph name="LINK_END" />.</translation>
 <translation id="6240821072888636753">Toujours demander</translation>
 <translation id="6240964651812394252">Pour utiliser le gestionnaire de mots de passe Google avec votre système d'exploitation, relancez Chrome et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront à nouveau après la relance.</translation>
 <translation id="6241530762627360640">Accéder aux détails des appareils Bluetooth associés à votre système et détecter les appareils Bluetooth à proximité.</translation>
