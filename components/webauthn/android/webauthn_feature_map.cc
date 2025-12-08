@@ -17,6 +17,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebAuthnAndroidPasskeyCacheMigration,
     &kWebAuthnAndroidCredManForDev,
+    &kWebAuthnAndroidCredManRequestExtraBundle,
 };
 
 // static

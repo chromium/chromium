@@ -29,6 +29,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.WebAuthnClientCapability;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.password_manager.BrowserAssistedLoginType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -486,6 +487,12 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                     "WebAuthentication.MakeCredential.Result",
                     result.getMakeCredentialResult(),
                     CredentialRequestResult.MAX_VALUE + 1);
+        }
+        if (result.getBrowserAssistedLoginType() != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "PasswordManager.BrowserAssistedLogin.Type",
+                    result.getBrowserAssistedLoginType(),
+                    BrowserAssistedLoginType.MAX_VALUE + 1);
         }
 
         Integer resultMetricValue = null;

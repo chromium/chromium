@@ -299,9 +299,10 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Passkey stored in Windows Hello"/>
   <int value="10" label="Passkey stored in iCloud Keychain"/>
   <int value="11" label="Passkey stored in Chrome profile"/>
-  <int value="12" label="Passkey other source"/>
+  <int value="12" label="Passkey hybrid flow"/>
   <int value="13" label="Passkey from a security key"/>
-  <int value="14" label="Passkey hybrid flow"/>
+  <int value="14" label="Passkey hybrid or security key"/>
+  <int value="15" label="Passkey unknown source"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/password_manager/core/browser/password_manager_metrics_util.h:BrowserAssistedLoginType) -->

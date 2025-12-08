@@ -46,6 +46,7 @@ import org.robolectric.shadow.api.Shadow;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.Authenticator.GetCredential_Response;
 import org.chromium.blink.mojom.Authenticator.MakeCredential_Response;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -54,6 +55,7 @@ import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
+import org.chromium.components.password_manager.BrowserAssistedLoginType;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
@@ -86,7 +88,10 @@ import org.chromium.mojo_base.mojom.String16;
             ShadowGetCredentialResponse.class,
             ShadowPrepareGetCredentialResponse.class
         })
-@DisableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV})
+@DisableFeatures({
+    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV,
+    WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE
+})
 public class CredManHelperRobolectricTest {
     private CredManHelper mCredManHelper;
     private PublicKeyCredentialCreationOptions mCreationOptions;
@@ -158,6 +163,40 @@ public class CredManHelperRobolectricTest {
     @After
     public void tearDown() {
         WebauthnModeProvider.setInstanceForTesting(null);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)
+    public void testGetBrowserAssistedLoginType_GPM() {
+        Bundle bundle = new Bundle();
+        bundle.putString(CredManHelper.CREDENTIAL_SOURCE_KEY, CredManHelper.GPM_SOURCE);
+        Integer loginType = CredManHelper.getBrowserAssistedLoginType(bundle);
+
+        Assert.assertEquals(
+                Integer.valueOf(BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM), loginType);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)
+    public void testGetBrowserAssistedLoginType_Remote() {
+        Bundle bundle = new Bundle();
+        bundle.putString(CredManHelper.CREDENTIAL_SOURCE_KEY, CredManHelper.REMOTE_SOURCE);
+        Integer loginType = CredManHelper.getBrowserAssistedLoginType(bundle);
+
+        Assert.assertEquals(
+                Integer.valueOf(BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY),
+                loginType);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)
+    public void testGetBrowserAssistedLoginType_Null() {
+        Integer loginType = CredManHelper.getBrowserAssistedLoginType(new Bundle());
+
+        Assert.assertEquals(Integer.valueOf(BrowserAssistedLoginType.PASSKEY_UNKNOWN), loginType);
     }
 
     @Test

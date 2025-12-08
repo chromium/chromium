@@ -20,6 +20,8 @@ import androidx.annotation.RequiresApi;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webauthn.GpmBrowserOptionsHelper;
+import org.chromium.components.webauthn.WebauthnFeatureMap;
+import org.chromium.components.webauthn.WebauthnFeatures;
 
 import java.util.Set;
 
@@ -40,6 +42,8 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
             "com.android.chrome.PASSWORDS_ONLY_FOR_THE_CHANNEL";
     private static final String PASSWORDS_WITH_NO_USERNAME_INCLUDED =
             "com.android.chrome.PASSWORDS_WITH_NO_USERNAME_INCLUDED";
+    private static final String REQUEST_CUSTOM_CREDENTIAL_KEY =
+            "com.android.chrome.REQUEST_CUSTOM_CREDENTIAL";
 
     private static @Nullable GpmCredManRequestDecorator sInstance;
 
@@ -115,6 +119,10 @@ public class GpmCredManRequestDecorator implements CredManRequestDecorator {
                 publicKeyCredentialOptionBundle, helper.getRenderFrameHost());
         // Do not include any passkeys from GPM if `helper.getIgnoreGpm()` is true.
         publicKeyCredentialOptionBundle.putBoolean(IGNORE_GPM_KEY, helper.getIgnoreGpm());
+        if (WebauthnFeatureMap.getInstance()
+                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)) {
+            publicKeyCredentialOptionBundle.putBoolean(REQUEST_CUSTOM_CREDENTIAL_KEY, true);
+        }
     }
 
     @Override

@@ -633,6 +633,7 @@ enum class PasswordDropdownDuplicateCredentialsType {
 // numeric values should never be reused.
 //
 // LINT.IfChange(BrowserAssistedLoginType)
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.password_manager
 enum class BrowserAssistedLoginType {
   kFedCmPassive = 0,
   kFedCmActive = 1,
@@ -648,8 +649,10 @@ enum class BrowserAssistedLoginType {
   kPasskeyStoredInChromeProfile = 11,
   kPasskeyHybrid = 12,
   kPasskeySecurityKey = 13,
+  kPasskeyHybridOrSecurityKey = 14,
+  kPasskeyUnknown = 15,
 
-  kMaxValue = kPasskeySecurityKey,
+  kMaxValue = kPasskeyUnknown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:BrowserAssistedLoginType)
 

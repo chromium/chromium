@@ -37,6 +37,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.password_manager.BrowserAssistedLoginType;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.CredManSupport;
@@ -72,6 +73,12 @@ public class CredManHelper {
     protected static final String TYPE_PASSKEY = CRED_MAN_PREFIX + "TYPE_PUBLIC_KEY_CREDENTIAL";
     protected static final String BUNDLE_KEY_REGISTRATION_RESPONSE_JSON =
             CRED_MAN_PREFIX + "BUNDLE_KEY_REGISTRATION_RESPONSE_JSON";
+
+    @VisibleForTesting
+    static final String CREDENTIAL_SOURCE_KEY = "com.android.chrome.CREDENTIAL_SOURCE";
+
+    @VisibleForTesting static final String GPM_SOURCE = "GPM";
+    @VisibleForTesting static final String REMOTE_SOURCE = "REMOTE";
 
     private @Nullable Barrier mBarrier;
     private final boolean mPlayServicesAvailable;
@@ -643,16 +650,19 @@ public class CredManHelper {
                         if (frameHost != null) {
                             frameHost.notifyWebAuthnAssertionRequestSucceeded();
                         }
+                        @BrowserAssistedLoginType
+                        int browserAssistedLoginType = getBrowserAssistedLoginType(data);
+                        RequestMetrics metrics =
+                                new RequestMetrics.Builder()
+                                        .setGetAssertionOutcome(GetAssertionOutcome.SUCCESS)
+                                        .setGetAssertionResult(
+                                                CredentialRequestResult.ANDROID_CRED_MAN_SUCCESS)
+                                        .setBrowserAssistedLoginType(browserAssistedLoginType)
+                                        .build();
                         assumeNonNull(callback);
                         callback.onComplete(
                                 WebauthnRequestResponse.forSuccessfulGetAssertion(
-                                        response,
-                                        new RequestMetrics.Builder()
-                                                .setGetAssertionOutcome(GetAssertionOutcome.SUCCESS)
-                                                .setGetAssertionResult(
-                                                        CredentialRequestResult
-                                                                .ANDROID_CRED_MAN_SUCCESS)
-                                                .build()));
+                                        response, metrics));
                     }
                 };
 
@@ -821,5 +831,18 @@ public class CredManHelper {
             logDeserializationException(e);
             return null;
         }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static @BrowserAssistedLoginType int getBrowserAssistedLoginType(Bundle data) {
+        String credentialSource = data.getString(CREDENTIAL_SOURCE_KEY);
+        int loginType = BrowserAssistedLoginType.PASSKEY_UNKNOWN;
+        if (GPM_SOURCE.equals(credentialSource)) {
+            loginType = BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM;
+        } else if (REMOTE_SOURCE.equals(credentialSource)) {
+            loginType = BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY;
+        }
+
+        return loginType;
     }
 }
