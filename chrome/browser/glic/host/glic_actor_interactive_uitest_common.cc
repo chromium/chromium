@@ -459,6 +459,17 @@ MultiStep GlicActorUiTest::InterruptActorTask() {
                RoundTrip(task_id_));
 }
 
+MultiStep GlicActorUiTest::UninterruptActorTask() {
+  return Steps(Do([this, &task_id = task_id_]() {
+                 content::WebContents* glic_contents = GetGlicContents();
+                 std::string script = content::JsReplace(
+                     "client.browser.uninterruptActorTask($1);",
+                     task_id.value());
+                 ASSERT_TRUE(content::ExecJs(glic_contents, script));
+               }),
+               RoundTrip(task_id_));
+}
+
 MultiStep GlicActorUiTest::WaitForActorTaskState(
     mojom::ActorTaskState expected_state) {
   // WaitForActorTaskState doesn't reliably check the stopped state, since the

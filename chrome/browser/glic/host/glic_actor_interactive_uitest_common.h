@@ -169,6 +169,8 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
 
   // Interrupts a task by calling the glic InterruptActorTask API.
   MultiStep InterruptActorTask();
+  // Uninterrupts a task by calling the glic UninterruptActorTask API.
+  MultiStep UninterruptActorTask();
 
   MultiStep WaitForActorTaskState(mojom::ActorTaskState expected_state);
 

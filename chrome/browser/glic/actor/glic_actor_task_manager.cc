@@ -453,7 +453,6 @@ void GlicActorTaskManager::UninterruptActorTask(actor::TaskId task_id) {
   actor::ActorTask::State next_state = actor::ActorTask::State::kReflecting;
   if (task->GetExecutionEngine() &&
       task->GetExecutionEngine()->HasActionSequence()) {
-    // TODO(mcnee): Explicitly stash the old state instead of inferring it.
     next_state = actor::ActorTask::State::kActing;
   }
   task->Uninterrupt(next_state);

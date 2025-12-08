@@ -830,6 +830,84 @@ IN_PROC_BROWSER_TEST_F(
   // clang-format on
 }
 
+// Tests that when an interrupt and uninterrupt happens during an action, the
+// uninterrupt returns to the correct state.
+IN_PROC_BROWSER_TEST_F(GlicActorCallbackOrderGeneralUiTest,
+                       InterruptAndUninterruptDuringAction) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(GURL(url::kAboutBlankURL), kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+
+      RecordActorTaskStateChanges(),
+      InvokeToolThatNeverFinishes(kNewActorTabId),
+      WaitForActorTaskState(mojom::ActorTaskState::kActing),
+      InterruptActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kIdle),
+      UninterruptActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kActing),
+      StopActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kStopped),
+
+      CheckResult([this]() { return GetEventLog(); },
+          "IDLE,"
+          "ACTING,"
+          "IDLE,"
+          "ACTING,"
+          "PERFORM_ACTIONS_RETURNED,"
+          "STOPPED")
+    );
+  // clang-format on
+}
+
+// Tests that if the interrupted state is changed by something other than a call
+// to uninterrupt, a subsequent call to uninterrupt will be handled gracefully.
+// The client should know that such a call is not meaningful, but we make the
+// chrome implementation robust to this regardless.
+IN_PROC_BROWSER_TEST_F(GlicActorCallbackOrderGeneralUiTest,
+                       UnpairedUninterrupt) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(GURL(url::kAboutBlankURL), kNewActorTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+
+      RecordActorTaskStateChanges(),
+      InvokeToolThatNeverFinishes(kNewActorTabId),
+      WaitForActorTaskState(mojom::ActorTaskState::kActing),
+      InterruptActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kIdle),
+
+      PauseActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kPaused),
+      ResumeActorTask(UpdatedContextOptions(),
+                      actor::mojom::ActionResultCode::kOk),
+      WaitForActorTaskState(mojom::ActorTaskState::kIdle),
+
+      UninterruptActorTask(),
+
+      StopActorTask(),
+      WaitForActorTaskState(mojom::ActorTaskState::kStopped),
+
+      CheckResult([this]() { return GetEventLog(); },
+          "IDLE,"
+          "ACTING,"
+          "IDLE,"
+          "PERFORM_ACTIONS_RETURNED,"
+          "PAUSED,"
+          "IDLE,"
+          "STOPPED")
+    );
+  // clang-format on
+}
+
 class GlicActorGeneralUiTestHighDPI : public GlicActorGeneralUiTest {
  public:
   static constexpr double kDeviceScaleFactor = 2.0;
