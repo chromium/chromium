@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/enum_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -108,6 +109,11 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   void NotifyBeginAccess(SharedImageBacking* backing,
                          RepresentationAccessMode mode);
 
+  // Called by wrapped representations during EndAccess(). This will update the
+  // CompoundImageBacking's clear rect with the accessed backing's clear rect it
+  // the access was a write access.
+  void NotifyEndAccess();
+
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
@@ -132,8 +138,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // rect will be xfered to the dst backing.
   // 4. If there is a shm backing, entire CompoundImageBacking as well all the
   // created gpu backings will be marked as cleared always.
-
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
+
   void OnAddSecondaryReference() override;
 
   // CompoundImageBacking is registered as the primary backing while creating a
@@ -329,10 +335,17 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   std::vector<ElementHolder> elements_;
 
   base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_;
-
   scoped_refptr<SharedImageCopyManager> copy_manager_;
-
   bool has_shm_backing_ = false;
+
+  // Tracks the current access mode (read/write) of the compound backing. This
+  // is used by `NotifyEndAccess()` to determine if the cleared rect needs to be
+  // propagated.
+  RepresentationAccessMode access_mode_ = RepresentationAccessMode::kNone;
+
+  // Points to the specific underlying backing that is currently being accessed.
+  // Used by `NotifyEndAccess()` to retrieve the correct cleared rect.
+  raw_ptr<SharedImageBacking> access_backing_ = nullptr;
 };
 
 }  // namespace gpu
