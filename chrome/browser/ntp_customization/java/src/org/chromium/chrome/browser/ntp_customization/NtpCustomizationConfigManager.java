@@ -123,7 +123,7 @@ public class NtpCustomizationConfigManager {
         if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK
                 || mBackgroundImageType == NtpBackgroundImageType.THEME_COLLECTION) {
             mIsInitialized = true;
-            BackgroundImageInfo imageInfo = NtpCustomizationUtils.readNtpBackgroundImageMatrices();
+            BackgroundImageInfo imageInfo = NtpCustomizationUtils.readNtpBackgroundImageInfo();
             NtpCustomizationUtils.readNtpBackgroundImage(
                     (bitmap) -> {
                         onBackgroundImageAvailable(bitmap, imageInfo);

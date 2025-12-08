@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -39,6 +40,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -71,7 +73,14 @@ public class NtpBackgroundImageCoordinatorUnitTest {
         mPortraitMatrix = new Matrix();
         mLandscapeMatrix = new Matrix();
         mLandscapeMatrix.setScale(2.0f, 2.0f); // Make it different from portrait.
-        mBackgroundImageInfo = new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
+
+        Point currentWindowSize = CropImageUtils.getCurrentWindowDimensions(mActivity);
+        mBackgroundImageInfo =
+                new BackgroundImageInfo(
+                        mPortraitMatrix,
+                        mLandscapeMatrix,
+                        currentWindowSize,
+                        new Point(currentWindowSize.y, currentWindowSize.x));
 
         mCoordinator = new NtpBackgroundImageCoordinator(mActivity, mRootView, mUiConfig, COLOR);
         mPropertyModel = mCoordinator.getPropertyModelForTesting();
@@ -150,6 +159,10 @@ public class NtpBackgroundImageCoordinatorUnitTest {
     public void testSetImageBackgroundWithMatrices_portrait() {
         mCoordinator.setBackground(mBitmap, mBackgroundImageInfo, IMAGE_FROM_DISK);
 
+        // Manually triggers the observer callback
+        verify(mUiConfig).addObserver(mDisplayStyleObserverArgumentCaptor.capture());
+        mDisplayStyleObserverArgumentCaptor.getValue().onDisplayStyleChanged(null);
+
         assertEquals(
                 mPortraitMatrix, mPropertyModel.get(NtpBackgroundImageProperties.IMAGE_MATRIX));
     }
@@ -158,6 +171,10 @@ public class NtpBackgroundImageCoordinatorUnitTest {
     @Config(qualifiers = "land")
     public void testSetImageBackgroundWithMatrices_landscape() {
         mCoordinator.setBackground(mBitmap, mBackgroundImageInfo, IMAGE_FROM_DISK);
+
+        // Manually triggers the observer callback
+        verify(mUiConfig).addObserver(mDisplayStyleObserverArgumentCaptor.capture());
+        mDisplayStyleObserverArgumentCaptor.getValue().onDisplayStyleChanged(null);
 
         assertEquals(
                 mLandscapeMatrix, mPropertyModel.get(NtpBackgroundImageProperties.IMAGE_MATRIX));

@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -200,11 +201,20 @@ public class UploadImagePreviewCoordinator {
     @VisibleForTesting
     void onSaveButtonClicked(
             Bitmap bitmap, Callback<Boolean> onBottomSheetClickedCallback, ChromeDialog dialog) {
+        // 1. Gets the matrices (source of truth or calculated estimate)
         Matrix portraitMatrix = mCropImageView.getPortraitMatrix();
         Matrix landscapeMatrix = mCropImageView.getLandscapeMatrix();
-        NtpCustomizationConfigManager.getInstance()
-                .onUploadedImageSelected(
-                        bitmap, new BackgroundImageInfo(portraitMatrix, landscapeMatrix));
+
+        // 2. Gets the dimensions used to create those matrices
+        // Note: These might be "guessed" dimensions if the user didn't rotate.
+        Point portraitSize = mCropImageView.getPortraitWindowSize();
+        Point landscapeSize = mCropImageView.getLandscapeWindowSize();
+
+        BackgroundImageInfo info =
+                new BackgroundImageInfo(
+                        portraitMatrix, landscapeMatrix, portraitSize, landscapeSize);
+
+        NtpCustomizationConfigManager.getInstance().onUploadedImageSelected(bitmap, info);
 
         onBottomSheetClickedCallback.onResult(true);
         dialog.dismiss();

@@ -15,6 +15,8 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
@@ -27,6 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -84,7 +87,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Arrays;
 import java.util.concurrent.Executor;
 
 /** Utility class of the NTP customization. */
@@ -395,14 +397,13 @@ public class NtpCustomizationUtils {
      *     landscape matrices.
      */
     @VisibleForTesting
-    static void updateBackgroundImageMatrices(BackgroundImageInfo backgroundImageInfo) {
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.writeString(
-                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX,
-                matrixToString(backgroundImageInfo.portraitMatrix));
-        prefsManager.writeString(
-                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX,
-                matrixToString(backgroundImageInfo.landscapeMatrix));
+    static void updateBackgroundImageInfo(BackgroundImageInfo backgroundImageInfo) {
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+
+        prefs.writeString(
+                NTP_BACKGROUND_IMAGE_PORTRAIT_INFO, backgroundImageInfo.getPortraitInfoString());
+        prefs.writeString(
+                NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO, backgroundImageInfo.getLandscapeInfoString());
     }
 
     /** Returns whether a white background should be applied on fake search box. */
@@ -498,60 +499,13 @@ public class NtpCustomizationUtils {
     }
 
     /** Loads the NTP's background transformation matrices from SharedPreferences. */
-    public static @Nullable BackgroundImageInfo readNtpBackgroundImageMatrices() {
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        String portraitMatrixString =
-                prefsManager.readString(
-                        ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX, null);
-        String landscapeMatrixString =
-                prefsManager.readString(
-                        ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX, null);
+    public static @Nullable BackgroundImageInfo readNtpBackgroundImageInfo() {
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
 
-        if (TextUtils.isEmpty(portraitMatrixString) || TextUtils.isEmpty(landscapeMatrixString)) {
-            return null;
-        }
+        String portraitInfoString = prefs.readString(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO, null);
+        String landscapeInfoString = prefs.readString(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO, null);
 
-        Matrix portraitMatrix = stringToMatrix(portraitMatrixString);
-        Matrix landscapeMatrix = stringToMatrix(landscapeMatrixString);
-
-        if (portraitMatrix == null || landscapeMatrix == null) {
-            return null;
-        }
-
-        return new BackgroundImageInfo(portraitMatrix, landscapeMatrix);
-    }
-
-    /** Converts a Matrix into a string representation for storage. */
-    public static String matrixToString(Matrix matrix) {
-        float[] values = new float[9];
-        matrix.getValues(values);
-        return Arrays.toString(values);
-    }
-
-    /** Converts a string representation back into a Matrix. Returns null on failure. */
-    public static @Nullable Matrix stringToMatrix(String matrixString) {
-        if (matrixString == null || !matrixString.startsWith("[") || !matrixString.endsWith("]")) {
-            return null;
-        }
-
-        try {
-            // Remove brackets and spaces
-            String[] stringValues =
-                    matrixString.substring(1, matrixString.length() - 1).split(", ");
-            if (stringValues.length != 9) return null;
-
-            float[] values = new float[9];
-            for (int i = 0; i < 9; i++) {
-                values[i] = Float.parseFloat(stringValues[i]);
-            }
-
-            Matrix matrix = new Matrix();
-            matrix.setValues(values);
-            return matrix;
-        } catch (Exception e) {
-            Log.i(TAG, "Error in stringToMatrix: " + e);
-            return null;
-        }
+        return BackgroundImageInfo.createFromStrings(portraitInfoString, landscapeInfoString);
     }
 
     /**
@@ -1020,7 +974,11 @@ public class NtpCustomizationUtils {
         CropImageUtils.calculateInitialCenterCropMatrix(
                 landscapeMatrix, portraitHeight, portraitWidth, bitmap);
 
-        return new BackgroundImageInfo(portraitMatrix, landscapeMatrix);
+        return new BackgroundImageInfo(
+                portraitMatrix,
+                landscapeMatrix,
+                new Point(portraitWidth, portraitHeight),
+                new Point(portraitHeight, portraitWidth));
     }
 
     /**
@@ -1040,7 +998,7 @@ public class NtpCustomizationUtils {
         }
 
         pickAndSavePrimaryColor(bitmap);
-        updateBackgroundImageMatrices(backgroundImageInfo);
+        updateBackgroundImageInfo(backgroundImageInfo);
     }
 
     public static void resetSharedPreferenceForTesting() {
@@ -1048,8 +1006,8 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX);
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO);
         prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP);
         prefsManager.removeKey(NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_COLOR_ID);

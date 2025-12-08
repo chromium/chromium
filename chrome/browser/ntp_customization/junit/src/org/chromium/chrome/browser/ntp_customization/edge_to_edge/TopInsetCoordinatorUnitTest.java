@@ -22,6 +22,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.view.View;
 
 import androidx.core.graphics.Insets;
@@ -218,7 +219,8 @@ public class TopInsetCoordinatorUnitTest {
         Matrix portraitMatrix = new Matrix();
         Matrix landscapeMatrix = new Matrix();
         landscapeMatrix.setScale(2f, 9f);
-        BackgroundImageInfo imageInfo = new BackgroundImageInfo(portraitMatrix, landscapeMatrix);
+        BackgroundImageInfo imageInfo =
+                new BackgroundImageInfo(portraitMatrix, landscapeMatrix, new Point(), new Point());
 
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.IMAGE_FROM_DISK);

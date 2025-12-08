@@ -25,9 +25,11 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.ContextThemeWrapper;
@@ -440,80 +442,83 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testMatrixToString_identityMatrix_returnsCorrectString() {
-        // Creates an identity matrix.
-        Matrix matrix = new Matrix();
+    public void testUpdateBackgroundImageInfo_SavesToSharedPreferences() {
+        Matrix portrait = new Matrix();
+        portrait.setTranslate(10, 10);
+        Matrix landscape = new Matrix();
+        landscape.setScale(2, 2);
 
-        String expected = "[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]";
-        assertEquals(expected, NtpCustomizationUtils.matrixToString(matrix));
+        Point portraitSize = new Point(1080, 1920);
+        Point landscapeSize = new Point(2000, 1080);
+        BackgroundImageInfo info =
+                new BackgroundImageInfo(portrait, landscape, portraitSize, landscapeSize);
+
+        NtpCustomizationUtils.updateBackgroundImageInfo(info);
+
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        String storedPortrait =
+                prefs.readString(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO, "");
+        String storedLandscape =
+                prefs.readString(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO, "");
+
+        assertEquals(
+                "Portrait info mismatch",
+                "[1.0, 0.0, 10.0, 0.0, 1.0, 10.0, 0.0, 0.0, 1.0]|1080|1920",
+                storedPortrait);
+
+        assertEquals(
+                "Landscape info mismatch",
+                "[2.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 1.0]|2000|1080",
+                storedLandscape);
     }
 
     @Test
-    public void testMatrixToString_scaledMatrix_returnsCorrectString() {
-        Matrix matrix = new Matrix();
-        matrix.setScale(2.5f, 3.5f);
+    public void testReadNtpBackgroundImageInfo_ParsesCorrectly() {
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
 
-        // Verifies if the string for a matrix scaled by (2.5, 3.5)
-        String expected = "[2.5, 0.0, 0.0, 0.0, 3.5, 0.0, 0.0, 0.0, 1.0]";
-        assertEquals(expected, NtpCustomizationUtils.matrixToString(matrix));
+        // Format: MatrixString|Width|Height
+        String portraitImageInfo = "[8.0, 0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 1.0]|500|800";
+        String landscapeImageInfo =
+                "[9.0, 0.0, 0.0, 0.0, 14.0, 0.0, 0.0, 0.0, 1.0]"; // In landscape mode, the window
+        // size is not saved in the disk
+
+        prefs.writeString(
+                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO, portraitImageInfo);
+        prefs.writeString(
+                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO, landscapeImageInfo);
+
+        BackgroundImageInfo result = NtpCustomizationUtils.readNtpBackgroundImageInfo();
+
+        // Verifies the matrices
+        assertEquals(
+                "Portrait matrix should match input string",
+                "[8.0, 0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 1.0]",
+                BackgroundImageInfo.matrixToString(result.getPortraitMatrix()));
+        assertEquals(
+                "Landscape matrix should match input string",
+                "[9.0, 0.0, 0.0, 0.0, 14.0, 0.0, 0.0, 0.0, 1.0]",
+                BackgroundImageInfo.matrixToString(result.getLandscapeMatrix()));
+
+        // Verifies image information in portrait mode
+        Point portraitSize = result.getWindowSize(Configuration.ORIENTATION_PORTRAIT);
+        assertEquals(500, portraitSize.x);
+        assertEquals(800, portraitSize.y);
+
+        // Verifies image information in landscape mode
+        Point landscapeSize = result.getWindowSize(Configuration.ORIENTATION_LANDSCAPE);
+        assertNull(landscapeSize);
     }
 
     @Test
-    public void testStringToMatrix_validString_returnsCorrectMatrix() {
-        String matrixString = "[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]";
-        Matrix resultMatrix = NtpCustomizationUtils.stringToMatrix(matrixString);
+    public void testResetSharedPreference_ClearsInfoKeys() {
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        prefs.writeString(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO, "foo");
+        prefs.writeString(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO, "bar");
 
-        assertNotNull(resultMatrix);
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
 
-        Matrix expectedMatrix = new Matrix();
-        expectedMatrix.setValues(new float[] {1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f});
-
-        assertEquals(expectedMatrix, resultMatrix);
-    }
-
-    @Test
-    public void testStringToMatrix_nullInput_returnsNull() {
-        assertNull(NtpCustomizationUtils.stringToMatrix(null));
-    }
-
-    @Test
-    public void testStringToMatrix_emptyString_returnsNull() {
-        assertNull(NtpCustomizationUtils.stringToMatrix(""));
-    }
-
-    @Test
-    public void testStringToMatrix_malformedString_noBrackets_returnsNull() {
-        assertNull(
-                NtpCustomizationUtils.stringToMatrix(
-                        "1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0"));
-    }
-
-    @Test
-    public void testStringToMatrix_wrongNumberOfValues_returnsNull() {
-        assertNull(NtpCustomizationUtils.stringToMatrix("[1.0, 2.0, 3.0]"));
-    }
-
-    @Test
-    public void testStringToMatrix_nonFloatValues_returnsNull() {
-        assertNull(
-                NtpCustomizationUtils.stringToMatrix(
-                        "[1.0, abc, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]"));
-    }
-
-    @Test
-    public void testReadNtpBackgroundImageMatrices_readsDataWrittenByUpdate() {
-        Matrix portraitMatrix = new Matrix();
-        Matrix landscapeMatrix = new Matrix();
-        landscapeMatrix.setScale(2.5f, 3.5f);
-
-        NtpCustomizationUtils.updateBackgroundImageMatrices(
-                new BackgroundImageInfo(portraitMatrix, landscapeMatrix));
-        BackgroundImageInfo result = NtpCustomizationUtils.readNtpBackgroundImageMatrices();
-
-        // Verify the read data matches the original written data.
-        assertNotNull(result);
-        assertEquals(portraitMatrix, result.portraitMatrix);
-        assertEquals(landscapeMatrix, result.landscapeMatrix);
+        assertFalse(prefs.contains(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO));
+        assertFalse(prefs.contains(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO));
     }
 
     @Test
@@ -784,8 +789,8 @@ public class NtpCustomizationUtilsUnitTest {
                 NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
                         mContext, bitmap);
         assertNotNull(info);
-        assertNotNull(info.portraitMatrix);
-        assertNotNull(info.landscapeMatrix);
+        assertNotNull(info.getPortraitMatrix());
+        assertNotNull(info.getLandscapeMatrix());
     }
 
     @Test

@@ -242,6 +242,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsAdapterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionsUtilsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/BackgroundImageInfoUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/CropImageUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/CropImageViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewCoordinatorUnitTest.java",

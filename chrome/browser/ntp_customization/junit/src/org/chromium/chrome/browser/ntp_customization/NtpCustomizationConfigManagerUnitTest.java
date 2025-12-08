@@ -73,6 +73,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     private Matrix mPortraitMatrix;
     private Matrix mLandscapeMatrix;
     private Bitmap mBitmap;
+    private BackgroundImageInfo mBackgroundImageInfo;
 
     @Before
     public void setUp() {
@@ -90,6 +91,8 @@ public class NtpCustomizationConfigManagerUnitTest {
         mLandscapeMatrix.setScale(7f, 5f);
 
         mBitmap = createBitmap();
+        mBackgroundImageInfo =
+                new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix, null, null);
     }
 
     @After
@@ -108,10 +111,8 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testOnUploadedImageSelected_persistsStateAndNotifiesListener() {
         int initialBackgroundImageType = mNtpCustomizationConfigManager.getBackgroundImageType();
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
-        BackgroundImageInfo backgroundImageInfo =
-                new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
 
-        mNtpCustomizationConfigManager.onUploadedImageSelected(mBitmap, backgroundImageInfo);
+        mNtpCustomizationConfigManager.onUploadedImageSelected(mBitmap, mBackgroundImageInfo);
         BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verifies that the image file are saved to the disk and matrices are persisted to prefs.
@@ -119,12 +120,12 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertNotNull(
                 ChromeSharedPreferences.getInstance()
                         .readString(
-                                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX,
+                                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO,
                                 /* defaultValue= */ null));
         assertNotNull(
                 ChromeSharedPreferences.getInstance()
                         .readString(
-                                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX,
+                                ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO,
                                 /* defaultValue= */ null));
         assertNotEquals(
                 NtpThemeColorInfo.COLOR_NOT_SET,
@@ -140,8 +141,8 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* newType */ eq(NtpBackgroundImageType.IMAGE_FROM_DISK));
 
         assertEquals(mBitmap, mBitmapCaptor.getValue());
-        assertEquals(mPortraitMatrix, mBackgroundImageInfoCaptor.getValue().portraitMatrix);
-        assertEquals(mLandscapeMatrix, mBackgroundImageInfoCaptor.getValue().landscapeMatrix);
+        assertEquals(mPortraitMatrix, mBackgroundImageInfoCaptor.getValue().getPortraitMatrix());
+        assertEquals(mLandscapeMatrix, mBackgroundImageInfoCaptor.getValue().getLandscapeMatrix());
         assertEquals(
                 NtpBackgroundImageType.IMAGE_FROM_DISK,
                 mNtpCustomizationConfigManager.getBackgroundImageType());
@@ -149,14 +150,12 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     public void testAddListener_skipNotify() {
-        BackgroundImageInfo backgroundImageInfo =
-                new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.IMAGE_FROM_DISK);
         // Passes non-null matrices to mNtpCustomizationConfigManager.
         mNtpCustomizationConfigManager.notifyBackgroundImageChanged(
                 mBitmap,
-                backgroundImageInfo,
+                mBackgroundImageInfo,
                 /* fromInitialization= */ true,
                 /* oldType= */ NtpBackgroundImageType.DEFAULT);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
@@ -175,14 +174,12 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     public void testAddListener_notifiesImmediatelyWithImage_forImageFromDisk() {
-        BackgroundImageInfo backgroundImageInfo =
-                new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.IMAGE_FROM_DISK);
         // Passes non-null matrices to mNtpCustomizationConfigManager.
         mNtpCustomizationConfigManager.notifyBackgroundImageChanged(
                 mBitmap,
-                backgroundImageInfo,
+                mBackgroundImageInfo,
                 /* fromInitialization= */ true,
                 /* oldType= */ NtpBackgroundImageType.DEFAULT);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
@@ -194,7 +191,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         verify(mListener)
                 .onBackgroundImageChanged(
                         eq(mBitmap),
-                        eq(backgroundImageInfo),
+                        eq(mBackgroundImageInfo),
                         /* fromInitialization= */ eq(true),
                         /* oldType= */ eq(NtpBackgroundImageType.DEFAULT),
                         /* newType= */ eq(NtpBackgroundImageType.IMAGE_FROM_DISK));
@@ -257,9 +254,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         // Triggers a change that would normally notify the listener.
         clearInvocations(mListener);
         mNtpCustomizationConfigManager.onBackgroundChanged(
-                mBitmap,
-                new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix),
-                NtpBackgroundImageType.IMAGE_FROM_DISK);
+                mBitmap, mBackgroundImageInfo, NtpBackgroundImageType.IMAGE_FROM_DISK);
 
         // Verifies the listener is removed.
         verify(mListener, never())
@@ -455,13 +450,11 @@ public class NtpCustomizationConfigManagerUnitTest {
     public void testOnThemeCollectionImageSelected() {
         int initialBackgroundImageType = mNtpCustomizationConfigManager.getBackgroundImageType();
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
-        BackgroundImageInfo backgroundImageInfo =
-                new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
         CustomBackgroundInfo customBackgroundInfo =
                 new CustomBackgroundInfo(JUnitTestGURLs.NTP_URL, "test", false, false);
 
         mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
-                mBitmap, customBackgroundInfo, backgroundImageInfo);
+                mBitmap, customBackgroundInfo, mBackgroundImageInfo);
 
         // Verifies the listener was notified with the correct parameters.
         verify(mListener)
@@ -474,11 +467,11 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         assertEquals(mBitmap, mBitmapCaptor.getValue());
         assertEquals(
-                backgroundImageInfo.portraitMatrix,
-                mBackgroundImageInfoCaptor.getValue().portraitMatrix);
+                mBackgroundImageInfo.getPortraitMatrix(),
+                mBackgroundImageInfoCaptor.getValue().getPortraitMatrix());
         assertEquals(
-                backgroundImageInfo.landscapeMatrix,
-                mBackgroundImageInfoCaptor.getValue().landscapeMatrix);
+                mBackgroundImageInfo.getLandscapeMatrix(),
+                mBackgroundImageInfoCaptor.getValue().getLandscapeMatrix());
         assertEquals(
                 NtpBackgroundImageType.THEME_COLLECTION,
                 mNtpCustomizationConfigManager.getBackgroundImageType());
@@ -488,14 +481,12 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     public void testAddListener_notifiesImmediatelyWithThemeCollection() {
-        BackgroundImageInfo backgroundImageInfo =
-                new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix);
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.THEME_COLLECTION);
         // Passes non-null matrices to mNtpCustomizationConfigManager.
         mNtpCustomizationConfigManager.notifyBackgroundImageChanged(
                 mBitmap,
-                backgroundImageInfo,
+                mBackgroundImageInfo,
                 /* fromInitialization= */ true,
                 /* oldType= */ NtpBackgroundImageType.DEFAULT);
         mNtpCustomizationConfigManager.setIsInitializedForTesting(true);
@@ -507,7 +498,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         verify(mListener)
                 .onBackgroundImageChanged(
                         eq(mBitmap),
-                        eq(backgroundImageInfo),
+                        eq(mBackgroundImageInfo),
                         /* fromInitialization= */ eq(true),
                         /* oldType= */ eq(NtpBackgroundImageType.DEFAULT),
                         /* newType= */ eq(NtpBackgroundImageType.THEME_COLLECTION));
@@ -523,9 +514,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         CustomBackgroundInfo customBackgroundInfo =
                 new CustomBackgroundInfo(JUnitTestGURLs.NTP_URL, "test", false, false);
         mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
-                mBitmap,
-                customBackgroundInfo,
-                new BackgroundImageInfo(mPortraitMatrix, mLandscapeMatrix));
+                mBitmap, customBackgroundInfo, mBackgroundImageInfo);
         assertEquals(
                 customBackgroundInfo, mNtpCustomizationConfigManager.getCustomBackgroundInfo());
     }

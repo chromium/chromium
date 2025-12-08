@@ -212,12 +212,12 @@ public final class ChromePreferenceKeys {
             "Chrome.NtpCustomization.NtpThemeColorId";
 
     /** The transformation matrix for the NTP background image in portrait orientation. */
-    public static final String NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX =
-            "Chrome.NtpCustomization.BackgroundImagePortraitMatrix";
+    public static final String NTP_BACKGROUND_IMAGE_PORTRAIT_INFO =
+            "Chrome.NtpCustomization.BackgroundImagePortraitInfo";
 
     /** The transformation matrix for the NTP background image in landscape orientation. */
-    public static final String NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX =
-            "Chrome.NtpCustomization.BackgroundImageLandscapeMatrix";
+    public static final String NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO =
+            "Chrome.NtpCustomization.BackgroundImageLandscapeInfo";
 
     /** The {@link CustomBackgroundInfo} used for the NTP theme collection background image. */
     public static final String NTP_CUSTOMIZATION_BACKGROUND_INFO =
@@ -1148,8 +1148,8 @@ public final class ChromePreferenceKeys {
                 NTP_CUSTOMIZATION_THEME_COLOR_ID,
                 NTP_CUSTOMIZATION_BACKGROUND_COLOR,
                 NTP_CUSTOMIZATION_PRIMARY_COLOR,
-                NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX,
-                NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX,
+                NTP_BACKGROUND_IMAGE_PORTRAIT_INFO,
+                NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO,
                 NTP_CUSTOMIZATION_BACKGROUND_INFO,
                 NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED,
                 NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP,

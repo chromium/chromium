@@ -4,8 +4,14 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
+import android.graphics.Rect;
+
+import androidx.window.layout.WindowMetrics;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -193,5 +199,22 @@ public final class CropImageUtils {
         matrix.reset();
         matrix.setScale(scale, scale);
         matrix.postTranslate(deltaX, deltaY);
+    }
+
+    /**
+     * Returns the current window dimensions in pixels.
+     *
+     * <p>This method uses {@link WindowMetricsCalculator} to retrieve the full bounds of the
+     * window. The returned values represent absolute pixels and include the space occupied by
+     * system bars (e.g., status bar and navigation bar).
+     *
+     * @param activity The {@link Activity} context used to retrieve window metrics.
+     * @return A {@link Point} where x is the width and y is the height in pixels.
+     */
+    public static Point getCurrentWindowDimensions(Activity activity) {
+        WindowMetrics metrics =
+                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
+        Rect bounds = metrics.getBounds();
+        return new Point(bounds.width(), bounds.height());
     }
 }

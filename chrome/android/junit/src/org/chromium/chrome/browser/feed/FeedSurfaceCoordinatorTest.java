@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -291,7 +292,8 @@ public class FeedSurfaceCoordinatorTest {
         ShadowLog.stream = System.out;
 
         mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        mBackgroundImageInfo = new BackgroundImageInfo(new Matrix(), new Matrix());
+        mBackgroundImageInfo =
+                new BackgroundImageInfo(new Matrix(), new Matrix(), new Point(), new Point());
     }
 
     @After

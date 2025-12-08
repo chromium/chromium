@@ -6,20 +6,18 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils.getCurrentWindowDimensions;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
-import androidx.window.layout.WindowMetrics;
-import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -95,7 +93,6 @@ public class NtpBackgroundImageCoordinator {
                 NtpBackgroundImageProperties.IMAGE_SCALE_TYPE, ImageView.ScaleType.MATRIX);
         mPropertyModel.set(NtpBackgroundImageProperties.BACKGROUND_IMAGE, originalBitmap);
         maybeAddDisplayStyleObserver();
-        setImageBackgroundWithMatrices();
     }
 
     /** Clears the background image. */
@@ -115,9 +112,15 @@ public class NtpBackgroundImageCoordinator {
     /**
      * Adds the DisplayStyleObserver if hasn't yet, and set the flag mIsObservingDisplayChange to be
      * true.
+     *
+     * <p>If the observer is already set, this method manually calls {@link
+     * #setImageBackgroundWithMatrices()} to ensure the new background is applied immediately.
      */
     private void maybeAddDisplayStyleObserver() {
-        if (mIsObservingDisplayChange) return;
+        if (mIsObservingDisplayChange) {
+            setImageBackgroundWithMatrices();
+            return;
+        }
 
         mIsObservingDisplayChange = true;
         mUiConfig.addObserver(mDisplayStyleObserver);
@@ -148,26 +151,16 @@ public class NtpBackgroundImageCoordinator {
 
     private Matrix getValidatedMatrixForCurrentWindowSize(
             Activity activity, BackgroundImageInfo backgroundImageInfo, Bitmap bitmap) {
-        Point windowSize = getCurrentWindowDimensions(activity);
-        boolean isLandscape = windowSize.x > windowSize.y;
-        Matrix matrixToApply =
-                isLandscape
-                        ? backgroundImageInfo.landscapeMatrix
-                        : backgroundImageInfo.portraitMatrix;
+        Point currentWindowSize = getCurrentWindowDimensions(activity);
+        int currentOrientation = activity.getResources().getConfiguration().orientation;
 
+        Matrix matrixToApply = backgroundImageInfo.getMatrix(currentOrientation);
         float[] matrixValues = new float[9];
         matrixToApply.getValues(matrixValues);
 
         CropImageUtils.validateMatrix(
-                matrixToApply, windowSize.x, windowSize.y, bitmap, matrixValues);
+                matrixToApply, currentWindowSize.x, currentWindowSize.y, bitmap, matrixValues);
         return matrixToApply;
-    }
-
-    private Point getCurrentWindowDimensions(Activity activity) {
-        WindowMetrics metrics =
-                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
-        Rect bounds = metrics.getBounds();
-        return new Point(bounds.width(), bounds.height());
     }
 
     public PropertyModel getPropertyModelForTesting() {
