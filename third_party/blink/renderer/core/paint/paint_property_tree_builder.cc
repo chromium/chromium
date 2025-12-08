@@ -2563,9 +2563,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
     // The ::view-transition pseudo is a child of the scoped element; however,
     // it and its children must be able to paint outside any overflow clip
     // imposed by the scoped element. Otherwise, the border and box-shadow on
-    // the scoped element disappear.
+    // the scoped element disappear. The ::view-transition pseudo must also
+    // escape any scroll translation if the scoped element is a scroll
+    // container.
     // See https://github.com/w3c/csswg-drafts/issues/12324.
-    bool escape_clip = false;
+    const ClipPaintPropertyNodeOrAlias* transition_clip = nullptr;
+    const TransformPaintPropertyNodeOrAlias* transition_transform = nullptr;
     if (object_.GetNode() &&
         IsTransitionPseudoElement(object_.GetNode()->GetPseudoId())) {
       Element& scope =
@@ -2573,13 +2576,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
       auto* scope_properties =
           scope.GetLayoutObject()->FirstFragment().PaintProperties();
       if (scope_properties && scope_properties->OverflowClip()) {
-        escape_clip = true;
+        transition_clip = context_.current.clip->Parent();
+      }
+      if (scope_properties && scope_properties->ScrollTranslation()) {
+        transition_transform = scope_properties->ScrollTranslation()->Parent();
       }
     }
 
-    new_transform = context_.current.transform;
-    new_clip =
-        escape_clip ? context_.current.clip->Parent() : context_.current.clip;
+    new_transform = transition_transform ? transition_transform
+                                         : context_.current.transform;
+    new_clip = transition_clip ? transition_clip : context_.current.clip;
     new_effect = context_.current_effect;
     fragment_data_.SetLocalBorderBoxProperties(
         PropertyTreeStateOrAlias(*new_transform, *new_clip, *new_effect));
