@@ -12,6 +12,8 @@
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -36,10 +38,13 @@ class MockSmsOtpBackend : public one_time_tokens::SmsOtpBackend {
   MockSmsOtpBackend() = default;
   ~MockSmsOtpBackend() override = default;
 
-  MOCK_METHOD(void,
-              RetrieveSmsOtp,
-              (base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>),
-              (override));
+  MOCK_METHOD(
+      void,
+      RetrieveSmsOtp,
+      (base::OnceCallback<
+          void(base::expected<one_time_tokens::OneTimeToken,
+                              one_time_tokens::OneTimeTokenRetrievalError>)>),
+      (override));
 };
 
 class OtpFormEventLoggerIntegrationTest
@@ -136,25 +141,24 @@ class OtpFormEventLoggerIntegrationTest
   void SetupMockedOtpResponse(bool returns_otp) {
     MockSmsOtpBackend* backend =
         static_cast<MockSmsOtpBackend*>(autofill_client().GetSmsOtpBackend());
-    one_time_tokens::OtpFetchReply reply = CreateOtpFetchReply(returns_otp);
     EXPECT_CALL(*backend, RetrieveSmsOtp)
-        .WillRepeatedly([this, returns_otp, reply](auto callback) {
+        .WillRepeatedly([this, returns_otp](auto callback) {
           if (returns_otp) {
             autofill_manager().GetOtpFormEventLogger().OnOtpAvailable();
           }
-          std::move(callback).Run(reply);
+          std::move(callback).Run(CreateOtpResult(returns_otp));
         });
   }
 
-  one_time_tokens::OtpFetchReply CreateOtpFetchReply(bool returns_otp) {
-    std::optional<one_time_tokens::OneTimeToken> token;
+  base::expected<one_time_tokens::OneTimeToken,
+                 one_time_tokens::OneTimeTokenRetrievalError>
+  CreateOtpResult(bool returns_otp) {
     if (returns_otp) {
-      token = one_time_tokens::OneTimeToken(
+      return one_time_tokens::OneTimeToken(
           one_time_tokens::OneTimeTokenType::kSmsOtp, "123456",
           base::Time::Now());
     }
-
-    return one_time_tokens::OtpFetchReply(token, /*request_complete=*/true);
+    return base::unexpected(one_time_tokens::OneTimeTokenRetrievalError());
   }
 
   void VerifyInteractedWithFormUkmMetric(

@@ -7,8 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_cache.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
@@ -45,7 +48,8 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService,
   // Retrieves SMS OTPs from `sms_.backend` if any subscriber is interested.
   // Results are posted to `OnResponseFromSmsOtpBackend`.
   void RetrieveSmsOtpIfNeeded();
-  void OnResponseFromSmsOtpBackend(const OtpFetchReply& reply);
+  void OnResponseFromSmsOtpBackend(
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 
   // Handles subscriptions to the `OneTimeTokenService`.
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;

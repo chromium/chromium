@@ -18,7 +18,9 @@ enum class OneTimeTokenRetrievalError {
   kSmsOtpBackendApiNotAvailable = 4,
   kSmsOtpBackendUserPermissionRequired = 5,
   kSmsOtpGmscoreVersionNotSupported = 6,
-  kMaxValue = kSmsOtpGmscoreVersionNotSupported,
+  // Error code for when AndroidSmsOtpBackend initialization fails
+  kSmsOtpBackendInitializationFailed = 7,
+  kMaxValue = kSmsOtpBackendInitializationFailed,
 };
 
 }  // namespace one_time_tokens

@@ -5,17 +5,18 @@
 #ifndef COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_BACKEND_H_
 #define COMPONENTS_ONE_TIME_TOKENS_ANDROID_BACKEND_SMS_ANDROID_SMS_OTP_BACKEND_H_
 
-#include <optional>
-
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_dispatcher_bridge.h"
 #include "components/one_time_tokens/android/backend/sms/android_sms_otp_fetch_receiver_bridge.h"
+#include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 
 namespace one_time_tokens {
@@ -42,7 +43,9 @@ class AndroidSmsOtpBackend
 
   // SmsOtpBackend:
   void RetrieveSmsOtp(
-      base::OnceCallback<void(const OtpFetchReply&)> callback) override;
+      base::OnceCallback<void(
+          base::expected<OneTimeToken, OneTimeTokenRetrievalError>)> callback)
+      override;
 
   // AndroidSmsOtpFetchReceiverBridge::Consumer
   void OnOtpValueRetrieved(std::string value) override;
@@ -83,7 +86,8 @@ class AndroidSmsOtpBackend
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
 
   // Callbacks that needs to be invoked after the OTP retrieval is complete.
-  base::queue<base::OnceCallback<void(const OtpFetchReply&)>>
+  base::queue<base::OnceCallback<void(
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>)>>
       pending_callbacks_;
 
   // All methods should be called on the main thread.

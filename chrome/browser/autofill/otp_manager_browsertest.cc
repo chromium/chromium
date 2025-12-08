@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
+#include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "content/public/test/browser_test.h"
@@ -34,8 +35,9 @@ namespace {
 // the moment an SMS is received for one-time passwords (OTP).
 class FakeSmsOtpBackend : public one_time_tokens::SmsOtpBackend {
  public:
-  using CallbackType =
-      base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>;
+  using CallbackType = base::OnceCallback<void(
+      base::expected<one_time_tokens::OneTimeToken,
+                     one_time_tokens::OneTimeTokenRetrievalError>)>;
 
   FakeSmsOtpBackend() = default;
   ~FakeSmsOtpBackend() override = default;
@@ -44,7 +46,9 @@ class FakeSmsOtpBackend : public one_time_tokens::SmsOtpBackend {
   void RetrieveSmsOtp(CallbackType callback) override;
 
   // Simulates the reception of an SMS.
-  void NotifyCallbacks(const one_time_tokens::OtpFetchReply& reply);
+  void NotifyCallbacks(
+      base::expected<one_time_tokens::OneTimeToken,
+                     one_time_tokens::OneTimeTokenRetrievalError> reply);
 
   size_t num_callbacks() const { return callbacks_.size(); }
 
@@ -58,7 +62,8 @@ void FakeSmsOtpBackend::RetrieveSmsOtp(
 }
 
 void FakeSmsOtpBackend::NotifyCallbacks(
-    const one_time_tokens::OtpFetchReply& reply) {
+    base::expected<one_time_tokens::OneTimeToken,
+                   one_time_tokens::OneTimeTokenRetrievalError> reply) {
   for (auto& callback : callbacks_) {
     std::move(callback).Run(reply);
   }
@@ -255,11 +260,8 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
 
   // Simulate an OTP arriving.
   autofill_client().sms_otp_backend().NotifyCallbacks(
-      one_time_tokens::OtpFetchReply(
-          one_time_tokens::OneTimeToken(
-              one_time_tokens::OneTimeTokenType::kSmsOtp, "123456",
-              base::Time::Now()),
-          /*request_complete=*/true));
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    "123456", base::Time::Now()));
 
   // Simulate click on field.
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms =

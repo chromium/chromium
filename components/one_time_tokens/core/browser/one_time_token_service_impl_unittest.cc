@@ -4,8 +4,6 @@
 
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 
-#include <variant>
-
 #include "base/functional/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -46,14 +44,17 @@ MATCHER_P(OneTimeTokenValueEq, expected_token_value, "") {
 class MockSmsOtpBackend : public SmsOtpBackend {
  public:
   void RetrieveSmsOtp(
-      base::OnceCallback<void(const OtpFetchReply&)> callback) override {
+      base::OnceCallback<void(
+          base::expected<OneTimeToken, OneTimeTokenRetrievalError>)> callback)
+      override {
     callbacks_.push_back(std::move(callback));
     RetrieveSmsOtpCalled();
   }
 
   bool HasPendingRetrieveSmsOtpCallbacks() { return !callbacks_.empty(); }
 
-  void SimulateOtpArrived(const OtpFetchReply& reply) {
+  void SimulateOtpArrived(
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
     for (auto& callback : callbacks_) {
       std::move(callback).Run(reply);
     }
@@ -67,7 +68,9 @@ class MockSmsOtpBackend : public SmsOtpBackend {
   MOCK_METHOD((void), RetrieveSmsOtpCalled, ());
 
  private:
-  std::list<base::OnceCallback<void(const OtpFetchReply&)>> callbacks_;
+  std::list<base::OnceCallback<void(
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>)>>
+      callbacks_;
 };
 
 // A helper class to collect results from the OneTimeTokenService callbacks.
@@ -101,19 +104,6 @@ class OneTimeTokenServiceImplTest : public testing::Test {
   ~OneTimeTokenServiceImplTest() override = default;
 
  protected:
-  OtpFetchReply GetOtpReply(const std::string& otp_value) {
-    return OtpFetchReply(
-        OneTimeToken(OneTimeTokenType::kSmsOtp, otp_value, base::Time::Now()),
-        /*request_complete=*/true);
-  }
-
-  OtpFetchReply GetDefaultOtpFetchReply() { return GetOtpReply("123456"); }
-
-  OtpFetchReply GetOtpFailureReply() {
-    return OtpFetchReply(std::nullopt,
-                         /*request_complete=*/false);
-  }
-
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockSmsOtpBackend sms_otp_backend_;
@@ -162,7 +152,8 @@ TEST_F(OneTimeTokenServiceImplTest, SuccessfulFetchNotifiesSubscribers) {
       base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
-  sms_otp_backend_.SimulateOtpArrived(GetDefaultOtpFetchReply());
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "123456", base::Time::Now()));
 
   ASSERT_THAT(observer.results(),
               ElementsAre(Pair(OneTimeTokenSource::kOnDeviceSms,
@@ -179,14 +170,16 @@ TEST_F(OneTimeTokenServiceImplTest, BackendIsQueriedForFreshTokens) {
       base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
-  sms_otp_backend_.SimulateOtpArrived(GetOtpReply("1"));
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "1", base::Time::Now()));
   Mock::VerifyAndClearExpectations(&sms_otp_backend_);
 
   // After a few seconds, the backend should be queried a second time.
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
   task_environment_.FastForwardBy(kSmsRefetchInterval);
   Mock::VerifyAndClearExpectations(&sms_otp_backend_);
-  sms_otp_backend_.SimulateOtpArrived(GetOtpReply("2"));
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "2", base::Time::Now()));
 
   ASSERT_THAT(
       observer.results(),
@@ -214,7 +207,8 @@ TEST_F(OneTimeTokenServiceImplTest, MultipleSubscriptionsOneFetch) {
                           base::Unretained(&observer2)));
 
   ASSERT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
-  sms_otp_backend_.SimulateOtpArrived(GetDefaultOtpFetchReply());
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "123456", base::Time::Now()));
 
   ASSERT_EQ(observer1.results().size(), 1u);
   ASSERT_EQ(observer2.results().size(), 1u);
@@ -235,7 +229,8 @@ TEST_F(OneTimeTokenServiceImplTest, ExpiredSubscription) {
   task_environment_.FastForwardBy(base::Minutes(6));
 
   ASSERT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
-  sms_otp_backend_.SimulateOtpArrived(GetDefaultOtpFetchReply());
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "123456", base::Time::Now()));
 
   EXPECT_TRUE(observer.results().empty());
 }
@@ -250,7 +245,8 @@ TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
       base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer1)));
-  sms_otp_backend_.SimulateOtpArrived(GetOtpReply("1"));
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "1", base::Time::Now()));
   ASSERT_THAT(observer1.results(),
               ElementsAre(Pair(OneTimeTokenSource::kOnDeviceSms,
                                OneTimeTokenValueEq("1"))));
@@ -259,7 +255,8 @@ TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
   task_environment_.FastForwardBy(base::Minutes(6));
 
   // Terminate the last callback to the backend.
-  sms_otp_backend_.SimulateOtpArrived(GetOtpFailureReply());
+  sms_otp_backend_.SimulateOtpArrived(
+      base::unexpected(OneTimeTokenRetrievalError::kSmsOtpBackendError));
   EXPECT_FALSE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
 
   OneTimeTokenServiceTestObserver observer2;
@@ -268,7 +265,8 @@ TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer2)));
   EXPECT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
-  sms_otp_backend_.SimulateOtpArrived(GetOtpReply("2"));
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "2", base::Time::Now()));
   ASSERT_THAT(observer2.results(),
               ElementsAre(Pair(OneTimeTokenSource::kOnDeviceSms,
                                OneTimeTokenValueEq("2"))));
@@ -287,7 +285,8 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens) {
                           base::Unretained(&subscriber_observer)));
 
   ASSERT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
-  sms_otp_backend_.SimulateOtpArrived(GetDefaultOtpFetchReply());
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "123456", base::Time::Now()));
 
   ASSERT_THAT(subscriber_observer.results(),
               ElementsAre(Pair(OneTimeTokenSource::kOnDeviceSms,
@@ -314,7 +313,8 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_Expired) {
                           base::Unretained(&subscriber_observer)));
 
   ASSERT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
-  sms_otp_backend_.SimulateOtpArrived(GetDefaultOtpFetchReply());
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "123456", base::Time::Now()));
 
   ASSERT_EQ(subscriber_observer.results().size(), 1u);
 
@@ -343,13 +343,14 @@ TEST_F(OneTimeTokenServiceImplTest, NewFetchAfterCompletion) {
                           base::Unretained(&observer)));
 
   ASSERT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
-  sms_otp_backend_.SimulateOtpArrived(GetOtpFailureReply());
+  sms_otp_backend_.SimulateOtpArrived(
+      base::unexpected(OneTimeTokenRetrievalError::kSmsOtpBackendError));
 
   ASSERT_EQ(observer.results().size(), 1u);
   EXPECT_EQ(observer.results()[0].first, OneTimeTokenSource::kOnDeviceSms);
   const auto& result = observer.results()[0].second;
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), OneTimeTokenRetrievalError::kUnknown);
+  EXPECT_EQ(result.error(), OneTimeTokenRetrievalError::kSmsOtpBackendError);
 }
 
 // Test GetCachedOneTimeTokens returns cached tokens, including expired ones.
@@ -363,7 +364,8 @@ TEST_F(OneTimeTokenServiceImplTest,
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)));
 
-  sms_otp_backend_.SimulateOtpArrived(GetOtpReply("123456"));
+  sms_otp_backend_.SimulateOtpArrived(
+      OneTimeToken(OneTimeTokenType::kSmsOtp, "123456", base::Time::Now()));
 
   // Verify that the token is returned by GetCachedOneTimeTokens.
   std::vector<OneTimeToken> cached_tokens = service.GetCachedOneTimeTokens();

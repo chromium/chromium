@@ -99,7 +99,14 @@ TEST_F(AndroidSmsOtpBackendTest, BackendInitFails) {
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return backend.GetInitializationResultForTesting().has_value(); }));
 
-  backend.RetrieveSmsOtp(base::DoNothing());
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+  backend.RetrieveSmsOtp(future.GetCallback());
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::kSmsOtpBackendInitializationFailed);
 }
 
 TEST_F(AndroidSmsOtpBackendTest, BackendInitSucceeds) {
@@ -181,19 +188,14 @@ TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchSucceeds) {
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return backend.GetInitializationResultForTesting().has_value(); }));
 
-  base::test::TestFuture<const OtpFetchReply&> future;
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
   backend.RetrieveSmsOtp(future.GetCallback());
   backend.OnOtpValueRetrieved("123456");
-  const OtpFetchReply& actual_result = future.Get();
-  EXPECT_THAT(
-      actual_result,
-      AllOf(
-          Field(&OtpFetchReply::otp_value,
-                testing::Optional(AllOf(Property("type", &OneTimeToken::type,
-                                                 Eq(OneTimeTokenType::kSmsOtp)),
-                                        Property("value", &OneTimeToken::value,
-                                                 Eq(std::string("123456")))))),
-          Field(&OtpFetchReply::request_complete, true)));
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>&
+      actual_result = future.Get();
+  EXPECT_THAT(actual_result.value().value(), testing::Eq("123456"));
 }
 
 TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchTimesOut) {
@@ -219,12 +221,16 @@ TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchTimesOut) {
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return backend.GetInitializationResultForTesting().has_value(); }));
 
-  base::test::TestFuture<const OtpFetchReply&> future;
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
   backend.RetrieveSmsOtp(future.GetCallback());
   backend.OnOtpValueRetrievalError(SmsOtpRetrievalApiErrorCode::kTimeout);
-  const OtpFetchReply& actual_result = future.Get();
-  EXPECT_EQ(actual_result.otp_value, std::nullopt);
-  EXPECT_TRUE(actual_result.request_complete);
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>&
+      actual_result = future.Get();
+  ASSERT_FALSE(actual_result.has_value());
+  EXPECT_EQ(actual_result.error(),
+            OneTimeTokenRetrievalError::kSmsOtpBackendTimeout);
 }
 
 TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchFails) {
@@ -250,12 +256,16 @@ TEST_F(AndroidSmsOtpBackendTest, OtpValueFetchFails) {
   EXPECT_TRUE(base::test::RunUntil(
       [&] { return backend.GetInitializationResultForTesting().has_value(); }));
 
-  base::test::TestFuture<const OtpFetchReply&> future;
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
   backend.RetrieveSmsOtp(future.GetCallback());
   backend.OnOtpValueRetrievalError(
       SmsOtpRetrievalApiErrorCode::kApiNotAvailable);
-  const OtpFetchReply& actual_result = future.Get();
-  EXPECT_EQ(actual_result.otp_value, std::nullopt);
-  EXPECT_FALSE(actual_result.request_complete);
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>&
+      actual_result = future.Get();
+  ASSERT_FALSE(actual_result.has_value());
+  EXPECT_EQ(actual_result.error(),
+            OneTimeTokenRetrievalError::kSmsOtpBackendApiNotAvailable);
 }
 }  // namespace one_time_tokens

@@ -7,6 +7,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/one_time_tokens/android/backend/sms/sms_otp_retrieval_api_error_codes.h"
+#include "components/one_time_tokens/android/backend/sms/sms_otp_to_one_time_token_retrieval_error_converter.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 
 namespace one_time_tokens {
@@ -38,7 +39,8 @@ AndroidSmsOtpBackend::~AndroidSmsOtpBackend() {
 }
 
 void AndroidSmsOtpBackend::RetrieveSmsOtp(
-    base::OnceCallback<void(const OtpFetchReply&)> callback) {
+    base::OnceCallback<void(
+        base::expected<OneTimeToken, OneTimeTokenRetrievalError>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   if (!initialization_result_.has_value()) {
@@ -50,8 +52,8 @@ void AndroidSmsOtpBackend::RetrieveSmsOtp(
 
   // Return early if the downstream backend did not initialize successfully.
   if (!initialization_result_.value()) {
-    std::move(callback).Run(
-        OtpFetchReply{/*otp_value=*/std::nullopt, /*request_complete=*/false});
+    std::move(callback).Run(base::unexpected(
+        OneTimeTokenRetrievalError::kSmsOtpBackendInitializationFailed));
     return;
   }
 
@@ -69,9 +71,8 @@ void AndroidSmsOtpBackend::OnOtpValueRetrieved(std::string value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (!pending_callbacks_.empty()) {
     std::move(pending_callbacks_.front())
-        .Run(OtpFetchReply{OneTimeToken(OneTimeTokenType::kSmsOtp,
-                                        std::move(value), base::Time::Now()),
-                           /*request_complete_=*/true});
+        .Run(OneTimeToken(OneTimeTokenType::kSmsOtp, std::move(value),
+                          base::Time::Now()));
     pending_callbacks_.pop();
   }
 }
@@ -82,13 +83,8 @@ void AndroidSmsOtpBackend::OnOtpValueRetrievalError(
   // TODO(crbug.com/415272524): Record metrics on the API error codes.
 
   if (!pending_callbacks_.empty()) {
-    // kTimeout means that nothing prevented the request from execution, but the
-    // SMS with the OTP value was not received within some time. All other
-    // errors mean that it was not possible to execute the request.
-    bool request_complete =
-        (error_code == SmsOtpRetrievalApiErrorCode::kTimeout);
     std::move(pending_callbacks_.front())
-        .Run(OtpFetchReply{/*otp_value=*/std::nullopt, request_complete});
+        .Run(base::unexpected(ConvertSmsOtpRetrievalApiErrorCode(error_code)));
     pending_callbacks_.pop();
   }
 }
