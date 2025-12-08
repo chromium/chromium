@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 FjordOobeServiceProvider::FjordOobeServiceProvider() = default;
@@ -17,8 +16,7 @@ FjordOobeServiceProvider::~FjordOobeServiceProvider() = default;
 void FjordOobeServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
-      chromeos::kFjordOobeServiceInterface,
-      chromeos::kFjordOobeServiceExitTcSetupMethod,
+      "org.chromium.FjordOobeServiceInterface", "ExitTcSetup",
       base::BindRepeating(&FjordOobeServiceProvider::ExitTouchControllerScreen,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FjordOobeServiceProvider::OnExported,

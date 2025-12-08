@@ -540,8 +540,8 @@ class DBusServices {
 #if BUILDFLAG(PLATFORM_CUTTLEFISH)
     if (features::IsFjordOobeEnabled()) {
       fjord_oobe_service_ = CrosDBusService::Create(
-          system_bus, chromeos::kFjordOobeServiceName,
-          dbus::ObjectPath(chromeos::kFjordOobeServicePath),
+          system_bus, "org.chromium.FjordOobeService",
+          dbus::ObjectPath("/org/chromium/FjordOobeService"),
           CrosDBusService::CreateServiceProviderList(
               std::make_unique<FjordOobeServiceProvider>()));
     }
