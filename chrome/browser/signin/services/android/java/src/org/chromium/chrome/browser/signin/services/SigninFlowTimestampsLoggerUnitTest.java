@@ -118,13 +118,10 @@ public class SigninFlowTimestampsLoggerUnitTest {
 
         mFakeTimeTestRule.advanceMillis(500);
         logger.onManagementNoticeAccepted(); // Called without onManagementNoticeShown()
-
-        mFakeTimeTestRule.advanceMillis(500);
-        logger.recordTimestamp(Event.SIGNIN_COMPLETED);
     }
 
     @Test(expected = AssertionError.class)
-    public void testOnManagementNoticeShown_withoutNoticeAccepted() {
+    public void testOnManagementNoticeShown_signinCompletedWithoutNoticeAccepted() {
         SigninFlowTimestampsLogger logger = SigninFlowTimestampsLogger.startLogging(mFlowVariant);
 
         mFakeTimeTestRule.advanceMillis(500);
@@ -133,5 +130,21 @@ public class SigninFlowTimestampsLoggerUnitTest {
         mFakeTimeTestRule.advanceMillis(500);
         logger.recordTimestamp(
                 Event.SIGNIN_COMPLETED); // Called without onManagementNoticeAccepted()
+    }
+
+    @Test
+    public void testOnManagementNoticeShown_signinAbortedWithoutNoticeAccepted() {
+        SigninFlowTimestampsLogger logger = SigninFlowTimestampsLogger.startLogging(mFlowVariant);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SignIn.Timestamps." + mFlowVariant + ".SigninAborted", 900);
+
+        mFakeTimeTestRule.advanceMillis(500);
+        logger.onManagementNoticeShown();
+
+        mFakeTimeTestRule.advanceMillis(400);
+        logger.recordTimestamp(Event.SIGNIN_ABORTED); // Called without onManagementNoticeAccepted()
+
+        histogramWatcher.assertExpected();
     }
 }

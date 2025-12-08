@@ -92,7 +92,9 @@ public class SigninFlowTimestampsLogger {
     public void recordTimestamp(@Event String event) {
         long duration = TimeUtils.elapsedRealtimeMillis() - mFlowStartTime;
         if (event.equals(Event.SIGNIN_COMPLETED) || event.equals(Event.SIGNIN_ABORTED)) {
-            assert mManagementConfirmationDelay > 0 || mManagementNoticeShownTime == 0;
+            assert event.equals(Event.SIGNIN_ABORTED)
+                    || mManagementConfirmationDelay > 0
+                    || mManagementNoticeShownTime == 0;
             duration -= mManagementConfirmationDelay;
         }
         final String histogramName = "Signin.SignIn.Timestamps." + mFlowVariant + "." + event;

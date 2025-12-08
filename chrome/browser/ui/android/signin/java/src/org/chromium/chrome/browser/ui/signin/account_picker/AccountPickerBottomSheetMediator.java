@@ -689,7 +689,9 @@ public class AccountPickerBottomSheetMediator
         mSelectedAccount = null;
         mDefaultAccount = null;
         mRequestDisplayBottomSheet = null;
-        // TODO(crbug.com/437038737): Log Event.SIGNIN_ABORTED timestamp.
+        if (mSigninTimestampsLogger != null) {
+            mSigninTimestampsLogger.recordTimestamp(Event.SIGNIN_ABORTED);
+        }
 
         mAccountPickerDelegate.onSeamlessSigninAbandoned();
     }

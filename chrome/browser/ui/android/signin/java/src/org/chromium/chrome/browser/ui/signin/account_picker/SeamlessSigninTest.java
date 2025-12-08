@@ -49,7 +49,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -385,6 +387,24 @@ public class SeamlessSigninTest {
         verify(mAccountPickerDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .onSeamlessSigninAbandoned();
         assertBottomSheetNeverShown();
+    }
+
+    @Test
+    @MediumTest
+    public void testAbandonedSigninFlowLogsAbortedEvent() {
+        when(mAccountPickerDelegateMock.getSigninFlowVariant()).thenReturn(FlowVariant.OTHER);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted");
+        emulateLongSignin();
+        createCoordinator();
+
+        // Remove the account while signin() is executing.
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        verify(mAccountPickerDelegateMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onSeamlessSigninAbandoned();
+        histogramWatcher.assertExpected();
     }
 
     @Test
