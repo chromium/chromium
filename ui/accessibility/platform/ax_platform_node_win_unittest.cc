@@ -23,6 +23,7 @@
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/win/atl.h"
@@ -8203,6 +8204,26 @@ TEST_F(AXPlatformNodeWinTest, DormantLiveGhostDestroyed) {
   // Zero instances and no ghost nodes.
   ASSERT_EQ(AXPlatformNodeWin::GetCounts(),
             (AXPlatformNodeWin::Counts{0U, 0U, 0U, 0U}));
+}
+
+// Test for UIA's MathML Implementation.
+TEST_F(AXPlatformNodeWinTest, UiaMathMlFeatureFlag) {
+  // Verify flag is disabled by default.
+  EXPECT_FALSE(base::FeatureList::IsEnabled(features::kUiaMathMlSupport));
+
+  // Verify flag can be enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(features::kUiaMathMlSupport);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(features::kUiaMathMlSupport));
+  }
+
+  // Verify flag can be explicitly disabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(features::kUiaMathMlSupport);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(features::kUiaMathMlSupport));
+  }
 }
 
 }  // namespace ui
