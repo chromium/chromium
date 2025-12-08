@@ -387,8 +387,6 @@ class CONTENT_EXPORT PrerenderHostRegistry
 
   // Hosts that are not reserved for activation yet. This map also includes the
   // hosts still waiting for their start.
-  // TODO(crbug.com/40150744): Expire prerendered contents if they are
-  // not used for a while.
   base::flat_map<FrameTreeNodeId, std::unique_ptr<PrerenderHost>>
       prerender_host_by_frame_tree_node_id_;
 
