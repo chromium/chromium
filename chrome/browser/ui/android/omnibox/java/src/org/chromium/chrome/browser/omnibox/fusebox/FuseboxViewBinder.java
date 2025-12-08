@@ -12,7 +12,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -89,7 +88,8 @@ class FuseboxViewBinder {
             view.popup.mClipboardButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_CLIPBOARD_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED) {
-            view.popup.mCreateImageButton.setEnabled(
+            setIsEnabledAndReapplyColorFilter(
+                    view.popup.mCreateImageButton,
                     model.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
         } else if (propertyKey == FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE) {
             updateButtonsVisibilityAndStyling(model, view);
@@ -114,7 +114,8 @@ class FuseboxViewBinder {
             view.popup.mAddCurrentTab.setOnClickListener(
                     v -> model.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED) {
-            view.popup.mAddCurrentTab.setEnabled(
+            setIsEnabledAndReapplyColorFilter(
+                    view.popup.mAddCurrentTab,
                     model.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
         } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON) {
             updateForCurrentTabFavicon(
@@ -129,20 +130,41 @@ class FuseboxViewBinder {
         }
     }
 
+    private static void setIsEnabledAndReapplyColorFilter(Button button, boolean isEnabled) {
+        button.setEnabled(isEnabled);
+        reapplyColorFilter(button);
+    }
+
+    /**
+     * Most of the button's drawables used by this class will pick up a default tint from the
+     * button. But some of them need to retain the original coloring, such as a tab favicon or the
+     * generate image banana. It is these drawables that this function is used for. Because the
+     * button will not override the tint of a drawable that has had a color filter applied, we
+     * always call this method to set the color filter for these drawables. However this is
+     * complicated by not having a color filter implementation that takes a {@link ColorStateList}.
+     * These drawables need to slightly fade when the button is disabled, and then stop fading when
+     * the button is enabled. So this method should be called any time a relevant state change
+     * happens to the button that would cause the color state list to return a different color.
+     */
+    private static void reapplyColorFilter(Button button) {
+        // Only the start drawable needs to have special handling, all the others will always use
+        // the default tint of the button.
+        Drawable drawable = button.getCompoundDrawablesRelative()[0];
+        if (drawable == null) return;
+
+        Context context = button.getContext();
+        // For some reason, the drawable and the button don't seem to agree on state, use the
+        // button's version, as it tracks what we would expect current setters on the button to
+        // result in.
+        int[] stateSet = button.getDrawableState();
+        ColorStateList tint = context.getColorStateList(R.color.default_icon_color_white_tint_list);
+        @ColorInt int color = tint.getColorForState(stateSet, Color.TRANSPARENT);
+        drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
+    }
+
     private static void updateToolDrawables(
             @AutocompleteRequestType int autocompleteRequestType, FuseboxViewHolder views) {
         Context context = views.parentView.getContext();
-        // Doesn't need manual tinting, the default tint from the button style will handle it. The
-        // same is true of the end drawables below.
-        final Drawable aiModeButtonStartDrawable =
-                context.getDrawable(R.drawable.search_spark_black_24dp);
-        final Drawable imageGenStartDrawable =
-                assumeNonNull(context.getDrawable(R.drawable.create_image_24dp)).mutate();
-        // Setting a color filter disables tinting.
-        imageGenStartDrawable.setColorFilter(
-                new PorterDuffColorFilter(
-                        context.getColor(R.color.default_icon_color_white_tint_list),
-                        Mode.MULTIPLY));
         final Drawable aiModeButtonEndDrawable;
         final Drawable imageGenEndDrawable;
         switch (autocompleteRequestType) {
@@ -161,10 +183,19 @@ class FuseboxViewBinder {
                 imageGenEndDrawable = null;
             }
         }
+
+        final Drawable aiModeButtonStartDrawable =
+                context.getDrawable(R.drawable.search_spark_black_24dp);
         views.popup.mAiModeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 aiModeButtonStartDrawable, null, aiModeButtonEndDrawable, null);
+
+        // This drawable will be manually tinted with a filter, while all the others in this method
+        // will pick up the default from the button.
+        final Drawable imageGenStartDrawable =
+                assumeNonNull(context.getDrawable(R.drawable.create_image_24dp)).mutate();
         views.popup.mCreateImageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 imageGenStartDrawable, null, imageGenEndDrawable, null);
+        reapplyColorFilter(views.popup.mCreateImageButton);
     }
 
     static void updateButtonsVisibilityAndStyling(PropertyModel model, FuseboxViewHolder views) {
@@ -299,11 +330,10 @@ class FuseboxViewBinder {
         @StyleRes
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
         ColorStateList iconTint =
-                ColorStateList.valueOf(
-                        OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
+                OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme);
         for (Button button : views.popup.mButtons) {
             button.setTextAppearance(textAppearance);
-            // Tints directly applied to drawables will take precedence over this tint.
+            // Color filters applied to drawables will take precedence over this tint.
             button.setCompoundDrawableTintList(iconTint);
         }
 
@@ -343,15 +373,13 @@ class FuseboxViewBinder {
         cs.applyTo(views.parentView);
     }
 
-    // TODO(https://crbug.com/460150759): Update to correctly tint for being disabled.
     private static void updateForCurrentTabFavicon(Bitmap favicon, FuseboxViewHolder viewHolder) {
         Context context = viewHolder.parentView.getContext();
         Resources res = context.getResources();
-        Button addCurrentTabButton = viewHolder.popup.mAddCurrentTab;
+        FuseboxPopup popup = viewHolder.popup;
+        Button addCurrentTabButton = popup.mAddCurrentTab;
 
         final Drawable drawable;
-        final ColorStateList tint;
-        final PorterDuff.Mode blendMode;
         if (favicon != null) {
             @Px int iconSizePx = res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size);
             Bitmap bitmap =
@@ -359,19 +387,16 @@ class FuseboxViewBinder {
             drawable = new BitmapDrawable(res, bitmap);
             drawable.setBounds(
                     /* left= */ 0, /* top= */ 0, /* right= */ iconSizePx, /* bottom= */ iconSizePx);
-            // This will change the alpha value based on the enabled state. The rgb values will
-            // always be unaffected because the multiplied color is white.
-            tint = context.getColorStateList(R.color.default_icon_color_white_tint_list);
-            blendMode = PorterDuff.Mode.MULTIPLY;
         } else {
             drawable = assumeNonNull(context.getDrawable(R.drawable.ic_globe_24dp));
-            tint = context.getColorStateList(R.color.default_icon_color_tint_list);
-            blendMode = PorterDuff.Mode.SRC_IN;
         }
-
         addCurrentTabButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 drawable, /* top= */ null, /* end= */ null, /* bottom= */ null);
-        addCurrentTabButton.setCompoundDrawableTintList(tint);
-        addCurrentTabButton.setCompoundDrawableTintMode(blendMode);
+
+        if (favicon != null) {
+            // This will change the alpha value based on the enabled state. The rgb values will
+            // always be unaffected because the multiplied color is white.
+            reapplyColorFilter(addCurrentTabButton);
+        }
     }
 }
