@@ -123,8 +123,6 @@ public class SeamlessSigninCoordinator {
     @MainThread
     public void dismissBottomSheet() {
         if (mView != null) {
-            // TODO(crbug.com/437038737): Log AccountConsistencyPromoAction.DISMISSED_BUTTON
-            // histogram.
             // The observer calls destroy() after the sheet is hidden.
             mBottomSheetController.hideContent(mView, true);
         } else {

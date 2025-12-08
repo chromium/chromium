@@ -200,6 +200,7 @@ public class AccountPickerBottomSheetMediator
                                 this::onSelectedAccountClicked,
                                 this::onContinueAsClicked,
                                 view -> assertNonNull(dismissBottomSheet).run(),
+                                this::onConfirmManagementCancelClicked,
                                 accountPickerBottomSheetStrings);
                 initializeAccountPickerAccountAndModel(accounts, accountId);
                 break;
@@ -210,7 +211,9 @@ public class AccountPickerBottomSheetMediator
                 mIsSeamlessSignin = true;
                 mModel =
                         AccountPickerBottomSheetProperties.createModelForSeamlessSignin(
-                                this::onContinueAsClicked, accountPickerBottomSheetStrings);
+                                this::onContinueAsClicked,
+                                this::onConfirmManagementCancelClicked,
+                                accountPickerBottomSheetStrings);
                 if (accounts.isEmpty()) {
                     // TODO(crbug.com/437038737): Handle missing account during seamless sign-in
                     // initialization.
@@ -328,11 +331,6 @@ public class AccountPickerBottomSheetMediator
         if (shouldHandleBackPress()) {
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
             return true;
-        }
-        if (mIsSeamlessSignin) {
-            // TODO(crbug.com/460030880): Decouple the 'Confirm Management' cancel button from this
-            // general back press handler using a dedicated property and callback
-            mDismissBottomSheet.run();
         }
         return false;
     }
@@ -560,6 +558,21 @@ public class AccountPickerBottomSheetMediator
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED, mSigninAccessPoint);
             signInAfterCheckingManagement();
+        }
+    }
+
+    /**
+     * Callback for the PropertyKey {@link
+     * AccountPickerBottomSheetProperties#ON_CONFIRM_MANAGEMENT_CANCEL_CLICKED}.
+     */
+    private void onConfirmManagementCancelClicked() {
+        if (mIsSeamlessSignin) {
+            // TODO(crbug.com/437038737): Log AccountConsistencyPromoAction.DISMISSED_BUTTON
+            // histogram.
+            // Seamless sign-in does not have an initial account picker view. Hide the bottom sheet.
+            mDismissBottomSheet.run();
+        } else {
+            mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
         }
     }
 

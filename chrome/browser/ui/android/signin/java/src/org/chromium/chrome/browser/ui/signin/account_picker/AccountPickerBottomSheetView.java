@@ -81,6 +81,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final View mSelectedAccountView;
     private final ButtonCompat mAccountPickerDismissButton;
     private final Space mDismissButtonGoneMarginSpace;
+    private final ButtonCompat mConfirmManagementCancelButton;
     private @Nullable @ViewState Integer mCurrentViewState;
 
     /**
@@ -116,6 +117,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_dismiss_button_gone_margin_space);
+        mConfirmManagementCancelButton =
+                mViewFlipper
+                        .getChildAt(ViewState.CONFIRM_MANAGEMENT)
+                        .findViewById(R.id.confirm_management_cancel_button);
 
         setUpContinueButton(
                 mViewFlipper.getChildAt(ViewState.NO_ACCOUNTS),
@@ -128,13 +133,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         setUpContinueButton(
                 mViewFlipper.getChildAt(ViewState.SIGNIN_AUTH_ERROR),
                 R.string.auth_error_card_button);
-
-        // TODO(crbug.com/460030880): Decouple the 'Confirm Management' cancel button from this
-        // general back press handler using a dedicated property and callback
-        mViewFlipper
-                .getChildAt(ViewState.CONFIRM_MANAGEMENT)
-                .findViewById(R.id.confirm_management_cancel_button)
-                .setOnClickListener((View v) -> handleBackPress());
 
         getAccountListView().addItemDecoration(new AccountPickerItemDecoration());
     }
@@ -163,6 +161,11 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     /** The button to dismiss the account picker bottom sheet. */
     ButtonCompat getAccountPickerDismissButton() {
         return mAccountPickerDismissButton;
+    }
+
+    /** The button to cancel the confirm management notice. */
+    ButtonCompat getConfirmManagementCancelButton() {
+        return mConfirmManagementCancelButton;
     }
 
     /** Sets the displayed view according to the given {@link ViewState}. */

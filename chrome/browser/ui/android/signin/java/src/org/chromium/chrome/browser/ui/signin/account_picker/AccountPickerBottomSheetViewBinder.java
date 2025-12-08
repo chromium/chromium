@@ -44,6 +44,13 @@ class AccountPickerBottomSheetViewBinder {
                             model.get(
                                     AccountPickerBottomSheetProperties
                                             .ON_ACCOUNT_PICKER_DISMISS_CLICKED));
+        } else if (propertyKey
+                == AccountPickerBottomSheetProperties.ON_CONFIRM_MANAGEMENT_CANCEL_CLICKED) {
+            view.getConfirmManagementCancelButton()
+                    .setOnClickListener(
+                            model.get(
+                                    AccountPickerBottomSheetProperties
+                                            .ON_CONFIRM_MANAGEMENT_CANCEL_CLICKED));
         } else if (propertyKey == AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS) {
             AccountPickerBottomSheetStrings bottomSheetStrings =
                     model.get(AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS);

@@ -1304,6 +1304,64 @@ public class AccountPickerBottomSheetTest {
         verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
     }
 
+    @Test
+    @MediumTest
+    public void testBackButtonOnManagementNoticeReturnsToCollapsedSheet() {
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN)
+                        .build();
+        mIsAccountManaged = true;
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        waitForView(
+                (ViewGroup) bottomSheetView,
+                allOf(withId(R.id.account_picker_state_collapsed), isDisplayed()));
+        clickContinueButtonAndClearDeviceLock(bottomSheetView);
+        waitForView(
+                (ViewGroup) bottomSheetView,
+                allOf(withId(R.id.account_picker_confirm_management_description), isDisplayed()));
+
+        // Clicking "Back" button should return to initial collapsed sheet.
+        Espresso.pressBack();
+
+        waitForView(
+                (ViewGroup) bottomSheetView,
+                allOf(withId(R.id.account_picker_state_collapsed), isDisplayed()));
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testCancelButtonOnManagementNoticeReturnsToCollapsedSheet() {
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN)
+                        .build();
+        mIsAccountManaged = true;
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        waitForView(
+                (ViewGroup) bottomSheetView,
+                allOf(withId(R.id.account_picker_state_collapsed), isDisplayed()));
+        clickContinueButtonAndClearDeviceLock(bottomSheetView);
+
+        // Clicking "Cancel" button should return to initial collapsed sheet.
+        onViewWaiting(allOf(withId(R.id.confirm_management_cancel_button), isDisplayed()))
+                .perform(click());
+
+        waitForView(
+                (ViewGroup) bottomSheetView,
+                allOf(withId(R.id.account_picker_state_collapsed), isDisplayed()));
+        accountConsistencyHistogram.assertExpected();
+    }
+
     private void clickContinueButton(View bottomSheetView) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
