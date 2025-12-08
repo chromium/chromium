@@ -110,6 +110,14 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
 
     ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
         .WillByDefault(Return(true));
+
+    ON_CALL(*context_controller_, GetFeatureEligibility).WillByDefault([]() {
+      FeatureEligibility eligibility;
+      eligibility.contextual_tasks_enabled = true;
+      eligibility.aim_eligible = true;
+      eligibility.context_sharing_enabled = true;
+      return eligibility;
+    });
   }
 
   void TearDown() override {
@@ -200,6 +208,30 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kTestUrl), false), web_contents.get(), false));
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
+  GURL ai_url(kAiPageUrl);
+  GURL tab_url(kTestUrl);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(tab_url);
+
+  ON_CALL(*context_controller_, GetFeatureEligibility).WillByDefault([]() {
+    FeatureEligibility eligibility;
+    eligibility.contextual_tasks_enabled = false;
+    eligibility.aim_eligible = false;
+    eligibility.context_sharing_enabled = false;
+    return eligibility;
+  });
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
