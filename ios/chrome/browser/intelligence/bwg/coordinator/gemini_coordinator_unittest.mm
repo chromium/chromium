@@ -136,7 +136,9 @@ TEST_F(GeminiCoordinatorTest, FullscreenNotExitedOnAIHubEntryPoint) {
 // Tests fullscreen mode exiting when promo shows from the promo entry point.
 TEST_F(GeminiCoordinatorTest, FullscreenExitedOnPromoEntryPoint) {
   feature_list_.InitWithFeatures(
-      {kGeminiNavigationPromo, kAskGeminiChip, kPageActionMenu}, {});
+      {feature_engagement::kIPHiOSGeminiFullscreenPromoFeature,
+       kGeminiNavigationPromo, kAskGeminiChip, kPageActionMenu},
+      {});
   auto* tracker = static_cast<feature_engagement::test::MockTracker*>(
       feature_engagement::TrackerFactory::GetForProfile(
           profile_manager_.GetProfileWithName(kFirstProfileName)));

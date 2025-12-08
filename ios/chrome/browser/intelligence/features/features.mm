@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
@@ -238,9 +239,12 @@ base::TimeDelta GetPersistedContextEffectiveTTL(PrefService* prefs) {
 BASE_FEATURE(kGeminiNavigationPromo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiNavigationPromoEnabled() {
-  if (!IsPageActionMenuEnabled()) {
+  if (!IsPageActionMenuEnabled() ||
+      !base::FeatureList::IsEnabled(
+          feature_engagement::kIPHiOSGeminiFullscreenPromoFeature)) {
     return false;
   }
+
   return base::FeatureList::IsEnabled(kGeminiNavigationPromo);
 }
 
