@@ -19,6 +19,16 @@ export interface ContextualTasksComposeboxElement {
   };
 }
 
+const DEBOUNCE_TIMEOUT: number = 20;
+
+function debounce(context: Object, func: () => void, delay: number) {
+  let timeout: number;
+  return function(...args: []) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), delay);
+  };
+}
+
 export class ContextualTasksComposeboxElement extends CrLitElement {
   static get is() {
     return 'contextual-tasks-composebox';
@@ -71,13 +81,14 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         composebox.clearAutocompleteMatches();
       });
 
-      this.composeboxResizeObserver_ = new ResizeObserver(() => {
+      this.composeboxResizeObserver_ = new ResizeObserver(debounce(this, () => {
         this.composeboxHeight_ = composebox.offsetHeight;
-      });
-      this.composeboxDropdownResizeObserver_ = new ResizeObserver(() => {
-        this.composeboxDropdownHeight_ =
-            composebox.getMatchesElement().offsetHeight;
-      });
+      }, DEBOUNCE_TIMEOUT));
+      this.composeboxDropdownResizeObserver_ =
+          new ResizeObserver(debounce(this, () => {
+            this.composeboxDropdownHeight_ =
+                composebox.getMatchesElement().offsetHeight;
+          }, DEBOUNCE_TIMEOUT));
       this.composeboxResizeObserver_.observe(composebox);
       this.composeboxDropdownResizeObserver_.observe(
           composebox.getMatchesElement());
