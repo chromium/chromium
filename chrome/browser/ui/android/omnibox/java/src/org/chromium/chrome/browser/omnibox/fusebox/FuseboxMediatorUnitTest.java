@@ -149,7 +149,7 @@ public class FuseboxMediatorUnitTest {
         mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
 
         mViewHolder = new FuseboxViewHolder(viewGroup, mPopup);
-        mAttachments = new FuseboxAttachmentModelList();
+        mAttachments = new FuseboxAttachmentModelList(mTabModelSelectorSupplier);
         mAttachments.setComposeBoxQueryControllerBridge(mComposeBoxQueryControllerBridge);
         mMediator =
                 new FuseboxMediator(
@@ -188,7 +188,7 @@ public class FuseboxMediatorUnitTest {
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
-                        new FuseboxAttachmentModelList(),
+                        new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
@@ -538,7 +538,7 @@ public class FuseboxMediatorUnitTest {
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
-                        new FuseboxAttachmentModelList(),
+                        new FuseboxAttachmentModelList(mTabModelSelectorSupplier),
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
