@@ -800,13 +800,15 @@ FloatRoundedRect::Radii GetFocusRingCornerRadii(
   return FloatRoundedRect::Radii(DefaultFocusRingCornerRadius(style));
 }
 
-void PaintSingleFocusRing(GraphicsContext& context,
-                          const Vector<gfx::Rect>& rects,
-                          float width,
-                          int offset,
-                          const FloatRoundedRect::Radii& corner_radii,
-                          const Color& color,
-                          const AutoDarkMode& auto_dark_mode) {
+void PaintSingleFocusRing(
+    GraphicsContext& context,
+    const Vector<gfx::Rect>& rects,
+    float width,
+    int offset,
+    const FloatRoundedRect::Radii& corner_radii,
+    const ContouredRect::CornerCurvature& corner_curvature,
+    const Color& color,
+    const AutoDarkMode& auto_dark_mode) {
   DCHECK(!rects.empty());
   SkPath path;
   if (!ComputeRightAnglePath(path, rects, offset, 0))
@@ -814,9 +816,22 @@ void PaintSingleFocusRing(GraphicsContext& context,
 
   SkRect rect;
   if (path.isRect(&rect)) {
-    context.DrawFocusRingRect(
-        SkRRect(FloatRoundedRect(gfx::SkRectToRectF(rect), corner_radii)),
-        color, width, auto_dark_mode);
+    if (corner_curvature.IsRound()) {
+      context.DrawFocusRingRect(
+          SkRRect(FloatRoundedRect(gfx::SkRectToRectF(rect), corner_radii)),
+          color, width, auto_dark_mode);
+    } else {
+      ContouredRect border_rect(
+          FloatRoundedRect(gfx::SkRectToRectF(rect), corner_radii),
+          corner_curvature);
+      ContouredRect contour(border_rect);
+      const auto outset = AdjustedOutlineOffset(rects[0], offset);
+      contour.OutsetWithCornerCorrection(gfx::OutsetsF::TLBR(
+          outset.top(), outset.left(), outset.bottom(), outset.right()));
+      contour.SetOriginRect(border_rect.AsRoundedRect());
+      context.DrawFocusRingPath(contour.GetPath().GetSkPath(), color, width, 0,
+                                auto_dark_mode);
+    }
     return;
   }
 
@@ -849,17 +864,30 @@ void PaintFocusRing(GraphicsContext& context,
   const float inner_ring_width = FocusRingInnerStrokeWidth(style);
   const int offset = FocusRingOffset(style, info);
 
+  const ContouredRect::CornerCurvature corner_curvature(
+      corner_radii.TopLeft().IsEmpty() ? ContouredRect::CornerCurvature::kRound
+                                       : style.CornerTopLeftShape().Exponent(),
+      corner_radii.TopRight().IsEmpty()
+          ? ContouredRect::CornerCurvature::kRound
+          : style.CornerTopRightShape().Exponent(),
+      corner_radii.BottomRight().IsEmpty()
+          ? ContouredRect::CornerCurvature::kRound
+          : style.CornerBottomRightShape().Exponent(),
+      corner_radii.BottomLeft().IsEmpty()
+          ? ContouredRect::CornerCurvature::kRound
+          : style.CornerBottomLeftShape().Exponent());
+
   Color outer_color =
       style.DarkColorScheme() ? Color(0x10, 0x10, 0x10) : Color::kWhite;
   PaintSingleFocusRing(context, rects, outer_ring_width,
                        offset + std::ceil(inner_ring_width), corner_radii,
-                       outer_color, AutoDarkMode::Disabled());
+                       corner_curvature, outer_color, AutoDarkMode::Disabled());
   // Draw the inner ring using |outer_ring_width| (which should be wider than
   // the additional offset of the outer ring) over the outer ring to ensure no
   // gaps or AA artifacts.
   DCHECK_GE(outer_ring_width, std::ceil(inner_ring_width));
   PaintSingleFocusRing(context, rects, outer_ring_width, offset, corner_radii,
-                       inner_color, AutoDarkMode::Disabled());
+                       corner_curvature, inner_color, AutoDarkMode::Disabled());
 }
 
 }  // anonymous namespace
