@@ -107,7 +107,7 @@ class SecretPortalKeyProvider : public KeyProvider {
   bool UseForEncryption() override;
   bool IsCompatibleWithOsCryptSync() override;
 
-  void OnPortalServiceStarted(bool service_started);
+  void OnPortalServiceStarted(uint32_t version);
 
   void OnRetrieveSecret(
       base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);

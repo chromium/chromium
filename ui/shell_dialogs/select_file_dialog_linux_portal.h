@@ -19,6 +19,7 @@
 #include "dbus/bus.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -39,15 +40,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinuxPortal
       delete;
   SelectFileDialogLinuxPortal& operator=(
       const SelectFileDialogLinuxPortal& other) = delete;
-
-  // Starts running a test to check for the presence of the file chooser portal.
-  // Must be called on the UI thread. This should only be called once,
-  // preferably around program start.
-  static void StartAvailabilityTestInBackground();
-
-  // Checks if the file chooser portal is available. Logs a warning if the
-  // availability test has not yet completed.
-  static bool IsPortalAvailable();
 
  protected:
   ~SelectFileDialogLinuxPortal() override;
@@ -152,13 +144,20 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinuxPortal
   // Removes the DialogInfo parent.
   void UnparentOnInvoker();
 
-  Type type_ = SELECT_NONE;
+  void OnPortalAvailable(std::u16string title,
+                         base::FilePath default_path,
+                         base::FilePath::StringType default_extension,
+                         std::optional<GURL> caller,
+                         uint32_t version);
 
   // The task runner the SelectFileImpl method was called on.
   scoped_refptr<base::SequencedTaskRunner> invoker_task_runner_;
 
   // This should be used by the invoker task runner.
   base::WeakPtr<aura::WindowTreeHost> host_;
+
+  // The fallback dialog to use if the portal is not available.
+  scoped_refptr<SelectFileDialog> fallback_dialog_;
 
   std::vector<PortalFilter> filters_;
 

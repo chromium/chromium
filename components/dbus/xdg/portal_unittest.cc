@@ -101,18 +101,43 @@ TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessNoSystemd) {
   // Expect SetNameOwnerChangedCallback
   EXPECT_CALL(*mock_portal_proxy, SetNameOwnerChangedCallback(_));
 
-  bool success = false;
+  // Expect GetVersion call
+  EXPECT_CALL(*mock_portal_proxy, CallMethod(_, _, _))
+      .WillRepeatedly([](dbus::MethodCall* method_call, int timeout_ms,
+                         dbus::ObjectProxy::ResponseCallback callback) {
+        if (method_call->GetInterface() == DBUS_INTERFACE_PROPERTIES &&
+            method_call->GetMember() == "Get") {
+          dbus::MessageReader reader(method_call);
+          std::string interface_name;
+          std::string property_name;
+          reader.PopString(&interface_name);
+          reader.PopString(&property_name);
+
+          if (interface_name == kFileChooserInterfaceName &&
+              property_name == "version") {
+            auto response = dbus::Response::CreateEmpty();
+            dbus::MessageWriter writer(response.get());
+            writer.AppendVariantOfUint32(3);
+            std::move(callback).Run(response.get());
+            return;
+          }
+        }
+        std::move(callback).Run(nullptr);
+      });
+
+  uint32_t version = 0;
   base::RunLoop run_loop;
   RequestXdgDesktopPortal(
-      bus_.get(), base::BindOnce(
-                      [](bool* out, base::OnceClosure quit_closure, bool res) {
-                        *out = res;
-                        std::move(quit_closure).Run();
-                      },
-                      &success, run_loop.QuitClosure()));
+      bus_.get(),
+      base::BindOnce(
+          [](uint32_t* out, base::OnceClosure quit_closure, uint32_t res) {
+            *out = res;
+            std::move(quit_closure).Run();
+          },
+          &version, run_loop.QuitClosure()));
 
   run_loop.Run();
-  EXPECT_TRUE(success);
+  EXPECT_EQ(version, 3u);
 }
 
 TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessWithSystemd) {
@@ -199,24 +224,46 @@ TEST_F(RequestXdgDesktopPortalTest, RequestXdgDesktopPortalSuccessWithSystemd) {
                                     dbus::ObjectPath(kPortalObjectPath)))
       .WillRepeatedly(Return(mock_portal_proxy.get()));
 
-  // Expect NO Register call because systemd unit creation succeeded
-  EXPECT_CALL(*mock_portal_proxy, CallMethod(_, _, _)).Times(0);
-
   // Expect NO SetNameOwnerChangedCallback
   EXPECT_CALL(*mock_portal_proxy, SetNameOwnerChangedCallback(_)).Times(0);
 
-  bool success = false;
+  // Expect GetVersion call
+  EXPECT_CALL(*mock_portal_proxy, CallMethod(_, _, _))
+      .WillRepeatedly([](dbus::MethodCall* method_call, int timeout_ms,
+                         dbus::ObjectProxy::ResponseCallback callback) {
+        if (method_call->GetInterface() == DBUS_INTERFACE_PROPERTIES &&
+            method_call->GetMember() == "Get") {
+          dbus::MessageReader reader(method_call);
+          std::string interface_name;
+          std::string property_name;
+          reader.PopString(&interface_name);
+          reader.PopString(&property_name);
+
+          if (interface_name == kFileChooserInterfaceName &&
+              property_name == "version") {
+            auto response = dbus::Response::CreateEmpty();
+            dbus::MessageWriter writer(response.get());
+            writer.AppendVariantOfUint32(3);
+            std::move(callback).Run(response.get());
+            return;
+          }
+        }
+        std::move(callback).Run(nullptr);
+      });
+
+  uint32_t version = 0;
   base::RunLoop run_loop;
   RequestXdgDesktopPortal(
-      bus_.get(), base::BindOnce(
-                      [](bool* out, base::OnceClosure quit_closure, bool res) {
-                        *out = res;
-                        std::move(quit_closure).Run();
-                      },
-                      &success, run_loop.QuitClosure()));
+      bus_.get(),
+      base::BindOnce(
+          [](uint32_t* out, base::OnceClosure quit_closure, uint32_t res) {
+            *out = res;
+            std::move(quit_closure).Run();
+          },
+          &version, run_loop.QuitClosure()));
 
   run_loop.Run();
-  EXPECT_TRUE(success);
+  EXPECT_EQ(version, 3u);
 }
 
 }  // namespace

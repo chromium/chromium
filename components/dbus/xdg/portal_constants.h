@@ -11,6 +11,8 @@ inline constexpr char kPortalServiceName[] = "org.freedesktop.portal.Desktop";
 inline constexpr char kPortalObjectPath[] = "/org/freedesktop/portal/desktop";
 inline constexpr char kRegistryInterface[] =
     "org.freedesktop.host.portal.Registry";
+inline constexpr char kFileChooserInterfaceName[] =
+    "org.freedesktop.portal.FileChooser";
 inline constexpr char kMethodRegister[] = "Register";
 
 }  // namespace dbus_xdg

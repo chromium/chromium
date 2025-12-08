@@ -34,7 +34,6 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
   bool IsRunning(gfx::NativeWindow parent_window) const override;
 
   // SelectFileDialog implementation.
-  // |params| is unused and must be nullptr.
   void SelectFileImpl(Type type,
                       const std::u16string& title,
                       const base::FilePath& default_path,

@@ -74,8 +74,8 @@ void DarkModeManagerLinux::OnNativeThemeUpdated(
   SetColorScheme(observed_theme->preferred_color_scheme(), true);
 }
 
-void DarkModeManagerLinux::OnPortalRequestResult(bool success) {
-  if (!success) {
+void DarkModeManagerLinux::OnPortalRequestResult(uint32_t version) {
+  if (version == 0) {
     return;
   }
   // Subscribe to changes in the color scheme preference.

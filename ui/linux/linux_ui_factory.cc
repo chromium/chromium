@@ -15,7 +15,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/chromecast_buildflags.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/system_theme.h"
@@ -29,10 +28,6 @@
 #endif
 #if BUILDFLAG(USE_QT)
 #include "ui/qt/qt_ui.h"
-#endif
-
-#if !BUILDFLAG(IS_CASTOS)
-#include "ui/shell_dialogs/shell_dialog_linux.h"
 #endif
 
 namespace ui {
@@ -162,15 +157,7 @@ LinuxUiAndTheme* GetDefaultLinuxUiAndTheme() {
 }  // namespace
 
 LinuxUi* GetDefaultLinuxUi() {
-  auto* linux_ui = GetDefaultLinuxUiAndTheme();
-#if !BUILDFLAG(IS_CASTOS)
-  // This may create an extra thread that may race against the LinuxUi instance
-  // initialization, GtkInitFromCommandLine, in GtkUi for example, so this must
-  // be done after the call to GetDefaultLinuxUiAndTheme above, so the race
-  // condition is avoided.
-  shell_dialog_linux::Initialize();
-#endif
-  return linux_ui;
+  return GetDefaultLinuxUiAndTheme();
 }
 
 LinuxUiTheme* GetDefaultLinuxUiTheme() {

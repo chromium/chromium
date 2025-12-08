@@ -84,9 +84,9 @@ bool SecretPortalKeyProvider::IsCompatibleWithOsCryptSync() {
   return false;
 }
 
-void SecretPortalKeyProvider::OnPortalServiceStarted(bool service_started) {
+void SecretPortalKeyProvider::OnPortalServiceStarted(uint32_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!service_started) {
+  if (version == 0) {
     return Finalize(InitStatus::kNoService);
   }
 

@@ -81,7 +81,7 @@ class DarkModeManagerLinux : public NativeThemeObserver {
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
   // D-Bus async handlers
-  void OnPortalRequestResult(bool success);
+  void OnPortalRequestResult(uint32_t version);
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
                          bool connected);

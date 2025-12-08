@@ -41,7 +41,8 @@ class PortalRegistrar {
     // otherwise add it to the callback list.
     if (state_ == PortalRegistrarState::kSuccess ||
         state_ == PortalRegistrarState::kFailed) {
-      std::move(callback).Run(state_ == PortalRegistrarState::kSuccess);
+      std::move(callback).Run(
+          state_ == PortalRegistrarState::kSuccess ? version_ : 0);
       return;
     }
     callbacks_.push_back(std::move(callback));
@@ -63,6 +64,7 @@ class PortalRegistrar {
   void SetStateForTesting(PortalRegistrarState state) {
     state_ = state;
     bus_ = nullptr;
+    version_ = (state == PortalRegistrarState::kSuccess) ? 3 : 0;
     callbacks_.clear();
     weak_ptr_factory_.InvalidateWeakPtrs();
   }
@@ -87,7 +89,7 @@ class PortalRegistrar {
     if (systemd_unit_status_ ==
             internal::SystemdUnitStatus::kUnitNotNecessary ||
         systemd_unit_status_ == internal::SystemdUnitStatus::kUnitStarted) {
-      SetStateAndRunCallbacks(PortalRegistrarState::kSuccess);
+      GetVersion();
       return;
     }
 
@@ -122,6 +124,34 @@ class PortalRegistrar {
       LOG(WARNING) << "Failed to register with " << kRegistryInterface;
     }
 
+    GetVersion();
+  }
+
+  void GetVersion() {
+    dbus::ObjectProxy* proxy = bus_->GetObjectProxy(
+        kPortalServiceName, dbus::ObjectPath(kPortalObjectPath));
+
+    dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES, "Get");
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(kFileChooserInterfaceName);
+    writer.AppendString("version");
+    proxy->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                      base::BindOnce(&PortalRegistrar::OnGetVersionReply,
+                                     weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnGetVersionReply(dbus::Response* response) {
+    if (!response) {
+      SetStateAndRunCallbacks(PortalRegistrarState::kFailed);
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    if (!reader.PopVariantOfUint32(&version_)) {
+      SetStateAndRunCallbacks(PortalRegistrarState::kFailed);
+      return;
+    }
+
     SetStateAndRunCallbacks(PortalRegistrarState::kSuccess);
   }
 
@@ -135,17 +165,19 @@ class PortalRegistrar {
 
   void SetStateAndRunCallbacks(PortalRegistrarState state) {
     state_ = state;
-    bool success = (state_ == PortalRegistrarState::kSuccess);
+    uint32_t version =
+        (state_ == PortalRegistrarState::kSuccess) ? version_ : 0;
     std::vector<PortalSetupCallback> callbacks;
     callbacks.swap(callbacks_);
     for (auto& callback : callbacks) {
-      std::move(callback).Run(success);
+      std::move(callback).Run(version);
     }
   }
 
   scoped_refptr<dbus::Bus> bus_;
   PortalRegistrarState state_ = PortalRegistrarState::kIdle;
   std::optional<internal::SystemdUnitStatus> systemd_unit_status_;
+  uint32_t version_ = 0;
   std::vector<PortalSetupCallback> callbacks_;
   base::WeakPtrFactory<PortalRegistrar> weak_ptr_factory_{this};
 };

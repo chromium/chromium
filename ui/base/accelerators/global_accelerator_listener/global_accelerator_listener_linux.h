@@ -103,7 +103,7 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
                          const std::string& signal_name,
                          bool success);
 
-  void OnServiceStarted(bool service_started);
+  void OnServiceStarted(uint32_t version);
 
   void CreateSession();
 

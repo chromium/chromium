@@ -68,8 +68,8 @@ GlobalAcceleratorListenerLinux::~GlobalAcceleratorListenerLinux() {
   CloseSession();
 }
 
-void GlobalAcceleratorListenerLinux::OnServiceStarted(bool service_started) {
-  service_started_ = service_started;
+void GlobalAcceleratorListenerLinux::OnServiceStarted(uint32_t version) {
+  service_started_ = (version != 0);
 
   if (!*service_started_) {
     bound_commands_.clear();
