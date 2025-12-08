@@ -669,8 +669,6 @@ public class FuseboxMediator {
     }
 
     void setUseCompactUi(boolean useCompactUi) {
-        if (mModel.get(FuseboxProperties.COMPACT_UI) == useCompactUi) return;
-
         boolean fuseboxActive = mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
         mFuseboxStateSupplier.set(
                 fuseboxActive
