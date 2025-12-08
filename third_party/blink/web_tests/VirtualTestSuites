@@ -2806,23 +2806,6 @@
     ]
   },
   {
-    "prefix": "sanitizer-api",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/sanitizer-api/"
-    ],
-    "args": [
-      "--enable-features=SanitizerAPI"
-    ],
-    "expires": "Jan 18, 2026",
-    "owners": [
-      "vogelheim@google.com"
-    ],
-    "exclusive_tests": "ALL"
-  },
-  {
     "prefix": "scalefactor150",
     "platforms": [
       "Linux",
