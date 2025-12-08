@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -50,11 +51,10 @@ class PersistentHistogramAllocatorTest : public testing::Test {
   void CreatePersistentHistogramAllocator() {
     // GlobalHistogramAllocator is never deleted, hence intentionally leak
     // allocated memory in this test.
-    allocator_memory_ = new char[kAllocatorMemorySize];
+    allocator_memory_ = new char[kAllocatorMemorySize]();
     ANNOTATE_LEAKING_OBJECT_PTR(allocator_memory_);
 
     GlobalHistogramAllocator::ReleaseForTesting();
-    UNSAFE_TODO(memset(allocator_memory_, 0, kAllocatorMemorySize));
     GlobalHistogramAllocator::CreateWithPersistentMemory(
         allocator_memory_, kAllocatorMemorySize, 0, 0,
         "PersistentHistogramAllocatorTest");
@@ -219,8 +219,8 @@ TEST_F(PersistentHistogramAllocatorTest, CreateSpareFile) {
 
   char buffer[256];
   for (size_t pos = 0; pos < temp_size; pos += sizeof(buffer)) {
-    UNSAFE_TODO(ASSERT_EQ(static_cast<int>(sizeof(buffer)),
-                          file.ReadAtCurrentPos(buffer, sizeof(buffer))));
+    ASSERT_TRUE(
+        file.ReadAtCurrentPosAndCheck(as_writable_bytes(base::span(buffer))));
     for (char i : buffer) {
       EXPECT_EQ(0, i);
     }
@@ -677,12 +677,16 @@ TEST_F(PersistentHistogramAllocatorTest, RangesDeDuplication) {
   EXPECT_NE(0U, ref2);
   EXPECT_NE(ref1, ref2);
 
-  uint32_t* data1 =
+  const uint32_t* data1 =
       allocator_->GetAsArray<uint32_t>(ref1, 0, kRangesRefIndex + 1);
-  uint32_t* data2 =
+  const uint32_t* data2 =
       allocator_->GetAsArray<uint32_t>(ref2, 0, kRangesRefIndex + 1);
-  UNSAFE_TODO(EXPECT_EQ(ranges_ref, data1[kRangesRefIndex]));
-  UNSAFE_TODO(EXPECT_EQ(ranges_ref, data2[kRangesRefIndex]));
+  ASSERT_NE(nullptr, data1);
+  ASSERT_NE(nullptr, data2);
+  UNSAFE_BUFFERS({
+    EXPECT_EQ(ranges_ref, data1[kRangesRefIndex]);
+    EXPECT_EQ(ranges_ref, data2[kRangesRefIndex]);
+  });
 }
 
 TEST_F(PersistentHistogramAllocatorTest, MovePersistentFile) {
