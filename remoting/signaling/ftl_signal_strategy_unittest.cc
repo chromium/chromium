@@ -197,7 +197,7 @@ class FtlSignalStrategyTest : public testing::Test,
 
     // By default, messages will be delievered through
     // OnSignalStrategyIncomingStanza().
-    ON_CALL(*this, OnSignalStrategyIncomingMessage(_, _, _))
+    ON_CALL(*this, OnSignalStrategyIncomingMessage(_, _))
         .WillByDefault(Return(false));
   }
 
@@ -224,10 +224,10 @@ class FtlSignalStrategyTest : public testing::Test,
         });
   }
 
-  MOCK_METHOD3(OnSignalStrategyIncomingMessage,
-               bool(const ftl::Id&,
-                    const std::string&,
-                    const ftl::ChromotingMessage&));
+  MOCK_METHOD(bool,
+              OnSignalStrategyIncomingMessage,
+              (const SignalingAddress&, const SignalingMessage&),
+              (override));
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -476,14 +476,18 @@ TEST_F(FtlSignalStrategyTest, ReceiveMessage_DelieverMessageAndDropStanza) {
   ftl::ChromotingMessage message;
   message.mutable_xmpp()->set_stanza(stanza_string);
 
-  EXPECT_CALL(*this,
-              OnSignalStrategyIncomingMessage(_, kFakeRemoteRegistrationId, _))
-      .WillOnce([&](const ftl::Id& sender_id,
-                    const std::string& sender_registration_id_unused,
-                    const ftl::ChromotingMessage& message) {
-        EXPECT_EQ(ftl::IdType_Type_EMAIL, sender_id.type());
-        EXPECT_EQ(remote_user_id.id(), sender_id.id());
-        EXPECT_EQ(stanza_string, message.xmpp().stanza());
+  EXPECT_CALL(*this, OnSignalStrategyIncomingMessage(_, _))
+      .WillOnce([&](const SignalingAddress& sender_address,
+                    const SignalingMessage& received_message) {
+        SignalingAddress expected_address =
+            SignalingAddress::CreateFtlSignalingAddress(
+                kFakeRemoteUsername, kFakeRemoteRegistrationId);
+        EXPECT_EQ(expected_address.id(), sender_address.id());
+
+        const ftl::ChromotingMessage* ftl_message =
+            std::get_if<ftl::ChromotingMessage>(&received_message);
+        EXPECT_TRUE(ftl_message);
+        EXPECT_EQ(stanza_string, ftl_message->xmpp().stanza());
         return true;
       });
 
@@ -538,7 +542,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_Success) {
   signal_strategy_->SendMessage(
       SignalingAddress::CreateFtlSignalingAddress(kFakeRemoteUsername,
                                                   kFakeRemoteRegistrationId),
-      message);
+      SignalingMessage{message});
 }
 
 TEST_F(FtlSignalStrategyTest, SendMessage_AuthError) {
@@ -561,7 +565,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_AuthError) {
   signal_strategy_->SendMessage(
       SignalingAddress::CreateFtlSignalingAddress(kFakeRemoteUsername,
                                                   kFakeRemoteRegistrationId),
-      message);
+      SignalingMessage{message});
 
   ASSERT_EQ(3u, state_history_.size());
   ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
@@ -595,7 +599,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_NetworkError) {
   signal_strategy_->SendMessage(
       SignalingAddress::CreateFtlSignalingAddress(kFakeRemoteUsername,
                                                   kFakeRemoteRegistrationId),
-      message);
+      SignalingMessage{message});
 
   ASSERT_EQ(0u, received_messages_.size());
   // Remain signed-in for non-auth related error.

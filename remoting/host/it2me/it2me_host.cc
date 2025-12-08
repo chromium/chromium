@@ -217,7 +217,8 @@ void It2MeHost::SendReconnectSessionMessage() const {
       reconnect_params_->support_id);
   SignalingAddress signaling_address(reconnect_params_->client_ftl_address);
 
-  signal_strategy_->SendMessage(signaling_address, crd_message);
+  signal_strategy_->SendMessage(signaling_address,
+                                SignalingMessage{crd_message});
 }
 
 void It2MeHost::Connect(

@@ -40,21 +40,29 @@ bool FtlEchoMessageListener::OnSignalStrategyIncomingStanza(
 }
 
 bool FtlEchoMessageListener::OnSignalStrategyIncomingMessage(
-    const ftl::Id& sender_id,
-    const std::string& sender_registration_id,
-    const ftl::ChromotingMessage& request_message) {
-  if (!request_message.has_echo() || !request_message.echo().has_message()) {
+    const SignalingAddress& sender_address,
+    const SignalingMessage& message) {
+  const ftl::ChromotingMessage* request_message =
+      std::get_if<ftl::ChromotingMessage>(&message);
+  if (!request_message || !request_message->has_echo() ||
+      !request_message->echo().has_message()) {
+    return false;
+  }
+
+  std::string sender_email;
+  if (!sender_address.GetFtlSenderEmail(&sender_email)) {
+    LOG(WARNING) << "Dropping echo message from non-FTL address "
+                 << sender_address.id();
     return false;
   }
 
   // Only respond to echo messages from the machine owner.
-  if (sender_id.type() != ftl::IdType_Type_EMAIL ||
-      !check_access_permission_callback_.Run(sender_id.id())) {
-    LOG(WARNING) << "Dropping echo message from " << sender_id.id();
+  if (!check_access_permission_callback_.Run(sender_email)) {
+    LOG(WARNING) << "Dropping echo message from " << sender_email;
     return false;
   }
 
-  std::string request_message_payload(request_message.echo().message());
+  std::string request_message_payload(request_message->echo().message());
   HOST_LOG << "Handling echo message: '" << request_message_payload << "'";
 
   std::string response_message_payload =
@@ -62,9 +70,8 @@ bool FtlEchoMessageListener::OnSignalStrategyIncomingMessage(
   ftl::ChromotingMessage response_message;
   response_message.mutable_echo()->set_message(response_message_payload);
 
-  signal_strategy_->SendMessage(SignalingAddress::CreateFtlSignalingAddress(
-                                    sender_id.id(), sender_registration_id),
-                                response_message);
+  signal_strategy_->SendMessage(sender_address,
+                                SignalingMessage{response_message});
 
   return true;
 }

@@ -4,12 +4,13 @@
 
 #include "remoting/signaling/signal_strategy.h"
 
+#include "remoting/signaling/signaling_address.h"
+
 namespace remoting {
 
 bool SignalStrategy::Listener::OnSignalStrategyIncomingMessage(
-    const ftl::Id& sender_id,
-    const std::string& sender_registration_id,
-    const ftl::ChromotingMessage& message) {
+    const SignalingAddress& sender_address,
+    const SignalingMessage& message) {
   return false;
 }
 

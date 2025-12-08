@@ -37,9 +37,8 @@ class FtlEchoMessageListener : public SignalStrategy::Listener {
   bool OnSignalStrategyIncomingStanza(
       const jingle_xmpp::XmlElement* stanza) override;
   bool OnSignalStrategyIncomingMessage(
-      const ftl::Id& sender_id,
-      const std::string& sender_registration_id,
-      const ftl::ChromotingMessage& message) override;
+      const SignalingAddress& sender_address,
+      const SignalingMessage& message) override;
 
  private:
   CheckAccessPermissionCallback check_access_permission_callback_;

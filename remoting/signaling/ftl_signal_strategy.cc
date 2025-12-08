@@ -18,6 +18,7 @@
 #include "remoting/base/http_status.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
+#include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/signaling/ftl_device_id_provider.h"
 #include "remoting/signaling/ftl_messaging_client.h"
 #include "remoting/signaling/ftl_registration_manager.h"
@@ -325,9 +326,12 @@ void FtlSignalStrategy::Core::OnMessageReceived(
     const ftl::Id& sender_id,
     const std::string& sender_registration_id,
     const ftl::ChromotingMessage& message) {
+  auto sender_address = SignalingAddress::CreateFtlSignalingAddress(
+      sender_id.id(), sender_registration_id);
+  SignalingMessage signaling_message{message};
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingMessage(
-            sender_id, sender_registration_id, message)) {
+    if (listener.OnSignalStrategyIncomingMessage(sender_address,
+                                                 signaling_message)) {
       return;
     }
   }
@@ -337,8 +341,6 @@ void FtlSignalStrategy::Core::OnMessageReceived(
     return;
   }
 
-  auto sender_address = SignalingAddress::CreateFtlSignalingAddress(
-      sender_id.id(), sender_registration_id);
   DCHECK(message.xmpp().has_stanza());
   auto stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
       jingle_xmpp::XmlElement::ForStr(message.xmpp().stanza()));
@@ -537,8 +539,14 @@ bool FtlSignalStrategy::SendStanza(
 }
 
 bool FtlSignalStrategy::SendMessage(const SignalingAddress& destination_address,
-                                    const ftl::ChromotingMessage& message) {
-  return core_->SendMessage(destination_address, message);
+                                    SignalingMessage&& message) {
+  ftl::ChromotingMessage* ftl_message =
+      std::get_if<ftl::ChromotingMessage>(&message);
+  if (!ftl_message) {
+    LOG(ERROR) << "Tried to send a non-FTL message with FtlSignalStrategy.";
+    return false;
+  }
+  return core_->SendMessage(destination_address, *ftl_message);
 }
 
 std::string FtlSignalStrategy::GetNextId() {
