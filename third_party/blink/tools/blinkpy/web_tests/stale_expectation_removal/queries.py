@@ -91,6 +91,7 @@ RESULTS_SUBQUERY = """\
     SELECT
       exported.id,
       test_id,
+      test_metadata.name AS test_name,
       status,
       (
         SELECT value
@@ -130,7 +131,7 @@ RESULTS_SUBQUERY = """\
 # Selects the relevant columns from results that had a non-Pass expectation when
 # they were run, ordered by builder name.
 FINAL_SELECTOR_QUERY = """\
-SELECT id, test_id, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
+SELECT id, test_id, test_name, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
