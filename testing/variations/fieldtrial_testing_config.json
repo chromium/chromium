@@ -1293,21 +1293,6 @@
             ]
         }
     ],
-    "AndroidUseFrameIntervalDeciderAdaptiveFrameRate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseFrameIntervalDeciderAdaptiveFrameRate"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidWebAppLaunchHandler": [
         {
             "platforms": [
