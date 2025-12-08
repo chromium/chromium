@@ -1019,28 +1019,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
-    units="%" expires_after="2025-10-26">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    The percent dropped frame is calculated for each sliding window of 1 second
-    length and added to a histogram, and then the 95 percentile of that
-    histogram is reported as 95pctPercentDroppedFrames_1sWindow.
-
-    The sliding windows cover the duration of page-load (From start of page-load
-    until user navigates away, or closes the tab/chrome, or when app goes to
-    background). Note that this means that this metric will bias toward tabs
-    that are closed more quickly, and might underreport tabs that remain open
-    for a long duration.
-
-    PercentDroppedFrames is measured by tracking the number of frames which were
-    not displayed on screen out of the total number of frames expected to be
-    produced and displayed. In other words, the lower this number is, the
-    smoother experience.
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Smoothness.CheckerboardingNeedRaster4.AllSequences"
     units="%" expires_after="2026-04-26">
   <owner>wangxianzhu@chromium.org</owner>
