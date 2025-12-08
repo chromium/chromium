@@ -185,6 +185,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/app/spotlight:unit_tests",
     "//ios/chrome/app/startup:unit_tests",
     "//ios/chrome/browser/account_picker/ui_bundled:unit_tests",
+    "//ios/chrome/browser/ai_prototyping/utils:unit_tests",
     "//ios/chrome/browser/alert_view/ui_bundled:unit_tests",
     "//ios/chrome/browser/app_launcher/model:unit_tests",
     "//ios/chrome/browser/app_store_rating/ui_bundled:unit_tests",

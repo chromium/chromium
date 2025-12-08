@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ai_prototyping/model/tab_organization_service_impl.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
+#import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/ios_smart_tab_grouping_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -203,13 +204,10 @@
           });
 
   // Populate the PageContext proto and then execute the query.
-  _pageContextWrapper = [[PageContextWrapper alloc]
-        initWithWebState:_webStateList->GetActiveWebState()
-      completionCallback:std::move(page_context_completion_callback)];
-  [_pageContextWrapper setShouldGetAnnotatedPageContent:YES];
-  [_pageContextWrapper setShouldGetSnapshot:YES];
-  [_pageContextWrapper setShouldGetFullPagePDF:YES];
-  [_pageContextWrapper populatePageContextFieldsAsync];
+  _pageContextWrapper =
+      CreatePageContextWrapper(_webStateList->GetActiveWebState(),
+                               std::move(page_context_completion_callback));
+  PopulatePageContext(_pageContextWrapper, _webStateList->GetActiveWebState());
 }
 
 - (void)executeFreeformOnDeviceQuery:

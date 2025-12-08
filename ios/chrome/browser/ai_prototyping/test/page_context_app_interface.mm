@@ -10,6 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -105,17 +106,16 @@ NSString* StringFromPageContextWrapperError(PageContextWrapperError error) {
               self.pageContextCaptureComplete = YES;
             });
 
-    self->_pageContextWrapper = [[PageContextWrapper alloc]
-          initWithWebState:chrome_test_util::GetCurrentBrowser()
-                               ->GetWebStateList()
-                               ->GetActiveWebState()
-        completionCallback:std::move(page_context_completion_callback)];
-
-    [self->_pageContextWrapper setShouldGetAnnotatedPageContent:YES];
-    [self->_pageContextWrapper setShouldGetSnapshot:YES];
-    [self->_pageContextWrapper setShouldGetFullPagePDF:YES];
-    [self->_pageContextWrapper
-        populatePageContextFieldsAsyncWithTimeout:base::Seconds(30)];
+    self->_pageContextWrapper =
+        CreatePageContextWrapper(chrome_test_util::GetCurrentBrowser()
+                                     ->GetWebStateList()
+                                     ->GetActiveWebState(),
+                                 std::move(page_context_completion_callback));
+    PopulatePageContextWithTimeout(self->_pageContextWrapper,
+                                   chrome_test_util::GetCurrentBrowser()
+                                       ->GetWebStateList()
+                                       ->GetActiveWebState(),
+                                   base::Seconds(30));
   });
 }
 

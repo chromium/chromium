@@ -13,6 +13,7 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/ai_prototyping/utils",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
