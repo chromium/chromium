@@ -4746,7 +4746,7 @@
     // https://chromestatus.com/feature/5176753681203200
     {
       name: "ShadowContourFollowsBorder",
-      status: "test",
+      status: "stable",
     },
     {
       // Reference Target allows IDREF attributes to refer inside Shadow DOM.
