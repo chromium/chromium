@@ -400,10 +400,6 @@ public final class ProductionSupportedFlagList {
                 "Changes behavior of User-Agent Client Hints to send blank headers "
                         + "when the User-Agent string is overriden"),
         Flag.baseFeature(
-                BlinkFeatures.ESTABLISH_GPU_CHANNEL_ASYNC,
-                "Enables establishing the GPU channel asnchronously when requesting a new "
-                        + "layer tree frame sink."),
-        Flag.baseFeature(
                 BlinkFeatures.PREFETCH_FONT_LOOKUP_TABLES,
                 "If enabled, font lookup tables will be prefetched on renderer startup."),
         Flag.baseFeature(

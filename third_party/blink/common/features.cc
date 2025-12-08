@@ -611,8 +611,6 @@ BASE_FEATURE(kDropInputEventsWhilePaintHolding,
 BASE_FEATURE(kEnableDevtoolsDeepLinkViaExtensibilityApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEstablishGpuChannelAsync, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to respect loading=lazy attribute for images when they are on
 // invisible pages.
 BASE_FEATURE(kEnableLazyLoadImageForInvisiblePage,

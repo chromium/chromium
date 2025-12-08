@@ -814,15 +814,11 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
                      std::move(render_frame_metadata_observer_remote),
                      std::move(render_frame_metadata_observer),
                      std::move(params), std::move(callback));
-  bool needs_sync_composite_for_test =
-      layer_tree_view_ && LayerTreeHost()->in_composite_for_test();
-  if (base::FeatureList::IsEnabled(features::kEstablishGpuChannelAsync) &&
-      !needs_sync_composite_for_test) {
-    Platform::Current()->EstablishGpuChannel(std::move(finish_callback));
+  if (layer_tree_view_ && LayerTreeHost()->in_composite_for_test()) {
+    std::move(finish_callback)
+        .Run(Platform::Current()->EstablishGpuChannelSync());
   } else {
-    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
-        Platform::Current()->EstablishGpuChannelSync();
-    std::move(finish_callback).Run(gpu_channel_host);
+    Platform::Current()->EstablishGpuChannel(std::move(finish_callback));
   }
 }
 

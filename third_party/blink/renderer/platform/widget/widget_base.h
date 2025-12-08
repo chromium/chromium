@@ -435,8 +435,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Finishes the call to RequestNewLayerTreeFrameSink() once the
   // |gpu_channel_host| is available.
-  // TODO(crbug.com/1278147): Clean up these parameters using either a struct or
-  // saving on WidgetBase if kEstablishGpuChannelAsync launches.
+  // TODO(crbug.com/40208065): Clean up these parameters using a struct.
   void FinishRequestNewLayerTreeFrameSink(
       const KURL& url,
       mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
