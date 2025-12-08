@@ -5238,24 +5238,6 @@ shown properly on the user-facing crash UI.
   <int value="4" label="Ready, other status (not success, not empty index)"/>
 </enum>
 
-<enum name="HistoryClustersFinalState">
-  <obsolete>
-    Removed as of 05/2022.
-  </obsolete>
-  <summary>
-    The final state, or outcome, of an interaction on the HistoryClusters, or
-    Journeys, UI.
-  </summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="kLinkClick">Followed a link in the same tab.</int>
-  <int value="2" label="kCloseTab">The tab was closed.</int>
-  <int value="3" label="kSameDocNavigation">
-    Followed a same-doc link (i.e., the 'Chrome history' and 'Tabs from other
-    devices' links) in the same tab without returning to the HistoryClusters UI.
-  </int>
-  <int value="4" label="kRefreshTab">Refreshed the tab.</int>
-</enum>
-
 <enum name="HlsDemuxerStatus">
   <int value="0" label="kOk"/>
   <int value="1" label="kNoSegmentData"/>

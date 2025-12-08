@@ -12157,11 +12157,6 @@ be describing additional metrics about the same event.
     will be recorded once per visit to the HistoryClusters UI and logged when
     the UI is closed or navigated away from.
   </summary>
-  <metric name="FinalState" enum="HistoryClustersFinalState">
-    <summary>
-      The final state, or outcome, of an interaction on the HistoryClusters UI.
-    </summary>
-  </metric>
   <metric name="InitialState" enum="HistoryClustersInitialState">
     <summary>
       The initial state that describes how an interaction with the

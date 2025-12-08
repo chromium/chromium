@@ -4,13 +4,12 @@
 """Model objects for histograms.xml contents."""
 
 import os
-import sys
 import re
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import models
 
-_OBSOLETE_TYPE = models.TextNodeType('obsolete')
 _OWNER_TYPE = models.TextNodeType('owner', single_line=True)
 # If present, it's intentional that the histogram is currently expired and
 # automation should not suggest for its implementation to be cleaned up.
@@ -51,23 +50,24 @@ _INT_TYPE = models.ObjectNodeType(
     single_line=True,
 )
 
-_ENUM_TYPE = models.ObjectNodeType(
-    'enum',
-    attributes=[
-        ('name', str, r'^[A-Za-z0-9_.]+$'),
-    ],
-    required_attributes=['name'],
-    alphabetization=[
-        (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
-        (_SUMMARY_TYPE.tag, _KEEP_ORDER),
-        (_INT_TYPE.tag, _INTEGER_FN('value')),
-    ],
-    extra_newlines=(1, 1, 1),
-    children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
-        models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
-        models.ChildType(_INT_TYPE.tag, _INT_TYPE, multiple=True),
-    ])
+_ENUM_TYPE = models.ObjectNodeType('enum',
+                                   attributes=[
+                                       ('name', str, r'^[A-Za-z0-9_.]+$'),
+                                   ],
+                                   required_attributes=['name'],
+                                   alphabetization=[
+                                       (_SUMMARY_TYPE.tag, _KEEP_ORDER),
+                                       (_INT_TYPE.tag, _INTEGER_FN('value')),
+                                   ],
+                                   extra_newlines=(1, 1, 1),
+                                   children=[
+                                       models.ChildType(_SUMMARY_TYPE.tag,
+                                                        _SUMMARY_TYPE,
+                                                        multiple=False),
+                                       models.ChildType(_INT_TYPE.tag,
+                                                        _INT_TYPE,
+                                                        multiple=True),
+                                   ])
 
 _ENUMS_TYPE = models.ObjectNodeType(
     'enums',
