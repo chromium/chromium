@@ -87,6 +87,7 @@ public class AccountPickerBottomSheetMediator
     private final PropertyObserver<PropertyKey> mModelPropertyChangedObserver;
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
+    private final AccountPickerDismissalLogger mDismissalLogger;
 
     static AccountPickerBottomSheetMediator create(
             WindowAndroid windowAndroid,
@@ -186,6 +187,7 @@ public class AccountPickerBottomSheetMediator
         mInitialViewState = initialViewState;
         mIsWebSignin = isWebSignin;
         mSigninAccessPoint = signinAccessPoint;
+        mDismissalLogger = new AccountPickerDismissalLogger(mSigninAccessPoint, mIsWebSignin);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         List<AccountInfo> accounts =
@@ -199,7 +201,7 @@ public class AccountPickerBottomSheetMediator
                         AccountPickerBottomSheetProperties.createModel(
                                 this::onSelectedAccountClicked,
                                 this::onContinueAsClicked,
-                                view -> assertNonNull(dismissBottomSheet).run(),
+                                this::onAccountPickerDismissClicked,
                                 this::onConfirmManagementCancelClicked,
                                 accountPickerBottomSheetStrings);
                 initializeAccountPickerAccountAndModel(accounts, accountId);
@@ -567,13 +569,22 @@ public class AccountPickerBottomSheetMediator
      */
     private void onConfirmManagementCancelClicked() {
         if (mIsSeamlessSignin) {
-            // TODO(crbug.com/437038737): Log AccountConsistencyPromoAction.DISMISSED_BUTTON
-            // histogram.
+            mDismissalLogger.logDismissedButtonClick();
             // Seamless sign-in does not have an initial account picker view. Hide the bottom sheet.
             mDismissBottomSheet.run();
         } else {
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
         }
+    }
+
+    /**
+     * Callback for the PropertyKey {@link
+     * AccountPickerBottomSheetProperties#ON_ACCOUNT_PICKER_DISMISS_CLICKED}
+     */
+    private void onAccountPickerDismissClicked() {
+        assert !mIsSeamlessSignin : "Account picker sheet is not supported for seamless sign-in";
+        mDismissalLogger.logDismissedButtonClick();
+        mDismissBottomSheet.run();
     }
 
     void launchDeviceLockIfNeededAndSignIn() {

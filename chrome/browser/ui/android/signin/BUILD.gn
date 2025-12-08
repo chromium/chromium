@@ -87,6 +87,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDismissalLogger.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerItemDecoration.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerLaunchMode.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerMediator.java",

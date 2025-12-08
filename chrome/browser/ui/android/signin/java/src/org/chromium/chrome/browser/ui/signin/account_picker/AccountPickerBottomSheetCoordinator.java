@@ -14,7 +14,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -36,10 +35,7 @@ public class AccountPickerBottomSheetCoordinator {
     private final AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediator;
     private final AccountPickerCoordinator mAccountPickerCoordinator;
     private final BottomSheetController mBottomSheetController;
-    // TODO(crbug.com/328747528): The web sign-in specific logic should be moved out of the bottom
-    // sheet MVC.
-    private final boolean mIsWebSignin;
-    private final @SigninAccessPoint int mSigninAccessPoint;
+    private final AccountPickerDismissalLogger mDismissalLogger;
     private final BottomSheetObserver mBottomSheetObserver =
             new EmptyBottomSheetObserver() {
                 @Override
@@ -50,17 +46,7 @@ public class AccountPickerBottomSheetCoordinator {
                         return;
                     }
 
-                    if (reason == StateChangeReason.SWIPE) {
-                        logMetricAndIncrementActiveDismissalCountIfWebSignin(
-                                AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN);
-                    } else if (reason == StateChangeReason.BACK_PRESS) {
-                        logMetricAndIncrementActiveDismissalCountIfWebSignin(
-                                AccountConsistencyPromoAction.DISMISSED_BACK);
-                    } else if (reason == StateChangeReason.TAP_SCRIM) {
-                        logMetricAndIncrementActiveDismissalCountIfWebSignin(
-                                AccountConsistencyPromoAction.DISMISSED_SCRIM);
-                    }
-
+                    mDismissalLogger.logBottomSheetDismissal(reason);
                     AccountPickerBottomSheetCoordinator.this.destroy();
                 }
             };
@@ -81,10 +67,9 @@ public class AccountPickerBottomSheetCoordinator {
             boolean isWebSignin,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId selectedAccountId) {
-        mIsWebSignin = isWebSignin;
-        mSigninAccessPoint = signinAccessPoint;
+        mDismissalLogger = new AccountPickerDismissalLogger(signinAccessPoint, isWebSignin);
         SigninMetricsUtils.logAccountConsistencyPromoAction(
-                AccountConsistencyPromoAction.SHOWN, mSigninAccessPoint);
+                AccountConsistencyPromoAction.SHOWN, signinAccessPoint);
 
         mAccountPickerBottomSheetMediator =
                 AccountPickerBottomSheetMediator.create(
@@ -92,7 +77,7 @@ public class AccountPickerBottomSheetCoordinator {
                         identityManager,
                         signinManager,
                         accountPickerDelegate,
-                        this::dismiss,
+                        this::dismissBottomSheet,
                         accountPickerBottomSheetStrings,
                         deviceLockActivityLauncher,
                         launchMode,
@@ -131,21 +116,9 @@ public class AccountPickerBottomSheetCoordinator {
     }
 
     @MainThread
-    public void dismiss() {
-        logMetricAndIncrementActiveDismissalCountIfWebSignin(
-                AccountConsistencyPromoAction.DISMISSED_BUTTON);
+    public void dismissBottomSheet() {
         // The observer calls destroy() after the sheet is hidden.
-        mBottomSheetController.hideContent(mView, true);
-    }
-
-    @MainThread
-    private void logMetricAndIncrementActiveDismissalCountIfWebSignin(
-            @AccountConsistencyPromoAction int promoAction) {
-        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction, mSigninAccessPoint);
-        if (mIsWebSignin) {
-            SigninPreferencesManager.getInstance()
-                    .incrementWebSigninAccountPickerActiveDismissalCount();
-        }
+        mBottomSheetController.hideContent(mView, true, StateChangeReason.NONE);
     }
 
     /**

@@ -262,7 +262,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
      */
     public void destroy() {
         if (mAccountPickerBottomSheetCoordinator != null) {
-            mAccountPickerBottomSheetCoordinator.dismiss();
+            mAccountPickerBottomSheetCoordinator.dismissBottomSheet();
             mAccountPickerBottomSheetCoordinator = null;
         }
         if (mSeamlessSigninCoordinator != null) {

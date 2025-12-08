@@ -162,14 +162,14 @@ class AccountPickerBottomSheetProperties {
     static PropertyModel createModel(
             Runnable onSelectedAccountClicked,
             Runnable onContinueAsClicked,
-            OnClickListener onAccountPickerDismissClicked,
+            Runnable onAccountPickerDismissClicked,
             Runnable onConfirmManagementCancelClicked,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
-                .with(ON_ACCOUNT_PICKER_DISMISS_CLICKED, onAccountPickerDismissClicked)
+                .with(ON_ACCOUNT_PICKER_DISMISS_CLICKED, v -> onAccountPickerDismissClicked.run())
                 .with(
                         ON_CONFIRM_MANAGEMENT_CANCEL_CLICKED,
                         v -> onConfirmManagementCancelClicked.run())

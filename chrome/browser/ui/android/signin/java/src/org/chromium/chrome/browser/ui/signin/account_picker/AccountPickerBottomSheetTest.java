@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
@@ -1360,6 +1361,34 @@ public class AccountPickerBottomSheetTest {
                 (ViewGroup) bottomSheetView,
                 allOf(withId(R.id.account_picker_state_collapsed), isDisplayed()));
         accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testSwipeDown_dismissesBottomSheet_forWebSignin() {
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN)
+                        .build();
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT, 1);
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        waitForView(
+                (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
+                allOf(withId(R.id.account_picker_state_collapsed), isDisplayed()));
+
+        onViewWaiting(withId(R.id.account_picker_state_collapsed)).perform(swipeDown());
+
+        Assert.assertFalse(getBottomSheetController().isSheetOpen());
+        verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
+        accountConsistencyHistogram.assertExpected();
+        Assert.assertEquals(
+                2,
+                SigninPreferencesManager.getInstance()
+                        .getWebSigninAccountPickerActiveDismissalCount());
     }
 
     private void clickContinueButton(View bottomSheetView) {
