@@ -170,6 +170,7 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
           /*trace_id=*/
           base::IdType64<class ui::LatencyInfo>(latency_info.trace_id()));
   metrics->set_predicted_delta(gesture_event.data.scroll_update.delta_y);
+  metrics->set_is_synthetic(true);
   return std::make_unique<EventWithCallback>(
       std::make_unique<WebCoalescedInputEvent>(std::move(gesture_event),
                                                latency_info),
