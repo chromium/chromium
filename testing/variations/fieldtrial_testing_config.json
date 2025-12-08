@@ -18409,10 +18409,7 @@
     "PdfOutOfProcessIframe": [
         {
             "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "chromeos"
             ],
             "experiments": [
                 {
