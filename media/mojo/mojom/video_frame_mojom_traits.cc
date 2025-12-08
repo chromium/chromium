@@ -115,7 +115,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(region), std::move(strides), std::move(offsets)));
   }
 
-  bool is_mappable_si_enabled = input->HasMappableSharedImage();
   if (input->HasMappableSharedImage()) {
     auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
 
@@ -123,7 +122,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     std::optional<gpu::ExportedSharedImage> shared_image;
     gpu::SyncToken sync_token;
     CHECK(input->HasSharedImage());
-    CHECK(is_mappable_si_enabled);
     shared_image = input->shared_image()->Export(
         /*with_buffer_handle=*/true);
     sync_token = input->acquire_sync_token();
@@ -141,9 +139,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
   }
 
   if (input->HasSharedImage()) {
-    // Mappable SI should only be used with `HasMappableSharedImage()`
-    // VideoFrames.
-    CHECK(!is_mappable_si_enabled);
     gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
 #if BUILDFLAG(IS_ANDROID)
     return media::mojom::VideoFrameData::NewSharedImageData(
