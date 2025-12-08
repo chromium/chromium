@@ -5,16 +5,17 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ARCHIVED_TABS_MESSAGE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
@@ -36,13 +37,14 @@ import org.chromium.ui.modelutil.ListObservable.ListObserver;
 class TabListEmptyCoordinator {
     public final long ILLUSTRATION_ANIMATION_DURATION_MS = 700L;
 
+    private final TabListRecyclerView mRecyclerView;
     private final ViewGroup mRootView;
     private final Context mContext;
     private final TabListModel mModel;
     private final ListObserver<Void> mListObserver;
     private final Callback<Runnable> mRunOnItemAnimatorFinished;
 
-    private @Nullable View mEmptyView;
+    private @Nullable ViewGroup mEmptyView;
     private TextView mEmptyStateHeading;
     private TextView mEmptyStateSubheading;
     private ImageView mImageView;
@@ -51,7 +53,11 @@ class TabListEmptyCoordinator {
     private @Nullable TabListEmptyIllustrationAnimationManager mIllustrationAnimationManager;
 
     public TabListEmptyCoordinator(
-            ViewGroup rootView, TabListModel model, Callback<Runnable> runOnItemAnimatorFinished) {
+            TabListRecyclerView recyclerView,
+            ViewGroup rootView,
+            TabListModel model,
+            Callback<Runnable> runOnItemAnimatorFinished) {
+        mRecyclerView = recyclerView;
         mRootView = rootView;
         mContext = rootView.getContext();
         mRunOnItemAnimatorFinished = runOnItemAnimatorFinished;
@@ -132,12 +138,7 @@ class TabListEmptyCoordinator {
     }
 
     private boolean isInEmptyState() {
-        boolean isOnlyArchivedMsg =
-                mModel.size() == 1
-                        && mModel.get(0)
-                                .model
-                                .containsKeyEqualTo(MESSAGE_TYPE, ARCHIVED_TABS_MESSAGE);
-        return (mModel.isEmpty() || isOnlyArchivedMsg) && mIsTabSwitcherShowing;
+        return (mModel.isEmpty() || isOnlyArchivedMsg(mModel)) && mIsTabSwitcherShowing;
     }
 
     private void updateEmptyView() {
@@ -152,6 +153,7 @@ class TabListEmptyCoordinator {
                                             ILLUSTRATION_ANIMATION_DURATION_MS);
                                 }
                                 setEmptyViewVisibility(View.VISIBLE);
+                                fixMargins();
                             }
                         });
             } else {
@@ -159,6 +161,23 @@ class TabListEmptyCoordinator {
                 transformIllustrationIfPresent();
             }
         }
+    }
+
+    private void fixMargins() {
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) assumeNonNull(mEmptyView).getLayoutParams();
+        Resources resources = mContext.getResources();
+        @Px int rowMargin = resources.getDimensionPixelSize(R.dimen.default_list_row_padding);
+
+        if (isOnlyArchivedMsg(mModel)) {
+            View msgCard = mRecyclerView.getChildAt(0);
+
+            // Account for the height of the message card.
+            params.topMargin = msgCard.getHeight() + rowMargin;
+        } else {
+            params.topMargin = 0;
+        }
+        mEmptyView.setLayoutParams(params);
     }
 
     private void transformIllustrationIfPresent() {

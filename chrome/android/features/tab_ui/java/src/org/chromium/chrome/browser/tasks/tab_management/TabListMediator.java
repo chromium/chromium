@@ -14,7 +14,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.THUMBNAIL_FETCHER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ARCHIVED_TABS_MESSAGE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isLargeMessageCard;
 import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.isMessageCard;
 
@@ -1614,15 +1614,9 @@ class TabListMediator implements TabListNotificationHandler {
         if (existingIndex != TabModel.INVALID_TAB_INDEX) return existingIndex;
 
         int newIndex = getInsertionIndexOfTab(tab, onlyShowRelatedTabs);
-        boolean isOnlyArchivedMsg =
-                mModelList.size() == 1
-                        && mModelList
-                                .get(0)
-                                .model
-                                .containsKeyEqualTo(MESSAGE_TYPE, ARCHIVED_TABS_MESSAGE);
 
         // Tabs should be inserted only after the archived message card.
-        if (newIndex == 0 && isOnlyArchivedMsg) newIndex++;
+        if (newIndex == 0 && isOnlyArchivedMsg(mModelList)) newIndex++;
 
         if (newIndex == TabList.INVALID_TAB_INDEX) return newIndex;
 

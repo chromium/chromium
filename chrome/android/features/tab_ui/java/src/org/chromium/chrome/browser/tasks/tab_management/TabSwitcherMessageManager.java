@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ARCHIVED_TABS_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.UiTypeHelper.messageTypeToUiType;
 
 import android.app.Activity;
@@ -708,5 +710,11 @@ public class TabSwitcherMessageManager {
         TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
         assumeNonNull(tabGroupModelFilter);
         return assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
+    }
+
+    /** Check to see if a {@link TabListModel} only contains the Archived Message card. */
+    public static boolean isOnlyArchivedMsg(TabListModel model) {
+        return model.size() == 1
+                && model.get(0).model.containsKeyEqualTo(MESSAGE_TYPE, ARCHIVED_TABS_MESSAGE);
     }
 }

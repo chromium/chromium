@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCa
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
@@ -461,7 +462,10 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         if (emptyViewParent != null) {
             mTabListEmptyCoordinator =
                     new TabListEmptyCoordinator(
-                            emptyViewParent, mModelList, this::runOnItemAnimatorFinished);
+                            mRecyclerView,
+                            emptyViewParent,
+                            mModelList,
+                            this::runOnItemAnimatorFinished);
         }
         mTabListHighlighter = new TabListHighlighter(mModelList);
         mTabListMergeAnimationManager = new TabListMergeAnimationManager(mRecyclerView);
@@ -983,7 +987,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     /**
      * @see TabListMediator#specialItemExistsInModel(int)
      */
-    boolean specialItemExists(@TabSwitcherMessageManager.MessageType int itemIdentifier) {
+    boolean specialItemExists(@MessageType int itemIdentifier) {
         return mMediator.specialItemExistsInModel(itemIdentifier);
     }
 
