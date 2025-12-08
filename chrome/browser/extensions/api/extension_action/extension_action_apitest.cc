@@ -575,6 +575,63 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
   EXPECT_EQ(0u, frames.size());
 }
 
+// Tests that setting the popup to an empty string clears it (so no popup is
+// shown), even if a default popup is specified in the manifest.
+IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetPopupToEmptyString) {
+  constexpr char kManifestTemplate[] =
+      R"({
+           "name": "Test Set Popup to Empty",
+           "manifest_version": %d,
+           "version": "0.1",
+           "%s": {
+             "default_popup": "default_popup.html"
+           }
+         })";
+  constexpr char kPageJs[] = "// Intentionally blank.";
+  constexpr char kPopupHtml[] =
+      "<!doctype html><html><body>Blank</body></html>";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      kManifestTemplate, GetManifestVersionForActionType(GetParam()),
+      ActionInfo::GetManifestKeyForActionType(GetParam())));
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("default_popup.html"), kPopupHtml);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ExtensionAction* action = GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+
+  ASSERT_TRUE(NavigateToURLInNewTab(extension->GetResourceURL("page.html")));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  int tab_id = GetActiveTabId();
+
+  // Initially, it should have the default popup.
+  EXPECT_EQ(extension->GetResourceURL("default_popup.html"),
+            action->GetPopupUrl(tab_id));
+  EXPECT_TRUE(action->HasPopup(tab_id));
+
+  // Set the popup to an empty string.
+  constexpr char kSetPopupEmptyScript[] =
+      R"(chrome.%s.setPopup({tabId: %d, popup: ''}, () => {
+           chrome.test.assertNoLastError();
+           chrome.test.notifyPass();
+         });)";
+  RunTestAndWaitForSuccess(
+      web_contents,
+      base::StringPrintf(kSetPopupEmptyScript,
+                         GetAPINameForActionType(GetParam()), tab_id));
+
+  // Now, it should have no popup.
+  EXPECT_EQ(GURL(), action->GetPopupUrl(tab_id));
+  EXPECT_FALSE(action->HasPopup(tab_id));
+}
+
 // Tests that sessionStorage does not persist between closing and opening of a
 // popup.
 // TODO(crbug.com/419057482): Enable on Android when we have a cross-platform
