@@ -17,8 +17,10 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/actor.mojom-data-view.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -274,6 +276,13 @@ void GlicActorTaskManager::StopActorTask(
   }
 
   actor_keyed_service_->StopTask(task->id(), reason);
+}
+
+void GlicActorTaskManager::MaybeShowDeactivationToastUi() {
+  BrowserWindowInterface* const last_active_bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  actor_keyed_service_->GetActorUiStateManager()->MaybeShowToast(
+      last_active_bwi);
 }
 
 void GlicActorTaskManager::PauseActorTask(

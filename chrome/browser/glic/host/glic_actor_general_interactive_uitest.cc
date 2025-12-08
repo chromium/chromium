@@ -12,9 +12,11 @@
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/browser_action_util.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -22,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/test/widget_test.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -76,6 +79,8 @@ class GlicActorGeneralUiTest : public GlicActorUiTest {
   tabs::TabHandle GetActiveTabHandle() {
     return browser()->GetTabStripModel()->GetActiveTab()->GetHandle();
   }
+
+  PrefService* prefs() { return browser()->profile()->GetPrefs(); }
 
   tabs::TabHandle null_tab_handle_;
 };
@@ -871,6 +876,43 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestHighDPI,
       ExecuteAction(std::move(click_provider)),
       CheckJsResult(kNewActorTabId, "() => offscreen_button_clicked"));
   // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CloseFloatyShowsToast) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
+                                      kToastState);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  TrackFloatingGlicInstance();
+  RunTestSequence(
+      OpenGlicFloatingWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      WaitForWebContentsReady(kNewActorTabId, task_url), CloseGlicWindow(),
+      PollState(
+          kToastState,
+          [this]() { return prefs()->GetInteger(actor::ui::kToastShown); }),
+      WaitForState(kToastState, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CloseSidePanelShowsToast) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
+                                      kToastState);
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId,
+                             /*open_in_foreground=*/false),
+      WaitForWebContentsReady(kNewActorTabId, task_url), CloseGlicWindow(),
+      PollState(
+          kToastState,
+          [this]() { return prefs()->GetInteger(actor::ui::kToastShown); }),
+      WaitForState(kToastState, 1));
 }
 
 // Test for the above behavior when the killswitch is turned off. i.e. that the

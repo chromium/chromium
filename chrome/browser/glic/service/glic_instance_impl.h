@@ -292,6 +292,7 @@ class GlicInstanceImpl : public GlicInstance,
   GlicUiEmbedder* GetActiveEmbedder();
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
   void DeactivateCurrentEmbedder();
+  void OnAllEmbeddersInactive();
   GlicUiEmbedder* CreateActiveEmbedder(const ShowOptions& options);
   GlicUiEmbedder* CreateActiveEmbedderForSidePanel(tabs::TabInterface* tab);
   GlicUiEmbedder* CreateActiveEmbedderForFloaty(

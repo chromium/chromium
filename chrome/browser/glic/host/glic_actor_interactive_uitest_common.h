@@ -145,8 +145,13 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   // create a new tab. The new tab can then be referenced by the identifier
   // passed in `new_tab_id`. Stores the created task's id in `task_id_` and the
   // new tab's handle in `tab_handle_`.
+  // If `open_in_foreground` is true (default), the new tab becomes active.
+  // If false, the tab opens in the background, preventing the browser window
+  // from stealing focus (useful for avoiding window-activation side effects in
+  // tests).
   MultiStep StartActorTaskInNewTab(const GURL& task_url,
-                                   ui::ElementIdentifier new_tab_id);
+                                   ui::ElementIdentifier new_tab_id,
+                                   bool open_in_foreground = true);
 
   // After invoking APIs that don't return promises, we round trip to both the
   // client and host to make sure the call has made it to the browser.

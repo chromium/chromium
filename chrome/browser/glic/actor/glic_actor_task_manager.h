@@ -56,6 +56,7 @@ class GlicActorTaskManager {
       const std::optional<int32_t>& initiator_tab_id,
       const std::optional<int32_t>& initiator_window_id,
       glic::mojom::WebClientHandler::CreateActorTabCallback callback);
+  void MaybeShowDeactivationToastUi();
 
   void CancelTask();
   bool IsActuating() const;

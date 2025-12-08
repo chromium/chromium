@@ -340,14 +340,15 @@ MultiStep GlicActorUiTest::NavigateAction(GURL url,
 
 MultiStep GlicActorUiTest::StartActorTaskInNewTab(
     const GURL& task_url,
-    ui::ElementIdentifier new_tab_id) {
+    ui::ElementIdentifier new_tab_id,
+    bool open_in_foreground) {
   return Steps(
       // clang-format off
       InstrumentNextTab(new_tab_id),
       CreateTask(task_id_, ""),
       CreateTabAction(task_id_,
                       browser()->session_id(),
-                      /*foreground=*/true),
+                      /*foreground=*/open_in_foreground),
       WaitForWebContentsReady(new_tab_id),
       InAnyContext(WithElement(new_tab_id, [this](ui::TrackedElement* el) {
         content::WebContents* new_tab_contents =
