@@ -45,7 +45,8 @@ bool IsRunning(SafetyCheckState* state) {
 bool IsDefault(SafetyCheckState* state) {
   return state.runningState == RunningSafetyCheckState::kDefault &&
          state.updateChromeState == UpdateChromeSafetyCheckState::kDefault &&
-         state.passwordState == PasswordSafetyCheckState::kDefault &&
+         (state.passwordState == PasswordSafetyCheckState::kDefault ||
+          state.passwordState == PasswordSafetyCheckState::kSignedOut) &&
          state.safeBrowsingState == SafeBrowsingSafetyCheckState::kDefault;
 }
 

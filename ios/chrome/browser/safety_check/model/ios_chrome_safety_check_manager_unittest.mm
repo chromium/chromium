@@ -746,7 +746,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, ClearsPasswordStateOnSignOut) {
       /* compromised */ 0, /* dismissed */ 0, /* reused */ 0, /* weak */ 0};
   EXPECT_EQ(safety_check_manager_->GetInsecurePasswordCounts(), reset_counts);
   EXPECT_EQ(safety_check_manager_->GetPasswordCheckState(),
-            PasswordSafetyCheckState::kDefault);
+            PasswordSafetyCheckState::kSignedOut);
 
   // Verify that the prefs are also updated to the reset state.
   password_manager::InsecurePasswordCounts pref_counts =
@@ -755,7 +755,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest, ClearsPasswordStateOnSignOut) {
   EXPECT_EQ(pref_counts, reset_counts);
   EXPECT_EQ(pref_service_->GetString(
                 prefs::kIosSafetyCheckManagerPasswordCheckResult),
-            NameForSafetyCheckState(PasswordSafetyCheckState::kDefault));
+            NameForSafetyCheckState(PasswordSafetyCheckState::kSignedOut));
 }
 
 // Tests that signing out while a password check is running stops the check

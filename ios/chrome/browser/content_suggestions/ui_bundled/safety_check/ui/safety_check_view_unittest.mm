@@ -375,3 +375,26 @@ TEST_F(SafetyCheckViewTest, FindsSafetyCheckItemTypeFromName) {
   EXPECT_EQ(SafetyCheckItemTypeForName(@"SafetyCheckItemType::kDefault"),
             SafetyCheckItemType::kDefault);
 }
+
+// Tests that the module can be initialized, create subviews, and that the
+// signed out module state is displayed as the Default state.
+TEST_F(SafetyCheckViewTest, DisplaysDefaultStateWhenPasswordCheckSignedOut) {
+  SafetyCheckState* state = [[SafetyCheckState alloc]
+      initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
+                  passwordState:PasswordSafetyCheckState::kSignedOut
+              safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
+                   runningState:RunningSafetyCheckState::kDefault];
+
+  SafetyCheckView* view = [[SafetyCheckView alloc] initWithState:state
+                                             contentViewDelegate:nil];
+
+  [_superview addSubview:view];
+
+  ExpectSubviewCount(1, [SafetyCheckView class]);
+  ExpectSubviewCount(1, [IconDetailView class]);
+
+  // Ensure it shows the Default state, NOT the "All Safe" state.
+  ExpectSubview(safety_check::kSafetyCheckViewID, true);
+  ExpectSubview(safety_check::kDefaultItemID, true);
+  ExpectSubview(safety_check::kAllSafeItemID, false);
+}
