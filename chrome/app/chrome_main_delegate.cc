@@ -77,6 +77,8 @@
 #include "components/metrics/persistent_histograms.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
+#include "components/variations/service/variations_network_clock.h"
+#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/app/initialize_mojo_core.h"
@@ -895,6 +897,22 @@ bool ChromeMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
 
 bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
   return ShouldCreateFeatureList(invoked_in);
+}
+
+::variations::VariationsIdsProvider*
+ChromeMainDelegate::CreateVariationsIdsProvider() {
+  // At the time this method is called, the global browser instance is not yet
+  // created. This means the `NetworkTimeTracker` is still owned by the
+  // 'ChromeFeatureListCreator', which is within the `startup_data` held by the
+  // `ChromeContentBrowserClient`. Once the global browser instance is
+  // created, it will take over ownership of the NetworkTimeTracker.
+
+  return ::variations::VariationsIdsProvider::CreateInstance(
+      ::variations::VariationsIdsProvider::Mode::kUseSignedInState,
+      std::make_unique<::variations::VariationsNetworkClock>(
+          chrome_content_browser_client_->startup_data()
+              ->chrome_feature_list_creator()
+              ->network_time_tracker()));
 }
 
 void ChromeMainDelegate::CreateThreadPool(std::string_view name) {

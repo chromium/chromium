@@ -66,6 +66,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   void ZygoteForked() override;
 #endif
   std::optional<int> PreBrowserMain() override;
+  variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;
   std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   bool ShouldInitializeMojo(InvokedIn invoked_in) override;

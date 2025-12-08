@@ -143,6 +143,7 @@ static_library("test_support") {
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/startup_metric_utils",
+    "//components/variations/service",
     "//components/webui/about",
     "//content/public/app",
     "//content/public/common",

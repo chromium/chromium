@@ -1421,6 +1421,7 @@ group("dependencies") {
     "//components/startup_metric_utils",
     "//components/sync",
     "//components/upload_list",
+    "//components/variations/service",
     "//components/webui/about",
     "//content/public/child",
     "//pdf",
