@@ -76,6 +76,8 @@ source_set("incognito_session_tracker") {
   sources = [
     "incognito_session_tracker.h",
     "incognito_session_tracker.mm",
+    "profile_incognito_session_tracker.h",
+    "profile_incognito_session_tracker.mm",
   ]
   deps = [
     ":profile",
