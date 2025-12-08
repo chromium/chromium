@@ -226,8 +226,8 @@ void* MappableBufferDXGI::memory(size_t plane) {
                                   .data();
   // This is safe, since we already checked that the requested plane is
   // valid for current format.
-  UNSAFE_TODO(plane_addr += viz)::SharedMemoryOffsetForSharedImageFormat(
-      format_, plane, size_);
+  UNSAFE_TODO(plane_addr += viz::SharedMemoryOffsetForSharedImageFormat(
+                  format_, plane, size_));
   return plane_addr;
 }
 

@@ -3890,9 +3890,9 @@ void GLES2Implementation::TexSubImage3DImpl(GLenum target,
       }
       UNSAFE_TODO(source += num_rows * pixels_padded_row_size);
       if (unpack_image_height_ > height && num_image_paddings > 0) {
-        UNSAFE_TODO(source +=
-                    num_image_paddings * (unpack_image_height_ - height)) *
-            pixels_padded_row_size;
+        UNSAFE_TODO(source += num_image_paddings *
+                              (unpack_image_height_ - height) *
+                              pixels_padded_row_size);
       }
     }
   }

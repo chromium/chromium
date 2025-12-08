@@ -11368,8 +11368,7 @@ error::Error GLES2DecoderImpl::HandleReadPixels(uint32_t immediate_data_size,
         copy_binder = std::make_unique<ScopedFramebufferCopyBinder>(this);
       }
       if (y < 0) {
-        UNSAFE_TODO(pixels += static_cast<uint32_t>(-y)) * padded_row_size;
-        ;
+        UNSAFE_TODO(pixels += static_cast<uint32_t>(-y) * padded_row_size);
       }
       if (x < 0) {
         uint32_t group_size = GLES2Util::ComputeImageGroupSize(format, type);

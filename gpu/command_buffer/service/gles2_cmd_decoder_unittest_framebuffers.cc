@@ -982,7 +982,7 @@ TEST_P(GLES2DecoderManualInitTest, ReadPixels2AlignmentWorkaround) {
   EXPECT_CALL(*gl_, PixelStorei(GL_PACK_ALIGNMENT, 1))
       .Times(1)
       .RetiresOnSaturation();
-  UNSAFE_TODO(offset += (kWidth * kBytesPerPixel + kPadding)) * (kHeight - 1);
+  UNSAFE_TODO(offset += (kWidth * kBytesPerPixel + kPadding) * (kHeight - 1));
   EXPECT_CALL(*gl_,
               ReadPixels(0, kHeight - 1, kWidth, 1, kFormat, kType, offset))
       .Times(1)
