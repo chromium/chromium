@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/modules/mediastream/video_track_adapter.h"  // For kMediaStreamTrackEmptyVideoFrameMonitor.
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
@@ -19,6 +20,14 @@
 #include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
+
+// The kWebRtcUnmuteTracksWhenPacketArrives2 feature is also gated on
+// kMediaStreamTrackEmptyVideoFrameMonitor.
+bool ShouldUnmuteTrackWhenPacketsArrive() {
+  return base::FeatureList::IsEnabled(
+             kMediaStreamTrackEmptyVideoFrameMonitor) &&
+         base::FeatureList::IsEnabled(kWebRtcUnmuteTracksWhenPacketArrives2);
+}
 
 RtpReceiverState::RtpReceiverState(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
@@ -165,7 +174,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
     }
     DCHECK(!encoded_audio_transformer_ || !encoded_video_transformer_);
     // TODO(https://crbug.com/40821064): Remove killswitch after rollout.
-    if (base::FeatureList::IsEnabled(kWebRtcUnmuteTracksWhenPacketArrives)) {
+    if (ShouldUnmuteTrackWhenPacketsArrive()) {
       CHECK(webrtc_receiver_);
       webrtc_receiver_->SetObserver(this);
     }
@@ -248,8 +257,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   ~RTCRtpReceiverInternal() override {
     DCHECK(main_task_runner_->BelongsToCurrentThread());
     // TODO(https://crbug.com/40821064): Remove killswitch after rollout.
-    if (webrtc_receiver_ &&
-        base::FeatureList::IsEnabled(kWebRtcUnmuteTracksWhenPacketArrives)) {
+    if (webrtc_receiver_ && ShouldUnmuteTrackWhenPacketsArrive()) {
       webrtc_receiver_->SetObserver(nullptr);
     }
   }

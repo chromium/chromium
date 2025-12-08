@@ -34,7 +34,7 @@ BASE_FEATURE(kWebRtcRtpScriptTransformerFrameRestrictions,
 
 // This feature unumutes a track when a packet arrives instead of after
 // setRemoteDescription.
-BASE_FEATURE(kWebRtcUnmuteTracksWhenPacketArrives,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebRtcUnmuteTracksWhenPacketArrives2,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace blink

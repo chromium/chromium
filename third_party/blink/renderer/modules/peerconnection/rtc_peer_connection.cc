@@ -2550,7 +2550,7 @@ void RTCPeerConnection::DidModifyTransceivers(
   }
 
   // TODO(https://crbug.com/40821064): Remove killswitch after rollout.
-  if (!base::FeatureList::IsEnabled(kWebRtcUnmuteTracksWhenPacketArrives)) {
+  if (!base::FeatureList::IsEnabled(kWebRtcUnmuteTracksWhenPacketArrives2)) {
     for (auto& transceiver : track_events) {
       transceiver->receiver()->track()->Component()->Source()->SetReadyState(
           MediaStreamSource::kReadyStateLive);
