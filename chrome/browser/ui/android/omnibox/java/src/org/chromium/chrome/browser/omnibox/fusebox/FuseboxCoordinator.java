@@ -186,7 +186,8 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mOnCompactModeChangedSupplier,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        () -> mTemplateUrlService);
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }
@@ -253,6 +254,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     // TemplateUrlServiceObserver
     @Override
     public void onTemplateURLServiceChanged() {
+        // TODO(https://crbug.com/465744465): Consider hard resetting mediator instead.
         boolean isDseGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
         if (isDseGoogle == mDefaultSearchEngineIsGoogle) return;
 
