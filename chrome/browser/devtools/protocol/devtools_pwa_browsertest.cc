@@ -607,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_InvalidManifestId) {
   ASSERT_FALSE(AppExists(NotInstallableWebAppManifestId()));
 }
 
-// TODO(crbug.com/331214986): May want a test to trigger the installation
+// TODO(crbug.com/466316822): May want a test to trigger the installation
 // failure when installing from the url.
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_PartiallyUnsupported) {
   ASSERT_TRUE(result()->FindList("targetIds")->size() == 3);
 }
 
-// TODO(crbug.com/331214986): May want a test to trigger the LaunchFilesInApp
+// TODO(crbug.com/466313171): May want a test to trigger the LaunchFilesInApp
 // failure in LaunchApp callback.
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_PartiallyFailed) {
