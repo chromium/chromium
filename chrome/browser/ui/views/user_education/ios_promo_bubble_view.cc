@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/desktop_to_mobile_promos/desktop_to_mobile_promos_metrics.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/user_education/views/help_bubble_views.h"
@@ -37,6 +38,10 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
+using desktop_to_mobile_promos::DesktopPromoActionType;
+using desktop_to_mobile_promos::DesktopPromoBubbleType;
+using desktop_to_mobile_promos::LogDesktopPromoAction;
+using desktop_to_mobile_promos::LogDesktopPromoBubbleCreated;
 using user_education::CustomHelpBubbleUi;
 
 namespace {
@@ -126,6 +131,7 @@ std::unique_ptr<IOSPromoBubbleView> IOSPromoBubbleView::Create(
   BubbleType promo_bubble_type = (service && service->GetIOSDeviceToRemind())
                                      ? BubbleType::kReminder
                                      : BubbleType::kQRCode;
+
   auto* const anchor_element = params.anchor_element.get();
   return std::make_unique<IOSPromoBubbleView>(
       profile, promo_type, promo_bubble_type,
@@ -165,6 +171,8 @@ IOSPromoBubbleView::IOSPromoBubbleView(Profile* profile,
   SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kDefault);
   SetCloseCallback(
       base::BindOnce(&IOSPromoBubbleView::OnDismissal, base::Unretained(this)));
+
+  LogDesktopPromoBubbleCreated(promo_type_, promo_bubble_type_);
 }
 
 IOSPromoBubbleView::~IOSPromoBubbleView() = default;
@@ -188,12 +196,17 @@ void IOSPromoBubbleView::VisibilityChanged(View* starting_from,
 }
 
 bool IOSPromoBubbleView::Cancel() {
+  LogDesktopPromoAction(promo_type_, promo_bubble_type_,
+                        DesktopPromoActionType::kCancel);
+
   NotifyUserAction(CustomHelpBubbleUi::UserAction::kCancel);
   return true;
 }
 
 bool IOSPromoBubbleView::Accept() {
-  // TODO(crbug.com/438769954): Record metrics.
+  LogDesktopPromoAction(promo_type_, promo_bubble_type_,
+                        DesktopPromoActionType::kAccept);
+
   switch (promo_bubble_type_) {
     case BubbleType::kReminder: {
       // Send the reminder to the iOS device and update the promo bubble with
@@ -204,6 +217,7 @@ bool IOSPromoBubbleView::Accept() {
       if (!ios_device_info_) {
         return true;
       }
+
       trigger_service->SetReminderForIOSDevice(promo_type_,
                                                ios_device_info_->guid());
       promo_bubble_type_ = BubbleType::kReminderConfirmation;
@@ -246,6 +260,9 @@ void IOSPromoBubbleView::SetWidth(views::DistanceMetric metric) {
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(metric));
 }
 void IOSPromoBubbleView::OnDismissal() {
+  LogDesktopPromoAction(promo_type_, promo_bubble_type_,
+                        DesktopPromoActionType::kDismiss);
+
   NotifyUserAction(CustomHelpBubbleUi::UserAction::kDismiss);
 }
 
@@ -291,6 +308,8 @@ void IOSPromoBubbleView::ShowReminderConfirmation() {
                  l10n_util::GetStringUTF16(config_.accept_button_text_id));
   SetCloseCallback(
       base::BindOnce(&IOSPromoBubbleView::OnDismissal, base::Unretained(this)));
+
+  LogDesktopPromoBubbleCreated(promo_type_, promo_bubble_type_);
 
   // Trigger a resize and layout pass.
   GetWidget()->UpdateWindowTitle();
