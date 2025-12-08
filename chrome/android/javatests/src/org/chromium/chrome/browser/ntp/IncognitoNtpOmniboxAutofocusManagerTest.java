@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import android.view.View;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -12,7 +14,6 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -41,6 +43,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -48,14 +51,25 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for {@link IncognitoNtpOmniboxAutofocusManager}. */
-@Ignore(
-        "crbug.com/465164165: Test class is flaky - disabling one test causes the next test to"
-                + " flake")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
 @Batch(Batch.PER_CLASS)
 public class IncognitoNtpOmniboxAutofocusManagerTest {
+    /**
+     * The maximum time to wait for omnibox focus and keyboard visibility. On some devices the
+     * software keyboard is slow to appear.
+     */
+    private static final long VERIFY_FOCUS_MAX_TIME_TO_POLL_MS = 30000L;
+
+    /** The polling interval to wait between checking for omnibox focus and keyboard visibility. */
+    private static final long VERIFY_FOCUS_POLLING_INTERVAL_MS = 50;
+
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_INCOGNITO)
+                    .build();
+
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -112,6 +126,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void whenReturnedAfterNavigating_autofocusFails_tabletOrDesktopNonAuto() {
         // Open an incognito NTP.
         IncognitoNewTabPageStation ntpPage = mInitialPage.openNewIncognitoTabOrWindowFast();
@@ -153,6 +168,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void whenLaunchAsNotNtpFirst_autofocusFails_tabletOrDesktopNonAuto() {
         // Open a non-NTP incognito tab.
         IncognitoNewTabPageStation ntpPage = mInitialPage.openNewIncognitoTabOrWindowFast();
@@ -193,7 +209,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "crbug.com/465746228")
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void whenLaunchFromTabSwitcher_autofocusSucceeds_tabletOrDesktopNonAuto() {
         // Open an incognito tab.
         IncognitoNewTabPageStation ntpPage = mInitialPage.openNewIncognitoTabOrWindowFast();
@@ -236,6 +252,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":not_first_tab/true")
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void
             whenVeryFirstTabOpened_andNotFirstTabEnabled_autofocusFails_tabletOrDesktopNonAuto() {
         // With the not_first_tab feature enabled, autofocus should be skipped on the first
@@ -291,6 +308,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_prediction/true")
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void whenEnoughSpaceWithPrediction_autofocusSucceeds_tabletOrDesktopNonAuto() {
         IncognitoNtpOmniboxAutofocusManager.setAutofocusAllowedWithPredictionForTesting(true);
 
@@ -316,6 +334,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @EnableFeatures(
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_hardware_keyboard/true")
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void
             whenHardwareKeyboardAttached_andWithHardwareKeyboardEnabled_autofocusSucceeds_tabletOrDesktopNonAuto() {
         IncognitoNtpOmniboxAutofocusManager.setIsHardwareKeyboardAttachedForTesting(true);
@@ -342,6 +361,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @EnableFeatures(
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_hardware_keyboard/true")
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void
             whenHardwareKeyboardNotAttached_andWithHardwareKeyboardEnabled_autofocusFails_tabletOrDesktopNonAuto() {
         IncognitoNtpOmniboxAutofocusManager.setIsHardwareKeyboardAttachedForTesting(false);
@@ -373,6 +393,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP
                     + ":not_first_tab/true/with_prediction/true")
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void
             whenVeryFirstTabOpenedAndEnoughSpaceWithPrediction_autofocusSucceeds_tabletOrDesktopNonAuto() {
         // There is enough free space on incognito NTP for prediction, it should autofocus.
@@ -413,6 +434,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void whenAccessibilityToggled_autofocusBehaviorChanges_tabletOrDesktopNonAuto() {
         // By default, accessibility is disabled. Autofocus should work.
         IncognitoNewTabPageStation ntpPage1 = mInitialPage.openNewIncognitoTabOrWindowFast();
@@ -457,6 +479,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/461578876: Disabled due to flakiness")
     public void
             whenAutofocusManagerInitializedWithExistingTab_autofocusSucceeds_tabletOrDesktopNonAuto() {
         // Autofocus works on a new launched Incognito tab.
@@ -472,6 +495,36 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
 
         // The manager should detect the existing Incognito NTP and trigger autofocus again.
         verifyNonPhoneOmniboxFocusAndKeyboardVisibility(true, ntpPage);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarTop() throws Exception {
+        final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        verifyPhoneOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
+
+        View view = mActivityTestRule.getActivity().findViewById(android.R.id.content);
+        mRenderTestRule.render(view, "incognito_ntp_omnibox_autofocus_toolbar_top");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP,
+        ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2 + ":force_bottom_for_focused_omnibox/true"
+    })
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarBottom() throws Exception {
+        final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        verifyPhoneOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
+
+        View view = mActivityTestRule.getActivity().findViewById(android.R.id.content);
+        mRenderTestRule.render(view, "incognito_ntp_omnibox_autofocus_toolbar_bottom");
     }
 
     private void verifyPhoneOmniboxFocusAndKeyboardVisibility(boolean enabled, @Nullable Tab tab) {
@@ -493,7 +546,9 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
                                         .isKeyboardShowing(tab.getView()),
                                 Matchers.is(enabled));
                     }
-                });
+                },
+                VERIFY_FOCUS_MAX_TIME_TO_POLL_MS,
+                VERIFY_FOCUS_POLLING_INTERVAL_MS);
     }
 
     private void verifyNonPhoneOmniboxFocusAndKeyboardVisibility(
@@ -517,7 +572,9 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
                                         .isKeyboardShowing(tab.getView()),
                                 Matchers.is(enabled));
                     }
-                });
+                },
+                VERIFY_FOCUS_MAX_TIME_TO_POLL_MS,
+                VERIFY_FOCUS_POLLING_INTERVAL_MS);
     }
 
     private void setAccessibilityEnabled(boolean enabled) {
