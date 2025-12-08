@@ -254,15 +254,6 @@ class NtpPromoUiTest
     }
   }
 
-  auto WaitForAndScrollToElement(
-      const ui::ElementIdentifier& ntp_id,
-      const WebContentsInteractionTestUtil::DeepQuery& query) {
-    auto steps = Steps(WaitForElementToRender(ntp_id, query),
-                       ScrollIntoView(ntp_id, query));
-    AddDescriptionPrefix(steps, __func__);
-    return steps;
-  }
-
   auto GetPromoIconPath() const { return GetFirstPromoPath() + kPromoIconId; }
 
   auto WaitForPromoIcon(std::string_view expected_icon) {

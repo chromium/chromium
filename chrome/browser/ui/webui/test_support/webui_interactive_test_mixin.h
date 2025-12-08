@@ -56,10 +56,18 @@ class WebUiInteractiveTestMixin : public T,
     return T::WaitForStateChange(contents_id, element_renders);
   }
 
+  auto WaitForAndScrollToElement(
+      const ui::ElementIdentifier& contents_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query) {
+    auto steps = T::Steps(WaitForElementToRender(contents_id, query),
+                          T::ScrollIntoView(contents_id, query));
+    T::AddDescriptionPrefix(steps, __func__);
+    return steps;
+  }
+
   auto ClickElement(const ui::ElementIdentifier& contents_id,
                     const WebContentsInteractionTestUtil::DeepQuery& element) {
-    return T::Steps(WaitForElementToRender(contents_id, element),
-                    T::ScrollIntoView(contents_id, element),
+    return T::Steps(WaitForAndScrollToElement(contents_id, element),
                     T::MoveMouseTo(contents_id, element), T::ClickMouse());
   }
 
