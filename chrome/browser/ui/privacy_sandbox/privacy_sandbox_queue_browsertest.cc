@@ -34,6 +34,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/user_education/test/test_product_messaging_controller.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -356,6 +357,8 @@ class PrivacySandboxQueueNoticeWithSearchEngineBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "BE");
     command_line->AppendSwitch(
         switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }

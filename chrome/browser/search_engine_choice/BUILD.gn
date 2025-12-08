@@ -119,6 +119,7 @@ if (!is_android) {
         "//components/metrics_services_manager",
         "//components/search_engines",
         "//components/search_engines:test_support",
+        "//components/variations",
         "//components/version_info",
         "//components/webapps/common",
         "//content/public/browser",

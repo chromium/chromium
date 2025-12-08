@@ -30,6 +30,7 @@
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_data_source.h"
@@ -279,6 +280,8 @@ class ChromeURLDataManagerWebUITrustedTypesTest
       // Command line arguments needed to render chrome://search-engine-choice.
       command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry,
                                       "BE");
+      command_line->AppendSwitchASCII(
+          variations::switches::kVariationsOverrideCountry, "BE");
       command_line->AppendSwitch(switches::kForceSearchEngineChoiceScreen);
       command_line->AppendSwitch(
           switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
