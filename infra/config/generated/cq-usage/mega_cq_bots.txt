@@ -71,6 +71,7 @@ chromium/try/chromeos-arm64-generic-rel
 chromium/try/chromeos-jacuzzi-rel
 chromium/try/chromeos-libfuzzer-asan-rel
 chromium/try/chromeos-octopus-rel
+chromium/try/chromeos-x64-libfuzzer-asan-rel-tests
 chromium/try/fuchsia-arm64-cast-receiver-rel
 chromium/try/fuchsia-fyi-arm64-dbg
 chromium/try/fuchsia-fyi-x64-asan
@@ -128,6 +129,12 @@ chromium/try/linux-v4l2-codec-rel
 chromium/try/linux-wayland-mutter-rel
 chromium/try/linux-wayland-weston-rel
 chromium/try/linux-win-cross-rel
+chromium/try/linux-x64-centipede-asan-rel-tests
+chromium/try/linux-x64-libfuzzer-asan-dbg-tests
+chromium/try/linux-x64-libfuzzer-asan-rel-tests
+chromium/try/linux-x64-libfuzzer-msan-rel-tests
+chromium/try/linux-x64-libfuzzer-ubsan-rel-tests
+chromium/try/linux-x86-libfuzzer-asan-rel-tests
 chromium/try/linux_chromium_archive_rel_ng
 chromium/try/linux_chromium_asan_rel_ng
 chromium/try/linux_chromium_cfi_rel_ng
@@ -140,6 +147,7 @@ chromium/try/linux_chromium_msan_rel_ng
 chromium/try/linux_chromium_tsan_rel_ng
 chromium/try/linux_chromium_ubsan_rel_ng
 chromium/try/mac-arm64-clobber-rel
+chromium/try/mac-arm64-libfuzzer-asan-rel-tests
 chromium/try/mac-arm64-on-arm64-rel
 chromium/try/mac-asan-media-rel
 chromium/try/mac-asan-rel
@@ -168,6 +176,7 @@ chromium/try/win-clobber-rel
 chromium/try/win-libfuzzer-asan-rel
 chromium/try/win-official
 chromium/try/win-rel
+chromium/try/win-x64-libfuzzer-asan-rel-tests
 chromium/try/win10-dbg
 chromium/try/win11-rel
 chromium/try/win32-clobber-rel

@@ -330,6 +330,7 @@ ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
 ci/chromeos-jacuzzi-rel
 ci/chromeos-octopus-rel
+ci/chromeos-x64-libfuzzer-asan-rel-tests
 ci/fuchsia-angle-builder
 ci/fuchsia-arm64-cast-receiver-rel
 ci/fuchsia-fyi-arm64-dbg
@@ -380,12 +381,19 @@ ci/linux-wayland-mutter-rel-tests
 ci/linux-wayland-weston-rel-tests
 ci/linux-win-cross-clang-tot-rel
 ci/linux-win-cross-rel
+ci/linux-x64-centipede-asan-rel-tests
+ci/linux-x64-libfuzzer-asan-dbg-tests
+ci/linux-x64-libfuzzer-asan-rel-tests
+ci/linux-x64-libfuzzer-msan-rel-tests
+ci/linux-x64-libfuzzer-ubsan-rel-tests
+ci/linux-x86-libfuzzer-asan-rel-tests
 ci/mac-angle-chromium-amd
 ci/mac-angle-chromium-builder
 ci/mac-angle-chromium-intel
 ci/mac-archive-rel
 ci/mac-arm64-archive-rel
 ci/mac-arm64-dbg
+ci/mac-arm64-libfuzzer-asan-rel-tests
 ci/mac-arm64-on-arm64-rel
 ci/mac-arm64-rel
 ci/mac-official
@@ -410,6 +418,7 @@ ci/win-swangle-tot-swiftshader-x64
 ci/win-swangle-tot-swiftshader-x86
 ci/win-swangle-x64
 ci/win-swangle-x86
+ci/win-x64-libfuzzer-asan-rel-tests
 ci/win10-angle-chromium-x64-intel
 ci/win10-angle-chromium-x64-nvidia
 ci/win11-arm64-rel-tests
@@ -497,6 +506,7 @@ try/chromeos-jacuzzi-rel
 try/chromeos-js-coverage-rel
 try/chromeos-libfuzzer-asan-rel
 try/chromeos-octopus-rel
+try/chromeos-x64-libfuzzer-asan-rel-tests
 try/compile-size
 try/fuchsia-angle-try
 try/fuchsia-arm64-cast-receiver-rel
@@ -639,6 +649,12 @@ try/linux-v4l2-codec-rel
 try/linux-wayland-mutter-rel
 try/linux-wayland-weston-rel
 try/linux-win-cross-rel
+try/linux-x64-centipede-asan-rel-tests
+try/linux-x64-libfuzzer-asan-dbg-tests
+try/linux-x64-libfuzzer-asan-rel-tests
+try/linux-x64-libfuzzer-msan-rel-tests
+try/linux-x64-libfuzzer-ubsan-rel-tests
+try/linux-x86-libfuzzer-asan-rel-tests
 try/linux_chromium_archive_rel_ng
 try/linux_chromium_asan_rel_ng
 try/linux_chromium_cfi_rel_ng
@@ -652,6 +668,7 @@ try/linux_chromium_tsan_rel_ng
 try/linux_chromium_ubsan_rel_ng
 try/mac-angle-chromium-try
 try/mac-arm64-clobber-rel
+try/mac-arm64-libfuzzer-asan-rel-tests
 try/mac-arm64-on-arm64-rel
 try/mac-asan-media-rel
 try/mac-asan-rel
@@ -713,6 +730,7 @@ try/win-swangle-try-x86
 try/win-updater-try-builder-dbg
 try/win-updater-try-builder-rel
 try/win-utr-tester
+try/win-x64-libfuzzer-asan-rel-tests
 try/win10-dbg
 try/win11-rel
 try/win32-clobber-rel

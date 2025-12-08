@@ -347,9 +347,6 @@ def fuzz_target_builder(
                 targets.mixin(args = ["--asan-detect-odr-violation=0"]),
             ] + swarming_mixins,
         ),
-        # TODO(https://crbug.com/432407787): Add to a gardening rotation
-        # once the bots are proven green enough.
-        gardener_rotations = args.ignore_default(None),
         console_category = fuzzing_engine + "-tests",
         **kwargs
     )
