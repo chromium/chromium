@@ -41,6 +41,7 @@ source_set("profile_controller") {
     ":first_run_profile_agent",
     ":identity_confirmation_profile_agent",
     ":multi_profile_forced_migration_profile_agent",
+    ":otr_profile_destroyer_profile_agent",
     ":post_restore_profile_agent",
     ":profile",
     ":search_engine_choice_profile_agent",
@@ -371,6 +372,27 @@ source_set("synced_set_up_profile_agent") {
     "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:observer_bridge",
     "//ios/chrome/browser/synced_set_up/public",
     "//ios/chrome/browser/synced_set_up/utils",
+  ]
+}
+
+source_set("otr_profile_destroyer_profile_agent") {
+  sources = [
+    "otr_profile_destroyer_profile_agent.h",
+    "otr_profile_destroyer_profile_agent.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/browsing_data/model:model_remove_mask",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header_for_otr_profile_deletion",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:incognito_session_tracker",
+    "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
+    "//ios/web/public/thread",
   ]
 }
 

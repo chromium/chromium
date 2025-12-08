@@ -74,7 +74,6 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
-#import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_scene_agent.h"
@@ -140,6 +139,7 @@
 #import "ios/chrome/browser/share_extension/model/share_extension_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller+OTRProfileDeletion.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -203,7 +203,6 @@
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/widget_kit/model/features.h"
@@ -222,8 +221,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
@@ -4390,27 +4387,6 @@ using UserFeedbackDataCallback =
 
 // Called when the last incognito tab was closed.
 - (void)lastIncognitoTabClosed {
-  // If no other window has incognito tab, then destroy and rebuild the
-  // Profile. Otherwise, just do the state transition animation.
-  if ([self shouldDestroyAndRebuildIncognitoProfile]) {
-    // Incognito profile cannot be deleted before all the requests are
-    // deleted. Queue empty task on IO thread and destroy the Profile
-    // when the task has executed, again verifying that no incognito tabs are
-    // present. When an incognito tab is moved between browsers, there is
-    // a point where the tab isn't attached to any web state list. However, when
-    // this queued cleanup step executes, the moved tab will be attached, so
-    // the cleanup shouldn't proceed.
-
-    auto cleanup = ^{
-      if ([self shouldDestroyAndRebuildIncognitoProfile]) {
-        [self destroyAndRebuildIncognitoProfile];
-      }
-    };
-
-    web::GetIOThreadTaskRunner({})->PostTaskAndReply(
-        FROM_HERE, base::DoNothing(), base::BindRepeating(cleanup));
-  }
-
   // a) The first condition can happen when the last incognito tab is closed
   // from the tab switcher.
   // b) The second condition can happen if some other code (like JS) triggers
@@ -4438,22 +4414,6 @@ using UserFeedbackDataCallback =
   }
 
   [self showTabSwitcher];
-}
-
-// Clears incognito data that is specific to iOS and won't be cleared by
-// deleting the profile.
-- (void)clearIOSSpecificIncognitoData {
-  DCHECK(self.profile->HasOffTheRecordProfile());
-  ProfileIOS* otrProfile = self.profile->GetOffTheRecordProfile();
-
-  __weak SceneController* weakSelf = self;
-  BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForProfile(otrProfile);
-  browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME,
-                              BrowsingDataRemoveMask::REMOVE_ALL,
-                              base::BindOnce(^{
-                                [weakSelf activateBVCAndMakeCurrentBVCPrimary];
-                              }));
 }
 
 - (void)activateBVCAndMakeCurrentBVCPrimary {
@@ -4546,79 +4506,6 @@ using UserFeedbackDataCallback =
 }
 
 #pragma mark - Handling of destroying the incognito profile
-
-// The incognito Profile should be closed when the last incognito tab is
-// closed (i.e. if there are other incognito tabs open in another Scene, the
-// Profile must not be destroyed).
-- (BOOL)shouldDestroyAndRebuildIncognitoProfile {
-  ProfileIOS* profile = self.profile;
-  if (!profile->HasOffTheRecordProfile()) {
-    return NO;
-  }
-
-  ProfileIOS* otrProfile = profile->GetOffTheRecordProfile();
-  DCHECK(otrProfile);
-
-  BrowserList* browserList = BrowserListFactory::GetForProfile(otrProfile);
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kIncognito)) {
-    WebStateList* webStateList = browser->GetWebStateList();
-    if (!webStateList->empty()) {
-      return NO;
-    }
-  }
-
-  return YES;
-}
-
-// Destroys and rebuilds the incognito Profile. This will inform all the
-// other SceneController to destroy state tied to the Profile and to
-// recreate it.
-- (void)destroyAndRebuildIncognitoProfile {
-  // This seems the best place to mark the start of destroying the incognito
-  // profile.
-  crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(
-      /*in_progress=*/true);
-
-  [self clearIOSSpecificIncognitoData];
-
-  ProfileIOS* profile = self.profile;
-  DCHECK(profile->HasOffTheRecordProfile());
-  ProfileIOS* otrProfile = profile->GetOffTheRecordProfile();
-
-  NSMutableArray<SceneController*>* sceneControllers =
-      [[NSMutableArray alloc] init];
-  for (SceneState* sceneState in self.sceneState.profileState.connectedScenes) {
-    SceneController* sceneController = sceneState.controller;
-    // In some circumstances, the scene state may still exist while the
-    // corresponding scene controller has been deallocated.
-    // (see crbug.com/1142782).
-    if (sceneController) {
-      [sceneControllers addObject:sceneController];
-    }
-  }
-
-  for (SceneController* sceneController in sceneControllers) {
-    [sceneController willDestroyIncognitoProfile];
-  }
-
-  // Record off-the-record metrics before detroying the Profile.
-  SessionMetrics::FromProfile(otrProfile)
-      ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
-
-  // Destroy and recreate the off-the-record Profile.
-  profile->DestroyOffTheRecordProfile();
-  profile->GetOffTheRecordProfile();
-
-  for (SceneController* sceneController in sceneControllers) {
-    [sceneController incognitoProfileCreated];
-  }
-
-  // This seems the best place to deem the destroying and rebuilding the
-  // incognito profile to be completed.
-  crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(
-      /*in_progress=*/false);
-}
 
 - (void)willDestroyIncognitoProfile {
   // Clear the Incognito Browser and notify the TabGrid that its otrBrowser
