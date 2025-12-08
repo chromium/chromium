@@ -117,7 +117,6 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   std::unique_ptr<GeneratedCodeCache, base::OnTaskRunnerDeleter>
       generated_webui_js_code_cache_ GUARDED_BY_CONTEXT(sequence_checker_) = {
           nullptr, base::OnTaskRunnerDeleter(nullptr)};
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
 #if !BUILDFLAG(IS_FUCHSIA)
   // When used instead of `generated_js_code_cache_` this stores the code
@@ -128,9 +127,11 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   // url used on that cache.
   std::unique_ptr<persistent_cache::PersistentCacheCollection,
                   base::OnTaskRunnerDeleter>
-      persistent_cache_collection_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
+      persistent_cache_collection_ GUARDED_BY_CONTEXT(sequence_checker_){
+          nullptr, base::OnTaskRunnerDeleter(nullptr)};
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

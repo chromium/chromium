@@ -4,6 +4,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -200,7 +201,11 @@ void GeneratedCodeCacheContext::ClearAndDeletePersistentCacheCollection() {
 std::optional<persistent_cache::PendingBackend>
 GeneratedCodeCacheContext::ShareReadOnlyConnection(
     const std::string& context_key) {
-  return persistent_cache_collection_->ShareReadOnlyConnection(context_key);
+  if (persistent_cache_collection_) {
+    return persistent_cache_collection_->ShareReadOnlyConnection(context_key);
+  }
+
+  return std::nullopt;
 }
 
 void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
@@ -208,6 +213,10 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
     std::string_view url,
     base::span<const uint8_t> content,
     persistent_cache::EntryMetadata metadata) {
+  if (!persistent_cache_collection_) {
+    return;
+  }
+
   // Since `content` is coming in through mojo it's important to make sure that
   // it's copied so it cannot be modified racily. This happens implicitly
   // because of the way the SQLite backend (the only backend available
@@ -228,6 +237,10 @@ std::optional<GeneratedCodeCacheContext::MetadataAndContent>
 GeneratedCodeCacheContext::FindInPersistentCacheCollection(
     const std::string& context_key,
     std::string_view url) {
+  if (!persistent_cache_collection_) {
+    return std::nullopt;
+  }
+
   mojo_base::BigBuffer content_buffer;
 
   // A BufferProvider for PersistentCache that puts a new mojo_base::BugBuffer
