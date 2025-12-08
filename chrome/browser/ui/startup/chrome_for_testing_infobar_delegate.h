@@ -25,6 +25,7 @@ class ChromeForTestingInfoBarDelegate : public ConfirmInfoBarDelegate {
 
  private:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
+  infobars::InfoBarDelegate::InfobarPriority GetPriority() const override;
   std::u16string GetMessageText() const override;
   std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;

@@ -256,7 +256,9 @@ class LocalTestInfoBarVisibilityManager :
         infobars::ContentInfoBarManager::FromWebContents(web_contents),
         infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR, nullptr,
         l10n_util::GetStringUTF16(IDS_LOCAL_TEST_POLICIES_ENABLED),
-        /*auto_expire=*/false, /*should_animate=*/false, /*closeable=*/false);
+        /*auto_expire=*/false, /*should_animate=*/false, /*closeable=*/false,
+        /*infobar_priority=*/
+        infobars::InfoBarDelegate::InfobarPriority::kLow);
   }
 
   void DismissInfobarsForActiveLocalTestPoliciesAllTabs() {

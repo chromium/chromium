@@ -133,6 +133,7 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   bool EqualsDelegate(InfoBarDelegate* delegate) const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   bool IsCloseable() const override;
+  infobars::InfoBarDelegate::InfobarPriority GetPriority() const override;
 
  private:
   TabSharingInfoBarDelegate(content::WebContents* web_contents,

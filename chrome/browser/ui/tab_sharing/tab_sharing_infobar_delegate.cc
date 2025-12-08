@@ -333,6 +333,11 @@ TabSharingInfoBarDelegate::GetIdentifier() const {
   return TAB_SHARING_INFOBAR_DELEGATE;
 }
 
+infobars::InfoBarDelegate::InfobarPriority
+TabSharingInfoBarDelegate::GetPriority() const {
+  return infobars::InfoBarDelegate::InfobarPriority::kCriticalSecurity;
+}
+
 std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
     TabSharingInfoBarButton button) const {
   return GetButton(button).GetLabel();

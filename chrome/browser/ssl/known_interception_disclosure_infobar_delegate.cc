@@ -103,6 +103,11 @@ KnownInterceptionDisclosureInfoBarDelegate::GetIdentifier() const {
   return KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE;
 }
 
+infobars::InfoBarDelegate::InfobarPriority
+KnownInterceptionDisclosureInfoBarDelegate::GetPriority() const {
+  return infobars::InfoBarDelegate::InfobarPriority::kCriticalSecurity;
+}
+
 std::u16string KnownInterceptionDisclosureInfoBarDelegate::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }

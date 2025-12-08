@@ -123,7 +123,9 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
         infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
         &vector_icons::kWarningIcon,
         l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_DUE_TO_CRASHY_CHROME),
-        /*auto_expire=*/false, /*should_animate=*/true);
+        /*auto_expire=*/false, /*should_animate=*/true, /*closeable=*/true,
+        /*infobar_priority=*/
+        infobars::InfoBarDelegate::InfobarPriority::kDefault);
   }
 
   // Show a warning info bar for secondary users.
@@ -134,7 +136,9 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
         infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
         &vector_icons::kWarningIcon,
         l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_SECONDARY_USERS),
-        /*auto_expire=*/false, /*should_animate=*/true);
+        /*auto_expire=*/false, /*should_animate=*/true, /*closeable=*/true,
+        /*infobar_priority=*/
+        infobars::InfoBarDelegate::InfobarPriority::kDefault);
   }
 #endif
 }
