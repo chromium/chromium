@@ -22,6 +22,7 @@ class PasskeyModel;
 
 @protocol CredentialImportConsumer;
 enum class CredentialImportStage;
+@class PasskeyImportItem;
 @class PasswordImportItem;
 
 // Delegate for CredentialImportMediator.
@@ -32,7 +33,9 @@ enum class CredentialImportStage;
 
 // Notifies the delegate to display a conflict resolution screen.
 - (void)showConflictResolutionScreenWithPasswords:
-    (NSArray<PasswordImportItem*>*)passwords;
+            (NSArray<PasswordImportItem*>*)passwords
+                                         passkeys:(NSArray<PasskeyImportItem*>*)
+                                                      passkeys;
 
 @end
 

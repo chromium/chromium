@@ -164,7 +164,9 @@
 
 #pragma mark - PasswordConflictMutator
 
-- (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers {
+- (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers
+                         passkeys:(NSArray<NSNumber*>*)passkeyIdentifiers {
+  CHECK_EQ(passkeyIdentifiers.count, 0u);
   std::vector<int> selected_password_ids;
   for (NSNumber* identifier in passwordIdentifiers) {
     selected_password_ids.push_back([identifier intValue]);

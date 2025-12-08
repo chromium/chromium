@@ -12,8 +12,11 @@
 /// A protocol for the mediator to handle credential import conflicts.
 @protocol DataImportCredentialConflictMutator
 
-/// Continues to import the given passwords with identifiers.
-- (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers;
+/// Continues to import the passwords and passkeys with given identifiers. The
+/// provided identifiers are for the conflicting credentials that should be kept
+/// (i.e. stored in the user's account).
+- (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers
+                         passkeys:(NSArray<NSNumber*>*)passkeyIdentifiers;
 
 @end
 

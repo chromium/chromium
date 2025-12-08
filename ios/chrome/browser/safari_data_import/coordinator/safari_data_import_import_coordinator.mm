@@ -320,7 +320,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
   CHECK(passwordConflicts);
   if (passwordConflicts.count == 0) {
     /// Continue to import passwords without conflict override.
-    [self.mediator continueToImportPasswords:[NSArray array]];
+    [self.mediator continueToImportPasswords:[NSArray array] passkeys:@[]];
     return;
   }
   /// Wraps the password conflict view in a navigation controller to display
@@ -328,7 +328,8 @@ constexpr NSInteger kExpectedItemsCount = 4;
   DataImportCredentialConflictResolutionViewController*
       conflictResolutionViewController =
           [[DataImportCredentialConflictResolutionViewController alloc]
-              initWithPasswordConflicts:passwordConflicts];
+              initWithPasswordConflicts:passwordConflicts
+                       passkeyConflicts:[NSArray array]];
   conflictResolutionViewController.mutator = self.mediator;
   UINavigationController* wrapper = [[UINavigationController alloc]
       initWithRootViewController:conflictResolutionViewController];

@@ -20,6 +20,7 @@ struct ImportResults;
 class SavedPasswordsPresenter;
 }  // namespace password_manager
 
+@class PasskeyImportItem;
 @class PasswordImportItem;
 
 // Delegate for CredentialImporter.
@@ -29,9 +30,12 @@ class SavedPasswordsPresenter;
 - (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount
                              passkeyCount:(NSInteger)passkeyCount;
 
-// Displays the conflict resolution screen with conflicting `passwords`.
+// Displays the conflict resolution screen with conflicting `passwords` and
+// `passkeys`.
 - (void)showConflictResolutionScreenWithPasswords:
-    (NSArray<PasswordImportItem*>*)passwords;
+            (NSArray<PasswordImportItem*>*)passwords
+                                         passkeys:(NSArray<PasskeyImportItem*>*)
+                                                      passkeys;
 
 // Updates the status of the password import in the UI.
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results;
@@ -73,8 +77,12 @@ class SavedPasswordsPresenter;
 // stored in the user's account were resolved for all credential types or
 // immediately after identifying no conflicts. `selectedPasswordIds` contains
 // ids of conflicting passwords that should be imported (if any).
+// `selectedPasskeyIds` contains ids of conflicting passkeys that should be
+// imported (if any).
 - (void)finishImportWithSelectedPasswordIds:
-    (const std::vector<int>&)selectedPasswordIds;
+            (const std::vector<int>&)selectedPasswordIds
+                         selectedPasskeyIds:
+                             (const std::vector<int>&)selectedPasskeyIds;
 
 @end
 

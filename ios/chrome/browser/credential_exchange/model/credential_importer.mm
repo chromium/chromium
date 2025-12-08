@@ -24,6 +24,7 @@
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
+#import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
@@ -125,7 +126,9 @@ std::string DataToString(NSData* data) {
 }
 
 - (void)finishImportWithSelectedPasswordIds:
-    (const std::vector<int>&)selectedPasswordIds {
+            (const std::vector<int>&)selectedPasswordIds
+                         selectedPasskeyIds:
+                             (const std::vector<int>&)selectedPasskeyIds {
   __weak __typeof(_delegate) weakDelegate = _delegate;
   base::RepeatingClosure allCredentialTypesImportedClosure =
       base::BarrierClosure(_presentCredentialTypesCount, base::BindOnce(^{
@@ -140,12 +143,11 @@ std::string DataToString(NSData* data) {
         }).Then(allCredentialTypesImportedClosure));
   }
   if (_passkeys.count > 0) {
-    // TODO(crbug.com/450982128): Pass chosen ids from the conflict UI.
-    _passkeyImporter->FinishImport(
-        /*selected_conflicting_passkey_ids=*/{},
-        base::BindOnce(^(int passkeysImported) {
-          [weakDelegate onPasskeysImported:passkeysImported];
-        }).Then(allCredentialTypesImportedClosure));
+    _passkeyImporter->FinishImport(selectedPasskeyIds,
+                                   base::BindOnce(^(int passkeysImported) {
+                                     [weakDelegate
+                                         onPasskeysImported:passkeysImported];
+                                   }).Then(allCredentialTypesImportedClosure));
   }
 }
 
@@ -302,15 +304,17 @@ std::string DataToString(NSData* data) {
 - (void)onAllCredentialTypesProcessed {
   if (_passkeyImportResult.conflicts.empty() &&
       _passwordImportResult.displayed_entries.empty()) {
-    [self finishImportWithSelectedPasswordIds:{}];
+    [self finishImportWithSelectedPasswordIds:{} selectedPasskeyIds:{}];
     return;
   }
 
-  // TODO(crbug.com/450982128): Pass passkey conflicts.
-  [_delegate
-      showConflictResolutionScreenWithPasswords:
-          [PasswordImportItem
-              passwordImportItemsFromImportResults:_passwordImportResult]];
+  NSArray<PasswordImportItem*>* passwords = [PasswordImportItem
+      passwordImportItemsFromImportResults:_passwordImportResult];
+  NSArray<PasskeyImportItem*>* passkeys = [PasskeyImportItem
+      passkeyImportItemsFromImportedPasskeyInfos:_passkeyImportResult
+                                                     .conflicts];
+  [_delegate showConflictResolutionScreenWithPasswords:passwords
+                                              passkeys:passkeys];
 }
 
 @end

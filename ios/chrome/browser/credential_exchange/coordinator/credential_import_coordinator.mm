@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
+#import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -116,13 +117,16 @@
 }
 
 - (void)showConflictResolutionScreenWithPasswords:
-    (NSArray<PasswordImportItem*>*)passwords {
+            (NSArray<PasswordImportItem*>*)passwords
+                                         passkeys:(NSArray<PasskeyImportItem*>*)
+                                                      passkeys {
   // Wraps the conflict resolution view in a navigation controller to display
   // navigation bar and toolbar.
   DataImportCredentialConflictResolutionViewController*
       conflictResolutionViewController =
           [[DataImportCredentialConflictResolutionViewController alloc]
-              initWithPasswordConflicts:passwords];
+              initWithPasswordConflicts:passwords
+                       passkeyConflicts:passkeys];
   conflictResolutionViewController.mutator = _mediator;
   UINavigationController* wrapper = [[UINavigationController alloc]
       initWithRootViewController:conflictResolutionViewController];

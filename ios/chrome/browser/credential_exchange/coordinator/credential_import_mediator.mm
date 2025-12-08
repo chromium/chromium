@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_consumer.h"
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
+#import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 
 @interface CredentialImportMediator () <CredentialImporterDelegate>
@@ -92,9 +93,12 @@
 }
 
 - (void)showConflictResolutionScreenWithPasswords:
-    (NSArray<PasswordImportItem*>*)passwords {
-  CHECK_GT(passwords.count, 0ul);
-  [_delegate showConflictResolutionScreenWithPasswords:passwords];
+            (NSArray<PasswordImportItem*>*)passwords
+                                         passkeys:(NSArray<PasskeyImportItem*>*)
+                                                      passkeys {
+  CHECK(passwords.count > 0ul || passkeys.count > 0ul);
+  [_delegate showConflictResolutionScreenWithPasswords:passwords
+                                              passkeys:passkeys];
 }
 
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results {
@@ -122,12 +126,18 @@
 
 #pragma mark - DataImportCredentialConflictMutator
 
-- (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers {
+- (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers
+                         passkeys:(NSArray<NSNumber*>*)passkeyIdentifiers {
   std::vector<int> selectedPasswordIds;
   for (NSNumber* identifier in passwordIdentifiers) {
     selectedPasswordIds.push_back([identifier intValue]);
   }
-  [_credentialImporter finishImportWithSelectedPasswordIds:selectedPasswordIds];
+  std::vector<int> selectedPasskeyIds;
+  for (NSNumber* identifier in passkeyIdentifiers) {
+    selectedPasskeyIds.push_back([identifier intValue]);
+  }
+  [_credentialImporter finishImportWithSelectedPasswordIds:selectedPasswordIds
+                                        selectedPasskeyIds:selectedPasskeyIds];
 }
 
 @end

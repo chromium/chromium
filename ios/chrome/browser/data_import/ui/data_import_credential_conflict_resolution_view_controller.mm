@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
 #import "ios/chrome/browser/data_import/public/conflict_item_identifier.h"
 #import "ios/chrome/browser/data_import/public/metrics.h"
+#import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_mutator.h"
 #import "ios/chrome/browser/data_import/ui/data_import_import_stage_transition_handler.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -37,6 +39,8 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 @implementation DataImportCredentialConflictResolutionViewController {
   /// List of password conflicts.
   NSArray<PasswordImportItem*>* _passwordConflicts;
+  /// List of passkey conflicts.
+  NSArray<PasskeyImportItem*>* _passkeyConflicts;
   /// List of NSNumber representation of boolean values indicating the password
   /// at the respective index should be unmasked for display.
   NSMutableArray<NSNumber*>* _shouldUnmaskPasswordAtIndex;
@@ -52,11 +56,13 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 
 #pragma mark - ChromeTableViewController
 
-- (instancetype)initWithPasswordConflicts:
-    (NSArray<PasswordImportItem*>*)passwords {
+- (instancetype)
+    initWithPasswordConflicts:(NSArray<PasswordImportItem*>*)passwords
+             passkeyConflicts:(NSArray<PasskeyImportItem*>*)passkeys {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _passwordConflicts = passwords;
+    _passkeyConflicts = passkeys;
     _shouldUnmaskPasswordAtIndex = [NSMutableArray array];
     NSUInteger count = _passwordConflicts.count;
     for (NSUInteger i = 0; i < count; i++) {
@@ -110,14 +116,14 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([self selectedItemsCount] == _passwordConflicts.count) {
+  if ([self selectedItemsCount] == [self allItemsCount]) {
     [self updateSelectionButton];
   }
 }
 
 - (void)tableView:(UITableView*)tableView
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if ([self selectedItemsCount] == _passwordConflicts.count - 1) {
+  if ([self selectedItemsCount] == [self allItemsCount] - 1) {
     [self updateSelectionButton];
   }
 }
@@ -135,21 +141,28 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   RecordDataImportDismissCredentialConflictScreen(
       DataImportCredentialConflictScreenAction::kContinue);
   NSMutableArray<NSNumber*>* passwordIdentifiers = [NSMutableArray array];
+  NSMutableArray<NSNumber*>* passkeyIdentifiers = [NSMutableArray array];
   for (NSIndexPath* indexPath in [self.tableView indexPathsForSelectedRows]) {
     ConflictItemIdentifier* identifier =
         [_dataSource itemIdentifierForIndexPath:indexPath];
     if (identifier.type == CredentialConflictType::kPassword) {
       [passwordIdentifiers addObject:@(identifier.index)];
+    } else {
+      [passkeyIdentifiers addObject:@(identifier.index)];
     }
   }
-  [self.mutator continueToImportPasswords:passwordIdentifiers];
+  [self.mutator continueToImportPasswords:passwordIdentifiers
+                                 passkeys:passkeyIdentifiers];
   [self.presentingViewController dismissViewControllerAnimated:YES
                                                     completion:nil];
 }
 
+// If all rows in the table view are currently selected, deselects all.
+// Otherwise, selects all rows in the table view. Updates the toolbar button
+// based on the action that was taken ("select all" when all items where
+// deselected and "deselect all" otherwise).
 - (void)didTapSelectionButton {
-  NSUInteger totalCount = _passwordConflicts.count;
-  BOOL deselect = totalCount == [self selectedItemsCount];
+  BOOL deselect = [self allItemsCount] == [self selectedItemsCount];
   NSArray<ConflictItemIdentifier*>* identifiers = [[_dataSource snapshot]
       itemIdentifiersInSectionWithIdentifier:
           kDataImportCredentialConflictResolutionSection];
@@ -187,10 +200,27 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   return selectedRows ? selectedRows.count : 0;
 }
 
+/// Returns the count of all items displayed in the table.
+- (NSUInteger)allItemsCount {
+  return _passwordConflicts.count + _passkeyConflicts.count;
+}
+
 /// Returns the cell with the properties of the `item` displayed.
 - (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(ConflictItemIdentifier*)identifier {
   /// Populate cell with information.
+  if (identifier.type == CredentialConflictType::kPasskey) {
+    PasskeyImportItem* item = _passkeyConflicts[identifier.index];
+    UITableViewCell* cell =
+        DequeueTableViewCell<UITableViewCell>(self.tableView);
+    TableViewCellContentConfiguration* contentConfig =
+        [[TableViewCellContentConfiguration alloc] init];
+    contentConfig.title = item.username;
+    contentConfig.subtitle = item.rpId;
+    cell.contentConfiguration = contentConfig;
+    return cell;
+  }
+
   PasswordImportItem* item = _passwordConflicts[identifier.index];
   UITableViewCell* cell = DequeueTableViewCell<UITableViewCell>(self.tableView);
   cell.accessibilityIdentifier =
@@ -268,7 +298,8 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   [self updateSelectionButton];
 }
 
-/// Sets `_dataSource` and fills the table with data from `_passwordConflicts`.
+/// Sets `_dataSource` and fills the table with data from `_passwordConflicts`
+/// and `_passkeyConflicts`.
 - (void)initializeDataSourceAndTable {
   /// Set up data source.
   __weak __typeof(self) weakSelf = self;
@@ -295,6 +326,11 @@ NSString* const kDataImportCredentialConflictResolutionSection =
         addObject:[[ConflictItemIdentifier alloc]
                       initWithType:CredentialConflictType::kPassword
                              index:i]];
+  }
+  for (NSUInteger i = 0; i < _passkeyConflicts.count; i++) {
+    [itemIdentifiers addObject:[[ConflictItemIdentifier alloc]
+                                   initWithType:CredentialConflictType::kPasskey
+                                          index:i]];
   }
 
   [snapshot appendItemsWithIdentifiers:itemIdentifiers

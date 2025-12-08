@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+@class PasskeyImportItem;
 @class PasswordImportItem;
 @protocol DataImportImportStageTransitionHandler;
 @protocol DataImportCredentialConflictMutator;
@@ -20,7 +21,9 @@
 @property(nonatomic, weak) id<DataImportCredentialConflictMutator> mutator;
 
 - (instancetype)initWithPasswordConflicts:
-    (NSArray<PasswordImportItem*>*)passwords NS_DESIGNATED_INITIALIZER;
+                    (NSArray<PasswordImportItem*>*)passwords
+                         passkeyConflicts:(NSArray<PasskeyImportItem*>*)passkeys
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end
