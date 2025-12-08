@@ -298,7 +298,9 @@ suite('Composebox', () => {
     input.dispatchEvent(new Event('input', {bubbles: true}));
     await waitAfterNextRender(composebox);
     await Promise.all([
-      cancelShowPromise, cancelContainerShowPromise, submitContainerShowPromise,
+      cancelShowPromise,
+      cancelContainerShowPromise,
+      submitContainerShowPromise,
     ]);
 
     assertTrue(isTrulyVisible(submitContainer));
@@ -313,8 +315,8 @@ suite('Composebox', () => {
     await waitAfterNextRender(composebox);
 
     // Blur the input to collapse the composebox.
-    const submitHidePromise = getTransitionEndPromise(
-        submitContainer, 'opacity');
+    const submitHidePromise =
+        getTransitionEndPromise(submitContainer, 'opacity');
     const cancelHidePromise =
         getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
     input.blur();
@@ -748,5 +750,153 @@ suite('Composebox', () => {
 
     // Verify the input is now focused.
     assertEquals(input, composebox.shadowRoot!.activeElement);
+  });
+
+  test('MaxSuggestionsUpdatesOnResize', async () => {
+    loadTimeData.overrideValues({enableAimSearchbox: true});
+    const composebox = await setupTest();
+
+    // Set initial window height to allow for some suggestions.
+    // Header (66) + Margin (30) + Composebox (e.g. 90) = ~186.
+    // Suggestion height = 54.
+    // 300px height -> 300 - 186 = 114. 114 / 54 = 2 suggestions.
+    Object.defineProperty(
+        window, 'innerHeight',
+        {writable: true, configurable: true, value: 300});
+    window.dispatchEvent(new Event('resize'));
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Verify max suggestions is calculated correctly.
+    // Note: Composebox height might vary slightly, so we check range or
+    // specific logic if predictable. We can check if it's > 0.
+    const maxSuggestions1 = (composebox as any).maxSuggestions;
+    assertTrue(maxSuggestions1 > 0);
+
+    // Increase window height.
+    Object.defineProperty(
+        window, 'innerHeight',
+        {writable: true, configurable: true, value: 600});
+    window.dispatchEvent(new Event('resize'));
+    await waitAfterNextRender(lensSidePanelElement);
+
+    const maxSuggestions2 = (composebox as any).maxSuggestions;
+    assertTrue(maxSuggestions2 > maxSuggestions1);
+  });
+
+  test('DropdownLimitsSuggestionsBasedOnMaxSuggestions', async () => {
+    loadTimeData.overrideValues({
+      enableAimSearchbox: true,
+      enableLensAimSuggestions: true,
+      composeboxShowZps: true,
+    });
+    const composebox = await setupTest();
+    const dropdown =
+        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+    assertTrue(!!dropdown);
+
+    // Set max suggestions to 1.
+    (composebox as any).maxSuggestions = 1;
+    await waitAfterNextRender(composebox);
+
+    // Focus input to expand composebox.
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+    input.focus();
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+    await getTransitionEndPromise(animatedElement, 'max-height');
+
+    // Send 3 suggestions to the composebox.
+    const matches = [
+      createSearchMatch({fillIntoEdit: 'match 1'}),
+      createSearchMatch({fillIntoEdit: 'match 2'}),
+      createSearchMatch({fillIntoEdit: 'match 3'}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({matches}));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(composebox);
+
+    // Verify only 1 match is rendered in the dropdown.
+    const renderedMatches =
+        dropdown.shadowRoot!.querySelectorAll('cr-composebox-match');
+    assertEquals(1, renderedMatches.length);
+  });
+
+  test('MaxSuggestionsUpdatesOnResize', async () => {
+    loadTimeData.overrideValues({enableAimSearchbox: true});
+    const composebox = await setupTest();
+
+    // Set initial window height to allow for some suggestions.
+    // Header (66) + Margin (30) + Composebox (e.g. 90) = ~186.
+    // Suggestion height = 54.
+    // 300px height -> 300 - 186 = 114. 114 / 54 = 2 suggestions.
+    Object.defineProperty(window, 'innerHeight', {
+      writable: true,
+      configurable: true,
+      value: 300,
+    });
+    window.dispatchEvent(new Event('resize'));
+    await waitAfterNextRender(lensSidePanelElement);
+
+    // Verify max suggestions is calculated correctly.
+    const maxSuggestions1 = (composebox as any).maxSuggestions;
+    assertTrue(maxSuggestions1 > 0);
+
+    // Increase window height.
+    Object.defineProperty(window, 'innerHeight', {
+      writable: true,
+      configurable: true,
+      value: 600,
+    });
+    window.dispatchEvent(new Event('resize'));
+    await waitAfterNextRender(lensSidePanelElement);
+
+    const maxSuggestions2 = (composebox as any).maxSuggestions;
+    assertTrue(maxSuggestions2 > maxSuggestions1);
+  });
+
+  test('DropdownLimitsSuggestionsBasedOnMaxSuggestions', async () => {
+    loadTimeData.overrideValues({
+      enableAimSearchbox: true,
+      enableLensAimSuggestions: true,
+      composeboxShowZps: true,
+    });
+    const composebox = await setupTest();
+    const dropdown =
+        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+    assertTrue(!!dropdown);
+
+    // Set max suggestions to 1.
+    (composebox as any).maxSuggestions = 1;
+    await waitAfterNextRender(composebox);
+
+    // Focus input to expand composebox.
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+    input.focus();
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+    await getTransitionEndPromise(animatedElement, 'max-height');
+
+    // Send 3 suggestions to the composebox.
+    const matches = [
+      createSearchMatch({fillIntoEdit: 'match 1'}),
+      createSearchMatch({fillIntoEdit: 'match 2'}),
+      createSearchMatch({fillIntoEdit: 'match 3'}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({matches}));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(composebox);
+
+    // Verify only 1 match is rendered in the dropdown.
+    const renderedMatches =
+        dropdown.shadowRoot!.querySelectorAll('cr-composebox-match');
+    assertEquals(1, renderedMatches.length);
   });
 });
