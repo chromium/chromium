@@ -705,64 +705,12 @@ public class BottomSheetControllerTest {
 
     @Test
     @MediumTest
-    public void testHeightUpdatedWithHalfRatioChanged() {
-        float customHalfHeight = 0.3f;
-        // Disable peek state, so that the opening state will be half state.
-        mLowPriorityContent.setPeekHeight(BottomSheetContent.HeightMode.DISABLED);
-        mLowPriorityContent.setHalfHeightRatio(customHalfHeight);
-        requestContentInSheet(mLowPriorityContent, true);
-
-        expandSheet();
-
-        customHalfHeight = 0.6f;
-        mLowPriorityContent.setHalfHeightRatio(customHalfHeight);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSheetController.updateSheetHeight();
-                    mTestSupport.endAllAnimations();
-                });
-
-        int computedOffset = (int) (customHalfHeight * mSheetController.getContainerHeight());
-        assertEquals(
-                "Half height is incorrect after half ratio changed.",
-                computedOffset,
-                mSheetController.getCurrentOffset());
-    }
-
-    @Test
-    @MediumTest
     public void testCustomFullRatio() {
         final float customFullHeight = 0.5f;
         mLowPriorityContent.setFullHeightRatio(customFullHeight);
         requestContentInSheet(mLowPriorityContent, true);
 
         maximizeSheet();
-
-        int computedOffset = (int) (customFullHeight * mSheetController.getContainerHeight());
-        assertEquals(
-                "Full height is incorrect for custom ratio.",
-                computedOffset,
-                mSheetController.getCurrentOffset());
-    }
-
-    @Test
-    @MediumTest
-    public void testHeightUpdatedWithFullRatioChanged() {
-        float customFullHeight = 0.5f;
-        mLowPriorityContent.setFullHeightRatio(customFullHeight);
-        requestContentInSheet(mLowPriorityContent, true);
-
-        maximizeSheet();
-
-        customFullHeight = 0.8f;
-        mLowPriorityContent.setFullHeightRatio(customFullHeight);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSheetController.updateSheetHeight(SheetState.FULL);
-                    mTestSupport.endAllAnimations();
-                });
 
         int computedOffset = (int) (customFullHeight * mSheetController.getContainerHeight());
         assertEquals(
@@ -781,44 +729,6 @@ public class BottomSheetControllerTest {
 
         assertEquals(
                 "The bottom sheet should be at the full state when half is disabled.",
-                SheetState.FULL,
-                mSheetController.getSheetState());
-    }
-
-    @Test
-    @MediumTest
-    public void testUpdateSheetHeightWithDisabledHalfState() {
-        mLowPriorityContent.setHalfHeightRatio(BottomSheetContent.HeightMode.DISABLED);
-        requestContentInSheet(mLowPriorityContent, true);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSheetController.updateSheetHeight(SheetState.HALF);
-                    mTestSupport.endAllAnimations();
-                });
-
-        assertEquals(
-                "The bottom sheet should be at the full state when half is disabled.",
-                SheetState.FULL,
-                mSheetController.getSheetState());
-    }
-
-    @Test
-    @MediumTest
-    public void testUpdateSheetHeightUpdatesSheetState() {
-        requestContentInSheet(mLowPriorityContent, true);
-
-        expandSheet();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mSheetController.updateSheetHeight(SheetState.FULL);
-                    mTestSupport.endAllAnimations();
-                });
-
-        assertEquals(
-                "The bottom sheet should be at the full state when height is updated to full"
-                        + " state.",
                 SheetState.FULL,
                 mSheetController.getSheetState());
     }

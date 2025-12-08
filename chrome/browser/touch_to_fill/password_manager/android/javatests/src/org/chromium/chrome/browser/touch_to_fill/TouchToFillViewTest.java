@@ -49,7 +49,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -973,7 +972,6 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    @Ignore("TODO(crbug.com/430575808): Fix screen state update with animation in test")
     public void testMorePasskeysButtonIsClickable() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -984,9 +982,6 @@ public class TouchToFillViewTest {
                                             buildFooterItem(/* showHybrid= */ false)));
                     mModel.set(VISIBLE, true);
                 });
-        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.SCROLLING);
-
-        ThreadUtils.runOnUiThreadBlocking(() -> mSheetTestSupport.endAllAnimations());
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         ThreadUtils.runOnUiThreadBlocking(
