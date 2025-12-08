@@ -411,6 +411,9 @@ struct GetDetailsForCreateBnplPaymentInstrumentRequestDetails {
   std::string app_locale;
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
+  // A vector of signals used to share client behavior with the Payments
+  // server.
+  std::vector<ClientBehaviorConstants> client_behavior_signals;
   // The ID of the BNPL partner to be linked. i.e. Affirm
   std::string issuer_id;
 };
@@ -567,6 +570,9 @@ struct GetDetailsForUpdateBnplPaymentInstrumentRequestDetails {
   std::string app_locale;
   // The billing customer number for the account this request is sent to.
   int64_t billing_customer_number = 0;
+  // A vector of signals used to share client behavior with the Payments
+  // server.
+  std::vector<ClientBehaviorConstants> client_behavior_signals;
   // The platform identifier for the instrument being updated.
   int64_t instrument_id = 0;
   // The type of the GetDetailsForUpdateBnplPaymentInstrument request.
