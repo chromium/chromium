@@ -93,6 +93,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.browserProxy_.callbackRouter.setThreadTitle.addListener(
             (title: string) => {
               this.threadTitle_ = title;
+              document.title = title || loadTimeData.getString('title');
             }),
         this.browserProxy_.callbackRouter.postMessageToWebview.addListener(
             this.postMessageToWebview.bind(this)),
