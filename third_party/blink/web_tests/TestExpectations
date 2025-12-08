@@ -5248,8 +5248,6 @@ crbug.com/709227 external/wpt/html/browsers/history/the-location-interface/per-g
 
 # ====== Tests from enabling .any.js/.worker.js tests end here ========
 
-crbug.com/40551880 http/tests/devtools/sources/debugger/live-edit-no-reveal.js [ Crash Failure Pass Timeout ]
-
 # ====== Begin of display: contents tests ======
 
 crbug.com/181374 external/wpt/css/css-display/display-contents-dynamic-table-001-inline.html [ Failure ]
