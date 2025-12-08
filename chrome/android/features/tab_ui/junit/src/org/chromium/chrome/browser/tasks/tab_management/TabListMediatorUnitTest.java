@@ -1787,6 +1787,35 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testTabAddition_withArchivedTabsMessagePresent() {
+        mModelList.clear();
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
+        when(model.get(MESSAGE_TYPE)).thenReturn(ARCHIVED_TABS_MESSAGE);
+        when(model.containsKeyEqualTo(MESSAGE_TYPE, ARCHIVED_TABS_MESSAGE)).thenReturn(true);
+        mMediator.addSpecialItemToModel(0, UiType.ARCHIVED_TABS_MESSAGE, model);
+
+        assertThat(mModelList.size(), equalTo(1));
+
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        doReturn(newTab).when(mTabGroupModelFilter).getRepresentativeTabAt(0);
+        doReturn(1).when(mTabGroupModelFilter).getIndividualTabAndGroupCount();
+        doReturn(Arrays.asList(newTab)).when(mTabGroupModelFilter).getRelatedTabList(eq(TAB3_ID));
+
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        newTab,
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND,
+                        false);
+
+        assertThat(mModelList.size(), equalTo(2));
+        assertThat(mModelList.get(0).model.get(MESSAGE_TYPE), equalTo(ARCHIVED_TABS_MESSAGE));
+        assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
+    }
+
+    @Test
     public void tabMergeIntoGroup() {
         // Assume that moveTab in TabModel is finished. Selected tab in the group becomes mTab1.
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION2);

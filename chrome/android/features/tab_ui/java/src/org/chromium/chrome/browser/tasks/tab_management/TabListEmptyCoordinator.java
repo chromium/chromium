@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ARCHIVED_TABS_MESSAGE;
 
 import android.content.Context;
 import android.view.View;
@@ -130,7 +132,12 @@ class TabListEmptyCoordinator {
     }
 
     private boolean isInEmptyState() {
-        return mModel.size() == 0 && mIsTabSwitcherShowing;
+        boolean isOnlyArchivedMsg =
+                mModel.size() == 1
+                        && mModel.get(0)
+                                .model
+                                .containsKeyEqualTo(MESSAGE_TYPE, ARCHIVED_TABS_MESSAGE);
+        return (mModel.isEmpty() || isOnlyArchivedMsg) && mIsTabSwitcherShowing;
     }
 
     private void updateEmptyView() {

@@ -235,7 +235,7 @@ public class TabSwitcherMessageManagerUnitTest {
                 .removeSpecialListItem(
                         UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                         MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator)
+        verify(mTabListCoordinator, never())
                 .removeSpecialListItem(
                         UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
@@ -259,7 +259,7 @@ public class TabSwitcherMessageManagerUnitTest {
                 .removeSpecialListItem(
                         UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                         MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator)
+        verify(mTabListCoordinator, never())
                 .removeSpecialListItem(
                         UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
@@ -285,7 +285,7 @@ public class TabSwitcherMessageManagerUnitTest {
                 .removeSpecialListItem(
                         UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                         MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator)
+        verify(mTabListCoordinator, never())
                 .removeSpecialListItem(
                         UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mTabListCoordinator)
@@ -321,7 +321,7 @@ public class TabSwitcherMessageManagerUnitTest {
                 .removeSpecialListItem(
                         UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                         MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator)
+        verify(mTabListCoordinator, never())
                 .removeSpecialListItem(
                         UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
@@ -340,7 +340,7 @@ public class TabSwitcherMessageManagerUnitTest {
                 .removeSpecialListItem(
                         UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                         MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator)
+        verify(mTabListCoordinator, never())
                 .removeSpecialListItem(
                         UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mTabListCoordinator)

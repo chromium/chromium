@@ -108,7 +108,7 @@ public class TabSwitcherMessageManager {
     private final MultiWindowModeStateDispatcher.MultiWindowModeObserver mMultiWindowModeObserver =
             isInMultiWindowMode -> {
                 if (isInMultiWindowMode) {
-                    removeAllAppendedMessage();
+                    onAllTabsClosed();
                 } else {
                     restoreAllAppendedMessage();
                 }
@@ -299,7 +299,7 @@ public class TabSwitcherMessageManager {
         TabListCoordinator currentTabListCoordinator = mTabListCoordinatorSupplier.get();
         if (currentTabListCoordinator != tabListCoordinator) return;
 
-        removeAllAppendedMessage();
+        onAllTabsClosed();
 
         mTabListCoordinatorSupplier.set(null);
         mPriceWelcomeMessageReviewActionProviderSupplier.set(null);
@@ -423,7 +423,7 @@ public class TabSwitcherMessageManager {
     /** Called after resetting the list of tabs. */
     public void afterReset(int tabCount) {
         onTabGroupModelFilterChanged(mCurrentTabGroupModelFilterSupplier.get(), null);
-        removeAllAppendedMessage();
+        onAllTabsClosed();
         if (tabCount > 0) {
             appendMessagesTo(tabCount);
         }
@@ -556,10 +556,10 @@ public class TabSwitcherMessageManager {
     }
 
     /**
-     * Remove all the message items in the model list. Right now this is used when all tabs are
-     * closed in the grid tab switcher.
+     * Remove message items in the model list. Right now this is used when all tabs are closed in
+     * the grid tab switcher.
      */
-    private void removeAllAppendedMessage() {
+    private void onAllTabsClosed() {
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
         if (tabListCoordinator == null) return;
 
@@ -567,8 +567,6 @@ public class TabSwitcherMessageManager {
         tabListCoordinator.removeSpecialListItem(UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
         tabListCoordinator.removeSpecialListItem(
                 UiType.INCOGNITO_REAUTH_PROMO_MESSAGE, MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        tabListCoordinator.removeSpecialListItem(
-                UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
 
         // TODO(crbug.com/441040016): Refactor the lifecycle of the TabGroupSuggestionMessageService
         // so that we don't need to pass a dismiss runnable.
@@ -702,7 +700,7 @@ public class TabSwitcherMessageManager {
         TabGroupModelFilter tabGroupModelFilter = mCurrentTabGroupModelFilterSupplier.get();
         assumeNonNull(tabGroupModelFilter);
         if (tabGroupModelFilter.getTabModel().getCount() == numTabsToRemove) {
-            removeAllAppendedMessage();
+            onAllTabsClosed();
         }
     }
 
