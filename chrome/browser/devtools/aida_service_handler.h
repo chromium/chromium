@@ -19,7 +19,7 @@ class AidaServiceHandler : public DevToolsHttpServiceHandler {
   void CanMakeRequest(Profile* profile,
                       base::OnceCallback<void(bool success)> callback) override;
   GURL BaseURL() const override;
-  signin::ScopeSet OAuthScopes() const override;
+  signin::OAuthConsumerId OAuthConsumerId() const override;
   net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag() const override;
 };
 

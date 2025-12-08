@@ -75,8 +75,8 @@ GURL AidaServiceHandler::BaseURL() const {
   return GURL("https://aida.googleapis.com");
 }
 
-signin::ScopeSet AidaServiceHandler::OAuthScopes() const {
-  return {GaiaConstants::kAidaOAuth2Scope};
+signin::OAuthConsumerId AidaServiceHandler::OAuthConsumerId() const {
+  return signin::OAuthConsumerId::kDevtoolsAida;
 }
 
 net::NetworkTrafficAnnotationTag

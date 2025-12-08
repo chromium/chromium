@@ -15,7 +15,7 @@ class GdpServiceHandler : public DevToolsHttpServiceHandler {
  private:
   // DevToolsHttpServiceHandler overrides:
   GURL BaseURL() const override;
-  signin::ScopeSet OAuthScopes() const override;
+  signin::OAuthConsumerId OAuthConsumerId() const override;
   net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag() const override;
 };
 

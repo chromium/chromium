@@ -207,7 +207,9 @@ class TestServiceHandler : public DevToolsHttpServiceHandler {
   ~TestServiceHandler() override = default;
 
   GURL BaseURL() const override { return GURL("http://localhost:8000"); }
-  signin::ScopeSet OAuthScopes() const override { return {}; }
+  signin::OAuthConsumerId OAuthConsumerId() const override {
+    return signin::OAuthConsumerId::kDevtoolsAida;
+  }
   net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag()
       const override {
     return TRAFFIC_ANNOTATION_FOR_TESTS;
@@ -268,7 +270,9 @@ class MockServiceHandler : public DevToolsHttpServiceHandler {
   ~MockServiceHandler() override = default;
 
   GURL BaseURL() const override { return GURL("http://localhost:8000"); }
-  signin::ScopeSet OAuthScopes() const override { return {}; }
+  signin::OAuthConsumerId OAuthConsumerId() const override {
+    return signin::OAuthConsumerId::kDevtoolsAida;
+  }
   net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag()
       const override {
     return TRAFFIC_ANNOTATION_FOR_TESTS;

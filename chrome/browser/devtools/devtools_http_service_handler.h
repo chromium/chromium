@@ -13,7 +13,6 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -69,8 +68,8 @@ class DevToolsHttpServiceHandler {
   // Returns the base URL for the service's API.
   virtual GURL BaseURL() const = 0;
 
-  // Returns the OAuth scopes required for authenticating with the service.
-  virtual signin::ScopeSet OAuthScopes() const = 0;
+  // Returns the OAuth consumer id required for authenticating with the service.
+  virtual signin::OAuthConsumerId OAuthConsumerId() const = 0;
 
   // Returns the traffic annotation for the request.
   virtual net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag()

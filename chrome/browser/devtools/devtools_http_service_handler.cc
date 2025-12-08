@@ -59,7 +59,7 @@ void DevToolsHttpServiceHandler::OnValidationDone(
   auto access_token_fetcher =
       identity_manager->CreateAccessTokenFetcherForAccount(
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          "DevTools_dispatchHttpRequest", OAuthScopes(),
+          OAuthConsumerId(),
           base::BindOnce(&DevToolsHttpServiceHandler::OnTokenFetched,
                          weak_factory_.GetWeakPtr(), std::move(callback),
                          profile, params, fetcher_id),

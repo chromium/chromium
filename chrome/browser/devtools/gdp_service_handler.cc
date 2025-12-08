@@ -51,8 +51,8 @@ GURL GdpServiceHandler::BaseURL() const {
   return GURL("https://developers.googleapis.com");
 }
 
-signin::ScopeSet GdpServiceHandler::OAuthScopes() const {
-  return {GaiaConstants::kGdpOAuth2Scope};
+signin::OAuthConsumerId GdpServiceHandler::OAuthConsumerId() const {
+  return signin::OAuthConsumerId::kDevtoolsGdp;
 }
 
 net::NetworkTrafficAnnotationTag

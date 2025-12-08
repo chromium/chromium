@@ -109,6 +109,7 @@ constexpr char kAuthServiceGlanceablesClassroomName[] =
 constexpr char kAuthServiceTasksClientName[] = "auth_service_tasks_client";
 constexpr char kYouTubeMusicName[] = "youtube_music";
 constexpr char kContextualTasksName[] = "contextual_tasks";
+constexpr char kDevtoolsGdpName[] = "devtools_gdp_client";
 
 }  // namespace
 
@@ -481,6 +482,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return GetOAuthConsumerForEnterprisePlusAddress();
     case OAuthConsumerId::kGlicUserStatus:
       return GetOAuthConsumerForGlicUserStatus();
+    case OAuthConsumerId::kDevtoolsGdp:
+      return OAuthConsumer(
+          /*name=*/kDevtoolsGdpName,
+          /*scopes=*/{GaiaConstants::kGdpOAuth2Scope});
   }
 }
 
