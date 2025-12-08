@@ -5220,6 +5220,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.MediaFoundationRenderer.PlaybackError.ActiveGpuDisplayInfo"
+    enum="ActiveGpuDisplayInfo" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Active GPU's display information whether likely built-in or external when
+    the MediaFoundationRenderer hits a playback error. Reported whenever such an
+    event happens.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaFoundationRenderer.PlaybackError.ActiveGpuInfo"
     enum="ActiveGpuInfo" expires_after="2026-04-05">
   <owner>sangbaekpark@chromium.org</owner>
@@ -5228,6 +5240,16 @@ chromium-metrics-reviews@google.com.
     Active and non-active GPU vendor information when the
     MediaFoundationRenderer hits a playback error. Reported whenever such an
     event happens.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaFoundationRenderer.PlaybackError.ActiveGpuVendorId"
+    enum="GpuVendorId" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Active GPU vendor ID when the MediaFoundationRenderer hits a playback error.
+    Reported whenever such an event happens.
   </summary>
 </histogram>
 
@@ -5248,6 +5270,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of GPUs when the MediaFoundationRenderer hits a playback error.
     Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaFoundationRenderer.PlaybackError.NonActiveGpuVendorId"
+    enum="GpuVendorId" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Non-active GPU vendor ID when the MediaFoundationRenderer hits a playback
+    error. Reported whenever such an event happens.
   </summary>
 </histogram>
 
