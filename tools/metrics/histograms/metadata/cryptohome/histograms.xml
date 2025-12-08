@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Cryptohome.AuthFactorBackingStoreConfig"
-    enum="CryptohomeAuthFactorBackingStoreConfig" expires_after="2026-01-18">
+    enum="CryptohomeAuthFactorBackingStoreConfig" expires_after="2027-01-18">
   <owner>jadmanski@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
