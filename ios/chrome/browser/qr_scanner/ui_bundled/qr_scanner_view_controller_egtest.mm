@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_app_interface.h"
 #import "ios/chrome/browser/scanner/ui_bundled/camera_state.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -212,6 +213,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 @implementation QRScannerViewControllerTestCase {
   // A swizzler for the CameraController method cameraControllerWithDelegate:.
   std::unique_ptr<EarlGreyScopedBlockSwizzler> _camera_controller_swizzler;
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(kComposeboxIOS);
+  return config;
 }
 
 - (void)setUp {
