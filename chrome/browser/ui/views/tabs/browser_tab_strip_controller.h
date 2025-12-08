@@ -39,7 +39,8 @@ class TabGroupVisualData;
 // An implementation of TabStripController that sources data from the
 // WebContentses in a TabStripModel.
 class BrowserTabStripController : public TabStripController,
-                                  public TabStripModelObserver {
+                                  public TabStripModelObserver,
+                                  public TabContextMenuController::Delegate {
  public:
   BrowserTabStripController(TabStripModel* model,
                             BrowserView* browser_view,
@@ -179,17 +180,19 @@ class BrowserTabStripController : public TabStripController,
 
   void OnDiscardRingTreatmentEnabledChanged();
 
+  // TabContextMenuController::Delegate:
   bool IsContextMenuCommandChecked(
-      TabStripModel::ContextMenuCommand command_id);
+      TabStripModel::ContextMenuCommand command_id) override;
   bool IsContextMenuCommandEnabled(
       int index,
-      TabStripModel::ContextMenuCommand command_id);
+      TabStripModel::ContextMenuCommand command_id) override;
   bool IsContextMenuCommandAlerted(
-      TabStripModel::ContextMenuCommand command_id);
+      TabStripModel::ContextMenuCommand command_id) override;
   void ExecuteContextMenuCommand(int index,
                                  TabStripModel::ContextMenuCommand command_id,
-                                 int event_flags);
-  bool GetContextMenuAccelerator(int command_id, ui::Accelerator* accelerator);
+                                 int event_flags) override;
+  bool GetContextMenuAccelerator(int command_id,
+                                 ui::Accelerator* accelerator) override;
 
   raw_ptr<TabStripModel> model_;
 

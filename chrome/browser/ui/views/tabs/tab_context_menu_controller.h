@@ -21,25 +21,35 @@ class Widget;
 }  // namespace views
 
 // TabContextMenuController manages the logic for the TabContextMenu in both the
-// vertical and horizontal tab strips. Given callbacks for the necessary
-// commands, it creates and runs the menu. The typical usage for this class is
+// vertical and horizontal tab strips. The typical usage for this class is
 // as follows:
-// 1. Create the TabContextMenuController using the callbacks.
+// 1. Create the TabContextMenuController using the delegate.
 // 2. Create the model from a menu_model_factory instance.
 // 3. Load the model.
 // 4. Call RunMenuAt.
 class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
  public:
-  explicit TabContextMenuController(
-      base::RepeatingCallback<bool(TabStripModel::ContextMenuCommand)>
-          is_command_checked,
-      base::RepeatingCallback<bool(TabStripModel::ContextMenuCommand)>
-          is_command_enabled,
-      base::RepeatingCallback<bool(TabStripModel::ContextMenuCommand)>
-          is_command_alerted,
-      base::RepeatingCallback<void(TabStripModel::ContextMenuCommand, int)>
-          execute_command,
-      base::RepeatingCallback<bool(int, ui::Accelerator*)> get_accelerator);
+  class Delegate {
+   public:
+    virtual bool IsContextMenuCommandChecked(
+        TabStripModel::ContextMenuCommand command_id) = 0;
+    virtual bool IsContextMenuCommandEnabled(
+        int index,
+        TabStripModel::ContextMenuCommand command_id) = 0;
+    virtual bool IsContextMenuCommandAlerted(
+        TabStripModel::ContextMenuCommand command_id) = 0;
+    virtual void ExecuteContextMenuCommand(
+        int index,
+        TabStripModel::ContextMenuCommand command_id,
+        int event_flags) = 0;
+    virtual bool GetContextMenuAccelerator(int command_id,
+                                           ui::Accelerator* accelerator) = 0;
+
+   protected:
+    virtual ~Delegate() = default;
+  };
+
+  explicit TabContextMenuController(int index, Delegate* delegate);
 
   ~TabContextMenuController() override;
 
@@ -68,19 +78,8 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
  private:
   std::unique_ptr<ui::SimpleMenuModel> model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
-
-  // These callbacks handle the menu's state and execution. Utilizing callbacks
-  // allows for other TabStripControllers to utilize the
-  // TabContextMenuController in differing contexts.
-  base::RepeatingCallback<bool(TabStripModel::ContextMenuCommand)>
-      is_command_checked_;
-  base::RepeatingCallback<bool(TabStripModel::ContextMenuCommand)>
-      is_command_enabled_;
-  base::RepeatingCallback<bool(TabStripModel::ContextMenuCommand)>
-      is_command_alerted_;
-  base::RepeatingCallback<void(TabStripModel::ContextMenuCommand, int)>
-      execute_command_;
-  base::RepeatingCallback<bool(int, ui::Accelerator*)> get_accelerator_;
+  const int tab_index_;
+  raw_ptr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTEXT_MENU_CONTROLLER_H_

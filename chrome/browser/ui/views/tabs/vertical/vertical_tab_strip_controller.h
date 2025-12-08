@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
-#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 
 class BrowserView;
 class TabCollectionNode;
@@ -18,7 +17,7 @@ class View;
 
 // VerticalTabStripController manages the behavior of the vertical tab strip. It
 // performs a similar functionality as BrowserTabStripController.
-class VerticalTabStripController {
+class VerticalTabStripController : public TabContextMenuController::Delegate {
  public:
   VerticalTabStripController(TabStripModel* model,
                              BrowserView* browser_view,
@@ -27,32 +26,31 @@ class VerticalTabStripController {
   VerticalTabStripController(const VerticalTabStripController&) = delete;
   VerticalTabStripController& operator=(const VerticalTabStripController&) =
       delete;
-  ~VerticalTabStripController();
+  ~VerticalTabStripController() override;
 
   void ShowContextMenuForNode(TabCollectionNode* collection_node,
                               views::View* source,
                               const gfx::Point& point,
                               ui::mojom::MenuSourceType source_type);
 
-  std::optional<int> GetIndexFromMojomTab(
-      const tabs_api::mojom::Tab& mojom_tab);
-
   TabContextMenuController* GetTabContextMenuController() {
     return context_menu_controller_.get();
   }
 
  private:
+  // TabContextMenuController::Delegate:
   bool IsContextMenuCommandChecked(
-      TabStripModel::ContextMenuCommand command_id);
+      TabStripModel::ContextMenuCommand command_id) override;
   bool IsContextMenuCommandEnabled(
       int index,
-      TabStripModel::ContextMenuCommand command_id);
+      TabStripModel::ContextMenuCommand command_id) override;
   bool IsContextMenuCommandAlerted(
-      TabStripModel::ContextMenuCommand command_id);
+      TabStripModel::ContextMenuCommand command_id) override;
   void ExecuteContextMenuCommand(int index,
                                  TabStripModel::ContextMenuCommand command_id,
-                                 int event_flags);
-  bool GetContextMenuAccelerator(int command_id, ui::Accelerator* accelerator);
+                                 int event_flags) override;
+  bool GetContextMenuAccelerator(int command_id,
+                                 ui::Accelerator* accelerator) override;
 
   std::unique_ptr<TabContextMenuController> context_menu_controller_;
   std::unique_ptr<TabMenuModelFactory> menu_model_factory_;

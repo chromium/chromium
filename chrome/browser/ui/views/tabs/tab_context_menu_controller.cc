@@ -8,21 +8,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
-TabContextMenuController::TabContextMenuController(
-    base::RepeatingCallback<bool(TabStripModel::ContextMenuCommand)>
-        is_command_checked,
-    base::RepeatingCallback<bool(TabStripModel::ContextMenuCommand)>
-        is_command_enabled,
-    base::RepeatingCallback<bool(TabStripModel::ContextMenuCommand)>
-        is_command_alerted,
-    base::RepeatingCallback<void(TabStripModel::ContextMenuCommand, int)>
-        execute_command,
-    base::RepeatingCallback<bool(int, ui::Accelerator*)> get_accelerator)
-    : is_command_checked_(is_command_checked),
-      is_command_enabled_(is_command_enabled),
-      is_command_alerted_(is_command_alerted),
-      execute_command_(execute_command),
-      get_accelerator_(get_accelerator) {}
+TabContextMenuController::TabContextMenuController(int index,
+                                                   Delegate* delegate)
+    : tab_index_(index), delegate_(delegate) {}
 
 TabContextMenuController::~TabContextMenuController() = default;
 
@@ -51,27 +39,28 @@ void TabContextMenuController::CloseMenu() {
 }
 
 bool TabContextMenuController::IsCommandIdChecked(int command_id) const {
-  return is_command_checked_.Run(
+  return delegate_->IsContextMenuCommandChecked(
       static_cast<TabStripModel::ContextMenuCommand>(command_id));
 }
 
 bool TabContextMenuController::IsCommandIdEnabled(int command_id) const {
-  return is_command_enabled_.Run(
-      static_cast<TabStripModel::ContextMenuCommand>(command_id));
+  return delegate_->IsContextMenuCommandEnabled(
+      tab_index_, static_cast<TabStripModel::ContextMenuCommand>(command_id));
 }
 
 bool TabContextMenuController::IsCommandIdAlerted(int command_id) const {
-  return is_command_alerted_.Run(
+  return delegate_->IsContextMenuCommandAlerted(
       static_cast<TabStripModel::ContextMenuCommand>(command_id));
 }
 
 void TabContextMenuController::ExecuteCommand(int command_id, int event_flags) {
-  execute_command_.Run(
-      static_cast<TabStripModel::ContextMenuCommand>(command_id), event_flags);
+  delegate_->ExecuteContextMenuCommand(
+      tab_index_, static_cast<TabStripModel::ContextMenuCommand>(command_id),
+      event_flags);
 }
 
 bool TabContextMenuController::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
-  return get_accelerator_.Run(command_id, accelerator);
+  return delegate_->GetContextMenuAccelerator(command_id, accelerator);
 }

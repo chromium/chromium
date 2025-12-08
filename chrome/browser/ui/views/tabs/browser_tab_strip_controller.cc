@@ -503,20 +503,8 @@ void BrowserTabStripController::ShowContextMenuForTab(
     return;
   }
 
-  context_menu_controller_ = std::make_unique<TabContextMenuController>(
-      base::BindRepeating(
-          &BrowserTabStripController::IsContextMenuCommandChecked,
-          base::Unretained(this)),
-      base::BindRepeating(
-          &BrowserTabStripController::IsContextMenuCommandEnabled,
-          base::Unretained(this), tab_index.value()),
-      base::BindRepeating(
-          &BrowserTabStripController::IsContextMenuCommandAlerted,
-          base::Unretained(this)),
-      base::BindRepeating(&BrowserTabStripController::ExecuteContextMenuCommand,
-                          base::Unretained(this), tab_index.value()),
-      base::BindRepeating(&BrowserTabStripController::GetContextMenuAccelerator,
-                          base::Unretained(this)));
+  context_menu_controller_ =
+      std::make_unique<TabContextMenuController>(tab_index.value(), this);
 
   auto model = menu_model_factory_->Create(
       context_menu_controller_.get(),
