@@ -339,7 +339,7 @@ std::unique_ptr<TabCollection> TabStripCollection::MaybeRemoveCollection(
 void TabStripCollection::InsertTabCollectionAt(
     std::unique_ptr<TabCollection> collection,
     int index,
-    int pinned,
+    bool pinned,
     std::optional<tab_groups::TabGroupId> parent_group) {
   TabCollection::Position insertion_details =
       GetInsertionDetails(index, pinned, parent_group);
@@ -728,7 +728,7 @@ void TabStripCollection::MoveCollectionImpl(TabCollection* collection_ptr,
 
 TabCollection::Position TabStripCollection::GetInsertionDetails(
     int index,
-    int pinned,
+    bool pinned,
     std::optional<tab_groups::TabGroupId> group) {
   size_t direct_dst_index;
   TabCollection* insert_collection = nullptr;
