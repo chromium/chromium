@@ -112,8 +112,9 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   int GetPreferredDefaultSidePanelWidth();
 
-  // Update the associated WebContents for active tab.
-  void UpdateWebContentsForActiveTab();
+  // Update the associated WebContents for active tab. Returns whether the web
+  // contents was changed.
+  bool UpdateWebContentsForActiveTab();
 
   // Handle swapping WebContents if thread changes.
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);

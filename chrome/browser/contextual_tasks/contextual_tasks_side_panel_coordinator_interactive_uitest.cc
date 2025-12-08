@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
@@ -191,12 +193,34 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
 
         // Activate tab1, verify the side panel is open for thread2.
-        browser()->tab_strip_model()->ActivateTabAt(1);
-        EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+        {
+          base::HistogramTester histogram_tester;
+          base::UserActionTester user_action_tester;
+
+          browser()->tab_strip_model()->ActivateTabAt(1);
+          EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+
+          histogram_tester.ExpectUniqueSample(
+              "ContextualTasks.TabChange.UserAction.ChangedThreads", true, 1);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.ChangedThreads"),
+                    1);
+        }
 
         // Activate tab0. Verify the side panel is open for thread1.
-        browser()->tab_strip_model()->ActivateTabAt(0);
-        EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+        {
+          base::HistogramTester histogram_tester;
+          base::UserActionTester user_action_tester;
+
+          browser()->tab_strip_model()->ActivateTabAt(0);
+          EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+
+          histogram_tester.ExpectUniqueSample(
+              "ContextualTasks.TabChange.UserAction.ChangedThreads", true, 1);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.ChangedThreads"),
+                    1);
+        }
 
         // Close side panel for tab0, verify the side panel is closed for
         // thread1.
@@ -204,29 +228,101 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
         EXPECT_EQ(false, coordinator->IsSidePanelOpenForContextualTask());
 
         // Activate tab1, verify the side panel is open for thread2.
-        browser()->tab_strip_model()->ActivateTabAt(1);
-        EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+        {
+          base::HistogramTester histogram_tester;
+          base::UserActionTester user_action_tester;
+
+          browser()->tab_strip_model()->ActivateTabAt(1);
+          EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+
+          histogram_tester.ExpectUniqueSample(
+              "ContextualTasks.TabChange.UserAction.OpenSidePanel", true, 1);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.OpenSidePanel"),
+                    1);
+        }
 
         // Activate tab2, verify the active side panel is closed for thread1.
-        browser()->tab_strip_model()->ActivateTabAt(2);
-        EXPECT_EQ(false, coordinator->IsSidePanelOpenForContextualTask());
+        {
+          base::HistogramTester histogram_tester;
+          base::UserActionTester user_action_tester;
+
+          browser()->tab_strip_model()->ActivateTabAt(2);
+          EXPECT_EQ(false, coordinator->IsSidePanelOpenForContextualTask());
+
+          histogram_tester.ExpectUniqueSample(
+              "ContextualTasks.TabChange.UserAction.CloseSidePanel", true, 1);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.CloseSidePanel"),
+                    1);
+        }
 
         // Activate tab0, verify the active side panel is closed for thread1.
-        browser()->tab_strip_model()->ActivateTabAt(0);
-        EXPECT_EQ(false, coordinator->IsSidePanelOpenForContextualTask());
+        {
+          base::HistogramTester histogram_tester;
+          base::UserActionTester user_action_tester;
+
+          browser()->tab_strip_model()->ActivateTabAt(0);
+          EXPECT_EQ(false, coordinator->IsSidePanelOpenForContextualTask());
+
+          // No tab change histograms should be recorded as this is the status
+          // quo.
+          histogram_tester.ExpectTotalCount(
+              "ContextualTasks.TabChange.UserAction.CloseSidePanel", 0);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.CloseSidePanel"),
+                    0);
+          histogram_tester.ExpectTotalCount(
+              "ContextualTasks.TabChange.UserAction.OpenSidePanel", 0);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.CloseSidePanel"),
+                    0);
+          histogram_tester.ExpectTotalCount(
+              "ContextualTasks.TabChange.UserAction.StayedOnThread", 0);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.StayedOnThread"),
+                    0);
+          histogram_tester.ExpectTotalCount(
+              "ContextualTasks.TabChange.UserAction.ChangedThreads", 0);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.ChangedThreads"),
+                    0);
+        }
 
         // Show side panel for tab0, verify the side panel is open for thread1.
         coordinator->Show();
         EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
 
         // Show side panel for tab2, verify the side panel is open for thread1.
-        browser()->tab_strip_model()->ActivateTabAt(0);
-        EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+        {
+          base::HistogramTester histogram_tester;
+          base::UserActionTester user_action_tester;
+
+          browser()->tab_strip_model()->ActivateTabAt(2);
+          EXPECT_EQ(true, coordinator->IsSidePanelOpenForContextualTask());
+
+          histogram_tester.ExpectUniqueSample(
+              "ContextualTasks.TabChange.UserAction.StayedOnThread", true, 1);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.StayedOnThread"),
+                    1);
+        }
 
         // Activate tab3, verify the side panel is closed with no associated
         // thread.
-        browser()->tab_strip_model()->ActivateTabAt(3);
-        EXPECT_EQ(false, coordinator->IsSidePanelOpenForContextualTask());
+        {
+          base::HistogramTester histogram_tester;
+          base::UserActionTester user_action_tester;
+
+          browser()->tab_strip_model()->ActivateTabAt(3);
+          EXPECT_EQ(false, coordinator->IsSidePanelOpenForContextualTask());
+
+          histogram_tester.ExpectUniqueSample(
+              "ContextualTasks.TabChange.UserAction.CloseSidePanel", true, 1);
+          EXPECT_EQ(user_action_tester.GetActionCount(
+                        "ContextualTasks.TabChange.UserAction.CloseSidePanel"),
+                    1);
+        }
       }));
 }
 
@@ -249,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-                       SidePanelOpenByTranferWebContentsFromTab) {
+                       SidePanelOpenByTransferWebContentsFromTab) {
   SetUpTasks();
   // Add tab4 with contextual task side panel tab.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
