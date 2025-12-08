@@ -59,8 +59,7 @@ class WebviewElement extends HTMLElement {
       this.appendChild(this.iframeElement);
       this.attached = true;
       const iframeContentWindow = this.iframeElement.contentWindow;
-      webshell.attachIframeGuest(this.guestContentsId,
-                                iframeContentWindow);
+      webshell.attachIframeGuest(this.guestContentsId, iframeContentWindow);
     }
   }
 
@@ -86,13 +85,15 @@ class SecureEmbedElement extends HTMLElement {
     super();
     this.embedElement = document.createElement('embed');
     this.embedElement.style.border = '0px';
-    this.embedElement.style.margin = "0";
-    this.embedElement.style.padding = "0";
+    this.embedElement.style.margin = '0';
+    this.embedElement.style.padding = '0';
     this.embedElement.style.flex = '1';
     this.guestContentsId = loadTimeData.getInteger('guest-contents-id');
     console.log('secure-embed guest-contents-id', this.guestContentsId);
-    this.embedElement.setAttribute('data-content-id', this.guestContentsId.toString());
-    this.embedElement.setAttribute('type', 'application/x-google-chrome-secure-embed');
+    this.embedElement.setAttribute(
+        'data-content-id', this.guestContentsId.toString());
+    this.embedElement.setAttribute(
+        'type', 'application/x-google-chrome-secure-embed');
   }
 
   connectedCallback() {
@@ -117,10 +118,10 @@ class SecureEmbedElement extends HTMLElement {
 
 webshell.allowWebviewElementRegistration(() => {
   customElements.define("webview", WebviewElement);
-  customElements.define("secureembed", SecureEmbedElement);
+  customElements.define('secureembed', SecureEmbedElement);
 });
 
-let currentEmbedElement: WebviewElement | SecureEmbedElement | null = null;
+let currentEmbedElement: WebviewElement|SecureEmbedElement|null = null;
 
 function attachViaGuestContents() {
   if (currentEmbedElement) {
@@ -128,8 +129,8 @@ function attachViaGuestContents() {
   }
 
   // Create and attach WebviewElement
-  const webview = document.createElement("webview") as WebviewElement;
-  webview.id = "webview";
+  const webview = document.createElement('webview') as WebviewElement;
+  webview.id = 'webview';
   document.body.appendChild(webview);
   currentEmbedElement = webview;
 }
@@ -140,20 +141,21 @@ function attachViaSecureEmbed() {
   }
 
   // Create and attach SecureEmbedElement
-  const secureEmbed = document.createElement("secureembed") as SecureEmbedElement;
-  secureEmbed.id = "webview";
+  const secureEmbed =
+      document.createElement('secureembed') as SecureEmbedElement;
+  secureEmbed.id = 'webview';
   document.body.appendChild(secureEmbed);
   currentEmbedElement = secureEmbed;
 }
 
-const attachGuestButton = document.getElementById("attach-guest");
+const attachGuestButton = document.getElementById('attach-guest');
 if (attachGuestButton) {
-  attachGuestButton.addEventListener("click", attachViaGuestContents);
+  attachGuestButton.addEventListener('click', attachViaGuestContents);
 }
 
-const attachSecureEmbedButton = document.getElementById("attach-secure-embed");
+const attachSecureEmbedButton = document.getElementById('attach-secure-embed');
 if (attachSecureEmbedButton) {
-  attachSecureEmbedButton.addEventListener("click", attachViaSecureEmbed);
+  attachSecureEmbedButton.addEventListener('click', attachViaSecureEmbed);
 }
 
 function navigateToAddressBarUrl() {
@@ -189,7 +191,7 @@ if (addressBar) {
 
 const backButton = document.getElementById("back");
 if (backButton) {
-  backButton.addEventListener("click", ()=>{
+  backButton.addEventListener('click', () => {
     if (currentEmbedElement) {
       currentEmbedElement.goBack();
     }
@@ -198,7 +200,7 @@ if (backButton) {
 
 const forwardButton = document.getElementById("forward");
 if (forwardButton) {
-  forwardButton.addEventListener("click", ()=>{
+  forwardButton.addEventListener('click', () => {
     if (currentEmbedElement) {
       currentEmbedElement.goForward();
     }

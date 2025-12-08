@@ -48,7 +48,6 @@ Browser::Browser(content::WebUI* web_ui)
   html_source->SetDefaultResource(IDR_WEBUI_EXAMPLES_BROWSER_INDEX_HTML);
 
   content::WebContents::CreateParams params(browser_context);
-  params.secure_embed_embedder = web_ui->GetWebContents();
   guest_contents_ = content::WebContents::Create(params);
 
   guest_contents::GuestContentsHandle::CreateForWebContents(
