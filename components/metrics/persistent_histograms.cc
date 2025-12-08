@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/strings/string_util.h"
-#include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -253,19 +252,6 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
       mode = kLocalMemory;
     }
   }
-
-#if BUILDFLAG(IS_LINUX)
-  // Linux kernel 4.4.0.* shows a huge number of SIGBUS crashes with persistent
-  // histograms enabled using a mapped file.  Change this to use local memory.
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=753741
-  if (mode == kMappedFile) {
-    int major, minor, bugfix;
-    base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
-    if (major == 4 && minor == 4 && bugfix == 0) {
-      mode = kLocalMemory;
-    }
-  }
-#endif
 
   InstantiatePersistentHistogramsImpl(metrics_dir, mode);
 }
