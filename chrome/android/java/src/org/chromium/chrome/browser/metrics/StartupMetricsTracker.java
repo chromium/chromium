@@ -248,7 +248,7 @@ public class StartupMetricsTracker {
                 () -> {
                     long timeToFirstDrawMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
                     if (NTP_COLD_START_HISTOGRAM.equals(histogram)) {
-                        recordTimeSpentInBinderCold("NewTabPage");
+                        recordBinderMetricsCold("NewTabPage");
                     }
                     // During a cold start, first draw can be triggered while Chrome is in
                     // the background, leading to ablated draw times. This early in the startup
@@ -288,12 +288,17 @@ public class StartupMetricsTracker {
                 "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
     }
 
-    private void recordTimeSpentInBinderCold(String variant) {
-        Long binderTimeMs = BinderCallsListener.getInstance().getTimeSpentInBinderCalls();
-        if (binderTimeMs != null) {
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Startup.Android.Cold." + variant + ".TimeSpentInBinder", binderTimeMs);
+    private void recordBinderMetricsCold(String variant) {
+        BinderCallsListener binderListener = BinderCallsListener.getInstance();
+        if (!binderListener.isInstalled()) {
+            return;
         }
+        long binderTimeMs = binderListener.getTimeSpentInBinderCalls();
+        RecordHistogram.recordMediumTimesHistogram(
+                "Startup.Android.Cold." + variant + ".TimeSpentInBinder", binderTimeMs);
+        int binderCallCount = binderListener.getTotalBinderTransactionsCount();
+        RecordHistogram.recordCount1000Histogram(
+                "Startup.Android.Cold." + variant + ".TotalBinderTransactions", binderCallCount);
     }
 
     private void recordNavigationCommitMetrics(long firstCommitMs) {

@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -218,6 +219,12 @@ public class BinderCallsListener {
         return installListener(mImplementation);
     }
 
+    /** Returns whether the listener was successfully installed. */
+    @EnsuresNonNullIf("mInvocationHandler")
+    public boolean isInstalled() {
+        return mInvocationHandler != null && mInstalled;
+    }
+
     /**
      * Get the total time spent in Binder calls since the listener was installed, if it was
      * installed.
@@ -225,12 +232,24 @@ public class BinderCallsListener {
      * <p>NOTE: The current implementation of BinderCallsListener is *very* exhaustive. This method
      * will include time spent in Binder calls that originated from outside of Chrome too.
      *
-     * @return time spent in Binder calls in milliseconds since the listener was installed or null.
+     * @return time spent in Binder calls in milliseconds since the listener was installed or -1L.
      */
-    @Nullable
-    public Long getTimeSpentInBinderCalls() {
-        if (!mInstalled || mInvocationHandler == null) return null;
+    public long getTimeSpentInBinderCalls() {
+        if (!isInstalled()) return -1L;
         return mInvocationHandler.getTimeSpentInBinderCalls();
+    }
+
+    /**
+     * Get the total number of Binder calls since the listener was installed, if it was installed.
+     *
+     * <p>NOTE: The current implementation of BinderCallsListener is *very* exhaustive. This method
+     * will include counts from Binder calls that originated from outside of Chrome too.
+     *
+     * @return count of Binder calls made since the listener was installed or -1.
+     */
+    public int getTotalBinderTransactionsCount() {
+        if (!isInstalled()) return -1;
+        return mInvocationHandler.getTotalTransactionsCount();
     }
 
     private boolean installListener(@Nullable Object listener) {
@@ -298,6 +317,10 @@ public class BinderCallsListener {
 
         public long getTimeSpentInBinderCalls() {
             return mTotalTimeSpentInBinderCallsMillis;
+        }
+
+        public int getTotalTransactionsCount() {
+            return mCurrentTransactionId;
         }
 
         @Override

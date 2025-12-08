@@ -73,6 +73,34 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:JankReason,//cc/metrics/scroll_jank_v4_result.h:JankReason) -->
 
+<histogram name="Event.Android.GestureScrollEnd.TimeSpentInBinder" units="ms"
+    expires_after="2026-05-12">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Android-only. Records the time spent handling Binder IPCs between a
+    GestureScrollBegin and the corresponding GestureScrollEnd event. Recorded
+    when a GestureScrollEnd is received.
+
+    The underlying mechanism used to determine this relies on undocumented
+    Android APIs, meaning that it may break in the future.
+  </summary>
+</histogram>
+
+<histogram name="Event.Android.GestureScrollEnd.TotalBinderTransactions"
+    units="counts" expires_after="2026-05-12">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Android-only. Records the number of Binder IPCs made between a
+    GestureScrollBegin and the corresponding GestureScrollEnd event. Recorded
+    when a GestureScrollEnd is received.
+
+    The underlying mechanism used to determine this relies on undocumented
+    Android APIs, meaning that it may break in the future.
+  </summary>
+</histogram>
+
 <histogram name="Event.AndroidActionDown.ToolType" enum="MotionEventToolType"
     expires_after="never">
 <!-- expires-never: Needed for long-term usage tracking for different types of

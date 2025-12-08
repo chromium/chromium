@@ -84,8 +84,10 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Warm.MainIntentTimeToFirstDraw";
     private static final String NTP_TIME_TO_FIRST_DRAW_COLD_HISTOGRAM =
             "Startup.Android.Cold.NewTabPage.TimeToFirstDraw";
-    private static final String NTP_COLD_START_BINDER_HISTOGRAM =
+    private static final String NTP_TIME_SPENT_IN_BINDER_COLD_HISTOGRAM =
             "Startup.Android.Cold.NewTabPage.TimeSpentInBinder";
+    private static final String NTP_BINDER_COUNTS_COLD_HISTOGRAM =
+            "Startup.Android.Cold.NewTabPage.TotalBinderTransactions";
     private static final String COLD_START_TIME_TO_FIRST_FRAME =
             "Startup.Android.Cold.TimeToFirstFrame";
 
@@ -392,10 +394,7 @@ public class StartupLoadingMetricsTest {
         assertHistogramsRecordedAsExpected(1, TABBED_SUFFIX);
     }
 
-    /**
-     * Tests that the startup loading histograms are recorded correctly in case of navigation to the
-     * NTP.
-     */
+    /** Tests that the startup loading histograms are recorded correctly for NTP launches */
     @Test
     @LargeTest
     public void testNtpRecordedCorrectly() throws Exception {
@@ -416,12 +415,14 @@ public class StartupLoadingMetricsTest {
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
 
+    /** Tests that Binder startup metrics are recorded correctly for NTP launches. */
     @Test
     @LargeTest
     public void testNtpBinderMetricRecordedCorrectly() throws Exception {
         HistogramWatcher ntpBinderWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes(NTP_COLD_START_BINDER_HISTOGRAM, 1)
+                        .expectAnyRecordTimes(NTP_TIME_SPENT_IN_BINDER_COLD_HISTOGRAM, 1)
+                        .expectAnyRecordTimes(NTP_BINDER_COUNTS_COLD_HISTOGRAM, 1)
                         .build();
         runAndWaitForPageLoadMetricsRecorded(() -> mTabbedActivityTestRule.startOnNtp());
         waitForHistogram(ntpBinderWatcher);
