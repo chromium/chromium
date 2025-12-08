@@ -471,6 +471,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="ContextualSearch.UserAction.DeleteAutoSuggestedTab.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2026-06-10">
+  <owner>sophiechang@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records every time the user deletes the auto-suggested tab context chip from
+    the composebox. Always recorded as true.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
