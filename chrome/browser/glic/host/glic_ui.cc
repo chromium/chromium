@@ -155,6 +155,10 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       !command_line->HasSwitch(::switches::kGlicSkipReloadAfterNavigation);
   source->AddBoolean("reloadAfterNavigation", reload_after_navigation);
 
+  source->AddBoolean(
+      "ignoreOfflineState",
+      base::FeatureList::IsEnabled(features::kGlicIgnoreOfflineState));
+
   source->AddBoolean("enableDebug",
                      base::FeatureList::IsEnabled(features::kGlicDebugWebview));
 

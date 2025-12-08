@@ -845,8 +845,8 @@ void GaiaCookieManagerService::StartSetAccounts() {
 
   oauth_multilogin_helper_ = std::make_unique<signin::OAuthMultiloginHelper>(
       signin_client_, this, token_service_, request.GetMultiloginMode(),
-      request.GetAccounts(), external_cc_result_fetcher_.GetExternalCcResult(),
-      request.source(),
+      /*wait_on_connectivity=*/true, request.GetAccounts(),
+      external_cc_result_fetcher_.GetExternalCcResult(), request.source(),
       base::BindOnce(&GaiaCookieManagerService::OnSetAccountsFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }

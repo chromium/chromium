@@ -330,7 +330,8 @@ class OAuthMultiloginHelperTest
 
   OAuthMultiloginHelper* CreateHelper(
       const std::vector<OAuthMultiloginHelper::AccountIdGaiaIdPair> accounts,
-      bool set_external_cc_result = false) {
+      bool set_external_cc_result = false,
+      bool wait_on_connectivity = true) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // `bound_session_delegate_` is owned by `OAuthMultiloginHelper`, ensures it
     // resets before creating a new helper to avoid dangling pointers.
@@ -338,7 +339,8 @@ class OAuthMultiloginHelperTest
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
     helper_ = std::make_unique<OAuthMultiloginHelper>(
         &test_signin_client_, this, token_service(),
-        gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
+        gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+        wait_on_connectivity, accounts,
         set_external_cc_result ? kExternalCcResult : std::string(),
         gaia::GaiaSource::kChrome,
         base::BindOnce(&OAuthMultiloginHelperTest::OnOAuthMultiloginFinished,
@@ -446,6 +448,42 @@ TEST_F(OAuthMultiloginHelperTest, Success) {
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
+      .WillOnce(RunSetCookieCallbackWithSuccess);
+
+  // Issue access token.
+  OAuth2AccessTokenConsumer::TokenResponse success_response;
+  success_response.access_token = kAccessToken;
+  token_service()->IssueAllTokensForAccount(kAccountId, success_response);
+
+  // Multilogin call.
+  EXPECT_FALSE(callback_called_);
+  const network::ResourceRequest* multilogin_request = nullptr;
+  ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
+  EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
+            CreateMultiBearerAuthorizationHeader(
+                {gaia::MultiloginAccountAuthCredentials(kGaiaId, kAccessToken,
+                                                        kNoAssertion)}));
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
+  EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
+  EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
+  EXPECT_TRUE(callback_called_);
+  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+}
+
+// Same as Success, but simulates making a request while offline and
+// wait_on_connectivity=false, which allows sending the request anyway.
+TEST_F(OAuthMultiloginHelperTest, SuccessOffline) {
+  test_signin_client_.SetNetworkCallsDelayed(true);
+  token_service()->UpdateCredentials(kAccountId, "refresh_token");
+  CreateHelper({{kAccountId, kGaiaId}}, false, /*wait_on_connectivity=*/false);
+
   EXPECT_CALL(
       *cookie_manager(),
       SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
