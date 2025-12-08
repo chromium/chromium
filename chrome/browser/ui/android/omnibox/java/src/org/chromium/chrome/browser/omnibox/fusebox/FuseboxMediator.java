@@ -498,34 +498,33 @@ public class FuseboxMediator {
     @VisibleForTesting
     void onImagePickerClicked() {
         mPopup.dismiss();
-
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
         if (mModelList.getRemainingAttachments() < 1) {
             warnForMaxAttachments();
             return;
         }
 
-        Intent i;
+        boolean allowMultipleAttachments =
+                mAutocompleteRequestTypeSupplier.get() != AutocompleteRequestType.IMAGE_GENERATION;
+        Intent intent;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            i =
+            int imageMax = allowMultipleAttachments ? mModelList.getRemainingAttachments() : 1;
+            intent =
                     new Intent(MediaStore.ACTION_PICK_IMAGES)
                             .setType(MimeTypeUtils.IMAGE_ANY_MIME_TYPE)
-                            .putExtra(
-                                    MediaStore.EXTRA_PICK_IMAGES_MAX,
-                                    FuseboxAttachmentModelList.MAX_ATTACHMENTS - mModelList.size());
+                            .putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, imageMax);
         } else {
-            i =
+            intent =
                     new Intent(Intent.ACTION_PICK)
                             .setDataAndType(
                                     MediaStore.Images.Media.INTERNAL_CONTENT_URI,
                                     MimeTypeUtils.IMAGE_ANY_MIME_TYPE)
-                            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultipleAttachments);
         }
-
-        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         mWindowAndroid.showCancelableIntent(
-                i,
+                intent,
                 (resultCode, data) -> {
                     if (resultCode != Activity.RESULT_OK || data == null) return;
 

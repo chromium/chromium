@@ -30,7 +30,9 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -48,6 +50,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -590,6 +593,47 @@ public class FuseboxMediatorUnitTest {
         doReturn(false).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
         recreateMediator();
         assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S_V2)
+    public void testGalleryIntent_extraAllowMultiple() {
+        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        Intent intent = mIntentCaptor.getValue();
+        assertTrue(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, /* defaultValue= */ false));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testGalleryIntent_extraPickImagesMax() {
+        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        Intent intent = mIntentCaptor.getValue();
+        assertEquals(
+                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
+                intent.getIntExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, /* defaultValue= */ -1));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S_V2)
+    public void testGalleryIntent_extraAllowMultiple_duringCreateImage() {
+        mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        Intent intent = mIntentCaptor.getValue();
+        assertFalse(intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, /* defaultValue= */ true));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testGalleryIntent_extraPickImagesMax_duringCreateImage() {
+        mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
+        mModel.get(FuseboxProperties.POPUP_GALLERY_CLICKED).run();
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        Intent intent = mIntentCaptor.getValue();
+        assertEquals(
+                1, intent.getIntExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, /* defaultValue= */ -1));
     }
 
     @Test
