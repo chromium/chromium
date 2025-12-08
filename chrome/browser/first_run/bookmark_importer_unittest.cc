@@ -8,13 +8,17 @@
 
 #include "base/json/json_reader.h"
 #include "base/task/current_thread.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/first_run/first_run_internal.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -187,6 +191,46 @@ TEST_F(BookmarkDictImporterTest, FailsIfBookmarkModelIsMissing) {
   histogram_tester.ExpectUniqueSample(
       "FirstRun.ImportBookmarksDict",
       FirstRunImportBookmarksResult::kInvalidProfile, 1);
+}
+
+TEST_F(BookmarkDictImporterTest, FailsIfProfileIsDestroyed) {
+  base::Value::Dict bookmarks_dict = ParseJSONIfValid(
+      R"(
+        {
+          "first_run_bookmarks": {
+            "children": [
+              {
+                "name": "Google",
+                "type": "url",
+                "url": "https://www.google.com"
+              }
+            ]
+          }
+        })");
+
+  // Create an active ProfileManager, and do NOT make it the owner of profile().
+  // This causes ScopedProfileKeepAlive::TryAcquire() to fail.
+  auto testing_profile_manager = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager->SetUp());
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+
+  bool did_import = false;
+  BookmarkImportObserver observer(
+      base::BindLambdaForTesting([&did_import] { did_import = true; }));
+  bookmark_model->AddObserver(&observer);
+
+  StartBookmarkImportFromDict(profile(), std::move(bookmarks_dict));
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+  run_loop.Run();
+
+  bookmark_model->RemoveObserver(&observer);
+
+  EXPECT_FALSE(did_import);
 }
 
 TEST_F(BookmarkDictImporterTest, SucceedsWithSomeMalformedNodes) {

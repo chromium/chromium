@@ -202,6 +202,15 @@ namespace first_run {
 
 void StartBookmarkImportFromDict(Profile* profile,
                                  base::Value::Dict bookmarks_dict) {
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+      ScopedProfileKeepAlive::TryAcquire(
+          profile,
+          ProfileKeepAliveOrigin::kWaitingForBookmarksImportOnFirstRun);
+  if (!profile_keep_alive) {
+    // Profile is being destroyed, no need to import bookmarks.
+    return;
+  }
+
   base::Value::Dict* bookmarks_to_import =
       bookmarks_dict.FindDictByDottedPath(kImportBookmarksBookmarksKey);
 
@@ -219,9 +228,6 @@ void StartBookmarkImportFromDict(Profile* profile,
     return;
   }
 
-  auto scoped_profile = std::make_unique<ScopedProfileKeepAlive>(
-      profile, ProfileKeepAliveOrigin::kWaitingForBookmarksImportOnFirstRun);
-
   // Schedule the import to run after the bookmark model is loaded.
   // A ScopedProfileKeepAlive is bound to the callback to ensure the profile is
   // not destroyed before the import is complete. The lambda acts as an adapter
@@ -236,7 +242,7 @@ void StartBookmarkImportFromDict(Profile* profile,
             FirstRunBookmarkImporter::Import(*profile_keep_alive->profile(),
                                              bookmarks, bookmark_model_arg);
           },
-          std::move(scoped_profile), std::move(*bookmarks_to_import),
+          std::move(profile_keep_alive), std::move(*bookmarks_to_import),
           std::ref(*bookmark_model)));
 }
 
