@@ -229,6 +229,9 @@ by a child template that "extends" this file.
         android:allowAudioPlaybackCapture="false"
         android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"
         android:enableOnBackInvokedCallback="true"
+        {% if javaless_renderers is defined %}
+        android:zygotePreloadNativeLib="lib{{ library_name }}.so"
+        {% endif %}
         {% block extra_application_attributes %}{% endblock %}>
 
         {% if channel in ['canary', 'dev', 'default'] %}
@@ -1300,17 +1303,21 @@ by a child template that "extends" this file.
            only for the prototype, and once it actually lands in the Android tree, there will be a
            better mechanism than this. -->
       <service android:name="org.chromium.content.app.NativeServiceSandboxedProcessService{{ i }}"
+          android:nativeService="true"
           android:process=":sandboxed_process{{ i }}"
           android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
           android:isolatedProcess="true"
+          android:useAppZygote="true"
           android:exported="{{sandboxed_service_exported|default(false)}}"
           {% if (sandboxed_service_exported|default(false)) == 'true' %}
           android:externalService="true"
           tools:ignore="ExportedService"
           android:visibleToInstantApps="true"
           {% endif %} >
-          <meta-data android:name="android.app.lib_name" android:value="{{ library_name }}"/>
-          <meta-data android:name="android.app.func_name" android:value="NativeChildProcessService_onCreate"/>
+          <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME"
+              android:value="lib{{ library_name }}.so" />
+          <property android:name="android.app.PROPERTY_NATIVE_SERVICE_FUNCTION_NAME"
+              android:value="NativeChildProcessService_onCreate" />
       </service>
       {% endfor %}
       {% endif %}

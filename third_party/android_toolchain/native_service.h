@@ -105,8 +105,8 @@ typedef enum ANativeServiceTrimMemoryLevel : int32_t {
  * Introduced in API 37.
  *
  * \param service {@link ANativeService} associated with the service.
- * \param intentToken A token associated with the intent that was used to bind to this
- * service, as given to `Context.bindService`.
+ * \param bindToken A token representing this service binding. The same token is passed to onUnbind
+ * and onRebind callbacks to identify which binding triggered the callback.
  * \param action The action specified in the intent passed to `Context.bindService` or null if not
  * specified.
  * \param data The data specified in the intent passed to `Context.bindService`. This is an encoded
@@ -114,7 +114,7 @@ typedef enum ANativeServiceTrimMemoryLevel : int32_t {
  * \return an AIBinder pointer through which clients can call on to the service.
  */
 typedef AIBinder* _Nullable (*ANativeService_onBindCallback)(ANativeService* _Nonnull service,
-                                                             int32_t intentToken,
+                                                             uint64_t bindToken,
                                                              char const* _Nullable action,
                                                              char const* _Nullable data);
 
@@ -128,13 +128,13 @@ typedef AIBinder* _Nullable (*ANativeService_onBindCallback)(ANativeService* _No
  * Introduced in API 37.
  *
  * \param service {@link ANativeService} associated with the service.
- * \param intentToken A token associated with the intent that was used to bind to this
- * service, as given to `Context.bindService`.
+ * \param bindToken A token representing a service binding, which allows the callback to identify
+ * which binding triggered it.
  * \return true if you would like to have the service's {@link ANativeService_onRebindCallback}
  * callback later called when new clients bind to it, otherwise false.
  */
 typedef bool (*ANativeService_onUnbindCallback)(ANativeService* _Nonnull service,
-                                                int32_t intentToken);
+                                                uint64_t bindToken);
 
 /**
  * The function type signature definition of the "onRebind" callback function called when someone is
@@ -145,12 +145,13 @@ typedef bool (*ANativeService_onUnbindCallback)(ANativeService* _Nonnull service
  * Introduced in API 37.
  *
  * \param service {@link ANativeService} associated with the service.
- * \param intentToken A token associated with the intent that was used to bind to this
+ * \param bindToken A token representing a service binding, which allows the callback to identify
+ * which binding triggered it.
  * service, as given to `Context.bindService`.
  * service binding.
  */
 typedef void (*ANativeService_onRebindCallback)(ANativeService* _Nonnull service,
-                                                int32_t intentToken);
+                                                uint64_t bindToken);
 
 /**
  * The function type signature definition of the "onDestroy" callback function called when the

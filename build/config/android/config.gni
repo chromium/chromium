@@ -16,10 +16,6 @@ declare_args() {
   # Java debug on Android. Having this on enables multidexing, and turning it
   # off will enable proguard.
   is_java_debug = is_debug || incremental_install
-
-  # Component build breaks javaless renderers - see
-  # go/javaless-renderers-component-build
-  enable_javaless_renderers = !is_component_build
 }
 
 # These two combinations could theoretically be made to work, but they are
@@ -28,9 +24,6 @@ assert(!(is_java_debug && is_official_build),
        "Cannot have is_official_build && is_java_debug")
 assert(!(incremental_install && !is_java_debug),
        "Cannot have incremental_install without is_java_debug")
-assert(!(enable_javaless_renderers && is_component_build),
-       "Javaless renderers do not support component build, see " +
-           "go/javaless-renderers-component-build.")
 
 # Toolchain used to create native libraries for robolectric_binary() targets.
 robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
@@ -354,6 +347,14 @@ if (is_android) {
 
     # Reduce build time by using d8 incremental build.
     enable_incremental_d8 = true
+
+    # Component build breaks javaless renderers - see
+    # go/javaless-renderers-component-build
+    # Ensuring that we are on version 37+ as that's what's required for aapt2
+    # to read our manifest. Once 37 is the default public SDK that check can go
+    # away.
+    enable_javaless_renderers =
+        !is_component_build && android_sdk_platform_version != "36"
 
     # Enables trace event injection on Android views with bytecode rewriting.
     # This adds an additional step on android_app_bundle_module targets that

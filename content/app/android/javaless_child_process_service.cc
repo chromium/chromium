@@ -284,15 +284,15 @@ std::shared_ptr<content::ChildProcessService>& getChildProcessService() {
   return *service_ptr.get();
 }
 
-std::set<int32_t>& getIntentTokens() {
-  static base::NoDestructor<std::set<int32_t>> tokens;
+std::set<uint64_t>& getBindTokens() {
+  static base::NoDestructor<std::set<uint64_t>> tokens;
   return *tokens.get();
 }
 
 void onDestroy(ANativeService* service) {}
 
 AIBinder* onBind(ANativeService* service,
-                 int32_t intentToken,
+                 uint64_t bindToken,
                  char const* action,
                  char const* data) {
   auto& child_process_service = getChildProcessService();
@@ -301,7 +301,7 @@ AIBinder* onBind(ANativeService* service,
         ndk::SharedRefBase::make<content::ChildProcessService>();
     child_process_service->SpawnMainThread();
   }
-  getIntentTokens().insert(intentToken);
+  getBindTokens().insert(bindToken);
   ::ndk::SpAIBinder spBinder = child_process_service->asBinder();
   AIBinder* result = spBinder.get();
   // Required to do this by the NDK API and is not balanced anywhere.
@@ -309,11 +309,11 @@ AIBinder* onBind(ANativeService* service,
   return result;
 }
 
-void onRebind(ANativeService* service, int32_t intentToken) {}
+void onRebind(ANativeService* service, uint64_t bindToken) {}
 
-bool onUnbind(ANativeService* service, int32_t intentToken) {
-  auto& tokens = getIntentTokens();
-  tokens.erase(intentToken);
+bool onUnbind(ANativeService* service, uint64_t bindToken) {
+  auto& tokens = getBindTokens();
+  tokens.erase(bindToken);
   if (tokens.empty()) {
     getChildProcessService().reset();
   }
