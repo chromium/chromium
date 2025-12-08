@@ -411,8 +411,16 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
   SocketPoolState State() const { return state_; }
 
+  // This should be called exactly once before each attempted socket allocation
+  // via `RequestSocket` or `RequestSockets`. Be sure not to over-invoke to
+  // prevent early capping of the socket pool.
   void UpdateStateBeforeAllocation();
 
+  // This should be called once after each successful socket released (and not
+  // reused) via `RequestSocket`, `RequestSockets`, `CancelRequest`,
+  // `ReleaseSocket`, `OnConnectJobComplete`, `CloseIdleSockets`, or
+  // `CloseIdleSocketsInGroup`. Be sure not to over-invoke to prevent early
+  // uncapping of the socket pool.
   void UpdateStateAfterRelease();
 
   // This is used to reset the pool to the initial uncapped state when the

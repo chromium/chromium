@@ -936,12 +936,6 @@ void TransportClientSocketPool::CleanupIdleSockets(
   }
 }
 
-bool TransportClientSocketPool::CloseOneIdleSocket() {
-  if (idle_socket_count_ == 0)
-    return false;
-  return CloseOneIdleSocketExceptInGroup(nullptr);
-}
-
 bool TransportClientSocketPool::CloseOneIdleConnectionInHigherLayeredPool() {
   // This pool doesn't have any idle sockets. It's possible that a pool at a
   // higher layer is holding one of this sockets active, but it's actually idle.
@@ -987,6 +981,7 @@ void TransportClientSocketPool::CleanupIdleSocketsInGroup(
           reason_for_closing_socket);
       idle_socket_it = group->mutable_idle_sockets()->erase(idle_socket_it);
       DecrementIdleCount();
+      UpdateStateAfterRelease();
     } else {
       DCHECK(!reason_for_closing_socket);
       ++idle_socket_it;
@@ -1108,7 +1103,9 @@ void TransportClientSocketPool::CheckForStalledSocketGroups() {
 
     if (State() == SocketPoolState::kCapped) {
       if (idle_socket_count_ > 0) {
-        CloseOneIdleSocket();
+        if (CloseOneIdleSocketExceptInGroup(nullptr)) {
+          UpdateStateAfterRelease();
+        }
       } else {
         // We can't activate more sockets since we're already at our global
         // limit.
@@ -1367,6 +1364,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
                               bound_request->request->socket_tag());
       bound_request->request->net_log().EndEventWithNetErrorCode(
           NetLogEventType::SOCKET_POOL, bound_request->pending_error);
+      UpdateStateAfterRelease();
       OnAvailableSocketSlot(group->group_id(), group);
       CheckForStalledSocketGroups();
       return;
@@ -1376,6 +1374,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
     // the group, and kick off another request. The socket will be discarded.
     if (bound_request->generation != group->generation()) {
       group->InsertUnboundRequest(std::move(bound_request->request));
+      UpdateStateAfterRelease();
       OnAvailableSocketSlot(group->group_id(), group);
       CheckForStalledSocketGroups();
       return;
@@ -1392,6 +1391,9 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
       if (result == OK)
         AddIdleSocket(job->PassSocket(), group);
       RemoveConnectJob(job, group);
+      if (result != OK) {
+        UpdateStateAfterRelease();
+      }
       OnAvailableSocketSlot(group->group_id(), group);
       CheckForStalledSocketGroups();
       return;
@@ -1419,6 +1421,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
     RemoveConnectJob(job, group);
   // If no socket was handed out, there's a new socket slot available.
   if (!request->handle()->socket()) {
+    UpdateStateAfterRelease();
     OnAvailableSocketSlot(group->group_id(), group);
     CheckForStalledSocketGroups();
   }

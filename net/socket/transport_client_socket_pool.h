@@ -654,13 +654,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // |reason| must be non-empty when |force| is true.
   void CleanupIdleSockets(bool force, const char* net_log_reason_utf8);
 
-  // Closes one idle socket.  Picks the first one encountered.
-  // TODO(willchan): Consider a better algorithm for doing this.  Perhaps we
-  // should keep an ordered list of idle sockets, and close them in order.
-  // Requires maintaining more state.  It's not clear if it's worth it since
-  // I'm not sure if we hit this situation often.
-  bool CloseOneIdleSocket();
-
   // Checks higher layered pools to see if they can close an idle connection.
   bool CloseOneIdleConnectionInHigherLayeredPool();
 

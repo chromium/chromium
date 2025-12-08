@@ -169,12 +169,12 @@ void WebSocketTransportClientSocketPool::CancelRequest(
     ReleaseSocket(handle->group_id(), std::move(socket),
                   handle->group_generation());
   if (DeleteJob(handle)) {
+    UpdateStateAfterRelease();
     CHECK(!base::Contains(pending_callbacks_,
                           reinterpret_cast<ClientSocketHandleID>(handle)));
   } else {
     pending_callbacks_.erase(reinterpret_cast<ClientSocketHandleID>(handle));
   }
-  UpdateStateAfterRelease();
 
   ActivateStalledRequest();
 }
@@ -355,8 +355,10 @@ void WebSocketTransportClientSocketPool::OnConnectJobComplete(
 
   connect_job_delegate = nullptr;
 
-  if (!handed_out_socket)
+  if (!handed_out_socket) {
+    UpdateStateAfterRelease();
     ActivateStalledRequest();
+  }
 
   InvokeUserCallbackLater(handle, std::move(callback), result);
 }
