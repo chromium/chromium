@@ -281,6 +281,10 @@ PrefetchContainer::PrefetchContainer(
       request_id_(base::UnguessableToken::Create().ToString()) {
   CHECK(request_);
 
+  TRACE_EVENT_END("loading", request_->preload_pipeline_info().GetTrack());
+  TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kNotStarted",
+                    request_->preload_pipeline_info().GetTrack());
+
   is_likely_ahead_of_prerender_ =
       CalculateIsLikelyAheadOfPrerender(request_->preload_pipeline_info());
 
@@ -343,6 +347,8 @@ PrefetchContainer::~PrefetchContainer() {
           ->PrefetchWillBeDestroyed(this);
     }
   }
+
+  TRACE_EVENT_END("loading", request_->preload_pipeline_info().GetTrack());
 }
 
 void PrefetchContainer::OnWillBeDestroyed() {
@@ -618,6 +624,8 @@ void PrefetchContainer::CloseIdleConnections() {
 }
 
 void PrefetchContainer::SetLoadState(LoadState new_load_state) {
+  TRACE_EVENT_END("loading", request_->preload_pipeline_info().GetTrack());
+
   if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification)) {
     CHECK(!is_in_dtor_);
   }
@@ -652,8 +660,51 @@ void PrefetchContainer::SetLoadState(LoadState new_load_state) {
             load_state_ == LoadState::kFailedDeterminedHead);
       break;
   }
+
+  // Tracing and debugging
+  switch (new_load_state) {
+    case LoadState::kNotStarted:
+      NOTREACHED();
+    case LoadState::kEligible:
+      TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kEligible",
+                        request_->preload_pipeline_info().GetTrack());
+      break;
+    case LoadState::kFailedIneligible:
+      TRACE_EVENT_BEGIN("loading",
+                        "PrefetchContainer::LoadState::kFailedIneligible",
+                        request_->preload_pipeline_info().GetTrack());
+      break;
+    case LoadState::kStarted:
+      TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kStarted",
+                        request_->preload_pipeline_info().GetTrack());
+      break;
+    case LoadState::kFailedHeldback:
+      TRACE_EVENT_BEGIN("loading",
+                        "PrefetchContainer::LoadState::kFailedHeldback",
+                        request_->preload_pipeline_info().GetTrack());
+      break;
+    case LoadState::kDeterminedHead:
+      TRACE_EVENT_BEGIN("loading",
+                        "PrefetchContainer::LoadState::kDeterminedHead",
+                        request_->preload_pipeline_info().GetTrack());
+      break;
+    case LoadState::kFailedDeterminedHead:
+      TRACE_EVENT_BEGIN("loading",
+                        "PrefetchContainer::LoadState::kFailedDeterminedHead",
+                        request_->preload_pipeline_info().GetTrack());
+      break;
+    case LoadState::kCompleted:
+      TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kCompleted",
+                        request_->preload_pipeline_info().GetTrack());
+      break;
+    case LoadState::kFailed:
+      TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kFailed",
+                        request_->preload_pipeline_info().GetTrack());
+      break;
+  }
   DVLOG(1) << (*this) << " LoadState " << load_state_ << " -> "
            << new_load_state;
+
   load_state_ = new_load_state;
 }
 
@@ -662,12 +713,18 @@ PrefetchContainer::LoadState PrefetchContainer::GetLoadState() const {
 }
 
 void PrefetchContainer::OnAddedToPrefetchService() {
+  TRACE_EVENT("loading", "PrefetchContainer::OnAddedToPrefetchService",
+              request_->preload_pipeline_info().GetFlow());
+
   prefetch_container_metrics_.time_added_to_prefetch_service =
       base::TimeTicks::Now();
 }
 
 void PrefetchContainer::OnEligibilityCheckComplete(
     PreloadingEligibility eligibility) {
+  TRACE_EVENT("loading", "PrefetchContainer::OnEligibilityCheckComplete",
+              request_->preload_pipeline_info().GetFlow());
+
   request().preload_pipeline_info().SetPrefetchEligibility(eligibility);
   for (auto& preload_pipeline_info : inherited_preload_pipeline_infos_) {
     preload_pipeline_info->SetPrefetchEligibility(eligibility);
@@ -905,6 +962,9 @@ void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
 }
 
 void PrefetchContainer::OnDeterminedHead(bool is_successful_determined_head) {
+  TRACE_EVENT("loading", "PrefetchContainer::OnDeterminedHead",
+              request_->preload_pipeline_info().GetFlow());
+
   if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification) &&
       is_in_dtor_) {
     // This can be called due to the loader cancellation during the
@@ -1056,6 +1116,9 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
 void PrefetchContainer::OnPrefetchComplete(
     bool is_success,
     const network::URLLoaderCompletionStatus& completion_status) {
+  TRACE_EVENT("loading", "PrefetchContainer::OnPrefetchComplete",
+              request_->preload_pipeline_info().GetFlow());
+
   SetLoadState(is_success ? LoadState::kCompleted : LoadState::kFailed);
   OnPrefetchCompleteInternal(completion_status);
 
@@ -1348,6 +1411,9 @@ void PrefetchContainer::OnDetectedCookiesChange(
 }
 
 void PrefetchContainer::OnPrefetchStarted() {
+  TRACE_EVENT("loading", "PrefetchContainer::OnPrefetchStarted",
+              request_->preload_pipeline_info().GetFlow());
+
   SetLoadState(PrefetchContainer::LoadState::kStarted);
   prefetch_container_metrics_.time_prefetch_started = base::TimeTicks::Now();
 }

@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
@@ -234,6 +235,9 @@ PrefetchSchedulerPriority PrefetchScheduler::CalculatePriority(
 }
 
 void PrefetchScheduler::PushAndProgress(PrefetchContainer& prefetch_container) {
+  TRACE_EVENT("loading", "PrefetchScheduler::PushAndProgress",
+              prefetch_container.request().preload_pipeline_info().GetFlow());
+
   // Precondition: Pushing already registered one is not allowed.
   for (auto& it : active_set_) {
     if (it.get() == &prefetch_container) {
@@ -249,6 +253,10 @@ void PrefetchScheduler::PushAndProgress(PrefetchContainer& prefetch_container) {
 
 void PrefetchScheduler::PushAndProgressAsync(
     PrefetchContainer& prefetch_container) {
+  TRACE_EVENT("loading", "PrefetchScheduler::PushAndProgressAsync",
+              prefetch_container.request().preload_pipeline_info().GetFlow(),
+              perfetto::Flow::FromPointer(this));
+
   // Precondition: Pushing already registered one is not allowed.
   for (auto& it : active_set_) {
     if (it.get() == &prefetch_container) {
@@ -265,6 +273,10 @@ void PrefetchScheduler::PushAndProgressAsync(
 void PrefetchScheduler::RemoveAndProgressAsync(
     PrefetchContainer& prefetch_container,
     bool should_progress) {
+  TRACE_EVENT("loading", "PrefetchScheduler::RemoveAndProgressAsync",
+              prefetch_container.request().preload_pipeline_info().GetFlow(),
+              perfetto::Flow::FromPointer(this));
+
   [&]() {
     for (auto it = active_set_.cbegin(); it != active_set_.cend(); ++it) {
       if (it->get() == &prefetch_container) {
@@ -291,6 +303,11 @@ void PrefetchScheduler::RemoveAndProgressAsync(
 void PrefetchScheduler::NotifyAttributeMightChangedAndProgressAsync(
     PrefetchContainer& prefetch_container,
     bool should_progress) {
+  TRACE_EVENT("loading",
+              "PrefetchScheduler::NotifyAttributeMightChangedAndProgressAsync",
+              prefetch_container.request().preload_pipeline_info().GetFlow(),
+              perfetto::Flow::FromPointer(this));
+
   if (!should_progress) {
     return;
   }
@@ -319,6 +336,9 @@ void PrefetchScheduler::Progress() {
   CHECK(!progress_reentrancy_guard_);
   base::AutoReset guard(&progress_reentrancy_guard_, true);
 #endif
+
+  TRACE_EVENT("loading", "PrefetchScheduler::Progress",
+              perfetto::TerminatingFlow::FromPointer(this));
 
   // Note that this doesn't correspond to the update in `ProgressAsync()` in 1:1
   // and there is a case updating `false` to `false` as this method can be

@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
 
+#include "base/trace_event/trace_event.h"
+
 namespace content {
 
 // static
@@ -28,9 +30,27 @@ PreloadPipelineInfoImpl& PreloadPipelineInfoImpl::From(
 PreloadPipelineInfoImpl::PreloadPipelineInfoImpl(
     PreloadingType planned_max_preloading_type)
     : id_(base::UnguessableToken::Create()),
-      planned_max_preloading_type_(planned_max_preloading_type) {}
+      planned_max_preloading_type_(planned_max_preloading_type),
+      // We use `low` of `Token` because `perfetto::Track::FromPointer()`
+      // crashes by a `DCHECK`. It looks `Tracing::Initialize()` to be not
+      // called.
+      track_(perfetto::Track::Global(id_.GetLowForSerialization())) {
+  TRACE_EVENT_BEGIN("loading", "Navigational preload", track_);
+}
 
 PreloadPipelineInfoImpl::~PreloadPipelineInfoImpl() = default;
+
+const perfetto::Track& PreloadPipelineInfoImpl::GetTrack() const {
+  return track_;
+}
+
+perfetto::Flow PreloadPipelineInfoImpl::GetFlow() const {
+  // Returns consistent flows in its lifecycle as `PreloadPipelineInfo` is
+  // refcounted and not movable.
+
+  return perfetto::Flow::FromPointer(
+      const_cast<PreloadPipelineInfoImpl*>(this));
+}
 
 void PreloadPipelineInfoImpl::SetPrefetchEligibility(
     PreloadingEligibility eligibility) {
