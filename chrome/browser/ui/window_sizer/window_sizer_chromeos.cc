@@ -9,8 +9,8 @@
 #include "base/command_line.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -162,7 +162,8 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
   if (browser()->is_session_restore()) {
     // Respect display for saved bounds during session restore.
     display = display::Screen::Get()->GetDisplayMatching(*bounds_in_screen);
-  } else if (BrowserList::GetInstance()->empty() && !is_saved_bounds &&
+  } else if (GlobalBrowserCollection::GetInstance()->IsEmpty() &&
+             !is_saved_bounds &&
              (ShouldForceMaximizeOnFirstRun(browser()->profile()) ||
               (display.work_area().width() <= kForceMaximizeWidthLimit &&
                !command_line->HasSwitch(

@@ -291,7 +291,7 @@ void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
   for (auto& observer : observers_) {
     observer.OnBrowserClosed(browser_delegate);
 
-    if (BrowserList::GetInstance()->empty()) {
+    if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
       observer.OnLastBrowserClosed();
     }
   }

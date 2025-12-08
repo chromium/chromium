@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -161,7 +162,7 @@ class AshSessionRestorePageLoadMetricsObserverTest
   // input delay is not recorded since the browser window is not from a session
   // restore.
   void RunFirstInputDelaySetupTest() {
-    ASSERT_TRUE(BrowserList::GetInstance()->empty());
+    ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
     CreateBrowser(ProfileManager::GetActiveUserProfile());
 

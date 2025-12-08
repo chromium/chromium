@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -120,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, Cleanup) {
 
   RunBrowserCleanupHandler();
 
-  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+  ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   ASSERT_EQ(0, GetHistorySize());
 }
 
@@ -137,11 +138,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, CleanupWhenBrowsersClosed) {
       /*skip_beforeunload=*/true);
   ui_test_utils::WaitForBrowserToClose();
 
-  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+  ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   ASSERT_EQ(1, GetHistorySize());
 
   RunBrowserCleanupHandler();
 
-  ASSERT_TRUE(BrowserList::GetInstance()->empty());
+  ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   ASSERT_EQ(0, GetHistorySize());
 }

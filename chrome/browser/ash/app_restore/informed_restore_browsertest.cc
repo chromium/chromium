@@ -28,11 +28,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
@@ -129,7 +129,7 @@ class InformedRestoreTest : public InProcessBrowserTest {
 #define MAYBE_PRE_LaunchBrowsers PRE_LaunchBrowsers
 #endif
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, MAYBE_PRE_LaunchBrowsers) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CreateBrowser(profile);
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, MAYBE_PRE_LaunchBrowsers) {
 #define MAYBE_LaunchBrowsers LaunchBrowsers
 #endif
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, MAYBE_LaunchBrowsers) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // Verify we have entered overview. The restore button will be null if we
   // failed to enter overview.
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, MAYBE_LaunchBrowsers) {
 
 // Creates SWAs that will be restored in the main test.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchSWA) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // Create two SWAs, files and settings.
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchSWA) {
 // Verify that with two elements in the full restore file, we enter overview on
 // login. Then when we click the restore button, we restore SWAs.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchSWA) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   test::InstallSystemAppsForTesting(ProfileManager::GetActiveUserProfile());
 
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchSWA) {
 // Creates 3 browser windows on 3 different desks that will be restored in the
 // main test.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchBrowsersToDesks) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   Browser* browser1 = CreateBrowser(profile);
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchBrowsersToDesks) {
 
 // Tests that the three browser windows are restored to their old desks.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_LaunchBrowsersToDesks) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // Verify we have entered overview. The restore button will be null if we
   // failed to enter overview.
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_LaunchBrowsersToDesks) {
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_DISABLED_WindowStates) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   Browser* browser_maximized = CreateBrowser(profile);
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_DISABLED_WindowStates) {
 
 // Tests that the browser windows are restored to their old window states.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_WindowStates) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // Verify we have entered overview. The restore button will be null if we
   // failed to enter overview.
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_WindowStates) {
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ClickCancelButton) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CreateBrowser(profile);
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ClickCancelButton) {
 // Verify that with two elements in the full restore file, if we click cancel no
 // browsers are launched.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ClickCancelButton) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // Verify we have entered overview. The cancel button will be null if we
   // failed to enter overview.
@@ -418,11 +418,11 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ClickCancelButton) {
   // async. Verify that no browsers are launched.
   test::Click(cancel_button, /*flag=*/0);
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoWithinLimit) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoWithinLimit) {
 // Verify that the tab info that is sent to ash shell is as expected, when the
 // most recent active tab is one of the first five tabs.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoWithinLimit) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // The informed restore dialog is built based on the values in this data
   // structure.
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoWithinLimit) {
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoOutsideLimit) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoOutsideLimit) {
 // Verify that the tab info that is sent to ash shell is as expected, when the
 // most recent active tab is outside of the first five tabs.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoOutsideLimit) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // The informed restore dialog is built based on the values in this data
   // structure.
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoOutsideLimit) {
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_AppInfo) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // Create multiple SWAs that will be added to the restore data. Each SWA is
   // activated when it is created, so the Print Management app should be the
@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_AppInfo) {
 // Verify that the app info that is sent to ash shell is as expected, with the
 // apps appearing in order from most recently used to least recently used.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, AppInfo) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // The informed restore dialog is built based on the values in this data
   // structure.
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_Update) {
 
 // Verify that the app info that is sent to ash shell is dialog type update.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Update) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   const InformedRestoreContentsData* contents_data =
       Shell::Get()->informed_restore_controller()->contents_data();
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Update) {
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ReenterInformedRestoreSession) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
   CreateBrowser(ProfileManager::GetActiveUserProfile());
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ReenterInformedRestoreSession) {
 // Test that if we exit overview and reenter without opening a new window, we
 // see the informed restore dialog again.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterInformedRestoreSession) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   // Verify we have entered overview with the informed restore dialog.
   WaitForOverviewEnterAnimation();

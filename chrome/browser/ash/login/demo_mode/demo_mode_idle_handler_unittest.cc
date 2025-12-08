@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -190,7 +190,7 @@ TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
   browser_2.reset();
 
   EXPECT_EQ(get_launch_demo_app_count(), 1);
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 }
 
 TEST_F(DemoModeIdleHandlerTest, ClearAndCloseClipboard) {
