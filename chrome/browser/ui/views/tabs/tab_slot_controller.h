@@ -115,16 +115,16 @@ class TabSlotController {
 
   // Returns whether `tab` is the active tab. The active tab is the one whose
   // content is shown in the browser.
-  virtual bool IsActiveTab(const Tab* tab) const = 0;
+  virtual bool IsActiveTab(const TabSlotView* tab) const = 0;
 
   // Returns whether `tab` is selected.
-  virtual bool IsTabSelected(const Tab* tab) const = 0;
+  virtual bool IsTabSelected(const TabSlotView* tab) const = 0;
 
   // Returns whether `tab` is pinned.
-  virtual bool IsTabPinned(const Tab* tab) const = 0;
+  virtual bool IsTabPinned(const TabSlotView* tab) const = 0;
 
   // Returns whether `tab` is the first in the model.
-  virtual bool IsTabFirst(const Tab* tab) const = 0;
+  virtual bool IsTabFirst(const TabSlotView* tab) const = 0;
 
   // Returns true if any tab or one of its children has focus.
   virtual bool IsFocusInTabs() const = 0;

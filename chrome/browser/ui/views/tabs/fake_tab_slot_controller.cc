@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "ui/views/view_utils.h"
 
 FakeTabSlotController::FakeTabSlotController(
     TabStripController* tab_strip_controller)
@@ -23,19 +24,19 @@ void FakeTabSlotController::ToggleTabGroupCollapsedState(
     const tab_groups::TabGroupId group,
     ToggleTabGroupCollapsedStateOrigin origin) {}
 
-bool FakeTabSlotController::IsActiveTab(const Tab* tab) const {
-  return active_tab_ == tab;
+bool FakeTabSlotController::IsActiveTab(const TabSlotView* tab) const {
+  return active_tab_ == views::AsViewClass<Tab>(tab);
 }
 
-bool FakeTabSlotController::IsTabSelected(const Tab* tab) const {
+bool FakeTabSlotController::IsTabSelected(const TabSlotView* tab) const {
   return false;
 }
 
-bool FakeTabSlotController::IsTabPinned(const Tab* tab) const {
+bool FakeTabSlotController::IsTabPinned(const TabSlotView* tab) const {
   return false;
 }
 
-bool FakeTabSlotController::IsTabFirst(const Tab* tab) const {
+bool FakeTabSlotController::IsTabFirst(const TabSlotView* tab) const {
   return false;
 }
 

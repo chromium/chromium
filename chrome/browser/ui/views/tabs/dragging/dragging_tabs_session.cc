@@ -273,7 +273,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   // right of the gap. If the tab is centered in the gap, make the tab
   // ungrouped.
 
-  const Tab* left_most_selected_tab =
+  const TabSlotView* left_most_selected_tab =
       attached_context_->GetTabAt(selected_unpinned[0]);
 
   const int buffer = left_most_selected_tab->width() / 4;
@@ -285,7 +285,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   const int tab_left_inset = TabStyle::Get()->GetTabOverlap() / 2;
 
   const auto tab_bounds_in_drag_context_coords = [this](int model_index) {
-    const Tab* const tab = attached_context_->GetTabAt(model_index);
+    const TabSlotView* const tab = attached_context_->GetTabAt(model_index);
     return ToEnclosingRect(views::View::ConvertRectToTarget(
         tab->parent(), attached_context_, gfx::RectF(tab->bounds())));
   };

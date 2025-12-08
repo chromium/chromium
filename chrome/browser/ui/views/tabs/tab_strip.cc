@@ -298,7 +298,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       const ui::ListSelectionModel& strip_selection_model =
           tab_strip_->GetSelectionModel();
       for (size_t i : strip_selection_model.selected_indices()) {
-        Tab* other_tab = GetTabAt(static_cast<int>(i));
+        TabSlotView* other_tab = GetTabAt(static_cast<int>(i));
         if (!other_tab) {
           continue;
         }
@@ -395,7 +395,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   // TabDragContext:
-  Tab* GetTabAt(int i) const override { return tab_strip_->tab_at(i); }
+  TabSlotView* GetTabAt(int i) const override { return tab_strip_->tab_at(i); }
 
   std::optional<int> GetIndexOf(const TabSlotView* view) const override {
     return tab_strip_->GetModelIndexOf(view);
@@ -403,7 +403,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
   int GetTabCount() const override { return tab_strip_->GetTabCount(); }
 
-  bool IsTabPinned(const Tab* tab) const override {
+  bool IsTabPinned(const TabSlotView* tab) const override {
     return tab_strip_->IsTabPinned(tab);
   }
 
@@ -477,7 +477,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
   bool IsActiveDropTarget() const override {
     for (int i = 0; i < GetTabCount(); ++i) {
-      const Tab* const tab = GetTabAt(i);
+      const TabSlotView* const tab = GetTabAt(i);
       if (tab->dragging()) {
         return true;
       }
@@ -850,7 +850,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       const gfx::Range tabs_in_group = tab_strip_->ListTabsInGroup(entry.first);
       for (size_t index = tabs_in_group.start(); index < tabs_in_group.end();
            index++) {
-        if (!GetTabAt(index)->IsSelected()) {
+        if (!tab_strip_->tab_at(index)->IsSelected()) {
           return true;
         }
       }
@@ -947,8 +947,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       return false;
     }
 
-    Tab* const left_tab = GetTabAt(candidate_index - 1);
-    Tab* const right_tab = tab_strip_->IsValidModelIndex(candidate_index)
+    TabSlotView* const left_tab = GetTabAt(candidate_index - 1);
+    TabSlotView* const right_tab = tab_strip_->IsValidModelIndex(candidate_index)
                                ? GetTabAt(candidate_index)
                                : nullptr;
 
@@ -1838,25 +1838,25 @@ void TabStrip::ShowContextMenuForTab(Tab* tab,
   controller_->ShowContextMenuForTab(tab, p, source_type);
 }
 
-bool TabStrip::IsActiveTab(const Tab* tab) const {
+bool TabStrip::IsActiveTab(const TabSlotView* tab) const {
   std::optional<int> model_index = GetModelIndexOf(tab);
   return model_index.has_value() &&
          controller_->IsActiveTab(model_index.value());
 }
 
-bool TabStrip::IsTabSelected(const Tab* tab) const {
+bool TabStrip::IsTabSelected(const TabSlotView* tab) const {
   std::optional<int> model_index = GetModelIndexOf(tab);
   return model_index.has_value() &&
          controller_->IsTabSelected(model_index.value());
 }
 
-bool TabStrip::IsTabPinned(const Tab* tab) const {
+bool TabStrip::IsTabPinned(const TabSlotView* tab) const {
   std::optional<int> model_index = GetModelIndexOf(tab);
   return model_index.has_value() &&
          controller_->IsTabPinned(model_index.value());
 }
 
-bool TabStrip::IsTabFirst(const Tab* tab) const {
+bool TabStrip::IsTabFirst(const TabSlotView* tab) const {
   return GetModelIndexOf(tab) == 0;
 }
 

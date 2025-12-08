@@ -61,10 +61,10 @@ class TabDragContext : public TabDragContextBase {
  public:
   ~TabDragContext() override = default;
 
-  virtual Tab* GetTabAt(int index) const = 0;
+  virtual TabSlotView* GetTabAt(int index) const = 0;
   virtual std::optional<int> GetIndexOf(const TabSlotView* view) const = 0;
   virtual int GetTabCount() const = 0;
-  virtual bool IsTabPinned(const Tab* tab) const = 0;
+  virtual bool IsTabPinned(const TabSlotView* tab) const = 0;
   virtual int GetPinnedTabCount() const = 0;
   virtual TabGroupHeader* GetTabGroupHeader(
       const tab_groups::TabGroupId& group) const = 0;
