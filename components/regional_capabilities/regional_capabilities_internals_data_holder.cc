@@ -5,36 +5,47 @@
 #include "components/regional_capabilities/regional_capabilities_internals_data_holder.h"
 
 #include "base/check_is_test.h"
+#include "base/notreached.h"
 #include "components/regional_capabilities/access/country_access_reason.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/webui/regional_capabilities_internals/constants.h"
 
 namespace regional_capabilities {
 
+namespace {
+std::string ProgramToString(Program program) {
+  switch (program) {
+    case Program::kDefault:
+      return "Default";
+    case Program::kTaiyaki:
+      return "Taiyaki";
+    case Program::kWaffle:
+      return "Waffle";
+  }
+  NOTREACHED();
+}
+}  // namespace
+
 InternalsDataHolder::InternalsDataHolder(
     RegionalCapabilitiesService& regional_capabilities) {
-  std::string active_program_name = "Unknown Program";
-  switch (regional_capabilities.GetActiveProgramSettings().program) {
-    case Program::kDefault:
-      active_program_name = "Default";
-      break;
-    case Program::kTaiyaki:
-      active_program_name = "Taiyaki";
-      break;
-    case Program::kWaffle:
-      active_program_name = "Waffle";
-      break;
-  }
-  data_.insert_or_assign(kActiveProgramNameKey, active_program_name);
+  data_.insert_or_assign(
+      kActiveProgramNameKey,
+      ProgramToString(
+          regional_capabilities.GetActiveProgramSettings().program));
 
   data_.insert_or_assign(
       kActiveCountryCodeKey,
       regional_capabilities.GetCountryIdInternal().CountryCode());
 
-  // DO_NOT_SUBMIT: Ensure this doesn't cause histograms to be recorded first.
   data_.insert_or_assign(
       kPrefsCountryCodeKey,
       regional_capabilities.GetPersistedCountryId().CountryCode());
+
+#if BUILDFLAG(IS_ANDROID)
+  data_.insert_or_assign(
+      kDeviceDeterminedProgramKey,
+      ProgramToString(regional_capabilities.client_->GetDeviceProgram()));
+#endif
 }
 
 InternalsDataHolder::~InternalsDataHolder() = default;

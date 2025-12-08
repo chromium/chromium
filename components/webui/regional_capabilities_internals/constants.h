@@ -14,6 +14,8 @@ inline constexpr char kChromeUIRegionalCapabilitiesInternalsHost[] =
 extern const char kActiveProgramNameKey[];
 extern const char kActiveCountryCodeKey[];
 extern const char kPrefsCountryCodeKey[];
+extern const char kDeviceDeterminedProgramKey[];
+extern const char kExternalChoiceKeywordKey[];
 
 }  // namespace regional_capabilities
 

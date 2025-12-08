@@ -24,16 +24,22 @@ function buildTableRow(
   return tr;
 }
 
+function appendRow(
+    tableElement: HTMLElement, headerName: string, dataKey: string) {
+  if (loadTimeData.valueExists(dataKey)) {
+    tableElement.appendChild(buildTableRow(headerName, dataKey));
+  }
+}
 
 /* All the work we do onload. */
 function initialize() {
-  const tableElement = getRequiredElement('data-table');
-  tableElement.textContent = '';
-  tableElement.appendChild(
-      buildTableRow('Active Program', 'activeProgramName'));
-  tableElement.appendChild(
-      buildTableRow('Active Country', 'activeCountryCode'));
-  tableElement.appendChild(
-      buildTableRow('Country in prefs', 'prefsCountryCode'));
+  const tableEl = getRequiredElement('data-table');
+  tableEl.textContent = '';
+
+  appendRow(tableEl, 'Active Program', 'activeProgramName');
+  appendRow(tableEl, 'Device Determined Program', 'deviceDeterminedProgram');
+  appendRow(tableEl, 'Active Country', 'activeCountryCode');
+  appendRow(tableEl, 'Country in prefs', 'prefsCountryCode');
+  appendRow(tableEl, 'External Choice', 'externalChoiceKeyword');
 }
 document.addEventListener('DOMContentLoaded', initialize);
