@@ -30,6 +30,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -83,14 +84,14 @@ public class FuseboxMediator {
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
-    private final ObservableSupplierImpl<Boolean> mOnCompactModeChangedSupplier;
+    private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
-    private boolean mUseCompactUi;
     private final SnackbarManager mSnackbarManager;
     private final Supplier<@Nullable TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Snackbar mAttachmentLimitSnackbar;
     private final Snackbar mAttachmentUploadFailedSnackbar;
+    private final ObservableSupplierImpl<Boolean> mAttachmentsPresentSupplier;
 
     FuseboxMediator(
             Context context,
@@ -103,7 +104,8 @@ public class FuseboxMediator {
                     autocompleteRequestTypeSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
-            ObservableSupplierImpl<Boolean> onCompactModeChangedSupplier,
+            ObservableSupplierImpl<@FuseboxState Integer> fuseboxStateSupplier,
+            ObservableSupplierImpl<Boolean> attachmentsPresentSupplier,
             SnackbarManager snackbarManager,
             Supplier<@Nullable TemplateUrlService> templateUrlServiceSupplier) {
         mContext = context;
@@ -116,7 +118,8 @@ public class FuseboxMediator {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
-        mOnCompactModeChangedSupplier = onCompactModeChangedSupplier;
+        mFuseboxStateSupplier = fuseboxStateSupplier;
+        mAttachmentsPresentSupplier = attachmentsPresentSupplier;
         mSnackbarManager = snackbarManager;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
 
@@ -332,6 +335,7 @@ public class FuseboxMediator {
     }
 
     private void onAttachmentsChanged() {
+        mAttachmentsPresentSupplier.set(!mModelList.isEmpty());
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
         mModel.set(
                 FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED,
@@ -666,9 +670,13 @@ public class FuseboxMediator {
     }
 
     void setUseCompactUi(boolean useCompactUi) {
-        if (mUseCompactUi == useCompactUi) return;
-        mUseCompactUi = useCompactUi;
-        mOnCompactModeChangedSupplier.set(mUseCompactUi);
+        if (mModel.get(FuseboxProperties.COMPACT_UI) == useCompactUi) return;
+
+        boolean fuseboxActive = mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
+        mFuseboxStateSupplier.set(
+                fuseboxActive
+                        ? useCompactUi ? FuseboxState.COMPACT : FuseboxState.EXPANDED
+                        : FuseboxState.DISABLED);
         mModel.set(FuseboxProperties.COMPACT_UI, useCompactUi);
     }
 }

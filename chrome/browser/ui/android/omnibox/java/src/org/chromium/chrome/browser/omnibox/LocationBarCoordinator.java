@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinat
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
@@ -280,9 +281,7 @@ public class LocationBarCoordinator
                         autocompleteRequestTypeSupplier,
                         snackbarManager);
         if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
-            mFuseboxCoordinator
-                    .getOnCompactModeChangedSupplier()
-                    .addObserver(this::onCompactModeChange);
+            mFuseboxCoordinator.getFuseboxStateSupplier().addObserver(this::onCompactModeChange);
         }
 
         mPageZoomIndicatorCoordinator =
@@ -857,7 +856,7 @@ public class LocationBarCoordinator
         mLocationBarMediator.updateButtonVisibility();
     }
 
-    private void onCompactModeChange(boolean toCompactMode) {
+    private void onCompactModeChange(@FuseboxState int state) {
         if (!mUrlCoordinator.hasFocus()) return;
         View addButton = mLocationBarLayout.findViewById(R.id.location_bar_attachments_add);
         if (addButton == null) return;
@@ -867,7 +866,7 @@ public class LocationBarCoordinator
                 .setDuration(COMPACT_MODE_ANIMATION_DURATION_MS)
                 .addTarget(mLocationBarLayout)
                 .addTarget(addButton);
-        if (toCompactMode) {
+        if (state == FuseboxState.COMPACT) {
             mLocationBarEmbedder.setRequestFixedHeight(true);
             changeBounds.addListener(
                     new TransitionListenerAdapter() {

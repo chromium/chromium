@@ -59,6 +59,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -121,7 +122,9 @@ public class FuseboxMediatorUnitTest {
     private ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private ObservableSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
-    private final ObservableSupplierImpl<Boolean> mOnCompactModeChangedSupplier =
+    private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
+            new ObservableSupplierImpl<>(FuseboxState.DISABLED);
+    private final ObservableSupplierImpl<Boolean> mAttachmentsPresentSupplier =
             new ObservableSupplierImpl<>(false);
     private boolean mCompactModeEnabled;
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
@@ -158,7 +161,8 @@ public class FuseboxMediatorUnitTest {
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
-                        mOnCompactModeChangedSupplier,
+                        mFuseboxStateSupplier,
+                        mAttachmentsPresentSupplier,
                         mSnackbarManager,
                         mTemplateUrlServiceSupplier);
         Clipboard.setInstanceForTesting(mClipboard);
@@ -187,7 +191,8 @@ public class FuseboxMediatorUnitTest {
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
-                        mOnCompactModeChangedSupplier,
+                        mFuseboxStateSupplier,
+                        mAttachmentsPresentSupplier,
                         mSnackbarManager,
                         mTemplateUrlServiceSupplier);
     }
@@ -534,7 +539,8 @@ public class FuseboxMediatorUnitTest {
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
-                        mOnCompactModeChangedSupplier,
+                        mFuseboxStateSupplier,
+                        mAttachmentsPresentSupplier,
                         mSnackbarManager,
                         mTemplateUrlServiceSupplier);
 
@@ -789,8 +795,9 @@ public class FuseboxMediatorUnitTest {
     public void testCompactMode() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
         recreateMediator();
-        Callback<Boolean> compactModeCallback = (val) -> mCompactModeEnabled = val;
-        mOnCompactModeChangedSupplier.addObserver(compactModeCallback);
+        Callback<@FuseboxState Integer> compactModeCallback =
+                (val) -> mCompactModeEnabled = val == FuseboxState.COMPACT;
+        mFuseboxStateSupplier.addObserver(compactModeCallback);
 
         mMediator.setToolbarVisible(true);
         assertTrue(mModel.get(FuseboxProperties.COMPACT_UI));
@@ -928,5 +935,29 @@ public class FuseboxMediatorUnitTest {
     public void testFailedUpload() {
         mMediator.onAttachmentUploadFailed();
         verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    public void testAttachmentsPresentSupplier_updatedOnAdd() {
+        assertFalse(mAttachmentsPresentSupplier.get());
+        addTabAttachment("test");
+        assertTrue(mAttachmentsPresentSupplier.get());
+    }
+
+    @Test
+    public void testAttachmentsPresentSupplier_updatedOnRemove() {
+        addTabAttachment("test");
+        assertTrue(mAttachmentsPresentSupplier.get());
+        mAttachments.remove(mAttachments.get(0));
+        assertFalse(mAttachmentsPresentSupplier.get());
+    }
+
+    @Test
+    public void testAttachmentsPresentSupplier_updatedOnClear() {
+        addTabAttachment("test1");
+        addTabAttachment("test2");
+        assertTrue(mAttachmentsPresentSupplier.get());
+        mAttachments.clear();
+        assertFalse(mAttachmentsPresentSupplier.get());
     }
 }
