@@ -13,6 +13,7 @@
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "build/branding_buildflags.h"
+#import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
@@ -149,8 +150,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
       _dataSource;
   /// The view containing the input text field and action buttons.
   UIView* _inputPlateContainerView;
-  /// Whether the user is eligible for AI mode.
-  BOOL _eligibleToAIMode;
   /// The button to toggle AI mode.
   UIButton* _aimButton;
   UIImageView* _aimButtonXIndicator;
@@ -170,10 +169,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
   UIView* _trailingCarouselFadeView;
   /// The carousel container.
   UIView* _carouselContainer;
-  /// Whether the Send button should be shown, hiding the other controls.
-  BOOL _showsSendButton;
-  /// Whether the extended controls (Plus and Lens button) should be shown.
-  BOOL _showsExtendedControls;
   /// Attach current tab action state.
   BOOL _attachCurrentTabActionHidden;
   /// Attach tabs actions state.
@@ -248,7 +243,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
   _plusButton = [self createPlusButton];
   _sendButton = [self createSendButton];
   [self updatePlusButtonItems];
-  [self updateButtonsVisibility];
   [self setupCarouselContainer];
 
   _inputPlateStackView =
@@ -379,35 +373,23 @@ UIImage* SendButtonImage(BOOL highlighted) {
     _sendButton.alpha = 1;
     _sendButton.enabled = YES;
     [_editView forceDisableReturnKey:NO];
+    [_editView setAllowsReturnKeyWithEmptyText:YES];
   } else {
     _sendButton.alpha = kSendButtonDisabledOpacity;
     _sendButton.enabled = NO;
     [_editView forceDisableReturnKey:YES];
+    [_editView setAllowsReturnKeyWithEmptyText:NO];
   }
 }
 
-- (void)setEligibleToAIMode:(BOOL)eligibleToAIMode {
-  if (_eligibleToAIMode == eligibleToAIMode) {
-    return;
-  }
-  _eligibleToAIMode = eligibleToAIMode;
-  [self updateButtonsVisibility];
-}
-
-- (void)setShowsSendButton:(BOOL)showsSendButton {
-  if (_showsSendButton == showsSendButton) {
-    return;
-  }
-  _showsSendButton = showsSendButton;
-  [self updateButtonsVisibility];
-}
-
-- (void)setShowsExtendedControls:(BOOL)showsExtendedControls {
-  if (_showsExtendedControls == showsExtendedControls) {
-    return;
-  }
-  _showsExtendedControls = showsExtendedControls;
-  [self updateButtonsVisibility];
+- (void)updateVisibleControls:(ComposeboxInputPlateControls)controls {
+  _plusButton.hidden = !(controls & ComposeboxInputPlateControls::kPlus);
+  _aimButton.hidden = !(controls & ComposeboxInputPlateControls::kAIM);
+  _micButton.hidden = !(controls & ComposeboxInputPlateControls::kVoice);
+  _lensButton.hidden = !(controls & ComposeboxInputPlateControls::kLens);
+  _sendButton.hidden = !(controls & ComposeboxInputPlateControls::kSend);
+  _imageGenerationButton.hidden =
+      !(controls & ComposeboxInputPlateControls::kCreateImage);
 }
 
 - (void)setCompact:(BOOL)compact {
@@ -431,7 +413,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
   [self updatePlaceholderText];
   [self updateAIMButtonAppearance];
   [self updatePlusButtonItems];
-  [self updateButtonsVisibility];
   [self triggerGlowEffect];
 }
 
@@ -441,7 +422,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
   }
   _imageGenerationEnabled = enabled;
   [self updatePlaceholderText];
-  [self updateImageGenerationButtonAppearance];
   [self updatePlusButtonItems];
   [self triggerGlowEffect];
 }
@@ -724,14 +704,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
   [_inputPlateContainerView.layer setNeedsDisplay];
 }
 
-- (void)updateButtonsVisibility {
-  _plusButton.hidden = !_showsExtendedControls || !_eligibleToAIMode;
-  _aimButton.hidden = !self.AIModeEnabled;
-  _micButton.hidden = _showsSendButton;
-  _lensButton.hidden = _showsSendButton || !_showsExtendedControls;
-  _sendButton.hidden = !_showsSendButton;
-}
-
 /// Updates the AIM button taking into account if the button should be minimize
 /// or not or if the mode is enable or not.
 - (void)updateAIMButtonAppearance {
@@ -775,7 +747,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
       _aimButton.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
     }
   }
-  [self updateButtonsVisibility];
 
   _aimButton.configuration = config;
 
@@ -787,10 +758,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
     [_aimButtonXIndicator removeFromSuperview];
     _aimButtonXIndicator = nil;
   }
-}
-
-- (void)updateImageGenerationButtonAppearance {
-  _imageGenerationButton.hidden = !_imageGenerationEnabled;
 }
 
 // Updates the placeholder text based on the current operating mode of the
@@ -1369,8 +1336,6 @@ UIImage* SendButtonImage(BOOL highlighted) {
     [_imageGenerationButton.titleLabel.centerYAnchor
         constraintEqualToAnchor:xMarkImageView.centerYAnchor],
   ]];
-
-  [self updateImageGenerationButtonAppearance];
 }
 
 @end

@@ -22,9 +22,13 @@
 #import "components/variations/variations_client.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
+#import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
@@ -36,32 +40,20 @@
 @interface TestComposeboxInputPlateConsumer
     : NSObject <ComposeboxInputPlateConsumer>
 
-@property(nonatomic, assign) BOOL eligibleToAIMode;
-@property(nonatomic, assign) BOOL showsSendButton;
-@property(nonatomic, assign) BOOL showsExtendedControls;
+// Whether the given control(s) are shown.
+- (BOOL)showsControls:(ComposeboxInputPlateControls)controls;
 
 @end
 
-@implementation TestComposeboxInputPlateConsumer
+@implementation TestComposeboxInputPlateConsumer {
+  ComposeboxInputPlateControls _visibleControls;
+}
 
 - (void)setItems:(NSArray<ComposeboxInputItem*>*)items {
 }
 - (void)updateState:(ComposeboxInputItemState)state
     forItemWithIdentifier:(const base::UnguessableToken&)identifier {
 }
-
-- (void)setEligibleToAIMode:(BOOL)eligibleToAIMode {
-  _eligibleToAIMode = eligibleToAIMode;
-}
-
-- (void)setShowsSendButton:(BOOL)showsSendButton {
-  _showsSendButton = showsSendButton;
-}
-
-- (void)setShowsExtendedControls:(BOOL)showsExtendedControls {
-  _showsExtendedControls = showsExtendedControls;
-}
-
 - (void)setAIModeEnabled:(BOOL)enabled {
 }
 - (void)setImageGenerationEnabled:(BOOL)enabled {
@@ -88,6 +80,13 @@
 }
 - (void)disableGalleryActions:(BOOL)disabled {
 }
+- (void)updateVisibleControls:(ComposeboxInputPlateControls)visibleControls {
+  _visibleControls = visibleControls;
+}
+
+- (BOOL)showsControls:(ComposeboxInputPlateControls)controls {
+  return (_visibleControls & controls) != ComposeboxInputPlateControls::kNone;
+}
 
 @end
 
@@ -111,6 +110,15 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
         contextual_search::ContextualSearchContextController::ConfigParams>();
     static base::NoDestructor<network::TestURLLoaderFactory>
         test_url_loader_factory;
+
+    web_state_list_delegate_ = std::make_unique<FakeWebStateListDelegate>();
+    web_state_list_ =
+        std::make_unique<WebStateList>(web_state_list_delegate_.get());
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state_list_->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::AtIndex(0).Activate());
+
     aim_eligibility_service_ =
         std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
             pref_service_, template_url_service(),
@@ -126,7 +134,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
             service_->CreateSession(
                 std::move(config_params),
                 contextual_search::ContextualSearchSource::kUnknown)
-                           webStateList:nullptr
+                           webStateList:web_state_list_.get()
                           faviconLoader:nullptr
                  persistTabContextAgent:nullptr
                             isIncognito:NO
@@ -149,6 +157,8 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     service_.reset();
     fake_variations_client_.reset();
     shared_url_loader_factory_.reset();
+    web_state_list_.reset();
+    web_state_list_delegate_.reset();
     profile_.reset();
     PlatformTest::TearDown();
   }
@@ -157,6 +167,41 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   TemplateURLService* template_url_service() {
     return search_engines_test_environment_.template_url_service();
   }
+
+  void SetDSEGoogle(bool isGoogleDSE) {
+    TemplateURLService* template_url_service = this->template_url_service();
+    TemplateURLData data;
+
+    if (isGoogleDSE) {
+      data.SetURL("https://www.google.com/search?q={searchTerms}");
+      data.safe_for_autoreplace = true;
+      data.prepopulate_id = 1;
+    } else {
+      data.SetURL("https://www.bing.com/search?q={searchTerms}");
+      data.safe_for_autoreplace = false;
+      data.prepopulate_id = 2;
+    }
+
+    TemplateURL* template_url =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  void SetAIMEligible(bool AIMEligible) {
+    EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
+        .WillRepeatedly(testing::Return(AIMEligible));
+    ASSERT_FALSE(aim_callback_.is_null());
+
+    aim_callback_.Run();
+  }
+
+  void SetOmniboxText(const std::u16string& text) {
+    [mediator_ omniboxDidChangeText:text
+                      isSearchQuery:NO
+                userInputInProgress:NO];
+  }
+
+  void EraseOmniboxText() { SetOmniboxText(u""); }
 
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
@@ -169,77 +214,62 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   std::unique_ptr<testing::NiceMock<MockAimEligibilityService>>
       aim_eligibility_service_;
   base::RepeatingClosure aim_callback_;
+  std::unique_ptr<FakeWebStateListDelegate> web_state_list_delegate_;
+  std::unique_ptr<WebStateList> web_state_list_;
   TestComposeboxInputPlateConsumer* consumer_;
   ComposeboxInputPlateMediator* mediator_;
 };
 
-// Tests that the consumer is informed when AIM is eligible.
-TEST_F(ComposeboxInputPlateMediatorTest, InformConsumerWhenAimEligible) {
-  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
-      .WillRepeatedly(testing::Return(true));
-  ASSERT_FALSE(aim_callback_.is_null());
-
-  aim_callback_.Run();
-
-  EXPECT_TRUE(consumer_.eligibleToAIMode);
+TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {
+  EraseOmniboxText();
+  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
+  UIImage* image = [[UIImage alloc] init];
+  NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
+  [mediator_ processImageItemProvider:provider assetID:@"123"];
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
 }
 
-// Tests that the consumer is informed when AIM is not eligible.
-TEST_F(ComposeboxInputPlateMediatorTest, InformConsumerWhenAimNotEligible) {
-  EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
-      .WillRepeatedly(testing::Return(false));
-  ASSERT_FALSE(aim_callback_.is_null());
-
-  aim_callback_.Run();
-
-  EXPECT_FALSE(consumer_.eligibleToAIMode);
+// Disables multimodal options when not eligible.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DisablesMultimodalActionsWhenAIMNotEligible) {
+  SetAIMEligible(false);
+  SetDSEGoogle(true);
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kVoice]);
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kLens]);
+  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
 // Tests that extended controls are shown when Google is the default search
 // engine.
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsExtendedControlsWithGoogleDSE) {
-  TemplateURLService* template_url_service = this->template_url_service();
-  TemplateURLData data;
-  data.SetURL("https://www.google.com/search?q={searchTerms}");
-  data.safe_for_autoreplace = true;
-  data.prepopulate_id = 1;
-  TemplateURL* template_url =
-      template_url_service->Add(std::make_unique<TemplateURL>(data));
-  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
-
-  EXPECT_TRUE(consumer_.showsExtendedControls);
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kVoice]);
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kLens]);
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
 // Tests that extended controls are hidden when Google is not the default search
 // engine.
 TEST_F(ComposeboxInputPlateMediatorTest,
        HidesExtendedControlsWithNonGoogleDSE) {
-  TemplateURLService* template_url_service = this->template_url_service();
-  TemplateURLData data;
-  data.SetURL("https://www.bing.com/search?q={searchTerms}");
-  data.safe_for_autoreplace = false;
-  data.prepopulate_id = 2;
-  TemplateURL* template_url =
-      template_url_service->Add(std::make_unique<TemplateURL>(data));
-  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
-
-  EXPECT_FALSE(consumer_.showsExtendedControls);
+  SetAIMEligible(true);
+  SetDSEGoogle(false);
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kVoice]);
+  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kLens]);
+  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
 // Tests that the send button is shown when there is text in the omnibox.
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithText) {
-  [mediator_ omniboxDidChangeText:u"some text"
-                    isSearchQuery:NO
-              userInputInProgress:NO];
-
-  EXPECT_TRUE(consumer_.showsSendButton);
+  this->SetOmniboxText(u"some text");
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
 }
 
 // Tests that the send button is hidden when there is no text in the omnibox.
 TEST_F(ComposeboxInputPlateMediatorTest, HidesSendButtonWithoutText) {
-  [mediator_ omniboxDidChangeText:u"" isSearchQuery:NO userInputInProgress:NO];
-
-  EXPECT_FALSE(consumer_.showsSendButton);
+  EraseOmniboxText();
+  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
 }
 
 }  // namespace

@@ -81,6 +81,7 @@ class ComposeboxOmniboxClient final : public OmniboxClient {
                      const std::u16string& user_text,
                      const AutocompleteResult& result,
                      bool has_focus) override;
+  void OnThumbnailOnlyAccept() override;
   void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
   void DiscardNonCommittedNavigations() override;
   const std::u16string& GetTitle() const override;
