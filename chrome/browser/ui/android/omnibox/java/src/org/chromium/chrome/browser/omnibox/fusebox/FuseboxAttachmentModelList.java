@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBrid
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.contextual_search.FileUploadStatus;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -30,8 +31,7 @@ import java.util.function.Predicate;
  */
 @NullMarked
 public class FuseboxAttachmentModelList extends ModelList implements FileUploadObserver {
-
-    static final int MAX_ATTACHMENTS = 10;
+    static final int MAX_ATTACHMENTS = OmniboxFeatures.sMultiattachmentFusebox.getValue() ? 10 : 1;
     private final Set<Integer> mAttachedTabIds = new ArraySet<>();
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @BrandedColorScheme int mBrandedColorScheme;

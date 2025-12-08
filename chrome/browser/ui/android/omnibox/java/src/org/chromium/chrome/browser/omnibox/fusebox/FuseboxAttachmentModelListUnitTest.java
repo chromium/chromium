@@ -31,6 +31,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.contextual_search.FileUploadStatus;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,6 +55,7 @@ public class FuseboxAttachmentModelListUnitTest {
 
     @Before
     public void setUp() {
+        OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
         mFuseboxAttachmentModelList = new FuseboxAttachmentModelList();
         mFuseboxAttachmentModelList.setComposeBoxQueryControllerBridge(
                 mComposeBoxQueryControllerBridge);
