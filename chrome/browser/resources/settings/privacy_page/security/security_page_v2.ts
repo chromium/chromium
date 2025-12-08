@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '/shared/settings/prefs/prefs.js';
 import '../../controls/controlled_radio_button.js';
@@ -48,9 +49,23 @@ export enum SecuritySettingsBundleSetting {
 }
 // LINT.ThenChange(/components/safe_browsing/core/common/safe_browsing_prefs.h:SecuritySettingsBundleSetting)
 
+/** Enumeration of all HTTPS-First Mode setting states.*/
+// LINT.IfChange(HttpsFirstModeSetting)
+export enum HttpsFirstModeSetting {
+  DISABLED = 0,
+  // DEPRECATED: A separate Incognito setting never shipped.
+  // ENABLED_INCOGNITO = 1,
+  ENABLED_FULL = 2,
+  ENABLED_BALANCED = 3,
+}
+// LINT.ThenChange(/chrome/browser/ssl/https_first_mode_settings_tracker.h)
+
 export interface SettingsSecurityPageV2Element {
   $: {
     bundlesRadioGroup: SettingsRadioGroupElement,
+    httpsFirstModeEnabledBalanced: ControlledRadioButtonElement,
+    httpsFirstModeEnabledStrict: ControlledRadioButtonElement,
+    httpsFirstModeToggle: SettingsToggleButtonElement,
     passwordsLeakToggle: SettingsToggleButtonElement,
     resetEnhancedBundleToDefaultsButton: CrButtonElement,
     resetStandardBundleToDefaultsButton: CrButtonElement,
@@ -86,6 +101,11 @@ export class SettingsSecurityPageV2Element extends
         value: SafeBrowsingSetting,
       },
 
+      httpsFirstModeSettingEnum_: {
+        type: Object,
+        value: HttpsFirstModeSetting,
+      },
+
       isResetStandardBundleToDefaultsButtonVisible_: {
         type: Boolean,
         value: false,
@@ -102,9 +122,19 @@ export class SettingsSecurityPageV2Element extends
         value: false,
       },
 
+      isHttpsFirstModeEnabled_: {
+        type: Boolean,
+        value: true,
+      },
+
       safeBrowsingOff_: {
         type: Array,
         value: () => [SafeBrowsingSetting.DISABLED],
+      },
+
+      httpsFirstModeUncheckedValues_: {
+        type: Array,
+        value: () => [HttpsFirstModeSetting.DISABLED],
       },
 
       safeBrowsingStateTextMap_: {
@@ -135,13 +165,17 @@ export class SettingsSecurityPageV2Element extends
           'isResettingToDefaults_,' +
           'prefs.generated.security_settings_bundle.value,' +
           'prefs.generated.safe_browsing.*),',
+      'updateHttpsFirstModeState_(' +
+          'prefs.generated.https_first_mode_enabled.value),',
     ];
   }
 
   declare private isResettingToDefaults_: boolean;
   declare private isResetStandardBundleToDefaultsButtonVisible_: boolean;
   declare private isResetEnhancedBundleToDefaultsButtonVisible_: boolean;
+  declare private isHttpsFirstModeEnabled_: boolean;
   declare private safeBrowsingOff_: SafeBrowsingSetting[];
+  declare private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
   declare private safeBrowsingStateTextMap_: Object;
   declare private enableSecurityKeysSubpage_: boolean;
 
@@ -353,6 +387,12 @@ export class SettingsSecurityPageV2Element extends
 
   private onSecurityKeysClick_() {
     Router.getInstance().navigateTo(routes.SECURITY_KEYS);
+  }
+
+  private updateHttpsFirstModeState_() {
+    this.isHttpsFirstModeEnabled_ =
+        this.getPref('generated.https_first_mode_enabled').value !==
+        HttpsFirstModeSetting.DISABLED;
   }
 }
 

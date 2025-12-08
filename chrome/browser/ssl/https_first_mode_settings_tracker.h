@@ -29,7 +29,9 @@ class Clock;
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Must be kept in sync with the HttpsFirstModeSetting enums located in
-// chrome/browser/resources/settings/privacy_page/security_page.ts and enums.xml
+// chrome/browser/resources/settings/privacy_page/security_page.ts,
+// chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts,
+// and enums.xml
 // LINT.IfChange
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ssl
@@ -41,7 +43,11 @@ enum class HttpsFirstModeSetting {
   kEnabledBalanced = 3,
   kMaxValue = kEnabledBalanced,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/security/enums.xml)
+// LINT.ThenChange(
+//      /chrome/browser/resources/settings/privacy_page/security/security_page.ts,
+//      /chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts:HttpsFirstModeSetting,
+//      /tools/metrics/histograms/metadata/security/enums.xml
+// )
 
 // A `KeyedService` that tracks changes to the HTTPS-First Mode pref for each
 // profile. This is currently used for:

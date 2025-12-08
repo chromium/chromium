@@ -2384,7 +2384,19 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"securityPasswordsLeakDetectionTitle",
        IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_TITLE},
       {"securityPasswordsLeakDetectionDesc",
-       IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_DESC}};
+       IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_DESC},
+      {"securityHttpsFirstModeToggleLabel",
+       IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_TOGGLE_LABEL},
+      {"securityHttpsFirstModeToggleSublabel",
+       IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_TOGGLE_SUBLABEL},
+      {"securityHttpsFirstModeBalancedLabel",
+       IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_BALANCED_LABEL},
+      {"securityHttpsFirstModeBalancedSublabel",
+       IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_BALANCED_SUBLABEL},
+      {"securityHttpsFirstModeStrictLabel",
+       IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_STRICT_LABEL},
+      {"securityHttpsFirstModeStrictSublabel",
+       IDS_SETTINGS_SECURITY_HTTPS_FIRST_MODE_STRICT_SUBLABEL}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("cookiesSettingsHelpCenterURL",

@@ -5,7 +5,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrExpandButtonElement, SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js';
-import {SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
+import {HttpsFirstModeSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import type {ControlledRadioButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
@@ -149,6 +149,51 @@ suite('Main', function() {
         SafeBrowsingSetting.ENHANCED,
         page.getPref('generated.safe_browsing').value);
     assertFalse(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
+  });
+
+  test('HttpsFirstModeRowRadioButtonsDisabledWhenOff', async function() {
+    page.setPrefValue(
+        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
+    await flushTasks();
+
+    // The toggle is set to OFF because HTTPS First Mode is DISABLED.
+    const toggle = page.$.httpsFirstModeToggle;
+    assertFalse(toggle.checked, 'Toggle should be set to off');
+
+    // The radio buttons are disabled because HTTPS First Mode is DISABLED.
+    const balancedButton = page.$.httpsFirstModeEnabledBalanced;
+    assertTrue(
+        balancedButton.disabled, 'Balanced radio button should be disabled');
+    const strictButton = page.$.httpsFirstModeEnabledStrict;
+    assertTrue(strictButton.disabled, 'Strict radio button should be disabled');
+
+    toggle.click();
+    await flushTasks();
+
+    // The toggle is set to ON, so the radio buttons are now enabled.
+    assertFalse(
+        balancedButton.disabled, 'Balanced radio button should be enabled');
+    assertFalse(strictButton.disabled, 'Strict radio button should be enabled');
+  });
+
+  test('HttpsFirstModeDefaultBalancedWhenToggledOn', async function() {
+    page.setPrefValue(
+        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
+    await flushTasks();
+
+    // The toggle is set to OFF because HTTPS First Mode is DISABLED.
+    const toggle = page.$.httpsFirstModeToggle;
+    assertFalse(toggle.checked, 'Toggle should be OFF');
+
+    toggle.click();
+    await flushTasks();
+    assertTrue(toggle.checked, 'Toggle should be ON');
+
+    // The pref should default to ENABLED_BALANCED.
+    assertEquals(
+        HttpsFirstModeSetting.ENABLED_BALANCED,
+        page.getPref('generated.https_first_mode_enabled').value,
+        'HTTPS First Mode should default to ENABLED_BALANCED when enabled');
   });
 
   test('PasswordsLeakDetectionClickTogglesSetting', async function() {
