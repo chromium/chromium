@@ -13,4 +13,7 @@ extern NSString* const kCredentialExportContinueButtonAccessibilityIdentifier;
 // Identifier for the Select/Deselect All button in the toolbar.
 extern NSString* const kCredentialExportSelectAllButtonAccessibilityIdentifier;
 
+// Identifier for the Download to CSV button in the toolbar.
+extern NSString* const kCredentialExportFileButtonAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_UI_CREDENTIAL_EXPORT_CONSTANTS_H_

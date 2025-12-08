@@ -2736,6 +2736,9 @@
       <message name="IDS_IOS_EXPORT_PASSWORDS_CANCEL_BUTTON" desc="Label of a confirmation dialog button which allows the user to cancel passwords export. [Length: 22em] [iOS only]">
         Cancel
       </message>
+      <message name="IDS_IOS_EXPORT_PASSWORDS_DOWNLOAD_CSV" desc="Label for a menu item that allows the user to download their selected passwords as a CSV file.">
+        Download to CSV
+      </message>
       <message name="IDS_IOS_EXPORT_PASSWORDS_FAILED_ALERT_TITLE" desc="Title of the alert informing the user that exporting passwords has failed. [iOS only]">
         Can't export passwords
       </message>

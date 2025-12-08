@@ -9,3 +9,6 @@ NSString* const kCredentialExportContinueButtonAccessibilityIdentifier =
 
 NSString* const kCredentialExportSelectAllButtonAccessibilityIdentifier =
     @"CredentialExportSelectAllButtonAccessibilityIdentifier";
+
+NSString* const kCredentialExportFileButtonAccessibilityIdentifier =
+    @"CredentialExportFileButtonAccessibilityIdentifier";
