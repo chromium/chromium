@@ -25,4 +25,31 @@ const base::FeatureParam<std::string> kLegionTokenServerGetTokensPath{
     &kLegion, /*name=*/"LegionTokenServerGetTokensPath",
     /*default_value=*/"/v1/legion/auth"};
 
+const base::FeatureParam<int> kLegionAuthTokenCacheBatchSize{
+    &kLegion, /*name=*/"LegionAuthTokenCacheBatchSize",
+    /*default_value=*/64};
+
+const base::FeatureParam<int> kLegionAuthTokenCacheLowWaterMark{
+    &kLegion, /*name=*/"LegionAuthTokenCacheLowWaterMark",
+    /*default_value=*/16};
+
+const base::FeatureParam<base::TimeDelta>
+    kLegionTryGetAuthTokensNotEligibleBackoff{
+        &kLegion,
+        /*name=*/"LegionTryGetAuthTokensNotEligibleBackoff",
+        /*default_value=*/base::Hours(1)};
+
+const base::FeatureParam<base::TimeDelta>
+    kLegionTryGetAuthTokensTransientBackoff{
+        &kLegion,
+        /*name=*/"LegionTryGetAuthTokensTransientBackoff",
+        /*default_value=*/base::Seconds(5)};
+
+const base::FeatureParam<base::TimeDelta> kLegionTryGetAuthTokensBugBackoff{
+    &kLegion, /*name=*/"LegionTryGetAuthTokensBugBackoff",
+    /*default_value=*/base::Minutes(10)};
+
+const base::FeatureParam<double> kLegionBackoffJitter{
+    &kLegion, /*name=*/"LegionBackoffJitter", /*default_value=*/0.25};
+
 }  // namespace legion

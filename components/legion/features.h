@@ -7,6 +7,7 @@
 
 #include "base/features.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace legion {
 
@@ -30,6 +31,29 @@ extern const base::FeatureParam<std::string>
 // Sets the path component of the Legion auth token server URL used for
 // getting blind-signed tokens.
 extern const base::FeatureParam<std::string> kLegionTokenServerGetTokensPath;
+
+// The number of auth tokens to request in each batch.
+extern const base::FeatureParam<int> kLegionAuthTokenCacheBatchSize;
+
+// The number of available auth tokens below which a new batch of tokens will be
+// requested.
+extern const base::FeatureParam<int> kLegionAuthTokenCacheLowWaterMark;
+
+// The backoff duration for fetching auth tokens if the user is not eligible.
+extern const base::FeatureParam<base::TimeDelta>
+    kLegionTryGetAuthTokensNotEligibleBackoff;
+
+// The initial backoff for fetching auth tokens after a transient error.
+extern const base::FeatureParam<base::TimeDelta>
+    kLegionTryGetAuthTokensTransientBackoff;
+
+// The initial backoff for fetching auth tokens after an error that suggests a
+// bug.
+extern const base::FeatureParam<base::TimeDelta>
+    kLegionTryGetAuthTokensBugBackoff;
+
+// The jitter factor to apply to backoff durations.
+extern const base::FeatureParam<double> kLegionBackoffJitter;
 
 }  // namespace legion
 

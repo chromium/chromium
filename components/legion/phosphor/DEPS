@@ -1,0 +1,6 @@
+# required for quiche integration
+specific_include_rules = {
+  "mock_blind_sign_auth.cc": [
+    "+third_party/abseil-cpp/absl/types/span.h",
+  ]
+}
