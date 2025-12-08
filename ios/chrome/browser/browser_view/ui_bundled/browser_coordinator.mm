@@ -3129,11 +3129,11 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - BWGCommands
 
 - (void)startGeminiFlowWithEntryPoint:(bwg::EntryPoint)entryPoint {
-  [self startBWGFlowWithImageAttachment:nil entryPoint:entryPoint];
+  [self startGeminiFlowWithImageAttachment:nil entryPoint:entryPoint];
 }
 
-- (void)startBWGFlowWithImageAttachment:(UIImage*)image
-                             entryPoint:(bwg::EntryPoint)entryPoint {
+- (void)startGeminiFlowWithImageAttachment:(UIImage*)image
+                                entryPoint:(bwg::EntryPoint)entryPoint {
   if (entryPoint == bwg::EntryPoint::ImageContextMenu) {
     BwgBrowserAgent::FromBrowser(self.browser)
         ->StartGeminiFlow(self.viewController, image);

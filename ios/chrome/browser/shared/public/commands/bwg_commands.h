@@ -19,9 +19,9 @@ enum class EntryPoint;
 // Starts the Gemini flow with an entry point.
 - (void)startGeminiFlowWithEntryPoint:(bwg::EntryPoint)entryPoint;
 
-// Starts the BWG flow with a provided image as attachment.
-- (void)startBWGFlowWithImageAttachment:(UIImage*)image
-                             entryPoint:(bwg::EntryPoint)entryPoint;
+// Starts the Gemini flow with a provided image as attachment.
+- (void)startGeminiFlowWithImageAttachment:(UIImage*)image
+                                entryPoint:(bwg::EntryPoint)entryPoint;
 
 // Dismiss the BWG flow with a completion block.
 - (void)dismissBWGFlowWithCompletion:(ProceduralBlock)completion;
