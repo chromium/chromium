@@ -1967,11 +1967,22 @@ def Bisect(archive_build,
     change_log_url_fn = GetShortChangeLogURL
 
   if verify_range:
-    good_rev_fetch = archive_build.get_download_job(rev_list[0],
-                                                    'good_rev_fetch').start()
-    bad_rev_fetch = archive_build.get_download_job(rev_list[-1],
-                                                   'bad_rev_fetch').start()
+    good_rev_fetch = None
+    bad_rev_fetch = None
     try:
+      bad_rev_fetch = archive_build.get_download_job(rev_list[-1],
+                                                    'bad_rev_fetch').start()
+      bad_download = bad_rev_fetch.wait_for()
+      # Start fetching the good revision in parallel with the bad evaluation.
+      good_rev_fetch = archive_build.get_download_job(rev_list[0],
+                                                      'good_rev_fetch').start()
+      answer = EvaluateRevision(archive_build, bad_download, rev_list[-1],
+                                try_args, evaluate)
+      if answer != 'b':
+        print(f'Expecting revision {rev_list[-1]} to be bad but got {answer}. '
+              'Please make sure that the issue can be reproduced for --bad.')
+        raise SystemExit
+
       good_download = good_rev_fetch.wait_for()
       answer = EvaluateRevision(archive_build, good_download, rev_list[0],
                                 try_args, evaluate)
@@ -1979,19 +1990,14 @@ def Bisect(archive_build,
         print(f'Expecting revision {rev_list[0]} to be good but got {answer}. '
               'Please make sure the --good is a good revision.')
         raise SystemExit
-      bad_download = bad_rev_fetch.wait_for()
-      answer = EvaluateRevision(archive_build, bad_download, rev_list[-1],
-                                try_args, evaluate)
-      if answer != 'b':
-        print(f'Expecting revision {rev_list[-1]} to be bad but got {answer}. '
-              'Please make sure that the issue can be reproduced for --bad.')
-        raise SystemExit
     except (KeyboardInterrupt, SystemExit):
       print('Cleaning up...')
       return None, None
     finally:
-      good_rev_fetch.stop()
-      bad_rev_fetch.stop()
+      if good_rev_fetch:
+        good_rev_fetch.stop()
+      if bad_rev_fetch:
+        bad_rev_fetch.stop()
 
   prefetch = {}
   try:
