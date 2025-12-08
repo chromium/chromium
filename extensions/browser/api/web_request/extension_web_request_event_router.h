@@ -422,14 +422,14 @@ class WebRequestEventRouter : public KeyedService {
 
     // Deserializes a listener from a persisted dictionary value into its
     // inactive (lazy) state. Returns nullptr on failure and sets `error`.
-    static std::unique_ptr<EventListener> InitFromLazyValue(
+    static std::unique_ptr<EventListener> InitFromInactiveListenerValue(
         const base::Value::Dict& value,
         const ExtensionId& extension_id,
         content::BrowserContext* context,
         std::string* error);
 
     // Serializes a listener for persistence.
-    base::Value::Dict ToLazyValue() const;
+    base::Value::Dict ToInactiveListenerValue() const;
 
     bool HasExtraHeaders() const {
       using extension_web_request_api_helpers::ExtraInfoSpec;

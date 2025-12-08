@@ -18,14 +18,32 @@ namespace {
 
 using RequestFilter = WebRequestEventRouter::RequestFilter;
 
-bool AreFiltersEqual(const RequestFilter& f1, const RequestFilter& f2) {
-  if (f1.tab_id != f2.tab_id || f1.window_id != f2.window_id) {
-    return false;
+::testing::AssertionResult AreFiltersEqual(
+    const RequestFilter& value,
+    const RequestFilter& expected_value) {
+  if (value.tab_id != expected_value.tab_id) {
+    return ::testing::AssertionFailure()
+           << "tab_id mismatch.\n  Expected: " << expected_value.tab_id
+           << "\n  Actual:   " << value.tab_id;
   }
-  if (f1.types != f2.types) {
-    return false;
+
+  if (value.window_id != expected_value.window_id) {
+    return ::testing::AssertionFailure()
+           << "window_id mismatch.\n  Expected: " << expected_value.window_id
+           << "\n  Actual:   " << value.window_id;
   }
-  return f1.urls.patterns() == f2.urls.patterns();
+
+  if (value.types != expected_value.types) {
+    return ::testing::AssertionFailure() << "types mismatch.";
+  }
+
+  if (value.urls != expected_value.urls) {
+    return ::testing::AssertionFailure()
+           << "URLPatternSet mismatch.\n  Expected: " << expected_value.urls
+           << "\n  Actual:   " << value.urls;
+  }
+
+  return ::testing::AssertionSuccess();
 }
 
 class WebRequestEventRouterTest : public testing::Test {
@@ -48,7 +66,7 @@ class WebRequestEventRouterTest : public testing::Test {
         << "Deserialization failed with error: " << error;
     EXPECT_TRUE(error.empty());
 
-    EXPECT_TRUE(AreFiltersEqual(original, deserialized));
+    EXPECT_TRUE(AreFiltersEqual(deserialized, original));
   }
 };
 

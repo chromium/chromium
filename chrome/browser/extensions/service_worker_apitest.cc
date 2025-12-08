@@ -2809,19 +2809,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 
 class ServiceWorkerWebRequestPersistFilteredEventsTest
     : public ServiceWorkerWebRequestEarlyListenerTest {
- public:
-  ServiceWorkerWebRequestPersistFilteredEventsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kWebRequestPersistFilteredEvents);
-  }
-
  protected:
   WebRequestEventRouter* web_request_router() {
     return WebRequestEventRouter::Get(profile());
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      extensions_features::kWebRequestPersistFilteredEvents};
   base::AutoReset<bool> disable_lazy_context_spinup_ =
       ExtensionRegistrar::DisableLazyContextSpinupForTest();
 };
@@ -2874,15 +2869,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
   // browser is created.
   ExtensionTestMessageListener incognito_listener_added(kListenerAdded);
   ResultCatcher incognito_catcher;
-  incognito_catcher.RestrictToBrowserContext(
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  Browser* incognito_browser =
-      OpenURLOffTheRecord(profile(), GURL("about:blank"));
-  content::BrowserContext* incognito_profile = incognito_browser->profile();
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  incognito_catcher.RestrictToBrowserContext(incognito_profile);
   EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCountForTesting(
                     incognito_profile, "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     incognito_profile, "webRequest.onBeforeRequest"));
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(profile(), GURL("about:blank"));
   ASSERT_TRUE(incognito_listener_added.WaitUntilSatisfied());
   // Navigate and expect the listener in the extension to be triggered.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

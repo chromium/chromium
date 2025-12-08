@@ -572,7 +572,7 @@ WebRequestEventRouter::EventListener::~EventListener() = default;
 
 // static
 std::unique_ptr<WebRequestEventRouter::EventListener>
-WebRequestEventRouter::EventListener::InitFromLazyValue(
+WebRequestEventRouter::EventListener::InitFromInactiveListenerValue(
     const base::Value::Dict& value,
     const ExtensionId& extension_id,
     content::BrowserContext* context,
@@ -617,8 +617,7 @@ WebRequestEventRouter::EventListener::InitFromLazyValue(
                                 /*service_worker_version_id=*/
                                 blink::mojom::kInvalidServiceWorkerVersionId);
 
-  std::unique_ptr<EventListener> listener =
-      std::make_unique<EventListener>(std::move(listener_id));
+  auto listener = std::make_unique<EventListener>(std::move(listener_id));
   listener->extension_name = extension->name();
   listener->histogram_value = GetEventHistogramValue(event_name);
   listener->filter = std::move(request_filter);
@@ -626,7 +625,8 @@ WebRequestEventRouter::EventListener::InitFromLazyValue(
   return listener;
 }
 
-base::Value::Dict WebRequestEventRouter::EventListener::ToLazyValue() const {
+base::Value::Dict
+WebRequestEventRouter::EventListener::ToInactiveListenerValue() const {
   base::Value::Dict dict;
   dict.Set(kListenerSubEventNameKey, id.sub_event_name);
   dict.Set(kListenerExtraInfoSpecKey, extra_info_spec);
@@ -900,11 +900,7 @@ bool WebRequestEventRouter::RequestFilter::InitFromValue(
 base::Value::Dict WebRequestEventRouter::RequestFilter::ToValue() const {
   base::Value::Dict dict;
 
-  base::Value::List urls_list;
-  for (const auto& pattern : urls.patterns()) {
-    urls_list.Append(pattern.GetAsString());
-  }
-  dict.Set(kRequestFilterUrlsKey, std::move(urls_list));
+  dict.Set(kRequestFilterUrlsKey, urls.ToValue());
 
   if (!types.empty()) {
     base::Value::List types_list;
@@ -1818,7 +1814,7 @@ void WebRequestEventRouter::DispatchEventToListeners(
       // In the event of a lazy listener, we go through normal extension
       // event dispatching code, which is responsible for waking up the
       // lazy context.
-      std::unique_ptr<Event> event =
+      auto event =
           std::make_unique<Event>(listener->histogram_value, id.sub_event_name,
                                   std::move(args_filtered));
       // Add a callback to the event in case we find we cannot dispatch to the
@@ -1915,8 +1911,7 @@ bool WebRequestEventRouter::AddEventListener(
     return false;
   }
 
-  std::unique_ptr<EventListener> listener =
-      std::make_unique<EventListener>(std::move(id));
+  auto listener = std::make_unique<EventListener>(std::move(id));
   listener->extension_name = extension_name;
   listener->histogram_value = GetEventHistogramValue(event_name);
   listener->filter = std::move(filter);
@@ -2190,7 +2185,7 @@ void WebRequestEventRouter::AddPersistedLazyListener(
     new_listeners = existing_listeners->Clone();
   }
 
-  new_listeners.Append(listener.ToLazyValue());
+  new_listeners.Append(listener.ToInactiveListenerValue());
   prefs->UpdateExtensionPref(extension_id, kFilteredLazyListeners,
                              base::Value(std::move(new_listeners)));
 }
@@ -2460,8 +2455,9 @@ void WebRequestEventRouter::LoadPersistedLazyListeners(
     }
 
     std::string error;
-    std::unique_ptr<EventListener> listener = EventListener::InitFromLazyValue(
-        listener_value.GetDict(), extension_id, browser_context, &error);
+    std::unique_ptr<EventListener> listener =
+        EventListener::InitFromInactiveListenerValue(
+            listener_value.GetDict(), extension_id, browser_context, &error);
     if (!listener) {
       LOG(WARNING) << "Failed to load persisted webRequest listener for "
                    << extension_id << ": " << error;
