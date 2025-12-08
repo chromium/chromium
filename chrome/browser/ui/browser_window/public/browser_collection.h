@@ -44,7 +44,7 @@ class BrowserCollection {
   //         return true;
   //       });
   void ForEach(base::FunctionRef<bool(BrowserWindowInterface*)> on_browser,
-               Order order);
+               Order order = Order::kCreation);
 
   // True if there are no BrowserWindowInterfaces belonging to this collection.
   virtual bool IsEmpty() const = 0;
