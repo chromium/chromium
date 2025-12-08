@@ -15,6 +15,7 @@ source_set("regional_capabilities_internals") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/regional_capabilities",
+    "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engines",
     "//chrome/common",
     "//components/regional_capabilities",

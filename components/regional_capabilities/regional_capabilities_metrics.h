@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_METRICS_H_
 #define COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_METRICS_H_
 
+#include <string>
+
 #include "components/country_codes/country_codes.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -74,6 +76,8 @@ enum class SearchEngineChoiceScreenConditions {
 namespace regional_capabilities {
 
 using search_engines::SearchEngineChoiceScreenConditions;
+
+std::string ToString(SearchEngineChoiceScreenConditions condition);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

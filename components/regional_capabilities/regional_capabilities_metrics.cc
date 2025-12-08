@@ -48,6 +48,57 @@ CountryMatchingStatus ComputeCountryMatchingStatus(
 
 }  // namespace
 
+std::string ToString(SearchEngineChoiceScreenConditions condition) {
+  switch (condition) {
+    case SearchEngineChoiceScreenConditions::kHasCustomSearchEngine:
+      return "HasCustomSearchEngine";
+    case SearchEngineChoiceScreenConditions::kSearchProviderOverride:
+      return "SearchProviderOverride";
+    case SearchEngineChoiceScreenConditions::kNotInRegionalScope:
+      return "NotInRegionalScope";
+    case SearchEngineChoiceScreenConditions::kControlledByPolicy:
+      return "ControlledByPolicy";
+    case SearchEngineChoiceScreenConditions::kProfileOutOfScope:
+      return "ProfileOutOfScope";
+    case SearchEngineChoiceScreenConditions::kExtensionControlled:
+      return "ExtensionControlled";
+    case SearchEngineChoiceScreenConditions::kEligible:
+      return "Eligible";
+    case SearchEngineChoiceScreenConditions::kAlreadyCompleted:
+      return "AlreadyCompleted";
+    case SearchEngineChoiceScreenConditions::kUnsupportedBrowserType:
+      return "UnsupportedBrowserType";
+    case SearchEngineChoiceScreenConditions::kFeatureSuppressed:
+      return "FeatureSuppressed";
+    case SearchEngineChoiceScreenConditions::kSuppressedByOtherDialog:
+      return "SuppressedByOtherDialog";
+    case SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall:
+      return "BrowserWindowTooSmall";
+    case SearchEngineChoiceScreenConditions::kHasDistributionCustomSearchEngine:
+      return "HasDistributionCustomSearchEngine";
+    case SearchEngineChoiceScreenConditions::
+        kHasRemovedPrepopulatedSearchEngine:
+      return "HasRemovedPrepopulatedSearchEngine";
+    case SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine:
+      return "HasNonGoogleSearchEngine";
+    case SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent:
+      return "AppStartedByExternalIntent";
+    case SearchEngineChoiceScreenConditions::kAlreadyBeingShown:
+      return "AlreadyBeingShown";
+    case SearchEngineChoiceScreenConditions::kUsingPersistedGuestSessionChoice:
+      return "UsingPersistedGuestSessionChoice";
+    case SearchEngineChoiceScreenConditions::kIncompatibleCurrentLocation:
+      return "IncompatibleCurrentLocation";
+    case SearchEngineChoiceScreenConditions::kAccountNotEligible:
+      return "AccountNotEligible";
+    case SearchEngineChoiceScreenConditions::kIneligibleSurface:
+      return "IneligibleSurface";
+    case SearchEngineChoiceScreenConditions::kManaged:
+      return "Managed";
+  }
+  NOTREACHED();
+}
+
 void RecordLoadedCountrySource(LoadedCountrySource source) {
   base::UmaHistogramEnumeration("RegionalCapabilities.LoadedCountrySource",
                                 source);

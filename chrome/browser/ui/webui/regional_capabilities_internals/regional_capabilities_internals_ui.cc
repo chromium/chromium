@@ -7,12 +7,15 @@
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/grit/regional_capabilities_internals_resources.h"
 #include "components/grit/regional_capabilities_internals_resources_map.h"
 #include "components/regional_capabilities/access/country_access_reason.h"
 #include "components/regional_capabilities/regional_capabilities_internals_data_holder.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/webui/regional_capabilities_internals/constants.h"
 #include "content/public/browser/browser_context.h"
@@ -58,6 +61,19 @@ RegionalCapabilitiesInternalsUI::RegionalCapabilitiesInternalsUI(
            CountryAccessReason::
                kRegionalCapabilitiesInternalsDisplayInDebugUi))) {
     source->AddString(key, value);
+  }
+
+  search_engines::SearchEngineChoiceService* search_engine_choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile);
+  if (auto eligibility =
+          search_engine_choice_service
+              ->recorded_profile_load_choice_screen_eligibility();
+      eligibility.has_value()) {
+    source->AddString(regional_capabilities::kRecordedEligibilityKey,
+                      regional_capabilities::ToString(*eligibility));
+  } else {
+    source->AddString(regional_capabilities::kRecordedEligibilityKey,
+                      "No recorded eligibility");
   }
 
 #if BUILDFLAG(IS_ANDROID)

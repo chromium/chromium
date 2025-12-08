@@ -663,6 +663,10 @@ void SearchEngineChoiceService::RecordProfileLoadEligibility(
     // expected to be recorded shortly after, to record a funnel stage.
     regional_capabilities::RecordFunnelStage(ToFunnelStage(condition));
   }
+
+  CHECK(!recorded_profile_load_choice_screen_eligibility_.has_value(),
+        base::NotFatalUntil::M149);
+  recorded_profile_load_choice_screen_eligibility_ = condition;
 }
 
 #if BUILDFLAG(IS_IOS)

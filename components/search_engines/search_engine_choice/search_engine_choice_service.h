@@ -241,6 +241,11 @@ class SearchEngineChoiceService : public KeyedService {
 
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
+  std::optional<SearchEngineChoiceScreenConditions>
+  recorded_profile_load_choice_screen_eligibility() const {
+    return recorded_profile_load_choice_screen_eligibility_;
+  }
+
   // Register Local state preferences in `registry`.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -286,6 +291,9 @@ class SearchEngineChoiceService : public KeyedService {
   const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<policy::ManagementService> platform_management_service_;
   base::ObserverList<Observer> observers_;
+
+  std::optional<SearchEngineChoiceScreenConditions>
+      recorded_profile_load_choice_screen_eligibility_;
 
   // Used to track whether `MaybeRecordChoiceScreenDisplayState()` has already
   // been called for this profile, to monitor the prevalence of some unexpected

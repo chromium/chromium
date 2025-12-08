@@ -40,6 +40,7 @@ function initialize() {
   appendRow(tableEl, 'Device Determined Program', 'deviceDeterminedProgram');
   appendRow(tableEl, 'Active Country', 'activeCountryCode');
   appendRow(tableEl, 'Country in prefs', 'prefsCountryCode');
+  appendRow(tableEl, 'Recorded Eligibility (static)', 'recordedEligibility');
   appendRow(tableEl, 'External Choice', 'externalChoiceKeyword');
 }
 document.addEventListener('DOMContentLoaded', initialize);
