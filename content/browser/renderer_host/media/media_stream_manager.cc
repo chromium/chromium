@@ -270,100 +270,6 @@ const char* RequestStateToString(MediaRequestState state) {
   }
 }
 
-const char* RequestResultToString(
-    blink::mojom::MediaStreamRequestResult result) {
-  switch (result) {
-    case blink::mojom::MediaStreamRequestResult::OK:
-      return "OK";
-    case blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED:
-      return "PERMISSION_DENIED";
-    case blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED:
-      return "PERMISSION_DISMISSED";
-    case blink::mojom::MediaStreamRequestResult::MULTI_CAPTURE_NOT_SUPPORTED:
-      return "MULTI_CAPTURE_NOT_SUPPORTED";
-    case blink::mojom::MediaStreamRequestResult::INVALID_STATE:
-      return "INVALID_STATE";
-    case blink::mojom::MediaStreamRequestResult::NO_HARDWARE:
-      return "NO_HARDWARE";
-    case blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN:
-      return "INVALID_SECURITY_ORIGIN";
-    case blink::mojom::MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
-      return "TAB_CAPTURE_FAILURE";
-    case blink::mojom::MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
-      return "SCREEN_CAPTURE_FAILURE";
-    case blink::mojom::MediaStreamRequestResult::CAPTURE_FAILURE:
-      return "CAPTURE_FAILURE";
-    case blink::mojom::MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
-      return "CONSTRAINT_NOT_SATISFIED";
-    case blink::mojom::MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO:
-      return "TRACK_START_FAILURE_AUDIO";
-    case blink::mojom::MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
-      return "TRACK_START_FAILURE_VIDEO";
-    case blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED:
-      return "NOT_SUPPORTED";
-    case blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:
-      return "FAILED_DUE_TO_SHUTDOWN";
-    case blink::mojom::MediaStreamRequestResult::KILL_SWITCH_ON:
-      return "KILL_SWITCH_ON";
-    case blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM:
-      return "PERMISSION_DENIED_BY_SYSTEM";
-    case blink::mojom::MediaStreamRequestResult::DEVICE_IN_USE:
-      return "DEVICE_IN_USE";
-    case blink::mojom::MediaStreamRequestResult::REQUEST_CANCELLED:
-      return "REQUEST_CANCELLED";
-    case blink::mojom::MediaStreamRequestResult::START_TIMEOUT:
-      return "START_TIMEOUT";
-    case blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
-      return "PERMISSION_DENIED_BY_USER";
-    case blink::mojom::MediaStreamRequestResult::AUDIO_DEVICE_SOCKET_ERROR:
-      return "AUDIO_DEVICE_SOCKET_ERROR";
-    case blink::mojom::MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION:
-      return "NO_TRANSIENT_ACTIVATION";
-    case blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY:
-      return "CAPTURE_NOT_ALLOWED_BY_POLICY";
-    case blink::mojom::MediaStreamRequestResult::
-        INVALID_DISPLAY_CAPTURE_CONSTRAINTS:
-      return "INVALID_DISPLAY_CAPTURE_CONSTRAINTS";
-    case blink::mojom::MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID:
-      return "INVALID_VIDEO_DEVICE_ID";
-    case blink::mojom::MediaStreamRequestResult::
-        INVALID_GUM_TAB_CAPTURE_CONSTRAINTS:
-      return "INVALID_GUM_TAB_CAPTURE_CONSTRAINTS";
-    case blink::mojom::MediaStreamRequestResult::
-        INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS:
-      return "INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS";
-    case blink::mojom::MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY:
-      return "STREAM_NOT_FOUND_IN_REGISTRY";
-    case blink::mojom::MediaStreamRequestResult::
-        ANDROID_CANT_REQUEST_PERMISSION:
-      return "ANDROID_CANT_REQUEST_PERMISSION";
-    case blink::mojom::MediaStreamRequestResult::
-        PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
-      return "PERMISSION_DENIED_BY_EMBEDDER_CONTEXT";
-    case blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED:
-      return "DLP_PERMISSION_DENIED";
-    case blink::mojom::MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
-      return "REGISTRY_REQUEST_UNVERIFIED";
-    case blink::mojom::MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST:
-      return "INVALID_DEVICE_TYPE_REQUEST";
-    case blink::mojom::MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
-      return "INVALID_EXTENSION_TYPE_REQUEST";
-    case blink::mojom::MediaStreamRequestResult::CAPTURED_TAB_DESTROYED:
-      return "CAPTURED_TAB_DESTROYED";
-    case blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ENABLED:
-      return "CAPTURE_NOT_ENABLED";
-    case blink::mojom::MediaStreamRequestResult::SAFE_BROWSING_OBSERVER:
-      return "SAFE_BROWSING_OBSERVER";
-    case blink::mojom::MediaStreamRequestResult::
-        CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS:
-      return "CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS";
-    case blink::mojom::MediaStreamRequestResult::
-        CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC:
-      return "CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC";
-  }
-  NOTREACHED();
-}
-
 std::string GetGenerateStreamsLogString(
     GlobalRenderFrameHostId render_frame_host_id,
     int requester_id,
@@ -3274,7 +3180,7 @@ void MediaStreamManager::FinalizeRequestFailed(
   SendLogMessage(base::StringPrintf(
       "FinalizeRequestFailed({label=%s}, {requester_id=%d}, {result=%s})",
       request_it->first.c_str(), request->requester_id,
-      RequestResultToString(result)));
+      base::ToString(result)));
 
   switch (request->request_type()) {
     case blink::MEDIA_DEVICE_ACCESS:
@@ -3635,8 +3541,7 @@ void MediaStreamManager::HandleAccessRequestResponse(
   SendLogMessage(base::StringPrintf(
       "HandleAccessRequestResponse({label=%s}, {request=%s}, {result=%s})",
       label.c_str(), RequestTypeToString(request->request_type()),
-      RequestResultToString(result)));
-
+      base::ToString(result)));
   media_stream_metrics::RecordMediaStreamRequestResponseMetric(
       request->video_type(), request->request_type(), result);
 

@@ -112,92 +112,6 @@ void UpdateRequestResult(UserMediaRequest* request,
   }
 }
 
-const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
-  switch (value) {
-    case MediaStreamRequestResult::OK:
-      return "OK";
-    case MediaStreamRequestResult::PERMISSION_DENIED:
-      return "PERMISSION_DENIED";
-    case MediaStreamRequestResult::PERMISSION_DISMISSED:
-      return "PERMISSION_DISMISSED";
-    case MediaStreamRequestResult::INVALID_STATE:
-      return "INVALID_STATE";
-    case MediaStreamRequestResult::NO_HARDWARE:
-      return "NO_HARDWARE";
-    case MediaStreamRequestResult::INVALID_SECURITY_ORIGIN:
-      return "INVALID_SECURITY_ORIGIN";
-    case MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
-      return "TAB_CAPTURE_FAILURE";
-    case MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
-      return "SCREEN_CAPTURE_FAILURE";
-    case MediaStreamRequestResult::CAPTURE_FAILURE:
-      return "CAPTURE_FAILURE";
-    case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
-      return "CONSTRAINT_NOT_SATISFIED";
-    case MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO:
-      return "TRACK_START_FAILURE_AUDIO";
-    case MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
-      return "TRACK_START_FAILURE_VIDEO";
-    case MediaStreamRequestResult::MULTI_CAPTURE_NOT_SUPPORTED:
-      return "MULTI_CAPTURE_NOT_SUPPORTED";
-    case MediaStreamRequestResult::NOT_SUPPORTED:
-      return "NOT_SUPPORTED";
-    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:
-      return "FAILED_DUE_TO_SHUTDOWN";
-    case MediaStreamRequestResult::KILL_SWITCH_ON:
-      return "KILL_SWITCH_ON";
-    case MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM:
-      return "PERMISSION_DENIED_BY_SYSTEM";
-    case MediaStreamRequestResult::DEVICE_IN_USE:
-      return "DEVICE_IN_USE";
-    case MediaStreamRequestResult::REQUEST_CANCELLED:
-      return "REQUEST_CANCELLED";
-    case MediaStreamRequestResult::START_TIMEOUT:
-      return "START_TIMEOUT";
-    case MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
-      return "PERMISSION_DENIED_BY_USER";
-    case MediaStreamRequestResult::AUDIO_DEVICE_SOCKET_ERROR:
-      return "AUDIO_DEVICE_SOCKET_ERROR";
-    case MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION:
-      return "NO_TRANSIENT_ACTIVATION";
-    case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY:
-      return "CAPTURE_NOT_ALLOWED_BY_POLICY";
-    case MediaStreamRequestResult::INVALID_DISPLAY_CAPTURE_CONSTRAINTS:
-      return "INVALID_DISPLAY_CAPTURE_CONSTRAINTS";
-    case MediaStreamRequestResult::INVALID_GUM_TAB_CAPTURE_CONSTRAINTS:
-      return "INVALID_GUM_TAB_CAPTURE_CONSTRAINTS";
-    case MediaStreamRequestResult::INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS:
-      return "INVALID_GUM_SCREEN_CAPTURE_CONSTRAINTS";
-    case MediaStreamRequestResult::INVALID_VIDEO_DEVICE_ID:
-      return "INVALID_VIDEO_DEVICE_ID";
-    case MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY:
-      return "STREAM_NOT_FOUND_IN_REGISTRY";
-    case MediaStreamRequestResult::ANDROID_CANT_REQUEST_PERMISSION:
-      return "ANDROID_CANT_REQUEST_PERMISSION";
-    case MediaStreamRequestResult::PERMISSION_DENIED_BY_EMBEDDER_CONTEXT:
-      return "PERMISSION_DENIED_BY_EMBEDDER_CONTEXT";
-    case MediaStreamRequestResult::CAPTURE_NOT_ENABLED:
-      return "CAPTURE_NOT_ENABLED";
-    case MediaStreamRequestResult::DLP_PERMISSION_DENIED:
-      return "DLP_PERMISSION_DENIED";
-    case MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED:
-      return "REGISTRY_REQUEST_UNVERIFIED";
-    case MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST:
-      return "INVALID_DEVICE_TYPE_REQUEST";
-    case MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
-      return "INVALID_EXTENSION_TYPE_REQUEST";
-    case MediaStreamRequestResult::CAPTURED_TAB_DESTROYED:
-      return "CAPTURED_TAB_DESTROYED";
-    case MediaStreamRequestResult::SAFE_BROWSING_OBSERVER:
-      return "SAFE_BROWSING_OBSERVER";
-    case MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS:
-      return "CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS";
-    case MediaStreamRequestResult::CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC:
-      return "CAPTURE_FROM_BACKGROUND_PAGE_ON_MAC";
-  }
-  NOTREACHED();
-}
-
 void SendLogMessage(const std::string& message) {
   blink::WebRtcLogMessage("UMP::" + message);
 }
@@ -247,7 +161,7 @@ std::string GetOnTrackStartedLogString(
   const MediaStreamDevice& device = source->device();
   String str = String::Format("OnTrackStarted({session_id=%s}, {result=%s})",
                               device.session_id().ToString().c_str(),
-                              MediaStreamRequestResultToString(result));
+                              base::ToString(result).c_str());
   return str.Utf8();
 }
 
@@ -2231,8 +2145,7 @@ void UserMediaProcessor::DelayedGetUserMediaRequestSucceeded(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(base::StringPrintf(
       "DelayedGetUserMediaRequestSucceeded({request_id=%d}, {result=%s})",
-      request_id,
-      MediaStreamRequestResultToString(MediaStreamRequestResult::OK)));
+      request_id, base::ToString(MediaStreamRequestResult::OK)));
   UpdateRequestResult(user_media_request, MediaStreamRequestResult::OK);
   DeleteUserMediaRequest(user_media_request);
   if (!user_media_request->IsTransferredTrackRequest()) {
@@ -2276,7 +2189,7 @@ void UserMediaProcessor::DelayedGetUserMediaRequestFailed(
   UpdateRequestResult(user_media_request, result);
   SendLogMessage(base::StringPrintf(
       "DelayedGetUserMediaRequestFailed({request_id=%d}, {result=%s})",
-      request_id, MediaStreamRequestResultToString(result)));
+      request_id, base::ToString(result)));
   DeleteUserMediaRequest(user_media_request);
   switch (result) {
     case MediaStreamRequestResult::OK:
