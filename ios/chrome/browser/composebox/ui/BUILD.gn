@@ -11,6 +11,8 @@ source_set("ui") {
     "composebox_input_item.mm",
     "composebox_input_item_cell.h",
     "composebox_input_item_cell.mm",
+    "composebox_input_item_collection.h",
+    "composebox_input_item_collection.mm",
     "composebox_input_item_view.h",
     "composebox_input_item_view.mm",
     "composebox_input_plate_consumer.h",
