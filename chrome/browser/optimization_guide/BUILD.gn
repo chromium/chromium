@@ -88,6 +88,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/legion",
+      "//components/legion:proto",
     ]
   }
 }
@@ -193,8 +194,11 @@ source_set("unit_tests") {
   ]
   if (!is_android) {
     sources += [
+      "legion_model_execution_fetcher_unittest.cc",
+
       # Android uses a different way of showing browser windows.
       "optimization_guide_tab_url_provider_unittest.cc",
     ]
+    deps += [ "//components/legion" ]
   }
 }

@@ -8,11 +8,14 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "content/public/browser/web_contents.h"
 
@@ -156,10 +159,14 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
       "ZeroStateSuggestionsRequest: Starting fetch for "
       "suggestions. Is-mulitab request: %s",
       pending_base_request_.has_page_context_list() ? "true" : "false"));
+  optimization_guide::ModelExecutionServiceType service_type =
+      base::FeatureList::IsEnabled(kZeroStateSuggestionsUseLegion)
+          ? optimization_guide::ModelExecutionServiceType::kLegion
+          : optimization_guide::ModelExecutionServiceType::kDefault;
+
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
-      pending_base_request_,
-      /*options=*/{},
+      pending_base_request_, {.service_type = service_type},
       base::BindOnce(&ZeroStateSuggestionsRequest::OnModelExecutionResponse,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
