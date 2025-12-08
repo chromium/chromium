@@ -16,7 +16,7 @@ class Extension;
 }
 
 // Helper to create AppLaunchParams using extensions::GetLaunchContainer with
-// LAUNCH_TYPE_REGULAR to check for a user-configured container.
+// LaunchType::kRegular to check for a user-configured container.
 apps::AppLaunchParams CreateAppLaunchParamsUserContainer(
     Profile* profile,
     const extensions::Extension* extension,

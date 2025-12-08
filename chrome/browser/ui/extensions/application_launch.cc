@@ -186,14 +186,14 @@ ui::mojom::WindowShowState DetermineWindowShowState(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // In ChromeOS, LAUNCH_TYPE_FULLSCREEN launches in a maximized app window and
-  // LAUNCH_TYPE_WINDOW launches in a default app window.
+  // In ChromeOS, LaunchType::kFullscreen launches in a maximized app window and
+  // LaunchType::kWindow launches in a default app window.
   extensions::LaunchType launch_type =
       extensions::GetLaunchType(ExtensionPrefs::Get(profile), extension);
-  if (launch_type == extensions::LAUNCH_TYPE_FULLSCREEN) {
+  if (launch_type == extensions::LaunchType::kFullscreen) {
     return ui::mojom::WindowShowState::kMaximized;
   }
-  if (launch_type == extensions::LAUNCH_TYPE_WINDOW) {
+  if (launch_type == extensions::LaunchType::kWindow) {
     return ui::mojom::WindowShowState::kDefault;
   }
 #endif
@@ -235,7 +235,7 @@ WebContents* OpenApplicationTab(Profile* profile,
       extensions::GetLaunchType(ExtensionPrefs::Get(profile), extension);
 
   int add_type = AddTabTypes::ADD_ACTIVE;
-  if (launch_type == extensions::LAUNCH_TYPE_PINNED) {
+  if (launch_type == extensions::LaunchType::kPinned) {
     add_type |= AddTabTypes::ADD_PINNED;
   }
 
@@ -279,15 +279,15 @@ WebContents* OpenApplicationTab(Profile* profile,
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // In ChromeOS, LAUNCH_FULLSCREEN launches in the OpenApplicationWindow
-  // function i.e. it should not reach here.
-  DCHECK(launch_type != extensions::LAUNCH_TYPE_FULLSCREEN);
+  // In ChromeOS, extensions::LaunchType::kFullscreen launches in the
+  // OpenApplicationWindow function i.e. it should not reach here.
+  DCHECK(launch_type != extensions::LaunchType::kFullscreen);
 #else
   // TODO(skerner):  If we are already in full screen mode, and the user set the
   // app to open as a regular or pinned tab, what should happen? Today we open
   // the tab, but stay in full screen mode.  Should we leave full screen mode in
   // this case?
-  if (launch_type == extensions::LAUNCH_TYPE_FULLSCREEN &&
+  if (launch_type == extensions::LaunchType::kFullscreen &&
       !browser->window()->IsFullscreen()) {
     chrome::ToggleFullscreenMode(browser, /*user_initiated=*/false);
   }
