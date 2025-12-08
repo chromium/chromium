@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
@@ -457,8 +458,14 @@ CreateInputDataFromAnnotatedPageContent(
       [_items clearItems];
       break;
     case ComposeboxMode::kAIM:
+      if (![self isEligibleToAIM]) {
+        _modeHolder.mode = ComposeboxMode::kRegularSearch;
+      }
       break;
     case ComposeboxMode::kImageGeneration:
+      if (![self isEligibleToCreateImages]) {
+        _modeHolder.mode = ComposeboxMode::kRegularSearch;
+      }
       [self cleanAttachmentsForImageGeneration];
       break;
   }
@@ -1053,11 +1060,40 @@ CreateInputDataFromAnnotatedPageContent(
       }));
 }
 
+// Checks if the user is eligible for AIM, taking into account experimental
+// settings overrides.
 - (BOOL)isEligibleToAIM {
+  if (experimental_flags::ShouldForceDisableComposeboxAIM()) {
+    return NO;
+  }
   if (!_aimEligibilityService) {
     return NO;
   }
   return _aimEligibilityService->IsAimEligible();
+}
+
+// Checks if the user is eligible to create images, taking into account
+// experimental settings overrides.
+- (BOOL)isEligibleToCreateImages {
+  if (experimental_flags::ShouldForceDisableComposeboxCreateImages()) {
+    return NO;
+  }
+  if (!_aimEligibilityService) {
+    return NO;
+  }
+  return _aimEligibilityService->IsCreateImagesEligible();
+}
+
+// Checks if the user is eligible to upload PDFs, taking into account
+// experimental settings overrides.
+- (BOOL)isEligibleToUploadPdf {
+  if (experimental_flags::ShouldForceDisableComposeboxPdfUpload()) {
+    return NO;
+  }
+  if (!_aimEligibilityService) {
+    return NO;
+  }
+  return _aimEligibilityService->IsPdfUploadEligible();
 }
 
 - (BOOL)isDSEGoogle {
@@ -1214,16 +1250,35 @@ CreateInputDataFromAnnotatedPageContent(
 /// Updates the consumer actions enabled/disable state.
 - (void)updateConsumerActionsState {
   BOOL hasTabOrFile = _items.hasTabOrFile;
-  [self.consumer disableCreateImageActions:hasTabOrFile];
-
-  BOOL isImageCreation = _modeHolder.mode == ComposeboxMode::kImageGeneration;
-  [self.consumer disableAttachTabActions:isImageCreation];
-  [self.consumer disableAttachFileActions:isImageCreation];
-
+  BOOL canUploadFiles = [self isEligibleToUploadPdf];
+  BOOL canCreateImage = [self isEligibleToCreateImages];
+  BOOL canSearchWithAI = [self isEligibleToAIM];
+  BOOL isImageCreationMode =
+      _modeHolder.mode == ComposeboxMode::kImageGeneration;
   BOOL canAddMoreImages = [self maxNumberOfGalleryItemsAllowed] > 0;
+  BOOL attachmentsAvailable = canCreateImage || canSearchWithAI;
+
+  // Image generation action.
+  [self.consumer disableCreateImageActions:hasTabOrFile];
+  [self.consumer hideCreateImageActions:!canCreateImage];
+
+  // Add tabs action.
+  [self.consumer disableAttachTabActions:isImageCreationMode];
+  [self.consumer hideAttachTabActions:!canSearchWithAI];
+
+  // Add files action.
+  [self.consumer disableAttachFileActions:isImageCreationMode];
+  [self.consumer hideAttachFileActions:!canUploadFiles || !canSearchWithAI];
+
+  // Add pictures from user gallery action.
   [self.consumer disableGalleryActions:!canAddMoreImages];
+  [self.consumer hideGalleryActions:!attachmentsAvailable];
+
+  // Add picture from camera action.
   [self.consumer disableCameraActions:!canAddMoreImages];
+  [self.consumer hideCameraActions:!attachmentsAvailable];
 }
+
 /// Updates the consumer items and maybe trigger AIM.
 - (void)updateConsumerItems {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);

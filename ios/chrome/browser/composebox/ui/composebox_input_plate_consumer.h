@@ -57,8 +57,14 @@ enum class ComposeboxInputPlateControls : unsigned int;
 // Sets whether the create image actions are disabled.
 - (void)disableCreateImageActions:(BOOL)disabled;
 
+// Sets whether the camera actions are hidden.
+- (void)hideCameraActions:(BOOL)hidden;
+
 // Sets whether the camera actions are disabled.
 - (void)disableCameraActions:(BOOL)disabled;
+
+// Sets whether the gallery actions are hidden.
+- (void)hideGalleryActions:(BOOL)hidden;
 
 // Sets whether the gallery actions are disabled.
 - (void)disableGalleryActions:(BOOL)disabled;

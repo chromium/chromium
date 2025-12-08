@@ -169,6 +169,16 @@ bool EnableAIPrototypingMenu();
 // Gets GWS URL base used to generate Lens result panel URLs. Returns nil if
 // there is no alternative URL specified.
 NSString* GetLensResultPanelGwsURL();
+
+// Returns true if Composebox AIM eligibility should be disabled.
+bool ShouldForceDisableComposeboxAIM();
+
+// Returns true if Composebox Create Images eligibility should be disabled.
+bool ShouldForceDisableComposeboxCreateImages();
+
+// Returns true if Composebox Pdf Upload eligibility should be disabled.
+bool ShouldForceDisableComposeboxPdfUpload();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_
