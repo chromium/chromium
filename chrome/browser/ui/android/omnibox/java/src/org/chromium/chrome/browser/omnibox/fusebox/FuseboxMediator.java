@@ -361,7 +361,8 @@ public class FuseboxMediator {
     void onTabPickerClicked() {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
-        if (mModelList.getRemainingAttachments() < 1) {
+        int remainingAttachments = mModelList.getRemainingAttachments();
+        if (remainingAttachments < 1) {
             warnForMaxAttachments();
             return;
         }
@@ -376,7 +377,7 @@ public class FuseboxMediator {
             return;
         }
 
-        int maxAllowedTabs = preselectedTabIds.size() + mModelList.getRemainingAttachments();
+        int maxAllowedTabs = preselectedTabIds.size() + remainingAttachments;
         intent.putExtra(EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
 
         mWindowAndroid.showCancelableIntent(

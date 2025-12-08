@@ -835,42 +835,57 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onTabPickerClicked_launchesTabPickerActivity() throws ClassNotFoundException {
-        mMediator.onTabPickerClicked();
+    public void onTabPickerClicked_launchesTabPickerActivity() {
+        mModel.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run();
 
-        // Verify popup is dismissed
         verify(mPopup).dismiss();
-
-        // Verify intent is shown
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
-
         assertEquals(
                 FuseboxMediator.CHROME_ITEM_PICKER_ACTIVITY_CLASS,
                 intent.getComponent().getClassName());
         assertNotNull(intent.getIntegerArrayListExtra(FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS));
+        assertEquals(
+                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
+                intent.getIntExtra(FuseboxMediator.EXTRA_ALLOWED_SELECTION_COUNT, -1));
     }
 
     @Test
-    public void onTabPickerClicked_sendsPreselectedTabIds() throws ClassNotFoundException {
-        // Setup tabs and add them as attachments
-        Tab tab1 = mockTab(101, true);
-        Tab tab2 = mockTab(102, false);
+    public void onTabPickerClicked_sendsPreselectedTabIds() {
+        Tab tab1 = mockTab(101, /* webContentsReady= */ true);
+        Tab tab2 = mockTab(102, /* webContentsReady= */ false);
         addTabAttachment(tab1);
         addTabAttachment(tab2);
 
-        mMediator.onTabPickerClicked();
+        mModel.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run();
 
-        // Capture the intent and verify its extras
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
         ArrayList<Integer> preselectedIds =
                 intent.getIntegerArrayListExtra(FuseboxMediator.EXTRA_PRESELECTED_TAB_IDS);
-
         assertNotNull(preselectedIds);
         assertEquals(2, preselectedIds.size());
-        assertTrue(preselectedIds.contains(101));
-        assertTrue(preselectedIds.contains(102));
+        assertTrue(preselectedIds.contains(tab1.getId()));
+        assertTrue(preselectedIds.contains(tab2.getId()));
+        assertEquals(
+                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
+                intent.getIntExtra(FuseboxMediator.EXTRA_ALLOWED_SELECTION_COUNT, -1));
+    }
+
+    @Test
+    public void onTabPickerClicked_sendsAllowedSelectionCount() {
+        addTabAttachment(mockTab(101, /* webContentsReady= */ true));
+        addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
+        addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_FILE);
+
+        mModel.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run();
+
+        verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
+        Intent intent = mIntentCaptor.getValue();
+        int allowedSelectionCount =
+                intent.getIntExtra(FuseboxMediator.EXTRA_ALLOWED_SELECTION_COUNT, -1);
+        // The image and file attachments should count against the max, the tab should not.
+        assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS - 2, allowedSelectionCount);
     }
 
     @Test
@@ -881,10 +896,10 @@ public class FuseboxMediatorUnitTest {
 
         assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS, mAttachments.size());
 
-        mockTab(101, true);
-        mockTab(102, false);
-        mockTab(103, true);
-        mockTab(104, false);
+        mockTab(101, /* webContentsReady= */ true);
+        mockTab(102, /* webContentsReady= */ false);
+        mockTab(103, /* webContentsReady= */ true);
+        mockTab(104, /* webContentsReady= */ false);
         Set<Integer> newlySelectedIds = new HashSet<>();
         newlySelectedIds.add(102);
         newlySelectedIds.add(103);
@@ -905,8 +920,8 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnTabPickerResult_modelListNotEmpty_activatesAiMode() {
-        mockTab(101, true);
-        mockTab(102, false);
+        mockTab(101, /* webContentsReady= */ true);
+        mockTab(102, /* webContentsReady= */ false);
         ArrayList<Integer> selectedTabIds = new ArrayList<>(Arrays.asList(101, 102));
         Intent resultIntent = createTabPickerResultIntent(selectedTabIds);
 
