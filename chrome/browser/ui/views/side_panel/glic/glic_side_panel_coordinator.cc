@@ -67,6 +67,33 @@ GlicSidePanelCoordinator* GlicSidePanelCoordinator::GetForTab(
   return tab->GetTabFeatures()->glic_side_panel_coordinator();
 }
 
+// static
+bool GlicSidePanelCoordinator::IsGlicSidePanelActive(tabs::TabInterface* tab) {
+  if (!tab) {
+    return false;
+  }
+  auto* tab_features = tab->GetTabFeatures();
+  if (!tab_features) {
+    return false;
+  }
+  auto* registry = tab_features->side_panel_registry();
+  if (!registry) {
+    return false;
+  }
+  auto* glic_side_panel_entry =
+      registry->GetEntryForKey(SidePanelEntryKey(SidePanelEntry::Id::kGlic));
+  if (!glic_side_panel_entry) {
+    return false;
+  }
+  const auto& active_entry =
+      registry->GetActiveEntryFor(glic_side_panel_entry->type());
+  if (!active_entry.has_value() ||
+      active_entry.value() != glic_side_panel_entry) {
+    return false;
+  }
+  return true;
+}
+
 void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
   if (side_panel_registry_->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kGlic))) {

@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -620,26 +621,8 @@ void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
       !pref_service->GetBoolean(glic::prefs::kGlicDaisyChainNewTabsEnabled)) {
     return;
   }
-  auto* tab_features = old_tab.GetTabFeatures();
-  if (!tab_features) {
-    return;
-  }
 
-  auto* registry = tab_features->side_panel_registry();
-  if (!registry) {
-    return;
-  }
-
-  SidePanelEntry* glic_side_panel_entry =
-      registry->GetEntryForKey(SidePanelEntryKey(SidePanelEntry::Id::kGlic));
-  if (!glic_side_panel_entry) {
-    return;
-  }
-
-  const auto& active_entry =
-      registry->GetActiveEntryFor(glic_side_panel_entry->type());
-  if (!active_entry.has_value() ||
-      active_entry.value() != glic_side_panel_entry) {
+  if (!GlicSidePanelCoordinator::IsGlicSidePanelActive(&old_tab)) {
     return;
   }
 

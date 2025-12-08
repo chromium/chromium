@@ -72,6 +72,19 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
   }
 
  protected:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Create a dummy view for the Lens entry.
+    auto lens_entry = std::make_unique<SidePanelEntry>(
+        SidePanelEntry::PanelType::kContent,
+        SidePanelEntry::Key(SidePanelEntry::Id::kLens),
+        base::BindRepeating([](SidePanelEntryScope& scope) {
+          return std::make_unique<views::View>();
+        }),
+        base::BindRepeating([]() { return 250; }));
+    registry()->Register(std::move(lens_entry));
+  }
+
   Profile* profile() { return browser()->profile(); }
 
   GlicEnabling* enabling() {
@@ -153,6 +166,64 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
+                       IsGlicSidePanelActiveTest) {
+  SidePanelCoordinator::From(browser())->DisableAnimationsForTesting();
+  ForceSigninAndGlicCapability(profile());
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+  CallOnGlicEnabledChanged();
+  ASSERT_TRUE(registry()->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
+
+  // Initially, the Glic side panel should not be active.
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsGlicSidePanelActive(
+      browser()->GetActiveTabInterface()));
+
+  // Show the Glic side panel.
+  coordinator().Show();
+
+  // Now, the Glic side panel should be active for the current tab.
+  tabs::TabInterface* first_tab = browser()->GetActiveTabInterface();
+  EXPECT_TRUE(GlicSidePanelCoordinator::IsGlicSidePanelActive(first_tab));
+
+  // Add a new tab and switch to it.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  tabs::TabInterface* second_tab = browser()->GetActiveTabInterface();
+  EXPECT_NE(first_tab, second_tab);
+
+  // The Glic side panel should not be active for the new tab.
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsGlicSidePanelActive(second_tab));
+
+  // The Glic side panel should still be considered active for the first tab,
+  // even though it's backgrounded.
+  EXPECT_TRUE(GlicSidePanelCoordinator::IsGlicSidePanelActive(first_tab));
+
+  // Switch back to the first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // The Glic side panel should be active for the first tab again.
+  EXPECT_TRUE(GlicSidePanelCoordinator::IsGlicSidePanelActive(first_tab));
+
+  // Open another tab-scoped side panel entry (Lens). This should make Glic side
+  // panel inactive for the current (first) tab.
+  SidePanelCoordinator::From(browser())->Show(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLens));
+
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsGlicSidePanelActive(
+      browser()->GetActiveTabInterface()));
+
+  // Close the Lens side panel. Glic should still be inactive.
+  SidePanelCoordinator::From(browser())->Close(
+      SidePanelEntry::PanelType::kContent);
+  EXPECT_FALSE(GlicSidePanelCoordinator::IsGlicSidePanelActive(
+      browser()->GetActiveTabInterface()));
+
+  // Show Glic again.
+  coordinator().Show();
+  EXPECT_TRUE(GlicSidePanelCoordinator::IsGlicSidePanelActive(
+      browser()->GetActiveTabInterface()));
+}
+
 class GlicSidePanelCoordinatorStateTest : public GlicSidePanelCoordinatorTest {
  public:
   void SetUpOnMainThread() override {
@@ -231,10 +302,10 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorStateTest, Replaced) {
   coordinator().Show();
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kShown);
 
-  // Open another side panel entry (Reading List). This should replace the Glic
+  // Open another side panel entry (Lens). This should replace the Glic
   // side panel and cause it to transition to kClosed.
   SidePanelCoordinator::From(browser())->Show(
-      SidePanelEntry::Key(SidePanelEntry::Id::kReadingList));
+      SidePanelEntry::Key(SidePanelEntry::Id::kLens));
 
   EXPECT_EQ(future_.Take(), GlicSidePanelCoordinator::State::kClosed);
   EXPECT_FALSE(coordinator().IsShowing());
