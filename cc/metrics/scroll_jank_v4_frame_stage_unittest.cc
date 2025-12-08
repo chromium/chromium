@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/test/event_metrics_test_creator.h"
-#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/types/event_type.h"
@@ -23,6 +22,7 @@ namespace cc {
 
 namespace {
 
+using DispatchBeginFrameArgs = ScrollEventMetrics::DispatchBeginFrameArgs;
 using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
 using ScrollStart = ScrollJankV4FrameStage::ScrollStart;
 using ScrollEnd = ScrollJankV4FrameStage::ScrollEnd;
@@ -31,9 +31,6 @@ using Synthetic = ScrollUpdates::Synthetic;
 using TraceId = EventMetrics::TraceId;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-
-constexpr uint64_t kSourceId = 999;
-constexpr base::TimeDelta kVsyncInterval = base::Milliseconds(16);
 
 }  // namespace
 
@@ -45,15 +42,6 @@ class ScrollJankV4FrameStageTest : public testing::Test {
  protected:
   static base::TimeTicks MillisecondsTicks(int ms) {
     return base::TimeTicks() + base::Milliseconds(ms);
-  }
-
-  static viz::BeginFrameArgs CreateBeginFrameArgs(int sequence_id,
-                                                  base::TimeTicks frame_time) {
-    return viz::BeginFrameArgs::Create(
-        BEGINFRAME_FROM_HERE, kSourceId, sequence_id, frame_time,
-        /* deadline= */ frame_time + kVsyncInterval / 3,
-        /* interval= */ kVsyncInterval,
-        viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
   }
 
   EventMetricsTestCreator metrics_creator_;
@@ -160,7 +148,6 @@ TEST_F(ScrollJankV4FrameStageTest,
 }
 
 TEST_F(ScrollJankV4FrameStageTest, SyntheticFirstGestureScrollUpdate) {
-  viz::BeginFrameArgs args = CreateBeginFrameArgs(123, MillisecondsTicks(24));
   EventMetrics::List events_metrics;
   events_metrics.push_back(metrics_creator_.CreateFirstGestureScrollUpdate({
       .timestamp = MillisecondsTicks(16),
@@ -169,7 +156,8 @@ TEST_F(ScrollJankV4FrameStageTest, SyntheticFirstGestureScrollUpdate) {
       .did_scroll = true,
       .is_synthetic = true,
       .trace_id = TraceId(42),
-      .begin_frame_args = args,
+      .dispatch_args =
+          DispatchBeginFrameArgs{.frame_time = MillisecondsTicks(24)},
   }));
   auto stages = ScrollJankV4FrameStage::CalculateStages(events_metrics);
   EXPECT_THAT(
@@ -261,7 +249,6 @@ TEST_F(ScrollJankV4FrameStageTest,
 }
 
 TEST_F(ScrollJankV4FrameStageTest, SyntheticGestureScrollUpdate) {
-  viz::BeginFrameArgs args = CreateBeginFrameArgs(123, MillisecondsTicks(24));
   EventMetrics::List events_metrics;
   events_metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
       {.timestamp = MillisecondsTicks(16),
@@ -270,7 +257,8 @@ TEST_F(ScrollJankV4FrameStageTest, SyntheticGestureScrollUpdate) {
        .did_scroll = true,
        .is_synthetic = true,
        .trace_id = TraceId(42),
-       .begin_frame_args = args}));
+       .dispatch_args =
+           DispatchBeginFrameArgs{.frame_time = MillisecondsTicks(24)}}));
   auto stages = ScrollJankV4FrameStage::CalculateStages(events_metrics);
   EXPECT_THAT(
       stages,
@@ -546,8 +534,6 @@ TEST_F(ScrollJankV4FrameStageTest,
 }
 
 TEST_F(ScrollJankV4FrameStageTest, MultipleScrollUpdatesIncludingSynthetic) {
-  viz::BeginFrameArgs args24 = CreateBeginFrameArgs(123, MillisecondsTicks(24));
-  viz::BeginFrameArgs args48 = CreateBeginFrameArgs(456, MillisecondsTicks(48));
   EventMetrics::List events_metrics;
   // Intentionally in "random" order to make sure that the calculation doesn't
   // rely on the list being sorted (because the list isn't sorted in general).
@@ -558,7 +544,8 @@ TEST_F(ScrollJankV4FrameStageTest, MultipleScrollUpdatesIncludingSynthetic) {
        .did_scroll = true,
        .is_synthetic = true,
        .trace_id = TraceId(44),
-       .begin_frame_args = args24}));
+       .dispatch_args =
+           DispatchBeginFrameArgs{.frame_time = MillisecondsTicks(24)}}));
   events_metrics.push_back(metrics_creator_.CreateGestureScrollUpdate(
       {.timestamp = MillisecondsTicks(2),
        .delta = -32'000,
@@ -580,7 +567,8 @@ TEST_F(ScrollJankV4FrameStageTest, MultipleScrollUpdatesIncludingSynthetic) {
        .did_scroll = true,
        .is_synthetic = true,
        .trace_id = TraceId(11),
-       .begin_frame_args = args48}));
+       .dispatch_args =
+           DispatchBeginFrameArgs{.frame_time = MillisecondsTicks(48)}}));
   events_metrics.push_back(metrics_creator_.CreateInertialGestureScrollUpdate(
       {.timestamp = MillisecondsTicks(5),
        .delta = -4'000,

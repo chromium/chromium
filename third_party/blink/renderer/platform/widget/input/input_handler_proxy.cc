@@ -841,6 +841,12 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
   cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
   if (event_with_callback->metrics()) {
     event_with_callback->WillStartProcessingForMetrics();
+    if (cc::ScrollEventMetrics* scroll =
+            event_with_callback->metrics()->AsScroll()) {
+      scroll->set_dispatch_args(
+          cc::ScrollUpdateEventMetrics::DispatchBeginFrameArgs::From(
+              current_begin_frame_args_));
+    }
     done_callback = base::BindOnce(
         [](EventWithCallback* event, bool handled) {
           event->DidCompleteProcessingForMetrics();

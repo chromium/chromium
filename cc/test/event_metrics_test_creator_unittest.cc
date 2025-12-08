@@ -149,36 +149,34 @@ TEST_P(EventMetricsTestCreatorScrollEventTest, CausedFrameUpdateParam) {
   EXPECT_TRUE(event2->caused_frame_update());
 }
 
-TEST_P(EventMetricsTestCreatorScrollEventTest, BeginFrameArgsParam) {
-  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, /* source_id= */ 123, /* sequence_number= */ 456,
-      /* frame_time= */ MillisecondsTicks(16),
-      /* deadline= */ MillisecondsTicks(24),
-      /* interval= */ base::Milliseconds(16),
-      viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
+TEST_P(EventMetricsTestCreatorScrollEventTest, DispatchArgsParam) {
+  ScrollEventMetrics::DispatchBeginFrameArgs args = {
+      .frame_time = MillisecondsTicks(24),
+      .interval = base::Milliseconds(16),
+      .frame_id = viz::BeginFrameId(123, 456),
+  };
   std::unique_ptr<ScrollEventMetrics> event =
-      CreateEvent({.begin_frame_args = args});
+      CreateEvent({.dispatch_args = args});
   EXPECT_EQ(event->type(), GetParam().expected_type);
-  EXPECT_EQ(event->begin_frame_args().frame_id, viz::BeginFrameId(123, 456));
+  EXPECT_EQ(event->dispatch_args(), args);
 }
 
 TEST_P(EventMetricsTestCreatorScrollEventTest, AllParams) {
-  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, /* source_id= */ 123, /* sequence_number= */ 456,
-      /* frame_time= */ MillisecondsTicks(16),
-      /* deadline= */ MillisecondsTicks(24),
-      /* interval= */ base::Milliseconds(16),
-      viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
+  ScrollEventMetrics::DispatchBeginFrameArgs args = {
+      .frame_time = MillisecondsTicks(24),
+      .interval = base::Milliseconds(16),
+      .frame_id = viz::BeginFrameId(123, 456),
+  };
   std::unique_ptr<ScrollEventMetrics> event =
       CreateEvent({.timestamp = MillisecondsTicks(99),
                    .caused_frame_update = false,
-                   .begin_frame_args = args});
+                   .dispatch_args = args});
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(
       event->GetDispatchStageTimestamp(EventMetrics::DispatchStage::kGenerated),
       MillisecondsTicks(99));
   EXPECT_FALSE(event->caused_frame_update());
-  EXPECT_EQ(event->begin_frame_args().frame_id, viz::BeginFrameId(123, 456));
+  EXPECT_EQ(event->dispatch_args(), args);
 }
 
 // Tests for `EventMetricsTestCreator::CreateFirstGestureScrollUpdate()`,
@@ -283,26 +281,24 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, TraceIdParam) {
   EXPECT_EQ(event->trace_id()->value(), 123);
 }
 
-TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, BeginFrameArgsParam) {
-  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, /* source_id= */ 123, /* sequence_number= */ 456,
-      /* frame_time= */ MillisecondsTicks(16),
-      /* deadline= */ MillisecondsTicks(24),
-      /* interval= */ base::Milliseconds(16),
-      viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
+TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, DispatchArgsParam) {
+  ScrollEventMetrics::DispatchBeginFrameArgs args = {
+      .frame_time = MillisecondsTicks(24),
+      .interval = base::Milliseconds(16),
+      .frame_id = viz::BeginFrameId(123, 456),
+  };
   std::unique_ptr<ScrollUpdateEventMetrics> event =
-      CreateEvent({.begin_frame_args = args});
+      CreateEvent({.dispatch_args = args});
   EXPECT_EQ(event->type(), GetParam().expected_type);
-  EXPECT_EQ(event->begin_frame_args().frame_id, viz::BeginFrameId(123, 456));
+  EXPECT_EQ(event->dispatch_args(), args);
 }
 
 TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
-  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
-      BEGINFRAME_FROM_HERE, /* source_id= */ 123, /* sequence_number= */ 456,
-      /* frame_time= */ MillisecondsTicks(16),
-      /* deadline= */ MillisecondsTicks(24),
-      /* interval= */ base::Milliseconds(16),
-      viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
+  ScrollEventMetrics::DispatchBeginFrameArgs args = {
+      .frame_time = MillisecondsTicks(24),
+      .interval = base::Milliseconds(16),
+      .frame_id = viz::BeginFrameId(123, 456),
+  };
   std::unique_ptr<ScrollUpdateEventMetrics> event =
       CreateEvent({.timestamp = MillisecondsTicks(99),
                    .delta = 7.0f,
@@ -311,7 +307,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
                    .did_scroll = false,
                    .is_synthetic = true,
                    .trace_id = EventMetrics::TraceId(456),
-                   .begin_frame_args = args});
+                   .dispatch_args = args});
   EXPECT_EQ(event->type(), GetParam().expected_type);
   EXPECT_EQ(
       event->GetDispatchStageTimestamp(EventMetrics::DispatchStage::kGenerated),
@@ -322,7 +318,7 @@ TEST_P(EventMetricsTestCreatorScrollUpdateEventTest, AllParams) {
   EXPECT_FALSE(event->did_scroll());
   EXPECT_TRUE(event->is_synthetic());
   EXPECT_EQ(event->trace_id()->value(), 456);
-  EXPECT_EQ(event->begin_frame_args().frame_id, viz::BeginFrameId(123, 456));
+  EXPECT_EQ(event->dispatch_args(), args);
 }
 
 }  // namespace cc

@@ -276,6 +276,26 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
     kMaxValue = kWheel,
   };
 
+  // A small number of fields from `viz::BeginFrameArgs` about the frame in
+  // which an event was dispatched to avoid copying the whole args (>100 bytes).
+  struct CC_EXPORT DispatchBeginFrameArgs {
+    // See `viz::BeginFrameArgs::frame_time`.
+    base::TimeTicks frame_time;
+
+    // See `viz::BeginFrameArgs::interval`.
+    base::TimeDelta interval;
+
+    // See `viz::BeginFrameArgs::frame_id`.
+    viz::BeginFrameId frame_id;
+
+    // Note: If this was an explicit constructor, it would prevent us from using
+    // designated initializers (e.g.
+    // `{.frame_time = X, .interval = Y, .frame_id = Z}`).
+    static DispatchBeginFrameArgs From(const viz::BeginFrameArgs& args);
+
+    bool operator==(const DispatchBeginFrameArgs&) const = default;
+  };
+
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns `nullptr`. Should only be used for scroll events other
   // than scroll-update.
@@ -343,6 +363,12 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
 
   const viz::BeginFrameArgs& begin_frame_args() const { return args_; }
 
+  void set_dispatch_args(const DispatchBeginFrameArgs& dispatch_args) {
+    dispatch_args_ = dispatch_args;
+  }
+
+  const DispatchBeginFrameArgs& dispatch_args() const { return dispatch_args_; }
+
  protected:
   ScrollEventMetrics(EventType type,
                      ScrollType scroll_type,
@@ -369,6 +395,13 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
   // These may not match those of CompositorFrameReporter for which the event
   // is eventually displayed.
   viz::BeginFrameArgs args_;
+
+  // A small number of fields from `viz::BeginFrameArgs` about the frame in
+  // which this event was dispatched. It's usually the next frame after `args_`.
+  //
+  // These may not match those of CompositorFrameReporter for which the event
+  // is eventually displayed.
+  DispatchBeginFrameArgs dispatch_args_;
 };
 
 class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {

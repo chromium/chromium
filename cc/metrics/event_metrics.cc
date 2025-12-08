@@ -464,6 +464,17 @@ void EventMetrics::CopyTimestampsFrom(const EventMetrics& other,
 // ScrollEventMetrics
 
 // static
+ScrollEventMetrics::DispatchBeginFrameArgs
+ScrollEventMetrics::DispatchBeginFrameArgs::From(
+    const viz::BeginFrameArgs& args) {
+  return {
+      .frame_time = args.frame_time,
+      .interval = args.interval,
+      .frame_id = args.frame_id,
+  };
+}
+
+// static
 std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::Create(
     ui::EventType type,
     ui::ScrollInputType input_type,
