@@ -9572,7 +9572,9 @@
     "DynamicProfileCountry": [
         {
             "platforms": [
+                "android",
                 "chromeos",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
@@ -9581,7 +9583,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DynamicProfileCountry"
+                        "DynamicProfileCountry",
+                        "StrictAssociatedCountriesCheck",
+                        "WaffleRestrictToAssociatedCountries"
                     ]
                 }
             ]
