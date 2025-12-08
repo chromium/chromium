@@ -171,7 +171,7 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
   HeapMojoAssociatedRemote<mojom::blink::DevToolsSessionHost> host_remote_{
       nullptr};
   IOSession* io_session_;
-  std::unique_ptr<v8_inspector::V8InspectorSession> v8_session_;
+  std::shared_ptr<v8_inspector::V8InspectorSession> v8_session_;
   std::unique_ptr<protocol::UberDispatcher> inspector_backend_dispatcher_;
   InspectorSessionState session_state_;
   HeapVector<Member<InspectorAgent>> agents_;

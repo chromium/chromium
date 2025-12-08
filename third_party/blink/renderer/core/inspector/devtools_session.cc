@@ -190,7 +190,7 @@ DevToolsSession::~DevToolsSession() {
 void DevToolsSession::ConnectToV8(v8_inspector::V8Inspector* inspector,
                                   int context_group_id) {
   const auto& cbor = v8_session_state_cbor_.Get();
-  v8_session_ = inspector->connect(
+  v8_session_ = inspector->connectShared(
       context_group_id, this,
       v8_inspector::StringView(cbor.data(), cbor.size()),
       client_is_trusted_ ? v8_inspector::V8Inspector::kFullyTrusted
@@ -224,6 +224,7 @@ void DevToolsSession::Detach() {
   for (wtf_size_t i = agents_.size(); i > 0; i--)
     agents_[i - 1]->Dispose();
   agents_.clear();
+  v8_session_->stop();
   v8_session_.reset();
   agent_->client_->DebuggerTaskFinished();
 }
