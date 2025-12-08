@@ -238,4 +238,14 @@ class SupportLibWebSettingsNoOpAdapter implements WebSettingsBoundaryInterface {
     public void setHyperlinkContextMenuItems(@HyperlinkContextMenuItems int items) {
         recordApiCall(ApiCall.SET_HYPERLINK_CONTEXT_MENU_ITEMS);
     }
+
+    @Override
+    public void setBackForwardCacheSettingsTimeout(int timeout) {
+        recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_TIMEOUT_IN_SECONDS);
+    }
+
+    @Override
+    public void setBackForwardCacheSettingsMaxPagesInCache(int pagesInCache) {
+        recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE);
+    }
 }

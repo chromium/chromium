@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
-import org.chromium.android_webview.AwBackForwardCacheSettings;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwSettings;
@@ -191,11 +190,8 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     public void testBFCacheEnabledThroughSettings() throws Exception, Throwable {
-        mAwContents
-                .getSettings()
-                .setBackForwardCacheSettings(
-                        new AwBackForwardCacheSettings(
-                                /* timeoutInSeconds= */ 600, /* maxPagesInCache= */ 3));
+        mAwContents.getSettings().setBackForwardCacheMaxPagesInCache(3);
+        mAwContents.getSettings().setBackForwardCacheTimeoutInSeconds(600);
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
         navigateForwardAndBack();
@@ -227,11 +223,8 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testBFCacheWithMultiplePages_MoreThanSettings() throws Exception, Throwable {
         // Only allow 1 page in BFCache at a time.
-        mAwContents
-                .getSettings()
-                .setBackForwardCacheSettings(
-                        new AwBackForwardCacheSettings(
-                                /* timeoutInSeconds= */ 600, /* maxPagesInCache= */ 1));
+        mAwContents.getSettings().setBackForwardCacheMaxPagesInCache(1);
+        mAwContents.getSettings().setBackForwardCacheTimeoutInSeconds(600);
         // Navigate three times.
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
@@ -247,6 +240,33 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         navigateBackToUrl(mInitialUrl);
         Assert.assertNotEquals("\"null\"", getNotRestoredReasons());
         Assert.assertFalse(isPageShowPersisted());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testBFCacheWithTimeout() throws Exception, Throwable {
+        mAwContents.getSettings().setBackForwardCacheEnabled(true);
+        mAwContents.getSettings().setBackForwardCacheTimeoutInSeconds(1);
+
+        // Navigate to the initial page.
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+
+        // Navigate forward to put the initial page in BFCache.
+        navigateForward();
+
+        // Wait for the cache entry to expire.
+        Thread.sleep(1100);
+
+        // Navigate back. The page should be evicted due to timeout and not restored from BFCache.
+        navigateBack();
+        Assert.assertNotEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertFalse(isPageShowPersisted());
+
+        // Verify that BFCache still works for subsequent navigations.
+        navigateForwardAndBack();
+        Assert.assertTrue(isPageShowPersisted());
     }
 
     @Test

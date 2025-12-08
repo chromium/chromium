@@ -673,7 +673,8 @@ chromium-metrics-reviews@google.com.
   <int value="152" label="Profile.hasCustomHeader"/>
   <int value="153" label="Profile.clearCustomHeader"/>
   <int value="154" label="Profile.clearAllCustomHeaders"/>
-  <int value="155" label="WebSettingsCompat.setBackForwardCacheSettings"/>
+  <int value="155"
+      label="WebSettingsCompat.setBackForwardCacheSettings (deprecated)"/>
   <int value="156" label="WebSettingsCompat.getBackForwardCacheSettings"/>
   <int value="157" label="BackForwardCacheSettings.getTimeoutInSeconds"/>
   <int value="158" label="BackForwardCacheSettings.getMaxPagesInCache"/>

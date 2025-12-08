@@ -16,23 +16,20 @@ import java.util.concurrent.Callable;
 
 /**
  * Adapter between WebViewBackForwardCacheSettingsBoundaryInterface and AwBackForwardCacheSettings.
- *
- * <p>Once created, instances are kept alive by the peer AwBackForwardCacheSettings.
  */
 @Lifetime.Temporary
 class SupportLibWebViewBackForwardCacheSettingsAdapter
         implements WebViewBackForwardCacheSettingsBoundaryInterface {
+
     private final AwBackForwardCacheSettings mAwBackForwardCacheSettings;
 
-    SupportLibWebViewBackForwardCacheSettingsAdapter(AwBackForwardCacheSettings settings) {
-        mAwBackForwardCacheSettings = settings;
+    SupportLibWebViewBackForwardCacheSettingsAdapter(
+            AwBackForwardCacheSettings awBackForwardCacheSettings) {
+        mAwBackForwardCacheSettings = awBackForwardCacheSettings;
     }
 
-    SupportLibWebViewBackForwardCacheSettingsAdapter(
-            WebViewBackForwardCacheSettingsBoundaryInterface settings) {
-        mAwBackForwardCacheSettings =
-                new AwBackForwardCacheSettings(
-                        settings.getTimeoutInSeconds(), settings.getMaxPagesInCache());
+    SupportLibWebViewBackForwardCacheSettingsAdapter(int maxPagesInCache, int timeoutInSeconds) {
+        this(new AwBackForwardCacheSettings(timeoutInSeconds, maxPagesInCache));
     }
 
     @Override

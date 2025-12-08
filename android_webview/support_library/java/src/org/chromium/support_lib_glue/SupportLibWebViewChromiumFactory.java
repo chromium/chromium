@@ -128,6 +128,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.ADD_QUIC_HINTS_V1,
                 Features.ON_NAVIGATION_COMPLETED_NON_COMMITTED,
                 Features.COMMITTED_NAVIGATION_GET_PAGE_NON_NULL,
+                Features.BACK_FORWARD_CACHE_SETTINGS_V2 + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -471,7 +472,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int HAS_ORIGIN_MATCHED_HEADER = 152;
         int CLEAR_ORIGIN_MATCHED_HEADER = 153;
         int CLEAR_ALL_ORIGIN_MATCHED_HEADERS = 154;
-        int SET_BACK_FORWARD_CACHE_SETTINGS = 155;
+        @Deprecated int SET_BACK_FORWARD_CACHE_SETTINGS = 155;
         int GET_BACK_FORWARD_CACHE_SETTINGS = 156;
         int BACK_FORWARD_CACHE_SETTINGS_GET_TIMEOUT_IN_SECONDS = 157;
         int BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE = 158;
