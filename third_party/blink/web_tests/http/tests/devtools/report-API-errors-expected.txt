@@ -1,9 +1,0 @@
-Tests that InspectorBackendStub is catching incorrect arguments.
-
-Protocol Error: Invalid type of argument 'userAgent' for method 'Network.setUserAgentOverride' call. It must be 'string' but it is 'number'.
-Protocol Error: Invalid number of arguments for method 'Network.setUserAgentOverride' call. It must have the following arguments [{"name":"userAgent","type":"string","optional":false},{"name":"acceptLanguage","type":"string","optional":true},{"name":"platform","type":"string","optional":true},{"name":"userAgentMetadata","type":"object","optional":true}]'.
-Protocol Error: Invalid type of argument 'includeCommandLineAPI' for method 'Runtime.evaluate' call. It must be 'boolean' but it is 'function'.
-Protocol Error: Invalid type of argument 'silent' for method 'Runtime.evaluate' call. It must be 'boolean' but it is 'function'.
-Protocol Error: the message wrongDomain.something-strange is for non-existing domain 'wrongDomain': {"method":"wrongDomain.something-strange","params":{}}
-Protocol Error: Attempted to dispatch an unspecified method 'Inspector.something-strange': {"method":"Inspector.something-strange","params":{}}
-
