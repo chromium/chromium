@@ -23,6 +23,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/result_codes.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -101,6 +102,26 @@ void RendererTask::Activate() {
     return;
 
   web_contents_->GetDelegate()->ActivateContents(web_contents_);
+}
+
+bool RendererTask::IsKillable() {
+  return Task::IsKillable();
+}
+
+bool RendererTask::Kill() {
+  if (!IsKillable()) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the renderer process is an isolated service. Sending SIGKILL
+  // (via base::Process::Terminate) fails due to permission restrictions.
+  // Shutdown() triggers unbinding the service, which is the correct way
+  // to kill a process on Android.
+  return render_process_host_->Shutdown(content::RESULT_CODE_KILLED);
+#else
+  return Task::Kill();
+#endif
 }
 
 void RendererTask::Refresh(const base::TimeDelta& update_interval,

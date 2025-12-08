@@ -53,6 +53,8 @@ class RendererTask : public Task,
 
   // task_manager::Task:
   void Activate() override;
+  bool IsKillable() override;
+  bool Kill() override;
   void Refresh(const base::TimeDelta& update_interval,
                int64_t refresh_flags) override;
   Type GetType() const override;

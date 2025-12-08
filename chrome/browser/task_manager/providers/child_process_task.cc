@@ -27,7 +27,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/process_type.h"
+#include "content/public/common/result_codes.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -103,8 +105,9 @@ ProcessResourceUsage* CreateProcessResourcesSampler(
   content::BrowserChildProcessHost* host =
       content::BrowserChildProcessHost::FromID(unique_child_process_id);
   auto receiver = usage_reporter.InitWithNewPipeAndPassReceiver();
-  if (host)
+  if (host) {
     host->GetHost()->BindReceiver(std::move(receiver));
+  }
 
   return new ProcessResourceUsage(std::move(usage_reporter));
 }
@@ -138,15 +141,46 @@ ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data,
 
 ChildProcessTask::~ChildProcessTask() = default;
 
+bool ChildProcessTask::IsKillable() {
+  return Task::IsKillable();
+}
+
+bool ChildProcessTask::Kill() {
+  if (!IsKillable()) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (process_type_ == content::PROCESS_TYPE_RENDERER) {
+    if (auto* host =
+            content::RenderProcessHost::FromID(unique_child_process_id_);
+        host) {
+      return host->Shutdown(content::RESULT_CODE_KILLED);
+    }
+  }
+
+  if (auto* host =
+          content::BrowserChildProcessHost::FromID(unique_child_process_id_);
+      host) {
+    host->GetHost()->ForceShutdown();
+    return true;
+  }
+#endif
+
+  return Task::Kill();
+}
+
 void ChildProcessTask::Refresh(const base::TimeDelta& update_interval,
                                int64_t refresh_flags) {
   Task::Refresh(update_interval, refresh_flags);
 
-  if ((refresh_flags & REFRESH_TYPE_V8_MEMORY) == 0)
+  if ((refresh_flags & REFRESH_TYPE_V8_MEMORY) == 0) {
     return;
+  }
 
-  if (!uses_v8_memory_)
+  if (!uses_v8_memory_) {
     return;
+  }
 
   // The child process resources refresh is performed asynchronously, we will
   // invoke it and record the current values (which might be invalid at the
