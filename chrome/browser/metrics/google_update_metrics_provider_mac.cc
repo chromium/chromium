@@ -10,7 +10,7 @@
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "chrome/browser/updater/browser_updater_client.h"
+#include "chrome/browser/updater/updater.h"
 #include "chrome/updater/update_service.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -23,7 +23,7 @@ void GoogleUpdateMetricsProviderMac::ProvideSystemProfileMetrics(
       system_profile_proto->mutable_google_update();
 
   std::optional<updater::UpdateService::AppState> browser_state =
-      BrowserUpdaterClient::GetLastKnownBrowserRegistration();
+      updater::GetLastKnownBrowserRegistration();
   if (browser_state) {
     const std::string browser_state_cohort = browser_state->cohort.value_or("");
     base::UmaHistogramSparse("GoogleUpdate.InstallDetails.UpdateCohortId",
@@ -33,7 +33,7 @@ void GoogleUpdateMetricsProviderMac::ProvideSystemProfileMetrics(
   }
 
   std::optional<updater::UpdateService::AppState> updater_state =
-      BrowserUpdaterClient::GetLastKnownUpdaterRegistration();
+      updater::GetLastKnownUpdaterRegistration();
   if (updater_state) {
     google_update->mutable_google_update_status()->set_version(
         updater_state->version);

@@ -9,13 +9,9 @@
 
 namespace updater {
 
-// Schedule updater periodic tasks to run five minutes later and every five
-// hours thereafter. This is a backup scheduler so that even if the updater's
-// scheduler is broken or disabled, it will run tasks while Chrome is running.
-void SchedulePeriodicTasks();
-
-// Do the periodic tasks right away, invoking `callback` when done.
-void DoPeriodicTasks(base::OnceClosure callback);
+// Do the periodic tasks right away, invoking `callback` when done. If user
+// intervention is needed, calls `prompt`.
+void DoPeriodicTasks(base::RepeatingClosure prompt, base::OnceClosure callback);
 
 // Wake up all existing updater instances. May block.
 void WakeAllUpdaters();

@@ -2072,7 +2072,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/ui/zoom",
-    "//chrome/browser/updater:scheduler",
+    "//chrome/browser/updater",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/updates/announcement_notification:impl",
     "//chrome/browser/vr",
@@ -6324,7 +6324,6 @@ static_library("browser") {
     deps += [
       "//chrome/browser/ui/pdf/infobar",
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:impl",
-      "//chrome/browser/updater:browser_updater_client",
       "//chrome/common/notifications",
       "//chrome/updater:browser_sources",
     ]
@@ -6666,7 +6665,6 @@ static_library("browser") {
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
       "//chrome/browser/renderer_host:history_swiper",
-      "//chrome/browser/updater:browser_updater_client",
       "//chrome/browser/web_applications/os_integration/mac:web_app_shortcut_copier_lib",
       "//chrome/browser/webshare:storage",
       "//chrome/services/mac_notifications",

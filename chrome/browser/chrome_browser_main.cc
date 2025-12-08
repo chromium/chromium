@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_configs.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/updater/updater.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
@@ -219,6 +220,7 @@
 #include <Security/Security.h>
 
 #include "chrome/browser/mac/chrome_browser_main_extra_parts_mac.h"
+#include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 
 #if defined(ARCH_CPU_X86_64)
@@ -296,10 +298,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
-#endif
-
-#if BUILDFLAG(ENABLE_UPDATER)
-#include "chrome/browser/updater/scheduler.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -996,9 +994,13 @@ void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PreCreateMainMessageLoop();
 
-#if BUILDFLAG(ENABLE_UPDATER)
-  updater::SchedulePeriodicTasks();
+  updater::SchedulePeriodicTasks(
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
+      base::BindRepeating(&ShowUpdaterPromotionInfoBar)
+#else
+      base::DoNothing()
 #endif
+  );
 }
 
 void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
