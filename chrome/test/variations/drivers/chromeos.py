@@ -38,6 +38,10 @@ from telemetry.internal.backends.chrome import cros_browser_finder
 CACHE_DIR = os.path.join(SRC_DIR, "build", "cros_cache")
 INITIAL_WAIT_TIME_SECONDS = 10
 
+# Wait time after loading a page to allow the scrollbar to disappear before
+# taking a screenshot.
+SCREENSHOT_WAIT_TIME_SECONDS = 5
+
 
 class _PossibleCrOSBrowser(cros_browser_finder.PossibleCrOSBrowser):
   """The CrOS browser wrapper to filter out start-up args."""
@@ -178,6 +182,10 @@ class CrOSDriverFactory(DriverFactory):
       yield
     finally:
       tunnel.terminate()
+
+  #override
+  def wait_for_screenshot(self):
+    time.sleep(SCREENSHOT_WAIT_TIME_SECONDS)
 
   #override
   @contextmanager
