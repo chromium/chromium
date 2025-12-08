@@ -613,8 +613,7 @@ PrivacySandboxSettingsImpl::GetM1FledgeAllowedStatus(
 PrivacySandboxSettingsImpl::Status
 PrivacySandboxSettingsImpl::GetFencedStorageReadEnabledStatus() const {
   // User has turned on the setting to block all third party cookies.
-  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      !cookie_settings_->AreThirdPartyCookiesLimited()) {
+  if (cookie_settings_->ShouldBlockThirdPartyCookies()) {
     return Status::kApisDisabled;
   }
 

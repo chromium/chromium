@@ -1986,64 +1986,6 @@ TEST_P(PrivacySandboxAttestationsTest, FencedStorageReadAttestation) {
            &kFalse_}});
 }
 
-TEST_P(PrivacySandboxAttestationsTest,
-       FencedStorageReadEnabledWhen3pcsLimited) {
-  GURL top_frame_url("https://top-frame.com");
-  GURL enrollee_url("https://embedded.com");
-  RunTestCase(
-      TestState{
-          {MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
-                             kM1FledgeEnabledUserPrefValue,
-                             kM1AdMeasurementEnabledUserPrefValue},
-           true},
-          {kTrackingProtection3pcdEnabledUserPrefValue, true},
-          {kAttestationsMap,
-           PrivacySandboxAttestationsMap{
-               {net::SchemefulSite(enrollee_url),
-                {PrivacySandboxAttestationsGatedAPI::kFencedStorageRead}}}}},
-      TestInput{
-          {kTopicsURL, enrollee_url},
-          {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
-          {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
-          {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
-          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
-          {kAdMeasurementSourceOrigin,
-           url::Origin::Create(GURL(top_frame_url))},
-          {kAdMeasurementDestinationOrigin,
-           url::Origin::Create(GURL(top_frame_url))},
-          {kAccessingOrigin, url::Origin::Create(enrollee_url)},
-          {kOutSharedStorageBlockIsSiteSettingSpecific,
-           &actual_out_shared_storage_block_is_site_setting_specific_},
-          {kOutPrivateAggregationBlockIsSiteSettingSpecific,
-           &actual_out_private_aggregation_block_is_site_setting_specific_}},
-      TestOutput{
-          {kIsFencedStorageReadAllowed, true},
-          {MultipleOutputKeys{kIsTopicsAllowedForContext,
-                              kIsAttributionReportingAllowed,
-                              kMaySendAttributionReport,
-                              kIsSharedStorageAllowed, kIsFledgeJoinAllowed,
-                              kIsFledgeLeaveAllowed, kIsFledgeUpdateAllowed,
-                              kIsFledgeSellAllowed, kIsFledgeBuyAllowed,
-                              kIsEventReportingDestinationAttestedForFledge,
-                              kIsPrivateAggregationAllowed,
-                              kIsPrivateAggregationDebugModeAllowed},
-           false},
-          {kIsFencedStorageReadAllowedMetric,
-           static_cast<int>(Status::kAllowed)},
-          {MultipleOutputKeys{
-               kIsTopicsAllowedForContextMetric,
-               kIsAttributionReportingAllowedMetric,
-               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
-               kIsFledgeJoinAllowedMetric, kIsFledgeLeaveAllowedMetric,
-               kIsFledgeUpdateAllowedMetric, kIsFledgeSellAllowedMetric,
-               kIsFledgeBuyAllowedMetric, kIsPrivateAggregationAllowedMetric,
-               kIsEventReportingDestinationAttestedForFledgeMetric},
-           static_cast<int>(Status::kAttestationFailed)},
-          {MultipleOutputKeys{kIsSharedStorageBlockSiteSettingSpecific,
-                              kIsPrivateAggregationBlockSiteSettingSpecific},
-           &kFalse_}});
-}
-
 TEST_P(PrivacySandboxAttestationsTest, FledgeAttestation) {
   GURL top_frame_url("https://top-frame.com");
   GURL enrollee_url("https://embedded.com");
