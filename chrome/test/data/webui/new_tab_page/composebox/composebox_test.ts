@@ -275,6 +275,16 @@ suite('NewTabPageComposeboxTest', () => {
     assertStyle(composeboxElement.$.submitContainer, 'cursor', 'pointer');
   });
 
+  test('upload image works when config is set to wildcard image/*', async () => {
+    loadTimeData.overrideValues({
+      'composeboxImageFileTypes': 'image/*',
+    });
+    createComposeboxElement();
+    const token = {low: BigInt(1), high: BigInt(2)};
+    const file = new File(['foo'], 'foo.jpg', {type: 'image/jpeg'});
+    await uploadFileAndVerify(token, file);
+  });
+
   test('uploading/deleting pdf file queries zps', async () => {
     loadTimeData.overrideValues(
         {composeboxShowZps: true, composeboxShowSubmit: true});
