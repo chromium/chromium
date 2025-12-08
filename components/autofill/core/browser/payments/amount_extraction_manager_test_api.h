@@ -32,6 +32,12 @@ class AmountExtractionManagerTestApi {
         search_request_pending;
   }
 
+  bool IsTimeoutTimerRunning() {
+    return amount_extraction_manager_->timeout_timer_.IsRunning();
+  }
+
+  void Reset() { amount_extraction_manager_->Reset(); }
+
  private:
   const raw_ref<AmountExtractionManager> amount_extraction_manager_;
 };

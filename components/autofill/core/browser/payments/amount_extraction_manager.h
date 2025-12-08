@@ -154,11 +154,15 @@ class AmountExtractionManager {
   // amount is on the main frame.
   AutofillDriver* GetMainFrameDriver();
 
+  // Cancels in-progress requests and resets the state. Also invalidates
+  // `AmountExtractionManager` weak pointers from the factory.
+  void Reset();
+
   // The owning BrowserAutofillManager.
   raw_ref<BrowserAutofillManager> autofill_manager_;
 
-  // If true, the metrics for the amount extraction result was already logged
-  // and should not log again.
+  // If Once it is set, it can not be reset, as it should be set for the
+  // lifetime of `this`.
   bool has_logged_amount_extraction_result_ = false;
 
   // Indicates whether there is an amount search ongoing or not. If set, do not

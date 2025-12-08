@@ -191,7 +191,7 @@ void AmountExtractionManager::OnAiPageContentReceived(
           /*timeout_reached=*/false);
     }
     // Stop the timer because amount extraction is finished with a failure.
-    timeout_timer_.Stop();
+    Reset();
     return;
   }
 
@@ -252,11 +252,6 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
         latency, result, GetMainFrameDriver()->GetPageUkmSourceId());
     has_logged_amount_extraction_result_ = true;
   }
-  // Set `search_request_pending_` to false once the search is done.
-  search_request_pending_ = false;
-  // Invalidate the WeakPtr instance to ignore the scheduled delay task when the
-  // amount is found.
-  weak_ptr_factory_.InvalidateWeakPtrs();
 
   std::optional<int64_t> parsed_extracted_amount =
       MaybeParseAmountToMonetaryMicroUnits(extracted_amount);
@@ -276,6 +271,8 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
               << latency.InMilliseconds() << " milliseconds.";
     }
   }
+
+  Reset();
 }
 
 void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
@@ -286,6 +283,7 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
   timeout_timer_.Stop();
 
   if (!result.response.has_value()) {
+    Reset();
     return;
   }
 
@@ -295,18 +293,21 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
           result.response.value());
 
   if (!response) {
+    Reset();
     return;
   }
 
   BnplManager* bnpl_manager = autofill_manager_->GetPaymentsBnplManager();
 
   if (!bnpl_manager) {
+    Reset();
     return;
   }
 
   if (!IsValidAmountExtractionResponse(response.value())) {
     bnpl_manager->OnAmountExtractionReturnedFromAi(std::nullopt,
                                                    /*timeout_reached=*/false);
+    Reset();
     return;
   }
 
@@ -315,8 +316,8 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
 
   bnpl_manager->OnAmountExtractionReturnedFromAi(parsed_extracted_amount,
                                                  /*timeout_reached=*/false);
-  // TODO(crbug.com/466136350): Add AmountExtractionManager::Reset() function
-  // and apply here.
+
+  Reset();
 }
 
 void AmountExtractionManager::OnTimeoutReached() {
@@ -364,8 +365,8 @@ void AmountExtractionManager::OnTimeoutReached() {
               << " reached a timeout.";
     }
   }
-  // TODO(crbug.com/466136350): Add AmountExtractionManager::Reset() function
-  // and apply here.
+
+  Reset();
 }
 
 DenseSet<AmountExtractionManager::EligibleFeature>
@@ -390,6 +391,12 @@ AutofillDriver* AmountExtractionManager::GetMainFrameDriver() {
     driver = driver->GetParent();
   }
   return driver;
+}
+
+void AmountExtractionManager::Reset() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  timeout_timer_.Stop();
+  search_request_pending_ = false;
 }
 
 }  // namespace autofill::payments

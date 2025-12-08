@@ -1111,6 +1111,33 @@ TEST_F(AmountExtractionManagerTest, AiAmountExtraction_FetchReturnsEmpty) {
   std::move(fetch_callback).Run(std::nullopt);
 }
 
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ResetWhenAiFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent);
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  EXPECT_TRUE(test_api(*amount_extraction_manager_).IsTimeoutTimerRunning());
+
+  test_api(*amount_extraction_manager_).Reset();
+
+  EXPECT_FALSE(test_api(*amount_extraction_manager_).IsTimeoutTimerRunning());
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ResetWhenAiFeatureDisabled) {
+  amount_extraction_manager_->TriggerCheckoutAmountExtraction();
+
+  EXPECT_TRUE(test_api(*amount_extraction_manager_).GetSearchRequestPending());
+
+  test_api(*amount_extraction_manager_).Reset();
+
+  EXPECT_FALSE(test_api(*amount_extraction_manager_).GetSearchRequestPending());
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
