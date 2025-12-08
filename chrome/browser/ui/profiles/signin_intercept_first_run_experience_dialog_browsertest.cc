@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/profiles/signin_intercept_first_run_experience_dialog.h"
 
 #include "base/containers/enum_set.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -43,8 +45,10 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -108,12 +112,26 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
         context, base::BindRepeating(&CreateTestSyncService));
     policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
         context,
-        base::BindRepeating(&policy::FakeUserPolicySigninService::Build));
+        GetEmail() == kEnterpriseEmail
+            ? base::BindRepeating(
+                  &policy::FakeUserPolicySigninService::BuildForEnterprise)
+            : base::BindRepeating(&policy::FakeUserPolicySigninService::Build));
   }
 
   void SetUpOnMainThread() override {
     TestBase::SetUpOnMainThread();
     identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+    SetUpNavigationObservers();
+  }
+
+  void SetUpNavigationObservers() {
+    sync_confirmation_observer_ =
+        std::make_unique<content::TestNavigationObserver>(kSyncConfirmationUrl);
+    history_sync_observer_ =
+        std::make_unique<content::TestNavigationObserver>(kHistorySyncUrl);
+    profile_customization_observer_ =
+        std::make_unique<content::TestNavigationObserver>(
+            kProfileCustomizationUrl);
   }
 
   // Returns true if the profile switch IPH has been shown.
@@ -126,7 +144,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
     policy_provider_.UpdateChromePolicy(policy);
   }
 
-  void SignIn() {
+  void SignIn(bool update_extended_account_info = true,
+              bool disable_history_sync = true) {
     account_id_ = identity_test_env()
                       ->MakePrimaryAccountAvailable(
                           GetEmail(), signin::ConsentLevel::kSignin)
@@ -134,6 +153,58 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
     EXPECT_EQ(
         identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
         account_id());
+    // In the testing framework be default all data types are enabled for syncing, unless
+    // we explicitly disabled them.
+    ASSERT_TRUE(sync_service()->GetUserSettings()->IsSyncEverythingEnabled());
+    // Disable history, tabs and tab groups syncing do that the history sync
+    // optin screen is offered, if all the necessary conditions are met.
+    if (disable_history_sync) {
+      DisableHistorySync();
+    }
+    if (update_extended_account_info) {
+      UpdateExtendedAccountInfo();
+    }
+  }
+
+  void ExpectAndApproveSyncConfirmationDialog() {
+    if (InUnoPhase2ModelWithFastFollows()) {
+      history_sync_observer_->Wait();
+      EXPECT_EQ(dialog()
+                    ->GetModalDialogWebContentsForTesting()
+                    ->GetLastCommittedURL(),
+                kHistorySyncUrl);
+
+      EXPECT_TRUE(login_ui_test_utils::ConfirmHistorySyncOptinDialog(
+          browser(), login_ui_test_utils::kSyncConfirmationDialogTimeout,
+          false));
+
+      ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+      // The dialog still shows the history sync while waiting for the synced
+      // theme to be applied.
+      EXPECT_TRUE(controller()->ShowsModalDialog());
+      EXPECT_EQ(dialog()
+                    ->GetModalDialogWebContentsForTesting()
+                    ->GetLastCommittedURL(),
+                kHistorySyncUrl);
+    } else {
+      sync_confirmation_observer_->Wait();
+      EXPECT_EQ(dialog()
+                    ->GetModalDialogWebContentsForTesting()
+                    ->GetLastCommittedURL(),
+                kSyncConfirmationUrl);
+
+      SimulateSyncConfirmationUIClosing(
+          LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+      ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
+
+      // The dialog still shows the sync confirmation while waiting for the
+      // synced theme to be applied.
+      EXPECT_TRUE(controller()->ShowsModalDialog());
+      EXPECT_EQ(dialog()
+                    ->GetModalDialogWebContentsForTesting()
+                    ->GetLastCommittedURL(),
+                kSyncConfirmationUrl);
+    }
   }
 
   void SimulateSyncConfirmationUIClosing(
@@ -173,6 +244,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
               1);
   }
 
+ protected:
   // `kSignin` consent level means that Sync should be disabled.
   void ExpectPrimaryAccountWithExactConsentLevel(
       signin::ConsentLevel consent_level) {
@@ -218,7 +290,22 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
         syncer::UserSelectableType::kSavedTabGroups, false);
   }
 
-  virtual std::string GetEmail() { return kConsumerEmail; }
+  virtual std::string GetEmail() = 0;
+
+  void UpdateExtendedAccountInfo() {
+    AccountInfo account_info =
+        identity_manager()->FindExtendedAccountInfoByAccountId(account_id());
+    std::string hosted_domain =
+        GetEmail() == kEnterpriseEmail ? "managed.com" : "";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .SetHostedDomain(hosted_domain)
+                       .Build();
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  }
 
  protected:
   const GURL kSyncConfirmationUrl = AppendSyncConfirmationQueryParams(
@@ -232,6 +319,11 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
   const GURL kProfileCustomizationUrl = GURL("chrome://profile-customization");
   const GURL kSyncSettingsUrl = GURL("chrome://settings/syncSetup");
 
+  std::unique_ptr<content::TestNavigationObserver> sync_confirmation_observer_;
+  std::unique_ptr<content::TestNavigationObserver> history_sync_observer_;
+  std::unique_ptr<content::TestNavigationObserver>
+      profile_customization_observer_;
+
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   // Needed for profile switch IPH testing.
@@ -244,12 +336,12 @@ class SigninInterceptFirstRunExperienceDialogBrowserTestBase : public TestBase {
 
 class SigninInterceptFirstRunExperienceDialogBrowserTest
     : public SigninInterceptFirstRunExperienceDialogBrowserTestBase,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool, std::string>> {
  public:
   SigninInterceptFirstRunExperienceDialogBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
+    if (std::get<0>(GetParam())) {
       enabled_features = {syncer::kReplaceSyncPromosWithSignInPromos,
                           syncer::kUnoPhase2FollowUp};
     } else {
@@ -259,6 +351,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
     scoped_features_.InitWithFeatures(enabled_features, disabled_features);
   }
 
+  std::string GetEmail() override { return std::get<1>(GetParam()); }
+
  private:
   base::test::ScopedFeatureList scoped_features_;
 };
@@ -266,30 +360,6 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 class SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTestBase
     : public SigninInterceptFirstRunExperienceDialogBrowserTestBase {
  public:
-  void OnWillCreateBrowserContextServices(
-      content::BrowserContext* context) override {
-    TestBase::OnWillCreateBrowserContextServices(context);
-
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&CreateTestSyncService));
-    policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(
-                     &policy::FakeUserPolicySigninService::BuildForEnterprise));
-  }
-
-  void UpdateExtendedAccountInfo() {
-    AccountInfo account_info =
-        identity_manager()->FindExtendedAccountInfoByAccountId(account_id());
-    account_info = AccountInfo::Builder(account_info)
-                       .SetFullName("fullname")
-                       .SetGivenName("givenname")
-                       .SetLocale("en")
-                       .SetAvatarUrl("https://example.com")
-                       .SetHostedDomain("managed.com")
-                       .Build();
-    identity_test_env()->UpdateAccountInfoForAccount(account_info);
-  }
-
   std::string GetEmail() override { return kEnterpriseEmail; }
 };
 
@@ -319,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        ShowAndCloseDialog) {
   SignIn();
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   controller()->CloseModalSignin();
   EXPECT_FALSE(controller()->ShowsModalDialog());
@@ -330,57 +400,19 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        AcceptSync) {
   SignIn();
-  DisableHistorySync();
-
-  content::TestNavigationObserver sync_confirmation_observer(
-      kSyncConfirmationUrl);
-  content::TestNavigationObserver history_sync_observer(kHistorySyncUrl);
-  content::TestNavigationObserver profile_customization_observer(
-      kProfileCustomizationUrl);
-  sync_confirmation_observer.StartWatchingNewWebContents();
-  history_sync_observer.StartWatchingNewWebContents();
-  profile_customization_observer.StartWatchingNewWebContents();
+  sync_confirmation_observer_->StartWatchingNewWebContents();
+  history_sync_observer_->StartWatchingNewWebContents();
+  profile_customization_observer_->StartWatchingNewWebContents();
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
 
-  if (InUnoPhase2ModelWithFastFollows()) {
-    history_sync_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kHistorySyncUrl);
-    EXPECT_TRUE(login_ui_test_utils::ConfirmHistorySyncOptinDialog(
-        browser(), login_ui_test_utils::kSyncConfirmationDialogTimeout, false));
-
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-    // The dialog still shows the history sync while waiting for the synced
-    // theme to be applied.
-    EXPECT_TRUE(controller()->ShowsModalDialog());
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kHistorySyncUrl);
-  } else {
-    sync_confirmation_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kSyncConfirmationUrl);
-
-    SimulateSyncConfirmationUIClosing(
-        LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
-
-    // The dialog still shows the sync confirmation while waiting for the synced
-    // theme to be applied.
-    EXPECT_TRUE(controller()->ShowsModalDialog());
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kSyncConfirmationUrl);
-  }
+  ExpectAndApproveSyncConfirmationDialog();
 
   theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
       ThemeSyncableService::ThemeSyncState::kApplied);
 
-  profile_customization_observer.Wait();
+  profile_customization_observer_->Wait();
   EXPECT_EQ(
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
@@ -407,6 +439,40 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
   }
 }
 
+// Goes through all steps of the fre dialog in the case that the history sync
+// optin dialog is not offered (e.g. because the user is already opted in).
+IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       HistorySyncOptinDialogNotOffered) {
+  if (!InUnoPhase2ModelWithFastFollows()) {
+    GTEST_SKIP() << "Test applicable only in Uno Phase 2 with follow ups";
+  }
+  // Setting `disable_history_sync` to false, means that all the syncable
+  // data types are enabled by default, as if the user had already opted in.
+  SignIn(/*update_extended_account_info=*/true,
+         /*disable_history_sync=*/false);
+
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+  profile_customization_observer_->StartWatchingNewWebContents();
+
+  // History sync screen is skipped.
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /*is_forced_intercept=*/false);
+  EXPECT_TRUE(controller()->ShowsModalDialog());
+  theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
+      ThemeSyncableService::ThemeSyncState::kApplied);
+  profile_customization_observer_->Wait();
+  EXPECT_EQ(
+      dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
+      kProfileCustomizationUrl);
+  // Sync consent should not be granted since the user hasn't seen any consent
+  // UI.
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+
+  SimulateProfileCustomizationDoneButtonClicked();
+  EXPECT_FALSE(controller()->ShowsModalDialog());
+  EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+}
+
 // TODO(crbug.com/418143300): Add a test case for the history sync optin screen
 // for managed users with a delayed execution of the management handling
 // callback to ensure the history sync optin is eventually shown.
@@ -416,56 +482,20 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        AcceptSyncSkipCustomization) {
   SignIn();
-  DisableHistorySync();
-
-  content::TestNavigationObserver sync_confirmation_observer(
-      kSyncConfirmationUrl);
-  content::TestNavigationObserver history_sync_observer(kHistorySyncUrl);
-  content::TestNavigationObserver profile_customization_observer(
-      kProfileCustomizationUrl);
-  sync_confirmation_observer.StartWatchingNewWebContents();
-  history_sync_observer.StartWatchingNewWebContents();
-  profile_customization_observer.StartWatchingNewWebContents();
+  sync_confirmation_observer_->StartWatchingNewWebContents();
+  history_sync_observer_->StartWatchingNewWebContents();
+  profile_customization_observer_->StartWatchingNewWebContents();
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
-  if (InUnoPhase2ModelWithFastFollows()) {
-    history_sync_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kHistorySyncUrl);
-    EXPECT_TRUE(login_ui_test_utils::ConfirmHistorySyncOptinDialog(
-        browser(), login_ui_test_utils::kSyncConfirmationDialogTimeout, false));
 
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-    // The dialog still shows the history sync while waiting for the synced
-    // theme to be applied.
-    EXPECT_TRUE(controller()->ShowsModalDialog());
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kHistorySyncUrl);
-  } else {
-    sync_confirmation_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kSyncConfirmationUrl);
-
-    SimulateSyncConfirmationUIClosing(
-        LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
-    // The dialog still shows the sync confirmation while waiting for the synced
-    // theme to be applied.
-    EXPECT_TRUE(controller()->ShowsModalDialog());
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kSyncConfirmationUrl);
-  }
+  ExpectAndApproveSyncConfirmationDialog();
 
   theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
       ThemeSyncableService::ThemeSyncState::kApplied);
 
-  profile_customization_observer.Wait();
+  profile_customization_observer_->Wait();
   EXPECT_EQ(
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
@@ -499,47 +529,16 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        AcceptSyncExtensionTheme) {
   SignIn();
-  DisableHistorySync();
 
-  content::TestNavigationObserver sync_confirmation_observer(
-      kSyncConfirmationUrl);
-  content::TestNavigationObserver history_sync_observer(kHistorySyncUrl);
-  content::TestNavigationObserver profile_customization_observer(
-      kProfileCustomizationUrl);
-  sync_confirmation_observer.StartWatchingNewWebContents();
-  history_sync_observer.StartWatchingNewWebContents();
-  profile_customization_observer.StartWatchingNewWebContents();
+  sync_confirmation_observer_->StartWatchingNewWebContents();
+  history_sync_observer_->StartWatchingNewWebContents();
+  profile_customization_observer_->StartWatchingNewWebContents();
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
 
-  if (InUnoPhase2ModelWithFastFollows()) {
-    history_sync_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kHistorySyncUrl);
-    // It does not matter if we accept or reject the history syncing.
-    EXPECT_TRUE(login_ui_test_utils::RejectHistorySyncOptinDialog(
-        browser(), login_ui_test_utils::kSyncConfirmationDialogTimeout, false));
-
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  } else {
-    sync_confirmation_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kSyncConfirmationUrl);
-
-    SimulateSyncConfirmationUIClosing(
-        LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
-    // The dialog still shows the sync confirmation while waiting for the synced
-    // theme to be applied.
-    EXPECT_TRUE(controller()->ShowsModalDialog());
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kSyncConfirmationUrl);
-  }
+  ExpectAndApproveSyncConfirmationDialog();
 
   theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
       ThemeSyncableService::ThemeSyncState::kWaitingForExtensionInstallation);
@@ -562,7 +561,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                                         // trigger the update?
           ThemeSyncableService::ThemeSyncState::kApplied);
 
-  profile_customization_observer.Wait();
+  profile_customization_observer_->Wait();
   EXPECT_EQ(
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
@@ -577,45 +576,22 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        AcceptSyncCustomPassphrase) {
   SignIn();
-  DisableHistorySync();
-
-  content::TestNavigationObserver sync_confirmation_observer(
-      kSyncConfirmationUrl);
-  content::TestNavigationObserver history_sync_observer(kHistorySyncUrl);
-  content::TestNavigationObserver profile_customization_observer(
-      kProfileCustomizationUrl);
-  sync_confirmation_observer.StartWatchingNewWebContents();
-  history_sync_observer.StartWatchingNewWebContents();
-  profile_customization_observer.StartWatchingNewWebContents();
+  sync_confirmation_observer_->StartWatchingNewWebContents();
+  history_sync_observer_->StartWatchingNewWebContents();
+  profile_customization_observer_->StartWatchingNewWebContents();
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
 
-  if (InUnoPhase2ModelWithFastFollows()) {
-    history_sync_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kHistorySyncUrl);
-    // It does not matter whether we accept or reject this dialog.
-    EXPECT_TRUE(login_ui_test_utils::RejectHistorySyncOptinDialog(
-        browser(), login_ui_test_utils::kSyncConfirmationDialogTimeout, false));
-
-    sync_service()->SetPassphraseRequired();
-    sync_service()->FireStateChanged();
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  } else {
-    sync_confirmation_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kSyncConfirmationUrl);
-
-    SimulateSyncConfirmationUIClosing(
-        LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-    sync_service()->SetPassphraseRequired();
-    sync_service()->FireStateChanged();
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
-  }
+  // Note: In the Uno model, for this test case it does not
+  // matter if we accept or reject this dialog.
+  ExpectAndApproveSyncConfirmationDialog();
+  sync_service()->SetPassphraseRequired();
+  sync_service()->FireStateChanged();
+  ExpectPrimaryAccountWithExactConsentLevel(InUnoPhase2ModelWithFastFollows()
+                                                ? signin::ConsentLevel::kSignin
+                                                : signin::ConsentLevel::kSync);
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !controller()->ShowsModalDialog(); }));
@@ -624,7 +600,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
   if (InUnoPhase2ModelWithFastFollows()) {
     ExpectRecordedEvents({DialogEvent::kStart,
                           DialogEvent::kShowHistorySyncOptinScreen,
-                          DialogEvent::kHistorySyncOptinReject});
+                          DialogEvent::kHistorySyncOptinAccept});
   } else {
     ExpectRecordedEvents({DialogEvent::kStart,
                           DialogEvent::kShowSyncConfirmation,
@@ -641,23 +617,16 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        DeclineSync) {
   SignIn();
-  DisableHistorySync();
-
-  content::TestNavigationObserver sync_confirmation_observer(
-      kSyncConfirmationUrl);
-  content::TestNavigationObserver history_sync_observer(kHistorySyncUrl);
-  content::TestNavigationObserver profile_customization_observer(
-      kProfileCustomizationUrl);
-  sync_confirmation_observer.StartWatchingNewWebContents();
-  history_sync_observer.StartWatchingNewWebContents();
-  profile_customization_observer.StartWatchingNewWebContents();
+  sync_confirmation_observer_->StartWatchingNewWebContents();
+  history_sync_observer_->StartWatchingNewWebContents();
+  profile_customization_observer_->StartWatchingNewWebContents();
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
 
   if (InUnoPhase2ModelWithFastFollows()) {
-    history_sync_observer.Wait();
+    history_sync_observer_->Wait();
     EXPECT_EQ(
         dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
         kHistorySyncUrl);
@@ -669,7 +638,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
     theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
         ThemeSyncableService::ThemeSyncState::kApplied);
   } else {
-    sync_confirmation_observer.Wait();
+    sync_confirmation_observer_->Wait();
     EXPECT_EQ(
         dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
         kSyncConfirmationUrl);
@@ -679,7 +648,7 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   EXPECT_TRUE(controller()->ShowsModalDialog());
-  profile_customization_observer.Wait();
+  profile_customization_observer_->Wait();
   EXPECT_EQ(
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
@@ -711,15 +680,9 @@ IN_PROC_BROWSER_TEST_P(SigninInterceptFirstRunExperienceDialogBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
     ProfileColorPolicy) {
-  SignIn();
-  DisableHistorySync();
-
-  content::TestNavigationObserver sync_confirmation_observer(
-      kSyncConfirmationUrl);
-  content::TestNavigationObserver history_sync_observer(kHistorySyncUrl);
-  sync_confirmation_observer.StartWatchingNewWebContents();
-  history_sync_observer.StartWatchingNewWebContents();
-
+  // We set the mocked the policies before the user is signed-in and the
+  // extended account info fetching triggers the management handling flow
+  // (policy registration & fetching).
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kBrowserThemeColor,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -727,41 +690,15 @@ IN_PROC_BROWSER_TEST_P(
                  /*external_data_fetcher=*/nullptr);
   UpdateChromePolicy(policy_map);
 
+  SignIn();
+  sync_confirmation_observer_->StartWatchingNewWebContents();
+  history_sync_observer_->StartWatchingNewWebContents();
+
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
 
-  if (InUnoPhase2ModelWithFastFollows()) {
-    history_sync_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kHistorySyncUrl);
-    EXPECT_TRUE(login_ui_test_utils::ConfirmHistorySyncOptinDialog(
-        browser(), login_ui_test_utils::kSyncConfirmationDialogTimeout, false));
-
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-    // The dialog still shows the sync confirmation while waiting for the synced
-    // theme to be applied.
-    EXPECT_TRUE(controller()->ShowsModalDialog());
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kHistorySyncUrl);
-  } else {
-    sync_confirmation_observer.Wait();
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kSyncConfirmationUrl);
-
-    SimulateSyncConfirmationUIClosing(
-        LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-    ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
-    // The dialog still shows the sync confirmation while waiting for the synced
-    // theme to be applied.
-    EXPECT_TRUE(controller()->ShowsModalDialog());
-    EXPECT_EQ(
-        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-        kSyncConfirmationUrl);
-  }
+  ExpectAndApproveSyncConfirmationDialog();
 
   theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
       ThemeSyncableService::ThemeSyncState::kApplied);
@@ -794,14 +731,12 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   SignIn();
-  content::TestNavigationObserver sync_confirmation_observer(
-      kSyncConfirmationUrl);
-  sync_confirmation_observer.StartWatchingNewWebContents();
+  sync_confirmation_observer_->StartWatchingNewWebContents();
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
-  sync_confirmation_observer.Wait();
+  sync_confirmation_observer_->Wait();
   EXPECT_EQ(
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kSyncConfirmationUrl);
@@ -838,7 +773,7 @@ IN_PROC_BROWSER_TEST_P(
       syncer::SyncService::TransportState::INITIALIZING);
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
 
   // The dialog is shown asynchronously. We wait for the posted tasks to run,
   // but nothing will be shown until we update the Sync service state.
@@ -872,19 +807,17 @@ IN_PROC_BROWSER_TEST_P(
   SignIn();
   sync_service()->SetAllowedByEnterprisePolicy(false);
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  content::TestNavigationObserver profile_customization_observer(
-      kProfileCustomizationUrl);
-  profile_customization_observer.StartWatchingNewWebContents();
+  profile_customization_observer_->StartWatchingNewWebContents();
 
   // Sync confirmation is skipped.
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   if (InUnoPhase2ModelWithFastFollows()) {
     theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
         ThemeSyncableService::ThemeSyncState::kApplied);
   }
-  profile_customization_observer.Wait();
+  profile_customization_observer_->Wait();
   EXPECT_EQ(
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
@@ -912,12 +845,10 @@ IN_PROC_BROWSER_TEST_P(
     SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
     ForcedIntercept) {
   SignIn();
-  content::TestNavigationObserver profile_customization_observer(
-      kProfileCustomizationUrl);
-  profile_customization_observer.StartWatchingNewWebContents();
+  profile_customization_observer_->StartWatchingNewWebContents();
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ true);
+      account_id(), /*is_forced_intercept=*/true);
   EXPECT_TRUE(controller()->ShowsModalDialog());
 
   if (InUnoPhase2ModelWithFastFollows()) {
@@ -925,7 +856,7 @@ IN_PROC_BROWSER_TEST_P(
         ThemeSyncableService::ThemeSyncState::kApplied);
   }
 
-  profile_customization_observer.Wait();
+  profile_customization_observer_->Wait();
 
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   EXPECT_EQ(
@@ -945,26 +876,28 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
     PromotionalTabsDisabled) {
-  SignIn();
+  // We set the mocked the policies before the user is signed-in and the
+  // extended account info fetching triggers the management handling flow
+  // (policy registration & fetching).
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kPromotionalTabsEnabled,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, base::Value(false),
                  /*external_data_fetcher=*/nullptr);
   UpdateChromePolicy(policy_map);
-  content::TestNavigationObserver profile_customization_observer(
-      kProfileCustomizationUrl);
-  profile_customization_observer.StartWatchingNewWebContents();
+
+  SignIn();
+  profile_customization_observer_->StartWatchingNewWebContents();
 
   // Sync confirmation is skipped.
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ false);
+      account_id(), /*is_forced_intercept=*/false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   if (InUnoPhase2ModelWithFastFollows()) {
     theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
         ThemeSyncableService::ThemeSyncState::kApplied);
   }
-  profile_customization_observer.Wait();
+  profile_customization_observer_->Wait();
   EXPECT_EQ(
       dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
       kProfileCustomizationUrl);
@@ -992,9 +925,9 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
     ForcedIntercept_ProfileColorPolicy) {
-  SignIn();
-  DisableHistorySync();
-
+  // We set the mocked the policies before the user is signed-in and the
+  // extended account info fetching triggers the management handling flow
+  // (policy registration & fetching).
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kBrowserThemeColor,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -1002,8 +935,9 @@ IN_PROC_BROWSER_TEST_P(
                  /*external_data_fetcher=*/nullptr);
   UpdateChromePolicy(policy_map);
 
+  SignIn();
   controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /* is_forced_intercept = */ true);
+      account_id(), /*is_forced_intercept=*/true);
 
   if (InUnoPhase2ModelWithFastFollows()) {
     theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
@@ -1018,35 +952,75 @@ IN_PROC_BROWSER_TEST_P(
   ExpectRecordedEvents({DialogEvent::kStart});
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SigninInterceptFirstRunExperienceDialogBrowserTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SigninInterceptFirstRunExperienceDialogBrowserTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(kConsumerEmail, kEnterpriseEmail)),
+    [](const auto& info) {
+      return (std::get<0>(info.param) ? "InUnoModel" : "InDiceModel") +
+             std::string((std::get<1>(info.param) == kConsumerEmail
+                              ? "ForConsumer"
+                              : "ForEnterprise"));
+    });
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
     ::testing::Bool());
 
+struct AutoAcceptManagementTestParam {
+  bool replace_sync_with_signin_promo;
+  bool uno_phase2_follow_ups;
+  bool enforce_managed_disclaimer;
+
+  AutoAcceptManagementTestParam(bool replace_sync_with_signin_promo,
+                                bool uno_phase2_follow_ups,
+                                bool enforce_managed_disclaimer)
+      : replace_sync_with_signin_promo(replace_sync_with_signin_promo),
+        uno_phase2_follow_ups(uno_phase2_follow_ups),
+        enforce_managed_disclaimer(enforce_managed_disclaimer) {
+    if (uno_phase2_follow_ups) {
+      CHECK(replace_sync_with_signin_promo);
+    }
+  }
+};
+
 class
     SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest
     : public SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTestBase,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<
+          std::tuple<AutoAcceptManagementTestParam, bool>> {
  public:
   SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (std::get<0>(GetParam())) {
+    if (std::get<0>(GetParam()).replace_sync_with_signin_promo) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     } else {
       disabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }
-    if (std::get<1>(GetParam())) {
+    if (std::get<0>(GetParam()).uno_phase2_follow_ups) {
+      enabled_features.push_back(syncer::kUnoPhase2FollowUp);
+    } else {
+      disabled_features.push_back(syncer::kUnoPhase2FollowUp);
+    }
+    if (std::get<0>(GetParam()).enforce_managed_disclaimer) {
       enabled_features.push_back(switches::kEnforceManagementDisclaimer);
     } else {
       disabled_features.push_back(switches::kEnforceManagementDisclaimer);
     }
     disabled_features.push_back(syncer::kUnoPhase2FollowUp);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+    if (std::get<1>(GetParam())) {
+      policy::PolicyMap policy_map;
+      policy_map.Set(policy::key::kBrowserThemeColor,
+                     policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                     policy::POLICY_SOURCE_CLOUD, base::Value("#000000"),
+                     /*external_data_fetcher=*/nullptr);
+      UpdateChromePolicy(policy_map);
+    }
   }
 
  private:
@@ -1058,27 +1032,60 @@ class
 IN_PROC_BROWSER_TEST_P(
     SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest,
     ManagementIsAutoAccepted) {
-  SignIn();
+  SignIn(/*update_extended_account_info=*/false);
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+
   controller()->ShowModalInterceptFirstRunExperienceDialog(
       account_id(), /*is_forced_intercept=*/false);
-  EXPECT_TRUE(controller()->ShowsModalDialog());
 
+  EXPECT_TRUE(controller()->ShowsModalDialog());
   // When `ReplaceSyncWithSignInPromos` is enabled, management handing requires
-  // on the extended account info being available.
+  // the extended account info being available.
+  // Trigger the update after the dialog is already created.
   UpdateExtendedAccountInfo();
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return enterprise_util::UserAcceptedAccountManagement(GetProfile());
   }));
-
   policy::FakeUserPolicySigninService* fake_policy_service =
       static_cast<policy::FakeUserPolicySigninService*>(
           policy::UserPolicySigninServiceFactory::GetForProfile(GetProfile()));
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return fake_policy_service->policy_fetched(); }));
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+
+  if (!InUnoPhase2ModelWithFastFollows()) {
+    // In the Dice model close the dialog to avoid a potential test flakiness
+    // issue on the test's teardown.
+    // In the Uno model keep the dialog open on purpose to ensure the browser's
+    // teardown happens smoothly when a dialog is showing.
+    controller()->CloseModalSignin();
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest,
-    ::testing::Combine(::testing::Bool(), ::testing::Bool()));
+    ::testing::Combine(
+        ::testing::Values(AutoAcceptManagementTestParam(false, false, false),
+                          AutoAcceptManagementTestParam(true, false, false),
+                          AutoAcceptManagementTestParam(true, true, false),
+                          AutoAcceptManagementTestParam(false, false, true),
+                          AutoAcceptManagementTestParam(true, false, true),
+                          AutoAcceptManagementTestParam(true, true, true)),
+        ::testing::Bool()),
+    [](const auto& info) {
+      return std::string(std::get<0>(info.param).replace_sync_with_signin_promo
+                             ? "InUnoModel"
+                             : "InDiceModel") +
+             std::string(
+                 std::get<0>(info.param).uno_phase2_follow_ups &&
+                         std::get<0>(info.param).replace_sync_with_signin_promo
+                     ? "WithFollowups"
+                     : "") +
+             std::string(std::get<0>(info.param).enforce_managed_disclaimer
+                             ? "WithEnforcedManagedDisclaimerEnabled"
+                             : "WithEnforcedManagedDisclaimerDisabled") +
+             std::string(std::get<1>(info.param) ? "WithPolicies"
+                                                 : "NoPolicies");
+    });
