@@ -31,12 +31,6 @@
 
 namespace {
 
-// The width of the vertical tab strip.
-//
-// TODO(https://crbug.com/439961053): This shouldn't be hard-coded and should
-// be reported by the vertical tabstrip itself.
-static constexpr int kMinVerticalTabStripWidth = 240;
-
 // The number of pixels the constrained window should overlap the bottom
 // of the omnibox.
 const int kConstrainedWindowOverlap = 3;
@@ -208,7 +202,7 @@ BrowserViewLayoutImplOld::CalculateContentsContainerLayout(
   gfx::Rect contents_container_bounds = available_bounds;
   int vertical_tab_offset = 0;
   if (delegate().ShouldDrawVerticalTabStrip()) {
-    vertical_tab_offset = kMinVerticalTabStripWidth;
+    vertical_tab_offset = views().vertical_tab_strip_container->width();
     contents_container_bounds.set_width(available_bounds.width() -
                                         vertical_tab_offset);
   }
@@ -392,10 +386,12 @@ void BrowserViewLayoutImplOld::LayoutVerticalTabStrip(
     gfx::Rect& available_bounds) {
   if (views().vertical_tab_strip_container &&
       views().vertical_tab_strip_container->GetVisible()) {
-    views().vertical_tab_strip_container->SetBounds(
-        available_bounds.x(), available_bounds.y(), kMinVerticalTabStripWidth,
-        available_bounds.height());
-    available_bounds.set_x(available_bounds.x() + kMinVerticalTabStripWidth);
+    const int width =
+        views().vertical_tab_strip_container->GetPreferredSize().width();
+    views().vertical_tab_strip_container->SetBounds(available_bounds.x(),
+                                                    available_bounds.y(), width,
+                                                    available_bounds.height());
+    available_bounds.set_x(available_bounds.x() + width);
   }
 }
 
@@ -453,7 +449,7 @@ void BrowserViewLayoutImplOld::LayoutToolbar(gfx::Rect& available_bounds) {
         delegate().GetBoundsForToolbarInVerticalTabBrowserView());
     toolbar_bounds.set_x(available_bounds.x());
     toolbar_bounds.set_width(toolbar_bounds.width() -
-                             kMinVerticalTabStripWidth);
+                             views().vertical_tab_strip_container->width());
     views().toolbar->SetBoundsRect(toolbar_bounds);
   } else {
     int height =

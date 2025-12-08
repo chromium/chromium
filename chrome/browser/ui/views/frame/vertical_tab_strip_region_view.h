@@ -38,6 +38,12 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
 
  public:
   static constexpr int kResizeAreaWidth = 6;
+  // TODO(crbug.com/465833741): Replace constant with derived value based on
+  // caption buttons.
+  static constexpr int kExpandedMinWidth = 96;
+  // TODO(crbug.com/465832180): Replace constant based width final max width for
+  // view.
+  static constexpr int kExpandedMaxWidth = 400;
 
   explicit VerticalTabStripRegionView(
       tabs::VerticalTabStripStateController* state_controller,
@@ -108,6 +114,10 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
 
   raw_ptr<tabs::VerticalTabStripStateController> state_controller_;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
+
+  // The width of the vertical tabstrip at the beginning of the current resize
+  // operation. Is std::nullopt when not resizing.
+  std::optional<int> starting_width_on_resize_ = std::nullopt;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_VERTICAL_TAB_STRIP_REGION_VIEW_H_

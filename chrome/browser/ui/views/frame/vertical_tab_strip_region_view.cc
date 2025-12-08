@@ -119,7 +119,23 @@ gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
 }
 
 void VerticalTabStripRegionView::OnResize(int resize_amount,
-                                          bool done_resizing) {}
+                                          bool done_resizing) {
+  if (!starting_width_on_resize_.has_value()) {
+    starting_width_on_resize_ = width();
+  }
+  int proposed_width = starting_width_on_resize_.value() + resize_amount;
+  if (done_resizing) {
+    starting_width_on_resize_ = std::nullopt;
+  }
+
+  // Clamp the proposed width to the min/max expanded widths.
+  proposed_width =
+      std::clamp(proposed_width, kExpandedMinWidth, kExpandedMaxWidth);
+
+  if (width() != proposed_width) {
+    SetPreferredSize(gfx::Size(proposed_width, 0));
+  }
+}
 
 bool VerticalTabStripRegionView::IsPositionInWindowCaption(
     const gfx::Point& point) {

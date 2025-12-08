@@ -95,6 +95,38 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeAreaBounds) {
             region_view()->resize_area_for_testing()->bounds().width());
 }
 
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewMinWidth) {
+  region_view()->SetBounds(0, 0, 200, 600);
+  // Verify the initial bounds of the region view.
+  EXPECT_EQ(200, region_view()->bounds().width());
+
+  // Shrink the area a small amount and expect the preferred width to adjust.
+  region_view()->OnResize(-10, false);
+  EXPECT_EQ(200 - 10, region_view()->GetPreferredSize().width());
+
+  // Shrink the area beyond the min width and the preferred width will be the
+  // minimum width.
+  region_view()->OnResize(-200, false);
+  EXPECT_EQ(VerticalTabStripRegionView::kExpandedMinWidth,
+            region_view()->GetPreferredSize().width());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewMaxWidth) {
+  region_view()->SetBounds(0, 0, 200, 600);
+  // Verify the initial bounds of the region view.
+  EXPECT_EQ(200, region_view()->bounds().width());
+
+  // Grow the area a small amount and expect the preferred width to adjust.
+  region_view()->OnResize(10, false);
+  EXPECT_EQ(200 + 10, region_view()->GetPreferredSize().width());
+
+  // Grow the area beyond the max width and the preferred width will be the
+  // maximum width.
+  region_view()->OnResize(1000, false);
+  EXPECT_EQ(VerticalTabStripRegionView::kExpandedMaxWidth,
+            region_view()->GetPreferredSize().width());
+}
+
 // Verify that the pinned tabs container will never be larger than the unpinned
 // tabs area.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
