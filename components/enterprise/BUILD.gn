@@ -186,7 +186,6 @@ source_set("unit_tests") {
     "//components/enterprise/browser/identifiers:test_support",
     "//components/enterprise/connectors/core:constants",
     "//components/enterprise/device_attestation:test_support",
-    "//components/enterprise/signin:unit_tests",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//components/version_info",

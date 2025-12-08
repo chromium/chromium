@@ -76,7 +76,6 @@ constexpr char kEduCoexistenceLoginHandlerName[] =
 constexpr char kEduAccountLoginHandlerName[] = "edu_account_login_handler";
 constexpr char kChromeosFamilyLinkUserMetricsProviderName[] =
     "chromeos_family_link_user_metrics_provider";
-constexpr char kEnterpriseIdentityServiceName[] = "enterprise_identity_service";
 constexpr char kPromotionEligibilityCheckerName[] =
     "promotion_eligibility_checker";
 constexpr char kPasswordManagerLeakDetectionName[] =
@@ -351,10 +350,6 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kChromeosFamilyLinkUserMetricsProviderName,
           /*scopes=*/{});
-    case OAuthConsumerId::kEnterpriseIdentityService:
-      return OAuthConsumer(
-          /*name=*/kEnterpriseIdentityServiceName,
-          /*scopes=*/{GaiaConstants::kDeviceManagementServiceOAuth});
     case OAuthConsumerId::kPromotionEligibilityChecker:
       return OAuthConsumer(
           /*name=*/kPromotionEligibilityCheckerName,

@@ -68,7 +68,7 @@ enum class OAuthConsumerId {
   kEduCoexistenceLoginHandler = 48,
   kEduAccountLoginHandler = 49,
   kChromeosFamilyLinkUserMetricsProvider = 50,
-  kEnterpriseIdentityService = 51,
+  // kEnterpriseIdentityService = 51, // Removed due to deprecation.
   kPromotionEligibilityChecker = 52,
   kPasswordManagerLeakDetection = 53,
   kAndroidManagementClient = 54,
