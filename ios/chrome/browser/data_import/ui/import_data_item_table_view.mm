@@ -322,7 +322,14 @@ UIView* GetCheckmark() {
   ColorfulSymbolContentConfiguration* symbolConfiguration =
       [[ColorfulSymbolContentConfiguration alloc] init];
   symbolConfiguration.symbolImage = GetImageForItemType(item.type);
-  symbolConfiguration.symbolTintColor = [UIColor colorNamed:kBlueColor];
+
+  if (item.status == ImportDataItemImportStatus::kBlockedByPolicy) {
+    symbolConfiguration.symbolTintColor = [UIColor colorNamed:kGrey500Color];
+    configuration.titleColor = [UIColor colorNamed:kTextSecondaryColor];
+    configuration.subtitleColor = [UIColor colorNamed:kTextSecondaryColor];
+  } else {
+    symbolConfiguration.symbolTintColor = [UIColor colorNamed:kBlueColor];
+  }
 
   configuration.leadingConfiguration = symbolConfiguration;
 
