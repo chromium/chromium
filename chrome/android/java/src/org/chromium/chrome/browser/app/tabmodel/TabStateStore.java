@@ -6,14 +6,11 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.os.SystemClock;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.app.tabmodel.TabRestorer.TabRestorerDelegate;
+import org.chromium.chrome.browser.app.tabmodel.CombinedTabRestorer.CombinedTabRestorerDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CollectionSaveForwarder;
@@ -89,7 +86,7 @@ public class TabStateStore implements TabPersistentStore {
             };
 
     private @Nullable TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
-    private @Nullable TabRestorer mTabRestorer;
+    private @Nullable CombinedTabRestorer mCombinedTabRestorer;
     private @Nullable Runnable mInitRestoreOrchestratorForIncognito;
     private @Nullable StorageCollectionSynchronizer mIncognitoSynchronizer;
     private @Nullable StorageCollectionSynchronizer mRegularSynchronizer;
@@ -163,11 +160,11 @@ public class TabStateStore implements TabPersistentStore {
                 }
             };
 
-    private final TabRestorerDelegate mTabRestorerDelegate =
-            new TabRestorerDelegate() {
+    private final CombinedTabRestorerDelegate mCombinedTabRestorerDelegate =
+            new CombinedTabRestorerDelegate() {
                 @Override
-                public void onDataLoaded(int restoredTabCount) {
-                    onAllDataLoaded(restoredTabCount);
+                public void onLoadFinished(int loadedTabCount) {
+                    onAllDataLoaded(loadedTabCount);
                 }
 
                 @Override
@@ -176,7 +173,7 @@ public class TabStateStore implements TabPersistentStore {
                 }
 
                 @Override
-                public void onFinished() {
+                public void onRestoreFinished() {
                     onFinishedCreatingAllTabs();
                 }
 
@@ -262,39 +259,47 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void loadState(boolean ignoreIncognitoFiles) {
-        assert mTabRestorer == null;
-        mTabRestorer = new TabRestorer(mTabRestorerDelegate, mTabCreatorManager);
-        // TODO(https://crbug.com/458335579): Handle including or ignoring incognito tabs.
-        long loadStartTime = SystemClock.elapsedRealtime();
-        boolean incognito = false;
-        mTabStateStorageService.loadAllData(
-                mWindowTag, incognito, data -> onDataLoaded(data, incognito, loadStartTime));
+        assert mCombinedTabRestorer == null;
+        mCombinedTabRestorer =
+                new CombinedTabRestorer(
+                        !ignoreIncognitoFiles, mCombinedTabRestorerDelegate, mTabCreatorManager);
+
+        boolean[] restoreOrder =
+                mTabModelSelector.isIncognitoSelected()
+                        ? new boolean[] {true, false}
+                        : new boolean[] {false, true};
+        for (boolean incognito : restoreOrder) {
+            if (incognito && ignoreIncognitoFiles) continue;
+            mTabStateStorageService.loadAllData(
+                    mWindowTag, incognito, data -> onDataLoaded(data, incognito));
+        }
     }
 
     @Override
     public void mergeState() {
         // This is only invoked for SDK versions less than API 31. Currently this is not supported.
         // TODO(https://crbug.com/463956290): Decide whether to support this behavior or limit the
-        // new system to API 31+.
+        // new system to API 31+. This could be accomplished with a separate queue of
+        // CombinedTabRestorers for merging.
         assert false;
     }
 
     @Override
     public void restoreTabs(boolean setActiveTab) {
-        assert mTabRestorer != null;
-        mTabRestorer.start(setActiveTab);
+        assert mCombinedTabRestorer != null;
+        mCombinedTabRestorer.start(mTabModelSelector.isIncognitoSelected(), setActiveTab);
     }
 
     @Override
     public void restoreTabStateForUrl(String url) {
-        if (mTabRestorer == null) return;
-        mTabRestorer.restoreTabStateForUrl(url);
+        if (mCombinedTabRestorer == null) return;
+        mCombinedTabRestorer.restoreTabStateForUrl(url);
     }
 
     @Override
     public void restoreTabStateForId(int id) {
-        if (mTabRestorer == null) return;
-        mTabRestorer.restoreTabStateForId(id);
+        if (mCombinedTabRestorer == null) return;
+        mCombinedTabRestorer.restoreTabStateForId(id);
     }
 
     @Override
@@ -309,10 +314,9 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     private void cancelLoadingTabs(boolean incognito) {
-        // TODO(https://crbug.com/451614469): Handle incognito.
-        if (incognito || mTabRestorer == null) return;
+        if (mCombinedTabRestorer == null) return;
 
-        mTabRestorer.cancel();
+        mCombinedTabRestorer.cancelLoadingTabs(incognito);
     }
 
     @Override
@@ -324,9 +328,9 @@ public class TabStateStore implements TabPersistentStore {
             mTabRegistrationObserver.destroy();
         }
 
-        if (mTabRestorer != null) {
-            mTabRestorer.cancel();
-            mTabRestorer = null;
+        if (mCombinedTabRestorer != null) {
+            mCombinedTabRestorer.cancel();
+            mCombinedTabRestorer = null;
         }
 
         mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
@@ -429,14 +433,12 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     /** Called when the data for one of the models has been loaded. */
-    private void onDataLoaded(StorageLoadedData data, boolean incognito, long loadStartTime) {
+    private void onDataLoaded(StorageLoadedData data, boolean incognito) {
         if (mIsDestroyed) {
             data.destroy();
             return;
         }
 
-        long duration = SystemClock.elapsedRealtime() - loadStartTime;
-        RecordHistogram.recordTimesHistogram("Tabs.TabStateStore.LoadAllTabsDuration", duration);
 
         if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
             TabGroupVisualDataStore.cacheGroups(data.getGroupsData());
@@ -455,14 +457,14 @@ public class TabStateStore implements TabPersistentStore {
         }
 
         // TODO(ckitagawa): Change back to assert if the `mIsDestroyed` check is sufficient.
-        if (mTabRestorer != null) {
-            mTabRestorer.onDataLoaded(data);
+        if (mCombinedTabRestorer != null) {
+            mCombinedTabRestorer.onDataLoaded(data, incognito);
         }
     }
 
     /** Called after both the regular and incognito data has been loaded. */
-    private void onAllDataLoaded(int restoredTabCount) {
-        mRestoredTabCount = restoredTabCount;
+    private void onAllDataLoaded(int loadedTabCount) {
+        mRestoredTabCount = loadedTabCount;
         for (TabPersistentStoreObserver observer : mObservers) {
             observer.onInitialized(mRestoredTabCount);
         }
@@ -482,7 +484,7 @@ public class TabStateStore implements TabPersistentStore {
 
         if (mIsDestroyed) return;
 
-        mTabRestorer = null;
+        mCombinedTabRestorer = null;
 
         initCollectionTracking();
 
