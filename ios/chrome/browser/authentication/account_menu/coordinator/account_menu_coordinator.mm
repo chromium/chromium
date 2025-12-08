@@ -161,6 +161,8 @@ void maybeShowSettingsIPH(Browser* browser) {
   DCHECK(!_mediator);
 }
 
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   ProfileIOS* profile = self.profile;
   _identityManager = IdentityManagerFactory::GetForProfile(profile);

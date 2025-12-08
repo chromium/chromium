@@ -476,20 +476,16 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
 
-  // In case of compact width only, adjust detents.
-  if (self.traitCollection.horizontalSizeClass ==
-      UIUserInterfaceSizeClassCompact) {
-    __weak __typeof(self) weakSelf = self;
-    auto preferredHeightForSheetContent = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return [weakSelf preferredHeightForSheetContent];
-    };
-    UISheetPresentationControllerDetent* customDetent =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                              resolver:preferredHeightForSheetContent];
-    presentationController.detents = @[ customDetent ];
-  }
+  __weak __typeof(self) weakSelf = self;
+  auto preferredHeightForSheetContent = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakSelf preferredHeightForSheetContent];
+  };
+  UISheetPresentationControllerDetent* customDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
+                            resolver:preferredHeightForSheetContent];
+  presentationController.detents = @[ customDetent ];
 
   presentationController.selectedDetentIdentifier =
       kCustomMinimizedDetentIdentifier;
