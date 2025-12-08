@@ -49,7 +49,6 @@ std::optional<CountryId> GetVpdCountry() {
   }
   if (vpd_region == "GCC" || vpd_region == "LATAM-ES-419" ||
       vpd_region == "NORDIC") {
-    // TODO: crbug.com/377475851 - Implement a lookup for the groupings.
     base::UmaHistogramEnumeration(kCrOSMissingVariationData, kGroupedRegion);
     return {};
   }
