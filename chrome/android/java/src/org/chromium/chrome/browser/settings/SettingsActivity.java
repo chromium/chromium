@@ -294,6 +294,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (isMultiColumnSettingEnabled()) {
                 assert mMultiColumnSettings != null;
                 createMultiColumnTitleUpdater();
+                if (ChromeFeatureList.sSearchInSettings.isEnabled()) createSearchCoordinator();
             } else {
                 mTitleUpdater = new TitleUpdater();
                 fragmentManager.registerFragmentLifecycleCallbacks(
@@ -359,7 +360,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                                     createMultiColumTitleUpdaterInternal(
                                             v.findViewById(R.id.settings_title_in_detailed_pane));
                                     fm.unregisterFragmentLifecycleCallbacks(this);
-                                    createSearchCoordinator();
                                 }
                             },
                             false);
@@ -379,10 +379,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     private void createSearchCoordinator() {
-        assert ChromeFeatureList.sSearchInSettings.isEnabled();
         Callback<Integer> updateFirstVisibleTitle =
                 isMultiColumnSettingEnabled()
-                        ? assumeNonNull(mMultiColumnTitleUpdater)::setFirstVisibleTitleIndex
+                        ? this::updateFirstVisibleTitle
                         : CallbackUtils.emptyCallback();
         mSearchCoordinator =
                 new SettingsSearchCoordinator(
@@ -393,6 +392,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         mProfile,
                         updateFirstVisibleTitle);
         mSearchCoordinator.initializeSearchUi();
+    }
+
+    private void updateFirstVisibleTitle(int index) {
+        assumeNonNull(mMultiColumnTitleUpdater).setFirstVisibleTitleIndex(index);
     }
 
     private void onTitleTapped(@Nullable String entryName) {
