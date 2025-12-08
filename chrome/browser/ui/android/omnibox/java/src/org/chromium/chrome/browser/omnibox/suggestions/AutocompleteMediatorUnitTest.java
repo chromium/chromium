@@ -134,6 +134,8 @@ public class AutocompleteMediatorUnitTest {
     private @Mock CachedZeroSuggestionsManager.OverridesForTesting
             mMockCachedZeroSuggestionsManager;
 
+    private final ObservableSupplierImpl<Boolean> mAttachmentsPresentSupplier =
+            new ObservableSupplierImpl<>(false);
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
     private List<AutocompleteMatch> mSuggestionsList;
@@ -178,6 +180,11 @@ public class AutocompleteMediatorUnitTest {
                 .doReturn(mAutocompleteRequestTypeSupplier)
                 .when(mFuseboxCoordinator)
                 .getAutocompleteRequestTypeSupplier();
+
+        lenient()
+                .doReturn(mAttachmentsPresentSupplier)
+                .when(mFuseboxCoordinator)
+                .getAttachmentsPresentSupplier();
 
         mMediator =
                 new AutocompleteMediator(

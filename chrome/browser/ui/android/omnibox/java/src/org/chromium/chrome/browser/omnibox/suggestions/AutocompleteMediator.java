@@ -478,7 +478,9 @@ class AutocompleteMediator
             stopMeasuringSuggestionRequestToUiModelTime();
             cancelAutocompleteRequests();
             OmniboxMetrics.recordOmniboxFocusResultedInNavigation(
-                    mOmniboxFocusResultedInNavigation);
+                    mAutocompleteInput.getRequestType(),
+                    mOmniboxFocusResultedInNavigation,
+                    mFuseboxCoordinator.getAttachmentsPresentSupplier().get());
             OmniboxMetrics.recordRefineActionUsage(mRefineActionUsage);
             OmniboxMetrics.recordSuggestionsListScrolled(
                     mAutocompleteInput.getPageClassification(), mSuggestionsListScrolled);

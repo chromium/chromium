@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.lang.annotation.Retention;
@@ -126,6 +127,23 @@ public class OmniboxMetrics {
         int COUNT = 3;
     }
 
+    @IntDef({
+        FocusResultedInNavigationTypes.NO_NAV_NO_ATTACHMENT,
+        FocusResultedInNavigationTypes.NO_NAV_WITH_ATTACHMENT,
+        FocusResultedInNavigationTypes.NAV_NO_ATTACHMENT,
+        FocusResultedInNavigationTypes.NAV_WITH_ATTACHMENT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface FocusResultedInNavigationTypes {
+        // LINT.IfChange(FocusResultedInNavigationTypes)
+        int NO_NAV_NO_ATTACHMENT = 0;
+        int NO_NAV_WITH_ATTACHMENT = 1;
+        int NAV_NO_ATTACHMENT = 2;
+        int NAV_WITH_ATTACHMENT = 3;
+        int COUNT = 4;
+        // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FocusResultedInNavigationTypes)
+    }
+
     /**
      * Record how long the Suggestion List needed to layout its content and children in thread time.
      */
@@ -212,9 +230,35 @@ public class OmniboxMetrics {
      *
      * @param focusResultedInNavigation Whether the user completed interaction with navigation.
      */
-    public static void recordOmniboxFocusResultedInNavigation(boolean focusResultedInNavigation) {
-        RecordHistogram.recordBooleanHistogram(
-                "Omnibox.FocusResultedInNavigation", focusResultedInNavigation);
+    public static void recordOmniboxFocusResultedInNavigation(
+            @AutocompleteRequestType int requestType,
+            boolean focusResultedInNavigation,
+            boolean withAttachments) {
+        String specializedHistogramSuffix =
+                switch (requestType) {
+                    case AutocompleteRequestType.AI_MODE -> ".AIMode";
+                    case AutocompleteRequestType.IMAGE_GENERATION -> ".ImageGeneration";
+                    default -> ".Search";
+                };
+
+        @FocusResultedInNavigationTypes
+        int recordedValue =
+                focusResultedInNavigation
+                        ? withAttachments
+                                ? FocusResultedInNavigationTypes.NAV_WITH_ATTACHMENT
+                                : FocusResultedInNavigationTypes.NAV_NO_ATTACHMENT
+                        : withAttachments
+                                ? FocusResultedInNavigationTypes.NO_NAV_WITH_ATTACHMENT
+                                : FocusResultedInNavigationTypes.NO_NAV_NO_ATTACHMENT;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.FocusResultedInNavigation",
+                recordedValue,
+                FocusResultedInNavigationTypes.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.FocusResultedInNavigation" + specializedHistogramSuffix,
+                recordedValue,
+                FocusResultedInNavigationTypes.COUNT);
     }
 
     /**
@@ -454,6 +498,10 @@ public class OmniboxMetrics {
             case PageClassification.OTHER_VALUE:
             case PageClassification.OTHER_ZPS_PREFETCH_VALUE:
                 // use default value for websites.
+                break;
+
+            case PageClassification.NTP_COMPOSEBOX_VALUE:
+                suffix = "ComposeBox";
                 break;
 
             case PageClassification.OBSOLETE_INSTANT_NTP_VALUE:

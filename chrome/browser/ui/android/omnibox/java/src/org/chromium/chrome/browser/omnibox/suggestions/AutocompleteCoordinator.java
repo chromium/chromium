@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCall
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
@@ -60,8 +59,7 @@ import java.util.function.Supplier;
 
 /** Coordinator that handles the interactions with the autocomplete system. */
 @NullMarked
-public class AutocompleteCoordinator
-        implements UrlFocusChangeListener, OmniboxSuggestionsVisualState {
+public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     private final ViewGroup mParent;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileChangeCallback;
@@ -253,12 +251,10 @@ public class AutocompleteCoordinator
         };
     }
 
-    @Override
     public void onUrlFocusChange(boolean hasFocus) {
         mMediator.onOmniboxSessionStateChange(hasFocus);
     }
 
-    @Override
     public void onUrlAnimationFinished(boolean hasFocus) {
         mMediator.onUrlAnimationFinished(hasFocus);
     }

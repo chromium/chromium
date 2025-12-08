@@ -145,6 +145,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Served then served"/>
 </enum>
 
+<!-- LINT.IfChange(FocusResultedInNavigationTypes) -->
+
+<enum name="FocusResultedInNavigationTypes">
+  <int value="0" label="No navigation, no attachments"/>
+  <int value="1" label="Navigation, no attachments"/>
+  <int value="2" label="No navigation, with attachments"/>
+  <int value="3" label="Navigation, with attachments"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/OmniboxMetrics.java:FocusResultedInNavigationTypes) -->
+
 <!-- LINT.IfChange(FuseboxAttachmentButtonType) -->
 
 <enum name="FuseboxAttachmentButtonType">
