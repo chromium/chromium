@@ -237,7 +237,7 @@
 }
 
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
-  [self.proxiedPresenterDelegate popupDidOpenForPresenter:presenter];
+  [self.proxiedPresenterDelegate popupDidCloseForPresenter:presenter];
   [self close];
 }
 
