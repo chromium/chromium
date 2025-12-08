@@ -305,6 +305,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         if (!mShouldReplaceSyncSettingsWithAccountSettings) {
             mSyncSetupInProgressHandle.close();
         }
+        if (mBatchUploadCardPreference != null) {
+            mBatchUploadCardPreference.destroy();
+            mBatchUploadCardPreference = null;
+        }
     }
 
     @Override
