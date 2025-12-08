@@ -13,6 +13,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions/permissions_updater.h"
@@ -86,6 +87,12 @@ class ExtensionsMenuViewModelBrowserTest
       const std::vector<std::string>& permissions,
       const std::vector<std::string>& host_permissions);
 
+  // Adds a policy restriction blocking access to sites matching `pattern`.
+  void AddPolicyBlockedSite(std::string_view pattern);
+
+  // Navigates the active web contents to a URL on `host_name`.
+  void NavigateTo(std::string_view host_name);
+
   ExtensionsMenuViewModel* menu_model() { return menu_model_.get(); }
   SitePermissionsHelper* permissions_helper() {
     return permissions_helper_.get();
@@ -129,6 +136,24 @@ ExtensionsMenuViewModelBrowserTest::AddExtension(
           .Build();
   extension_registrar()->AddExtension(extension.get());
   return extension;
+}
+
+void ExtensionsMenuViewModelBrowserTest::AddPolicyBlockedSite(
+    std::string_view pattern) {
+  URLPattern default_policy_blocked_pattern =
+      URLPattern(URLPattern::SCHEME_ALL, pattern);
+  extensions::URLPatternSet default_allowed_hosts;
+  extensions::URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
+  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
+      extensions::util::GetBrowserContextId(profile()), default_blocked_hosts,
+      default_allowed_hosts);
+}
+
+void ExtensionsMenuViewModelBrowserTest::NavigateTo(
+    std::string_view host_name) {
+  const GURL url = embedded_test_server()->GetURL(host_name, "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 }
 
 void ExtensionsMenuViewModelBrowserTest::SetUpOnMainThread() {
@@ -442,9 +467,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetSiteSettings) {
   AddExtensionWithHostPermission("Extension", "<all_urls>");
 
   // Navigate to a site that the extension requests access to.
-  const GURL url =
-      embedded_test_server()->GetURL("example.com", "/simple.html");
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+  NavigateTo("example.com");
 
   // Verify the site settings when the user can customize the site's access.
   ExtensionsMenuViewModel::SiteSettings site_settings =
@@ -479,17 +502,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetSiteSettings) {
   EXPECT_FALSE(site_settings.is_tooltip_visible);
 
   // Navigate to a policy blocked site.
-  URLPattern default_policy_blocked_pattern =
-      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
-  extensions::URLPatternSet default_allowed_hosts;
-  extensions::URLPatternSet default_blocked_hosts;
-  default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
-  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
-      extensions::util::GetBrowserContextId(profile()), default_blocked_hosts,
-      default_allowed_hosts);
-  const GURL policy_blocked_url =
-      embedded_test_server()->GetURL("policy-blocked.com", "/simple.html");
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), policy_blocked_url));
+  AddPolicyBlockedSite("*://*.policy-blocked.com/*");
+  NavigateTo("policy-blocked.com");
 
   // Verify the site setting when the site is policy blocked.
   site_settings = menu_model()->GetSiteSettings();
@@ -498,4 +512,73 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetSiteSettings) {
   EXPECT_FALSE(site_settings.is_toggle_visible);
   EXPECT_FALSE(site_settings.is_toggle_on);
   EXPECT_FALSE(site_settings.is_tooltip_visible);
+}
+
+// Tests that the extensions menu view model correctly returns the optional
+// section.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetOptionalSection) {
+  AddExtensionWithHostPermission("Extension", "<all_urls>");
+  NavigateTo("example.com");
+
+  // Verify the optional section is 'host access requests' when the user can
+  // customize the site's access. Platform delegate may hide this section if
+  // there are no active requests.
+  EXPECT_EQ(menu_model()->GetOptionalSection(),
+            ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests);
+
+  // Update the user site setting to block all extensions on the current site.
+  // This action implies a state change that requires a page reload.
+  menu_model()->UpdateSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+
+  // Verify the optional section is 'reload page' when the page needs to be
+  // reloaded for changes to take place.
+  EXPECT_EQ(menu_model()->GetOptionalSection(),
+            ExtensionsMenuViewModel::OptionalSection::kReloadPage);
+
+  // Reload the page to clear the "reload required" state.
+  {
+    content::TestNavigationObserver observer(GetActiveWebContents());
+    menu_model()->ReloadWebContents();
+    observer.Wait();
+  }
+
+  // Verify the optional section is 'none' when the user has blocked access to
+  // the current site and there is no pending reload.
+  EXPECT_EQ(menu_model()->GetOptionalSection(),
+            ExtensionsMenuViewModel::OptionalSection::kNone);
+
+  // Update the user site setting to allow extensions on the current site again.
+  // This again triggers the need for a reload.
+  menu_model()->UpdateSiteSetting(
+      PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(menu_model()->GetOptionalSection(),
+            ExtensionsMenuViewModel::OptionalSection::kReloadPage);
+
+  // Reload the page.
+  {
+    content::TestNavigationObserver observer(GetActiveWebContents());
+    menu_model()->ReloadWebContents();
+    observer.Wait();
+  }
+
+  // Verify we are back to 'host access requests' optional section.
+  EXPECT_EQ(menu_model()->GetOptionalSection(),
+            ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests);
+
+  // Navigate to a restricted site.
+  const GURL restricted_url("chrome://extensions");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), restricted_url));
+
+  // Restricted sites should never show an optional section.
+  EXPECT_EQ(menu_model()->GetOptionalSection(),
+            ExtensionsMenuViewModel::OptionalSection::kNone);
+
+  // Navigate to a policy blocked site.
+  AddPolicyBlockedSite("*://*.policy-blocked.com/*");
+  NavigateTo("policy-blocked.com");
+
+  // Policy blocked sites should never show an optional section.
+  EXPECT_EQ(menu_model()->GetOptionalSection(),
+            ExtensionsMenuViewModel::OptionalSection::kNone);
 }

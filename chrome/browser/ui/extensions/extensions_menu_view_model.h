@@ -84,6 +84,19 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     bool is_enterprise;
   };
 
+  // The type of optional section to display in the menu.
+  enum class OptionalSection {
+    // A section alerting the user that a page reload is required for changes to
+    // take effect.
+    kReloadPage,
+    // A section listing extensions that have host access requests to the
+    // current
+    // site.
+    kHostAccessRequests,
+    // No optional section should be displayed.
+    kNone
+  };
+
   ExtensionsMenuViewModel(
       BrowserWindowInterface* browser,
       std::unique_ptr<ExtensionsMenuViewPlatformDelegate> platform_delegate);
@@ -126,6 +139,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // Returns the menu item info for extension with `model`.
   MenuItemInfo GetMenuItemInfo(ToolbarActionViewModel* model);
+
+  // Returns the optional section to display in the menu.
+  OptionalSection GetOptionalSection();
 
   // PermissionsManager::Observer:
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,

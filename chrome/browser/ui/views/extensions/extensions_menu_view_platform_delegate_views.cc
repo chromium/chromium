@@ -45,44 +45,6 @@ namespace {
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
-// TODO(crbug.com/449814184): Remove once all usages have been moved to
-// extensions enu view model. Returns the state for the main page in the menu.
-enum class MainPageState {
-  // Site is restricted to all extensions.
-  kRestrictedSite,
-  // Site is restricted all non-enterprise extensions by policy.
-  kPolicyBlockedSite,
-  // User blocked all extensions access to the site.
-  kUserBlockedSite,
-  // User can customize each extension's access to the site.
-  kUserCustomizedSite,
-};
-
-// TODO(crbug.com/449814184): Remove once all usages have been moved to
-// extensions enu view model.
-MainPageState GetMainPageState(Profile& profile,
-                               const ToolbarActionsModel& toolbar_model,
-                               content::WebContents& web_contents) {
-  const GURL& url = web_contents.GetLastCommittedURL();
-  if (toolbar_model.IsRestrictedUrl(url)) {
-    return MainPageState::kRestrictedSite;
-  }
-
-  if (toolbar_model.IsPolicyBlockedHost(url)) {
-    return MainPageState::kPolicyBlockedSite;
-  }
-
-  PermissionsManager::UserSiteSetting site_setting =
-      PermissionsManager::Get(&profile)->GetUserSiteSetting(
-          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  if (site_setting ==
-      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
-    return MainPageState::kUserBlockedSite;
-  }
-
-  return MainPageState::kUserCustomizedSite;
-}
-
 // Returns the extension for `extension_id`.
 const extensions::Extension* GetExtension(
     Browser* browser,
@@ -492,47 +454,41 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
+  // Update site settings.
   ExtensionsMenuViewModel::SiteSettings site_settings =
       menu_model_->GetSiteSettings();
   main_page->UpdateSiteSettings(site_settings);
 
-  // TODO(crbug.com/449814184): Move reload section and requests section
-  // computation to the menu view model.
-  bool is_reload_required = false;
-  bool can_have_requests = false;
+  // Update the optional section.
+  ExtensionsMenuViewModel::OptionalSection optional_section =
+      menu_model_->GetOptionalSection();
+  switch (optional_section) {
+    case ExtensionsMenuViewModel::OptionalSection::kReloadPage:
+      main_page->ShowReloadSection();
+      break;
+    case ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests: {
+      int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+      auto* permissions_manager = PermissionsManager::Get(browser_->profile());
+      int index = 0;
+      std::vector<std::string> extension_ids =
+          SortExtensionsByName(*toolbar_model_);
 
-  MainPageState state =
-      GetMainPageState(*browser_->profile(), *toolbar_model_, *web_contents);
-  if (state == MainPageState::kUserBlockedSite ||
-      state == MainPageState::kUserCustomizedSite) {
-    is_reload_required = extensions::TabHelper::FromWebContents(web_contents)
-                             ->IsReloadRequired();
-  }
-  if (state == MainPageState::kUserCustomizedSite) {
-    can_have_requests = true;
-  }
-
-  if (is_reload_required) {
-    main_page->ShowReloadSection();
-  } else if (can_have_requests) {
-    int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-    auto* permissions_manager = PermissionsManager::Get(browser_->profile());
-    int index = 0;
-    std::vector<std::string> extension_ids =
-        SortExtensionsByName(*toolbar_model_);
-
-    for (const auto& extension_id : extension_ids) {
-      if (permissions_manager->HasActiveHostAccessRequest(tab_id,
-                                                          extension_id)) {
-        AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
-                                             web_contents);
-        ++index;
-      } else {
-        // Otherwise remove its entry, if existent.
-        main_page->RemoveExtensionRequestingAccess(extension_id);
+      for (const auto& extension_id : extension_ids) {
+        if (permissions_manager->HasActiveHostAccessRequest(tab_id,
+                                                            extension_id)) {
+          AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
+                                               web_contents);
+          ++index;
+        } else {
+          // Otherwise remove its entry, if existent.
+          main_page->RemoveExtensionRequestingAccess(extension_id);
+        }
       }
+      main_page->MaybeShowRequestsSection();
+      break;
     }
-    main_page->MaybeShowRequestsSection();
+    case ExtensionsMenuViewModel::OptionalSection::kNone:
+      break;
   }
 
   // Update menu items.

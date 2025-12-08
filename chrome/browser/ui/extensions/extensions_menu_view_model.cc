@@ -670,6 +670,32 @@ ExtensionsMenuViewModel::MenuItemInfo ExtensionsMenuViewModel::GetMenuItemInfo(
   return menu_item;
 }
 
+ExtensionsMenuViewModel::OptionalSection
+ExtensionsMenuViewModel::GetOptionalSection() {
+  content::WebContents* web_contents = GetActiveWebContents();
+  auto reload_required = [web_contents]() {
+    return extensions::TabHelper::FromWebContents(web_contents)
+        ->IsReloadRequired();
+  };
+
+  MainPageState state =
+      GetMainPageState(*browser_->GetProfile(), *toolbar_model_, *web_contents);
+
+  if (state == MainPageState::kUserBlockedSite) {
+    return reload_required()
+               ? ExtensionsMenuViewModel::OptionalSection::kReloadPage
+               : ExtensionsMenuViewModel::OptionalSection::kNone;
+  }
+
+  if (state == MainPageState::kUserCustomizedSite) {
+    return reload_required()
+               ? ExtensionsMenuViewModel::OptionalSection::kReloadPage
+               : ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests;
+  }
+
+  return ExtensionsMenuViewModel::OptionalSection::kNone;
+}
+
 void ExtensionsMenuViewModel::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int tab_id) {
