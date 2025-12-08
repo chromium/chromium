@@ -34,7 +34,6 @@ enum PluginStatus {
   kBlockedByPolicy,
   kDisabled,
   kNotFound,
-  kPlayImportantContent,
   kUnauthorized,
 };
 

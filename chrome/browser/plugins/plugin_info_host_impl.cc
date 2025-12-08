@@ -252,7 +252,7 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (plugin_setting == CONTENT_SETTING_ALLOW) {
-    *status = chrome::mojom::PluginStatus::kPlayImportantContent;
+    *status = chrome::mojom::PluginStatus::kAllowed;
   } else {
     *status = is_managed ? chrome::mojom::PluginStatus::kBlockedByPolicy
                          : chrome::mojom::PluginStatus::kBlocked;
@@ -264,8 +264,7 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   // and update the status as appropriate depending on the response from the
   // embedder.
   if (*status == chrome::mojom::PluginStatus::kAllowed ||
-      *status == chrome::mojom::PluginStatus::kBlocked ||
-      *status == chrome::mojom::PluginStatus::kPlayImportantContent) {
+      *status == chrome::mojom::PluginStatus::kBlocked) {
     if (extensions::WebViewRendererState::GetInstance()->IsGuest(
             render_process_id_))
       *status = chrome::mojom::PluginStatus::kUnauthorized;
@@ -334,8 +333,7 @@ void PluginInfoHostImpl::EnsureFactoryBuilt() {
 void PluginInfoHostImpl::Context::MaybeGrantAccess(
     chrome::mojom::PluginStatus status,
     const base::FilePath& path) const {
-  if (status == chrome::mojom::PluginStatus::kAllowed ||
-      status == chrome::mojom::PluginStatus::kPlayImportantContent) {
+  if (status == chrome::mojom::PluginStatus::kAllowed) {
     ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
         render_process_id_, path);
   }

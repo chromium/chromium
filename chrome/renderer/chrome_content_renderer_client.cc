@@ -814,9 +814,7 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
   // necessary here (see https://crbug.com/965747). For now, returning false
   // should take us to CreatePlugin after HTMLPlugInElement which is called
   // through HTMLPlugInElement::LoadPlugin code path.
-  if (plugin_info->status != chrome::mojom::PluginStatus::kAllowed &&
-      plugin_info->status !=
-          chrome::mojom::PluginStatus::kPlayImportantContent) {
+  if (plugin_info->status != chrome::mojom::PluginStatus::kAllowed) {
     // We could get here when a MimeHandlerView is loaded inside a <webview>
     // which is using permissions API (see WebViewPluginTests).
     ChromeExtensionsRendererClient::DidBlockMimeHandlerViewForDisallowedPlugin(
@@ -1000,8 +998,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
       case chrome::mojom::PluginStatus::kNotFound: {
         NOTREACHED();
       }
-      case chrome::mojom::PluginStatus::kAllowed:
-      case chrome::mojom::PluginStatus::kPlayImportantContent: {
+      case chrome::mojom::PluginStatus::kAllowed: {
         if (info.path.value() == ChromeContentClient::kPDFExtensionPluginPath) {
           // Report PDF load metrics. Since the PDF plugin is comprised of an
           // extension that loads a second plugin, avoid double counting by
