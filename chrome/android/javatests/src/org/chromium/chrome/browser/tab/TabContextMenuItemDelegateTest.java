@@ -44,6 +44,7 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.util.function.Supplier;
@@ -114,7 +115,7 @@ public class TabContextMenuItemDelegateTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Features.EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testOpenInOtherWindow_ShowDialog_incognitoWindowingEnabled() {
         createContextMenuForCurrentTab();
