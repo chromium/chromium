@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import android.util.Pair;
 import android.view.View;
 
 import org.chromium.base.test.transit.Condition;
@@ -12,12 +11,8 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.transit.SoftKeyboardFacility;
-import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
-import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -45,6 +40,11 @@ public class WebPageStation extends CtaPageStation {
         // Make sure that the new tab page is not considered a WebPageStation
         List<String> prohibitedUrls = List.of("chrome://newtab", "chrome-native://newtab");
         declareEnterCondition(new PageUrlDoesNotMatchCondition(prohibitedUrls, loadedTabElement));
+    }
+
+    @Override
+    protected TripBuilder clickUrlBarOrSearchBarTo() {
+        return urlBarElement.clickTo();
     }
 
     public static Builder<WebPageStation> newBuilder() {
@@ -159,26 +159,6 @@ public class WebPageStation extends CtaPageStation {
                         throw new RuntimeException(e);
                     }
                 });
-    }
-
-    /** Click the URL bar to enter the Omnibox. */
-    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox() {
-        return openOmnibox(/* fakeSuggestions= */ null);
-    }
-
-    /**
-     * Click the URL bar to enter the Omnibox.
-     *
-     * @param fakeSuggestions If non-null, fake suggestions expected to be shown in the Omnibox.
-     */
-    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
-            @Nullable FakeOmniboxSuggestions fakeSuggestions) {
-        OmniboxFacility omniboxFacility =
-                new OmniboxFacility(/* incognito= */ mIsIncognito, fakeSuggestions);
-        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-
-        urlBarElement.clickTo().enterFacilities(omniboxFacility, softKeyboard);
-        return Pair.create(omniboxFacility, softKeyboard);
     }
 
     // Condition checks whether web page reaches the bottom by checking viewport position and scroll

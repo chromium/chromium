@@ -102,7 +102,7 @@ public class LocationBarLayoutTest {
     @Restriction(DeviceFormFactor.PHONE)
     public void testNotShowingVoiceSearchButtonIfUrlBarContainsText() {
         // When there is text, the delete button should be visible.
-        OmniboxFacility omnibox = mPage.openOmnibox().first;
+        OmniboxFacility omnibox = mPage.openOmnibox();
         omnibox.setText("testing");
 
         omnibox.deleteButtonElement.checkPresent();
@@ -114,7 +114,7 @@ public class LocationBarLayoutTest {
     @Restriction(DeviceFormFactor.PHONE)
     public void testShowingVoiceSearchButtonIfUrlBarIsEmpty() {
         // When there's no text, the mic button should be visible.
-        OmniboxFacility omnibox = mPage.openOmnibox().first;
+        OmniboxFacility omnibox = mPage.openOmnibox();
 
         omnibox.micButtonElement.checkPresent();
         omnibox.deleteButtonElement.checkAbsent();
@@ -123,7 +123,7 @@ public class LocationBarLayoutTest {
     @Test
     @SmallTest
     public void testDeleteButton() {
-        OmniboxFacility omnibox = mPage.openOmnibox().first;
+        OmniboxFacility omnibox = mPage.openOmnibox();
         omnibox.setText("testing").clickDelete();
 
         omnibox.deleteButtonElement.checkAbsent();

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.os.Build;
-import android.util.Pair;
 
 import androidx.test.filters.LargeTest;
 
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
-import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
@@ -75,9 +73,9 @@ public class OmniboxPTTest {
         ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
         WebPageStation blankPage = mCtaTestRule.start();
         RegularNewTabPageStation ntp = blankPage.openNewTabFast();
-        var omniboxAndKeyboard = ntp.openOmnibox(sFakeSuggestions);
+        var omnibox = ntp.openOmnibox(sFakeSuggestions);
 
-        doOpenTypeDelete(omniboxAndKeyboard);
+        doOpenTypeDelete(omnibox);
 
         blankPage =
                 ntp.openTabSwitcherActionMenu()
@@ -91,9 +89,9 @@ public class OmniboxPTTest {
     public void testOpenTypeDelete_fromIncognitoNtp() {
         WebPageStation blankPage = mCtaTestRule.start();
         IncognitoNewTabPageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
-        var omniboxAndKeyboard = incognitoNtp.openOmnibox(sFakeSuggestions);
+        var omnibox = incognitoNtp.openOmnibox(sFakeSuggestions);
 
-        doOpenTypeDelete(omniboxAndKeyboard);
+        doOpenTypeDelete(omnibox);
 
         blankPage =
                 incognitoNtp
@@ -102,15 +100,11 @@ public class OmniboxPTTest {
         TransitAsserts.assertFinalDestination(blankPage);
     }
 
-    private void doOpenTypeDelete(Pair<OmniboxFacility, SoftKeyboardFacility> omniboxAndKeyboard) {
-        OmniboxFacility omnibox = omniboxAndKeyboard.first;
-        SoftKeyboardFacility keyboard = omniboxAndKeyboard.second;
-
+    private void doOpenTypeDelete(OmniboxFacility omnibox) {
         OmniboxEnteredTextFacility enteredText = omnibox.typeText("chr");
         enteredText = enteredText.simulateAutocomplete("omium");
         enteredText.clickDelete();
 
-        keyboard.close();
         omnibox.pressBackTo().exitFacility();
     }
 }

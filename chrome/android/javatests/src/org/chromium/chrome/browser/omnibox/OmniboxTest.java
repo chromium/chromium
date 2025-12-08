@@ -164,7 +164,7 @@ public class OmniboxTest {
     @Manual
     public void manualTestTypingPerformance() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
-        OmniboxFacility omnibox = page.openOmnibox().first;
+        OmniboxFacility omnibox = page.openOmnibox();
 
         final String text = "searching for pizza";
         // Type 10 times something on the omnibox and get the average time with and without instant.
