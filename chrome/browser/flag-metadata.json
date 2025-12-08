@@ -49,11 +49,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ack-on-surface-activation-when-interactive",
-    "owners": [ "vollick@chromium.org", "jonross@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "adaptive-button-in-top-toolbar-page-summary",
     "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 140

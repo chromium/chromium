@@ -2235,16 +2235,6 @@ inline constexpr char kAckCopyOutputRequestEarlyForViewTransitionDescription[] =
     "unblock navigation for ViewTransitions while CopyOutputRequests are in "
     "progress. This is a fast-path for ViewTransitions.";
 
-inline constexpr char kAckOnSurfaceActivationWhenInteractiveName[] =
-    "Ack On Surface Activation When Interactive";
-inline constexpr char kAckOnSurfaceActivationWhenInteractiveDescription[] =
-    "If enabled, immediately send acks to clients when a viz surface "
-    "activates and when that surface is a dependency of an interactive frame "
-    "(i.e., when there is an active scroll or a touch interaction). This "
-    "effectively removes back-pressure in this case. This can result in "
-    "wasted work and contention, but should regularize the timing of client "
-    "rendering.";
-
 inline constexpr char kFluentOverlayScrollbarsName[] =
     "Fluent Overlay scrollbars.";
 inline constexpr char kFluentOverlayScrollbarsDescription[] =

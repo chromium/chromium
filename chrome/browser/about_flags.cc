@@ -10649,12 +10649,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(features::kAckCopyOutputRequestEarlyForViewTransition)},
 
-    {"ack-on-surface-activation-when-interactive",
-     flag_descriptions::kAckOnSurfaceActivationWhenInteractiveName,
-     flag_descriptions::kAckOnSurfaceActivationWhenInteractiveDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kAckOnSurfaceActivationWhenInteractive)},
-
 #if BUILDFLAG(IS_MAC)
     {"enable-mac-pwas-notification-attribution",
      flag_descriptions::kMacPWAsNotificationAttributionName,
