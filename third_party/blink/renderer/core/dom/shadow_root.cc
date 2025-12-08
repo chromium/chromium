@@ -376,6 +376,7 @@ ShadowRoot::GetFetchedStyleSheetsFromModuleMap(
             isolate,
             static_cast<const ValueWrapperSyntheticModuleScript*>(module_script)
                 ->GetExport(isolate));
+        CHECK_EQ(sheet->ConstructorDocument(), GetDocument());
         sheets.push_back(*sheet);
       }
     }
