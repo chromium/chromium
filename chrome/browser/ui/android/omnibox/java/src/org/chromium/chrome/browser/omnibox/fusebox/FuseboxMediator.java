@@ -330,16 +330,23 @@ public class FuseboxMediator {
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
         mModel.set(
                 FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED,
-                !attachmentsContainType(FuseboxAttachmentType.ATTACHMENT_TAB));
+                areAttachmentsCompatibleWithCreateImage());
     }
 
-    private boolean attachmentsContainType(@FuseboxAttachmentType int target) {
+    private boolean areAttachmentsCompatibleWithCreateImage() {
+        int imageCount = 0;
         for (MVCListAdapter.ListItem listItem : mModelList) {
-            if (listItem.type == target) {
-                return true;
+            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_FILE) {
+                return false;
+            }
+            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_TAB) {
+                return false;
+            }
+            if (listItem.type == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
+                imageCount++;
             }
         }
-        return false;
+        return imageCount <= 1;
     }
 
     @VisibleForTesting

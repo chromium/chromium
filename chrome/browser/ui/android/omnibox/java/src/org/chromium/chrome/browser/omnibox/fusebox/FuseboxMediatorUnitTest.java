@@ -200,10 +200,16 @@ public class FuseboxMediatorUnitTest {
             when(mComposeBoxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
             when(mComposeBoxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
             mAttachments.add(FuseboxAttachment.forTab(mockTab, mResources));
-        } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_FILE
-                || attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
+        } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_FILE) {
             doReturn(token).when(mComposeBoxQueryControllerBridge).addFile(eq(title), any(), any());
             mAttachments.add(FuseboxAttachment.forFile(null, title, "image/", new byte[0]));
+        } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
+            doReturn(token).when(mComposeBoxQueryControllerBridge).addFile(eq(title), any(), any());
+            mAttachments.add(
+                    FuseboxAttachment.forCameraImage(
+                            /* thumbnail= */ null, title, "image/", new byte[0]));
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -684,6 +690,26 @@ public class FuseboxMediatorUnitTest {
         mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
         assertEquals(0, mAttachments.size());
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+
+        addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_FILE);
+        assertEquals(1, mAttachments.size());
+        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+
+        mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
+        assertEquals(0, mAttachments.size());
+        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+
+        addAttachment("title", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE);
+        assertEquals(1, mAttachments.size());
+        assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+
+        addAttachment("title", "token3", FuseboxAttachmentType.ATTACHMENT_IMAGE);
+        assertEquals(2, mAttachments.size());
+        assertFalse(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
+
+        mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
+        assertEquals(1, mAttachments.size());
         assertTrue(mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED));
     }
 
