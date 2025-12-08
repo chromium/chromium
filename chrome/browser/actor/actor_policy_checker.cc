@@ -142,17 +142,27 @@ bool IsAccountEligibleForActuation(Profile& profile,
           account_info.account_id);
   auto is_managed = extended_account_info.IsManaged();
 
-  journal.Log(GURL(), TaskId(), "IsAccountEligibleForActuation",
-              JournalDetailsBuilder()
-                  .Add("is_enterprise_account_data_protected",
-                       base::ToString(is_enterprise_account_data_protected))
-                  .Add("is_managed", signin::TriboolToString(is_managed))
-                  .Build());
+  // If the main Glic check has been split to no longer use the
+  // can_use_model_execution_features capability (see
+  // kGlicEligibilitySeparateAccountCapability), then that capability must be
+  // checked here. This is because actuation currently implements stricter
+  // account checks.
+  auto can_use_model_execution_features =
+      extended_account_info.capabilities.can_use_model_execution_features();
 
-  if (is_enterprise_account_data_protected) {
-    return false;
-  }
-  return is_managed == signin::Tribool::kFalse;
+  journal.Log(
+      GURL(), TaskId(), "IsAccountEligibleForActuation",
+      JournalDetailsBuilder()
+          .Add("is_enterprise_account_data_protected",
+               base::ToString(is_enterprise_account_data_protected))
+          .Add("is_managed", signin::TriboolToString(is_managed))
+          .Add("can_use_model_execution_features",
+               signin::TriboolToString(can_use_model_execution_features))
+          .Build());
+
+  return !is_enterprise_account_data_protected &&
+         (is_managed == signin::Tribool::kFalse) &&
+         (can_use_model_execution_features == signin::Tribool::kTrue);
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -280,7 +290,7 @@ bool ActorPolicyChecker::ComputeActOnWebCapability() {
   bool is_likely_dogfood_client = IsLikelyDogfoodClient();
   auto* profile = service_->GetProfile();
   CHECK(profile);
-  bool is_browser_managed = IsBrowserManaged(*service_->GetProfile());
+  bool is_browser_managed = IsBrowserManaged(*profile);
   bool actuation_enabled_for_managed_user = false;
   if (is_browser_managed) {
     actuation_enabled_for_managed_user =

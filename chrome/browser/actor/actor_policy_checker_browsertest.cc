@@ -156,10 +156,11 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
  protected:
   bool ShouldForceActOnWeb() override { return false; }
 
- private:
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+
+ private:
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::ScopedClosureRunner disclaimer_service_resetter_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -491,6 +492,42 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
   EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
                    ->GetPolicyChecker()
                    .can_act_on_web());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
+                       CanUseModelExecutionFeaturesCapabilityFalse) {
+  SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
+
+  CoreAccountInfo core_account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(
+          core_account_info.account_id);
+
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(false);
+  identity_test_env_->UpdateAccountInfoForAccount(account_info);
+  EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
+                   ->GetPolicyChecker()
+                   .can_act_on_web());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestWithManagedAccount,
+                       CanUseModelExecutionFeaturesCapabilityTrue) {
+  SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
+
+  CoreAccountInfo core_account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(
+          core_account_info.account_id);
+
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+  identity_test_env_->UpdateAccountInfoForAccount(account_info);
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .can_act_on_web());
 }
 
 // Exercise the policy checker for managed accounts (AccountInfo::IsManaged())
