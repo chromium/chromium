@@ -120,6 +120,8 @@ export function dispatchKeydown(element: HTMLElement, key: string) {
     case 'ArrowUp':
       init.keyCode = 38;
       break;
+    default:
+      break;
   }
   element.dispatchEvent(new KeyboardEvent('keydown', init));
 }

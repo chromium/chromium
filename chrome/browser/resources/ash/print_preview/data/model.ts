@@ -2,27 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Policies} from '../native_layer.js';
-import {BackgroundGraphicsModeRestriction} from '../native_layer.js';
-
-import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '../native_layer.js';
+import {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '../native_layer.js';
 
 import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
 import {DuplexType} from './cdd.js';
-
 import type {Destination, RecentDestination} from './destination_cros.js';
 import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination_cros.js';
 import type {DocumentSettings} from './document_info.js';
+import {IPP_PRINT_QUALITY, managedPrintOptionsDuplexToCdd, managedPrintOptionsQualityToIpp} from './managed_print_options_cros.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
-import {IPP_PRINT_QUALITY, managedPrintOptionsDuplexToCdd, managedPrintOptionsQualityToIpp} from './managed_print_options_cros.js';
 import {PrinterStatusReason} from './printer_status_cros.js';
-
 import {ScalingType} from './scaling.js';
 import type {Size} from './size.js';
 
@@ -1679,6 +1675,8 @@ export class PrintPreviewModelElement extends PolymerElement {
                 'duplexShortEdge', /*value=*/ true, /*noSticky=*/ true);
             break;
           }
+          default:
+            assertNotReachedCase(cddDuplex);
         }
       }
     }

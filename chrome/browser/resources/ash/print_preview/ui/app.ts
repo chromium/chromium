@@ -10,11 +10,11 @@ import './sidebar.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 
 import type {Destination} from '../data/destination_cros.js';
 import {DestinationOrigin, PrinterType} from '../data/destination_cros.js';
@@ -31,7 +31,6 @@ import {Error, State} from '../data/state.js';
 import type {NativeInitialSettings, NativeLayer} from '../native_layer.js';
 import {NativeLayerImpl} from '../native_layer.js';
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
-
 
 import {getTemplate} from './app.html.js';
 import {DestinationState} from './destination_settings.js';
@@ -420,7 +419,9 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       printAttemptOutcome = PrintAttemptOutcome.CANCELLED_NO_PRINTERS_AVAILABLE;
     } else if (this.destination_.origin === DestinationOrigin.CROS) {
       // Fetch and record printer state.
-      switch (computePrinterState(this.destination_.printerStatusReason)) {
+      const printerState =
+          computePrinterState(this.destination_.printerStatusReason);
+      switch (printerState) {
         case PrinterState.GOOD:
           printAttemptOutcome =
               PrintAttemptOutcome.CANCELLED_PRINTER_GOOD_STATUS;
@@ -433,6 +434,8 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
           printAttemptOutcome =
               PrintAttemptOutcome.CANCELLED_PRINTER_UNKNOWN_STATUS;
           break;
+        default:
+          assertNotReachedCase(printerState);
       }
     } else {
       printAttemptOutcome =

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export enum State {
@@ -93,6 +93,10 @@ export class PrintPreviewStateElement extends PolymerElement {
       case (State.CLOSING):
         assert(this.state !== State.HIDDEN);
         break;
+      case State.FATAL_ERROR:
+        break;
+      default:
+        assertNotReachedCase(newState);
     }
     this.state = newState;
     if (newState !== State.ERROR && newState !== State.FATAL_ERROR) {

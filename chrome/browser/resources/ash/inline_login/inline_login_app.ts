@@ -415,6 +415,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       case View.SIGNIN_ERROR:
         this.closeDialog_();
         break;
+      default:
+        break;
     }
   }
 
