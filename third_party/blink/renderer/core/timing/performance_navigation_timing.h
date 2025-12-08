@@ -56,7 +56,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
   uint16_t redirectCount() const;
   NotRestoredReasons* notRestoredReasons() const;
   PerformanceTimingConfidence* confidence() const;
-  DOMHighResTimeStamp criticalCHRestart(ScriptState* script_state) const;
+  DOMHighResTimeStamp criticalCHRestart() const;
 
   // PerformanceResourceTiming overrides:
   DOMHighResTimeStamp fetchStart() const override;
@@ -82,6 +82,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
 
   NotRestoredReasons* BuildNotRestoredReasons(
       const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const;
+  PerformanceTimingConfidence* GetConfidence() const;
 
   const network::mojom::NavigationDeliveryType navigation_delivery_type_;
   const WebNavigationType navigation_type_;

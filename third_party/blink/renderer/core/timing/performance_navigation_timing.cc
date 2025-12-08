@@ -241,6 +241,11 @@ PerformanceTimingConfidence* PerformanceNavigationTiming::confidence() const {
         WebFeature::kPerformanceNavigationTimingConfidence);
   }
 
+  return GetConfidence();
+}
+
+PerformanceTimingConfidence* PerformanceNavigationTiming::GetConfidence()
+    const {
   std::optional<RandomizedConfidenceValue> confidence =
       document_load_timing_values_->randomized_confidence;
   if (!confidence) {
@@ -253,10 +258,7 @@ PerformanceTimingConfidence* PerformanceNavigationTiming::confidence() const {
           GetNavigationConfidenceString(confidence->second)));
 }
 
-DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart(
-    ScriptState* script_state) const {
-  ExecutionContext::From(script_state)
-      ->CountUse(WebFeature::kCriticalCHRestartNavigationTiming);
+DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart() const {
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), document_load_timing_values_->critical_ch_restart,
       AllowNegativeValues(), CrossOriginIsolatedCapability());
@@ -328,8 +330,7 @@ void PerformanceNavigationTiming::BuildJSONValue(
   builder.AddNumber(
       "activationStart",
       PerformanceNavigationTimingActivationStart::activationStart(*this));
-  builder.AddNumber("criticalCHRestart",
-                    criticalCHRestart(builder.GetScriptState()));
+  builder.AddNumber("criticalCHRestart", criticalCHRestart());
 
   if (RuntimeEnabledFeatures::BackForwardCacheNotRestoredReasonsEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
@@ -344,7 +345,7 @@ void PerformanceNavigationTiming::BuildJSONValue(
 
   if (RuntimeEnabledFeatures::PerformanceNavigationTimingConfidenceEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    if (auto* confidence_value = confidence()) {
+    if (auto* confidence_value = GetConfidence()) {
       builder.Add("confidence", confidence_value);
     } else {
       builder.AddNull("confidence");
