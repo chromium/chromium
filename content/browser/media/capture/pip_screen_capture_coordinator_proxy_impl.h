@@ -35,8 +35,8 @@ class PipScreenCaptureCoordinatorProxyImpl
   class UiThreadObserver;
   friend class UiThreadObserver;
 
-  void SetPipWindowId(const std::optional<NativeWindowId>& new_pip_window_id);
-  void SetCaptures(const std::vector<CaptureInfo>& captures);
+  void UpdateState(const std::optional<NativeWindowId>& new_pip_window_id,
+                   const std::vector<CaptureInfo>& new_captures);
 
   base::WeakPtr<PipScreenCaptureCoordinatorImpl> coordinator_
       GUARDED_BY_CONTEXT(sequence_checker_);

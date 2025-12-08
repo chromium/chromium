@@ -27,12 +27,9 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
 
   class Observer : public base::CheckedObserver {
    public:
-    // Called with the NativeWindowId of the PiP window when it is
-    // shown, or nullopt when it is closed.
-    virtual void OnPipWindowIdChanged(
-        std::optional<NativeWindowId> new_pip_window_id) = 0;
-    // Called when the list of captures changes.
-    virtual void OnCapturesChanged(
+    // Called when the state of the coordinator changes.
+    virtual void OnStateChanged(
+        std::optional<NativeWindowId> new_pip_window_id,
         const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
             captures) = 0;
   };
@@ -62,6 +59,7 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
   void AddCaptureOnUIThread(
       PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info);
   void RemoveCaptureOnUIThread(const base::UnguessableToken& session_id);
+  void NotifyStateChanged();
   friend class base::NoDestructor<PipScreenCaptureCoordinatorImpl>;
   PipScreenCaptureCoordinatorImpl();
 

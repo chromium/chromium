@@ -33,9 +33,8 @@ class PipScreenCaptureCoordinatorProxy {
 
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnPipWindowIdChanged(
-        const std::optional<NativeWindowId>& new_pip_window_id) = 0;
-    virtual void OnCapturesChanged(
+    virtual void OnStateChanged(
+        const std::optional<NativeWindowId>& new_pip_window_id,
         const std::vector<CaptureInfo>& captures) = 0;
   };
 

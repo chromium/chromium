@@ -585,8 +585,10 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   }
 
   // PipScreenCaptureCoordinatorProxy::Observer:
-  void OnPipWindowIdChanged(
-      const std::optional<NativeWindowId>& new_pip_window_id) override {
+  void OnStateChanged(
+      const std::optional<NativeWindowId>& new_pip_window_id,
+      const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
+          captures) override {
     DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
 
     if (!stream_) {
@@ -607,9 +609,6 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     };
     [SCShareableContent getShareableContentWithCompletionHandler:handler];
   }
-  void OnCapturesChanged(
-      const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
-          captures) override {}
 
   // IOSurfaceCaptureDeviceBase:
   void OnStart() override {

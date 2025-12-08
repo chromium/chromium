@@ -75,9 +75,7 @@ void PipScreenCaptureCoordinatorImpl::OnPipShown(
   }
 
   pip_window_id_ = new_pip_window_id;
-  for (Observer& obs : observers_) {
-    obs.OnPipWindowIdChanged(pip_window_id_);
-  }
+  NotifyStateChanged();
 }
 
 void PipScreenCaptureCoordinatorImpl::OnPipClosed() {
@@ -85,9 +83,7 @@ void PipScreenCaptureCoordinatorImpl::OnPipClosed() {
     return;
   }
   pip_window_id_ = std::nullopt;
-  for (Observer& obs : observers_) {
-    obs.OnPipWindowIdChanged(pip_window_id_);
-  }
+  NotifyStateChanged();
 }
 
 std::optional<NativeWindowId> PipScreenCaptureCoordinatorImpl::PipWindowId()
@@ -103,9 +99,7 @@ PipScreenCaptureCoordinatorImpl::Captures() const {
 void PipScreenCaptureCoordinatorImpl::AddCaptureOnUIThread(
     PipScreenCaptureCoordinatorProxy::CaptureInfo capture_info) {
   captures_.push_back(std::move(capture_info));
-  for (Observer& obs : observers_) {
-    obs.OnCapturesChanged(captures_);
-  }
+  NotifyStateChanged();
 }
 
 void PipScreenCaptureCoordinatorImpl::RemoveCaptureOnUIThread(
@@ -115,8 +109,12 @@ void PipScreenCaptureCoordinatorImpl::RemoveCaptureOnUIThread(
                                    return c.session_id == session_id;
                                  }),
                   captures_.end());
+  NotifyStateChanged();
+}
+
+void PipScreenCaptureCoordinatorImpl::NotifyStateChanged() {
   for (Observer& obs : observers_) {
-    obs.OnCapturesChanged(captures_);
+    obs.OnStateChanged(pip_window_id_, captures_);
   }
 }
 

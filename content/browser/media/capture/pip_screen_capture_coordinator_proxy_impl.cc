@@ -36,29 +36,20 @@ class PipScreenCaptureCoordinatorProxyImpl::UiThreadObserver
       coordinator_->AddObserver(this);
 
       // Update the proxy with the latest state
-      OnPipWindowIdChanged(coordinator_->PipWindowId());
-      OnCapturesChanged(coordinator_->Captures());
+      OnStateChanged(coordinator_->PipWindowId(), coordinator_->Captures());
     }
   }
 
   // PipScreenCaptureCoordinatorImpl::Observer:
-  void OnPipWindowIdChanged(
-      std::optional<NativeWindowId> new_pip_window_id) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
-    proxy_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PipScreenCaptureCoordinatorProxyImpl::SetPipWindowId,
-                       proxy_, new_pip_window_id));
-  }
-
-  void OnCapturesChanged(
+  void OnStateChanged(
+      std::optional<NativeWindowId> new_pip_window_id,
       const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
           captures) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_thread_sequence_checker_);
     proxy_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&PipScreenCaptureCoordinatorProxyImpl::SetCaptures,
-                       proxy_, captures));
+        base::BindOnce(&PipScreenCaptureCoordinatorProxyImpl::UpdateState,
+                       proxy_, new_pip_window_id, captures));
   }
 
  private:
@@ -136,27 +127,17 @@ void PipScreenCaptureCoordinatorProxyImpl::RemoveObserver(Observer* observer) {
   }
 }
 
-void PipScreenCaptureCoordinatorProxyImpl::SetPipWindowId(
-    const std::optional<NativeWindowId>& new_pip_window_id) {
+void PipScreenCaptureCoordinatorProxyImpl::UpdateState(
+    const std::optional<NativeWindowId>& new_pip_window_id,
+    const std::vector<CaptureInfo>& new_captures) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pip_window_id_ == new_pip_window_id) {
+  if (pip_window_id_ == new_pip_window_id && captures_ == new_captures) {
     return;
   }
   pip_window_id_ = new_pip_window_id;
+  captures_ = new_captures;
   for (Observer& obs : observers_) {
-    obs.OnPipWindowIdChanged(pip_window_id_);
-  }
-}
-
-void PipScreenCaptureCoordinatorProxyImpl::SetCaptures(
-    const std::vector<CaptureInfo>& captures) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (captures_ == captures) {
-    return;
-  }
-  captures_ = captures;
-  for (Observer& obs : observers_) {
-    obs.OnCapturesChanged(captures_);
+    obs.OnStateChanged(pip_window_id_, captures_);
   }
 }
 
