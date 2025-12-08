@@ -64,6 +64,8 @@ BASE_FEATURE(kGlicAlwaysBindOnPin, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicAvoidReactivatingActiveEmbedder,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicUnpinOnUnbind, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kRemoveBlankInstanceDelay{
     &kGlicRemoveBlankInstancesOnClose, "delay", base::Seconds(1)};
 
@@ -560,9 +562,7 @@ void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
 
 void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   instance_metrics_.OnUnbindEmbedder(key);
-  if ((base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs) ||
-       base::FeatureList::IsEnabled(
-           features::kGlicDefaultToLastActiveConversation)) &&
+  if (base::FeatureList::IsEnabled(kGlicUnpinOnUnbind) &&
       std::holds_alternative<tabs::TabInterface*>(key)) {
     auto* tab = std::get<tabs::TabInterface*>(key);
     sharing_manager().UnpinTabs({tab->GetHandle()});
