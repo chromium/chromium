@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -206,6 +207,11 @@ bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 }  // namespace
+
+policy::BrowserPolicyConnector* GetBrowserPolicyConnector() {
+  return g_browser_process ? g_browser_process->browser_policy_connector()
+                           : nullptr;
+}
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 RequestHandlerResult CalculateRequestHandlerResult(

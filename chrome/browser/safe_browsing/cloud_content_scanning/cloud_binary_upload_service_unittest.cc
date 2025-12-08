@@ -1307,8 +1307,8 @@ TEST_F(CloudBinaryUploadServiceTest, RunsStartCallback) {
           enterprise_connectors::AnalysisSettings(), file_path,
           file_path.BaseName(), "fake/mimetype", false, base::DoNothing(),
           base::BindLambdaForTesting(
-              [&run_loop,
-               &was_started](const BinaryUploadService::Request& request) {
+              [&run_loop, &was_started](
+                  const enterprise_connectors::BinaryUploadRequest& request) {
                 was_started = true;
                 run_loop.Quit();
               }));

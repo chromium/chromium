@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -49,6 +50,8 @@ struct SavePackageScanningData : public base::SupportsUserData::Data {
 
   content::SavePackageAllowedCallback callback;
 };
+
+policy::BrowserPolicyConnector* GetBrowserPolicyConnector();
 
 // Checks `item` for a SavePackageScanningData, and run it's callback with
 // `allowed` if there is one.

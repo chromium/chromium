@@ -99,6 +99,8 @@ source_set("core") {
 
 source_set("cloud_content_scanning") {
   sources = [
+    "cloud_content_scanning/binary_upload_request.cc",
+    "cloud_content_scanning/binary_upload_request.h",
     "cloud_content_scanning/common.cc",
     "cloud_content_scanning/common.h",
     "cloud_content_scanning/connector_data_pipe_getter.cc",
@@ -112,9 +114,11 @@ source_set("cloud_content_scanning") {
   ]
   deps = [
     "//base",
+    "//components/enterprise/common:strings",
     "//components/enterprise/connectors/core",
     "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/file_access",
+    "//components/policy/core/browser",
     "//components/safe_browsing/core/common",
     "//mojo/public/cpp/bindings",
     "//net",

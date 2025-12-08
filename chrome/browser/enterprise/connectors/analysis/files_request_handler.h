@@ -147,9 +147,8 @@ class FilesRequestHandler : public RequestHandlerBase {
       ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
 
-  void FileRequestStartCallback(
-      size_t index,
-      const safe_browsing::BinaryUploadService::Request& request);
+  void FileRequestStartCallback(size_t index,
+                                const BinaryUploadRequest& request);
 
   void MaybeCompleteScanRequest();
 

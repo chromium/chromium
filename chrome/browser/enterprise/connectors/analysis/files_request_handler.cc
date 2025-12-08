@@ -308,7 +308,7 @@ void FilesRequestHandler::UploadFileForDeepScanning(
 
 void FilesRequestHandler::FileRequestStartCallback(
     size_t index,
-    const safe_browsing::BinaryUploadService::Request& request) {
+    const BinaryUploadRequest& request) {
   start_times_[index] = base::TimeTicks::Now();
 }
 
