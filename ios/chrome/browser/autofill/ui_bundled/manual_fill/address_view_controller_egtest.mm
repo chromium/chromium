@@ -227,6 +227,11 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
         autofill::features::kAutofillEnableSupportForHomeAndWork);
   }
 
+  if ([self isRunningTest:@selector(testDoNotEditNamEmailFromOverflowMenu)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillEnableSupportForNameAndEmail);
+  }
+
   return config;
 }
 
@@ -490,6 +495,31 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 - (void)testDoNotEditHomeAndWorkAddressFromOverflowMenu {
   [AutofillAppInterface clearProfilesStore];
   [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
+
+  // Tap the overflow menu button and select the "Edit" action.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
+      performAction:grey_tap()];
+
+  // Check that the address details page is not opened.
+  [[EarlGrey selectElementWithMatcher:AddressDetailsPage()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests the "Edit" action of the overflow menu button does not display the
+// address's details for Name and Email profile.
+- (void)testDoNotEditNamEmailFromOverflowMenu {
+  [AutofillAppInterface clearProfilesStore];
+  [AutofillAppInterface saveExampleAccountNameEmailProfile];
 
   // Bring up the keyboard
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
