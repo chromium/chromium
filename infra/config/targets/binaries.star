@@ -1926,11 +1926,13 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
     label = "//chrome/test:performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
     name = "performance_test_suite_android_trichrome_chrome_google_bundle",
     label = "//chrome/test:performance_test_suite_android_trichrome_chrome_google_bundle",
+    module_scheme = "flat",
 )
 
 targets.binaries.script(

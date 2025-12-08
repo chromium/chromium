@@ -1721,10 +1721,12 @@
   "performance_test_suite_android_trichrome_chrome_google_64_32_bundle": {
     "label": "//chrome/test:performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
     "type": "generated_script",
+    "module_scheme": "flat",
   },
   "performance_test_suite_android_trichrome_chrome_google_bundle": {
     "label": "//chrome/test:performance_test_suite_android_trichrome_chrome_google_bundle",
     "type": "generated_script",
+    "module_scheme": "flat",
   },
   "performance_web_engine_test_suite": {
     "label": "//content/test:performance_web_engine_test_suite",
