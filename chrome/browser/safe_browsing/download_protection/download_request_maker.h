@@ -44,11 +44,13 @@ class DownloadRequestMaker {
   static std::unique_ptr<DownloadRequestMaker> CreateFromDownloadItem(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
       download::DownloadItem* item,
-      base::optional_ref<const std::string> password = std::nullopt);
+      base::optional_ref<const std::string> password = std::nullopt,
+      bool is_obfuscated = false);
 
   static std::unique_ptr<DownloadRequestMaker> CreateFromFileSystemAccess(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
-      const content::FileSystemAccessWriteItem& item);
+      const content::FileSystemAccessWriteItem& item,
+      bool is_obfuscated = false);
 
   DownloadRequestMaker(
       scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
@@ -65,7 +67,8 @@ class DownloadRequestMaker {
       base::optional_ref<const std::string> password,
       const std::string& previous_token,
       base::OnceCallback<void(const FileAnalyzer::Results&)>
-          on_results_callback);
+          on_results_callback,
+      bool is_obfuscated = false);
 
   DownloadRequestMaker(const DownloadRequestMaker&) = delete;
   DownloadRequestMaker& operator=(const DownloadRequestMaker&) = delete;
@@ -95,8 +98,7 @@ class DownloadRequestMaker {
   raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<ClientDownloadRequest> request_;
   const scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
-  const std::unique_ptr<FileAnalyzer> file_analyzer_ =
-      std::make_unique<FileAnalyzer>(binary_feature_extractor_);
+  const std::unique_ptr<FileAnalyzer> file_analyzer_;
   base::CancelableTaskTracker request_tracker_;  // For HistoryService lookup.
 
   // The current URL for the WebContents that initiated the download, and its

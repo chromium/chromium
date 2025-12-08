@@ -141,8 +141,8 @@ enterprise_connectors::EventResult DownloadItemMetadata::GetPreScanEventResult(
 std::unique_ptr<DownloadRequestMaker>
 DownloadItemMetadata::CreateDownloadRequestFromMetadata(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor) const {
-  return DownloadRequestMaker::CreateFromDownloadItem(binary_feature_extractor,
-                                                      item_);
+  return DownloadRequestMaker::CreateFromDownloadItem(
+      binary_feature_extractor, item_, std::nullopt, IsObfuscated());
 }
 
 std::unique_ptr<DeepScanningMetadata::DownloadScopedObservation>

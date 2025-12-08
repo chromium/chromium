@@ -49,6 +49,10 @@ static constexpr char kObfuscationResultHistogram[] =
 COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
 BASE_DECLARE_FEATURE(kEnterpriseFileObfuscation);
 
+// Feature to enable the archive analyzer for obfuscated files.
+COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
+BASE_DECLARE_FEATURE(kEnterpriseFileObfuscationArchiveAnalyzer);
+
 // Returns true if `kEnterpriseFileObfuscation` feature is enabled.
 COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
 bool IsFileObfuscationEnabled();

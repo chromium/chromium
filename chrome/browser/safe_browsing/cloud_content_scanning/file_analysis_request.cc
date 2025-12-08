@@ -17,6 +17,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "content/public/browser/browser_thread.h"
@@ -261,13 +262,22 @@ void FileAnalysisRequest::OnGotFileData(
   base::FilePath::StringType ext(file_name_.FinalExtension());
   std::ranges::transform(ext, ext.begin(), tolower);
   if (IsZipFile(ext, mime_type)) {
-    zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
-        path_,
-        /*password=*/password(),
-        base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
-                       weakptr_factory_.GetWeakPtr(),
-                       std::move(result_and_data.second)),
-        LaunchFileUtilService());
+    auto callback = base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
+                                   weakptr_factory_.GetWeakPtr(),
+                                   std::move(result_and_data.second));
+    if (is_obfuscated_ && base::FeatureList::IsEnabled(
+                              enterprise_obfuscation::
+                                  kEnterpriseFileObfuscationArchiveAnalyzer)) {
+      zip_analyzer_ = SandboxedZipAnalyzer::CreateObfuscatedAnalyzer(
+          path_,
+          /*password=*/password(), std::move(callback),
+          LaunchFileUtilService());
+    } else {
+      zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
+          path_,
+          /*password=*/password(), std::move(callback),
+          LaunchFileUtilService());
+    }
     zip_analyzer_->Start();
   } else if (IsRarFile(ext, mime_type)) {
     rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(

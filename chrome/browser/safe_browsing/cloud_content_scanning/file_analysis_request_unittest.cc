@@ -594,4 +594,56 @@ TEST_F(FileAnalysisRequestTest, ObfuscatedFile) {
   EXPECT_EQ(data.size, original_contents.size());
 }
 
+TEST_F(FileAnalysisRequestTest, ObfuscatedEncryptedZipFile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {enterprise_obfuscation::kEnterpriseFileObfuscation,
+       enterprise_obfuscation::kEnterpriseFileObfuscationArchiveAnalyzer},
+      {});
+
+  content::BrowserTaskEnvironment browser_task_environment;
+  content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath test_zip;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
+  test_zip = test_zip.AppendASCII("safe_browsing")
+                 .AppendASCII("download_protection")
+                 .AppendASCII("encrypted.zip");
+
+  std::string original_contents;
+  ASSERT_TRUE(base::ReadFileToString(test_zip, &original_contents));
+
+  // Obfuscate the file contents and write to file.
+  enterprise_obfuscation::DownloadObfuscator obfuscator;
+  auto obfuscation_result =
+      obfuscator.ObfuscateChunk(base::as_byte_span(original_contents), true);
+
+  ASSERT_TRUE(obfuscation_result.has_value());
+  base::FilePath obfuscated_path =
+      temp_dir.GetPath().AppendASCII("obfuscated.zip");
+  ASSERT_TRUE(base::WriteFile(obfuscated_path, obfuscation_result.value()));
+
+  auto obfuscated_request =
+      MakeRequest(obfuscated_path, obfuscated_path.BaseName(),
+                  /*delay_opening_file=*/false,
+                  /*mime_type=*/"application/zip",
+                  /*is_obfuscated=*/true);
+  obfuscated_request->set_password("67890");  // Incorrect password
+
+  base::test::TestFuture<enterprise_connectors::ScanRequestUploadResult,
+                         BinaryUploadService::Request::Data>
+      future;
+  obfuscated_request->GetRequestData(future.GetCallback());
+  auto [result, data] = future.Take();
+
+  // Should detect encryption and fail because of incorrect password.
+  EXPECT_EQ(result,
+            enterprise_connectors::ScanRequestUploadResult::kFileEncrypted);
+  // Check if size has been updated to use the calculated unobfuscated content
+  // size.
+  EXPECT_EQ(data.size, original_contents.size());
+}
+
 }  // namespace safe_browsing
