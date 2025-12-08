@@ -20,7 +20,7 @@
     color: var(--color-tab-foreground-inactive-frame-active);
     background-color: var(--color-tab-background-inactive-frame-active);
     border-radius: 12px 12px 0 0;
-    height: 36px;
+    height: 34px;
     padding: 0 10px;
     display: flex;
     align-items: center;

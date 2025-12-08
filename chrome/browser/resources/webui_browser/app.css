@@ -19,6 +19,7 @@
   color: var(--color-toolbar-text);
   position: relative; /* Needed for absolute positioning of controls */
   overflow: hidden;
+  user-select: none;
 }
 
 /* Hide browser frame in tab fullscreen mode */
@@ -45,7 +46,7 @@
   --iron-icon-stroke-color: var(--color-tab-foreground-active-frame-active);
   --iron-icon-fill-color: transparent;
   stroke-width: 3px;
-  height: 43px;
+  height: 41px;
   min-width: 30px;
   padding: 0;
   shape-rendering: crispEdges;
@@ -70,7 +71,8 @@ cr-icon-button {
 }
 
 cr-searchbox {
-  --cr-searchbox-height: 35px;
+  --cr-searchbox-font-size: 14px;
+  --cr-searchbox-height: 32px;
   --cr-searchbox-shadow: 0 0 0px 1px #20212451;
   --cr-searchbox-icon-left-position: 12px;
   --cr-searchbox-icon-size-in-searchbox: 20px;
@@ -78,6 +80,7 @@ cr-searchbox {
   --cr-searchbox-match-padding: 4px 0;
 
   margin: 0 10px;
+  flex: 1;
 }
 
 cr-searchbox[dropdown-is-visible] {
@@ -119,6 +122,8 @@ cr-searchbox[dropdown-is-visible] {
 #addressBox {
   position: relative;
   flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 #locationIconButton {
