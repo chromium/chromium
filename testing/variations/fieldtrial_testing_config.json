@@ -27183,30 +27183,6 @@
             ]
         }
     ],
-    "WebGPU": [
-        {
-            "platforms": [
-                "chromeos",
-                "mac",
-                "windows",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebGPUService"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "WebGPUService"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebGPUEnableRangeAnalysisForRobustness": [
         {
             "platforms": [
