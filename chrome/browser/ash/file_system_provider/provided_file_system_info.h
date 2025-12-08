@@ -59,9 +59,6 @@ class ProviderId {
 };
 
 // The type of content cache that is used for the individual provider.
-// TODO(b/317137739): Move this value to
-// file_system_provider_capabilities_handler.h` once the
-// chrome.fileSystemProvider manifest exposes this value.
 enum class CacheType { LRU, NONE };
 
 // Contains information about the provided file system instance.
