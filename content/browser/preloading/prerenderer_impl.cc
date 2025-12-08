@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/named_trigger.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading.h"
@@ -446,6 +447,9 @@ bool PrerendererImpl::MaybePrerender(
       case blink::mojom::SpeculationTargetHint::kSelf: {
         if (base::FeatureList::IsEnabled(
                 features::kPrerender2FallbackPrefetchSpecRules)) {
+          base::trace_event::EmitNamedTrigger(
+              "specrules-prerender-trigger-prefetch");
+
           auto* prefetch_document_manager =
               content::PrefetchDocumentManager::GetOrCreateForCurrentDocument(
                   web_contents->GetPrimaryMainFrame());
