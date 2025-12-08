@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/resources/grit/actor_common_resources.h"
+#include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -43,8 +44,10 @@ constexpr char kActorUiHandoffButtonGiveControlClickedHistogram[] =
 
 class TestHandoffButtonController : public HandoffButtonController {
  public:
-  explicit TestHandoffButtonController(views::View* anchor_view)
-      : HandoffButtonController(anchor_view) {}
+  explicit TestHandoffButtonController(
+      views::View* anchor_view,
+      ActorUiWindowController* window_controller)
+      : HandoffButtonController(anchor_view, window_controller) {}
   ~TestHandoffButtonController() override = default;
 
   void SetWidgetAndButtonForTest(std::unique_ptr<HandoffButtonWidget> widget,
@@ -86,14 +89,16 @@ class HandoffButtonControllerTest : public ChromeViewsTestBase {
     profile_ = TestingProfile::Builder().Build();
     ON_CALL(mock_browser_window_interface_, GetProfile())
         .WillByDefault(testing::Return(profile()));
-
+    window_controller_ = std::make_unique<ActorUiWindowController>(
+        &mock_browser_window_interface_,
+        std::vector<std::pair<views::WebView*, ActorOverlayWebView*>>());
     parent_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                          views::Widget::InitParams::TYPE_WINDOW);
     parent_widget_->Show();
 
     controller_ = std::make_unique<TestHandoffButtonController>(
-        parent_widget_->GetContentsView());
+        parent_widget_->GetContentsView(), window_controller_.get());
     tab_controller_registration_ =
         controller_->RegisterTabInterface(&mock_tab_);
 
@@ -127,6 +132,7 @@ class HandoffButtonControllerTest : public ChromeViewsTestBase {
     button_ = nullptr;
     widget_ = nullptr;
     controller_.reset();
+    window_controller_.reset();
     parent_widget_.reset();
     profile_.reset();
     ChromeViewsTestBase::TearDown();
@@ -145,6 +151,7 @@ class HandoffButtonControllerTest : public ChromeViewsTestBase {
   ::ui::UnownedUserDataHost user_data_host_;
   tabs::MockTabInterface mock_tab_;
   MockBrowserWindowInterface mock_browser_window_interface_;
+  std::unique_ptr<ActorUiWindowController> window_controller_;
   std::unique_ptr<TestHandoffButtonController> controller_;
   base::ScopedClosureRunner tab_controller_registration_;
   std::optional<MockActorUiTabController> mock_actor_ui_tab_controller_;

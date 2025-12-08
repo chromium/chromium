@@ -92,6 +92,9 @@ class ActorUiTabControllerInterface {
   // Called when the focus status changes on the handoff button.
   virtual void OnHandoffButtonFocusStatusChanged() = 0;
 
+  // Called when the window's immersive mode state changes.
+  virtual void OnImmersiveModeChanged() = 0;
+
   [[nodiscard]] virtual base::ScopedClosureRunner
   RegisterHandoffButtonController(HandoffButtonController* controller) = 0;
 

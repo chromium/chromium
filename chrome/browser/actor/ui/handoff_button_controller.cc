@@ -207,8 +207,10 @@ void HandoffButtonWidget::OnMouseEvent(::ui::MouseEvent* event) {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HandoffButtonController,
                                       kHandoffButtonElementId);
 
-HandoffButtonController::HandoffButtonController(views::View* anchor_view)
-    : anchor_view_(anchor_view) {}
+HandoffButtonController::HandoffButtonController(
+    views::View* anchor_view,
+    ActorUiWindowController* window_controller)
+    : anchor_view_(anchor_view), window_controller_(window_controller) {}
 
 HandoffButtonController::~HandoffButtonController() = default;
 
@@ -222,6 +224,25 @@ void HandoffButtonController::UpdateState(HandoffButtonState state,
   }
   is_visible_ = is_visible;
   ownership_ = state.controller;
+
+  bool is_immersive = window_controller_->IsImmersiveModeEnabled();
+  bool is_pinned = window_controller_->IsToolbarPinned();
+
+  // Check if a layout change occurred that requires re-anchoring (immersive
+  // mode toggled on or off, or a toolbar pin state change while in immersive
+  // mode).
+  bool layout_changed = (is_immersive != was_immersive_) ||
+                        (is_immersive && (is_pinned != was_toolbar_pinned_));
+
+  if (widget_ && layout_changed) {
+    view_observer_.Reset();
+    button_view_ = nullptr;
+    widget_.reset();
+    delegate_.reset();
+  }
+
+  was_immersive_ = is_immersive;
+  was_toolbar_pinned_ = is_pinned;
 
   std::u16string text;
   std::u16string a11y_text;
@@ -254,6 +275,12 @@ void HandoffButtonController::UpdateState(HandoffButtonState state,
     button_view_->SetAccessibleDescription(a11y_text);
     button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
     UpdateBounds();
+  }
+
+  if (is_immersive) {
+    widget_->SetZOrderLevel(::ui::ZOrderLevel::kFloatingUIElement);
+  } else {
+    widget_->SetZOrderLevel(::ui::ZOrderLevel::kNormal);
   }
 
   if (is_visible_) {
