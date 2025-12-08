@@ -169,7 +169,11 @@ WaylandWpColorManager::WaylandWpColorManager(wp_color_manager_v1* color_manager,
   wp_color_manager_v1_add_listener(manager_.get(), &kListener, this);
 }
 
-WaylandWpColorManager::~WaylandWpColorManager() = default;
+WaylandWpColorManager::~WaylandWpColorManager() {
+  for (auto& observer : observers_) {
+    observer.OnColorManagerDestroyed();
+  }
+}
 
 void WaylandWpColorManager::GetImageDescription(
     const gfx::ColorSpace& color_space,

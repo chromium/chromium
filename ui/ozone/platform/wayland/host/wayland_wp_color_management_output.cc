@@ -58,6 +58,10 @@ void WaylandWpColorManagementOutput::GetCurrentColorSpace() {
                      weak_factory_.GetWeakPtr()));
 }
 
+void WaylandWpColorManagementOutput::OnColorManagerDestroyed() {
+  color_manager_observation_.Reset();
+}
+
 void WaylandWpColorManagementOutput::OnImageDescription(
     scoped_refptr<WaylandWpImageDescription> image_description) {
   if (!image_description) {

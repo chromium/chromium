@@ -34,6 +34,7 @@ class WaylandWpColorManager
     ~Observer() override = default;
 
     virtual void OnHdrEnabledChanged(bool hdr_enabled) = 0;
+    virtual void OnColorManagerDestroyed() = 0;
   };
 
   static constexpr char kInterfaceName[] = "wp_color_manager_v1";

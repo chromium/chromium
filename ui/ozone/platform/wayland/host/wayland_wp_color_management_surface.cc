@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -122,6 +123,10 @@ void WaylandWpColorManagementSurface::OnHdrEnabledChanged(bool hdr_enabled) {
       display_color_spaces
           ? display_color_spaces
           : base::MakeRefCounted<gfx::DisplayColorSpacesRef>());
+}
+
+void WaylandWpColorManagementSurface::OnColorManagerDestroyed() {
+  NOTREACHED();
 }
 
 }  // namespace ui
