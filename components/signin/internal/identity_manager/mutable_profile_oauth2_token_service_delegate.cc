@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -34,6 +35,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/signin/public/webdata/token_web_data.h"
+#include "components/unexportable_keys/features.h"
 #include "components/version_info/version_info.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "crypto/process_bound_string.h"
@@ -51,6 +53,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
+
+constexpr base::TimeDelta kWebWrappedKeyFetchDelay = base::Minutes(2);
 
 bool g_ignore_non_official_api_keys_for_testing = false;
 
@@ -527,6 +531,18 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
 
   loading_primary_account_id_ = primary_account_id;
   web_data_service_request_ = token_web_data_->GetAllTokens(this);
+
+  if (!base::FeatureList::IsEnabled(
+          unexportable_keys::kUnexportableKeyDeletion)) {
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &MutableProfileOAuth2TokenServiceDelegate::StartWebWrappedKeyFetch,
+          weak_ptr_factory_.GetWeakPtr()),
+      kWebWrappedKeyFetchDelay);
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
@@ -535,6 +551,11 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
   VLOG(1) << "MutablePO2TS::OnWebDataServiceRequestDone. Result type: "
           << (result.get() == nullptr ? -1
                                       : static_cast<int>(result->GetType()));
+
+  if (handle == web_data_service_request_for_gc_) {
+    OnWebWrappedKeyFetchDone(std::move(result));
+    return;
+  }
 
   DCHECK_EQ(web_data_service_request_, handle);
   web_data_service_request_ = 0;
@@ -859,11 +880,41 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsOnServer(
       this, client_, refresh_token, 0));
 }
 
-void MutableProfileOAuth2TokenServiceDelegate::CancelWebTokenFetch() {
+void MutableProfileOAuth2TokenServiceDelegate::StartWebWrappedKeyFetch() {
+  if (!token_web_data_) {
+    return;
+  }
+
+  web_data_service_request_for_gc_ =
+      token_web_data_->GetAllWrappedBindingKeys(this);
+}
+
+void MutableProfileOAuth2TokenServiceDelegate::OnWebWrappedKeyFetchDone(
+    std::unique_ptr<WDTypedResult> result) {
+  web_data_service_request_for_gc_.reset();
+  if (!result) {
+    return;
+  }
+
+  CHECK_EQ(result->GetType(), WRAPPED_BINDING_KEYS_RESULT);
+  if (token_binding_helper_) {
+    token_binding_helper_->StartGarbageCollection(
+        static_cast<WDResult<absl::flat_hash_set<std::vector<uint8_t>>>&>(
+            *result)
+            .GetValue());
+  }
+}
+
+void MutableProfileOAuth2TokenServiceDelegate::CancelWebFetches() {
   if (web_data_service_request_ != 0) {
     DCHECK(token_web_data_);
     token_web_data_->CancelRequest(web_data_service_request_);
     web_data_service_request_ = 0;
+  }
+
+  if (web_data_service_request_for_gc_.has_value()) {
+    CHECK_DEREF(token_web_data_)
+        .CancelRequest(*std::exchange(web_data_service_request_for_gc_, {}));
   }
 }
 
@@ -904,7 +955,7 @@ void MutableProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
 void MutableProfileOAuth2TokenServiceDelegate::Shutdown() {
   VLOG(1) << "MutablePO2TS::Shutdown";
   server_revokes_.clear();
-  CancelWebTokenFetch();
+  CancelWebFetches();
   refresh_tokens_.clear();
   if (token_binding_helper_) {
     token_binding_helper_->ClearAllKeys();

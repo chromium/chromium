@@ -8,13 +8,16 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace unexportable_keys {
 class UnexportableKeyService;
@@ -88,6 +91,10 @@ class TokenBindingHelper {
                                    const GURL& destination_url,
                                    GenerateAssertionCallback callback);
 
+  // Starts garbage collection of orphaned keys.
+  void StartGarbageCollection(
+      absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db);
+
   // Returns a wrapped key associated with `account_id`. Returns an empty vector
   // if no key is found.
   std::vector<uint8_t> GetWrappedBindingKey(
@@ -124,10 +131,21 @@ class TokenBindingHelper {
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
           binding_key);
 
+  void OnGetAllKeysForGarbageCollection(
+      absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db,
+      unexportable_keys::ServiceErrorOr<
+          std::vector<unexportable_keys::UnexportableKeyId>> result);
+
+  void DoGarbageCollection(
+      absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db,
+      std::vector<unexportable_keys::UnexportableKeyId> all_key_ids);
+
   const raw_ref<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
 
   base::flat_map<CoreAccountId, BindingKeyData> binding_keys_;
+
+  base::WeakPtrFactory<TokenBindingHelper> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TOKEN_BINDING_HELPER_H_

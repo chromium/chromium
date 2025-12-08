@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/optional_ref.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -265,8 +266,14 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Revokes the refresh token on the server.
   void RevokeCredentialsOnServer(const std::string& refresh_token);
 
-  // Cancels any outstanding fetch for tokens from the web database.
-  void CancelWebTokenFetch();
+  // Starts a fetch for wrapped keys from the web database.
+  void StartWebWrappedKeyFetch();
+
+  // Callback for the fetch for wrapped keys from the web database.
+  void OnWebWrappedKeyFetchDone(std::unique_ptr<WDTypedResult> result);
+
+  // Cancels any outstanding fetches from the web database.
+  void CancelWebFetches();
 
   std::string GetRefreshToken(const CoreAccountId& account_id) const;
 
@@ -290,6 +297,10 @@ class MutableProfileOAuth2TokenServiceDelegate
 
   // Handle to the request reading tokens from database.
   WebDataServiceBase::Handle web_data_service_request_;
+
+  // Handle to the request reading wrapped keys from database for garbage
+  // collection.
+  std::optional<WebDataServiceBase::Handle> web_data_service_request_for_gc_;
 
   // Flag limiting `ClearUnreadableCredentials()` to take action at most once.
   bool has_cleared_unreadable_credentials_ = false;
@@ -321,6 +332,9 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Callback function that attempts to correct request errors.  Best effort
   // only.  Returns true if the error was fixed and retry should be reattempted.
   FixRequestErrorCallback fix_request_error_callback_;
+
+  base::WeakPtrFactory<MutableProfileOAuth2TokenServiceDelegate>
+      weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_MUTABLE_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_

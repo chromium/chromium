@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -47,6 +48,8 @@
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
+#include "components/unexportable_keys/features.h"
+#include "components/unexportable_keys/mock_unexportable_key_service.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_database_service.h"
 #include "crypto/kdf.h"
@@ -164,6 +167,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   MutableProfileOAuth2TokenServiceDelegateTest()
       : task_environment_(
             base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC),
         os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
             /*is_sync_for_unittests=*/true)),
@@ -2269,3 +2273,39 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       oauth2_service_delegate_->GetRefreshToken(primary_account).c_str());
   EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
 }
+
+class MutableProfileOAuth2TokenServiceDelegateGarbageCollectionTest
+    : public MutableProfileOAuth2TokenServiceDelegateTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(MutableProfileOAuth2TokenServiceDelegateGarbageCollectionTest,
+       UnexportableKeyDeletion) {
+  const bool enable_unexportable_key_deletion = GetParam();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      unexportable_keys::kUnexportableKeyDeletion,
+      enable_unexportable_key_deletion);
+
+  testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
+      mock_unexportable_key_service;
+  oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
+      signin::AccountConsistencyMethod::kDice,
+      std::make_unique<TokenBindingHelper>(mock_unexportable_key_service));
+  oauth2_service_delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
+  test_service_observation_.Observe(oauth2_service_delegate_.get());
+
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  WaitForRefreshTokensLoaded();
+
+  EXPECT_CALL(mock_unexportable_key_service,
+              GetAllSigningKeysForGarbageCollectionSlowlyAsync)
+      .Times(enable_unexportable_key_deletion ? 1 : 0);
+
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MutableProfileOAuth2TokenServiceDelegateGarbageCollectionTest,
+    testing::Bool(),
+    [](const auto& info) { return info.param ? "Enabled" : "Disabled"; });
