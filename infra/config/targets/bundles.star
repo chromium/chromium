@@ -637,10 +637,12 @@ targets.bundle(
 )
 
 # Test suites that need to run on hardware that is close to real Android device.
-# See https://crbug.com/40204012#comment5 for details.
 targets.bundle(
     name = "android_hardware_specific_gtests",
     targets = [
+        # https://crbug.com/466313164#comment3
+        "android_webview_unittests",
+        # https://crbug.com/40204012#comment5
         "cc_unittests",
         "viz_unittests",
     ],
