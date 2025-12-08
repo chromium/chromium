@@ -277,9 +277,6 @@ void FakeBaseTabStripController::CreateNewTab(NewTabTypes context) {
   AddTab(num_tabs_, TabActive::kActive);
 }
 
-void FakeBaseTabStripController::CreateNewTabWithLocation(
-    const std::u16string& location) {}
-
 void FakeBaseTabStripController::OnStartedDragging(bool dragging_window) {}
 
 void FakeBaseTabStripController::OnStoppedDragging() {}
