@@ -11,14 +11,14 @@ service-worker-empty.js
 Received
 Status
 #N activated and is running
-stop
+Stop
 Clients
 Push
 Push
 Sync
 Sync
-Periodic Sync
-Periodic Sync
+Periodic sync
+Periodic sync
 Update Cycle
 Version
 Update Activity
@@ -48,14 +48,14 @@ service-worker-empty.js
 Received
 Status
 #N activated and is running
-stop
+Stop
 Clients
 Push
 Push
 Sync
 Sync
-Periodic Sync
-Periodic Sync
+Periodic sync
+Periodic sync
 Update Cycle
 Version
 Update Activity
@@ -84,14 +84,14 @@ service-worker-empty.js
 Received
 Status
 #N activated and is running
-stop
+Stop
 Clients
 Push
 Push
 Sync
 Sync
-Periodic Sync
-Periodic Sync
+Periodic sync
+Periodic sync
 Update Cycle
 Version
 Update Activity
@@ -121,14 +121,14 @@ service-worker-empty.js
 Received
 Status
 #N activated and is running
-stop
+Stop
 Clients
 Push
 Push
 Sync
 Sync
-Periodic Sync
-Periodic Sync
+Periodic sync
+Periodic sync
 Update Cycle
 Version
 Update Activity
@@ -162,8 +162,8 @@ Push
 Push
 Sync
 Sync
-Periodic Sync
-Periodic Sync
+Periodic sync
+Periodic sync
 Update Cycle
 Version
 Update Activity

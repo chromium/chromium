@@ -56,7 +56,7 @@ element.style { ()
     --var-47: 47px;
     --var-48: 48px;
     --var-49: 49px;
-Show All Properties (150 more)
+Show all properties (150 more)
 
 [expanded] 
 div { (user agent stylesheet)
