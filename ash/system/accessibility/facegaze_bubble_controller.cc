@@ -7,6 +7,7 @@
 #include "ash/system/accessibility/facegaze_bubble_view.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
@@ -90,6 +91,10 @@ void FaceGazeBubbleController::Update(const std::u16string& text,
   // work area.
   int center = (work_area_size.width() / 2) - (bubble_size.width() / 2) +
                primary_work_area.x();
+  // Adjust positioning for right-to-left (RTL) languages.
+  if (base::i18n::IsRTL()) {
+    center += bubble_size.width();
+  }
   int top = primary_work_area.y() + kMarginFromTopDip;
   facegaze_bubble_view_->SetAnchorRect(gfx::Rect(center, top, 0, 0));
 }
