@@ -76,6 +76,12 @@ public class IdentityManagerImpl implements IdentityManager {
     }
 
     @Override
+    public @Nullable AccountInfo findExtendedAccountInfoByAccountId(CoreAccountId accountId) {
+        return IdentityManagerImplJni.get()
+                .findExtendedAccountInfoByAccountId(mNativeIdentityManager, accountId);
+    }
+
+    @Override
     public @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(String email) {
         return IdentityManagerImplJni.get()
                 .findExtendedAccountInfoByEmailAddress(mNativeIdentityManager, email);
@@ -167,6 +173,9 @@ public class IdentityManagerImpl implements IdentityManager {
 
         @Nullable CoreAccountInfo getPrimaryAccountInfo(
                 long nativeIdentityManager, int consentLevel);
+
+        @Nullable AccountInfo findExtendedAccountInfoByAccountId(
+                long nativeIdentityManager, CoreAccountId accountId);
 
         @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(
                 long nativeIdentityManager, String email);

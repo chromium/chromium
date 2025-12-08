@@ -14,6 +14,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +52,16 @@ public class FakeIdentityManager implements IdentityManager {
     @Override
     public @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(String email) {
         return mExtendedAccountInfos.get(email);
+    }
+
+    @Override
+    public @Nullable AccountInfo findExtendedAccountInfoByAccountId(CoreAccountId accountId) {
+        for (AccountInfo accountInfo : mExtendedAccountInfos.values()) {
+            if (accountInfo.getId().equals(accountId)) {
+                return accountInfo;
+            }
+        }
+        return null;
     }
 
     @Override

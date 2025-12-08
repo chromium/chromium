@@ -547,6 +547,10 @@ class IdentityManager : public KeyedService,
   base::android::ScopedJavaLocalRef<jobject> GetPrimaryAccountId(
       JNIEnv* env) const;
 
+  base::android::ScopedJavaLocalRef<jobject> FindExtendedAccountInfoByAccountId(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_account_id) const;
+
   base::android::ScopedJavaLocalRef<jobject>
   FindExtendedAccountInfoByEmailAddress(
       JNIEnv* env,

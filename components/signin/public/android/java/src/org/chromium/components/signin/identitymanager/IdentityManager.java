@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.List;
 
@@ -59,6 +60,12 @@ public interface IdentityManager {
      * @param consentLevel {@link ConsentLevel} necessary for the caller.
      */
     @Nullable CoreAccountInfo getPrimaryAccountInfo(@ConsentLevel int consentLevel);
+
+    /**
+     * Looks up and returns information for account with given |accountId|. If the account cannot be
+     * found, return a null value.
+     */
+    @Nullable AccountInfo findExtendedAccountInfoByAccountId(CoreAccountId accountId);
 
     /**
      * Looks up and returns information for account with given |email|. If the account cannot be
