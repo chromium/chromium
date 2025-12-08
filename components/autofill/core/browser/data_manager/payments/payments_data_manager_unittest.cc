@@ -4036,18 +4036,6 @@ TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEnUS) {
   EXPECT_TRUE(test_api(payments_data_manager()).AreBnplIssuersSupported());
 }
 
-// Tests that BNPL issuers are supported for "en-GB" app locales.
-TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEnGB) {
-  ResetPaymentsDataManager(false, "en-GB", "US");
-  EXPECT_TRUE(test_api(payments_data_manager()).AreBnplIssuersSupported());
-}
-
-// Tests that BNPL issuers are supported for "en-CA" app locales.
-TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEnCA) {
-  ResetPaymentsDataManager(false, "en-CA", "US");
-  EXPECT_TRUE(test_api(payments_data_manager()).AreBnplIssuersSupported());
-}
-
 // Tests that BNPL issuers are not supported for "es-US" app locales.
 TEST_F(PaymentsDataManagerTest, AreBnplIssuersSupported_LocaleIsEsUS) {
   ResetPaymentsDataManager(false, "es-US", "US");

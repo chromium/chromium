@@ -2140,8 +2140,7 @@ bool PaymentsDataManager::AreEwalletAccountsSupported() const {
 bool PaymentsDataManager::AreBnplIssuersSupported() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  return (app_locale_ == "en-US" || app_locale_ == "en-GB" ||
-          app_locale_ == "en-CA") &&
+  return app_locale_ == "en-US" &&
          (GetCountryCodeForExperimentGroup() == "US" ||
           base::FeatureList::IsEnabled(
               features::kAutofillDisableBnplCountryCheckForTesting)) &&
