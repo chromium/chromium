@@ -130,10 +130,6 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
 
-  // This method should only be called with context providers supporting OOP-R.
-  CHECK(!raster_context_provider ||
-        raster_context_provider->ContextCapabilities().gpu_rasterization);
-
   // If the provider isn't accelerated, avoid GPU round trips to upload frame
   // data from GpuMemoryBuffer backed frames which aren't mappable.
   if (frame->HasMappableSharedImage() && !frame->IsMappable() &&
