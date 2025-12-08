@@ -5,12 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECT_TOOLS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECT_TOOLS_H_
 
+#include <v8-inspector.h>
+
 #include <vector>
 
-#include <v8-inspector.h>
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_agent.h"
 #include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 
 namespace blink {
 
@@ -237,14 +239,21 @@ class PausedInDebuggerTool : public InspectTool {
         message_(message) {}
   PausedInDebuggerTool(const PausedInDebuggerTool&) = delete;
   PausedInDebuggerTool& operator=(const PausedInDebuggerTool&) = delete;
+  void Trace(Visitor* visitor) const override;
 
  private:
+  enum class Action { kResume, kStepOver };
+
   void Draw(float scale) override;
   void Dispatch(const ScriptValue& message,
                 ExceptionState& exception_state) override;
   String GetOverlayName() override;
+  void OnAgentDisable() override;
+  void ExecuteOnV8Session(Action action);
+
   v8_inspector::V8InspectorSession* v8_session_;
   String message_;
+  WeakCellFactory<PausedInDebuggerTool> weak_factory_{this};
 };
 
 // -----------------------------------------------------------------------------

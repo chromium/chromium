@@ -529,6 +529,9 @@ protocol::Response InspectorOverlayAgent::disable() {
 
   persistent_tool_ = nullptr;
   hinge_ = nullptr;
+  if (inspect_tool_) {
+    inspect_tool_->OnAgentDisable();
+  }
   PickTheRightTool();
   SetNeedsUnbufferedInput(false);
   document_to_ax_context_.clear();
