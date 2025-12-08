@@ -380,6 +380,8 @@ chromium-metrics-reviews@google.com.
   <token key="DefaultBrowserStateValidator">
     <variant name="HttpProgIdAssocValidation"
         summary="AssocQueryString to get the HTTP default client's program ID"/>
+    <variant name="HttpProgIdRegistryValidation"
+        summary="the HTTP default client's program ID from the registry"/>
   </token>
 </histogram>
 

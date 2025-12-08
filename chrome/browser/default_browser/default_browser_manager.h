@@ -74,6 +74,11 @@ class DefaultBrowserManager {
       default_browser::DefaultBrowserCheckCompletionCallback callback,
       default_browser::DefaultBrowserState default_state);
 
+  // Performs additional validations on the default browser check's result to
+  // detect potentially incorrect results.
+  void PerformDefaultBrowserCheckValidations(
+      default_browser::DefaultBrowserState default_state);
+
   // Delegate for handling shell operations, such as checking and setting
   // default browser.
   const std::unique_ptr<ShellDelegate> shell_delegate_;
