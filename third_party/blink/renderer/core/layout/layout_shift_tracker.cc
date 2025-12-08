@@ -859,9 +859,9 @@ void LayoutShiftTracker::AttributionsToTracedValue(TracedValue& value) const {
   while (it != attributions_.end() && it->node_id != kInvalidDOMNodeId) {
     value.BeginDictionary();
     value.SetInteger("node_id", it->node_id);
-    RectToTracedValue(gfx::ToEnclosingRect(it->old_visual_rect), value,
+    RectToTracedValue(gfx::ToRoundedRect(it->old_visual_rect), value,
                       "old_rect");
-    RectToTracedValue(gfx::ToEnclosingRect(it->new_visual_rect), value,
+    RectToTracedValue(gfx::ToRoundedRect(it->new_visual_rect), value,
                       "new_rect");
     if (should_include_names) {
       Node* node = DOMNodeIds::NodeForId(it->node_id);
