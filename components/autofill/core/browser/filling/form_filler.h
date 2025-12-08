@@ -171,7 +171,7 @@ class FormFiller {
   // `RefillTriggerReason::kExpirationDateFormatted`, and in that case `field`
   // is the one that was reformatted and `old_value` is the value `field` had
   // before the reformatting.
-  void MaybeTriggerRefill(
+  void MaybeTriggerAutomaticRefill(
       const FormData& form,
       const FormStructure& form_structure,
       RefillTriggerReason refill_trigger_reason,

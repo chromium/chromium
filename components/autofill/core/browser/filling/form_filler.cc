@@ -277,8 +277,8 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
   NOTREACHED();
 }
 
-// Called by `FormFiller::MaybeTriggerRefill()` and constructs a refill value in
-// case the website used JavaScript to reformat an expiration date like
+// Called by `FormFiller::MaybeTriggerAutomaticRefill()` and constructs a refill
+// value in case the website used JavaScript to reformat an expiration date like
 // "05/2023" into "05 / 20" (i.e. it broke the year by cutting the last two
 // digits instead of stripping the first two digits).
 std::optional<FormFiller::ValueAndType> GetRefillValueForExpirationDate(
@@ -1015,7 +1015,7 @@ void FormFiller::FillOrPreviewForm(
       filling_payload, trigger_source, refill_trigger_reason);
 }
 
-void FormFiller::MaybeTriggerRefill(
+void FormFiller::MaybeTriggerAutomaticRefill(
     const FormData& form,
     const FormStructure& form_structure,
     RefillTriggerReason refill_trigger_reason,
