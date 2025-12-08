@@ -140,6 +140,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -174,6 +175,7 @@ import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -183,6 +185,7 @@ import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 /** Tests for {@link TouchToFillPaymentMethodView} */
@@ -190,6 +193,25 @@ import java.util.function.Consumer;
 @DoNotBatch(reason = "The methods of ChromeAccessibilityUtil don't seem to work with batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillPaymentMethodViewTest {
+    /** An observer used to record events that occur with respect to the bottom sheet. */
+    private static class TestSheetObserver extends EmptyBottomSheetObserver {
+        /** A {@link CallbackHelper} that can wait for the `onOffsetChanged` event. */
+        public final CallbackHelper mOffsetChangedCallbackHelper = new CallbackHelper();
+
+        /** A {@link CallbackHelper} that can wait for the `onSheetStateChanged` event. */
+        public final CallbackHelper mStateChangedCallbackHelper = new CallbackHelper();
+
+        @Override
+        public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+            mOffsetChangedCallbackHelper.notifyCalled();
+        }
+
+        @Override
+        public void onSheetStateChanged(int newState, int reason) {
+            mStateChangedCallbackHelper.notifyCalled();
+        }
+    }
+
     private static final CreditCard VISA =
             createCreditCard(
                     "Visa",
@@ -442,6 +464,7 @@ public class TouchToFillPaymentMethodViewTest {
 
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mSheetTestSupport;
+    private TestSheetObserver mObserver;
     private TouchToFillPaymentMethodView mTouchToFillPaymentMethodView;
     private PropertyModel mTouchToFillPaymentMethodModel;
     private WebPageStation mPage;
@@ -459,6 +482,8 @@ public class TouchToFillPaymentMethodViewTest {
                         .getRootUiCoordinatorForTesting()
                         .getBottomSheetController();
         mSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
+        mObserver = new TestSheetObserver();
+        mBottomSheetController.addObserver(mObserver);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel =
@@ -1359,6 +1384,9 @@ public class TouchToFillPaymentMethodViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
+        // The sheet should be expanded to full height.
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
         RecyclerView bnplTosScreen =
                 mTouchToFillPaymentMethodView
                         .getContentView()
@@ -1404,8 +1432,6 @@ public class TouchToFillPaymentMethodViewTest {
                     mTouchToFillPaymentMethodModel.set(CURRENT_SCREEN, BNPL_ISSUER_TOS_SCREEN);
                     mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, bnplTosFooter);
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
-                    // Expand the sheet to the full height to show action buttons.
-                    mSheetTestSupport.setSheetState(BottomSheetController.SheetState.FULL, false);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         BottomSheetTestSupport.waitForState(
@@ -1615,6 +1641,9 @@ public class TouchToFillPaymentMethodViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
+        // The sheet should be expanded to full height.
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
         RecyclerView bnplProgressScreen =
                 mTouchToFillPaymentMethodView
                         .getContentView()
@@ -1814,6 +1843,9 @@ public class TouchToFillPaymentMethodViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
+        // The sheet should be expanded to full height.
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
         RecyclerView errorListView =
                 mTouchToFillPaymentMethodView
                         .getContentView()
@@ -1914,6 +1946,60 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(spans.length, is(1));
         spans[0].onClick(openPaymentSettingsLabel);
         waitForEvent(actionCallback).run();
+    }
+
+    @Test
+    @MediumTest
+    public void testStateChangeEventWithFullStateScreenButUnexpectedHeight()
+            throws TimeoutException {
+        // Open a screen with full height.
+        runOnUiThreadBlocking(
+                () -> {
+                    ModelList bnplTosScreenItems = new ModelList();
+                    bnplTosScreenItems.add(
+                            new ListItem(
+                                    BNPL_TOS_TEXT, createBnplIssuerTosTextItemModelWithFlatText()));
+                    mTouchToFillPaymentMethodModel.set(CURRENT_SCREEN, BNPL_ISSUER_TOS_SCREEN);
+                    mTouchToFillPaymentMethodModel.set(SHEET_ITEMS, bnplTosScreenItems);
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        float expectedFullStateOffSet = mSheetTestSupport.getMaxOffsetPx();
+        pollUiThread(() -> mSheetTestSupport.getCurrentOffsetPx() == expectedFullStateOffSet);
+
+        // Change the screen offset to a different value without changing its state.
+        CallbackHelper callbackHelper = mObserver.mOffsetChangedCallbackHelper;
+        int callbackCount = callbackHelper.getCallCount();
+        runOnUiThreadBlocking(
+                () ->
+                        mSheetTestSupport.setSheetOffsetFromBottom(
+                                expectedFullStateOffSet - 10f,
+                                BottomSheetController.StateChangeReason.NONE));
+        callbackHelper.waitForCallback(callbackCount);
+        // Screen should in full state with a height different from the expected full state height.
+        pollUiThread(
+                () ->
+                        getBottomSheetState() == BottomSheetController.SheetState.FULL
+                                && mSheetTestSupport.getCurrentOffsetPx()
+                                        != expectedFullStateOffSet);
+
+        // Trigger the state changed callback to simulate full state screen with unexpected height
+        // after state changing.
+        callbackHelper = mObserver.mStateChangedCallbackHelper;
+        callbackCount = callbackHelper.getCallCount();
+        runOnUiThreadBlocking(
+                () -> {
+                    mSheetTestSupport.setInternalCurrentState(SheetState.SCROLLING);
+                    mSheetTestSupport.setInternalCurrentState(SheetState.FULL);
+                });
+        // Above simulation triggered the event twice, and the callback should trigger the event two
+        // more times (one for scrolling, and one for full).
+        callbackHelper.waitForCallback(callbackCount, 4);
+        pollUiThread(
+                () ->
+                        getBottomSheetState() == BottomSheetController.SheetState.FULL
+                                && mSheetTestSupport.getCurrentOffsetPx()
+                                        == expectedFullStateOffSet);
     }
 
     private RecyclerView getCreditCardSuggestions() {

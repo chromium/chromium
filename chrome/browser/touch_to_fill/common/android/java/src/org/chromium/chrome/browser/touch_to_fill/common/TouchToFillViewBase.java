@@ -322,6 +322,15 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
                         MeasureSpec.UNSPECIFIED);
     }
 
+    protected void removeObserver(BottomSheetObserver observer) {
+        mBottomSheetController.removeObserver(observer);
+    }
+
+    protected boolean isFullyExtended() {
+        return mBottomSheetController.getCurrentOffset()
+                == Math.min(getMaximumSheetHeightPx(), mBottomSheetController.getContainerHeight());
+    }
+
     private @Px int getInsetDisplayWidthPx() {
         return mContentView.getContext().getResources().getDisplayMetrics().widthPixels
                 - 2 * getSideMarginPx();
