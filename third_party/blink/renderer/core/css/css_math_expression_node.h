@@ -1238,7 +1238,7 @@ class CORE_EXPORT CSSMathExpressionRandomFunction final
   // [1] https://drafts.csswg.org/css-values-4/#math
   bool IsMathFunction() const final { return true; }
   bool MayHaveRelativeUnit() const final;
-  CSSPrimitiveValue::UnitType ResolvedUnitType() const final { NOTREACHED(); }
+  CSSPrimitiveValue::UnitType ResolvedUnitType() const final;
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope*) const final {
     NOTREACHED();

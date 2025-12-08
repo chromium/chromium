@@ -5522,6 +5522,27 @@ double CSSMathExpressionRandomFunction::ComputeDouble(
   return ComputeCSSRandomValue(random_base_value, min, max, step);
 }
 
+CSSPrimitiveValue::UnitType CSSMathExpressionRandomFunction::ResolvedUnitType()
+    const {
+  CSSPrimitiveValue::UnitType min_type = min_->ResolvedUnitType();
+  CSSPrimitiveValue::UnitType max_type = max_->ResolvedUnitType();
+  if (min_type == CSSPrimitiveValue::UnitType::kUnknown ||
+      max_type == CSSPrimitiveValue::UnitType::kUnknown ||
+      min_type != max_type) {
+    return CSSPrimitiveValue::UnitType::kUnknown;
+  }
+  if (!step_) {
+    return min_type;
+  }
+  CSSPrimitiveValue::UnitType step_type = step_->ResolvedUnitType();
+
+  if (step_type == CSSPrimitiveValue::UnitType::kUnknown ||
+      min_type != step_type) {
+    return CSSPrimitiveValue::UnitType::kUnknown;
+  }
+  return min_type;
+}
+
 double CSSMathExpressionRandomFunction::ComputeLengthPx(
     const CSSLengthResolver& length_resolver) const {
   DCHECK(!HasPercentage());

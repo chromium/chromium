@@ -83,14 +83,20 @@ void CSSMathRandom::BuildCSSText(Nested,
 CSSMathExpressionNode* CSSMathRandom::ToCalcExpressionNode() const {
   CSSMathExpressionOperation::Operands operands;
   operands.reserve(3u);
-  for (const auto& value : {min_, max_, step_}) {
+  DCHECK(min_);
+  DCHECK(max_);
+  for (const CSSNumericValue* value : {min_, max_, step_}) {
+    if (!value) {
+      // step_ value can be null since it is optional
+      break;
+    }
     CSSMathExpressionNode* operand = value->ToCalcExpressionNode();
     if (!operand) {
       // TODO(crbug.com/41470626): Remove this when all ToCalcExpressionNode()
       // overrides are implemented.
       NOTREACHED();
     }
-    operands.push_back(value->ToCalcExpressionNode());
+    operands.push_back(operand);
   }
   return CSSMathExpressionRandomFunction::Create(
       RandomValueSharing::Fixed(random_base_value_), std::move(operands));
