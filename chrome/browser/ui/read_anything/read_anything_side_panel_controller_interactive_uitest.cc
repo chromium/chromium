@@ -30,7 +30,7 @@ namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 }  // namespace
 
-class MockReadAnythingSidePanelControllerObserver
+class MockReadAnythingLifecycleObserver
     : public ReadAnythingLifecycleObserver {
  public:
   MOCK_METHOD(void,
@@ -82,7 +82,7 @@ class ReadAnythingSidePanelControllerTest
 
  protected:
   bool IsImmersiveEnabled() const { return GetParam(); }
-  MockReadAnythingSidePanelControllerObserver side_panel_controller_observer_;
+  MockReadAnythingLifecycleObserver read_anything_observer_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        OnEntryShown_ActivateObservers) {
-  AddObserver(&side_panel_controller_observer_);
+  AddObserver(&read_anything_observer_);
   SidePanelEntry* entry = browser()
                               ->GetActiveTabInterface()
                               ->GetTabFeatures()
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                                   SidePanelEntry::Id::kReadAnything));
   entry->set_last_open_trigger(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
 
-  EXPECT_CALL(side_panel_controller_observer_,
+  EXPECT_CALL(read_anything_observer_,
               Activate(true, std::optional<ReadAnythingOpenTrigger>(
                                  ReadAnythingOpenTrigger::kOmniboxChip)))
       .Times(1);
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        OnEntryHidden_ActivateObservers) {
-  AddObserver(&side_panel_controller_observer_);
+  AddObserver(&read_anything_observer_);
   SidePanelEntry* entry = browser()
                               ->GetActiveTabInterface()
                               ->GetTabFeatures()
@@ -130,16 +130,16 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                               ->GetEntryForKey(SidePanelEntry::Key(
                                   SidePanelEntry::Id::kReadAnything));
 
-  EXPECT_CALL(side_panel_controller_observer_, Activate(false, empty_trigger()))
+  EXPECT_CALL(read_anything_observer_, Activate(false, empty_trigger()))
       .Times(1);
   side_panel_controller()->OnEntryHidden(entry);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        TabWillDetach_NotfiyObservers) {
-  AddObserver(&side_panel_controller_observer_);
+  AddObserver(&read_anything_observer_);
 
-  EXPECT_CALL(side_panel_controller_observer_, OnTabWillDetach()).Times(1);
+  EXPECT_CALL(read_anything_observer_, OnTabWillDetach()).Times(1);
   browser()->GetActiveTabInterface()->Close();
 }
 
