@@ -19755,6 +19755,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TIPS_NOTIFICATIONS_BOTTOM_OMNIBOX_SUBTITLE" desc="Subtitle for the bottom omnibox tip notification.">
       Switch the position of your address bar for a customized browsing experience
     </message>
+
+    <!-- chrome://updater -->
+    <if expr="is_linux or is_macosx or is_win">
+      <message name="IDS_UPDATER_VIEW_RAW_DETAILS" desc="Title of the button to display the contents of a Chrome Updater log in JSON format">
+        Source
+      </message>
+    </if>
   </messages>
 </release>
 </grit>

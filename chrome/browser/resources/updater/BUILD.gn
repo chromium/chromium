@@ -15,14 +15,20 @@ build_webui("build") {
     "app.html.ts",
     "app.ts",
     "event_history.ts",
+    "event_list/raw_event_details.html.ts",
+    "event_list/raw_event_details.ts",
   ]
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "event_list/raw_event_details.css",
+  ]
 
   webui_context_type = "trusted"
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
   ]
   ts_composite = true
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/updater/updater_ui.h"
 
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/updater_resources.h"
 #include "chrome/grit/updater_resources_map.h"
 #include "content/public/browser/browser_context.h"
@@ -18,6 +19,7 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUpdaterHost);
+  source->AddLocalizedString("viewRawDetails", IDS_UPDATER_VIEW_RAW_DETAILS);
 
   webui::SetupWebUIDataSource(source, kUpdaterResources,
                               IDR_UPDATER_UPDATER_HTML);
