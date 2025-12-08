@@ -9,10 +9,12 @@
 @implementation ComposeboxTheme
 
 - (instancetype)initWithInputPlatePosition:
-    (ComposeboxInputPlatePosition)position {
+                    (ComposeboxInputPlatePosition)position
+                                 incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
     _inputPlatePosition = position;
+    _incognito = incognito;
   }
 
   return self;
@@ -37,6 +39,9 @@
 }
 
 - (UIColor*)inputPlateBackgroundColor {
+  if (self.incognito) {
+    return [UIColor colorNamed:kStaticGrey900Color];
+  }
   if (self.isTopInputPlate) {
     return [UIColor colorNamed:kTextfieldBackgroundColor];
   }
@@ -45,6 +50,9 @@
 }
 
 - (UIColor*)closeButtonBackgroundColor {
+  if (self.incognito) {
+    return [UIColor colorNamed:kStaticGrey900Color];
+  }
   return [UIColor colorNamed:kTextfieldBackgroundColor];
 }
 

@@ -15,6 +15,9 @@
 // The preferred position of the input plate.
 @property(nonatomic, readonly) ComposeboxInputPlatePosition inputPlatePosition;
 
+// Whether the theme is associated with an incognito session.
+@property(nonatomic, readonly) BOOL incognito;
+
 // Convenience check for input plate position top.
 @property(nonatomic, readonly) BOOL isTopInputPlate;
 
@@ -44,7 +47,8 @@
 
 // Creates a newc instance with the given configuration
 - (instancetype)initWithInputPlatePosition:
-    (ComposeboxInputPlatePosition)position;
+                    (ComposeboxInputPlatePosition)position
+                                 incognito:(BOOL)incognito;
 
 @end
 
