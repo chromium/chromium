@@ -6930,6 +6930,29 @@
             ]
         }
     ],
+    "ConnectionKeepAliveForHttp2": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithBindReceiversEverytime_20251111_CanaryDev",
+                    "params": {
+                        "kRebindReceiverEvent": "kOnlyOnConnectionClosedOrFailed"
+                    },
+                    "enable_features": [
+                        "ConnectionKeepAliveForHttp2",
+                        "RebindPreconnectReceivers"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContentVerifyJobUseJobVersionForHashing": [
         {
             "platforms": [
