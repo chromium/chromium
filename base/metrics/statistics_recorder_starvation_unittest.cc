@@ -237,9 +237,6 @@ class StatisticsRecorderStarvationTest
 // StatisticsRecorder. When switching to a Read/Write lock (see crbug/1123627),
 // we encountered such a starvation issue, where a thread trying to write to the
 // internal map was starved out for 10+ seconds by readers on iOS.
-// TODO(crbug.com/41489801): StatisticsRecorderNoStarvation continuously emits a
-// new histogram which can cause the app memory footprint to grow unbounded and
-// watchdog kill the unit test on iOS devices.
 TEST_P(StatisticsRecorderStarvationTest, StatisticsRecorderNoStarvation) {
   // Make sure there is no GlobalHistogramAllocator so that histograms emitted
   // during this test are all allocated on the heap, which makes it a lot easier
@@ -257,7 +254,7 @@ TEST_P(StatisticsRecorderStarvationTest, StatisticsRecorderNoStarvation) {
   StopThreads();
 
   // Verify that on average, on each thread, performing a read or write took
-  // less than 1ms. There is no meaning to 50ms -- this is just to ensure that
+  // less than 50ms. There is no meaning to 50ms -- this is just to ensure that
   // there is no egregious starvation effect (for example, we've seen crash
   // reports where readers were starving out writers for >10 seconds). Note that
   // the average time it took to perform one iteration is:
