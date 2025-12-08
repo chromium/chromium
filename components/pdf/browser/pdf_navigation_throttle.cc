@@ -153,7 +153,9 @@ PdfNavigationThrottle::WillStartRequest() {
           [](content::GlobalRenderFrameHostId frame_id,
              const content::OpenURLParams& params) {
             auto* embedder_frame = content::RenderFrameHost::FromID(frame_id);
-            if (!embedder_frame) {
+            if (!embedder_frame || embedder_frame->IsInLifecycleState(
+                                       content::RenderFrameHost::
+                                           LifecycleState::kPendingDeletion)) {
               return;
             }
 
