@@ -100,6 +100,10 @@ void FieldToValueFunction(const FieldDescriptor* field, Printer* printer) {
   using enum FieldDescriptor::Type;
   using enum FieldDescriptor::CppStringType;
   auto conversion_function = [&]() -> std::string {
+    if (field->options().debug_redact()) {
+      return "::proto_extras::ToValueForDebugRedact";
+    }
+
     switch (field->cpp_type()) {
       case CPPTYPE_DOUBLE:
       case CPPTYPE_FLOAT:
