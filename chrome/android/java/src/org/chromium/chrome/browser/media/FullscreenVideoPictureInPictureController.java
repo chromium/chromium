@@ -683,7 +683,7 @@ public class FullscreenVideoPictureInPictureController {
         private DismissActivityOnTabChangeObserver(Activity activity) {
             mActivity = activity;
             mCurrentTab = mActivityTabProvider.get();
-            mActivityTabProvider.addObserver(this);
+            mActivityTabProvider.asObservable().addObserver(this);
             registerTabEventObserver();
         }
 
@@ -700,7 +700,7 @@ public class FullscreenVideoPictureInPictureController {
                 mTabEventObserver = null;
             }
             mCurrentTab = null;
-            mActivityTabProvider.removeObserver(this);
+            mActivityTabProvider.asObservable().removeObserver(this);
         }
 
         @Override

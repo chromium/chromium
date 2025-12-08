@@ -68,12 +68,12 @@ public class PrivacySandbox3pcdRollbackMessageControllerTest {
 
     @Mock PrefService mPrefService;
     @Mock private Tab mTab;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private Context mContext;
     @Mock private MessageDispatcher mMessageDispatcher;
     @Mock private Profile mProfile;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private PrivacySandbox3pcdRollbackMessageController mController;
 
     private PropertyModel showMessage() {

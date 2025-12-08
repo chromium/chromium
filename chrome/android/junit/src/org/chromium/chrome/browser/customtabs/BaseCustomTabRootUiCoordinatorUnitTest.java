@@ -111,7 +111,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock private ActivityTabProvider mTabProvider;
     @Mock private CustomTabActivityTabProvider mCustomTabProvider;
     @Mock private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
@@ -161,6 +160,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private Supplier<BrowserServicesThemeColorProvider> mBrowserServicesColorProviderSupplier;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private AppCompatActivity mActivity;
     private BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
@@ -193,7 +193,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 new BaseCustomTabRootUiCoordinator(
                         mActivity,
                         mShareDelegateSupplier,
-                        mTabProvider,
+                        mActivityTabProvider,
                         mCustomTabProvider,
                         mProfileSupplier,
                         mBookmarkModelSupplier,

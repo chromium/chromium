@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -78,7 +78,7 @@ public class MerchantTrustSignalsCoordinator
     private final MerchantTrustSignalsStorageFactory mStorageFactory;
     private final NonNullObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private @Nullable OmniboxIconController mOmniboxIconController;
 
     /** Creates a new instance. */
@@ -88,7 +88,7 @@ public class MerchantTrustSignalsCoordinator
             BottomSheetController bottomSheetController,
             View layoutView,
             MessageDispatcher messageDispatcher,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Profile> profileSupplier,
             MerchantTrustMetrics metrics,
             IntentRequestTracker intentRequestTracker) {
@@ -116,7 +116,7 @@ public class MerchantTrustSignalsCoordinator
             Context context,
             WindowAndroid windowAndroid,
             MerchantTrustMessageScheduler messageScheduler,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             MerchantTrustSignalsDataProvider dataProvider,
             NonNullObservableSupplier<Profile> profileSupplier,
             MerchantTrustMetrics metrics,

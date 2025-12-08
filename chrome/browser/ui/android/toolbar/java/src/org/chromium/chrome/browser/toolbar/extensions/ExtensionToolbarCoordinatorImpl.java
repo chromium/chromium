@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -46,7 +47,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             WindowAndroid windowAndroid,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
             ObservableSupplier<@Nullable Profile> profileSupplier,
-            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
         mProfileSupplier = profileSupplier;

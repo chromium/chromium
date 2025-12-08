@@ -61,11 +61,11 @@ public class StatusBarColorControllerUnitTest {
     @Mock private StatusBarColorProvider mStatusBarColorProvider;
     @Mock private ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private EdgeToEdgeSystemBarColorHelper mSystemBarColorHelper;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final ObservableSupplierImpl<Integer> mOverviewColorSupplier =
             new ObservableSupplierImpl<>(Color.TRANSPARENT);
     private StatusBarColorController mStatusBarColorController;

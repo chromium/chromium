@@ -38,9 +38,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -49,7 +49,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -86,7 +85,6 @@ public class ChromeActivityUnitTest {
     @Mock TabModel mTabModel;
     @Mock Profile mProfile;
     @Mock Tab mActivityTab;
-    @Mock ActivityTabProvider mActivityTabProvider;
     @Mock ReadAloudController mReadAloudController;
     @Mock ReaderModeManager mReaderModeManager;
     @Mock FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
@@ -94,11 +92,10 @@ public class ChromeActivityUnitTest {
     @Mock EnterpriseInfo mEnterpriseInfo;
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
-    @Mock private ObservableSupplier<LayoutManagerImpl> mLayoutManagerSupplier;
     @Mock private TabStateThemeResourceProvider mThemeResourceProvider;
 
-    ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<ReadAloudController> mReadAloudControllerSupplier =
+            ObservableSuppliers.createMonotonic();
 
     class TestChromeActivity extends ChromeActivity {
         public TestChromeActivity() {
@@ -156,16 +153,6 @@ public class ChromeActivityUnitTest {
         protected void onPreCreate() {
             // Override the method in test so it can be accessible in test body.
             super.onPreCreate();
-        }
-
-        @Override
-        public ObservableSupplier<LayoutManagerImpl> getLayoutManagerSupplier() {
-            return mLayoutManagerSupplier;
-        }
-
-        @Override
-        public ActivityTabProvider getActivityTabProvider() {
-            return mActivityTabProvider;
         }
     }
 
@@ -237,9 +224,8 @@ public class ChromeActivityUnitTest {
     @EnableFeatures({ChromeFeatureList.PAGE_CONTENT_PROVIDER})
     public void testPageContentStructuredData() throws JSONException {
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        chromeActivity.getActivityTabProvider().setForTesting(mActivityTab);
         when(chromeActivity.getActivityTab()).thenReturn(mActivityTab);
-        when(chromeActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
-        when(mActivityTabProvider.get()).thenReturn(mActivityTab);
         when(mActivityTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
         WebContents webContents = mock(WebContents.class);
         when(webContents.getMainFrame()).thenReturn(mock(RenderFrameHost.class));

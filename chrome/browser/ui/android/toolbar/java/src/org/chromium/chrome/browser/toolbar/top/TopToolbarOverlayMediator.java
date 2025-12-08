@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -112,7 +113,7 @@ public class TopToolbarOverlayMediator {
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final ObservableSupplier<Long> mCaptureResourceIdSupplier;
     private float mViewportHeight;
 
@@ -124,8 +125,8 @@ public class TopToolbarOverlayMediator {
             PropertyModel model,
             Context context,
             LayoutStateProvider layoutStateProvider,
-            Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            Callback<DrawingInfo> progressInfoCallback,
+            NullableObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             TopUiThemeColorProvider topUiThemeColorProvider,
             ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -41,7 +42,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
             WindowAndroid windowAndroid,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
             ObservableSupplier<@Nullable Profile> profileSupplier,
-            ObservableSupplier<@Nullable Tab> currentTabSupplier) {
+            NullableObservableSupplier<Tab> currentTabSupplier) {
         mContainer = container;
 
         mModels = new ModelList();

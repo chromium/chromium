@@ -93,7 +93,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
         controller.addButtonVariant(AdaptiveToolbarButtonVariant.NEW_TAB, newTabButton);
         var addToBookmarks =
                 new AddToBookmarksToolbarButtonController(
-                        mActivityTabProvider,
+                        mActivityTabProvider.asObservable(),
                         mContext,
                         mActivityLifecycleDispatcher,
                         mTabBookmarkerSupplier,

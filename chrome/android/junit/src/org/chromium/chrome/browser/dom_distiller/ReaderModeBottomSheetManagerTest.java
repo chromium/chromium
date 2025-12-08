@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
@@ -52,7 +53,6 @@ public class ReaderModeBottomSheetManagerTest {
 
     @Mock private Profile mProfile;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private ActivityTabProvider mTabProvider;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
@@ -69,6 +69,7 @@ public class ReaderModeBottomSheetManagerTest {
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private ReaderModeBottomSheetManager mManager;
     private Activity mActivity;
     private GURL mGurl;
@@ -77,13 +78,13 @@ public class ReaderModeBottomSheetManagerTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivityTabProvider.setForTesting(mTab);
 
         mGurl = new GURL(DISTILLED_URL);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mTab.getUrl()).thenReturn(mGurl);
         when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mTabProvider.get()).thenReturn(mTab);
         when(mNavigationHandle.hasCommitted()).thenReturn(true);
         when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
 
@@ -108,10 +109,9 @@ public class ReaderModeBottomSheetManagerTest {
                 new ReaderModeBottomSheetManager(
                         mActivity,
                         mBottomSheetController,
-                        mTabProvider,
+                        mActivityTabProvider,
                         mBrowserControlsVisibilityManager,
                         mThemeColorProvider);
-        verify(mTabProvider).addObserver(mActivityTabObserverCaptor.capture());
         verify(mTab).addObserver(mEmptyTabObserverCaptor.capture());
     }
 
@@ -173,7 +173,7 @@ public class ReaderModeBottomSheetManagerTest {
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
 
         // When there's no active tab, the sheet should be hidden.
-        mActivityTabObserverCaptor.getValue().onResult(null);
+        mActivityTabProvider.setForTesting(null);
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
     }
 
@@ -234,7 +234,7 @@ public class ReaderModeBottomSheetManagerTest {
         createManagerAndGetTabObserver();
         verify(mTab).addObserver(any());
 
-        mActivityTabObserverCaptor.getValue().onResult(null);
+        mActivityTabProvider.setForTesting(null);
         verify(mTab).removeObserver(any());
     }
 
@@ -244,7 +244,7 @@ public class ReaderModeBottomSheetManagerTest {
         verify(mTab).addObserver(any());
 
         mManager.destroy();
-        verify(mTabProvider).removeObserver(any());
+        assertFalse(mActivityTabProvider.asObservable().hasObservers());
         verify(mTab).removeObserver(any());
         verify(mBrowserControlsVisibilityManager).removeObserver(any());
         mManager = null;

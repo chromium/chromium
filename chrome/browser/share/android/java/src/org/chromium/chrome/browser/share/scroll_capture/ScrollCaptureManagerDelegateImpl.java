@@ -36,7 +36,7 @@ public class ScrollCaptureManagerDelegateImpl implements ScrollCaptureManagerDel
     }
 
     @Override
-    public void setCurrentTab(Tab tab) {
+    public void setCurrentTab(@Nullable Tab tab) {
         mScrollCaptureCallback.setCurrentTab(tab);
     }
 

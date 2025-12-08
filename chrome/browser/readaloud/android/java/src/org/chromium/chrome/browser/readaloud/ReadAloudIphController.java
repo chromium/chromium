@@ -11,6 +11,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -32,7 +33,7 @@ public class ReadAloudIphController {
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
     private final ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
-    private final ObservableSupplier<Tab> mCurrentTabSupplier;
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private boolean mShowAppMenuTextBubble;
     private final Runnable mReadabilityUpdateListener = this::maybeShowReadAloudAppMenuIph;
 
@@ -53,7 +54,7 @@ public class ReadAloudIphController {
             Profile profile,
             View toolbarMenuButton,
             AppMenuHandler appMenuHandler,
-            ObservableSupplier<Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             boolean showAppMenuTextBubble) {
         this(
@@ -71,7 +72,7 @@ public class ReadAloudIphController {
             View toolbarMenuButton,
             AppMenuHandler appMenuHandler,
             UserEducationHelper userEducationHelper,
-            ObservableSupplier<Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             boolean showAppMenuTextBubble) {
         mToolbarMenuButton = toolbarMenuButton;

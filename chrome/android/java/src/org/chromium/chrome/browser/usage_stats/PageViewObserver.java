@@ -13,7 +13,7 @@ import android.content.Context;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -52,7 +52,7 @@ public class PageViewObserver extends EmptyTabObserver {
 
     PageViewObserver(
             Activity activity,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             EventTracker eventTracker,
             TokenTracker tokenTracker,
             SuspensionTracker suspensionTracker,

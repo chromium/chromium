@@ -50,7 +50,6 @@ import java.lang.ref.WeakReference;
 public class PdfPageIphControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private View mToolbarMenuButton;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private UserEducationHelper mUserEducationHelper;
@@ -62,6 +61,7 @@ public class PdfPageIphControllerUnitTest {
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private PdfPageIphController mController;
 
     @Before

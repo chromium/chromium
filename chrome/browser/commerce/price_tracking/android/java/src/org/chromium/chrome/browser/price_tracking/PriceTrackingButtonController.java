@@ -57,7 +57,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     /** Constructor. */
     public PriceTrackingButtonController(
             Context context,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             ModalDialogManager modalDialogManager,
             BottomSheetController bottomSheetController,
             SnackbarManager snackbarManager,

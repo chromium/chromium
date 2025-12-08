@@ -27,6 +27,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
@@ -400,7 +401,7 @@ public class AdaptiveToolbarButtonController
      *
      * @param tabSupplier Supplier of current tab.
      */
-    public void initializePageLoadMetricsRecorder(ObservableSupplier<@Nullable Tab> tabSupplier) {
+    public void initializePageLoadMetricsRecorder(NullableObservableSupplier<Tab> tabSupplier) {
         if (mPageLoadMetricsRecorder != null) return;
         mPageLoadMetricsRecorder =
                 new CurrentTabObserver(

@@ -104,7 +104,6 @@ import java.util.List;
 public class AppMenuPropertiesDelegateUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private NavigationController mNavigationController;
@@ -132,6 +131,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private ReadAloudController mReadAloudController;
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
@@ -145,6 +145,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Before
     public void setUp() {
         setupFeatureDefaults();
+        mActivityTabProvider.setForTesting(mTab);
 
         Context context =
                 new ContextThemeWrapper(
@@ -260,7 +261,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndEnabledDownloadPage() {
         when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
-        when(mActivityTabProvider.get()).thenReturn(mTab);
         assertTrue(mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(mTab));
     }
 
@@ -268,7 +268,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw600dp")
     public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndDisabledDownloadPage() {
         when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(false);
-        when(mActivityTabProvider.get()).thenReturn(mTab);
         assertFalse(mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(mTab));
     }
 
@@ -276,7 +275,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw320dp")
     public void testShouldShowDownloadPageMenuItem_Phone_WithFeatureOnAndEnabledDownloadPage() {
         when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
-        when(mActivityTabProvider.get()).thenReturn(mTab);
         assertFalse(mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(mTab));
     }
 
@@ -463,7 +461,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     private void setUpMocksForPageMenu() {
-        when(mActivityTabProvider.get()).thenReturn(mTab);
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
         doReturn(false).when(mAppMenuPropertiesDelegate).shouldCheckBookmarkStar(any(Tab.class));
         doReturn(false).when(mAppMenuPropertiesDelegate).shouldEnableDownloadPage(any(Tab.class));

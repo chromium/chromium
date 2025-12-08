@@ -26,6 +26,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -210,7 +211,7 @@ public class EdgeToEdgeControllerImpl
     public EdgeToEdgeControllerImpl(
             Activity activity,
             WindowAndroid windowAndroid,
-            ObservableSupplier<@Nullable Tab> tabObservableSupplier,
+            NullableObservableSupplier<Tab> tabObservableSupplier,
             @Nullable EdgeToEdgeOSWrapper edgeToEdgeOsWrapper,
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,

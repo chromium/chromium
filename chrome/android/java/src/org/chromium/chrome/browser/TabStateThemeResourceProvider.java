@@ -66,7 +66,7 @@ public class TabStateThemeResourceProvider extends ThemeResourceWrapper {
                     }
                 };
 
-        mActivityTabProvider.addSyncObserverAndCallIfNonNull(mTabCallback);
+        mActivityTabProvider.asObservable().addSyncObserverAndCallIfNonNull(mTabCallback);
         mLayoutManagerSupplier.addSyncObserverAndCallIfNonNull(mLayoutManagerChangeCallback);
 
         maybeUpdateOverlay(mLatestTab);
@@ -78,7 +78,7 @@ public class TabStateThemeResourceProvider extends ThemeResourceWrapper {
         if (mLayoutManager != null) {
             mLayoutManager.removeObserver(mLayoutStateObserver);
         }
-        mActivityTabProvider.removeObserver(mTabCallback);
+        mActivityTabProvider.asObservable().removeObserver(mTabCallback);
 
         super.destroy();
     }

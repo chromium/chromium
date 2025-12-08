@@ -1059,7 +1059,7 @@ public class ToolbarManager
                             mUserEducationHelper,
                             mPromoShownOneshotSupplier,
                             mLayoutStateProviderSupplier,
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             mTabModelSelectorSupplier,
                             browsingModeThemeColorProviderWithAdjustableTint,
                             mIncognitoStateProvider);
@@ -1111,7 +1111,7 @@ public class ToolbarManager
                             this::back,
                             browsingModeThemeColorProvider,
                             mIncognitoStateProvider,
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             mToolbarNavControlsEnabledSupplier,
                             /* onNavigationPopupShown= */ () -> {},
                             historyDelegate,
@@ -1143,7 +1143,7 @@ public class ToolbarManager
                             windowAndroid,
                             chromeAndroidTaskSupplier,
                             profileSupplier,
-                            tabProvider,
+                            tabProvider.asObservable(),
                             mTabCreatorManager.getTabCreator(false),
                             browsingModeThemeColorProvider);
         }
@@ -1340,7 +1340,8 @@ public class ToolbarManager
         mLocationBar.addOmniboxSuggestionsDropdownScrollListener(mStatusBarColorController);
 
         mProgressBarCoordinator =
-                new LoadProgressCoordinator(mActivityTabProvider, mToolbar.getProgressBar());
+                new LoadProgressCoordinator(
+                        mActivityTabProvider.asObservable(), mToolbar.getProgressBar());
         mToolbar.setToolbarColorObserver(statusBarColorController);
 
         mActivityTabTabObserver =
@@ -2012,7 +2013,7 @@ public class ToolbarManager
                         mTabStripTransitionDelegateSupplier,
                         onLongClickListener,
                         progressBar,
-                        mActivityTabProvider,
+                        mActivityTabProvider.asObservable(),
                         mToolbarNavControlsEnabledSupplier,
                         mBackButtonCoordinator,
                         mForwardButtonCoordinator,
@@ -2410,7 +2411,7 @@ public class ToolbarManager
                 bookmarkClickHandler,
                 customTabsBackClickHandler,
                 layoutManager,
-                mActivityTabProvider,
+                mActivityTabProvider.asObservable(),
                 mBrowserControlsSizer,
                 mTopUiThemeColorProvider,
                 mBottomToolbarControlsOffsetSupplier,

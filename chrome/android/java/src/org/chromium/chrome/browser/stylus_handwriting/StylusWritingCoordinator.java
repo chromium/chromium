@@ -8,9 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -33,7 +32,7 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
     public StylusWritingCoordinator(
             Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            ObservableSupplier<@Nullable Tab> activityTabProvider) {
+            NullableObservableSupplier<Tab> activityTabProvider) {
         mActivity = activity;
         mStylusWritingController = new StylusWritingController(mActivity.getApplicationContext());
         if (StylusHandwritingFeatureMap.isEnabledOrDefault(

@@ -4026,7 +4026,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (mMinimizeAppAndCloseTabBackPressHandler == null) {
             mMinimizeAppAndCloseTabBackPressHandler =
                     new MinimizeAppAndCloseTabBackPressHandler(
-                            getActivityTabProvider(),
+                            getActivityTabProvider().asObservable(),
                             this::backShouldCloseTab,
                             TabAssociatedApp::isOpenedFromExternalApp,
                             this::closeTabUponMinimization,

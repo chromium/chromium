@@ -538,7 +538,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                 profile,
                                                 getToolbarManager().getMenuButtonView(),
                                                 mAppMenuCoordinator.getAppMenuHandler(),
-                                                mActivityTabProvider,
+                                                mActivityTabProvider.asObservable(),
                                                 mReadAloudControllerSupplier,
                                                 /* showAppMenuTextBubble= */ false);
                             }
@@ -766,7 +766,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                     org.chromium.chrome.browser.web_app_header.R.id
                                             .web_app_header_layout),
                             desktopWindowStateManager,
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             mWebAppThemeColorProvider.get(),
                             intentDataProvider,
                             getScrimManager(),
@@ -800,7 +800,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             mActivity.findViewById(
                                     DesktopPopupHeaderUtils.getHeaderViewStubViewId()),
                             desktopWindowStateManager,
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             intentDataProvider.getCustomTabMode() == INCOGNITO,
                             mActivity);
         }

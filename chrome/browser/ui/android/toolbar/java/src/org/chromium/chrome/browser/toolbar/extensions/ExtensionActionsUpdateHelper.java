@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -48,7 +49,7 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
     }
 
     private final ObservableSupplier<@Nullable Profile> mProfileSupplier;
-    private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final ActionsUpdateDelegate mActionsUpdateDelegate;
     private final ModelList mModels;
 
@@ -63,7 +64,7 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
     public ExtensionActionsUpdateHelper(
             ModelList models,
             ObservableSupplier<@Nullable Profile> profileSupplier,
-            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            NullableObservableSupplier<Tab> currentTabSupplier,
             ActionsUpdateDelegate delegate) {
         mModels = models;
         mProfileSupplier = profileSupplier;

@@ -8,7 +8,7 @@ import android.content.Context;
 
 import androidx.core.graphics.Insets;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -33,7 +33,7 @@ class DesktopPopupHeaderMediator implements DesktopWindowStateManager.AppHeaderO
     public DesktopPopupHeaderMediator(
             PropertyModel model,
             DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             Context context,
             boolean isIncognito) {
         mModel = model;

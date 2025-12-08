@@ -889,7 +889,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mCompositorViewHolderSupplier.get(),
                         mCallbackController.makeCancelable(
                                 () -> mLayoutManager.getActiveLayout().requestUpdate()),
-                        mActivityTabProvider,
+                        mActivityTabProvider.asObservable(),
                         mInsetObserver,
                         new BackActionDelegate() {
                             @Override
@@ -1194,7 +1194,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mAppMenuCoordinator,
                         mActivityLifecycleDispatcher,
                         profile,
-                        mActivityTabProvider,
+                        mActivityTabProvider.asObservable(),
                         mIsInOverviewModeSupplier,
                         mToolbarManager.getMenuButtonView());
         mReadAloudIphController =
@@ -1203,7 +1203,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         profile,
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler(),
-                        mActivityTabProvider,
+                        mActivityTabProvider.asObservable(),
                         mReadAloudControllerSupplier,
                         /* showAppMenuTextBubble= */ true);
         mReadLaterIphController =
@@ -1275,7 +1275,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         new LinkToTextIphController(
-                mActivityTabProvider, mTabModelSelectorSupplier.get(), mProfileSupplier);
+                mActivityTabProvider.asObservable(),
+                mTabModelSelectorSupplier.get(),
+                mProfileSupplier);
 
         Tab tab = mActivityTabProvider.get();
 
@@ -1297,7 +1299,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mActivity,
                             profile,
                             mAppMenuCoordinator.getAppMenuHandler(),
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             mToolbarManager.getMenuButtonView(),
                             () -> {
                                 mTabCreatorManagerSupplier
@@ -1904,7 +1906,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mBookmarkOpener,
                             mBookmarkManagerOpenerSupplier,
                             mTopControlsStacker,
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             getTopUiThemeColorProvider());
             if (mBookmarkBarVisibilityProvider != null) {
                 mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarCoordinator);

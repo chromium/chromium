@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 
 import androidx.core.graphics.Insets;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -57,8 +58,8 @@ public class ReloadButtonCoordinator extends ToolbarChildButton {
      */
     public ReloadButtonCoordinator(
             ImageButton view,
-            ReloadButtonCoordinator.Delegate delegate,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            Delegate delegate,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             ThemeColorProvider themeColorProvider,

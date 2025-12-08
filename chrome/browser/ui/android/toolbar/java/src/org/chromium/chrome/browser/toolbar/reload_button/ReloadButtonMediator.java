@@ -18,6 +18,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -72,7 +73,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
             PropertyModel model,
             ReloadButtonCoordinator.Delegate delegate,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> ntpLoadingSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             Callback<String> showToast,

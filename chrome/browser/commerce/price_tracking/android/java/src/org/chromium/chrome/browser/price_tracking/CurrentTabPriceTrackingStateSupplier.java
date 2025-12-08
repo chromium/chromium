@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.price_tracking;
 import com.google.common.primitives.UnsignedLongs;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -38,7 +39,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
     private @Nullable CommerceSubscription mCurrentTabCommerceSubscription;
     private @Nullable ShoppingService mShoppingService;
 
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mOnProfileUpdatedCallback = this::onProfileUpdated;
     private final SubscriptionsObserver mSubscriptionObserver =
@@ -66,7 +67,7 @@ public class CurrentTabPriceTrackingStateSupplier extends ObservableSupplierImpl
      * @param profileSupplier Profile supplier, used to retrieve a ShoppingService from it.
      */
     public CurrentTabPriceTrackingStateSupplier(
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Profile> profileSupplier) {
         super(false);
         mTabSupplier = tabSupplier;

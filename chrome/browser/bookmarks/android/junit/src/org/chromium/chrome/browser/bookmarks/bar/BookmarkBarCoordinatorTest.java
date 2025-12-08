@@ -46,8 +46,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -115,7 +115,6 @@ public class BookmarkBarCoordinatorTest {
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private TopControlsStacker mTopControlsStacker;
-    @Mock private ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private BookmarkBarCoordinator mCoordinator;
@@ -194,7 +193,7 @@ public class BookmarkBarCoordinatorTest {
                         mBookmarkOpener,
                         new ObservableSupplierImpl<>(mBookmarkManagerOpener),
                         mTopControlsStacker,
-                        mCurrentTabSupplier,
+                        ObservableSuppliers.alwaysNull(),
                         mTopUiThemeColorProvider);
 
         assertNotNull("Verify view stub inflation during construction.", mView);

@@ -71,7 +71,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             mSetter = setter;
             mActivityTabProvider = activityTabProvider;
             mTabModelSelector = tabModelSelector;
-            activityTabProvider.addObserver(mActivityTabObserver);
+            activityTabProvider.asObservable().addObserver(mActivityTabObserver);
         }
 
         void destroy() {
@@ -79,7 +79,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                 mCallbackController.destroy();
                 mCallbackController = null;
             }
-            mActivityTabProvider.removeObserver(mActivityTabObserver);
+            mActivityTabProvider.asObservable().removeObserver(mActivityTabObserver);
             // Trigger a null new tab selection to effectively unregister the observer from the old
             // tab.
             mActivityTabObserver.onResult(null);

@@ -71,7 +71,6 @@ import java.util.function.Supplier;
 @DisableFeatures(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT)
 public class CustomTabAppMenuPropertiesDelegateUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
     @Mock private NavigationController mNavigationController;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
@@ -88,6 +87,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
 
     @Mock private Verifier mVerifier;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
             new ObservableSupplierImpl<>();
     private final Supplier<ReadAloudController> mReadAloudControllerSupplier =
@@ -95,7 +95,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
 
     @Before
     public void setUp() {
-        when(mActivityTabProvider.get()).thenReturn(mTab);
+        mActivityTabProvider.setForTesting(mTab);
         when(mTab.getUrl()).thenReturn(new GURL("https://google.com"));
         when(mTab.isNativePage()).thenReturn(false);
     }

@@ -14,7 +14,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -48,7 +48,7 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
     }
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final TabObserver mTabObserver;
     private final LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private final InsetObserver mInsetObserver;
@@ -83,7 +83,7 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
      */
     public TopInsetCoordinator(
             Context context,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mInsetObserver = insetObserver;

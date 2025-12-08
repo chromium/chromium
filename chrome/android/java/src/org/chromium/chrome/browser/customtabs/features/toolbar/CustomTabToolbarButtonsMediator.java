@@ -294,16 +294,18 @@ class CustomTabToolbarButtonsMediator
         // Passing OneshotSupplier effectively delays UserEducationHelper#requestShowIph()
         // till Profile becomes reachable via the current Tab.
         var profileSupplier = new OneshotSupplierImpl<Profile>();
-        mTabProvider.addSyncObserver(
-                new Callback<@Nullable Tab>() {
-                    @Override
-                    public void onResult(@Nullable Tab currentTab) {
-                        if (currentTab == null) return;
+        mTabProvider
+                .asObservable()
+                .addSyncObserver(
+                        new Callback<@Nullable Tab>() {
+                            @Override
+                            public void onResult(@Nullable Tab currentTab) {
+                                if (currentTab == null) return;
 
-                        mTabProvider.removeObserver(this);
-                        profileSupplier.set(currentTab.getProfile());
-                    }
-                });
+                                mTabProvider.asObservable().removeObserver(this);
+                                profileSupplier.set(currentTab.getProfile());
+                            }
+                        });
         return profileSupplier;
     }
 

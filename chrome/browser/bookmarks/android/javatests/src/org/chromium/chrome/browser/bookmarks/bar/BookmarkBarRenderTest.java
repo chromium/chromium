@@ -26,8 +26,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -35,7 +35,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
@@ -96,10 +95,8 @@ public class BookmarkBarRenderTest {
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private TopControlsStacker mTopControlsStacker;
-    @Mock private ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
-    private BookmarkBarCoordinator mCoordinator;
     private BookmarkBar mView;
 
     public BookmarkBarRenderTest(boolean nightModeEnabled) {
@@ -123,24 +120,23 @@ public class BookmarkBarRenderTest {
                     viewStub.setOnInflateListener((stub, view) -> mView = (BookmarkBar) view);
                     contentView.addView(viewStub, new LayoutParams(MATCH_PARENT, WRAP_CONTENT));
 
-                    mCoordinator =
-                            new BookmarkBarCoordinator(
-                                    activity,
-                                    mActivityLifecycleDispatcher,
-                                    mLayoutManager,
-                                    /* requestUpdate= */ () -> {},
-                                    mFullscreenManager,
-                                    mResourceManager,
-                                    mBrowserControlsManager,
-                                    /* heightChangeCallback= */ result -> {},
-                                    /* profileSupplier= */ new ObservableSupplierImpl<>(),
-                                    viewStub,
-                                    mCurrentTab,
-                                    mBookmarkOpener,
-                                    new ObservableSupplierImpl<>(mBookmarkManagerOpener),
-                                    mTopControlsStacker,
-                                    mCurrentTabSupplier,
-                                    mTopUiThemeColorProvider);
+                    new BookmarkBarCoordinator(
+                            activity,
+                            mActivityLifecycleDispatcher,
+                            mLayoutManager,
+                            /* requestUpdate= */ () -> {},
+                            mFullscreenManager,
+                            mResourceManager,
+                            mBrowserControlsManager,
+                            /* heightChangeCallback= */ result -> {},
+                            /* profileSupplier= */ new ObservableSupplierImpl<>(),
+                            viewStub,
+                            mCurrentTab,
+                            mBookmarkOpener,
+                            new ObservableSupplierImpl<>(mBookmarkManagerOpener),
+                            mTopControlsStacker,
+                            ObservableSuppliers.alwaysNull(),
+                            mTopUiThemeColorProvider);
 
                     assertNotNull(mView);
                     ChromeRenderTestRule.sanitize(mView);

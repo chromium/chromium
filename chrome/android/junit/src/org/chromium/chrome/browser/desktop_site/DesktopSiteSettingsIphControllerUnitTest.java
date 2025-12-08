@@ -74,7 +74,6 @@ public class DesktopSiteSettingsIphControllerUnitTest {
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private WebsitePreferenceBridge mWebsitePreferenceBridge;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private View mToolbarMenuButton;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private UserEducationHelper mUserEducationHelper;
@@ -88,6 +87,7 @@ public class DesktopSiteSettingsIphControllerUnitTest {
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private DesktopSiteSettingsIphController mController;
     private GURL mTabUrl;
     private Context mContext;

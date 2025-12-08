@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.blink.mojom.DisplayMode;
@@ -51,7 +52,7 @@ class WebAppHeaderLayoutMediator
     private final PropertyModel mModel;
     private final WebAppHeaderDelegate mHeaderDelegate;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final ScrimManager mScrimManager;
     private final Supplier<List<Rect>> mHeaderControlPositionSupplier;
     private final ObservableSupplierImpl<Integer> mWidthSupplier;
@@ -93,7 +94,7 @@ class WebAppHeaderLayoutMediator
             WebAppHeaderDelegate headerDelegate,
             DesktopWindowStateManager desktopWindowStateManager,
             ScrimManager scrimManager,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             Supplier<List<Rect>> headerControlPositionSupplier,
             ThemeColorProvider themeColorProvider,
             int webAppHeaderMinHeightFromResources,

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
@@ -53,7 +54,7 @@ public class EdgeToEdgeControllerFactory {
     public static @Nullable EdgeToEdgeController create(
             Activity activity,
             WindowAndroid windowAndroid,
-            ObservableSupplier<Tab> tabObservableSupplier,
+            NullableObservableSupplier<Tab> tabObservableSupplier,
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,

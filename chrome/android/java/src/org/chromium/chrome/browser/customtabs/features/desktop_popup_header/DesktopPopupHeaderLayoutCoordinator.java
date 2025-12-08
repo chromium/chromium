@@ -8,9 +8,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewStub;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,7 +27,7 @@ public class DesktopPopupHeaderLayoutCoordinator {
     public DesktopPopupHeaderLayoutCoordinator(
             ViewStub viewStub,
             DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             boolean isIncognito,
             Context context) {
         viewStub.setLayoutResource(DesktopPopupHeaderUtils.getHeaderLayoutId());

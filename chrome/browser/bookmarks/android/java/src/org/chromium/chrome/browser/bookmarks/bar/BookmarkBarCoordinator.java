@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -148,7 +149,7 @@ public class BookmarkBarCoordinator
             BookmarkOpener bookmarkOpener,
             ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             TopControlsStacker topControlsStacker,
-            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            NullableObservableSupplier<Tab> currentTabSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider) {
         mContext = activity;
         mRequestUpdate = requestUpdate;

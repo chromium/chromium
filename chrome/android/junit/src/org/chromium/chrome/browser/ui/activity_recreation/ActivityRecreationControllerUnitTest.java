@@ -57,7 +57,6 @@ public class ActivityRecreationControllerUnitTest {
     @Mock private ToolbarManager mToolbarManager;
     @Mock private LayoutManager mLayoutManager;
     @Mock private Handler mHandler;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mActivityTab;
     @Mock private WebContents mWebContents;
     @Mock private ContentView mContentView;
@@ -65,6 +64,7 @@ public class ActivityRecreationControllerUnitTest {
     @Mock private Bundle mSavedInstanceState;
     @Mock private ExclusiveAccessManager mExclusiveAccessManager;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private ActivityRecreationController mActivityRecreationController;
 
     @Before
@@ -73,11 +73,11 @@ public class ActivityRecreationControllerUnitTest {
         ViewAndroidDelegate viewAndroidDelegate =
                 ViewAndroidDelegate.createBasicDelegate(mContentView);
         KeyboardVisibilityDelegate.setInstance(mKeyboardVisibilityDelegate);
+        mActivityTabProvider.setForTesting(mActivityTab);
 
         doNothing().when(mToolbarManager).setUrlBarFocusAndText(anyBoolean(), anyInt(), any());
         doNothing().when(mLayoutManager).addObserver(any());
         doReturn(true).when(mLayoutManager).isLayoutStartingToShow(LayoutType.BROWSING);
-        doReturn(mActivityTab).when(mActivityTabProvider).get();
         doReturn(context).when(mActivityTab).getContext();
         doReturn(mWebContents).when(mActivityTab).getWebContents();
         doReturn(viewAndroidDelegate).when(mWebContents).getViewAndroidDelegate();

@@ -61,10 +61,10 @@ public class FullscreenHtmlApiHandlerLegacyUnitTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private ContentView mContentView;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private FullscreenHtmlApiHandlerLegacy mFullscreenHtmlApiHandlerLegacy;
     private ObservableSupplierImpl<Boolean> mAreControlsHidden;
     private UserDataHost mHost;

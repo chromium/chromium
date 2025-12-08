@@ -88,7 +88,6 @@ public class CustomTabMinimizationManagerUnitTest {
                     JUnitTestGURLs.SEARCH_URL);
 
     @Spy private AppCompatActivity mActivity;
-    @Mock private ActivityTabProvider mTabProvider;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
@@ -100,6 +99,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private CustomTabMinimizeDelegate mOtherMinimizeDelegate;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     private CustomTabMinimizationManager mManager;
 
@@ -109,16 +109,16 @@ public class CustomTabMinimizationManagerUnitTest {
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
 
         CustomTabsConnection.setInstanceForTesting(mConnection);
+        mActivityTabProvider.setForTesting(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.getTitle()).thenReturn(TITLE);
-        when(mTabProvider.get()).thenReturn(mTab);
         when(mActivity.enterPictureInPictureMode(any(PictureInPictureParams.class)))
                 .thenReturn(true);
         mManager =
                 new CustomTabMinimizationManager(
                         mActivity,
-                        mTabProvider,
+                        mActivityTabProvider,
                         mFeatureEngagementDelegate,
                         mCloseTabRunnable,
                         mIntentData,
@@ -309,7 +309,7 @@ public class CustomTabMinimizationManagerUnitTest {
         var manager =
                 new CustomTabMinimizationManager(
                         mActivity,
-                        mTabProvider,
+                        mActivityTabProvider,
                         mFeatureEngagementDelegate,
                         mCloseTabRunnable,
                         mIntentData,

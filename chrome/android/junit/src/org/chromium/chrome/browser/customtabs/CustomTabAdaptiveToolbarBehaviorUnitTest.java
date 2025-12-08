@@ -63,14 +63,13 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Runnable mOpenInBrowserRunnable;
     @Mock private Runnable mRegisterVoiceSearchRunnable;
     @Mock private Drawable mOpenInBrowserButton;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private CustomTabAdaptiveToolbarBehavior mBehavior;
-    private List<CustomButtonParams> mToolbarCustomButtons;
 
     @Before
     public void setUp() {

@@ -39,12 +39,12 @@ public class CustomTabAppMenuHelperUnitTest {
     private static final String PACKAGE_NAME = "org.foo.bar";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock private Supplier<Profile> mProfileSupplier;
     @Mock private AppMenuCoordinator mAppMenuCoordinator;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private Activity mActivity;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     @Before
     public void setUp() {

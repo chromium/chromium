@@ -11,6 +11,7 @@ import android.view.View;
 import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -55,7 +56,7 @@ class ExtensionActionListMediator implements Destroyable {
             ModelList models,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
             ObservableSupplier<@Nullable Profile> profileSupplier,
-            ObservableSupplier<@Nullable Tab> currentTabSupplier) {
+            NullableObservableSupplier<Tab> currentTabSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mModels = models;

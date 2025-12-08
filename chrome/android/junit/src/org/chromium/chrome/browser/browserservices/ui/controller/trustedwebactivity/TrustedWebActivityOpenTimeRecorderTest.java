@@ -46,26 +46,26 @@ public class TrustedWebActivityOpenTimeRecorderTest {
 
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock CurrentPageVerifier mCurrentPageVerifier;
-    @Mock ActivityTabProvider mTabProvider;
     @Captor ArgumentCaptor<Runnable> mVerificationObserverCaptor;
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock WebContents mWebContents;
     @Mock Tab mTab;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private TrustedWebActivityOpenTimeRecorder mRecorder;
 
     @Before
     public void setUp() {
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
+        mActivityTabProvider.setForTesting(mTab);
 
         doNothing()
                 .when(mCurrentPageVerifier)
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
         mRecorder =
                 new TrustedWebActivityOpenTimeRecorder(
-                        mCurrentPageVerifier, mTabProvider, mLifecycleDispatcher);
+                        mCurrentPageVerifier, mActivityTabProvider, mLifecycleDispatcher);
 
-        when(mTabProvider.get()).thenReturn(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
     }
 

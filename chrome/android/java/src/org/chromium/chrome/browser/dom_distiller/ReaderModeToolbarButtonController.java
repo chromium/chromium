@@ -11,7 +11,6 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.CallbackController;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -19,7 +18,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -40,8 +38,6 @@ import java.util.function.Supplier;
 @NullMarked
 public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
         implements ReaderModeActionRateLimiter.Observer {
-    private final Context mContext;
-    private final ActivityTabProvider mActivityTabProvider;
     private final Supplier<@Nullable ReaderModeIphController> mReaderModeIphControllerSupplier;
     private final TabSupplierObserver mActivityTabObserver;
     private final ButtonSpec mEntryPointSpec;
@@ -59,18 +55,14 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
      * Creates a new instance of {@code ReaderModeToolbarButtonController}.
      *
      * @param context The context for retrieving string resources.
-     * @param profileSupplier Supplies the current profile.
-     * @param activityTabSupplier Supplier for the current active tab.
+     * @param activityTabProvider Supplier for the current active tab.
      * @param modalDialogManager Modal dialog manager, used to disable the button when a dialog is
      *     visible. Can be null to disable this behavior.
-     * @param bottomSheetController The bottom sheet controller, used to show the reader mode bottom
-     *     sheet.
      * @param readerModeIphControllerSupplier Supplies the reader mode IPH controller, null for
      *     CCTs.
      */
     public ReaderModeToolbarButtonController(
             Context context,
-            ObservableSupplier<Profile> profileSupplier,
             ActivityTabProvider activityTabProvider,
             ModalDialogManager modalDialogManager,
             Supplier<@Nullable ReaderModeIphController> readerModeIphControllerSupplier) {
@@ -85,11 +77,9 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
                 AdaptiveToolbarButtonVariant.READER_MODE,
                 /* tooltipTextResId= */ R.string.show_reading_mode_text);
 
-        mContext = context;
-        mActivityTabProvider = activityTabProvider;
         mReaderModeIphControllerSupplier = readerModeIphControllerSupplier;
         mActivityTabObserver =
-                new TabSupplierObserver(mActivityTabProvider) {
+                new TabSupplierObserver(activityTabProvider.asObservable()) {
                     @Override
                     public void onUrlUpdated(@Nullable Tab tab) {
                         GURL currentUrl = tab == null ? null : tab.getUrl();
@@ -108,8 +98,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
         mEntryPointSpec = mButtonData.getButtonSpec();
         mExitPointSpec =
                 new ButtonSpec(
-                        AppCompatResources.getDrawable(
-                                mContext, R.drawable.ic_mobile_friendly_24dp),
+                        AppCompatResources.getDrawable(context, R.drawable.ic_mobile_friendly_24dp),
                         /* onClickListener= */ this,
                         /* onLongClickListener= */ null,
                         /* contentDescription= */ context.getString(

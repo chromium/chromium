@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -72,8 +71,6 @@ public class ChromeMessageQueueMediatorTest {
 
     @Mock private ModalDialogManager mModalDialogManager;
 
-    @Mock private ActivityTabProvider mActivityTabProvider;
-
     @Mock private Tab mTab;
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -83,6 +80,7 @@ public class ChromeMessageQueueMediatorTest {
     @Mock private Handler mQueueHandler;
 
     private ChromeMessageQueueMediator mMediator;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     @Before
     public void setUp() {
@@ -209,7 +207,7 @@ public class ChromeMessageQueueMediatorTest {
         visibilitySupplier.set(true);
         when(mBrowserControlsManager.getBrowserControlHiddenRatio()).thenReturn(0f);
 
-        when(mActivityTabProvider.get()).thenReturn(mTab);
+        mActivityTabProvider.setForTesting(mTab);
         when(mTab.isDestroyed()).thenReturn(false);
         // Mock TabBrowserControlsConstraintsHelper to avoid NPE.
         when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
@@ -359,13 +357,12 @@ public class ChromeMessageQueueMediatorTest {
     /** Test the queue can be suspended and resumed correctly when tab is un/available. */
     @Test
     public void testNoValidTab() {
-        ArgumentCaptor<Callback<Tab>> captor = ArgumentCaptor.forClass(Callback.class);
+        mActivityTabProvider.setForTesting(mTab);
         initMediator();
-        verify(mActivityTabProvider).addObserver(captor.capture());
-        captor.getValue().onResult(null);
+        mActivityTabProvider.setForTesting(null);
         verify(mMessageDispatcher).suspend();
 
-        captor.getValue().onResult(mTab);
+        mActivityTabProvider.setForTesting(mTab);
         verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
     }
 
@@ -373,7 +370,7 @@ public class ChromeMessageQueueMediatorTest {
     @Test
     public void testTabDestroyed() {
         initMediator();
-        when(mActivityTabProvider.get()).thenReturn(mTab);
+        mActivityTabProvider.setForTesting(mTab);
         when(mTab.isDestroyed()).thenReturn(true);
 
         // Expect no error.

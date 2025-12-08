@@ -77,11 +77,11 @@ public class PageContentProviderImplUnitTest {
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private WebContents mWebContents;
     @Mock private Tab mTab;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private InnerTextBridge.Natives mInnerTextNatives;
     @Mock private PageContentProtoProviderBridge.Natives mPageContentProtoProviderNatives;
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private PageContentProvider mProvider;
 
     @Before
@@ -95,10 +95,10 @@ public class PageContentProviderImplUnitTest {
 
         InnerTextBridgeJni.setInstanceForTesting(mInnerTextNatives);
         PageContentProtoProviderBridgeJni.setInstanceForTesting(mPageContentProtoProviderNatives);
+        mActivityTabProvider.setForTesting(mTab);
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
-        when(mActivityTabProvider.get()).thenReturn(mTab);
     }
 
     @Test

@@ -13,6 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -82,7 +83,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
      *     changes and checking if the current tab is bookmarked.
      */
     public AddToBookmarksToolbarButtonController(
-            ObservableSupplier<@Nullable Tab> activeTabSupplier,
+            NullableObservableSupplier<Tab> activeTabSupplier,
             Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Supplier<TabBookmarker> tabBookmarkerSupplier,

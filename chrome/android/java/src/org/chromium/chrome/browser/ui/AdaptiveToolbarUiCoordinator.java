@@ -128,7 +128,8 @@ public class AdaptiveToolbarUiCoordinator {
         IdentityDiscController identityDiscController =
                 new IdentityDiscController(mContext, profileSupplier);
         mCurrentTabPriceTrackingStateSupplier =
-                new CurrentTabPriceTrackingStateSupplier(mActivityTabProvider, profileSupplier);
+                new CurrentTabPriceTrackingStateSupplier(
+                        mActivityTabProvider.asObservable(), profileSupplier);
 
         PriceInsightsButtonController priceInsightsButtonController =
                 new PriceInsightsButtonController(
@@ -157,7 +158,6 @@ public class AdaptiveToolbarUiCoordinator {
         ReaderModeToolbarButtonController readerModeToolbarButtonController =
                 new ReaderModeToolbarButtonController(
                         mContext,
-                        mProfileSupplier,
                         mActivityTabProvider,
                         mModalDialogManagerSupplier.get(),
                         readerModeIphControllerSupplier);
@@ -218,7 +218,7 @@ public class AdaptiveToolbarUiCoordinator {
         mContextualPageActionController =
                 new ContextualPageActionController(
                         profileSupplier,
-                        mActivityTabProvider,
+                        mActivityTabProvider.asObservable(),
                         adaptiveToolbarButtonController,
                         () -> ShoppingServiceFactory.getForProfile(profileSupplier.get()),
                         bookmarkModelSupplier);

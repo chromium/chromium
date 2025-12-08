@@ -10,6 +10,7 @@ import android.view.ViewStub;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
@@ -44,7 +45,7 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             WindowAndroid windowAndroid,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
             ObservableSupplier<@Nullable Profile> profileSupplier,
-            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
         ExtensionToolbarCoordinator coordinator =
@@ -77,7 +78,7 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             WindowAndroid windowAndroid,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
             ObservableSupplier<@Nullable Profile> profileSupplier,
-            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider);
 

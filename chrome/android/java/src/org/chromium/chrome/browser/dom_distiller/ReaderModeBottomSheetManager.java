@@ -89,7 +89,7 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);
         mThemeColorProvider = themeColorProvider;
-        mTabProvider.addObserver(mActivityTabTabObserver);
+        mTabProvider.asObservable().addObserver(mActivityTabTabObserver);
         mActivityTabTabObserver.onResult(mTabProvider.get());
     }
 
@@ -98,7 +98,7 @@ public class ReaderModeBottomSheetManager extends EmptyTabObserver implements De
     @Override
     public void destroy() {
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
-        mTabProvider.removeObserver(mActivityTabTabObserver);
+        mTabProvider.asObservable().removeObserver(mActivityTabTabObserver);
         removeTabObservers();
         mActiveTab = null;
         hide();

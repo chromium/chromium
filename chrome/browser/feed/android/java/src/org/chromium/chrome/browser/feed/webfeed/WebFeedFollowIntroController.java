@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -91,7 +91,7 @@ public class WebFeedFollowIntroController {
             ChromeSharedPreferences.getInstance();
     private final Tracker mFeatureEngagementTracker;
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final WebFeedRecommendationFollowAcceleratorController
             mRecommendationFollowAcceleratorController;
     private final RecommendationInfoFetcher mRecommendationFetcher;
@@ -121,7 +121,7 @@ public class WebFeedFollowIntroController {
             Activity activity,
             Profile profile,
             AppMenuHandler appMenuHandler,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             View menuButtonAnchorView,
             FeedLauncher feedLauncher,
             ModalDialogManager dialogManager,

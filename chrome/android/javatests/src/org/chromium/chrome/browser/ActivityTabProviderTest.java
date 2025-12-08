@@ -96,11 +96,13 @@ public class ActivityTabProviderTest {
                 () -> {
                     mActivity = mActivityTestRule.getActivity();
                     mProvider = mActivity.getActivityTabProvider();
-                    mProvider.addObserver(
-                            tab -> {
-                                mActivityTab = tab;
-                                mActivityTabChangedHelper.notifyCalled();
-                            });
+                    mProvider
+                            .asObservable()
+                            .addObserver(
+                                    tab -> {
+                                        mActivityTab = tab;
+                                        mActivityTabChangedHelper.notifyCalled();
+                                    });
                 });
         mActivityTabChangedHelper.waitForCallback(0);
         assertEquals(
@@ -128,7 +130,7 @@ public class ActivityTabProviderTest {
         CallbackHelper helper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProvider.addObserver(tab -> helper.notifyCalled());
+                    mProvider.asObservable().addObserver(tab -> helper.notifyCalled());
                 });
         helper.waitForCallback(0);
 

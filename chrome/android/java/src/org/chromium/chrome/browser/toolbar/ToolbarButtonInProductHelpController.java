@@ -10,7 +10,7 @@ import android.view.View;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -67,7 +67,7 @@ public class ToolbarButtonInProductHelpController
     private final AppMenuHandler mAppMenuHandler;
     private final UserEducationHelper mUserEducationHelper;
     private final Profile mProfile;
-    private final Supplier<@Nullable Tab> mCurrentTabSupplier;
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final Supplier<Boolean> mIsInOverviewModeSupplier;
 
     /**
@@ -87,7 +87,7 @@ public class ToolbarButtonInProductHelpController
             AppMenuCoordinator appMenuCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Profile profile,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             Supplier<Boolean> isInOverviewModeSupplier,
             View menuButtonAnchorView) {
         mActivity = activity;

@@ -166,7 +166,6 @@ public class CompositorViewHolderUnitTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private ToolbarControlContainer mControlContainer;
     @Mock private View mContainerView;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private android.content.res.Resources mResources;
     @Mock private WebContents mWebContents;
     @Mock private ContentView mContentView;
@@ -188,6 +187,7 @@ public class CompositorViewHolderUnitTest {
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private Context mContext;
     private MockTabModelSelector mTabModelSelector;
     private Tab mTab;

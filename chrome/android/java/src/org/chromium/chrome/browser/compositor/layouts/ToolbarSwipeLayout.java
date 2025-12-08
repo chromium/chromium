@@ -21,6 +21,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -82,8 +84,10 @@ public class ToolbarSwipeLayout extends Layout {
     private @Nullable TopToolbarOverlayCoordinator mLeftToolbarOverlay;
     private @Nullable TopToolbarOverlayCoordinator mRightToolbarOverlay;
 
-    private final ObservableSupplierImpl<@Nullable Tab> mLeftTabSupplier;
-    private final ObservableSupplierImpl<@Nullable Tab> mRightTabSupplier;
+    private final SettableNullableObservableSupplier<Tab> mLeftTabSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<Tab> mRightTabSupplier =
+            ObservableSuppliers.createNullable();
 
     private final ViewGroup mContentContainer;
 
@@ -140,8 +144,6 @@ public class ToolbarSwipeLayout extends Layout {
 
         mMoveToolbar = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
 
-        mLeftTabSupplier = new ObservableSupplierImpl<>();
-        mRightTabSupplier = new ObservableSupplierImpl<>();
         // No new captures should be taken mid swipe, so this shouldn't matter.
         ObservableSupplier<Long> captureResourceIdSupplier = new ObservableSupplierImpl<>();
 

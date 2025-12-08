@@ -123,7 +123,7 @@ public class UsageStatsService implements Destroyable {
         PageViewObserver observer =
                 new PageViewObserver(
                         activity,
-                        activityTabProvider,
+                        activityTabProvider.asObservable(),
                         mEventTracker,
                         mTokenTracker,
                         mSuspensionTracker,

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.divider.MaterialDivider;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -53,7 +54,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
     private final ListMenuButton mExtensionsMenuButton;
     private final MaterialDivider mExtensionsMenuTabSwitcherDivider;
     private final ThemeColorProvider mThemeColorProvider;
-    private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final TabCreator mTabCreator;
     private final View mContentView;
     private final PropertyModelChangeProcessor mChangeProcessor;
@@ -85,7 +86,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
             ThemeColorProvider themeColorProvider,
             OneshotSupplier<ChromeAndroidTask> taskSupplier,
             ObservableSupplier<@Nullable Profile> profileSupplier,
-            ObservableSupplier<@Nullable Tab> currentTabSupplier,
+            NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator) {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;

@@ -54,7 +54,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private Tab mTab;
     @Mock private MockWebContents mWebContents;
@@ -64,6 +63,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     // Not a mock, since it's just a container and `final` anyway.
     private final UserDataHost mUserDataHost = new UserDataHost();
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     private FullscreenVideoPictureInPictureController mController;
 
@@ -112,12 +112,12 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         Context context = ContextUtils.getApplicationContext();
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(context.getPackageManager());
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        mActivityTabProvider.setForTesting(mTab);
 
         when(mActivity.getSystemService(Context.ACTIVITY_SERVICE))
                 .thenReturn((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE));
         when(mActivity.getSystemService(Context.POWER_SERVICE)).thenReturn(mPowerManager);
         when(mActivity.getPackageManager()).thenReturn(context.getPackageManager());
-        when(mActivityTabProvider.get()).thenReturn(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mPowerManager.isInteractive()).thenReturn(true);

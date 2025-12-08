@@ -17,6 +17,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -74,7 +75,7 @@ public class ContextualPageActionController {
     }
 
     private final ObservableSupplier<Profile> mProfileSupplier;
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private @Nullable CurrentTabObserver mCurrentTabObserver;
     private @Nullable SignalAccumulator mSignalAccumulator;
@@ -93,7 +94,7 @@ public class ContextualPageActionController {
      */
     public ContextualPageActionController(
             ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             AdaptiveToolbarButtonController adaptiveToolbarButtonController,
             Supplier<ShoppingService> shoppingServiceSupplier,
             Supplier<BookmarkModel> bookmarkModelSupplier) {

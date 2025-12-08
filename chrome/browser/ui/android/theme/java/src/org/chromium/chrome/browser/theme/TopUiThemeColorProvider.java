@@ -9,7 +9,7 @@ import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -61,7 +61,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
      */
     public TopUiThemeColorProvider(
             Context context,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             Supplier<Integer> activityThemeColorSupplier,
             boolean isTablet,
             boolean allowThemingInNightMode,

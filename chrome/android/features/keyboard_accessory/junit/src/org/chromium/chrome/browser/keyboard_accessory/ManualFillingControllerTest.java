@@ -173,21 +173,7 @@ public class ManualFillingControllerTest {
     private final ObservableSupplierImpl<EdgeToEdgeController> mMockEdgeToEdgeControllerSupplier =
             new ObservableSupplierImpl<>();
 
-    private static class MockActivityTabProvider extends ActivityTabProvider {
-        public Tab mTab;
-
-        @Override
-        public void set(Tab tab) {
-            mTab = tab;
-        }
-
-        @Override
-        public Tab get() {
-            return mTab;
-        }
-    }
-
-    private final MockActivityTabProvider mActivityTabProvider = new MockActivityTabProvider();
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     /**
      * Helper class that provides shortcuts to providing and observing AccessorySheetData and
@@ -1758,7 +1744,7 @@ public class ManualFillingControllerTest {
                 .onVisibilityChanged(Visibility.VISIBLE);
         when(tab.getContentView()).thenReturn(mMockContentView);
         when(mMockTabModelSelector.getCurrentTab()).thenReturn(tab);
-        mActivityTabProvider.set(tab);
+        mActivityTabProvider.setForTesting(tab);
         mediator.getTabModelObserverForTesting()
                 .didAddTab(tab, FROM_BROWSER_ACTIONS, TabCreationState.LIVE_IN_FOREGROUND, false);
         mediator.getTabObserverForTesting().onShown(tab, FROM_NEW);

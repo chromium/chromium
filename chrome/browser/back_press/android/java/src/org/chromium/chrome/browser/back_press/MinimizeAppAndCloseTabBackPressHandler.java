@@ -17,7 +17,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -59,7 +59,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
     private final Callback<@Nullable Tab> mSendToBackground;
     private final Callback<Tab> mCloseTabUponMinimization;
     private final Callback<@Nullable Tab> mOnTabChanged = this::onTabChanged;
-    private final ObservableSupplier<@Nullable Tab> mActivityTabSupplier;
+    private final NullableObservableSupplier<Tab> mActivityTabSupplier;
     private final boolean mUseSystemBack;
 
     private static @Nullable Integer sVersionForTesting;
@@ -145,7 +145,7 @@ public class MinimizeAppAndCloseTabBackPressHandler
      * @param sendToBackground Callback when app should be sent to background on back press.
      */
     public MinimizeAppAndCloseTabBackPressHandler(
-            ObservableSupplier<@Nullable Tab> activityTabSupplier,
+            NullableObservableSupplier<Tab> activityTabSupplier,
             Predicate<Tab> backShouldCloseTab,
             Predicate<Tab> minimizationShouldCloseTab,
             Callback<Tab> closeTabUponMinimization,

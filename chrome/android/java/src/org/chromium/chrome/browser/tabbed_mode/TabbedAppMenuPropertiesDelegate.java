@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -1179,7 +1180,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.web_feed_main_menu_item, null);
         footer.initialize(
-                mActivityTabProvider.asNonNull().get(),
+                assertNonNull(mActivityTabProvider.get()),
                 appMenuHandler,
                 WebFeedFaviconFetcher.createDefault(),
                 mFeedLauncher,

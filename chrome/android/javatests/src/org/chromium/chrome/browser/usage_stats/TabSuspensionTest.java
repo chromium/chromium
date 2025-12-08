@@ -130,7 +130,7 @@ public class TabSuspensionTest {
                     mPageViewObserver =
                             new PageViewObserver(
                                     mActivity,
-                                    mActivity.getActivityTabProvider(),
+                                    mActivity.getActivityTabProvider().asObservable(),
                                     mEventTracker,
                                     mTokenTracker,
                                     mSuspensionTracker,
@@ -284,7 +284,7 @@ public class TabSuspensionTest {
                     mPageViewObserver2 =
                             new PageViewObserver(
                                     activity2,
-                                    activity2.getActivityTabProvider(),
+                                    activity2.getActivityTabProvider().asObservable(),
                                     mEventTracker,
                                     mTokenTracker,
                                     mSuspensionTracker,

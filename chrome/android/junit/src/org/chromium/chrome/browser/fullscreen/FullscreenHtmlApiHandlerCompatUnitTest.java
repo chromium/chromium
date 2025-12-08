@@ -78,8 +78,8 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private ContentView mContentView;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private TabModelSelector mTabModelSelector;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher;
     private FullscreenHtmlApiHandlerCompat mFullscreenHtmlApiHandlerCompat;
     private ObservableSupplierImpl<Boolean> mAreControlsHidden;

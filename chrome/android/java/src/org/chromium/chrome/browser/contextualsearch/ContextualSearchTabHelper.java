@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
@@ -81,7 +82,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             this::onActivePlaybackTabUpdated;
 
     /** To listen for when the current tab has an active ReadAloud playback. */
-    private @Nullable ObservableSupplier<@Nullable Tab> mReadAloudActivePlaybackTab;
+    private @Nullable NullableObservableSupplier<Tab> mReadAloudActivePlaybackTab;
 
     /**
      * Creates a contextual search tab helper for the given tab.
@@ -344,8 +345,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         // If the tab has an active ReadAloud playback, contextual search is disabled
         if (isReadAloudTapToSeekEnabled()
                 && mReadAloudActivePlaybackTab != null
-                && mReadAloudActivePlaybackTab.get() == mTab
-                && mTab != null) {
+                && mReadAloudActivePlaybackTab.get() == mTab) {
             return false;
         }
         if (maybeObserveManagerCreation()) return false;

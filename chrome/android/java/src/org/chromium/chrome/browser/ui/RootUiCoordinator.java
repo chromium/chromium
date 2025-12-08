@@ -586,7 +586,7 @@ public class RootUiCoordinator
         mTopUiThemeColorProvider =
                 new TopUiThemeColorProvider(
                         mActivity,
-                        mActivityTabProvider,
+                        mActivityTabProvider.asObservable(),
                         activityThemeColorSupplier,
                         mIsTablet,
                         shouldAllowThemingInNightMode(),
@@ -596,7 +596,7 @@ public class RootUiCoordinator
             mAdjustedTopUiThemeColorProvider =
                     new AdjustedTopUiThemeColorProvider(
                             mActivity,
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             activityThemeColorSupplier,
                             mIsTablet,
                             shouldAllowThemingInNightMode(),
@@ -1190,7 +1190,7 @@ public class RootUiCoordinator
             var topInsetCoordinator =
                     new TopInsetCoordinator(
                             mActivity,
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             mWindowAndroid.getInsetObserver(),
                             mLayoutStateProviderOneShotSupplier);
             mTopInsetCoordinatorSupplier.set(topInsetCoordinator);
@@ -1199,7 +1199,7 @@ public class RootUiCoordinator
             ViewStub statusBarStub = mActivity.findViewById(R.id.link_hover_status_bar_stub);
             mLinkHoverStatusBarCoordinator =
                     new LinkHoverStatusBarCoordinator(
-                            mActivity, mActivityTabProvider, statusBarStub);
+                            mActivity, mActivityTabProvider.asObservable(), statusBarStub);
         }
     }
 
@@ -1405,7 +1405,7 @@ public class RootUiCoordinator
                             getBottomSheetController(),
                             mActivity.getWindow().getDecorView(),
                             MessageDispatcherProvider.from(mWindowAndroid),
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             mProfileSupplier.asNonNull(),
                             new MerchantTrustMetrics(),
                             mIntentRequestTracker);
@@ -1416,7 +1416,7 @@ public class RootUiCoordinator
     private void initScrollCapture() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
 
-        mScrollCaptureManager = new ScrollCaptureManager(mActivityTabProvider);
+        mScrollCaptureManager = new ScrollCaptureManager(mActivityTabProvider.asObservable());
     }
 
     /**
@@ -2159,7 +2159,7 @@ public class RootUiCoordinator
                     EdgeToEdgeControllerFactory.create(
                             mActivity,
                             mWindowAndroid,
-                            mActivityTabProvider,
+                            mActivityTabProvider.asObservable(),
                             mEdgeToEdgeManager,
                             mBrowserControlsManager,
                             mLayoutManagerSupplier,
@@ -2432,7 +2432,8 @@ public class RootUiCoordinator
 
     private void initBoardingPassDetector() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.BOARDING_PASS_DETECTOR)) {
-            mBoardingPassController = new BoardingPassController(mActivityTabProvider);
+            mBoardingPassController =
+                    new BoardingPassController(mActivityTabProvider.asObservable());
         }
     }
 

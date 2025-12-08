@@ -245,10 +245,9 @@ public class WebApkUpdateManagerUnitTest {
         }
 
         private static ActivityTabProvider buildMockTabProvider() {
-            Tab mockTab = Mockito.mock(Tab.class);
-            ActivityTabProvider tabProvider = Mockito.mock(ActivityTabProvider.class);
-            Mockito.when(tabProvider.get()).thenReturn(mockTab);
-            return tabProvider;
+            ActivityTabProvider activityTabProvider = new ActivityTabProvider();
+            activityTabProvider.setForTesting(Mockito.mock(Tab.class));
+            return activityTabProvider;
         }
 
         /** Returns whether the is-update-needed check has been triggered. */

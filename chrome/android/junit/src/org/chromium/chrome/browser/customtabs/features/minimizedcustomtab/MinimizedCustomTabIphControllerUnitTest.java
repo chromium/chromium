@@ -72,12 +72,12 @@ public class MinimizedCustomTabIphControllerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ActivityTabProvider mTabProvider;
     @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private Tab mTab;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private Supplier<Profile> mProfileSupplier;
     private Activity mActivity;
     private MinimizedCustomTabIphController mController;
@@ -91,7 +91,7 @@ public class MinimizedCustomTabIphControllerUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         mController =
                 new MinimizedCustomTabIphController(
-                        mActivity, mTabProvider, mUserEducationHelper, mProfileSupplier);
+                        mActivity, mActivityTabProvider, mUserEducationHelper, mProfileSupplier);
         ViewStub minimizeStub = mActivity.findViewById(R.id.minimize_button_stub);
         View minimizeView =
                 minimizeStub != null

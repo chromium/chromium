@@ -26,7 +26,7 @@ import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.blink.mojom.DisplayMode;
@@ -67,6 +67,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -97,7 +98,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
     private @Nullable MenuButtonCoordinator mMenuButtonCoordinator;
     private final ViewStub mViewStub;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final ScrimManager mScrimManager;
     private final ThemeColorProvider mThemeColorProvider;
     private final IncognitoStateProvider mIncognitoStateProvider;
@@ -139,7 +140,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
             Activity activity,
             ViewStub viewStub,
             DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             ThemeColorProvider themeColorProvider,
             BrowserServicesIntentDataProvider browserServicesIntentDataProvider,
             ScrimManager scrimManager,
@@ -654,21 +655,22 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
     @Override
     public void onDidFinishNavigationInPrimaryMainFrame(
             Tab tab, NavigationHandle navigationHandle) {
-        if (mAppOriginView == null) return;
-        if (mBrowserServicesIntentDataProvider == null
-                || mBrowserServicesIntentDataProvider.getAllTrustedWebActivityOrigins() == null)
+        if (mAppOriginView == null || mBrowserServicesIntentDataProvider == null) {
             return;
+        }
+        Set<Origin> origins = mBrowserServicesIntentDataProvider.getAllTrustedWebActivityOrigins();
+        if (origins == null) {
+            return;
+        }
         GURL origin = navigationHandle.getUrl().getOrigin();
-        boolean isTWAOrigin =
-                mBrowserServicesIntentDataProvider
-                        .getAllTrustedWebActivityOrigins()
-                        .contains(Origin.create(origin.getSpec()));
+        String originSpec = origin.getSpec();
+        boolean isTWAOrigin = origins.contains(Origin.create(originSpec));
         // If the origin is not new or does not belong to the TWA, do nothing.
-        if ((mAppOrigin != null && mAppOrigin.equals(origin.getSpec())) || !isTWAOrigin) {
+        if ((mAppOrigin != null && mAppOrigin.equals(originSpec)) || !isTWAOrigin) {
             return;
         }
 
-        mAppOrigin = origin.getSpec();
+        mAppOrigin = originSpec;
         String domain = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(origin);
         mAppOriginView.setText(domain);
         setTextThemeColor();

@@ -400,7 +400,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         } // else we've already set the initial tab.
 
         // Listen to tab swapping and closing.
-        mActivityTabProvider.addObserver(mTabProvider::swapTab);
+        mActivityTabProvider
+                .asObservable()
+                .addObserver((Callback<@Nullable Tab>) mTabProvider::swapTab);
     }
 
     private @Nullable Tab tryRestoringTab(TabModelOrchestrator tabModelOrchestrator) {

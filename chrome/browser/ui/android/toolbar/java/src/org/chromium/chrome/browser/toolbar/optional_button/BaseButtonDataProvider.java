@@ -134,9 +134,9 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      * @param tab Current tab.
      */
     private void maybeSetIphCommandBuilder(@Nullable Tab tab) {
-        if (mButtonData.getButtonSpec().getIphCommandBuilder() != null
-                || tab == null
+        if (tab == null
                 || !FeatureList.isInitialized()
+                || mButtonData.getButtonSpec().getIphCommandBuilder() != null
                 || !AdaptiveToolbarFeatures.isCustomizationEnabled()
                 || AdaptiveToolbarFeatures.shouldShowActionChip(
                         mButtonData.getButtonSpec().getButtonVariant())) {

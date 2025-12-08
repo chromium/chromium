@@ -17,6 +17,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
@@ -204,7 +205,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> toolbarNavControlsEnabledSupplier,
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
@@ -338,7 +339,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             @Nullable OnClickListener bookmarkClickHandler,
             @Nullable OnClickListener customTabsBackClickHandler,
             LayoutManager layoutManager,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TopUiThemeColorProvider topUiThemeColorProvider,
             ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,

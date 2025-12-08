@@ -29,8 +29,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -56,14 +55,13 @@ import org.chromium.url.GURL;
 
 /** This class tests the behavior of the {@link ReaderModeToolbarButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPostTask.class})
+@Config(manifest = Config.NONE)
 public class ReaderModeToolbarButtonControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mMockTab;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ReaderModeManager mMockReaderModeManager;
-    @Mock private ActivityTabProvider mMockActivityTabProvider;
     @Mock private ModalDialogManager mMockModalDialogManager;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private Profile mProfile;
@@ -74,7 +72,8 @@ public class ReaderModeToolbarButtonControllerTest {
     @Mock private ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
     @Mock private ReaderModeIphController mReaderModeIphController;
 
-    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+
     private final ObservableSupplierImpl<ReaderModeIphController> mReaderModeIphControllerSupplier =
             new ObservableSupplierImpl<>();
 
@@ -84,21 +83,13 @@ public class ReaderModeToolbarButtonControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        ShadowPostTask.setTestImpl(
-                new ShadowPostTask.TestImpl() {
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        task.run();
-                    }
-                });
-
         mUserDataHost = new UserDataHost();
         mUnownedUserDataHost = new UnownedUserDataHost();
 
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mActivityTabProvider.setForTesting(mMockTab);
 
         ReaderModeActionRateLimiter.setInstanceForTesting(mReaderModeActionRateLimiter);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
@@ -106,9 +97,7 @@ public class ReaderModeToolbarButtonControllerTest {
         when(mMockTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mMockTab.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        mProfileSupplier.set(mProfile);
         when(mMockTab.getContext()).thenReturn(mContext);
-        when(mMockActivityTabProvider.get()).thenReturn(mMockTab);
         when(mMockTab.getUserDataHost()).thenReturn(mUserDataHost);
         mUserDataHost.setUserData(ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
         mReaderModeIphControllerSupplier.set(mReaderModeIphController);
@@ -124,8 +113,7 @@ public class ReaderModeToolbarButtonControllerTest {
     private ReaderModeToolbarButtonController createController() {
         return new ReaderModeToolbarButtonController(
                 mContext,
-                mProfileSupplier,
-                mMockActivityTabProvider,
+                mActivityTabProvider,
                 mMockModalDialogManager,
                 mReaderModeIphControllerSupplier);
     }
@@ -188,7 +176,7 @@ public class ReaderModeToolbarButtonControllerTest {
                 controller.getButtonDataForTesting().getButtonSpec().getContentDescription());
 
         // Now do the same thing with a null tab.
-        when(mMockActivityTabProvider.get()).thenReturn(null);
+        mActivityTabProvider.setForTesting(null);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(null);
         assertEquals(
                 R.string.reader_mode_cpa_button_text,
@@ -200,11 +188,12 @@ public class ReaderModeToolbarButtonControllerTest {
     public void testReaderModeButton_timesOut() throws Exception {
         ReaderModeToolbarButtonController controller = createController();
 
-
         when(mMockTab.getUrl()).thenReturn(new GURL("chrome-distiller://test"));
         when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
         controller.getTabSupplierObserverForTesting().onUrlUpdated(mMockTab);
         assertTrue(controller.shouldShowButton(mMockTab));
+
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         CallbackHelper callbackHelper = new CallbackHelper();
         ButtonDataProvider.ButtonDataObserver observer =
@@ -228,7 +217,8 @@ public class ReaderModeToolbarButtonControllerTest {
 
         // Simulate the button being shown, and verify that the button is hidden after a delay.
         controller.onActionShown();
-        callbackHelper.waitForNext();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        assertEquals(1, callbackHelper.getCallCount());
         assertFalse(controller.shouldShowButton(mMockTab));
 
         watcher.assertExpected();

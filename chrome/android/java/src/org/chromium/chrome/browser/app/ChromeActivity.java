@@ -556,7 +556,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         mStylusWritingCoordinator =
                 new StylusWritingCoordinator(
-                        this, getLifecycleDispatcher(), getActivityTabProvider());
+                        this, getLifecycleDispatcher(), mActivityTabProvider.asObservable());
 
         // Create the orchestrator that manages Tab models and persistence
         mTabModelOrchestrator = createTabModelOrchestrator();
@@ -686,7 +686,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             getBrowserControlsManager()
                     .initialize(
                             (ControlContainer) findViewById(R.id.control_container),
-                            getActivityTabProvider(),
+                            mActivityTabProvider,
                             getTabModelSelector(),
                             mRootUiCoordinator.getControlContainerHeightResource());
 
@@ -700,7 +700,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             this,
                             mRootUiCoordinator.getBottomSheetController(),
                             getLifecycleDispatcher(),
-                            getActivityTabProvider(),
+                            mActivityTabProvider,
                             getTabModelSelectorSupplier(),
                             mTabModelProfileSupplier,
                             new ShareDelegateImpl.ShareSheetDelegate(),
@@ -1340,7 +1340,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (mFullscreenVideoPictureInPictureController == null) {
             mFullscreenVideoPictureInPictureController =
                     new FullscreenVideoPictureInPictureController(
-                            this, getActivityTabProvider(), getFullscreenManager());
+                            this, mActivityTabProvider, getFullscreenManager());
         }
 
         return mFullscreenVideoPictureInPictureController;
@@ -1702,7 +1702,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 String pageContentStructuredData =
                         PageContentProviderImpl.getAssistContentStructuredDataForUrl(
                                 tab.getUrl().getSpec(),
-                                getActivityTabProvider(),
+                                mActivityTabProvider,
                                 enterpriseInfoState.mProfileOwned);
                 PageContentProviderMetrics.recordWebStructuredDataAttachedToAssistContent(
                         tab, pageContentStructuredData != null);
@@ -2350,7 +2350,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      * @return An {@link ObservableSupplier} that will supply the {@link LayoutManagerImpl} when it
      *     is ready.
      */
-    public ObservableSupplier<LayoutManagerImpl> getLayoutManagerSupplier() {
+    public final ObservableSupplier<LayoutManagerImpl> getLayoutManagerSupplier() {
         return mLayoutManagerSupplier;
     }
 
@@ -2544,7 +2544,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 };
         getTabModelSelectorSupplier().addObserver(mSelectionPopupBackPressInitCallback);
 
-        mCloseListenerManager = new CloseListenerManager(getActivityTabProvider());
+        mCloseListenerManager = new CloseListenerManager(mActivityTabProvider.asObservable());
         mBackPressManager.addHandler(mCloseListenerManager, BackPressHandler.Type.CLOSE_WATCHER);
     }
 
@@ -3263,7 +3263,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito;
         mThemeResourceProvider =
                 new TabStateThemeResourceProvider(
-                        this, resourceId, getActivityTabProvider(), getLayoutManagerSupplier());
+                        this, resourceId, mActivityTabProvider, mLayoutManagerSupplier);
     }
 
     @Override

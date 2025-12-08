@@ -11,6 +11,7 @@ import android.view.View;
 
 import androidx.core.graphics.Insets;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,8 +26,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.ClickWithMetaStateCallback;
 import org.chromium.ui.widget.ChromeImageButton;
 
-import java.util.function.Supplier;
-
 /**
  * Root component for the back button. Exposes public API for external consumers to interact with
  * the button and affect its state.
@@ -35,7 +34,7 @@ import java.util.function.Supplier;
 public class BackButtonCoordinator extends ToolbarChildButton {
     private final BackButtonMediator mMediator;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
-    private final Supplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final Runnable mOnNavigationPopupShown;
     private final View mView;
 
@@ -57,7 +56,7 @@ public class BackButtonCoordinator extends ToolbarChildButton {
             ClickWithMetaStateCallback onBackPressed,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             Runnable onNavigationPopupShown,
             NavigationPopup.HistoryDelegate historyDelegate,
@@ -105,6 +104,7 @@ public class BackButtonCoordinator extends ToolbarChildButton {
         mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
     }
 
+    @SuppressWarnings("NullAway") // Supplier<@Nullable> - https://crbug.com/455874046
     private void showNavigationPopup(Tab tab) {
         if (tab.getWebContents() == null) return;
 

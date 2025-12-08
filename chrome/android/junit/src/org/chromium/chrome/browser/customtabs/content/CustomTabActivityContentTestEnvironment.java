@@ -100,7 +100,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabActivityTabFactory tabFactory;
     @Mock public CustomTabsTabModelOrchestrator tabModelOrchestrator;
     @Mock public CustomTabObserver customTabObserver;
-    @Mock public ActivityTabProvider activityTabProvider;
     @Mock public ActivityLifecycleDispatcher lifecycleDispatcher;
     @Mock public SessionHolder<CustomTabsSessionToken> session;
     @Mock public TabModelSelectorImpl tabModelSelector;
@@ -124,6 +123,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CurrentPageVerifier currentPageVerifier;
     @Mock PreloadingDataBridge.Natives mPreloadingDataBridgeMock;
     @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
+
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     public final CustomTabActivityTabProvider tabProvider =
             new CustomTabActivityTabProvider(SPECULATED_URL);
@@ -166,7 +167,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         // Default setup is toolbarManager doesn't consume back press event.
         when(toolbarManager.back()).thenReturn(false);
 
-        when(activityTabProvider.addObserver(activityTabObserverCaptor.capture())).thenReturn(null);
         when(intentDataProvider.getColorProvider()).thenReturn(colorProvider);
 
         when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
@@ -203,7 +203,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 tabFactory,
                 customTabObserver,
                 navigationEventObserver,
-                activityTabProvider,
+                mActivityTabProvider,
                 tabProvider,
                 () -> activity.getSavedInstanceState(),
                 activity.getWindowAndroid(),
@@ -247,11 +247,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     }
 
     public void changeTab(Tab newTab) {
-        when(activityTabProvider.get()).thenReturn(newTab);
+        mActivityTabProvider.setForTesting(newTab);
         when(tabModel.getCount()).thenReturn(1);
-        for (Callback<Tab> observer : activityTabObserverCaptor.getAllValues()) {
-            observer.onResult(newTab);
-        }
     }
 
     public void saveTab(Tab tab) {
