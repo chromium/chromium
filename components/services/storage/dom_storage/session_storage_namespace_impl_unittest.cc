@@ -71,7 +71,6 @@ class SessionStorageNamespaceImplTest
         StorageType::kSessionStorage,
         /*directory=*/base::FilePath(), "SessionStorageNamespaceImplTest",
         /*memory_dump_id=*/std::nullopt,
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
     loop.Run();
 

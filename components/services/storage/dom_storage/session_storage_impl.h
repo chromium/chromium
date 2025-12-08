@@ -32,10 +32,6 @@
 #include "storage/common/database/db_status.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
 
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
-
 namespace blink {
 class StorageKey;
 }  // namespace blink
@@ -70,8 +66,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
       base::OnceCallback<void(SessionStorageImpl*)>;
   SessionStorageImpl(
       const base::FilePath& partition_directory,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> memory_dump_task_runner,
       BackingMode backing_option,
       std::string database_name,
       DestructSessionStorageCallback destruct_callback,
@@ -221,13 +215,15 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   } connection_state_ = NO_CONNECTION;
 
   const base::FilePath partition_directory_;
-  const scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
 
   base::trace_event::MemoryAllocatorDumpGuid memory_dump_id_;
 
   mojo::Receiver<mojom::SessionStorageControl> receiver_;
 
   std::unique_ptr<AsyncDomStorageDatabase> database_;
+  // This can be true even if the profile is not in-memory, since we attempt
+  // to create an in-memory DB if on-disk fails. This variable has no meaning
+  // if `database_` is null.
   bool in_memory_ = false;
   bool tried_to_recreate_during_open_ = false;
 
