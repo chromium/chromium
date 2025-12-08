@@ -17,11 +17,15 @@ source_set("ui") {
     ":controller",
     "//base",
     "//chrome/app/vector_icons",
+    "//chrome/browser/actor/resources:grit_grit",
     "//chrome/browser/ui",
     "//chrome/common",
     "//content/public/browser",
     "//ui/views",
   ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }
 
 source_set("controller") {
