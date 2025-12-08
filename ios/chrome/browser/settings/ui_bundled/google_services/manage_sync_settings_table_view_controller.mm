@@ -102,10 +102,8 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                   withRowAnimation:UITableViewRowAnimationMiddle];
   } else {
     [UIView performWithoutAnimation:^{
-      [self.tableView beginUpdates];
       [self.tableView insertSections:sections
                     withRowAnimation:UITableViewRowAnimationNone];
-      [self.tableView endUpdates];
     }];
   }
 }
@@ -121,10 +119,8 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   } else {
     // To avoid animation glitches related to crbug.com/1469539.
     [UIView performWithoutAnimation:^{
-      [self.tableView beginUpdates];
       [self.tableView deleteSections:sections
                     withRowAnimation:UITableViewRowAnimationNone];
-      [self.tableView endUpdates];
     }];
   }
 }
@@ -149,10 +145,8 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   }
   // To avoid animation glitches related to crbug.com/1469539.
   [UIView performWithoutAnimation:^{
-    [self.tableView beginUpdates];
     [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
                           withRowAnimation:UITableViewRowAnimationNone];
-    [self.tableView endUpdates];
   }];
 }
 
