@@ -1083,6 +1083,51 @@ bool IsImmediateGetRequest(const ExecutionContext& context,
   return false;
 }
 
+enum class WebAuthenticationResidentKeyRequirement {
+  // LINT.IfChange(WebAuthenticationResidentKeyRequirement)
+  kUnspecified = 0,
+  kRkDiscouraged = 1,
+  kRkPreferred = 2,
+  kRkRequired = 3,
+  kRequireRkTrue = 4,
+  kRequireRkFalse = 5,
+  kRkUnknown = 6,
+
+  kMaxValue = kRkUnknown,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:WebAuthenticationResidentKeyRequirement)
+};
+
+WebAuthenticationResidentKeyRequirement GetResidentKeyRequirementForLogging(
+    PublicKeyCredentialCreationOptions* public_key) {
+  if (public_key->hasAuthenticatorSelection()) {
+    const auto* authenticator_selection = public_key->authenticatorSelection();
+    if (authenticator_selection->hasResidentKey()) {
+      if (authenticator_selection->residentKey() == "discouraged") {
+        return WebAuthenticationResidentKeyRequirement::kRkDiscouraged;
+      } else if (authenticator_selection->residentKey() == "preferred") {
+        return WebAuthenticationResidentKeyRequirement::kRkPreferred;
+      } else if (authenticator_selection->residentKey() == "required") {
+        return WebAuthenticationResidentKeyRequirement::kRkRequired;
+      } else {
+        return WebAuthenticationResidentKeyRequirement::kRkUnknown;
+      }
+    } else if (authenticator_selection->hasRequireResidentKey()) {
+      if (authenticator_selection->requireResidentKey()) {
+        return WebAuthenticationResidentKeyRequirement::kRequireRkTrue;
+      } else {
+        return WebAuthenticationResidentKeyRequirement::kRequireRkFalse;
+      }
+    }
+  }
+  return WebAuthenticationResidentKeyRequirement::kUnspecified;
+}
+
+void LogResidentKeyRequirement(PublicKeyCredentialCreationOptions* public_key) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.MakeCredential.ResidentKeyRequirement",
+      GetResidentKeyRequirementForLogging(public_key));
+}
+
 }  // namespace
 
 DOMException* AuthenticatorStatusToDOMException(
@@ -1841,6 +1886,7 @@ AuthenticationCredentialsContainer::create(
           (rk_requirement == mojom::blink::ResidentKeyRequirement::REQUIRED);
     }
   }
+
   // An empty list uses default algorithm identifiers.
   if (options->publicKey()->pubKeyCredParams().size() != 0) {
     HashSet<int16_t> algorithm_set;
@@ -1885,6 +1931,8 @@ AuthenticationCredentialsContainer::create(
     mojo_options->relying_party->id =
         resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
   }
+
+  LogResidentKeyRequirement(options->publicKey());
 
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();

@@ -479,6 +479,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.MakeCredential.ResidentKeyRequirement"
+    enum="WebAuthenticationResidentKeyRequirement" expires_after="2026-06-30">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the resident key specification of a make credential request at the
+    time the request is initiated. This is taken from the residentKey field, if
+    available, or else the requireResidentKey field, if available.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.MakeCredential.Result"
     enum="WebAuthenticationCredentialRequestResult" expires_after="2026-05-17">
   <owner>kenrb@chromium.org</owner>
