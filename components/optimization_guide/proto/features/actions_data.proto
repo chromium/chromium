@@ -496,7 +496,7 @@ message WindowObservation {
 }
 
 // Information about a chrome tab.
-// Next ID: 7
+// Next ID: 9
 message TabObservation {
   // Unique id
   int32 id = 1 [features = { field_presence: EXPLICIT }];
@@ -525,8 +525,12 @@ message TabObservation {
   // in the Actions message.
   PageMetadata metadata = 6 [features = { field_presence: EXPLICIT }];
 
-  // Result codes of a tab observation. It may be possible
-  // to retry an observation given specific error codes.
+  AnnotatedPageContentResult annotated_page_content_result = 7 [features = { field_presence: EXPLICIT }];
+
+  ScreenshotResult screenshot_result = 8 [features = { field_presence: EXPLICIT }];
+
+  // Result codes of a tab observation as a whole. It may be possible to retry
+  // an observation given specific error codes.
   enum TabObservationResult {
     // The tab was observed successfully.
     TAB_OBSERVATION_OK = 0;
@@ -535,10 +539,46 @@ message TabObservation {
     TAB_OBSERVATION_TAB_WENT_AWAY = 1;
 
     // The screenshot of the tab timed out.
+    // TODO: crbug.com/462190108 - Deprecate, this should be a screenshot error code.
     TAB_OBSERVATION_SCREENSHOT_TIMEOUT = 2;
 
     // The page crashed.
     TAB_OBSERVATION_PAGE_CRASHED = 3;
+
+    // A generic error has occurred.
+    TAB_OBSERVATION_UNKNOWN_ERROR = 4;
+
+    // The web contents of the tab changed so the tab observation was abandoned.
+    TAB_OBSERVATION_WEB_CONTENTS_CHANGED = 5;
+
+    // The page is not eligible for tab observation.
+    TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE = 6;
+
+    // Fetching context encountered an error. The details are in the APC or
+    // Screenshot specific fields below.
+    TAB_OBSERVATION_FETCH_ERROR = 7;
+  }
+
+  enum AnnotatedPageContentResult {
+    // The annotated page content was observed successfully.
+    ANNOTATED_PAGE_CONTENT_OK = 0;
+
+    // Fetching annotated page content timed out.
+    ANNOTATED_PAGE_CONTENT_TIMEOUT = 1;
+
+    // Fetching annotated page content encountered an unspecified error.
+    ANNOTATED_PAGE_CONTENT_ERROR = 2;
+  }
+
+  enum ScreenshotResult {
+    // The screenshot was observed successfully.
+    SCREENSHOT_OK = 0;
+
+    // Fetching the screenshot timed out.
+    SCREENSHOT_TIMEOUT = 1;
+
+    // Fetching the screenshot encountered an unspecified error.
+    SCREENSHOT_ERROR = 2;
   }
 }
 
