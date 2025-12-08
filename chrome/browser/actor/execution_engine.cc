@@ -87,11 +87,7 @@ void PostTaskForActCallback(
     mojom::ActionResultPtr result,
     std::optional<size_t> index_of_failed_action,
     std::vector<ActionResultWithLatencyInfo> action_results) {
-  // Using a sparse histogram instead of a linear (i.e. enumeration) histogram
-  // here because, the linear histograms are limited to 1000 values in
-  // base/metrics/histogram.cc.
-  base::UmaHistogramSparse("Actor.ExecutionEngine.Action.ResultCode",
-                           base::to_underlying(result->code));
+  RecordActionResultCode(result->code);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(result),
@@ -159,10 +155,9 @@ std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
 
 ExecutionEngine::~ExecutionEngine() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramCounts1000("Actor.NavigationGating.AllowListSize",
-                               allowed_navigation_origins_.size());
-  base::UmaHistogramCounts1000("Actor.NavigationGating.ConfirmedListSize",
-                               user_confirmed_blocklisted_origins_.size());
+  RecordActorNavigationGatingListSize(
+      allowed_navigation_origins_.size(),
+      user_confirmed_blocklisted_origins_.size());
 
   RunUserTakeoverCallbackIfExists(/*should_cancel=*/true);
 }
@@ -260,8 +255,7 @@ ExecutionEngine::GatingDecision ExecutionEngine::ShouldGateNavigationInternal(
   const GURL& destination_url = navigation_handle.GetURL();
   const GatingDecision decision =
       DetermineGatingDecision(source_url, destination_url);
-  base::UmaHistogramEnumeration("Actor.NavigationGating.GatingDecision",
-                                decision);
+  RecordNavigationGatingDecision(decision);
   if (decision == GatingDecision::kBlockByStaticList) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*may_continue=*/false));
@@ -517,7 +511,7 @@ void ExecutionEngine::UserTakeover(
     mojom::ActionResultCode takeover_response_code,
     base::OnceCallback<void(bool)> callback) {
   if (takeover_response_code == mojom::ActionResultCode::kFilePickerTriggered) {
-    base::UmaHistogramBoolean("Actor.Download.SaveAsDialogTriggered", true);
+    RecordDownloadSaveAsDialogTriggered(true);
   }
 
   CancelOngoingActions(takeover_response_code);

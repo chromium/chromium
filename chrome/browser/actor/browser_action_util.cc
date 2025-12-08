@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/shared_types.h"
@@ -858,10 +859,9 @@ void FetchCallback(
         (fetch_result.annotated_page_content_result.value().end_time -
          start_time)
             .InMilliseconds());
-    base::UmaHistogramMediumTimes(
-        "Actor.PageContext.APC.Duration",
+    RecordPageContextApcDuration(
         fetch_result.annotated_page_content_result.value().end_time -
-            fetch_context_time);
+        fetch_context_time);
   }
 
   {
@@ -873,8 +873,7 @@ void FetchCallback(
     latency_step->set_latency_stop_ms(
         (fetch_result.screenshot_result.value().end_time - start_time)
             .InMilliseconds());
-    base::UmaHistogramMediumTimes(
-        "Actor.PageContext.Screenshot.Duration",
+    RecordPageContextScreenshotDuration(
         fetch_result.screenshot_result.value().end_time - fetch_context_time);
   }
 
@@ -1028,8 +1027,7 @@ void BuildActionsResultWithObservations(
           .Add("tabs_to_fetch", tabs_to_fetch.size())
           .Build());
 
-  base::UmaHistogramCounts1000("Actor.PageContext.TabCount",
-                               tabs_to_fetch.size());
+  RecordPageContextTabCount(tabs_to_fetch.size());
 
   if (skip_async_observation_information) {
     std::move(callback).Run(std::move(response), std::move(journal_entry));

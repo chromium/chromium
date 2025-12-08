@@ -96,4 +96,50 @@ void RecordActorTaskCompletion(ActorTask::StoppedReason stopped_reason,
   base::UmaHistogramEnumeration("Actor.Task.StoppedReason", stopped_reason);
 }
 
+void RecordActorTaskCreated(bool success) {
+  base::UmaHistogramBoolean("Actor.Task.Created", success);
+}
+
+void RecordActionResultCode(actor::mojom::ActionResultCode action_result_code) {
+  // Note: Uses a sparse histogram instead of a linear (i.e. enumeration)
+  // histogram here because, the linear histograms are limited to 1000 values in
+  // base/metrics/histogram.cc.
+  base::UmaHistogramSparse("Actor.ExecutionEngine.Action.ResultCode",
+                           base::to_underlying(action_result_code));
+}
+
+void RecordPageContextApcDuration(base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes("Actor.PageContext.APC.Duration", duration);
+}
+
+void RecordPageContextScreenshotDuration(base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes("Actor.PageContext.Screenshot.Duration",
+                                duration);
+}
+
+void RecordPageContextTabCount(size_t tab_count) {
+  base::UmaHistogramCounts1000("Actor.PageContext.TabCount", tab_count);
+}
+
+void RecordDirectDownloadTriggered(bool success) {
+  base::UmaHistogramBoolean("Actor.Download.DirectDownloadTriggered", success);
+}
+
+void RecordDownloadSaveAsDialogTriggered(bool success) {
+  base::UmaHistogramBoolean("Actor.Download.SaveAsDialogTriggered", success);
+}
+
+void RecordActorNavigationGatingListSize(size_t allow_list_size,
+                                         size_t confirmed_list_size) {
+  base::UmaHistogramCounts1000("Actor.NavigationGating.AllowListSize",
+                               allow_list_size);
+  base::UmaHistogramCounts1000("Actor.NavigationGating.ConfirmedListSize",
+                               confirmed_list_size);
+}
+
+void RecordNavigationGatingDecision(ExecutionEngine::GatingDecision decision) {
+  base::UmaHistogramEnumeration("Actor.NavigationGating.GatingDecision",
+                                decision);
+}
+
 }  // namespace actor

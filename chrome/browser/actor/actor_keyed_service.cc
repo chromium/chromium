@@ -15,6 +15,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -276,14 +277,14 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
     base::WeakPtr<ActorTaskDelegate> delegate) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   if (!policy_checker_->can_act_on_web()) {
-    base::UmaHistogramBoolean("Actor.Task.Created", false);
+    RecordActorTaskCreated(false);
     GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask",
                      JournalDetailsBuilder()
                          .AddError("Actuation capability disabled")
                          .Build());
     return TaskId();
   }
-  base::UmaHistogramBoolean("Actor.Task.Created", true);
+  RecordActorTaskCreated(true);
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task = std::make_unique<ActorTask>(
       profile_.get(), std::move(execution_engine),
@@ -534,7 +535,7 @@ void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,
   if (content::WebContents* web_contents =
           content::DownloadItemUtils::GetWebContents(item)) {
     if (GetActingActorTaskForWebContents(web_contents)) {
-      base::UmaHistogramBoolean("Actor.Download.DirectDownloadTriggered", true);
+      RecordDirectDownloadTriggered(true);
     }
   }
 }

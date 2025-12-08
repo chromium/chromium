@@ -8,6 +8,8 @@
 #include <cstddef>
 
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/execution_engine.h"
+#include "chrome/common/actor.mojom.h"
 
 namespace actor {
 
@@ -46,6 +48,35 @@ void RecordActorTaskCompletion(ActorTask::StoppedReason stopped_reason,
                                base::TimeDelta controlled_time,
                                size_t interruptions_count,
                                size_t actions_count);
+
+// Recorded when a ActorTask is successfully created for the first time or not.
+void RecordActorTaskCreated(bool success);
+
+// Records the result codes of completed actions.
+void RecordActionResultCode(actor::mojom::ActionResultCode action_result_code);
+
+// Records the time spent fetching the APC for a PerformActions response.
+void RecordPageContextApcDuration(base::TimeDelta duration);
+
+// Records the time spent fetching a screenshot for a PerformActions response.
+void RecordPageContextScreenshotDuration(base::TimeDelta duration);
+
+// Records the number of tabs that were observed for a PerformActions response.
+void RecordPageContextTabCount(size_t tab_count);
+
+// Recorded when a direct download is triggered by an ActorTask.
+void RecordDirectDownloadTriggered(bool success);
+
+// Recorded when a 'save as' download dialog is triggered by an ActorTask.
+void RecordDownloadSaveAsDialogTriggered(bool success);
+
+// Records the the size of the allow list and confirmed list (blocklist) of
+// origins for navigation gating.
+void RecordActorNavigationGatingListSize(size_t allow_list_size,
+                                         size_t confirmed_list_size);
+
+// Records the outcome of navigation gating decisions.
+void RecordNavigationGatingDecision(ExecutionEngine::GatingDecision decision);
 
 }  // namespace actor
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_METRICS_H_
