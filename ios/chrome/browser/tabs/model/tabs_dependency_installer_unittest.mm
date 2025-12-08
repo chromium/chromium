@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer_manager.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -393,4 +394,32 @@ TEST_P(TabsDependencyInstallerTest, Disconnect) {
       std::move(web_state_2),
       WebStateList::InsertionParams::Automatic().Activate());
   EXPECT_FALSE(installer_.WasInstalled(web_state_2_id));
+}
+
+// Verifies that stopping the observation for an installer will uninstall it
+// from the TabsDependencyInstallerManager.
+TEST_P(TabsDependencyInstallerTest, UninstallForManagerAfterDisconnect) {
+  TabsDependencyInstallerManager::CreateForBrowser(browser_.get());
+  TabsDependencyInstallerManager* manager =
+      TabsDependencyInstallerManager::FromBrowser(browser_.get());
+  ASSERT_TRUE(manager);
+  installer_.StartObserving(
+      browser_.get(), std::get<TabsDependencyInstaller::Policy>(GetParam()));
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  const web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+
+  manager->InstallDependencies(web_state.get());
+  EXPECT_TRUE(installer_.WasInstalled(web_state_id));
+  EXPECT_EQ(1u, installer_.InstallCount(web_state_id));
+  EXPECT_FALSE(installer_.WasUninstalled(web_state_id));
+
+  installer_.StopObserving();
+
+  manager->UninstallDependencies(web_state.get());
+
+  // The uninstall should not be performed since the test installer stops
+  // observing before the manager starts uninstalling dependencies.
+  EXPECT_FALSE(installer_.WasUninstalled(web_state_id));
+  EXPECT_EQ(0u, installer_.UninstallCount(web_state_id));
 }
