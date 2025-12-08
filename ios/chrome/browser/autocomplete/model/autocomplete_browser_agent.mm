@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autocomplete/model/autocomplete_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 
 #import <algorithm>
 
@@ -11,24 +11,21 @@
 #import "components/omnibox/browser/autocomplete_provider_client.h"
 #import "components/omnibox/browser/page_classification_functions.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
+#import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/autocomplete/model/zero_suggest_prefetcher.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/web_state.h"
 
-AutocompleteService::AutocompleteService(
-    base::RepeatingCallback<std::unique_ptr<AutocompleteProviderClient>()>
-        client_factory,
-    ShortcutsBackend* shortcuts_backend)
-    : client_factory_(std::move(client_factory)),
-      shortcuts_backend_(shortcuts_backend) {}
+AutocompleteBrowserAgent::AutocompleteBrowserAgent(Browser* browser)
+    : BrowserUserData(browser) {}
 
-AutocompleteService::~AutocompleteService() {}
-
-void AutocompleteService::Shutdown() {
+AutocompleteBrowserAgent::~AutocompleteBrowserAgent() {
   RemoveServices();
 }
 
-AutocompleteController* AutocompleteService::GetAutocompleteController(
+AutocompleteController* AutocompleteBrowserAgent::GetAutocompleteController(
     OmniboxPresentationContext context) {
   auto it = controllers_.find(context);
   if (it != controllers_.end()) {
@@ -44,7 +41,7 @@ AutocompleteController* AutocompleteService::GetAutocompleteController(
   return controller_ptr;
 }
 
-OmniboxShortcutsHelper* AutocompleteService::GetOmniboxShortcutsHelper(
+OmniboxShortcutsHelper* AutocompleteBrowserAgent::GetOmniboxShortcutsHelper(
     OmniboxPresentationContext context) {
   auto it = shortcuts_helpers_.find(context);
   if (it != shortcuts_helpers_.end()) {
@@ -57,7 +54,7 @@ OmniboxShortcutsHelper* AutocompleteService::GetOmniboxShortcutsHelper(
   return helper_ptr;
 }
 
-void AutocompleteService::RemoveServices() {
+void AutocompleteBrowserAgent::RemoveServices() {
   for (auto it = web_state_list_prefetchers_.begin();
        it != web_state_list_prefetchers_.end(); ++it) {
     [it->second disconnect];
@@ -72,7 +69,7 @@ void AutocompleteService::RemoveServices() {
   controllers_.clear();
 }
 
-void AutocompleteService::RegisterWebStateListForPrefetching(
+void AutocompleteBrowserAgent::RegisterWebStateListForPrefetching(
     OmniboxPresentationContext context,
     WebStateList* web_state_list,
     PageClassificationCallback classification_callback) {
@@ -81,13 +78,13 @@ void AutocompleteService::RegisterWebStateListForPrefetching(
                         webStateList:web_state_list
               classificationCallback:std::move(classification_callback)
                   disconnectCallback:
-                      base::BindOnce(&AutocompleteService::
+                      base::BindOnce(&AutocompleteBrowserAgent::
                                          UnregisterWebStateListForPrefetching,
                                      AsWeakPtr())];
   web_state_list_prefetchers_[web_state_list] = prefetcher;
 }
 
-void AutocompleteService::UnregisterWebStateListForPrefetching(
+void AutocompleteBrowserAgent::UnregisterWebStateListForPrefetching(
     WebStateList* web_state_list) {
   auto it = web_state_list_prefetchers_.find(web_state_list);
   if (it != web_state_list_prefetchers_.end()) {
@@ -96,7 +93,7 @@ void AutocompleteService::UnregisterWebStateListForPrefetching(
   }
 }
 
-void AutocompleteService::RegisterWebStateForPrefetching(
+void AutocompleteBrowserAgent::RegisterWebStateForPrefetching(
     OmniboxPresentationContext context,
     web::WebState* web_state,
     PageClassificationCallback classification_callback) {
@@ -105,13 +102,13 @@ void AutocompleteService::RegisterWebStateForPrefetching(
                             webState:web_state
               classificationCallback:std::move(classification_callback)
                   disconnectCallback:base::BindOnce(
-                                         &AutocompleteService::
+                                         &AutocompleteBrowserAgent::
                                              UnregisterWebStateForPrefetching,
                                          AsWeakPtr())];
   web_state_prefetchers_[web_state] = prefetcher;
 }
 
-void AutocompleteService::UnregisterWebStateForPrefetching(
+void AutocompleteBrowserAgent::UnregisterWebStateForPrefetching(
     web::WebState* web_state) {
   auto it = web_state_prefetchers_.find(web_state);
   if (it != web_state_prefetchers_.end()) {
@@ -121,12 +118,9 @@ void AutocompleteService::UnregisterWebStateForPrefetching(
 }
 
 std::unique_ptr<AutocompleteController>
-AutocompleteService::CreateAutocompleteController() {
+AutocompleteBrowserAgent::CreateAutocompleteController() {
   std::unique_ptr<AutocompleteProviderClient> provider_client =
-      client_factory_.Run();
-  if (!provider_client) {
-    return nullptr;
-  }
+      std::make_unique<AutocompleteProviderClientImpl>(browser_->GetProfile());
 
   int providers = AutocompleteClassifier::DefaultOmniboxProviders();
 
@@ -136,6 +130,8 @@ AutocompleteService::CreateAutocompleteController() {
 }
 
 std::unique_ptr<OmniboxShortcutsHelper>
-AutocompleteService::CreateOmniboxShortcutsHelper() {
-  return std::make_unique<OmniboxShortcutsHelper>(shortcuts_backend_);
+AutocompleteBrowserAgent::CreateOmniboxShortcutsHelper() {
+  return std::make_unique<OmniboxShortcutsHelper>(
+      ios::ShortcutsBackendFactory::GetForProfile(browser_->GetProfile())
+          .get());
 }

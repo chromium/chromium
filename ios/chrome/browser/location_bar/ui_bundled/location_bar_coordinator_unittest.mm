@@ -11,6 +11,7 @@
 #import "components/omnibox/browser/test_location_bar_model.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -111,6 +112,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
     // must be created first. Please maintain this order.
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     FullscreenController::CreateForBrowser(browser_.get());
+    AutocompleteBrowserAgent::CreateForBrowser(browser_.get());
 
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(profile_.get());

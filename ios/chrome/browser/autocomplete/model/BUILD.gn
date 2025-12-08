@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "autocomplete_browser_agent.h",
+    "autocomplete_browser_agent.mm",
     "autocomplete_classifier_factory.cc",
     "autocomplete_classifier_factory.h",
     "autocomplete_provider_client_impl.h",
@@ -12,10 +14,6 @@ source_set("model") {
     "autocomplete_scheme_classifier_impl.mm",
     "autocomplete_scoring_model_service_factory.h",
     "autocomplete_scoring_model_service_factory.mm",
-    "autocomplete_service.h",
-    "autocomplete_service.mm",
-    "autocomplete_service_factory.h",
-    "autocomplete_service_factory.mm",
     "in_memory_url_index_factory.cc",
     "in_memory_url_index_factory.h",
     "omnibox_pedal_implementation.h",

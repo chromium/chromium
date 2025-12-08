@@ -208,6 +208,7 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/collaboration/model/messaging",
     "//ios/chrome/browser/fullscreen/ui_bundled",

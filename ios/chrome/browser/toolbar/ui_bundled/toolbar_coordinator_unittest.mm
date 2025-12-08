@@ -7,6 +7,7 @@
 #import "base/scoped_observation.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
@@ -166,6 +167,7 @@ class ToolbarCoordinatorTest : public PlatformTest {
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
+    AutocompleteBrowserAgent::CreateForBrowser(browser_.get());
     // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
     // must be created first. Please maintain this order.
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());

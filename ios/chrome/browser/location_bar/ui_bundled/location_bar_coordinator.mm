@@ -17,9 +17,8 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/search_engines/util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#import "ios/chrome/browser/autocomplete/model/autocomplete_service.h"
-#import "ios/chrome/browser/autocomplete/model/autocomplete_service_factory.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button_factory.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_delegate.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_mediator.h"
@@ -420,11 +419,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     omniboxPositionBrowserAgent->SetOmniboxStateProvider(self);
   }
 
-  AutocompleteService* autocompleteService =
-      AutocompleteServiceFactory::GetForProfile(self.profile);
-  if (autocompleteService) {
+  AutocompleteBrowserAgent* autocompleteBrowserAgent =
+      AutocompleteBrowserAgent::FromBrowser(self.browser);
+  if (autocompleteBrowserAgent) {
     __weak __typeof__(self) weakSelf = self;
-    autocompleteService->RegisterWebStateListForPrefetching(
+    autocompleteBrowserAgent->RegisterWebStateListForPrefetching(
         IsComposeboxIOSEnabled() ? OmniboxPresentationContext::kComposebox
                                  : OmniboxPresentationContext::kLocationBar,
         self.webStateList,
@@ -467,12 +466,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // TODO(crbug.com/462700929): Cleanup the service's objects like when it was
   // owned by the omnibox. Remove this workaround once the service can be safely
   // cleaned up during shutdown.
-  AutocompleteService* autocompleteService =
-      AutocompleteServiceFactory::GetForProfile(self.profile);
-  if (autocompleteService) {
-    autocompleteService->UnregisterWebStateListForPrefetching(
+  AutocompleteBrowserAgent* autocompleteBrowserAgent =
+      AutocompleteBrowserAgent::FromBrowser(self.browser);
+  if (autocompleteBrowserAgent) {
+    autocompleteBrowserAgent->UnregisterWebStateListForPrefetching(
         self.webStateList);
-    autocompleteService->RemoveServices();
+    autocompleteBrowserAgent->RemoveServices();
   }
   [self.badgeMediator disconnect];
   self.badgeMediator = nil;
