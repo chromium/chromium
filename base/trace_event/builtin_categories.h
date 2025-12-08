@@ -303,11 +303,6 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
         .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"))
         .SetTags("slow"),
-    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("identifiability"))
-        .SetTags("slow"),
-    perfetto::Category(
-        TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"))
-        .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc"))
         .SetTags("slow"),
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug")).SetTags("debug"),
