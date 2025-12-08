@@ -263,6 +263,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.speechController_.onLockScreen();
     };
 
+    chrome.readingMode.readingModeWillClose = () => {
+      this.speechController_.onReadingModeWillClose();
+    };
+
     chrome.readingMode.onTtsEngineInstalled = () => {
       this.voiceLanguageController_.onTtsEngineInstalled();
     };

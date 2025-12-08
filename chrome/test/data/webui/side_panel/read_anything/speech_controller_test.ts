@@ -655,6 +655,26 @@ suite('SpeechController', () => {
     assertEquals(0, speech.getCallCount('speak'));
   });
 
+  test('onReadingModeWillHide while playing cancels speech', () => {
+    onPlayPauseToggle('Sleepy jack the fire drill');
+    speech.reset();
+    assertTrue(speechController.isSpeechActive());
+
+    speechController.onReadingModeWillClose();
+
+    assertEquals(1, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(0, speech.getCallCount('speak'));
+  });
+
+  test('onReadingModeWillHide while paused does nothing', () => {
+    speechController.onReadingModeWillClose();
+
+    assertEquals(0, speech.getCallCount('pause'));
+    assertEquals(0, speech.getCallCount('cancel'));
+    assertEquals(0, speech.getCallCount('speak'));
+  });
+
   test('onVoiceSelected sets current voice', () => {
     const voice1 = createSpeechSynthesisVoice({lang: 'pt-pt', name: 'Donkey'});
     const voice2 = createSpeechSynthesisVoice({lang: 'pt-br', name: 'Corgi'});

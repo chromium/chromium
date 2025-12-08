@@ -2117,6 +2117,7 @@ void ReadAnythingAppController::OnReadingModeHidden(bool tab_active) {
   if (read_aloud_model_.speech_playing() && tab_active) {
     read_aloud_model_.LogSpeechStop(
         ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode);
+    ReadingModeWillClose();
   }
   RecordEstimatedWordsSeen();
   RecordEstimatedWordsHeard();
@@ -2127,9 +2128,18 @@ void ReadAnythingAppController::OnTabWillDetach() {
   if (read_aloud_model_.speech_playing()) {
     read_aloud_model_.LogSpeechStop(
         ReadAloudAppModel::ReadAloudStopSource::kCloseTabOrWindow);
+    ReadingModeWillClose();
   }
   RecordEstimatedWordsSeen();
   RecordEstimatedWordsHeard();
+}
+
+void ReadAnythingAppController::ReadingModeWillClose() {
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+
+  ExecuteJavaScript("chrome.readingMode.readingModeWillClose();");
 }
 
 void ReadAnythingAppController::OnTabMuteStateChange(bool muted) {

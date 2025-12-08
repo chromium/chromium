@@ -176,6 +176,16 @@ export class SpeechController {
     }
   }
 
+  // When the view is hidden with Immersive Reading Mode enabled, we should
+  // stop speaking.
+  onReadingModeWillClose() {
+    // TODO: crbug.com/466967616 - Ensure Read Aloud resume honors word
+    // boundaries after ReadingModeWillClose is called
+    if (this.isSpeechActive()) {
+      this.stopSpeech_(PauseActionSource.DEFAULT);
+    }
+  }
+
   onTabMuteStateChange(muted: boolean) {
     this.model_.setVolume(muted ? 0.0 : 1.0);
     this.onSpeechSettingsChange();

@@ -386,6 +386,10 @@ class ReadAnythingAppController
   // processed accessibility events.
   void SendEventUpdates();
 
+  // Helper for forwarding reading mode hide events to the webui so we can
+  // perform cleaning operations on it.
+  void ReadingModeWillClose();
+
   // Records the number of selections that occurred for the active page. Called
   // when the active tree changes.
   void RecordNumSelections();

@@ -215,6 +215,9 @@ declare namespace chrome {
     // Called when the font is changed via the webui toolbar.
     function onFontChange(font: string): void;
 
+    // Called when reading mode is closed.
+    function readingModeWillClose(): void;
+
     // Called when the speech rate is changed via the webui toolbar.
     function onSpeechRateChange(rate: number): void;
 
