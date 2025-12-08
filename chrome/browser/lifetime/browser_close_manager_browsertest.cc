@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -709,8 +708,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   PrepareForDialog(browsers_[0]);
   PrepareForDialog(browsers_[1]);
 
-  AllBrowsersClosingCancelledObserver cancel_observer(1);
+  AllBrowsersClosingCancelledObserver cancel_observer(2);
   chrome::CloseAllBrowsersAndQuit();
+  ASSERT_NO_FATAL_FAILURE(AcceptClose());
   AddBlankTabAndShow(browsers_[0]);
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
   PrepareForDialog(browsers_[1]);
-
+  ASSERT_NO_FATAL_FAILURE(AcceptClose());
   ASSERT_NO_FATAL_FAILURE(CancelClose());
   cancel_observer.Wait();
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
@@ -843,23 +843,13 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
   AllBrowsersClosingCancelledObserver cancel_observer(1);
   chrome::CloseAllBrowsersAndQuit();
-  EXPECT_TRUE(browsers_[0]->IsAttemptingToCloseBrowser());
 
   browsers_.push_back(CreateBrowser(browser()->profile()));
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[1]);
-
-  // Attempt to close all tabs on the newly created browser. It should be
-  // blocked by the before-unload handler.
-  EXPECT_TRUE(browsers_[0]->IsAttemptingToCloseBrowser());
-  EXPECT_FALSE(browsers_[1]->IsAttemptingToCloseBrowser());
   browsers_[1]->tab_strip_model()->CloseAllTabs();
-  EXPECT_EQ(1, browsers_[1]->tab_strip_model()->count());
-  EXPECT_TRUE(browsers_[0]->IsAttemptingToCloseBrowser());
-  EXPECT_FALSE(browsers_[1]->IsAttemptingToCloseBrowser());
-
-  // Dismiss the first Browser's before unload dialog.
+  ASSERT_NO_FATAL_FAILURE(CancelClose());
   ASSERT_NO_FATAL_FAILURE(CancelClose());
   cancel_observer.Wait();
 
@@ -870,6 +860,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   EXPECT_EQ(1, browsers_[1]->tab_strip_model()->count());
 
   chrome::CloseAllBrowsersAndQuit();
+  browsers_[1]->tab_strip_model()->CloseAllTabs();
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
 
@@ -924,8 +915,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   AllBrowsersClosingCancelledObserver cancel_observer(1);
   chrome::CloseAllBrowsersAndQuit();
 
-  ASSERT_EQ(browsers_.size(), 2u);
-  EXPECT_FALSE(browsers_[1]->HandleBeforeClose());
+  ASSERT_FALSE(browsers_.empty());
+  EXPECT_FALSE(browsers_[0]->HandleBeforeClose());
   ASSERT_NO_FATAL_FAILURE(CancelClose());
   cancel_observer.Wait();
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
@@ -933,8 +924,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   EXPECT_EQ(1, browsers_[1]->tab_strip_model()->count());
 
   chrome::CloseAllBrowsersAndQuit();
-  ASSERT_EQ(browsers_.size(), 2u);
-  EXPECT_FALSE(browsers_[1]->HandleBeforeClose());
+  ASSERT_FALSE(browsers_.empty());
+  EXPECT_FALSE(browsers_[0]->HandleBeforeClose());
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
 

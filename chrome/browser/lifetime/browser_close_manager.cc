@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -80,11 +81,12 @@ void BrowserCloseManager::CancelBrowserClose() {
   }
 
   browser_shutdown::SetTryingToQuit(false);
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+  GlobalBrowserCollection::GetInstance()->ForEach(
       [](BrowserWindowInterface* browser) {
         browser->GetBrowserForMigrationOnly()->ResetTryToCloseWindow();
         return true;
-      });
+      },
+      BrowserCollection::Order::kCreation);
 }
 
 void BrowserCloseManager::TryToCloseBrowsers() {
@@ -94,7 +96,7 @@ void BrowserCloseManager::TryToCloseBrowsers() {
   // OnBrowserReportCloseable with the result. If the user confirms the close,
   // this will trigger TryToCloseBrowsers to try again.
   bool should_stop = false;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+  GlobalBrowserCollection::GetInstance()->ForEach(
       [this, &should_stop](BrowserWindowInterface* browser) {
         if (browser->GetBrowserForMigrationOnly()->TryToCloseWindow(
                 false,
@@ -104,7 +106,8 @@ void BrowserCloseManager::TryToCloseBrowsers() {
           should_stop = true;
         }
         return !should_stop;
-      });
+      },
+      BrowserCollection::Order::kCreation);
   if (should_stop) {
     return;
   }
