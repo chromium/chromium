@@ -294,19 +294,6 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void fileButtonEnabledState() {
-        mModel.set(
-                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
-                AutocompleteRequestType.IMAGE_GENERATION);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertFalse(mPopup.mFileButton.isEnabled());
-
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.SEARCH);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-        assertTrue(mPopup.mFileButton.isEnabled());
-    }
-
-    @Test
     public void addCurrentTabButton() {
         mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
         assertEquals(View.GONE, mPopup.mAddCurrentTab.getVisibility());

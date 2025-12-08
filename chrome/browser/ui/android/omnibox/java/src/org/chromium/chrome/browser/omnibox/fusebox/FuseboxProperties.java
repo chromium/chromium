@@ -107,6 +107,10 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_CREATE_IMAGE_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the File button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_FILE_BUTTON_ENABLED =
+            new WritableBooleanPropertyKey();
+
     /** Whether the File button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_FILE_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -153,8 +157,9 @@ class FuseboxProperties {
         POPUP_CREATE_IMAGE_BUTTON_ENABLED,
         POPUP_CREATE_IMAGE_BUTTON_VISIBLE,
         POPUP_CREATE_IMAGE_CLICKED,
-        POPUP_FILE_CLICKED,
+        POPUP_FILE_BUTTON_ENABLED,
         POPUP_FILE_BUTTON_VISIBLE,
+        POPUP_FILE_CLICKED,
         POPUP_GALLERY_CLICKED,
         POPUP_TAB_PICKER_CLICKED,
         RECENT_TABS_HEADER_VISIBLE,

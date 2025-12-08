@@ -449,7 +449,8 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void activateImageGeneration_disablesCurrentTabInput() {
+    public void activateImageGeneration_disablesNonImageInput() {
+        doReturn(true).when(mComposeBoxQueryControllerBridge).isPdfUploadEligible();
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
@@ -460,16 +461,21 @@ public class FuseboxMediatorUnitTest {
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        recreateMediator();
         ShadowLooper.idleMainLooper();
 
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
 
         mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
     }
 
     @Test

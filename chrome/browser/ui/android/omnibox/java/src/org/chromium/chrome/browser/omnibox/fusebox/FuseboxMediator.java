@@ -457,10 +457,10 @@ public class FuseboxMediator {
                 type == AutocompleteRequestType.SEARCH
                         && OmniboxFeatures.sCompactFusebox.getValue());
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
-        boolean tabInputsEnabled = type != AutocompleteRequestType.IMAGE_GENERATION;
-        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED, tabInputsEnabled);
-        // TODO(https://www.crbug.com/456274957): Also set enabled on select tabs
-        // button.
+        boolean allowNonImage = type != AutocompleteRequestType.IMAGE_GENERATION;
+        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED, allowNonImage);
+        mModel.set(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED, allowNonImage);
+        // TODO(https://www.crbug.com/456274957): Also set enabled on select tabs button.
     }
 
     @VisibleForTesting

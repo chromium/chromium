@@ -96,6 +96,9 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED) {
             view.popup.mCreateImageButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_FILE_BUTTON_ENABLED) {
+            view.popup.mFileButton.setEnabled(
+                    model.get(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED));
         } else if (propertyKey == FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE) {
             view.popup.mFileButton.setVisibility(
                     model.get(FuseboxProperties.POPUP_FILE_BUTTON_VISIBLE)
@@ -325,7 +328,6 @@ class FuseboxViewBinder {
                 isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
         views.popup.mRequestTypeDivider.setVisibility(
                 isAiModeButtonVisible || isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
-        views.popup.mFileButton.setEnabled(!isImageGenerationUsed);
 
         @StyleRes
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
