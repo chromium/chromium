@@ -54,7 +54,6 @@ bool ControllerVisibleToListener(WindowController* window_controller,
     filter_value = listener_filter->FindList(kWindowTypesKey);
   }
 
-  // TODO(crbug.com/41367902): Remove this.
   bool allow_dev_tools_windows = !!filter_value;
   if (!window_controller->IsVisibleToTabsAPIForExtension(
           extension, allow_dev_tools_windows)) {
@@ -77,7 +76,6 @@ bool WillDispatchWindowEvent(
     bool* dispatch_separate_event_out) {
   bool has_filter =
       listener_filter && listener_filter->contains(kWindowTypesKey);
-  // TODO(crbug.com/41367902): Remove this.
   bool allow_dev_tools_windows = has_filter;
   if (!window_controller->IsVisibleToTabsAPIForExtension(
           extension, allow_dev_tools_windows)) {
