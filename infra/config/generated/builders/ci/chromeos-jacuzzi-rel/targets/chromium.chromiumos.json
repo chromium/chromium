@@ -52,7 +52,6 @@
           "result_format": "tast"
         },
         "shard_level_retries_on_ctp": 1,
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "timeout_sec": 14400,
@@ -90,7 +89,6 @@
         "resultdb": {
           "result_format": "tast"
         },
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
         "timeout_sec": 14400,
@@ -119,7 +117,6 @@
         "resultdb": {
           "result_format": "tast"
         },
-        "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_disabled_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
         "timeout_sec": 14400,
