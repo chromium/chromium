@@ -280,11 +280,16 @@ public class FuseboxMediator {
     }
 
     private void updateModelForCurrentTab() {
-        if (mTabModelSelectorSupplier.get() == null
-                || mTabModelSelectorSupplier.get().getCurrentTab() == null) {
-            mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
-            return;
-        }
+        var tabSelector = mTabModelSelectorSupplier.get();
+        var shouldShowCurrentTab =
+                tabSelector != null
+                        && tabSelector.getCurrentTab() != null
+                        && !mModelList
+                                .getAttachedTabIds()
+                                .contains(tabSelector.getCurrentTab().getId());
+
+        mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE, shouldShowCurrentTab);
+        if (!shouldShowCurrentTab) return;
 
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         assumeNonNull(tabModelSelector);
@@ -311,7 +316,7 @@ public class FuseboxMediator {
         if (mComposeBoxQueryControllerBridge == null) return;
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
 
-        Set<Integer> currentAttachedIds = getAttachedTabIds();
+        Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
         if (currentAttachedIds.contains(tab.getId())) return;
         var attachment = FuseboxAttachment.forTab(tab, mContext.getResources());
 
@@ -346,7 +351,7 @@ public class FuseboxMediator {
             return;
         }
         Intent intent;
-        ArrayList<Integer> preselectedIds = new ArrayList<>(getAttachedTabIds());
+        ArrayList<Integer> preselectedIds = new ArrayList<>(mModelList.getAttachedTabIds());
         try {
             intent =
                     new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS))
@@ -388,7 +393,7 @@ public class FuseboxMediator {
     public void updateCurrentlyAttachedTabs(Set<Integer> newlySelectedTabIds) {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector == null) return;
-        Set<Integer> currentAttachedIds = getAttachedTabIds();
+        Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
         mModelList.removeIf(
                 item -> {
                     if (item.type != FuseboxAttachmentType.ATTACHMENT_TAB) return false;
@@ -649,19 +654,5 @@ public class FuseboxMediator {
         mUseCompactUi = useCompactUi;
         mOnCompactModeChangedSupplier.set(mUseCompactUi);
         mModel.set(FuseboxProperties.COMPACT_UI, useCompactUi);
-    }
-
-    /** Returns {@link HashSet} of all the tab ids, or empty if no tab attachments. */
-    public HashSet<Integer> getAttachedTabIds() {
-        HashSet<Integer> attachedTabIds = new HashSet<>();
-
-        for (int i = 0; i < mModelList.size(); i++) {
-            FuseboxAttachment attachment = mModelList.get(i);
-            if (attachment.type != FuseboxAttachmentType.ATTACHMENT_TAB) {
-                continue;
-            }
-            attachedTabIds.add(attachment.tabId);
-        }
-        return attachedTabIds;
     }
 }
