@@ -5,12 +5,15 @@
 #include "components/signin/public/webdata/token_web_data.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected_macros.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_database_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using base::BindOnce;
 
@@ -68,6 +71,17 @@ class TokenWebDataBackend
                                                    std::move(result));
   }
 
+  std::unique_ptr<WDTypedResult> GetAllWrappedBindingKeys(WebDatabase* db) {
+    ASSIGN_OR_RETURN(
+        absl::flat_hash_set<std::vector<uint8_t>> keys,
+        TokenServiceTable::FromWebDatabase(db)->GetAllWrappedBindingKeys(),
+        [] -> std::unique_ptr<WDTypedResult> { return nullptr; });
+
+    return std::make_unique<
+        WDResult<absl::flat_hash_set<std::vector<uint8_t>>>>(
+        WRAPPED_BINDING_KEYS_RESULT, std::move(keys));
+  }
+
  protected:
   virtual ~TokenWebDataBackend() = default;
 
@@ -123,6 +137,15 @@ WebDataServiceBase::Handle TokenWebData::GetAllTokens(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE, BindOnce(&TokenWebDataBackend::GetAllTokens, token_backend_),
+      consumer);
+}
+
+// Null on failure. Success is WDResult<std::vector<std::vector<uint8_t>>>
+WebDataServiceBase::Handle TokenWebData::GetAllWrappedBindingKeys(
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      BindOnce(&TokenWebDataBackend::GetAllWrappedBindingKeys, token_backend_),
       consumer);
 }
 

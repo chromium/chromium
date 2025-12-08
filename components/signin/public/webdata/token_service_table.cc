@@ -5,6 +5,7 @@
 #include "components/signin/public/webdata/token_service_table.h"
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/logging.h"
@@ -16,6 +17,7 @@
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
 
@@ -45,6 +47,19 @@ enum class SetTokenResult {
   kSqlFailure = 2,
   kMaxValue = kSqlFailure,
 };
+
+// Entries in the `Signin.TokenTable.GetAllWrappedBindingKeysResult` histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(GetAllWrappedBindingKeysResult)
+enum class GetAllWrappedBindingKeysResult {
+  kSuccess = 0,
+  kSqlInvalidStatement = 1,
+  kSqlFailure = 2,
+  kMaxValue = kSqlFailure,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninTokenTableGetAllWrappedBindingKeysResult)
 
 void RecordRemoveOtherTokensHistogram(size_t remove_count) {
   base::UmaHistogramCounts100("Signin.TokenTable.RemoveOtherTokensCount",
@@ -233,6 +248,37 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
   VLOG(1) << "Loaded tokens: result = " << read_all_tokens_result
           << " ; number of tokens loaded = " << number_of_tokens_loaded;
   return read_all_tokens_result;
+}
+
+std::optional<absl::flat_hash_set<std::vector<uint8_t>>>
+TokenServiceTable::GetAllWrappedBindingKeys() {
+  GetAllWrappedBindingKeysResult result =
+      GetAllWrappedBindingKeysResult::kSuccess;
+
+  absl::Cleanup record_result = [&result] {
+    base::UmaHistogramEnumeration(
+        "Signin.TokenTable.GetAllWrappedBindingKeysResult", result);
+  };
+
+  sql::Statement s(
+      db()->GetUniqueStatement("SELECT binding_key FROM token_service"));
+
+  if (!s.is_valid()) {
+    result = GetAllWrappedBindingKeysResult::kSqlInvalidStatement;
+    return std::nullopt;
+  }
+
+  absl::flat_hash_set<std::vector<uint8_t>> wrapped_binding_keys;
+  while (s.Step()) {
+    wrapped_binding_keys.insert(s.ColumnBlobAsVector(0));
+  }
+
+  if (!s.Succeeded()) {
+    result = GetAllWrappedBindingKeysResult::kSqlFailure;
+    return std::nullopt;
+  }
+
+  return wrapped_binding_keys;
 }
 
 bool TokenServiceTable::MigrateToVersion130AddBindingKeyColumn() {

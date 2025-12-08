@@ -1371,6 +1371,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Finished"/>
 </enum>
 
+<!-- LINT.IfChange(SigninTokenTableGetAllWrappedBindingKeysResult) -->
+
+<enum name="SigninTokenTableGetAllWrappedBindingKeysResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="SQL Invalid Statement"/>
+  <int value="2" label="SQL Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/public/webdata/token_service_table.cc:GetAllWrappedBindingKeysResult) -->
+
 <enum name="SigninTokenTableReadTokenFromDBResult">
   <int value="0" label="Success"/>
   <int value="1" label="Decrypt failed"/>

@@ -24,8 +24,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::base::Time;
+using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Key;
+using ::testing::Optional;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
@@ -91,6 +93,23 @@ TEST_F(TokenServiceTableTest, TokenServiceGetAllRemoveAll) {
   EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
             table_->GetAllTokens(&out_map, should_reencrypt));
   EXPECT_EQ(TokenWithBindingKey("cheese"), out_map.find(service)->second);
+}
+
+TEST_F(TokenServiceTableTest, TokenServiceGetAllWrappedBindingKeys) {
+  EXPECT_THAT(table_->GetAllWrappedBindingKeys(), Optional(IsEmpty()));
+
+  EXPECT_TRUE(table_->SetTokenForService("service1", "token1", {1, 2, 3}));
+  EXPECT_TRUE(table_->SetTokenForService("service2", "token2", {4, 5, 6}));
+  EXPECT_TRUE(table_->SetTokenForService("service3", "token3", {7, 8, 9}));
+  EXPECT_THAT(
+      table_->GetAllWrappedBindingKeys(),
+      Optional(UnorderedElementsAre(ElementsAre(1, 2, 3), ElementsAre(4, 5, 6),
+                                    ElementsAre(7, 8, 9))));
+
+  EXPECT_TRUE(table_->RemoveTokenForService("service1"));
+  EXPECT_THAT(table_->GetAllWrappedBindingKeys(),
+              Optional(UnorderedElementsAre(ElementsAre(4, 5, 6),
+                                            ElementsAre(7, 8, 9))));
 }
 
 TEST_F(TokenServiceTableTest, TokenServiceGetSet) {
@@ -264,6 +283,15 @@ TEST_F(TokenServiceTableTest, TokenMetrics) {
               table_->GetAllTokens(&out_map, should_reencrypt));
     histograms.ExpectUniqueSample("Signin.TokenTable.ReadTokenFromDBResult",
                                   /*READ_ONE_TOKEN_SUCCESS*/ 0, 1u);
+  }
+
+  {
+    base::HistogramTester histograms;
+    EXPECT_THAT(table_->GetAllWrappedBindingKeys(),
+                Optional(UnorderedElementsAre(IsEmpty())));
+    histograms.ExpectUniqueSample(
+        "Signin.TokenTable.GetAllWrappedBindingKeysResult",
+        /*kSuccess*/ 0, 1u);
   }
 }
 

@@ -67,8 +67,11 @@ class TokenWebData : public WebDataServiceBase {
   // service is present in `services_to_keep`.
   void RemoveOtherTokens(const std::vector<std::string>& services_to_keep);
 
-  // Null on failure. Success is `WDResult<std::vector<std::string>>`.
+  // Null on failure. Success is `WDResult<TokenResult>`.
   virtual Handle GetAllTokens(WebDataServiceConsumer* consumer);
+
+  // Null on failure. Success is `WDResult<std::vector<std::vector<uint8_t>>>`.
+  virtual Handle GetAllWrappedBindingKeys(WebDataServiceConsumer* consumer);
 
  protected:
   ~TokenWebData() override;

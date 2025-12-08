@@ -52,6 +52,7 @@ typedef enum {
                                      //     sync_pb::PaymentInstrument>>
   PAYMENT_INSTRUMENT_CREATION_OPTION_RESULT,  // WDResult<std::vector<
                                               //     sync_pb::PaymentInstrumentCreationOption>>
+  WRAPPED_BINDING_KEYS_RESULT,  // WDResult<absl::flat_hash_set<std::vector<uint8_t>>>
 #if BUILDFLAG(USE_BLINK)  //
   // The browser bound key id is retrieved by the payments component
   // during secure payment confirmation requests and payment credential

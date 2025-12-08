@@ -3780,6 +3780,16 @@ for as long as we store refresh tokens in an SQLite DB. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.TokenTable.GetAllWrappedBindingKeysResult"
+    enum="SigninTokenTableGetAllWrappedBindingKeysResult"
+    expires_after="2026-06-08">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts the results of loading wrapped binding keys from the token database.
+  </summary>
+</histogram>
+
 <histogram name="Signin.TokenTable.ReadTokenFromDBResult"
     enum="SigninTokenTableReadTokenFromDBResult" expires_after="never">
 <!-- expires-never: This reports health status for loading authentication
