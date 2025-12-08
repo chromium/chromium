@@ -227,8 +227,13 @@
   _pageContextWrapper = nil;
 
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  CHECK(activeWebState);
-  CHECK(_BWGService->IsBwgAvailableForWebState(activeWebState));
+
+  // The active web state may no longer be eligible for Gemini by the time this
+  // is called. If this is the case, the overlay should not be presented.
+  if (!activeWebState ||
+      !_BWGService->IsBwgAvailableForWebState(activeWebState)) {
+    return;
+  }
 
   // Set parts of PageContext (i.e. url and title) that are available before the
   // page is done loading.
