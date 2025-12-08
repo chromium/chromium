@@ -25,7 +25,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -500,12 +499,12 @@ public class NtpCustomizationUtilsUnitTest {
                 BackgroundImageInfo.matrixToString(result.getLandscapeMatrix()));
 
         // Verifies image information in portrait mode
-        Point portraitSize = result.getWindowSize(Configuration.ORIENTATION_PORTRAIT);
+        Point portraitSize = result.getPortraitWindowSize();
         assertEquals(500, portraitSize.x);
         assertEquals(800, portraitSize.y);
 
         // Verifies image information in landscape mode
-        Point landscapeSize = result.getWindowSize(Configuration.ORIENTATION_LANDSCAPE);
+        Point landscapeSize = result.getLandscapeWindowSize();
         assertNull(landscapeSize);
     }
 

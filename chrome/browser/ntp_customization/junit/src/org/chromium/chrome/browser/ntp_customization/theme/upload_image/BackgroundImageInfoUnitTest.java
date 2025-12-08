@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo.matrixToString;
 import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo.stringToMatrix;
 
-import android.content.res.Configuration;
 import android.graphics.Matrix;
 import android.graphics.Point;
 
@@ -129,7 +128,7 @@ public class BackgroundImageInfoUnitTest {
         assertEquals(
                 "[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]",
                 BackgroundImageInfo.matrixToString(info.getPortraitMatrix()));
-        Point portraitSize = info.getWindowSize(Configuration.ORIENTATION_PORTRAIT);
+        Point portraitSize = info.getPortraitWindowSize();
         assertEquals(1080, portraitSize.x);
         assertEquals(1920, portraitSize.y);
 
@@ -137,7 +136,7 @@ public class BackgroundImageInfoUnitTest {
         assertEquals(
                 "[2.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 15.0]",
                 BackgroundImageInfo.matrixToString(info.getLandscapeMatrix()));
-        Point landSize = info.getWindowSize(Configuration.ORIENTATION_LANDSCAPE);
+        Point landSize = info.getLandscapeWindowSize();
         assertEquals(1920, landSize.x);
         assertEquals(1080, landSize.y);
     }
@@ -151,7 +150,7 @@ public class BackgroundImageInfoUnitTest {
         BackgroundImageInfo info =
                 BackgroundImageInfo.createFromStrings(matrixString, matrixString);
 
-        assertNull(info.getWindowSize(Configuration.ORIENTATION_PORTRAIT));
-        assertNull(info.getWindowSize(Configuration.ORIENTATION_LANDSCAPE));
+        assertNull(info.getPortraitWindowSize());
+        assertNull(info.getLandscapeWindowSize());
     }
 }

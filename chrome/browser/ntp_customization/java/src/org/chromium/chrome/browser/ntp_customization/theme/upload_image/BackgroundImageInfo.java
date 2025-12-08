@@ -31,8 +31,8 @@ public class BackgroundImageInfo {
     private @Nullable Point mPortraitWindowSize;
     private @Nullable Point mLandscapeWindowSize;
 
-    private final Matrix mPortraitMatrix;
-    private final Matrix mLandscapeMatrix;
+    private Matrix mPortraitMatrix;
+    private Matrix mLandscapeMatrix;
 
     public BackgroundImageInfo(
             Matrix portrait,
@@ -127,12 +127,21 @@ public class BackgroundImageInfo {
      *     Configuration#ORIENTATION_LANDSCAPE}.
      * @return The cached size, or null if not yet calculated/saved for that orientation.
      */
-    @VisibleForTesting
     public @Nullable Point getWindowSize(int orientation) {
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             return mPortraitWindowSize;
         }
         return mLandscapeWindowSize;
+    }
+
+    @VisibleForTesting
+    public @Nullable Point getPortraitWindowSize() {
+        return getWindowSize(Configuration.ORIENTATION_PORTRAIT);
+    }
+
+    @VisibleForTesting
+    public @Nullable Point getLandscapeWindowSize() {
+        return getWindowSize(Configuration.ORIENTATION_LANDSCAPE);
     }
 
     /**
@@ -142,7 +151,7 @@ public class BackgroundImageInfo {
      *     Configuration#ORIENTATION_LANDSCAPE}.
      * @param windowSize The {@link Point} representing the width and height of the window.
      */
-    void setWindowSize(int orientation, Point windowSize) {
+    public void setWindowSize(int orientation, Point windowSize) {
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             mPortraitWindowSize = windowSize;
             return;
@@ -172,6 +181,21 @@ public class BackgroundImageInfo {
     @VisibleForTesting
     public Matrix getLandscapeMatrix() {
         return getMatrix(Configuration.ORIENTATION_LANDSCAPE);
+    }
+
+    /**
+     * Sets the transformation matrix for the specified orientation.
+     *
+     * @param orientation {@link Configuration#ORIENTATION_PORTRAIT} or {@link
+     *     Configuration#ORIENTATION_LANDSCAPE}.
+     * @param matrix The {@link Matrix} to associate with the given orientation.
+     */
+    public void setMatrix(int orientation, Matrix matrix) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mPortraitMatrix = matrix;
+            return;
+        }
+        mLandscapeMatrix = matrix;
     }
 
     /**
@@ -225,5 +249,26 @@ public class BackgroundImageInfo {
             Log.i(TAG, "Error in stringToMatrix: " + e);
             return null;
         }
+    }
+
+    /**
+     * Creates a deep copy of the provided {@link BackgroundImageInfo}.
+     *
+     * <p>This creates new instances of the {@link Matrix} objects to ensure that modifications to
+     * the copy (e.g., during user interaction) do not affect the original source.
+     *
+     * @param info The {@link BackgroundImageInfo} to copy.
+     * @return A new {@link BackgroundImageInfo} instance with independent matrix data, or {@code
+     *     null} if the input is null.
+     */
+    public static @Nullable BackgroundImageInfo getDeepCopy(@Nullable BackgroundImageInfo info) {
+        if (info == null) {
+            return null;
+        }
+        return new BackgroundImageInfo(
+                new Matrix(info.getPortraitMatrix()),
+                new Matrix(info.getLandscapeMatrix()),
+                info.getPortraitWindowSize(),
+                info.getLandscapeWindowSize());
     }
 }

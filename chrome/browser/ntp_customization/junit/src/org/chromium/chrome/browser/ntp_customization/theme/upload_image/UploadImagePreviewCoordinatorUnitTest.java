@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -271,14 +270,14 @@ public class UploadImagePreviewCoordinatorUnitTest {
         BackgroundImageInfo savedInfo = NtpCustomizationUtils.readNtpBackgroundImageInfo();
 
         // Verifies the portrait image information
-        Point portraitSize = savedInfo.getWindowSize(Configuration.ORIENTATION_PORTRAIT);
+        Point portraitSize = savedInfo.getPortraitWindowSize();
         assertEquals("Portrait width should match", 1080, portraitSize.x);
         assertEquals("Portrait height should match", 1920, portraitSize.y);
         assertEquals(
                 "Portrait matrix should be saved", mPortraitMatrix, savedInfo.getPortraitMatrix());
 
         // Verifies the landscape image information
-        Point landscapeSize = savedInfo.getWindowSize(Configuration.ORIENTATION_LANDSCAPE);
+        Point landscapeSize = savedInfo.getLandscapeWindowSize();
         assertEquals("Landscape width should match", 2000, landscapeSize.x);
         assertEquals("Landscape height should match", 1080, landscapeSize.y);
         assertEquals(

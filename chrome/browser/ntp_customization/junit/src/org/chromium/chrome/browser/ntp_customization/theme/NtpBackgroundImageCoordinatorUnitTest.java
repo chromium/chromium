@@ -13,8 +13,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo.matrixToString;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -74,13 +76,20 @@ public class NtpBackgroundImageCoordinatorUnitTest {
         mLandscapeMatrix = new Matrix();
         mLandscapeMatrix.setScale(2.0f, 2.0f); // Make it different from portrait.
 
-        Point currentWindowSize = CropImageUtils.getCurrentWindowDimensions(mActivity);
+        int orientation = mActivity.getResources().getConfiguration().orientation;
+        Point portraitWindowSize;
+        Point landscapeWindowSize;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            portraitWindowSize = CropImageUtils.getCurrentWindowDimensions(mActivity);
+            landscapeWindowSize = new Point(portraitWindowSize.y, portraitWindowSize.x);
+        } else {
+            landscapeWindowSize = CropImageUtils.getCurrentWindowDimensions(mActivity);
+            portraitWindowSize = new Point(landscapeWindowSize.y, landscapeWindowSize.x);
+        }
+
         mBackgroundImageInfo =
                 new BackgroundImageInfo(
-                        mPortraitMatrix,
-                        mLandscapeMatrix,
-                        currentWindowSize,
-                        new Point(currentWindowSize.y, currentWindowSize.x));
+                        mPortraitMatrix, mLandscapeMatrix, portraitWindowSize, landscapeWindowSize);
 
         mCoordinator = new NtpBackgroundImageCoordinator(mActivity, mRootView, mUiConfig, COLOR);
         mPropertyModel = mCoordinator.getPropertyModelForTesting();
@@ -156,7 +165,7 @@ public class NtpBackgroundImageCoordinatorUnitTest {
 
     @Test
     @Config(qualifiers = "port")
-    public void testSetImageBackgroundWithMatrices_portrait() {
+    public void testSetImageBackgroundWithMatrices_cacheHit_portrait() {
         mCoordinator.setBackground(mBitmap, mBackgroundImageInfo, IMAGE_FROM_DISK);
 
         // Manually triggers the observer callback
@@ -169,7 +178,7 @@ public class NtpBackgroundImageCoordinatorUnitTest {
 
     @Test
     @Config(qualifiers = "land")
-    public void testSetImageBackgroundWithMatrices_landscape() {
+    public void testSetImageBackgroundWithMatrices_cacheHit_landscape() {
         mCoordinator.setBackground(mBitmap, mBackgroundImageInfo, IMAGE_FROM_DISK);
 
         // Manually triggers the observer callback
@@ -185,6 +194,9 @@ public class NtpBackgroundImageCoordinatorUnitTest {
     public void testSetImageBackgroundWithMatrices_doesNothingIfBitmapIsNull() {
         mCoordinator.setBackground(null, mBackgroundImageInfo, IMAGE_FROM_DISK);
 
+        verify(mUiConfig).addObserver(mDisplayStyleObserverArgumentCaptor.capture());
+        mDisplayStyleObserverArgumentCaptor.getValue().onDisplayStyleChanged(null);
+
         assertNull(mPropertyModel.get(NtpBackgroundImageProperties.IMAGE_MATRIX));
     }
 
@@ -193,6 +205,52 @@ public class NtpBackgroundImageCoordinatorUnitTest {
     public void testSetImageBackgroundWithMatrices_doesNothingIfInfoIsNull() {
         mCoordinator.setBackground(mBitmap, null, IMAGE_FROM_DISK);
 
+        verify(mUiConfig).addObserver(mDisplayStyleObserverArgumentCaptor.capture());
+        mDisplayStyleObserverArgumentCaptor.getValue().onDisplayStyleChanged(null);
+
         assertNull(mPropertyModel.get(NtpBackgroundImageProperties.IMAGE_MATRIX));
+    }
+
+    @Test
+    @Config(qualifiers = "port")
+    public void testSetImageBackground_cacheMiss_calculatesAndUpdatesCache() {
+        Point currentScreenSize = CropImageUtils.getCurrentWindowDimensions(mActivity);
+
+        Matrix invalidMatrix = new Matrix();
+        invalidMatrix.setTranslate(currentScreenSize.x + 100f, 0);
+
+        // Creates BackgroundImageInfo with a wrong window size to force a cache miss.
+        // We ensure the "wrong" size is numerically different from the currentScreenSize.
+        Point wrongEstimatedSize = new Point(currentScreenSize.x + 1, currentScreenSize.y + 1);
+        Point landscapeSize = new Point(currentScreenSize.y + 1, currentScreenSize.x + 1);
+
+        mBackgroundImageInfo =
+                new BackgroundImageInfo(
+                        invalidMatrix, // Passing the invalid matrix
+                        mLandscapeMatrix,
+                        wrongEstimatedSize, // Passing wrong size to force recalculation
+                        landscapeSize);
+
+        Matrix expectedMatrix = new Matrix(invalidMatrix);
+        float[] matrixValues = new float[9];
+        expectedMatrix.getValues(matrixValues);
+        CropImageUtils.validateMatrix(
+                expectedMatrix, currentScreenSize.x, currentScreenSize.y, mBitmap, matrixValues);
+
+        mCoordinator.setBackground(mBitmap, mBackgroundImageInfo, IMAGE_FROM_DISK);
+
+        verify(mUiConfig).addObserver(mDisplayStyleObserverArgumentCaptor.capture());
+        mDisplayStyleObserverArgumentCaptor.getValue().onDisplayStyleChanged(null);
+
+        // Verifies values changed
+        Matrix resultMatrix = mPropertyModel.get(NtpBackgroundImageProperties.IMAGE_MATRIX);
+        assertEquals(
+                "Coordinator should have applied validateMatrix correctly",
+                matrixToString(expectedMatrix),
+                matrixToString(resultMatrix));
+
+        // Verifies cache updated
+        BackgroundImageInfo cachedInfo = mCoordinator.getCachedBackgroundImageInfoForTesting();
+        assertEquals(resultMatrix, cachedInfo.getPortraitMatrix());
     }
 }
