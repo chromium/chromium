@@ -38,15 +38,15 @@ class HttpResponseDelegate {
 
   // Builds and sends header block. Should only be called once.
   virtual void SendResponseHeaders(HttpStatusCode status,
-                                   const std::string& status_reason,
+                                   std::string_view status_reason,
                                    const base::StringPairs& headers) = 0;
   // Sends a raw header block, in the form of an HTTP1.1 response header block
   // (separated by "\r\n". Best effort will be maintained to preserve the raw
   // headers.
-  virtual void SendRawResponseHeaders(const std::string& headers) = 0;
+  virtual void SendRawResponseHeaders(std::string_view headers) = 0;
 
   // Sends a content block, then calls the closure.
-  virtual void SendContents(const std::string& contents,
+  virtual void SendContents(std::string_view contents,
                             base::OnceClosure callback = base::DoNothing()) = 0;
 
   // Called after the last content block or after the header block. The response
@@ -56,11 +56,11 @@ class HttpResponseDelegate {
   // The following functions are essentially shorthand for common combinations
   // of function calls that may have a more efficient layout than just calling
   // one after the other.
-  virtual void SendContentsAndFinish(const std::string& contents) = 0;
+  virtual void SendContentsAndFinish(std::string_view contents) = 0;
   virtual void SendHeadersContentAndFinish(HttpStatusCode status,
-                                           const std::string& status_reason,
+                                           std::string_view status_reason,
                                            const base::StringPairs& headers,
-                                           const std::string& contents) = 0;
+                                           std::string_view contents) = 0;
 };
 
 // Interface for HTTP response implementations. The response should be owned by
@@ -105,13 +105,13 @@ class BasicHttpResponse : public HttpResponse {
   }
 
   // The content of the response.
-  const std::string& content() const { return content_; }
+  std::string_view content() const { return content_; }
   void set_content(std::string_view content) {
     content_ = std::string{content};
   }
 
   // The content type.
-  const std::string& content_type() const { return content_type_; }
+  std::string_view content_type() const { return content_type_; }
   void set_content_type(std::string_view content_type) {
     content_type_ = std::string{content_type};
   }
@@ -156,7 +156,7 @@ class DelayedHttpResponse : public BasicHttpResponse {
 
 class RawHttpResponse : public HttpResponse {
  public:
-  RawHttpResponse(const std::string& headers, const std::string& contents);
+  RawHttpResponse(std::string_view headers, std::string_view contents);
 
   RawHttpResponse(const RawHttpResponse&) = delete;
   RawHttpResponse& operator=(const RawHttpResponse&) = delete;
@@ -165,7 +165,7 @@ class RawHttpResponse : public HttpResponse {
 
   void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 
-  void AddHeader(const std::string& key_value_pair);
+  void AddHeader(std::string_view key_value_pair);
 
  private:
   std::string headers_;

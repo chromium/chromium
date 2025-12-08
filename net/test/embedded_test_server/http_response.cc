@@ -8,6 +8,7 @@
 #include <iterator>
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -30,8 +31,8 @@ HttpResponseDelegate::~HttpResponseDelegate() = default;
 
 HttpResponse::~HttpResponse() = default;
 
-RawHttpResponse::RawHttpResponse(const std::string& headers,
-                                 const std::string& contents)
+RawHttpResponse::RawHttpResponse(std::string_view headers,
+                                 std::string_view contents)
     : headers_(headers), contents_(contents) {}
 
 RawHttpResponse::~RawHttpResponse() = default;
@@ -52,8 +53,8 @@ void RawHttpResponse::SendResponse(
   delegate->SendContentsAndFinish(contents_);
 }
 
-void RawHttpResponse::AddHeader(const std::string& key_value_pair) {
-  headers_.append(base::StringPrintf("%s\r\n", key_value_pair.c_str()));
+void RawHttpResponse::AddHeader(std::string_view key_value_pair) {
+  headers_.append(base::StringPrintf("%s\r\n", key_value_pair));
 }
 
 BasicHttpResponse::BasicHttpResponse() = default;
