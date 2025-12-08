@@ -145,6 +145,10 @@ public final class UiUtils {
             return context.getString(R.string.download_manager_dangerous_blocked);
         }
 
+        if (DownloadUtils.isBlockedSensitiveDownload(item)) {
+            return context.getString(R.string.download_message_single_download_blocked);
+        }
+
         String displayUrl =
                 DownloadUtils.formatUrlForDisplayInNotification(
                         item.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_DOWNLOAD_HOME_CAPTION);
@@ -196,7 +200,8 @@ public final class UiUtils {
      * @return A drawable resource id representing an icon for {@code item}.
      */
     public static @DrawableRes int getIconForItem(OfflineItem item) {
-        if (DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)) {
+        if (DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)
+                || DownloadUtils.isBlockedSensitiveDownload(item)) {
             return R.drawable.dangerous_filled_24dp;
         }
 

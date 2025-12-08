@@ -10,8 +10,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
-import org.chromium.components.download.DownloadDangerType;
-import org.chromium.components.offline_items_collection.FailState;
+import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 
@@ -45,8 +44,7 @@ public class InvalidStateOfflineItemFilter extends OfflineItemFilter {
                 return true;
             case OfflineItemState.FAILED:
                 if (mIncludeBlockedSensitiveItems) {
-                    return item.failState != FailState.FILE_BLOCKED
-                            || item.dangerType != DownloadDangerType.SENSITIVE_CONTENT_BLOCK;
+                    return !DownloadUtils.isBlockedSensitiveDownload(item);
                 }
                 return true;
             case OfflineItemState.INTERRUPTED:

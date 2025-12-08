@@ -13,6 +13,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.offline_items_collection.FailState;
+import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -134,5 +136,12 @@ public class DownloadUtils {
                 dangerType == DownloadDangerType.DANGEROUS_CONTENT
                         || dangerType == DownloadDangerType.POTENTIALLY_UNWANTED;
         return dangerTypeShouldDisplayAsDangerous && state != OfflineItemState.CANCELLED;
+    }
+
+    /** Returns whether a download is blocked due to sensitive content. */
+    public static boolean isBlockedSensitiveDownload(OfflineItem item) {
+        return item.state == OfflineItemState.FAILED
+                && item.failState == FailState.FILE_BLOCKED
+                && item.dangerType == DownloadDangerType.SENSITIVE_CONTENT_BLOCK;
     }
 }
