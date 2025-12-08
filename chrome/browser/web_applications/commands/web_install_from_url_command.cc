@@ -53,7 +53,7 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
     base::WeakPtr<content::WebContents> web_contents,
-    const GURL& last_committed_url,
+    const GURL& installed_by,
     WebAppInstallDialogCallback dialog_callback,
     WebInstallFromUrlCommandCallback installed_callback)
     : WebAppCommand<SharedWebContentsLock,
@@ -70,12 +70,13 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
       manifest_id_(manifest_id),
       install_url_(install_url),
       web_contents_(web_contents),
-      last_committed_url_(last_committed_url),
+      installed_by_(installed_by),
       dialog_callback_(std::move(dialog_callback)) {
   if (manifest_id_.has_value()) {
     GetMutableDebugValue().Set("manifest_id_param", manifest_id_->spec());
   }
   GetMutableDebugValue().Set("install_url_param", install_url_.spec());
+  GetMutableDebugValue().Set("installed_by", installed_by_.spec());
 }
 
 WebInstallFromUrlCommand::~WebInstallFromUrlCommand() = default;
@@ -242,7 +243,7 @@ void WebInstallFromUrlCommand::OnInstallDialogCompleted(
 
   web_app_info_->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
-  web_app_info_->installed_by = last_committed_url_;
+  web_app_info_->installed_by = installed_by_;
   WebAppInstallFinalizer::FinalizeOptions finalize_options(kInstallSource);
   finalize_options.install_state =
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;

@@ -190,6 +190,10 @@ class WebInstallFromUrlCommandBrowserTest
     return EvalJs(web_contents(), "webInstallError.name").ExtractString();
   }
 
+  GURL GetInstallableAppURL() {
+    return https_server()->GetURL("/web_apps/install_url/install_url.html");
+  }
+
   // Get the installed_by field from the app's database with the given
   // manifest_id.
   std::deque<AppInstalledBy> GetInstalledBy(const GURL& manifest_id) {
@@ -317,14 +321,15 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                        InstallApp_TwoParam) {
   NavigateToValidUrl();
 
-  std::string install_url = GetInstallableAppURL().spec();
-  std::string manifest_id = install_url;
+  GURL install_url = GetInstallableAppURL();
+  std::string manifest_id =
+      install_url.GetWithoutFilename().spec() + "index.html";
 
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
   SetPermissionResponse(/*permission_granted=*/true);
   base::HistogramTester histograms;
-  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
+  ASSERT_TRUE(TryInstallApp(install_url.spec(), manifest_id));
 
   EXPECT_TRUE(ResultExists());
   EXPECT_FALSE(ErrorExists());
@@ -459,14 +464,15 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                        InstallApp_SameOrigin_AllowPermission) {
   NavigateToValidUrl();
 
-  std::string install_url = GetInstallableAppURL().spec();
-  std::string manifest_id = install_url;
+  GURL install_url = GetInstallableAppURL();
+  std::string manifest_id =
+      install_url.GetWithoutFilename().spec() + "index.html";
   base::HistogramTester histograms;
 
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
   SetPermissionResponse(/*permission_granted=*/true);
-  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
+  ASSERT_TRUE(TryInstallApp(install_url.spec(), manifest_id));
 
   EXPECT_TRUE(ResultExists());
   EXPECT_EQ(GetManifestIdResult(), manifest_id);
@@ -521,12 +527,13 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                        InstallApp_SameOrigin_DenyPermission) {
   NavigateToValidUrl();
 
-  std::string install_url = GetInstallableAppURL().spec();
-  std::string manifest_id = install_url;
+  GURL install_url = GetInstallableAppURL();
+  std::string manifest_id =
+      install_url.GetWithoutFilename().spec() + "index.html";
   base::HistogramTester histograms;
 
   SetPermissionResponse(/*permission_granted=*/false);
-  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
+  ASSERT_TRUE(TryInstallApp(install_url.spec(), manifest_id));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
@@ -564,19 +571,16 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   // Navigate to a valid URL on the primary server.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("/simple.html")));
-
-  std::string install_url =
-      secondary_server_
-          .GetURL("/banners/manifest_test_page.html?manifest=manifest.json")
-          .spec();
+  GURL install_url =
+      secondary_server_.GetURL("/web_apps/install_url/install_url.html");
   std::string manifest_id =
-      secondary_server_.GetURL("/banners/manifest_test_page.html").spec();
+      install_url.GetWithoutFilename().spec() + "index.html";
   base::HistogramTester histograms;
 
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
   SetPermissionResponse(/*permission_granted=*/true);
-  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
+  ASSERT_TRUE(TryInstallApp(install_url.spec(), manifest_id));
 
   EXPECT_TRUE(ResultExists());
   EXPECT_EQ(GetManifestIdResult(), manifest_id);
@@ -634,14 +638,12 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
       browser(), https_server()->GetURL("/simple.html")));
   base::HistogramTester histograms;
 
-  std::string install_url =
-      secondary_server_
-          .GetURL("/banners/manifest_test_page.html?manifest=manifest.json")
-          .spec();
+  GURL install_url =
+      secondary_server_.GetURL("/web_apps/install_url/install_url.html");
   std::string manifest_id =
-      secondary_server_.GetURL("/banners/manifest_test_page.html").spec();
+      install_url.GetWithoutFilename().spec() + "index.html";
   SetPermissionResponse(/*permission_granted=*/false);
-  ASSERT_TRUE(TryInstallApp(install_url, manifest_id));
+  ASSERT_TRUE(TryInstallApp(install_url.spec(), manifest_id));
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
