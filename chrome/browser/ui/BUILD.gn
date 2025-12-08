@@ -454,6 +454,7 @@ static_library("ui") {
     "//components/encrypted_messages:encrypted_message_proto",
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
+    "//components/enterprise/browser/promotion",
     "//components/error_page/content/browser",
     "//components/facilitated_payments/core/features",
     "//components/favicon/content",
