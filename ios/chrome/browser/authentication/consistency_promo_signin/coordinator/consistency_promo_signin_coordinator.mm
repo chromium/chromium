@@ -296,7 +296,7 @@
     // In case of double tap, let the first reauth proceed.
     return;
   }
-  [self.reauthCoordinator stop];
+  [self stopAddAccountFlows];
   self.reauthCoordinator = [[SigninReauthCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
@@ -335,6 +335,13 @@
   [self.reauthCoordinator stop];
   self.reauthCoordinator = nil;
 }
+
+// Stop children coordinators that goes through the add account flow.
+- (void)stopAddAccountFlows {
+  [self stopReauthCoordinator];
+  [self stopAddAccountCoordinatorAnimated:NO];
+}
+
 // Does cleanup (metrics and remove coordinator) once the add-account flow is
 // finished. If `hasAccounts == NO` and `signinResult` is successful , the
 // function immediately signs in to Chrome with the identity acquired from the
@@ -380,7 +387,7 @@
   // In case of double-tap, we must stop the already started coordinator. This
   // may occur because, up to iOS 18, the view may have disappeared without
   // calling the signin completion. See crbug.com/395959814
-  [self.addAccountCoordinator stop];
+  [self stopAddAccountFlows];
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED,
