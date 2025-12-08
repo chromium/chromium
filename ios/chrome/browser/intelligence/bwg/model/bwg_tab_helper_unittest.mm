@@ -279,7 +279,7 @@ TEST_F(BwgTabHelperTest, TestGetServerId_Expired) {
 
 TEST_F(BwgTabHelperTest, TestWasShown_RestoresSession) {
   OCMExpect([mock_bwg_handler_
-      startBWGFlowWithEntryPoint:bwg::EntryPoint::TabReopen]);
+      startGeminiFlowWithEntryPoint:bwg::EntryPoint::TabReopen]);
 
   // Background a session and then show the tab.
   tab_helper_->PrepareBwgFreBackgrounding();

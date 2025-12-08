@@ -359,7 +359,7 @@ void BwgTabHelper::SetLocationBarBadgeCommandsHandler(
 void BwgTabHelper::WasShown(web::WebState* web_state) {
   if (is_bwg_session_active_in_background_) {
     [bwg_commands_handler_
-        startBWGFlowWithEntryPoint:bwg::EntryPoint::TabReopen];
+        startGeminiFlowWithEntryPoint:bwg::EntryPoint::TabReopen];
     cached_snapshot_ = nil;
   }
 }
@@ -601,7 +601,8 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
   if (IsAskGeminiSnackbarEnabled()) {
     SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
     action.handler = ^{
-      [bwg_commands_handler_ startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
+      [bwg_commands_handler_
+          startGeminiFlowWithEntryPoint:bwg::EntryPoint::Promo];
     };
     action.title = [NSString stringWithFormat:@"✦ %@", @"Ask Gemini"];
     SnackbarMessage* message =

@@ -3128,7 +3128,7 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - BWGCommands
 
-- (void)startBWGFlowWithEntryPoint:(bwg::EntryPoint)entryPoint {
+- (void)startGeminiFlowWithEntryPoint:(bwg::EntryPoint)entryPoint {
   [self startBWGFlowWithImageAttachment:nil entryPoint:entryPoint];
 }
 
@@ -3160,7 +3160,7 @@ const char kChromeAppStoreUrl[] =
 - (void)showBWGPromoIfPageIsEligible {
   BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
   if (BWGService->IsBwgAvailableForWebState(self.activeWebState)) {
-    [self startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
+    [self startGeminiFlowWithEntryPoint:bwg::EntryPoint::Promo];
   }
 }
 

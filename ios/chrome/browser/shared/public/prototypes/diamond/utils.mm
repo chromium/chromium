@@ -86,7 +86,7 @@ void DiamondPrototypeStartGemini(bool from_tab_grid,
   } else {
     id<BWGCommands> BWGCommandsHandler =
         HandlerForProtocol(browser->GetCommandDispatcher(), BWGCommands);
-    [BWGCommandsHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::Diamond];
+    [BWGCommandsHandler startGeminiFlowWithEntryPoint:bwg::EntryPoint::Diamond];
   }
 }
 

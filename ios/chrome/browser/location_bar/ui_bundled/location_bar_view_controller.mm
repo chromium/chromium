@@ -1071,7 +1071,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     _pageActionMenuEntrypointView.newBadgeVisible = NO;
   }
   if (IsDirectBWGEntryPoint()) {
-    [self.BWGHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
+    [self.BWGHandler
+        startGeminiFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
   } else {
     RecordAIHubIconTapped();
     [self.pageActionMenuHandler showPageActionMenu];
