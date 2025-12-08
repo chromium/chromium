@@ -186,9 +186,7 @@ std::tuple<uint32_t, LUID> GetVendorIdAndLUIDFromD3D11Device(
 
   ComPtr<IDXGIDevice> dxgi_device;
   HRESULT hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&dxgi_device));
-  if (FAILED(hr)) {
-    return {kGpuVendorIdNone, {}};
-  }
+  CHECK_EQ(hr, S_OK);
 
   ComPtr<IDXGIAdapter> adapter;
   hr = dxgi_device->GetAdapter(&adapter);

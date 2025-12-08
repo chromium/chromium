@@ -955,7 +955,7 @@ HRESULT GenerateSampleFromVideoFrame(
 
     Microsoft::WRL::ComPtr<ID3D11Device1> device1;
     hr = d3d_device.As(&device1);
-    RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
+    CHECK_EQ(hr, S_OK);
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
     hr = device1->OpenSharedResource1(
@@ -1100,7 +1100,7 @@ void GenerateResourceOnSyncTokenReleased(
   bool input_texture_has_been_copied = false;
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
   hr = input_texture.texture.As(&dxgi_resource);
-  RETURN_ON_FAILURE_WITH_CALLBACK(hr, "Failed to get DXGI resource");
+  CHECK_EQ(hr, S_OK);
   HANDLE shared_handle;
 
   // MFVP & HMFT is not expecting texture array as input.
@@ -1141,7 +1141,7 @@ void GenerateResourceOnSyncTokenReleased(
                                           input_texture.array_index, &src_box);
     Microsoft::WRL::ComPtr<IDXGIResource1> shared_dxgi_resource;
     hr = shared_texture.As(&shared_dxgi_resource);
-    CHECK(SUCCEEDED(hr));
+    CHECK_EQ(hr, S_OK);
     hr = shared_dxgi_resource->CreateSharedHandle(
         nullptr, DXGI_SHARED_RESOURCE_READ, nullptr, &shared_handle);
     RETURN_ON_FAILURE_WITH_CALLBACK(hr, "Failed to create shared handle");
@@ -1156,7 +1156,7 @@ void GenerateResourceOnSyncTokenReleased(
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
   Microsoft::WRL::ComPtr<IDXGIDevice2> dxgi_device2;
   hr = shared_d3d11_device.As(&dxgi_device2);
-  RETURN_ON_FAILURE_WITH_CALLBACK(hr, "Failed to query dxgi device2");
+  CHECK_EQ(hr, S_OK);
   hr = dxgi_device2->EnqueueSetEvent(event.handle());
   if (SUCCEEDED(hr)) {
     event.Wait();

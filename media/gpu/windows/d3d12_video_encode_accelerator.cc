@@ -168,15 +168,13 @@ void GenerateResourceOnSynTokenReleased(
 
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
   HRESULT hr = input_texture.texture.As(&dxgi_resource);
-  RETURN_ON_FAILURE_WITH_CALLBACK(
-      hr, "Failed to query IDXGIResource1 from input texture.");
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_context;
   d3d11_device->GetImmediateContext(&d3d11_context);
   Microsoft::WRL::ComPtr<IDXGIDevice2> dxgi_device2;
   hr = d3d11_device.As(&dxgi_device2);
-  RETURN_ON_FAILURE_WITH_CALLBACK(
-      hr, "Failed to query IDXGIDevice2 from D3D11 device");
+  CHECK_EQ(hr, S_OK);
 
   base::win::ScopedHandle shared_handle;
   if (!is_texture_array) {
@@ -255,8 +253,7 @@ void GenerateResourceOnSynTokenReleased(
     }
 
     hr = shared_texture.As(&dxgi_resource);
-    RETURN_ON_FAILURE_WITH_CALLBACK(
-        hr, "Failed to query DXGI resource from shared texture");
+    CHECK_EQ(hr, S_OK);
 
     HANDLE copied_handle = nullptr;
     hr = dxgi_resource->CreateSharedHandle(nullptr, DXGI_SHARED_RESOURCE_READ,

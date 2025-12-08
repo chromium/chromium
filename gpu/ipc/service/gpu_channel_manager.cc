@@ -103,18 +103,18 @@ void TrimD3DResources(const scoped_refptr<SharedContextState>& context_state) {
   }
   if (d3d11_device) {
     Microsoft::WRL::ComPtr<IDXGIDevice3> dxgi_device;
-    if (SUCCEEDED(d3d11_device.As(&dxgi_device))) {
-      dxgi_device->Trim();
-    }
+    HRESULT hr = d3d11_device.As(&dxgi_device);
+    CHECK_EQ(hr, S_OK);
+    dxgi_device->Trim();
   }
 
   Microsoft::WRL::ComPtr<ID3D11Device> angle_d3d11_device =
       gl::QueryD3D11DeviceObjectFromANGLE();
   if (angle_d3d11_device && angle_d3d11_device != d3d11_device) {
     Microsoft::WRL::ComPtr<IDXGIDevice3> dxgi_device;
-    if (SUCCEEDED(angle_d3d11_device.As(&dxgi_device))) {
-      dxgi_device->Trim();
-    }
+    HRESULT hr = angle_d3d11_device.As(&dxgi_device);
+    CHECK_EQ(hr, S_OK);
+    dxgi_device->Trim();
   }
 }
 #endif

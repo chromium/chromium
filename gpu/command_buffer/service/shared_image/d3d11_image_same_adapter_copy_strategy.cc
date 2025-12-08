@@ -49,10 +49,7 @@ bool D3D11ImageSameAdapterCopyStrategy::CopyD3D11TextureOnSameAdapter(
   // Get a shared handle to the destination texture.
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
   HRESULT hr = dest_texture->QueryInterface(IID_PPV_ARGS(&dxgi_resource));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to get DXGI resource. hr=" << std::hex << hr;
-    return false;
-  }
+  CHECK_EQ(hr, S_OK);
   HANDLE shared_handle;
   hr = dxgi_resource->CreateSharedHandle(
       nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE, nullptr,
@@ -66,11 +63,7 @@ bool D3D11ImageSameAdapterCopyStrategy::CopyD3D11TextureOnSameAdapter(
   // Open the shared handle on the source device.
   Microsoft::WRL::ComPtr<ID3D11Device1> src_device1;
   hr = src_device.As(&src_device1);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to query ID3D11Device1 from source device. hr="
-               << std::hex << hr;
-    return false;
-  }
+  CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> opened_texture_on_src;
   hr = src_device1->OpenSharedResource1(shared_handle,
                                         IID_PPV_ARGS(&opened_texture_on_src));

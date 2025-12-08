@@ -189,17 +189,11 @@ bool D3D11TextureHelper::CopyToBackBuffer(
 
   Microsoft::WRL::ComPtr<ID3D11Device1> d3d11_device;
   HRESULT hr = render_state_.d3d11_device_.As(&d3d11_device);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to get ID3D11Device1.";
-    return false;
-  }
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
   hr = source->QueryInterface(IID_PPV_ARGS(&dxgi_resource));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed QueryInterface.";
-    return false;
-  }
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
   hr = dxgi_resource.As(&(keyed_mutex));

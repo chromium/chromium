@@ -2099,7 +2099,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
 
     ComD3D11Device1 device1;
     hr = d3d_device.As(&device1);
-    RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
+    CHECK_EQ(hr, S_OK);
     hr = device1->OpenSharedResource1(
         buffer_handle.dxgi_handle().buffer_handle(),
         IID_PPV_ARGS(&input_texture));
@@ -2234,7 +2234,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
 
     ComD3D11Device1 device1;
     hr = d3d_device.As(&device1);
-    RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
+    CHECK_EQ(hr, S_OK);
 
     hr = device1->OpenSharedResource1(
         buffer_handle.dxgi_handle().buffer_handle(),

@@ -755,7 +755,8 @@ void D3DImageBacking::ReadbackToMemoryAsync(
 
   base::WaitableEvent copy_complete_event;
   Microsoft::WRL::ComPtr<IDXGIDevice2> dxgi_device;
-  texture_d3d11_device_.As(&dxgi_device);
+  const HRESULT hr = texture_d3d11_device_.As(&dxgi_device);
+  CHECK_EQ(hr, S_OK);
   dxgi_device->EnqueueSetEvent(copy_complete_event.handle());
 
   pending_copy_event_watcher_.emplace();

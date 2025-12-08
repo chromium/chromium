@@ -515,10 +515,8 @@ void QueryVideoProcessorCustomExtForHDR() {
   }
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  if (FAILED(d3d11_device.As(&dxgi_device))) {
-    DLOG(ERROR) << "Failed to retrieve DXGI device";
-    return;
-  }
+  HRESULT hr = d3d11_device.As(&dxgi_device);
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   if (FAILED(dxgi_device->GetAdapter(&dxgi_adapter))) {
@@ -572,7 +570,7 @@ void QueryVideoProcessorCustomExtForHDR() {
   desc.Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL;
 
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator> d3d11_video_enumerator;
-  HRESULT hr = d3d11_video_device->CreateVideoProcessorEnumerator(
+  hr = d3d11_video_device->CreateVideoProcessorEnumerator(
       &desc, &d3d11_video_enumerator);
   if (FAILED(hr)) {
     LOG(ERROR) << "CreateVideoProcessorEnumerator failed: "
@@ -736,10 +734,11 @@ void InitializeDirectComposition(
   }
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.As(&dxgi_device);
+  HRESULT hr = d3d11_device.As(&dxgi_device);
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
-  HRESULT hr =
+  hr =
       create_device3_function(dxgi_device.Get(), IID_PPV_ARGS(&desktop_device));
   if (FAILED(hr)) {
     LOG(ERROR) << "DCompositionCreateDevice3 failed: "
@@ -1070,8 +1069,8 @@ bool DXGISwapChainTearingSupported() {
       return false;
     }
     Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-    d3d11_device.As(&dxgi_device);
-    DCHECK(dxgi_device);
+    const HRESULT hr = d3d11_device.As(&dxgi_device);
+    CHECK_EQ(hr, S_OK);
     Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
     dxgi_device->GetAdapter(&dxgi_adapter);
     DCHECK(dxgi_adapter);

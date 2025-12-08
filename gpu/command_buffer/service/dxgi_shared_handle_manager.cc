@@ -23,11 +23,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> OpenSharedHandleTexture(
     HANDLE shared_handle) {
   Microsoft::WRL::ComPtr<ID3D11Device1> d3d11_device1;
   HRESULT hr = d3d11_device.As(&d3d11_device1);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "Failed to query for ID3D11Device1. Error: "
-               << logging::SystemErrorCodeToString(hr);
-    return nullptr;
-  }
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
   hr = d3d11_device1->OpenSharedResource1(shared_handle,

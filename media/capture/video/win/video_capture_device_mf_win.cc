@@ -692,11 +692,7 @@ HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
 
   Microsoft::WRL::ComPtr<ID3D11Device1> device1;
   HRESULT hr = texture_device.As(&device1);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to get ID3D11Device1: "
-                << logging::SystemErrorCodeToString(hr);
-    return hr;
-  }
+  CHECK_EQ(hr, S_OK);
 
   // Open shared resource from GpuMemoryBuffer on source texture D3D11 device
   Microsoft::WRL::ComPtr<ID3D11Texture2D> target_texture;
@@ -739,11 +735,7 @@ HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
     // the same adapter.
     Microsoft::WRL::ComPtr<IDXGIDevice2> dxgi_device2;
     hr = texture_device.As(&dxgi_device2);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to query IDXGIDevice2: "
-                 << logging::SystemErrorCodeToString(hr);
-      return hr;
-    }
+    CHECK_EQ(hr, S_OK);
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
 
@@ -2393,10 +2385,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
     // It's failed to get valid |private_data|, create and set a new value.
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
     hr = texture->QueryInterface(IID_PPV_ARGS(&dxgi_resource));
-    if (FAILED(hr)) {
-      DLOG(ERROR) << logging::SystemErrorCodeToString(hr);
-      return hr;
-    }
+    CHECK_EQ(hr, S_OK);
     HANDLE texture_handle;
     hr = dxgi_resource->CreateSharedHandle(
         nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,

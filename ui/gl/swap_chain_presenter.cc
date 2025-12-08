@@ -1365,10 +1365,9 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
                swap_chain_size.ToString());
 
   Microsoft::WRL::ComPtr<IDXGIResource> decode_resource;
-  texture.As(&decode_resource);
-  DCHECK(decode_resource);
+  HRESULT hr = texture.As(&decode_resource);
+  CHECK_EQ(hr, S_OK);
 
-  HRESULT hr = S_OK;
   if (!decode_swap_chain_ || decode_resource_ != decode_resource) {
     TRACE_EVENT0(
         "gpu",
@@ -1380,8 +1379,8 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     base::win::ScopedHandle swap_chain_handle = CreateDCompSurfaceHandle();
 
     Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-    d3d11_device_.As(&dxgi_device);
-    DCHECK(dxgi_device);
+    hr = d3d11_device_.As(&dxgi_device);
+    CHECK_EQ(hr, S_OK);
     Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
     dxgi_device->GetAdapter(&dxgi_adapter);
     DCHECK(dxgi_adapter);
@@ -1743,8 +1742,8 @@ bool SwapChainPresenter::SetupPresentToSwapChain(
     // there still may be a black flicker when presenting expensive content
     // (e.g. 4k video).
     Microsoft::WRL::ComPtr<IDXGIDevice2> dxgi_device2;
-    d3d11_device_.As(&dxgi_device2);
-    DCHECK(dxgi_device2);
+    hr = d3d11_device_.As(&dxgi_device2);
+    CHECK_EQ(hr, S_OK);
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
     hr = dxgi_device2->EnqueueSetEvent(event.handle());
@@ -2444,8 +2443,8 @@ bool SwapChainPresenter::ReallocateSwapChain(
   gpu_vendor_id_ = 0;
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device_.As(&dxgi_device);
-  DCHECK(dxgi_device);
+  HRESULT hr = d3d11_device_.As(&dxgi_device);
+  CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   dxgi_device->GetAdapter(&dxgi_adapter);
   DCHECK(dxgi_adapter);
@@ -2493,7 +2492,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
   if (use_yuv_swap_chain) {
     TRACE_EVENT1("gpu", "SwapChainPresenter::ReallocateSwapChain::YUV",
                  "format", DxgiFormatToString(swap_chain_format));
-    HRESULT hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
+    hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
         d3d11_device_.Get(), swap_chain_handle.Get(), &desc, nullptr,
         &swap_chain_);
     failed_to_create_yuv_swapchain_ = FAILED(hr);
@@ -2534,7 +2533,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
       desc.Flags |= DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
     }
 
-    HRESULT hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
+    hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
         d3d11_device_.Get(), swap_chain_handle.Get(), &desc, nullptr,
         &swap_chain_);
 
@@ -2560,7 +2559,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
   if (DXGIWaitableSwapChainEnabled()) {
     Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
     if (SUCCEEDED(swap_chain_.As(&swap_chain3))) {
-      HRESULT hr = swap_chain3->SetMaximumFrameLatency(
+      hr = swap_chain3->SetMaximumFrameLatency(
           GetDXGIWaitableSwapChainMaxQueuedFrames());
       DCHECK(SUCCEEDED(hr)) << "SetMaximumFrameLatency failed with error "
                             << logging::SystemErrorCodeToString(hr);
@@ -2576,7 +2575,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
   SetSwapChainPresentDuration();
 
   DXGI_ADAPTER_DESC adapter_desc;
-  HRESULT hr = dxgi_adapter->GetDesc(&adapter_desc);
+  hr = dxgi_adapter->GetDesc(&adapter_desc);
   if (SUCCEEDED(hr)) {
     gpu_vendor_id_ = adapter_desc.VendorId;
   } else {

@@ -79,10 +79,7 @@ bool CopyDXGIBufferToShMem(
 
   Microsoft::WRL::ComPtr<ID3D11Device1> device1;
   HRESULT hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&device1));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to open D3D11_1 device. hr=" << std::hex << hr;
-    return false;
-  }
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
 
@@ -209,10 +206,7 @@ bool CopyShMemToDXGIBuffer(base::span<uint8_t> shared_memory,
 
   Microsoft::WRL::ComPtr<ID3D11Device1> device1;
   HRESULT hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&device1));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to open D3D11_1 device. hr=" << std::hex << hr;
-    return false;
-  }
+  CHECK_EQ(hr, S_OK);
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
 

@@ -1706,10 +1706,8 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
   }
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  if (!SUCCEEDED(d3d11_device.As(&dxgi_device))) {
-    LOG(ERROR) << "Failed to get IDXGIDevice from ANGLE.";
-    return nullptr;
-  }
+  HRESULT hr = d3d11_device.As(&dxgi_device);
+  CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   if (!SUCCEEDED(dxgi_device->GetAdapter(&dxgi_adapter))) {
     LOG(ERROR) << "Failed to get IDXGIAdapter from ANGLE.";

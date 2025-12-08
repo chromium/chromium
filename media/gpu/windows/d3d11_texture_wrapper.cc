@@ -210,13 +210,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) {
     ComDXGIResource1 dxgi_resource;
     hr = texture.As(&dxgi_resource);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
-                  << std::hex << hr;
-      std::move(on_error_cb)
-          .Run(std::move(D3D11Status::Codes::kCreateSharedHandleFailed));
-      return;
-    }
+    CHECK_EQ(hr, S_OK);
 
     // WebGPU will potentially read directly from this texture.
     usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;

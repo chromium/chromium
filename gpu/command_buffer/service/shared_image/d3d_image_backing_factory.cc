@@ -66,7 +66,7 @@ class GpuMemoryBufferHandleSharedState {
 
       Microsoft::WRL::ComPtr<IDXGIDevice> angle_dxgi_device;
       HRESULT hr = angle_d3d11_device.As(&angle_dxgi_device);
-      CHECK(SUCCEEDED(hr));
+      CHECK_EQ(hr, S_OK);
 
       Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter = nullptr;
       hr = FAILED(angle_dxgi_device->GetAdapter(&dxgi_adapter));
@@ -404,9 +404,8 @@ gfx::GpuMemoryBufferHandle D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
   }
 
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
-  if (FAILED(d3d11_texture.As(&dxgi_resource))) {
-    return handle;
-  }
+  const HRESULT hr = d3d11_texture.As(&dxgi_resource);
+  CHECK_EQ(hr, S_OK);
 
   HANDLE texture_handle;
   if (FAILED(dxgi_resource->CreateSharedHandle(
@@ -519,8 +518,8 @@ bool D3DImageBackingFactory::CreateSwapChainInternal(
   }
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device_.As(&dxgi_device);
-  DCHECK(dxgi_device);
+  HRESULT hr = d3d11_device_.As(&dxgi_device);
+  CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   dxgi_device->GetAdapter(&dxgi_adapter);
   DCHECK(dxgi_adapter);
@@ -548,8 +547,8 @@ bool D3DImageBackingFactory::CreateSwapChainInternal(
   desc.AlphaMode = format.HasAlpha() ? DXGI_ALPHA_MODE_PREMULTIPLIED
                                      : DXGI_ALPHA_MODE_IGNORE;
 
-  HRESULT hr = dxgi_factory->CreateSwapChainForComposition(
-      d3d11_device_.Get(), &desc, nullptr, &swap_chain);
+  hr = dxgi_factory->CreateSwapChainForComposition(d3d11_device_.Get(), &desc,
+                                                   nullptr, &swap_chain);
   if (FAILED(hr)) {
     LOG(ERROR) << "CreateSwapChainForComposition failed with error " << std::hex
                << hr;
@@ -782,11 +781,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   if (needs_cross_device_synchronization) {
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
     hr = d3d11_texture.As(&dxgi_resource);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
-                 << std::hex << hr;
-      return nullptr;
-    }
+    CHECK_EQ(hr, S_OK);
 
     HANDLE shared_handle;
     hr = dxgi_resource->CreateSharedHandle(

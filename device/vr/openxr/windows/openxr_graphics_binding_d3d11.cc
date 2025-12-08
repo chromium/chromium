@@ -143,11 +143,7 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
     Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
     HRESULT hr = swap_chain_info.d3d11_texture->QueryInterface(
         IID_PPV_ARGS(&dxgi_resource));
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
-                  << std::hex << hr;
-      return;
-    }
+    CHECK_EQ(hr, S_OK);
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
     hr = dxgi_resource.As(&d3d11_texture);
@@ -199,13 +195,7 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
 
       hr = swap_chain_info.d3d11_shared_texture->QueryInterface(
           IID_PPV_ARGS(&dxgi_resource));
-      if (FAILED(hr)) {
-        DLOG(ERROR) << "QueryInterface for IDXGIResource of shared texture "
-                       "failed with error 0x"
-                    << std::hex << hr;
-        swap_chain_info.d3d11_shared_texture = nullptr;
-        return;
-      }
+      CHECK_EQ(hr, S_OK);
 
       hr = dxgi_resource->CreateSharedHandle(
           nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
