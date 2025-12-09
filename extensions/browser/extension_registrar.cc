@@ -99,6 +99,8 @@ void ExtensionRegistrar::Init(
   // there's a KeyedService cycle between DelayedInstallManager and
   // ExtensionRegistrar.
   delayed_install_manager_ = DelayedInstallManager::Get(browser_context_);
+  delayed_install_manager_observation_.Reset();
+  delayed_install_manager_observation_.Observe(delayed_install_manager_);
 }
 
 bool ExtensionRegistrar::IsInitialized() const {
@@ -115,7 +117,13 @@ void ExtensionRegistrar::Shutdown() {
   // the `ExtensionSystem` keyed service is destroyed.
   extension_system_ = nullptr;
   delegate_ = nullptr;
+  delayed_install_manager_observation_.Reset();
   delayed_install_manager_ = nullptr;
+}
+
+void ExtensionRegistrar::OnDelayedInstallFinished(
+    scoped_refptr<const Extension> extension) {
+  FinishInstallation(extension.get());
 }
 
 void ExtensionRegistrar::AddExtension(

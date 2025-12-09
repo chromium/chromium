@@ -10,14 +10,12 @@
 #include "base/check.h"
 #include "base/trace_event/trace_event.h"
 #include "extensions/browser/delayed_install_manager_factory.h"
-#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/install_gate.h"
 
 namespace extensions {
 
 DelayedInstallManager::DelayedInstallManager(content::BrowserContext* context)
-    : extension_prefs_(ExtensionPrefs::Get(context)),
-      extension_registrar_(ExtensionRegistrar::Get(context)) {}
+    : extension_prefs_(ExtensionPrefs::Get(context)) {}
 
 DelayedInstallManager::~DelayedInstallManager() = default;
 
@@ -30,7 +28,14 @@ DelayedInstallManager* DelayedInstallManager::Get(
 void DelayedInstallManager::Shutdown() {
   // Avoids dangling pointers during keyed service two-phase shutdown.
   extension_prefs_ = nullptr;
-  extension_registrar_ = nullptr;
+}
+
+void DelayedInstallManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DelayedInstallManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool DelayedInstallManager::Contains(const ExtensionId& id) const {
@@ -120,7 +125,9 @@ bool DelayedInstallManager::FinishDelayedInstallationIfReady(
     NOTREACHED();
   }
 
-  extension_registrar_->FinishInstallation(delayed_install.get());
+  for (auto& observer : observers_) {
+    observer.OnDelayedInstallFinished(delayed_install);
+  }
   return true;
 }
 
