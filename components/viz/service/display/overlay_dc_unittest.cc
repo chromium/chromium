@@ -3595,6 +3595,43 @@ TEST_F(OverlayProcessorWinFullScreenTest, VideoIsLetterboxedDueToClipping) {
               }));
 }
 
+// This tests the case where:
+//
+// - A video is full screen
+// - The video has the same aspect ratio of the screen
+// - The monitor the video is on has a non-integer device scale factor. This
+//   test simulates a 2400x1600 monitor at 1.5x scaling.
+//
+// In this case, we want the video to be "snapped" to the monitor size, instead
+// of the video quad size that is slightly larger due to rounding up when
+// calculating the root rame size in the browser.
+TEST_F(OverlayProcessorWinFullScreenTest,
+       FullScreenVideoSlightlyLargerThanScreen) {
+  AggregatedRenderPassList pass_list;
+  auto pass = CreateRenderPass();
+  pass->output_rect = gfx::Rect(2400, 1600);
+
+  const gfx::Rect slightly_larger_than_pass = gfx::Rect(2400, 1601);
+
+  auto* sqs = CreateSharedQuadStateWithLayerNamespaceId(pass.get());
+  sqs->clip_rect = slightly_larger_than_pass;
+  CreateYUVTextureQuadAt(resource_provider_.get(),
+                         child_resource_provider_.get(), child_provider_.get(),
+                         sqs, pass.get(), slightly_larger_than_pass);
+  CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
+                         SkColors::kBlack, pass.get(), pass->output_rect);
+  pass_list.push_back(std::move(pass));
+
+  auto result = TryProcessForDelegatedOverlays(pass_list);
+  result.ExpectDelegationSuccess();
+
+  EXPECT_THAT(
+      result.candidates(),
+      CandidatesAreSortedAndElementsAre({
+          testing::AllOf(test::OverlayIsFullScreen(),
+                         test::OverlayTargetRectIs(gfx::RectF(2400, 1600))),
+      }));
+}
 class OverlayProcessorWinFullScreenWithAdjustmentTest
     : public OverlayProcessorWinDelegatedCompositingTest {
  public:

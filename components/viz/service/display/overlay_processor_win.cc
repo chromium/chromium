@@ -689,14 +689,25 @@ void OverlayProcessorWin::TryPromoteFullScreenVideo(
 
   // The ideal rect is `target_rect` scaled to fit and centered inside the full
   // screen render pass output rect.
-  const gfx::RectF ideal_full_screen_rect = ContainedAndCenteredRect(
+  gfx::RectF ideal_full_screen_rect = ContainedAndCenteredRect(
       target_rect, gfx::SizeF(root_pass_output_rect.size()));
 
   // Allow up to a pixel of wiggle room for checking the clip rect and
-  // centeredness of the video. This is in case the video renderer doesn't
-  // supply a perfectly placed video quad and assumes that up to a pixel
-  // of adjustment is forgivable.
+  // centeredness of the video. This is in case the browser doesn't embed--or
+  // the video renderer doesn't supply--a perfectly placed video quad. We
+  // therefore assume that up to a pixel of adjustment is forgivable.
   constexpr float kTightTolerance = 1.0f;
+
+  if (ideal_full_screen_rect.ApproximatelyEqual(
+          gfx::RectF(root_pass_output_rect), kTightTolerance,
+          kTightTolerance)) {
+    // Snap the "ideal" rect to the monitor rect if we are close enough.
+    //
+    // One of cases that `kTightTolerance` addresses is with non-integer device
+    // scale factors, which can result in a root frame size that is one rounded
+    // up to be one pixel larger than the monitor size.
+    ideal_full_screen_rect = gfx::RectF(root_pass_output_rect);
+  }
 
   const bool candidate_is_not_clipped =
       !frontmost_candidate_it->clip_rect ||
