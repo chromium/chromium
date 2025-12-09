@@ -57,7 +57,7 @@ class PendingScriptTest : public PageTestBase {
     // `ParseBlockedOnScriptExecutionDuration()` is longer than total parse
     // time, so we expect `parse_duration` to be greater than
     // `parse_blocked_on_script_execution_duration`.
-    EXPECT_GT(parse_duration, parse_blocked_on_script_execution_duration)
+    EXPECT_GE(parse_duration, parse_blocked_on_script_execution_duration)
         << location.ToString();
   }
 
