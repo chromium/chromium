@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
@@ -96,6 +97,13 @@ const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
       return vector_icons::kCardboardIcon;
     case TabAlert::kActorWaitingOnUser:
     case TabAlert::kActorAccessing:
+#if BUILDFLAG(ENABLE_GLIC)
+      if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconV2)) {
+        return glic::GlicVectorIconManager::GetVectorIcon(
+            IDR_ACTOR_AUTO_BROWSE_ICON);
+      }
+#endif
+      return kTvIcon;
     case TabAlert::kGlicAccessing:
     case TabAlert::kGlicSharing:
 #if BUILDFLAG(ENABLE_GLIC)

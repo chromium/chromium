@@ -24,7 +24,8 @@ const int kIconSize = 16;
 const gfx::VectorIcon& GetRowIcon() {
 #if BUILDFLAG(ENABLE_GLIC)
   if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconV2)) {
-    glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
+    return glic::GlicVectorIconManager::GetVectorIcon(
+        IDR_ACTOR_AUTO_BROWSE_ICON);
   }
 #endif
   return kScreensaverAutoIcon;

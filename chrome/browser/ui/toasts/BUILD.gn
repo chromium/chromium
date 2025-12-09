@@ -49,6 +49,8 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/actor/resources:common_resources",
+    "//chrome/browser/actor/resources:grit",
+    "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs/saved_tab_groups",

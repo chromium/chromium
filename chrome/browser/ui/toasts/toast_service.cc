@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -41,10 +42,25 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/menus/simple_menu_model.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/plus_addresses/core/browser/resources/vector_icons.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+namespace {
+const gfx::VectorIcon& GetTaskInProgressIcon() {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconV2)) {
+    return glic::GlicVectorIconManager::GetVectorIcon(
+        IDR_ACTOR_AUTO_BROWSE_ICON);
+  }
+#endif
+  return kScreensaverAutoIcon;
+}
+}  // namespace
 
 ToastService::ToastService(BrowserWindowInterface* browser_window_interface) {
   toast_registry_ = std::make_unique<ToastRegistry>();
@@ -271,7 +287,7 @@ void ToastService::RegisterToasts(
   if (features::kGlicActorUiToast.Get()) {
     toast_registry_->RegisterToast(
         ToastId::kGeminiWorkingOnTask,
-        ToastSpecification::Builder(kScreensaverAutoIcon,
+        ToastSpecification::Builder(GetTaskInProgressIcon(),
                                     IDS_TASK_IN_PROGRESS_TOAST_BODY)
             .AddCloseButton()
             .Build());

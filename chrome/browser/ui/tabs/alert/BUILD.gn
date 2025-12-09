@@ -41,6 +41,7 @@ source_set("impl") {
     ":tab_alert",
     ":tab_alert_enum",
     "//chrome/app/vector_icons",
+    "//chrome/browser/actor/resources:grit",
     "//chrome/browser/actor/ui",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui:layout_constants",
