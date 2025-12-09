@@ -98,7 +98,8 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
 
   // Gets the ScopedMapping object which clients can use to access the CPU
   // visible memory and other metadata for the gpu buffer backing |this|.
-  virtual std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImage() const = 0;
+  virtual std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImageDEPRECATED()
+      const = 0;
 
   virtual const VideoFrameLayout& layout() const = 0;
 

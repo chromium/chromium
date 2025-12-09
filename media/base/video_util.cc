@@ -261,7 +261,7 @@ void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
   if (!frame->IsMappable() &&
       frame->storage_type() ==
           media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
-    scoped_mapping = frame->MapSharedImage();
+    scoped_mapping = frame->MapSharedImageDEPRECATED();
     CHECK(scoped_mapping);
   }
 
@@ -569,7 +569,7 @@ scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
   CHECK(video_frame);
   CHECK(video_frame->HasMappableSharedImage());
 
-  auto scoped_mapping = video_frame->MapSharedImage();
+  auto scoped_mapping = video_frame->MapSharedImageDEPRECATED();
   if (!scoped_mapping) {
     return nullptr;
   }

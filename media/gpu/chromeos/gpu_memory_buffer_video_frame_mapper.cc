@@ -49,7 +49,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
     return nullptr;
   }
 
-  auto scoped_mapping = video_frame->MapSharedImage();
+  auto scoped_mapping = video_frame->MapSharedImageDEPRECATED();
   if (!scoped_mapping) {
     VLOGF(1) << "Failed to get the mapped memory.";
     return nullptr;

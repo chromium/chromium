@@ -299,7 +299,7 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
 }
 
 std::unique_ptr<VideoFrame::ScopedMapping>
-NativePixmapFrameResource::MapSharedImage() const {
+NativePixmapFrameResource::MapSharedImageDEPRECATED() const {
   // This accessor is used for frames with STORAGE_MAPPABLE_SHARED_IMAGE. This
   // class is coded to advertise STORAGE_DMABUFS, so this always returns
   // nullptr.

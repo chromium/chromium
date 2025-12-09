@@ -181,7 +181,7 @@ static sk_sp<SkImage> ConvertFrame(media::VideoFrame* frame) {
   if (frame->storage_type() ==
       media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
-    auto scoped_mapping = frame->MapSharedImage();
+    auto scoped_mapping = frame->MapSharedImageDEPRECATED();
     if (!scoped_mapping) {
       DLOG(ERROR) << "Failed to get the mapped memory.";
       return nullptr;

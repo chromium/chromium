@@ -515,7 +515,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // VideoFrame.
   // TODO(crbug.com/40263579): Have this method directly return
   // ClientSharedImage::ScopedMapping object instead.
-  std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImage() const;
+  std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImageDEPRECATED() const;
 
   // Gets the ScopedMapping object which clients can use to access the CPU
   // visible memory and other metadata for the MappableSI backing this
