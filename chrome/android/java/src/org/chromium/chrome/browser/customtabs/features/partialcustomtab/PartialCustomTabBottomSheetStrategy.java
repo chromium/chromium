@@ -714,8 +714,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                     mStatus == HeightStatus.TOP
                             ? R.string.accessibility_custom_tab_expanded
                             : R.string.accessibility_custom_tab_collapsed;
-            getCoordinatorLayout()
-                    .announceForAccessibility(mActivity.getResources().getString(textId));
+            String tabState = mActivity.getResources().getString(textId);
+            getCoordinatorLayout().setAccessibilityPaneTitle(tabState);
+            mActivity.getWindow().setTitle(tabState);
         }
     }
 
