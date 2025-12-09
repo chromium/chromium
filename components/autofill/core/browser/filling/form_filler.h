@@ -166,6 +166,11 @@ class FormFiller {
       AutofillTriggerSource trigger_source,
       std::optional<RefillTriggerReason> refill_trigger_reason = std::nullopt);
 
+  // Prevents any automatic refill of the operation `fill_id`. A renderer may
+  // call this when a JavaScript observes the `autofill` event and may therefore
+  // programmatically trigger a refill.
+  void SuppressAutomaticRefills(const FillId& fill_id);
+
   // May or may not trigger a refill operation on `form`. `field` and
   // `old_value` are only needed when `refill_trigger_reason` is
   // `RefillTriggerReason::kExpirationDateFormatted`, and in that case `field`

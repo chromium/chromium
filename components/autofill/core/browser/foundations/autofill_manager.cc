@@ -229,6 +229,10 @@ void AutofillManager::OnDidAutofillForm(const FormData& form) {
                                               form.global_id())));
 }
 
+void AutofillManager::SuppressAutomaticRefills(const FillId& fill_id) {
+  SuppressAutomaticRefillsImpl(fill_id);
+}
+
 void AutofillManager::OnFormSubmitted(const FormData& form,
                                       const mojom::SubmissionSource source) {
   if (!IsValidFormData(form)) {

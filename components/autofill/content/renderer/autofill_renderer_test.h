@@ -87,6 +87,10 @@ class MockAutofillDriver : public mojom::AutofillDriver {
        const std::optional<PasswordSuggestionRequest>& password_request),
       (override));
   MOCK_METHOD(void, HidePopup, (), (override));
+  MOCK_METHOD(void,
+              SuppressAutomaticRefills,
+              (const FillId& fill_id),
+              (override));
   MOCK_METHOD(void, FocusOnNonFormField, (), (override));
   MOCK_METHOD(void,
               FocusOnFormField,

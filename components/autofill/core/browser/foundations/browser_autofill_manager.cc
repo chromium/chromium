@@ -2181,6 +2181,11 @@ void BrowserAutofillManager::OnDidAutofillFormImpl(const FormData& form) {
   UpdateInitialInteractionTimestamp(base::TimeTicks::Now());
 }
 
+void BrowserAutofillManager::SuppressAutomaticRefillsImpl(
+    const FillId& fill_id) {
+  form_filler_->SuppressAutomaticRefills(fill_id);
+}
+
 void BrowserAutofillManager::DidShowSuggestions(
     base::span<const Suggestion> suggestions,
     const FormData& form,

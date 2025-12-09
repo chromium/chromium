@@ -198,6 +198,10 @@ class AutofillDriverRouter {
       mojom::SubmissionSource submission_source);
   // This event is broadcast to all drivers.
   void HidePopup(RoutedCallback<> callback, AutofillDriver& source);
+  // This event is broadcast to all drivers.
+  void SuppressAutomaticRefills(RoutedCallback<const FillId&> callback,
+                                AutofillDriver& source,
+                                const FillId& fill_id);
   void JavaScriptChangedAutofilledValue(
       RoutedCallback<const FormData&,
                      const FieldGlobalId&,

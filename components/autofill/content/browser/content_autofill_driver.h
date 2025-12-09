@@ -265,6 +265,7 @@ class ContentAutofillDriver : public AutofillDriver,
   void DidEndTextFieldEditing() override;
   void FocusOnNonFormField() override;
   void HidePopup() override;
+  void SuppressAutomaticRefills(const FillId& fill_id) override;
 
   // Group (2b): renderer -> browser events, routed (see comment above).
   // mojom::AutofillDriver:
