@@ -147,6 +147,23 @@ optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
   NOTREACHED();
 }
 
+optimization_guide::proto::InteractionDisabledReason
+ConvertInteractionDisabledReason(
+    blink::mojom::AIPageContentInteractionDisabledReason reason) {
+  switch (reason) {
+    case blink::mojom::AIPageContentInteractionDisabledReason::kDisabled:
+      return optimization_guide::proto::INTERACTION_DISABLED_REASON_DISABLED;
+    case blink::mojom::AIPageContentInteractionDisabledReason::kAriaDisabled:
+      return optimization_guide::proto::
+          INTERACTION_DISABLED_REASON_ARIA_DISABLED;
+    case blink::mojom::AIPageContentInteractionDisabledReason::
+        kCursorNotAllowed:
+      return optimization_guide::proto::
+          INTERACTION_DISABLED_REASON_CURSOR_NOT_ALLOWED;
+  }
+  NOTREACHED();
+}
+
 optimization_guide::proto::ContentAttributeType ConvertAttributeType(
     blink::mojom::AIPageContentAttributeType type) {
   switch (type) {
@@ -285,6 +302,12 @@ void ConvertNodeInteractionInfo(
   for (const auto& reason : mojom_node_interaction_info.clickability_reasons) {
     proto_interaction_info->add_clickability_reasons(
         ConvertClickabilityReason(reason));
+  }
+
+  for (const auto& reason :
+       mojom_node_interaction_info.interaction_disabled_reasons) {
+    proto_interaction_info->add_interaction_disabled_reasons(
+        ConvertInteractionDisabledReason(reason));
   }
 
   proto_interaction_info->set_is_disabled(

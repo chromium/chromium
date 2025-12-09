@@ -1916,11 +1916,13 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, DisabledButton) {
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
   const auto& button = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(button.content_attributes().has_interaction_info());
-  EXPECT_TRUE(button.content_attributes()
-                  .interaction_info()
-                  .clickability_reasons()
-                  .empty());
-  EXPECT_TRUE(button.content_attributes().interaction_info().is_disabled());
+  const auto& interaction_info = button.content_attributes().interaction_info();
+  EXPECT_TRUE(interaction_info.clickability_reasons().empty());
+  EXPECT_TRUE(interaction_info.is_disabled());
+  EXPECT_THAT(
+      interaction_info.interaction_disabled_reasons(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::INTERACTION_DISABLED_REASON_DISABLED));
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -1934,11 +1936,36 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
   const auto& button = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(button.content_attributes().has_interaction_info());
-  EXPECT_TRUE(button.content_attributes()
-                  .interaction_info()
-                  .clickability_reasons()
-                  .empty());
-  EXPECT_TRUE(button.content_attributes().interaction_info().is_disabled());
+  const auto& interaction_info = button.content_attributes().interaction_info();
+  EXPECT_TRUE(interaction_info.clickability_reasons().empty());
+  EXPECT_TRUE(interaction_info.is_disabled());
+  EXPECT_THAT(interaction_info.interaction_disabled_reasons(),
+              testing::UnorderedElementsAre(
+                  optimization_guide::proto::
+                      INTERACTION_DISABLED_REASON_ARIA_DISABLED));
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       CursorNotAllowedButton) {
+  LoadPage(https_server()->GetURL("/cursor_not_allowed_button.html"),
+           GetActionableAIPageContentOptions());
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
+  const auto& button = ActionableContentRootNode().children_nodes()[0];
+  ASSERT_TRUE(button.content_attributes().has_interaction_info());
+  const auto& interaction_info = button.content_attributes().interaction_info();
+  EXPECT_THAT(
+      interaction_info.clickability_reasons(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL));
+  EXPECT_FALSE(interaction_info.is_disabled());
+  EXPECT_THAT(interaction_info.interaction_disabled_reasons(),
+              testing::UnorderedElementsAre(
+                  optimization_guide::proto::
+                      INTERACTION_DISABLED_REASON_CURSOR_NOT_ALLOWED));
 }
 
 // Popups may be rendered as native OS-level widgets on Android, MacOS, and iOS.

@@ -186,6 +186,13 @@ enum AIPageContentClickabilityReason {
   kHoverPseudoClass,
 };
 
+// Provides hints to indicate that interaction with the element is disabled.
+enum AIPageContentInteractionDisabledReason {
+  kDisabled,
+  kAriaDisabled,
+  kCursorNotAllowed,
+};
+
 struct AIPageContentNodeInteractionInfo {
   // If this node supports scrolling, provides information about its current
   // state.
@@ -214,7 +221,12 @@ struct AIPageContentNodeInteractionInfo {
   // attribute. Disabled nodes are still valid action targets and can consume
   // events. This is false for nodes which are not hit-testable and will ignore
   // events, for example with `pointer-events: none`.
+  //
+  // TODO(b/465736813): Deprecate when consumers move to `interaction_disabled_reasons`.
   bool is_disabled;
+
+  // Provides hints on why the interaction with the element is disabled.
+  array<AIPageContentInteractionDisabledReason> interaction_disabled_reasons;
 };
 
 // The coordinate space for the dimensions here is physical coordinates (not

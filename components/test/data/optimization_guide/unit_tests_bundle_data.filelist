@@ -11,6 +11,7 @@
 //components/test/data/optimization_guide/canvas.html
 //components/test/data/optimization_guide/clickability_reason.html
 //components/test/data/optimization_guide/cross_origin_image.html
+//components/test/data/optimization_guide/cursor_not_allowed_button.html
 //components/test/data/optimization_guide/data_image.html
 //components/test/data/optimization_guide/deep.html
 //components/test/data/optimization_guide/deep_sparse.html
