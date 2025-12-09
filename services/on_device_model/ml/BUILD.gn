@@ -39,7 +39,6 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       "chrome_ml.h",
       "gpu_blocklist.h",
       "on_device_model_executor.h",
-      "on_device_model_internal.h",
       "performance_class.h",
       "session_accessor.h",
       "ts_model.h",
@@ -50,7 +49,6 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     sources = [
       "chrome_ml.cc",
       "on_device_model_executor.cc",
-      "on_device_model_internal.cc",
       "performance_class.cc",
       "session_accessor.cc",
       "ts_model.cc",

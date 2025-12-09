@@ -123,9 +123,9 @@ ChromeML::ChromeML(const ChromeMLAPI* api) : holder_(nullptr), api_(api) {}
 ChromeML::~ChromeML() = default;
 
 // static
-ChromeML* ChromeML::Get(const std::optional<std::string>& library_name) {
+ChromeML* ChromeML::Get() {
   static base::NoDestructor<std::unique_ptr<ChromeML>> chrome_ml{
-      Create(library_name)};
+      Create(std::nullopt)};
   return chrome_ml->get();
 }
 

@@ -28,8 +28,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
 
   // Gets a lazily initialized global instance of ChromeML. May return null
   // if the underlying library could not be loaded.
-  static ChromeML* Get(
-      const std::optional<std::string>& library_name = std::nullopt);
+  static ChromeML* Get();
 
   // Creates a new instance of ChromeML. May return null if the underlying
   // library could not be loaded.
