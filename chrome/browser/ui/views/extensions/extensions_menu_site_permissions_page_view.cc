@@ -400,34 +400,35 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
 void ExtensionsMenuSitePermissionsPageView::Update(
     const std::u16string& extension_name,
     const ui::ImageModel& extension_icon,
-    const std::u16string& current_site,
-    PermissionsManager::UserSiteAccess user_site_access,
-    bool is_show_requests_toggle_on,
-    bool is_on_site_enabled,
-    bool is_on_all_sites_enabled) {
+    ExtensionsMenuViewModel::ExtensionSitePermissions
+        extension_site_permissions) {
   extension_icon_->SetImage(extension_icon);
   extension_name_->SetText(extension_name);
 
   // Update the site access buttons with new `user_site_access` and
   // `current_site`.
-  int new_selected_index = GetSiteAccessButtonIndex(user_site_access);
+  int new_selected_index =
+      GetSiteAccessButtonIndex(extension_site_permissions.site_access);
   std::vector<views::RadioButton*> site_access_buttons =
       GetSiteAccessButtons(this);
   for (int i = 0; i < static_cast<int>(site_access_buttons.size()); ++i) {
     site_access_buttons[i]->SetChecked(i == new_selected_index);
     if (i == kOnSiteButtonIndex) {
       site_access_buttons[i]->SetText(GetSiteAccessRadioButtonText(
-          PermissionsManager::UserSiteAccess::kOnSite, current_site));
+          PermissionsManager::UserSiteAccess::kOnSite,
+          extension_site_permissions.current_site));
     }
   }
 
   // Enable the site access buttons accordingly. The extension is guaranteed to
   // at least have "on click" enabled when this page is opened.
-  site_access_buttons[kOnSiteButtonIndex]->SetEnabled(is_on_site_enabled);
+  site_access_buttons[kOnSiteButtonIndex]->SetEnabled(
+      extension_site_permissions.is_on_site_enabled);
   site_access_buttons[kOnAllSitesButtonIndex]->SetEnabled(
-      is_on_all_sites_enabled);
+      extension_site_permissions.is_on_all_sites_enabled);
 
-  UpdateShowRequestsToggle(is_show_requests_toggle_on);
+  UpdateShowRequestsToggle(
+      extension_site_permissions.is_show_requests_toggle_on);
 }
 
 void ExtensionsMenuSitePermissionsPageView::UpdateShowRequestsToggle(

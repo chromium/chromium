@@ -22,7 +22,6 @@ class WebContents;
 
 class BrowserWindowInterface;
 class ExtensionsMenuViewPlatformDelegate;
-class ToolbarActionViewModel;
 
 // The platform agnostic model for the extensions menu.
 class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
@@ -84,6 +83,22 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     bool is_enterprise;
   };
 
+  // Holds the information for an extension's site permissions in the
+  // extension's menu. This will be used by the platform delegate as needed.
+  struct ExtensionSitePermissions {
+    // The text to display for the current site (e.g. "example.com").
+    std::u16string current_site;
+    // The current site access of the extension (e.g. on click, on site, on all
+    // sites).
+    extensions::PermissionsManager::UserSiteAccess site_access;
+    // Whether the "on site" option is enabled.
+    bool is_on_site_enabled;
+    // Whether the "on all sites" option is enabled.
+    bool is_on_all_sites_enabled;
+    // Whether the toggle to show access requests in the toolbar is on.
+    bool is_show_requests_toggle_on;
+  };
+
   // The type of optional section to display in the menu.
   enum class OptionalSection {
     // A section alerting the user that a page reload is required for changes to
@@ -137,8 +152,14 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Returns the site settings for the current web contents.
   SiteSettings GetSiteSettings();
 
-  // Returns the menu item info for extension with `model`.
-  MenuItemInfo GetMenuItemInfo(ToolbarActionViewModel* model);
+  // Returns the menu item info for an extension.
+  MenuItemInfo GetMenuItemInfo(const extensions::ExtensionId& extension_id);
+
+  // Returns the site permissions for an extension. This will crash if called
+  // when the user cannot modify the extension site permissions, as this method
+  // would compute invalid values.
+  ExtensionSitePermissions GetExtensionSitePermissions(
+      const extensions::ExtensionId& extension_id);
 
   // Returns the optional section to display in the menu.
   OptionalSection GetOptionalSection();

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -20,6 +21,7 @@
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
@@ -512,6 +514,62 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetSiteSettings) {
   EXPECT_FALSE(site_settings.is_toggle_visible);
   EXPECT_FALSE(site_settings.is_toggle_on);
   EXPECT_FALSE(site_settings.is_tooltip_visible);
+}
+
+// Tests that the extensions menu view model correctly returns the extension
+// site permissions.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       GetExtensionSitePermissions) {
+  scoped_refptr<const extensions::Extension> extension_A =
+      AddExtensionWithHostPermission("Extension A", "*://a.com/*");
+  scoped_refptr<const extensions::Extension> extension_with_all_hosts =
+      AddExtensionWithHostPermission("Extension with all hosts", "<all_urls>");
+  scoped_refptr<const extensions::Extension> extension_activeTab =
+      AddActiveTabExtension("Extension with activeTab");
+
+  // Verify the site permissions for an extension with all host permissions
+  // granted
+  NavigateTo("example.com");
+  auto site_permissions =
+      menu_model()->GetExtensionSitePermissions(extension_with_all_hosts->id());
+  EXPECT_EQ(site_permissions.site_access,
+            PermissionsManager::UserSiteAccess::kOnAllSites);
+  EXPECT_TRUE(site_permissions.is_on_site_enabled);
+  EXPECT_TRUE(site_permissions.is_on_all_sites_enabled);
+
+  // Verify the site permissions for an extension with only access to the
+  // current site. 'on site' is enabled because the user can choose that option,
+  // whereas 'on all sites' is not.
+  NavigateTo("a.com");
+  site_permissions =
+      menu_model()->GetExtensionSitePermissions(extension_A->id());
+  EXPECT_EQ(site_permissions.site_access,
+            PermissionsManager::UserSiteAccess::kOnSite);
+  EXPECT_TRUE(site_permissions.is_on_site_enabled);
+  EXPECT_FALSE(site_permissions.is_on_all_sites_enabled);
+
+  // Update site access to 'on click'.
+  menu_model()->UpdateSiteAccess(extension_A->id(),
+                                 PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Verify the site permissions for an extension with site access withheld when
+  // it's requesting access only to the current site. 'on site' is enabled
+  // because the user can still choose that option, whereas 'on all sites' is
+  // not.
+  site_permissions =
+      menu_model()->GetExtensionSitePermissions(extension_A->id());
+  EXPECT_EQ(site_permissions.site_access,
+            PermissionsManager::UserSiteAccess::kOnClick);
+  EXPECT_TRUE(site_permissions.is_on_site_enabled);
+  EXPECT_FALSE(site_permissions.is_on_all_sites_enabled);
+
+  // Verify the site permissions for an extension with only on click access
+  site_permissions =
+      menu_model()->GetExtensionSitePermissions(extension_activeTab->id());
+  EXPECT_EQ(site_permissions.site_access,
+            PermissionsManager::UserSiteAccess::kOnClick);
+  EXPECT_FALSE(site_permissions.is_on_site_enabled);
+  EXPECT_FALSE(site_permissions.is_on_all_sites_enabled);
 }
 
 // Tests that the extensions menu view model correctly returns the optional

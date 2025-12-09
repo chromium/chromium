@@ -501,7 +501,7 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
     CHECK(extension);
 
     ExtensionsMenuViewModel::MenuItemInfo menu_item_info =
-        menu_model_->GetMenuItemInfo(menu_item->view_model());
+        menu_model_->GetMenuItemInfo(menu_item->view_model()->GetId());
     menu_item->Update(menu_item_info);
   }
 }
@@ -511,34 +511,20 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateSitePermissionsPage(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  auto* permissions_manager = PermissionsManager::Get(browser_->profile());
-  SitePermissionsHelper permissions_helper(browser_->profile());
-
   extensions::ExtensionId extension_id = site_permissions_page->extension_id();
-  const extensions::Extension* extension = GetExtension(browser_, extension_id);
-  const GURL& url = web_contents->GetLastCommittedURL();
-  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
   ToolbarActionViewModel* view_model =
       extensions_container_->GetActionForId(extension_id);
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
 
   std::u16string extension_name = view_model->GetActionName();
   ui::ImageModel extension_icon =
       view_model->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
-  std::u16string current_site =
-      extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
-  PermissionsManager::UserSiteAccess user_site_access =
-      permissions_manager->GetUserSiteAccess(*extension, url);
-  bool is_show_requests_toggle_on =
-      permissions_helper.ShowAccessRequestsInToolbar(extension_id);
-  bool is_on_site_enabled = permissions_manager->CanUserSelectSiteAccess(
-      *extension, url, PermissionsManager::UserSiteAccess::kOnSite);
-  bool is_on_all_sites_enabled = permissions_manager->CanUserSelectSiteAccess(
-      *extension, url, PermissionsManager::UserSiteAccess::kOnAllSites);
+  ExtensionsMenuViewModel::ExtensionSitePermissions extension_site_settings =
+      menu_model_->GetExtensionSitePermissions(extension_id);
 
-  site_permissions_page->Update(extension_name, extension_icon, current_site,
-                                user_site_access, is_show_requests_toggle_on,
-                                is_on_site_enabled, is_on_all_sites_enabled);
+  site_permissions_page->Update(extension_name, extension_icon,
+                                extension_site_settings);
 }
 
 ExtensionsMenuMainPageView*
@@ -581,9 +567,8 @@ void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
           extension_id, browser_,
           std::make_unique<ExtensionActionPlatformDelegateViews>(
               browser_, extensions_container_));
-
   ExtensionsMenuViewModel::MenuItemInfo menu_item =
-      menu_model_->GetMenuItemInfo(model.get());
+      menu_model_->GetMenuItemInfo(extension_id);
 
   main_page->CreateAndInsertMenuItem(std::move(model), extension_id, menu_item,
                                      index);
