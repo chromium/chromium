@@ -13609,6 +13609,25 @@
             ]
         }
     ],
+    "IOSLensTripleCameraWith90Zoom": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensCameraNoStillOutputRequired",
+                        "LensCameraUnbinnedCaptureFormatsPreferred",
+                        "LensContinuousZoomEnabled",
+                        "LensInitialLvfZoomLevel90Percent",
+                        "LensTripleCameraEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLogApplicationStorageSizeMetrics": [
         {
             "platforms": [
