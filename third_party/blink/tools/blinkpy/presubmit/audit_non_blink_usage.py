@@ -2820,6 +2820,20 @@ _CONFIG = [
             'base::(StringViewToRustSlice|RustStrToStringView)',
             're2::StringPiece',
         ]
+    },
+    {
+        'paths': [
+            'third_party/blink/public/mojom/authenticator_mojom_traits.h',
+        ],
+        'allowed': [
+            # Blink code shouldn't need to be qualified with the Blink namespace,
+            # but this is a Mojo trait so we need an exception.
+            'blink::.+',
+            'device::FidoTransportProtocol',
+            'device::AuthenticatorAttachment',
+            'device::ResidentKeyRequirement',
+            'device::UserVerificationRequirement',
+        ]
     }
 ]
 
