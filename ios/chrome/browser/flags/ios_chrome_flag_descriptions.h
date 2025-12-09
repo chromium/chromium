@@ -611,6 +611,9 @@ extern const char kLensSearchHeadersCheckEnabledDescription[];
 extern const char kLensSingleTapTextSelectionDisabledName[];
 extern const char kLensSingleTapTextSelectionDisabledDescription[];
 
+extern const char kLensStreamServiceWebChannelTransportEnabledName[];
+extern const char kLensStreamServiceWebChannelTransportEnabledDescription[];
+
 extern const char kLensTranslateToggleModeEnabledName[];
 extern const char kLensTranslateToggleModeEnabledDescription[];
 

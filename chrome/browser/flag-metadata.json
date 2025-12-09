@@ -6717,6 +6717,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "lens-stream-service-web-channel-transport-enabled",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 152
+  },
+  {
     "name": "lens-strokes-api-enabled",
     "owners": ["aboodmufti@google.com", "cmyang@google.com"],
     "expiry_milestone": 145

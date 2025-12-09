@@ -1019,6 +1019,11 @@ const char kLensSingleTapTextSelectionDisabledName[] =
 const char kLensSingleTapTextSelectionDisabledDescription[] =
     "When disabled, single taps do not trigger text selections.";
 
+const char kLensStreamServiceWebChannelTransportEnabledName[] =
+    "Lens stream service web channel transport";
+const char kLensStreamServiceWebChannelTransportEnabledDescription[] =
+    "When enabled, uses web channel transport for the stream service.";
+
 const char kLensTranslateToggleModeEnabledName[] =
     "Lens translate toggle mode enabled";
 const char kLensTranslateToggleModeEnabledDescription[] =
