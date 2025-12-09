@@ -11,8 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -167,8 +165,6 @@ class ArcAppTest {
 
   const UserManagerMode user_manager_mode_;
 
-  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_;
-
   // Unowned pointer.
   raw_ptr<const user_manager::User> user_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
@@ -194,7 +190,6 @@ class ArcAppTest {
   user_manager::ScopedUserManager user_manager_;
 
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
-  std::unique_ptr<ash::ScopedTestingCrosSettings> cros_settings_;
   std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<arc::ArcPlayStoreEnabledPreferenceHandler>

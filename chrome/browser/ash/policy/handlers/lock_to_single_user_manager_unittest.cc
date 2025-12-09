@@ -35,7 +35,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
@@ -89,8 +88,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     arc::ArcSessionManager::SetUiEnabledForTesting(false);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-    arc_dlc_installer_ =
-        std::make_unique<arc::ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<arc::ArcDlcInstaller>();
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)),

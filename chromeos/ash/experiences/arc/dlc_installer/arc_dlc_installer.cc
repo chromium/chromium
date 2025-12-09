@@ -13,9 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/arc_platform_support.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
 
@@ -57,13 +55,14 @@ void OnDlcServiceAvailableForStateCheck(
 
 }  // namespace
 
-ArcDlcInstaller::ArcDlcInstaller(ash::CrosSettings* cros_settings)
-    : cros_settings_(std::move(cros_settings)) {}
+ArcDlcInstaller::ArcDlcInstaller() = default;
 
 ArcDlcInstaller::~ArcDlcInstaller() = default;
 
 void ArcDlcInstaller::PrepareArc(base::OnceCallback<void(bool)> callback) {
-  if (!IsDlcRequired()) {
+  if (!arc::ArcPlatformSupport::Get()->IsDlcEnabled()) {
+    VLOG(1) << "The device is not managed or the preload policy is not "
+               "enabled, so the ARCVM image from DLC is not required.";
     std::move(callback).Run(false);
     return;
   }
@@ -84,7 +83,7 @@ void ArcDlcInstaller::PrepareArc(base::OnceCallback<void(bool)> callback) {
 
 void ArcDlcInstaller::CheckInstallationState(
     base::OnceCallback<void(DlcState)> callback) {
-  if (!IsDlcRequired()) {
+  if (!arc::ArcPlatformSupport::Get()->IsDlcEnabled()) {
     std::move(callback).Run(DlcState::kNotRequired);
     return;
   }
@@ -122,33 +121,6 @@ void ArcDlcInstaller::OnDlcServiceAvailable(bool service_available) {
       base::BindRepeating(&ArcDlcInstaller::OnDlcProgress,
                           weak_ptr_factory_.GetWeakPtr(),
                           installation_triggered_ptr));
-}
-
-bool ArcDlcInstaller::IsDlcRequired() {
-  if (!IsArcVmDlcEnabled()) {
-    return false;
-  }
-
-  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
-    VLOG(1) << "Device is not managed and cannot install arcvm images.";
-    return false;
-  }
-
-  bool device_flex_arc_preload_enabled_allowed = false;
-  if (!cros_settings_->GetBoolean(ash::kDeviceFlexArcPreloadEnabled,
-                                  &device_flex_arc_preload_enabled_allowed)) {
-    VLOG(1) << "Failed to get DeviceFlexArcPreloadEnabled policy; defaulting "
-               "to disabled.";
-    return false;
-  }
-
-  if (!device_flex_arc_preload_enabled_allowed) {
-    VLOG(1) << "Reven device cannot install arcvm images because the "
-               "DeviceFlexArcPreloadEnabled policy prevents it.";
-    return false;
-  }
-
-  return true;
 }
 
 void ArcDlcInstaller::OnDlcProgress(bool* installation_triggered_ptr,

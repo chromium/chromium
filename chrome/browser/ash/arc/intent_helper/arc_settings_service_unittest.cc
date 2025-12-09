@@ -22,7 +22,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
@@ -85,8 +84,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     ash::StatsReportingController::Initialize(&local_state_);
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),

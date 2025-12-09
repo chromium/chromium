@@ -61,8 +61,7 @@ class ArcLockedFullscreenManagerTest
 
     // Force ARC session manager to skip UI.
     ArcSessionManager::SetUiEnabledForTesting(false);
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),

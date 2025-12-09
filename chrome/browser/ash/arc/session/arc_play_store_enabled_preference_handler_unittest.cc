@@ -29,7 +29,6 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
@@ -106,8 +105,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
     user_manager_->OnUserProfileCreated(kTestAccountId, profile_->GetPrefs());
 
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),

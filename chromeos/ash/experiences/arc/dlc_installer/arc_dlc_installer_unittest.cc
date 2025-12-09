@@ -20,9 +20,9 @@
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_platform_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/fake_message_center.h"
 
@@ -31,40 +31,26 @@ namespace arc {
 class ArcDlcInstallerTest : public testing::Test {
  protected:
   void SetUp() override {
-    ash::DlcserviceClient::InitializeFake();
-    ash::UpstartClient::InitializeFake();
-
+    fake_arc_platform_support_ = std::make_unique<FakeArcPlatformSupport>();
     auto fake_message_center =
         std::make_unique<message_center::FakeMessageCenter>();
     fake_message_center_ = fake_message_center.get();
     message_center::MessageCenter::InitializeForTesting(
         std::move(fake_message_center));
 
-    cros_settings_ = std::make_unique<ash::CrosSettings>();
-    auto provider =
-        std::make_unique<ash::FakeCrosSettingsProvider>(base::DoNothing());
-    fake_provider_ = provider.get();
-    cros_settings_->AddSettingsProvider(std::move(provider));
-    // TODO(b/405341089): Update fake provider to accept unset value for
-    // specific path.
-    fake_provider_->Set(ash::kDeviceFlexArcPreloadEnabled, base::Value());
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(cros_settings_.get());
+    ash::DlcserviceClient::InitializeFake();
+    ash::UpstartClient::InitializeFake();
+
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
   }
 
   void TearDown() override {
     arc_dlc_installer_.reset();
-    fake_provider_ = nullptr;
-    cros_settings_.reset();
     ash::UpstartClient::Shutdown();
     ash::DlcserviceClient::Shutdown();
     fake_message_center_ = nullptr;
     message_center::MessageCenter::Shutdown();
-  }
-
-  void SetFlexArcPreloadEnabled(bool enabled) {
-    fake_provider_->Set(ash::kDeviceFlexArcPreloadEnabled,
-                        base::Value(enabled));
+    fake_arc_platform_support_.reset();
   }
 
   // Sets up the conditions for IsDlcRequired() to return true.
@@ -73,7 +59,7 @@ class ArcDlcInstallerTest : public testing::Test {
                                                     "fake-device-id");
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ash::switches::kEnableArcVmDlc);
-    SetFlexArcPreloadEnabled(true);
+    fake_arc_platform_support_->SetDlcEnabled(true);
   }
 
   void PrepareArcAndWait(bool expected_result) {
@@ -117,34 +103,14 @@ class ArcDlcInstallerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
+  std::unique_ptr<FakeArcPlatformSupport> fake_arc_platform_support_;
   raw_ptr<message_center::FakeMessageCenter> fake_message_center_ = nullptr;
-  std::unique_ptr<ash::CrosSettings> cros_settings_;
-  raw_ptr<ash::FakeCrosSettingsProvider> fake_provider_ = nullptr;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 };
 
-// Verifies that ARCVM DLC image preparation fails when the arcvm-dlc command
-// flag is not enabled.
-TEST_F(ArcDlcInstallerTest, MaybeEnableArc_NoArcvmDlcCommandFlag) {
-  test_install_attributes_.Get()->SetCloudManaged("example.com",
-                                                  "fake-device-id");
-  SetFlexArcPreloadEnabled(true);
-  PrepareArcAndWait(/*expected_result=*/false);
-}
-
-// Verifies that ARCVM DLC image preparation fails for unmanaged devices.
-TEST_F(ArcDlcInstallerTest, MaybeEnableArc_UnmanagedDevice) {
-  // Add arcvm-dlc command flag.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableArcVmDlc);
-  SetFlexArcPreloadEnabled(true);
-
-  PrepareArcAndWait(/*expected_result=*/false);
-}
-
 // Verifies that ARCVM DLC image preparation fails when the
 // kDeviceFlexArcPreloadEnabled policy is unset.
-TEST_F(ArcDlcInstallerTest, MaybeEnableArc_WithPolicyUnset) {
+TEST_F(ArcDlcInstallerTest, MaybeEnableArc_DlcPolicyNotEnabled) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
   // Add arcvm-dlc command flag.
@@ -152,7 +118,7 @@ TEST_F(ArcDlcInstallerTest, MaybeEnableArc_WithPolicyUnset) {
       ash::switches::kEnableArcVmDlc);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kArcVmDlcHardwareRequirementSatisfied);
-  SetFlexArcPreloadEnabled(false);
+  fake_arc_platform_support_->SetDlcEnabled(false);
 
   PrepareArcAndWait(/*expected_result=*/false);
 }
@@ -163,7 +129,7 @@ TEST_F(ArcDlcInstallerTest, MaybeEnableArc_NotMeetHardwareRequirement) {
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
-  SetFlexArcPreloadEnabled(true);
+  fake_arc_platform_support_->SetDlcEnabled(true);
 
   PrepareArcAndWait(/*expected_result=*/false);
 }
@@ -176,8 +142,8 @@ TEST_F(ArcDlcInstallerTest, VerifyNotifications_DlcServiceNotAvailable) {
       ash::switches::kEnableArcVmDlc);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kArcVmDlcHardwareRequirementSatisfied);
-  SetFlexArcPreloadEnabled(true);
   fake_dlcservice_client()->set_service_availability(false);
+  fake_arc_platform_support_->SetDlcEnabled(true);
 
   PrepareArcAndWait(/*expected_result=*/false);
 
@@ -193,9 +159,9 @@ TEST_F(ArcDlcInstallerTest, VerifyNotifications_InstallSuccess) {
       ash::switches::kEnableArcVmDlc);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kArcVmDlcHardwareRequirementSatisfied);
-  SetFlexArcPreloadEnabled(true);
   fake_dlcservice_client()->set_trigger_install_progress(true);
   fake_dlcservice_client()->set_install_error(dlcservice::kErrorNone);
+  fake_arc_platform_support_->SetDlcEnabled(true);
 
   PrepareArcAndWait(/*expected_result=*/true);
 
@@ -212,9 +178,9 @@ TEST_F(ArcDlcInstallerTest, VerifyNotifications_InstallFail) {
       ash::switches::kEnableArcVmDlc);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kArcVmDlcHardwareRequirementSatisfied);
-  SetFlexArcPreloadEnabled(true);
   fake_dlcservice_client()->set_trigger_install_progress(true);
   fake_dlcservice_client()->set_install_error(dlcservice::kErrorInternal);
+  fake_arc_platform_support_->SetDlcEnabled(true);
 
   PrepareArcAndWait(/*expected_result=*/false);
 
@@ -233,9 +199,9 @@ TEST_F(ArcDlcInstallerTest, CompletionNotificationTriggerOnce_RepeatInstall) {
       ash::switches::kEnableArcVmDlc);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kArcVmDlcHardwareRequirementSatisfied);
-  SetFlexArcPreloadEnabled(true);
   fake_dlcservice_client()->set_trigger_install_progress(true);
   fake_dlcservice_client()->set_install_error(dlcservice::kErrorNone);
+  fake_arc_platform_support_->SetDlcEnabled(true);
 
   // Simulate the first DLC installation.
   PrepareArcAndWait(/*expected_result=*/true);
@@ -250,6 +216,8 @@ TEST_F(ArcDlcInstallerTest, CompletionNotificationTriggerOnce_RepeatInstall) {
 }
 
 TEST_F(ArcDlcInstallerTest, CheckInstallationState_DlcNotRequired) {
+  fake_arc_platform_support_->SetDlcEnabled(false);
+
   // By default, IsDlcRequired() is false.
   CheckInstallationStateAndWait(ArcDlcInstaller::DlcState::kNotRequired);
 }

@@ -33,7 +33,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -250,8 +249,7 @@ class ArcPolicyBridgeTestBase {
     // Init ArcSessionManager for testing.
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::DlcserviceClient::InitializeFake();
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),

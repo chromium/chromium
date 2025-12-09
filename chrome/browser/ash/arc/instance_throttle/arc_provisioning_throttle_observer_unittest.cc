@@ -64,8 +64,7 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 
     ash::DlcserviceClient::InitializeFake();
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),

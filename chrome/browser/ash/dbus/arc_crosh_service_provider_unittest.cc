@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -23,7 +22,6 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/mojom/crosh.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -95,11 +93,8 @@ class ArcCroshServiceProviderTest : public testing::Test {
 
     service_provider_ = std::make_unique<ArcCroshServiceProvider>();
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    cros_settings_test_helper_ =
-        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-    arc_dlc_installer_ =
-        std::make_unique<arc::ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<arc::ArcDlcInstaller>();
     // Make the session manager skip creating UI.
     arc::ArcSessionManager::SetUiEnabledForTesting(/*enabled=*/false);
     arc_session_manager_ = arc::CreateTestArcSessionManager(
@@ -166,7 +161,6 @@ class ArcCroshServiceProviderTest : public testing::Test {
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
-    cros_settings_test_helper_.reset();
     service_provider_.reset();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
@@ -212,7 +206,6 @@ class ArcCroshServiceProviderTest : public testing::Test {
   MockArcShellExecutionInstance mock_arc_shell_execution_instance_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
-  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;

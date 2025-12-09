@@ -34,9 +34,3 @@ include_rules = [
   "+chrome/test/base",
   "+ui/message_center/message_center.h",
 ]
-
-specific_include_rules = {
-  "arc_vm_data_migration_notifier_unittest\.cc": [
-    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
-  ],
-}

@@ -61,7 +61,6 @@ static_library("service_launcher") {
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/dbus/cdm_factory_daemon",
     "//chromeos/ash/components/memory",
-    "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/arc:arc_features",

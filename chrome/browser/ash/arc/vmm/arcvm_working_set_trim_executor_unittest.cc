@@ -9,11 +9,9 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/memory/arc_memory_bridge.h"
@@ -75,10 +73,7 @@ class ArcVmWorkingSetTrimExecutorTest : public testing::Test {
   void SetUp() override {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::DlcserviceClient::InitializeFake();
-    cros_settings_test_helper_ =
-        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)),
@@ -97,7 +92,6 @@ class ArcVmWorkingSetTrimExecutorTest : public testing::Test {
     testing_profile_.reset();
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
-    cros_settings_test_helper_.reset();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
@@ -116,7 +110,6 @@ class ArcVmWorkingSetTrimExecutorTest : public testing::Test {
   DelayedMemoryInstance memory_instance_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
-  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
 };

@@ -243,6 +243,7 @@
 #include "chromeos/ash/components/tpm/tpm_token_loader.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_controller.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_platform_support_impl.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/policy/handlers/quirks/quirks_policy_controller.h"
 #include "chromeos/ash/services/cros_healthd/private/cpp/data_collector.h"
@@ -787,6 +788,15 @@ void ChromeBrowserMainPartsAsh::PostCreateMainMessageLoop() {
   ::memory::MemoryKillsMonitor::Initialize();
 
   ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop();
+}
+
+int ChromeBrowserMainPartsAsh::PreCreateThreads() {
+  int result_code = ChromeBrowserMainPartsLinux::PreCreateThreads();
+
+  arc_platform_support_ = std::make_unique<arc::ArcPlatformSupportImpl>();
+  arc_platform_support_->CheckDlcRequirement();
+
+  return result_code;
 }
 
 // Threads are initialized between CreateMainMessageLoop and MainMessageLoopRun.
@@ -1849,6 +1859,8 @@ void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
   // The cert database initializer must be shut down before DBus services are
   // destroyed.
   system_token_certdb_initializer_.reset();
+
+  arc_platform_support_.reset();
 
   // Destroy DBus services immediately after threads are stopped.
   dbus_services_.reset();

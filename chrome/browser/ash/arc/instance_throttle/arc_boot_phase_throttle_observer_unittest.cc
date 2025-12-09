@@ -14,13 +14,11 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -59,10 +57,7 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::DlcserviceClient::InitializeFake();
-    cros_settings_test_helper_ =
-        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
@@ -103,7 +98,6 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
 
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
-    cros_settings_test_helper_.reset();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
@@ -153,7 +147,6 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
       TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   ArcServiceManager arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;

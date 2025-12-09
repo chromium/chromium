@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -79,8 +78,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
 
     notification_tester_ = std::make_unique<NotificationDisplayServiceTester>(
         testing_profile_.get());
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     // Initialize a session manager with a fake ARC session.
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(

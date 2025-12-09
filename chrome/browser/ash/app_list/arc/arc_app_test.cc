@@ -32,8 +32,6 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -127,17 +125,6 @@ void ArcAppTest::PreProfileSetUp() {
   // ProfileManager, and use ScopedAccountIdAnnotator.
   ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
 
-  if (!ash::InstallAttributes::IsInitialized()) {
-    install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(
-        ash::StubInstallAttributes::CreateConsumerOwned());
-  }
-
-  // ScopedTestingCrosSettings may be initialized from other testing utility,
-  // such as ExtensionServiceTestBase
-  if (!ash::CrosSettings::IsInitialized()) {
-    cros_settings_ = std::make_unique<ash::ScopedTestingCrosSettings>();
-  }
-
   // ChromeMainDelegate::PostEarlyInitialization:
   if (!ash::ConciergeClient::Get()) {
     concierge_client_initialized_ = true;
@@ -165,8 +152,7 @@ void ArcAppTest::PreProfileSetUp() {
   // ConciergeClient must outlive ArcSessionManager.
   CHECK(ash::ConciergeClient::Get());
 
-  arc_dlc_installer_ =
-      std::make_unique<arc::ArcDlcInstaller>(ash::CrosSettings::Get());
+  arc_dlc_installer_ = std::make_unique<arc::ArcDlcInstaller>();
   arc_session_manager_ = arc::CreateTestArcSessionManager(
       std::make_unique<arc::ArcSessionRunner>(
           base::BindRepeating(arc::FakeArcSession::Create)),
@@ -498,9 +484,6 @@ void ArcAppTest::PostProfileTearDown() {
   // TODO(crbug.com/455728516): Fix tests that create TestingProfile without
   // ProfileManager, and use ScopedAccountIdAnnotator.
   ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
-
-  cros_settings_.reset();
-  install_attributes_.reset();
 }
 
 void ArcAppTest::StopArcInstance() {

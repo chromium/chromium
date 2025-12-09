@@ -76,7 +76,6 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
 #include "chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -127,7 +126,6 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #else
 #include "ash/constants/ash_switches.h"
-#include "base/files/file_path.h"
 #endif
 
 namespace arc {
@@ -162,28 +160,13 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
       std::move(runner), std::move(delegate), arc_dlc_installer);
 }
 
-#if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-void CheckArcvmDlcImageStatus() {
-  base::FilePath arc_vm_dlc_image_path(
-      "/opt/google/vms/android/system.raw.img");
-  // Check if the ARCVM DLC image exists before calling
-  // GetArcStatusForProfile(). This blocks the main thread but is necessary to
-  // ensure arc availability is consistent, especially during Ash Chrome
-  // restarts. The check only occurs when the arcvm_dlc USE flag is enabled,
-  // which is currently specific to the Reven board.
-  bool is_arcvm_dlc_image_available = base::PathExists(arc_vm_dlc_image_path);
-  arc::SetArcvmDlcImageStatus(is_arcvm_dlc_image_available);
-}
-#endif  //! BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-
 }  // namespace
 
 ArcServiceLauncher::ArcServiceLauncher(
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager)
     : arc_service_manager_(std::make_unique<ArcServiceManager>()),
       scheduler_configuration_manager_(scheduler_configuration_manager),
-      arc_dlc_installer_(
-          std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get())),
+      arc_dlc_installer_(std::make_unique<ArcDlcInstaller>()),
       arc_session_manager_(
           CreateArcSessionManager(arc_service_manager_->arc_bridge_service(),
                                   ash::GetChannel(),
@@ -223,13 +206,7 @@ void ArcServiceLauncher::Initialize() {
                      weak_factory_.GetWeakPtr()),
       kTpmOwnershipCheckDelay);
 #else
-  if (arc::IsArcVmDlcEnabled() &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kLoginUser)) {
-    CheckArcvmDlcImageStatus();
-  }
-
-  if (!arc::IsArcVmDlcEnabled()) {
+  if (!arc::IsArcVmDlcRequired()) {
     arc_session_manager_->ExpandPropertyFilesAndReadSalt();
     return;
   }
@@ -447,8 +424,7 @@ void ArcServiceLauncher::ResetForTesting() {
   Shutdown();
   arc_session_manager_.reset();
 
-  arc_dlc_installer_ =
-      std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+  arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
 
   // No recreation of arc_service_manager. Pointers to its ArcBridgeService
   // may be referred from existing KeyedService, so destoying it would cause

@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -84,8 +83,7 @@ UserCommandArcJobTest::UserCommandArcJobTest()
       profile_(std::make_unique<TestingProfile>()) {
   ash::ConciergeClient::InitializeFake(nullptr);
   ash::DlcserviceClient::InitializeFake();
-  arc_dlc_installer_ =
-      std::make_unique<arc::ArcDlcInstaller>(ash::CrosSettings::Get());
+  arc_dlc_installer_ = std::make_unique<arc::ArcDlcInstaller>();
   arc_session_manager_ = CreateTestArcSessionManager(
       std::make_unique<arc::ArcSessionRunner>(
           base::BindRepeating(arc::FakeArcSession::Create)),

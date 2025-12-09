@@ -69,7 +69,6 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -77,6 +76,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_platform_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
@@ -198,11 +198,8 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
     ArcSessionManager::SetUiEnabledForTesting(false);
     SetArcBlockedDueToIncompatibleFileSystemForTesting(false);
 
-    cros_settings_test_helper_ =
-        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
@@ -218,7 +215,6 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
     arc_session_manager_->Shutdown();
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
-    cros_settings_test_helper_.reset();
     arc_service_manager_.reset();
     ash::SessionManagerClient::Shutdown();
     ash::DlcserviceClient::Shutdown();
@@ -238,7 +234,6 @@ class ArcSessionManagerInLoginScreenTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
@@ -336,16 +331,10 @@ class ArcSessionManagerTestBase : public testing::Test {
     ArcSessionManager::SetUiEnabledForTesting(false);
     SetArcBlockedDueToIncompatibleFileSystemForTesting(false);
 
-    cros_settings_test_helper_ =
-        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
-    cros_settings_test_helper_->InstallAttributes()->SetCloudManaged(
-        "example.com", "fake-device-id");
-
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
 
     // Create the ArcDlcInstaller that will be passed to ArcSessionManager.
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
 
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
@@ -379,7 +368,6 @@ class ArcSessionManagerTestBase : public testing::Test {
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
-    cros_settings_test_helper_.reset();
     ash::UpstartClient::Shutdown();
     ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
@@ -434,8 +422,6 @@ class ArcSessionManagerTestBase : public testing::Test {
         /*new_user=*/false, /*has_active_session=*/false);
   }
 
-  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
-
  private:
   void StartPreferenceSyncing() const {
     PrefServiceSyncableFromProfile(profile_.get())
@@ -479,6 +465,7 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
     ArcSessionManagerTestBase::TearDown();
   }
  protected:
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   raw_ptr<ash::FakeResourcedClient> resourced_client_ = nullptr;
 };
 
@@ -2563,26 +2550,28 @@ class ArcSessionManagerTimerTest : public ArcSessionManagerTest {
         ash::switches::kEnableArcVm);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ash::switches::kEnableArcVmDlc);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::switches::kArcVmDlcHardwareRequirementSatisfied);
   }
 
   void SetUp() override {
     ArcSessionManagerTest::SetUp();
+    fake_arc_platform_support_ = std::make_unique<FakeArcPlatformSupport>();
+    fake_arc_platform_support_->SetDlcEnabled(true);
+
     dlcservice_client_ =
         static_cast<ash::FakeDlcserviceClient*>(ash::DlcserviceClient::Get());
-    cros_settings_test_helper_->ReplaceDeviceSettingsProviderWithStub();
-    cros_settings_test_helper_->InstallAttributes()->SetCloudManaged(
-        "example.com", "fake-id");
-    cros_settings_test_helper_->GetStubbedProvider()->SetBoolean(
-        ash::kDeviceFlexArcPreloadEnabled, true);
   }
 
   void TearDown() override {
     dlcservice_client_ = nullptr;
+    fake_arc_platform_support_.reset();
     ArcSessionManagerTest::TearDown();
   }
 
  protected:
   ash::FakeDlcserviceClient* dlcservice_client() { return dlcservice_client_; }
+  std::unique_ptr<FakeArcPlatformSupport> fake_arc_platform_support_;
 
  private:
   raw_ptr<ash::FakeDlcserviceClient> dlcservice_client_ = nullptr;

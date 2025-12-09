@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_platform_support.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
 #include "chromeos/version/version_loader.h"
@@ -163,6 +164,26 @@ void OnStaleArcVmUpstartJobsStopped(
 bool IsArcAvailable() {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
 
+  // If a device requires downloading the ARCVM image from a DLC (only on Reven
+  // board), but the download is not allowed due to unmet requirements (such as
+  // hardware or device management policies), then ARC is not considered
+  // available.
+  if (IsArcVmDlcRequired()) {
+    if (!arc::ArcPlatformSupport::Get()->IsDlcEnabled()) {
+      VLOG(1)
+          << "The ARCVM preload device policy is not enabled on the device, so "
+             "installing the ARCVM image from DLC is not supported.";
+      return false;
+    }
+
+    if (!IsArcVmDlcHardwareRequirementSatisfied()) {
+      VLOG(1)
+          << "The device does not meet the minimum hardware requirements to "
+             "install the ARCVM image from DLC.";
+      return false;
+    }
+  }
+
   if (command_line->HasSwitch(ash::switches::kArcAvailability)) {
     const std::string value =
         command_line->GetSwitchValueASCII(ash::switches::kArcAvailability);
@@ -187,7 +208,9 @@ bool IsArcVmEnabled() {
       ash::switches::kEnableArcVm);
 }
 
-bool IsArcVmDlcEnabled() {
+// TODO(crbug.com/450134000): Rename --arcvm-dlc-enabled flag to
+// --arcvm-dlc-required.
+bool IsArcVmDlcRequired() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kEnableArcVmDlc);
 }

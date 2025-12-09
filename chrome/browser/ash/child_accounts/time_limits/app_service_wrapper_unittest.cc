@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/app_permissions.mojom.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
@@ -251,7 +250,6 @@ class AppServiceWrapperTest : public ::testing::Test {
   base::test::ScopedCommandLine scoped_command_line_;
   content::BrowserTaskEnvironment task_environment_;
 
-  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_app_test_;

@@ -1847,7 +1847,7 @@ void ArcSessionManager::MaybeStartTimer() {
     return;
   }
 
-  if (!arc::IsArcVmDlcEnabled()) {
+  if (!arc::IsArcVmDlcRequired()) {
     VLOG(1) << "Setup provisioning timer (DLC gating disabled)";
     StartProvisioningTimerWithTimeout(kArcSignInTimeout);
     return;

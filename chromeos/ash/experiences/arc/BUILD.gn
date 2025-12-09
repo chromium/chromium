@@ -239,6 +239,10 @@ source_set("arc_features") {
 
 static_library("arc_base_utils") {
   sources = [
+    "arc_platform_support.cc",
+    "arc_platform_support.h",
+    "arc_platform_support_impl.cc",
+    "arc_platform_support_impl.h",
     "arc_util.cc",
     "arc_util.h",
   ]
@@ -255,6 +259,8 @@ static_library("arc_base_utils") {
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/settings",
     "//chromeos/ash/experiences/arc:prefs",
     "//chromeos/ash/experiences/arc/session:arc_base_enums",
     "//chromeos/version",
@@ -349,6 +355,8 @@ static_library("arc_test_support") {
     "test/fake_arc_icon_cache.h",
     "test/fake_arc_intent_helper_mojo.cc",
     "test/fake_arc_intent_helper_mojo.h",
+    "test/fake_arc_platform_support.cc",
+    "test/fake_arc_platform_support.h",
     "test/fake_arc_session.cc",
     "test/fake_arc_session.h",
     "test/fake_backup_settings_instance.cc",
@@ -456,6 +464,7 @@ source_set("unit_tests") {
     "app/arc_app_launch_notifier_unittest.cc",
     "appfuse/arc_appfuse_bridge_unittest.cc",
     "arc_features_parser_unittest.cc",
+    "arc_platform_support_impl_unittest.cc",
     "arc_util_unittest.cc",
     "audio/arc_audio_bridge_unittest.cc",
     "bluetooth/bluetooth_mojom_traits_unittest.cc",

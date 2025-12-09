@@ -92,8 +92,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     ash::DlcserviceClient::InitializeFake();
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),

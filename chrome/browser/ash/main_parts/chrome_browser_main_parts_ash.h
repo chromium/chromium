@@ -15,6 +15,7 @@
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 #include "chromeos/ash/components/pcie_peripheral/ash_usb_detector.h"
+#include "chromeos/ash/experiences/arc/arc_platform_support_impl.h"
 #include "printing/buildflags/buildflags.h"  // USE_CUPS
 
 class AmbientClientImpl;
@@ -158,6 +159,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   int PreEarlyInitialization() override;
   void PreCreateMainMessageLoop() override;
   void PostCreateMainMessageLoop() override;
+  int PreCreateThreads() override;
   int PreMainMessageLoopRun() override;
 
   // Stages called from PreMainMessageLoopRun.
@@ -213,6 +215,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       doze_mode_power_status_scheduler_;
 
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
+  std::unique_ptr<arc::ArcPlatformSupportImpl> arc_platform_support_;
 
   std::unique_ptr<ImageDownloaderImpl> image_downloader_;
 

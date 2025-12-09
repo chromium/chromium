@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -20,7 +19,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -59,10 +57,7 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
     ChromeAshTestBase::SetUp();
     ash::ConciergeClient::InitializeFake();
     ArcSessionManager::SetUiEnabledForTesting(false);
-    cros_settings_test_helper_ =
-        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)),
@@ -101,7 +96,6 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
     profile_manager_.reset();
     fake_user_manager_.Reset();
     arc_dlc_installer_.reset();
-    cros_settings_test_helper_.reset();
 
     ChromeAshTestBase::TearDown();
   }
@@ -113,7 +107,6 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
   TestingProfile* profile() { return testing_profile_; }
 
  private:
-  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;

@@ -16,13 +16,11 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -64,14 +62,11 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
     command_line->InitFromArgv(
         {"", "--arc-availability=officially-supported", "--enable-arcvm"});
 
-    cros_settings_test_helper_ =
-        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
 
     // Make the session manager skip creating UI.
     ArcSessionManager::SetUiEnabledForTesting(/*enabled=*/false);
-    arc_dlc_installer_ =
-        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
     arc_session_manager_ = CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(arc::FakeArcSession::Create)),
@@ -122,7 +117,6 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
     arc_session_manager_.reset();
     arc_dlc_installer_.reset();
     arc_service_manager_.reset();
-    cros_settings_test_helper_.reset();
     ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::UpstartClient::Shutdown();
@@ -153,7 +147,6 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<FakeAdbdMonitorInstance> instance_;
   std::unique_ptr<ArcAdbdMonitorBridge> bridge_;
-  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;

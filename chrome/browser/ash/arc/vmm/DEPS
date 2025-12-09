@@ -26,7 +26,4 @@ specific_include_rules = {
   "arc_vmm_manager_browsertest\.cc": [
      "+chrome/browser/ui/browser.h",
   ],
-  "arcvm_working_set_trim_executor_unittest\.cc": [
-    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
-  ],
 }
