@@ -40,11 +40,9 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
   // RAII helper for monitoring data-content-id attribute changes.
   class ScopedDataContentIdMonitor {
    public:
-    enum class ExpectZeroChange { kNo, kYes };
-
     ScopedDataContentIdMonitor(content::WebContents* web_contents,
-                               ExpectZeroChange expect_zero)
-        : web_contents_(web_contents), expect_zero_(expect_zero) {
+                               bool expect_zero_change)
+        : web_contents_(web_contents), expect_zero_change_(expect_zero_change) {
       EXPECT_TRUE(
           content::ExecJs(web_contents_, "startMonitoringDataContentId();"));
     }
@@ -54,7 +52,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
           content::EvalJs(web_contents_, "wasZeroChangeDetected()")
               .ExtractBool();
 
-      if (expect_zero_ == ExpectZeroChange::kYes) {
+      if (expect_zero_change_) {
         // Wait for zero change if we expect it but haven't seen it yet.
         if (!zero_detected) {
           EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -78,7 +76,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
 
    private:
     raw_ptr<content::WebContents> web_contents_;
-    ExpectZeroChange expect_zero_;
+    bool expect_zero_change_;
   };
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -335,8 +333,8 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
   AttachGuestToEmbed(guest_contents_red.get());
   VerifyBoxRendering(SK_ColorRED);
 
-  ScopedDataContentIdMonitor monitor(
-      web_contents(), ScopedDataContentIdMonitor::ExpectZeroChange::kNo);
+  ScopedDataContentIdMonitor monitor(web_contents(),
+                                     /*expect_zero_change=*/false);
 
   // Swap to the blue guest by changing the data-content-id attribute.
   std::string script_blue =
@@ -412,8 +410,8 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, VisibilityHiddenSwapGuest) {
       "document.querySelector('embed').style.visibility = 'hidden';"));
   VerifyBoxRendering(SK_ColorWHITE);
 
-  ScopedDataContentIdMonitor monitor(
-      web_contents(), ScopedDataContentIdMonitor::ExpectZeroChange::kNo);
+  ScopedDataContentIdMonitor monitor(web_contents(),
+                                     /*expect_zero_change=*/false);
 
   // Swap to the blue guest while hidden.
   std::string script_blue =
@@ -449,8 +447,8 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneSwapGuest) {
       "document.querySelector('embed').style.display = 'none';"));
   VerifyBoxRendering(SK_ColorWHITE);
 
-  ScopedDataContentIdMonitor monitor(
-      web_contents(), ScopedDataContentIdMonitor::ExpectZeroChange::kNo);
+  ScopedDataContentIdMonitor monitor(web_contents(),
+                                     /*expect_zero_change=*/false);
 
   // Swap to the blue guest while display is none.
   std::string script_blue =
@@ -488,8 +486,8 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TwoEmbedSameContentId) {
 
   // The first embed's data-content-id should be reset to 0 since it was
   // forcibly detached when the guest was attached to the 2nd embed.
-  ScopedDataContentIdMonitor monitor(
-      web_contents(), ScopedDataContentIdMonitor::ExpectZeroChange::kYes);
+  ScopedDataContentIdMonitor monitor(web_contents(),
+                                     /*expect_zero_change=*/true);
 
   // Add a 2nd <embed> with ID 'embed2' that uses the same content id.
   AttachGuestToEmbedWithId(guest_contents_red.get(), "embed2");
