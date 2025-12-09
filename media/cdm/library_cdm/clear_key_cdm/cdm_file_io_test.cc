@@ -92,7 +92,7 @@ FileIOTestRunner::~FileIOTestRunner() {
   if (remaining_tests_.empty())
     return;
 
-  DCHECK_LT(num_passed_tests_, total_num_tests_);
+  CHECK_LT(num_passed_tests_, total_num_tests_);
   FILE_IO_DVLOG(1) << "Not Finished (probably due to timeout). "
                    << num_passed_tests_ << " passed in "
                    << total_num_tests_ << " tests.";
@@ -556,7 +556,7 @@ void FileIOTest::AddResultReadEither(Status status,
                                      uint32_t data_size,
                                      const uint8_t* data2,
                                      uint32_t data2_size) {
-  DCHECK_NE(data_size, data2_size);
+  CHECK_NE(data_size, data2_size);
   test_steps_.push_back(TestStep(FileIOTest::RESULT_READ, status, data,
                                  data_size, data2, data2_size));
 }
@@ -564,7 +564,7 @@ void FileIOTest::AddResultReadEither(Status status,
 void FileIOTest::Run(CompletionCB completion_cb) {
   FILE_IO_DVLOG(3) << "Run " << test_name_;
   completion_cb_ = std::move(completion_cb);
-  DCHECK(!test_steps_.empty() && !IsResult(test_steps_.front()));
+  CHECK(!test_steps_.empty() && !IsResult(test_steps_.front()));
   RunNextStep();
 }
 
@@ -599,8 +599,8 @@ bool FileIOTest::IsResult(const TestStep& test_step) {
 }
 
 bool FileIOTest::MatchesResult(const TestStep& a, const TestStep& b) {
-  DCHECK(IsResult(a) && IsResult(b));
-  DCHECK(!b.data2);
+  CHECK(IsResult(a) && IsResult(b));
+  CHECK(!b.data2);
 
   if (a.type != b.type || a.status != b.status)
     return false;
@@ -663,7 +663,7 @@ void FileIOTest::RunNextStep() {
 }
 
 void FileIOTest::OnResult(const TestStep& result) {
-  DCHECK(IsResult(result));
+  CHECK(IsResult(result));
   if (!CheckResult(result)) {
     LOG(WARNING) << test_name_ << " got unexpected result. type=" << result.type
                  << ", status=" << (uint32_t)result.status

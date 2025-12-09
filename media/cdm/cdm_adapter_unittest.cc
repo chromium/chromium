@@ -270,7 +270,7 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
   void CreateSessionAndExpect(EmeInitDataType data_type,
                               const std::vector<uint8_t>& key_id,
                               ExpectedResult expected_result) {
-    DCHECK(!key_id.empty());
+    CHECK(!key_id.empty());
 
     if (expected_result == SUCCESS) {
       EXPECT_CALL(cdm_client_, OnSessionMessage(IsNotEmpty(), _, _));
@@ -295,7 +295,7 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
   // that LoadSession() succeeds or generates an error.
   void LoadSessionAndExpect(const std::string& session_id,
                             ExpectedResult expected_result) {
-    DCHECK(!session_id.empty());
+    CHECK(!session_id.empty());
     ASSERT_EQ(expected_result, FAILURE) << "LoadSession not supported.";
 
     cdm_->LoadSession(CdmSessionType::kTemporary, session_id,
@@ -310,7 +310,7 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
                               const std::string& key,
                               ExpectedResult expected_result,
                               bool new_key_expected) {
-    DCHECK(!key.empty());
+    CHECK(!key.empty());
 
     if (expected_result == SUCCESS) {
       EXPECT_CALL(cdm_client_,

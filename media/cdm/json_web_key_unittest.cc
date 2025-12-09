@@ -22,7 +22,7 @@ class JSONWebKeyTest : public testing::Test {
   void ExtractJWKKeysAndExpect(const std::string& jwk,
                                bool expected_result,
                                size_t expected_number_of_keys) {
-    DCHECK(!jwk.empty());
+    CHECK(!jwk.empty());
     KeyIdAndKeyPairs keys;
     CdmSessionType session_type;
     EXPECT_EQ(expected_result,
@@ -33,7 +33,7 @@ class JSONWebKeyTest : public testing::Test {
   void ExtractSessionTypeAndExpect(const std::string& jwk,
                                    bool expected_result,
                                    CdmSessionType expected_type) {
-    DCHECK(!jwk.empty());
+    CHECK(!jwk.empty());
     KeyIdAndKeyPairs keys;
     CdmSessionType session_type;
     EXPECT_EQ(expected_result,
