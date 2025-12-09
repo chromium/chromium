@@ -7157,10 +7157,6 @@ crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.
 # Sheriff 2022-08-06
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 
-# These seem to consistently fail with disabling code cache.
-crbug.com/40234680 http/tests/devtools/network/font-face.js [ Failure Pass ]
-crbug.com/40234680 virtual/disable-frequency-capping-for-overlay-popup/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Failure Pass ]
-
 # Sheriff 2022-08-11
 # Most likely a forced style/layout update from accessibiity while we are
 # render blocking, which should not happen.
