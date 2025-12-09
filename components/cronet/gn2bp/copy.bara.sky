@@ -254,6 +254,11 @@ origin_files = glob([
     # they will be used.
     "**/*.aconfig",
 
+    # Exclude TEST_MAPPING files that may be present in some subprojects (e.g.
+    # Perfetto). These files may accidentally be picked up by test
+    # infrastructure on the Android side, with surprising results.
+    "**/TEST_MAPPING",
+
     # Exclude Typescript files. Realistically Cronet will never use Typescript,
     # and they tend to create a lot of diff noise, especially from Perfetto.
     "**/*.ts",
