@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -442,7 +441,7 @@ public class IdentityDiscController
         } else {
             SettingsNavigation settingsNavigation =
                     SettingsNavigationFactory.createSettingsNavigation();
-            settingsNavigation.startSettings(mContext, MainSettings.class);
+            settingsNavigation.startSettings(mContext);
         }
     }
 
