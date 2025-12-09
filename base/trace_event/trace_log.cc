@@ -464,12 +464,6 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config) {
   SetEnabledImpl(trace_config, perfetto_config);
 }
 
-std::vector<TraceLog::TrackEventSession> TraceLog::GetTrackEventSessions()
-    const {
-  AutoLock lock(track_event_lock_);
-  return track_event_sessions_;
-}
-
 void TraceLog::SetEnabled(const TraceConfig& trace_config,
                           const perfetto::TraceConfig& perfetto_config) {
   AutoLock lock(lock_);
@@ -706,12 +700,6 @@ size_t TraceLog::GetObserverCountForTest() const {
   return enabled_state_observers_.size();
 }
 
-void TraceLog::OnSetup(const perfetto::DataSourceBase::SetupArgs& args) {
-  AutoLock lock(track_event_lock_);
-  track_event_sessions_.emplace_back(args.internal_instance_index, *args.config,
-                                     args.backend_type);
-}
-
 void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
   {
     AutoLock lock(track_event_lock_);
@@ -735,18 +723,6 @@ void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
 }
 
 void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs& args) {
-  {
-    // We can't use |lock_| because OnStop() can be called from within
-    // SetDisabled(). We also can't use |observers_lock_|, because observers
-    // below can call into IsEnabled(), which needs to access
-    // |track_event_sessions_|. So we use a separate lock.
-    AutoLock track_event_lock(track_event_lock_);
-    std::erase_if(track_event_sessions_, [&args](
-                                             const TrackEventSession& session) {
-      return session.internal_instance_index == args.internal_instance_index;
-    });
-  }
-
   {
     AutoLock lock(track_event_lock_);
     --active_track_event_sessions_;

@@ -62,8 +62,9 @@ void COMPONENT_EXPORT(TRACING_CPP) InitTracingPostFeatureList(
 base::ReadOnlySharedMemoryRegion COMPONENT_EXPORT(TRACING_CPP)
     CreateTracingConfigSharedMemory();
 
-// If tracing is enabled, returns a writeable SMB as destination of tracing
-// data, to be forwarded at child process creation.
+// Returns a writeable SMB as destination of tracing data, to be forwarded at
+// child process creation. This should only be called if tracing config shm was
+// created beforehand.
 base::UnsafeSharedMemoryRegion COMPONENT_EXPORT(TRACING_CPP)
     CreateTracingOutputSharedMemory();
 
