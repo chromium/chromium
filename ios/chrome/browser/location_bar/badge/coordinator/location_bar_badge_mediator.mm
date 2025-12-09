@@ -24,8 +24,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -171,7 +173,8 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
         BwgTabHelper* BWGTabHelper =
             BwgTabHelper::FromWebState(_activeWebState);
         if (BWGTabHelper) {
-          BWGTabHelper->SetContextualCueLabel(badgeConfig.badgeText);
+          BWGTabHelper->SetContextualCueLabel(
+              l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_PREFILL_PROMPT));
         }
       }
       [self.BWGCommandHandler
