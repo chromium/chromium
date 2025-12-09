@@ -83,21 +83,12 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
     bool is_after_expansion_;
   };
 
-  struct ComputeSpacingParameters {
-    unsigned index;
-    float original_advance = 0.0;
-  };
   // Compute spacings for the specified `index`.
   // This function returns space amount to be added after the glyph.
   //
   // The `index` is for the string given in the constructor.
   TextRunLayoutUnit ComputeSpacing(unsigned index,
-                                   bool is_cursive_script = false) {
-    return ComputeSpacing(ComputeSpacingParameters{.index = index},
-                          is_cursive_script);
-  }
-  TextRunLayoutUnit ComputeSpacing(const ComputeSpacingParameters& parameters,
-                                   bool is_cursive_script);
+                                   bool is_cursive_script = false);
 
   // Compute spacings to justify a glyph at the specified `index`.
   // This function returns a pair of
@@ -134,7 +125,6 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   InlineLayoutUnit expansion_;
   TextRunLayoutUnit expansion_per_opportunity_;
   unsigned expansion_opportunity_count_ = 0;
-  TextJustify justification_method_ = TextJustify::kAuto;
   bool has_spacing_ = false;
   bool is_letter_spacing_applied_ = false;
   bool is_word_spacing_applied_ = false;

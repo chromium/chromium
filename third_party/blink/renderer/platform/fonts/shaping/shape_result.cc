@@ -1005,18 +1005,16 @@ TextRunLayoutUnit ShapeResult::ApplySpacingOrExpansion(
         continue;
       }
 
-      ShapeResultSpacing::ComputeSpacingParameters parameters{
-          .index = run_start_index + glyph_data.character_index,
-          .original_advance = glyph_data.advance};
+      unsigned index = run_start_index + glyph_data.character_index;
       TextRunLayoutUnit spacing_before;
       if (method) {
-        auto result = spacing.ComputeExpansion(*method, parameters.index,
+        auto result = spacing.ComputeExpansion(*method, index,
                                                IsCursiveScript(run->script_));
         spacing_before = result.first;
         spacing_after = result.second;
       } else {
         spacing_after =
-            spacing.ComputeSpacing(parameters, IsCursiveScript(run->script_));
+            spacing.ComputeSpacing(index, IsCursiveScript(run->script_));
       }
       glyph_data.AddAdvance(spacing_before + spacing_after);
       total_advance_for_run += glyph_data.advance;

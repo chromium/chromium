@@ -84,7 +84,6 @@ void ShapeResultSpacing::SetExpansion(TextJustify method,
                                       TextDirection direction,
                                       bool allows_leading_expansion,
                                       bool allows_trailing_expansion) {
-  justification_method_ = method;
   ExpansionSetup setup(expansion, this, allows_leading_expansion,
                        allows_trailing_expansion);
   setup.CountOpportunities(method, text_, direction);
@@ -115,11 +114,9 @@ TextRunLayoutUnit ShapeResultSpacing::NextExpansion() {
   return expansion_per_opportunity_;
 }
 
-TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(
-    const ComputeSpacingParameters& parameters,
-    bool is_cursive_script) {
+TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(unsigned index,
+                                                     bool is_cursive_script) {
   DCHECK(has_spacing_);
-  unsigned index = parameters.index;
   UChar32 character = text_[index];
   bool treat_as_space =
       (Character::TreatAsSpace(character) ||
