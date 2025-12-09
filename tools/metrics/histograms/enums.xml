@@ -11594,8 +11594,6 @@ from previous Chrome versions.
   <int value="-932317811" label="EwalletPayments:enabled"/>
   <int value="-932261921"
       label="enable-defer-all-script-without-optimization-hints"/>
-  <int value="-931935394"
-      label="WebAppSyncGeneratedIconBackgroundFix:disabled"/>
   <int value="-931494909" label="DefaultLinkCapturingInBrowser:disabled"/>
   <int value="-930676269" label="TranslateOpenSettings:enabled"/>
   <int value="-930478115" label="CameraAppDocScanDlc:enabled"/>
@@ -13899,7 +13897,6 @@ from previous Chrome versions.
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
   <int value="-115541486" label="MostVisitedTilesReselect:enabled"/>
   <int value="-115261987" label="DesksTemplates:disabled"/>
-  <int value="-114925604" label="WebAppSyncGeneratedIconBackgroundFix:enabled"/>
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
   <int value="-114308870" label="AndroidTabGroupsColorUpdateGM3:enabled"/>
