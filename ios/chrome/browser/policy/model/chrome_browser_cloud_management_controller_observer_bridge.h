@@ -14,6 +14,7 @@
 // policy::ChromeBrowserCloudManagementController::Observer.
 @protocol ChromeBrowserCloudManagementControllerObserver <NSObject>
 - (void)policyRegistrationDidCompleteSuccessfuly:(BOOL)succeeded;
+- (void)controllerWillShutdown;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -32,6 +33,7 @@ class ChromeBrowserCloudManagementControllerObserverBridge
 
   // policy::ChromeBrowserCloudManagementController::Observer implementation.
   void OnPolicyRegisterFinished(bool succeeded) override;
+  void OnShutdown() override;
 
  private:
   __weak id<ChromeBrowserCloudManagementControllerObserver> observer_;
