@@ -2602,6 +2602,7 @@ interface Element : Node
     method setPointerCapture
     method startViewTransition
     method streamAppendHTMLUnsafe
+    method streamHTMLUnsafe
     method toggleAttribute
     method webkitMatchesSelector
     method webkitRequestFullScreen
@@ -9869,6 +9870,7 @@ interface ShadowRoot : DocumentFragment
     method setHTML
     method setHTMLUnsafe
     method streamAppendHTMLUnsafe
+    method streamHTMLUnsafe
     setter adoptedStyleSheets
     setter fullscreenElement
     setter innerHTML

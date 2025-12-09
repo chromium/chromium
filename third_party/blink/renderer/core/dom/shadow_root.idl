@@ -60,6 +60,7 @@ interface ShadowRoot : DocumentFragment {
 
     // https://github.com/whatwg/html/issues/2142
     [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamAppendHTMLUnsafe();
+    [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamHTMLUnsafe();
 };
 
 ShadowRoot includes DocumentOrShadowRoot;

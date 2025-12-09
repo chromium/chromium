@@ -1933,6 +1933,17 @@ WritableStream* ContainerNode::streamAppendHTMLUnsafe(
   return HTMLStream::Create(script_state, this, exception_state);
 }
 
+WritableStream* ContainerNode::streamHTMLUnsafe(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  WritableStream* stream =
+      HTMLStream::Create(script_state, this, exception_state);
+  if (!exception_state.HadException()) {
+    RemoveChildren();
+  }
+  return stream;
+}
+
 WritableStream* ContainerNode::patchBefore(ScriptState* script_state,
                                            Node* b,
                                            ExceptionState& exception_state) {
