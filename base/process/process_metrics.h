@@ -15,7 +15,6 @@
 #include <string_view>
 
 #include "base/base_export.h"
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -316,7 +315,7 @@ BASE_EXPORT void IncreaseFdLimitTo(unsigned int max_descriptors);
 // Data about system-wide memory consumption. Available on Windows, Mac, Linux,
 // Android and Chrome OS.
 //
-// The values are kept in ByteCount but depending on the platform, the
+// The values are kept in ByteSize but depending on the platform, the
 // granularity might be at the KB level or higher.
 //
 // Total memory are available on all platforms that implement
@@ -331,12 +330,10 @@ struct BASE_EXPORT SystemMemoryInfo {
   SystemMemoryInfo(const SystemMemoryInfo& other);
   SystemMemoryInfo& operator=(const SystemMemoryInfo& other);
 
-  // TODO(crbug.com/458489438): Migrate all generic ByteCount usages in
-  // base/system and base/memory to the new types.
-  ByteCount total;
+  ByteSize total;
 
 #if !BUILDFLAG(IS_WIN)
-  ByteCount free;
+  ByteSize free;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -345,7 +342,7 @@ struct BASE_EXPORT SystemMemoryInfo {
   // size of the standby, free, and zero lists." (MSDN).
   // Standby: not modified pages of physical ram (file-backed memory) that are
   // not actively being used.
-  ByteCount avail_phys;
+  ByteSize avail_phys;
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
@@ -355,42 +352,42 @@ struct BASE_EXPORT SystemMemoryInfo {
   // NOTE: this is ONLY valid in kernels 3.14 and up.  Its value will always
   // be 0 in earlier kernel versions.
   // Note: it includes _all_ file-backed memory (active + inactive).
-  ByteCount available;
+  ByteSize available;
 #endif
 
 #if !BUILDFLAG(IS_APPLE)
-  ByteCount swap_total;
-  ByteCount swap_free;
+  ByteSize swap_total;
+  ByteSize swap_free;
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX) || BUILDFLAG(IS_FUCHSIA)
-  ByteCount buffers;
-  ByteCount cached;
-  ByteCount active_anon;
-  ByteCount inactive_anon;
-  ByteCount active_file;
-  ByteCount inactive_file;
-  ByteCount dirty;
-  ByteCount reclaimable;
+  ByteSize buffers;
+  ByteSize cached;
+  ByteSize active_anon;
+  ByteSize inactive_anon;
+  ByteSize active_file;
+  ByteSize inactive_file;
+  ByteSize dirty;
+  ByteSize reclaimable;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX) BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  ByteCount shmem;
-  ByteCount slab;
+  ByteSize shmem;
+  ByteSize slab;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_APPLE)
-  ByteCount speculative;
-  ByteCount file_backed;
-  ByteCount purgeable;
+  ByteSize speculative;
+  ByteSize file_backed;
+  ByteSize purgeable;
 #endif  // BUILDFLAG(IS_APPLE)
 
   // Returns a cross-platform estimation of available physical memory.
   // This value is an approximation of the amount of physical memory that
   // can be used without the system needing to swap.
-  ByteCount GetAvailablePhysicalMemory() const;
+  ByteSize GetAvailablePhysicalMemory() const;
 };
 
 // On Linux/Android/Chrome OS, system-wide memory consumption data is parsed

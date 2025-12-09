@@ -303,6 +303,12 @@ TEST(ByteSizeDeathTest, ConstructionOtherUnitOutOfRange) {
   }
 }
 
+TEST(ByteSizeTest, IsPositive) {
+  EXPECT_FALSE(ByteSize(0).is_positive());
+  EXPECT_TRUE(ByteSize(2).is_positive());
+  EXPECT_TRUE(ByteSize::Max().is_positive());
+}
+
 TEST(ByteSizeTest, IsZero) {
   EXPECT_TRUE(ByteSize(0).is_zero());
   EXPECT_FALSE(ByteSize(2).is_zero());

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -133,7 +134,7 @@ class ResourcedClientImpl : public ResourcedClient {
 ResourcedClientImpl::ResourcedClientImpl() {
   base::SystemMemoryInfo info;
   if (base::GetSystemMemoryInfo(&info)) {
-    total_memory_ = info.total;
+    total_memory_ = base::ByteCount::FromUnsigned(info.total.InBytes());
   } else {
     PLOG(ERROR) << "Error reading total memory.";
   }

@@ -16,6 +16,8 @@
 #include <string_view>
 
 #include "base/apple/scoped_mach_port.h"
+#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
@@ -106,7 +108,7 @@ ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   }
   // We should add inactive file-backed memory also but there is no such
   // information from Mac OS unfortunately.
-  return info.free + info.speculative;
+  return ByteCount::FromUnsigned((info.free + info.speculative).InBytes());
 }
 
 // static

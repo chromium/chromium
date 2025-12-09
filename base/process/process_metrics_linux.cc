@@ -20,7 +20,7 @@
 #include <string_view>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/cpu.h"
@@ -394,7 +394,7 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
 
   // As a basic sanity check at the end, make sure the MemTotal value will be at
   // least non-zero. So start off with a zero total.
-  meminfo->total = ByteCount(0);
+  meminfo->total = ByteSize(0);
 
   for (std::string_view line : SplitStringPiece(
            meminfo_data, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
@@ -408,7 +408,7 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
       continue;
     }
 
-    ByteCount* target = nullptr;
+    ByteSize* target = nullptr;
     if (tokens[0] == "MemTotal:") {
       target = &meminfo->total;
     } else if (tokens[0] == "MemFree:") {
@@ -446,15 +446,15 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
     }
 #endif
     if (target) {
-      int64_t value;
-      if (StringToInt64(tokens[1], &value)) {
-        *target = KiB(value);
+      uint64_t value;
+      if (StringToUint64(tokens[1], &value)) {
+        *target = KiBU(value);
       }
     }
   }
 
   // Make sure the MemTotal is valid.
-  return meminfo->total > ByteCount(0);
+  return meminfo->total > ByteSize(0);
 }
 
 bool ParseProcVmstat(std::string_view vmstat_data, VmStatInfo* vmstat) {
@@ -1043,7 +1043,7 @@ int ProcessMetrics::GetIdleWakeupsPerSecond() {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 
-ByteCount SystemMemoryInfo::GetAvailablePhysicalMemory() const {
+ByteSize SystemMemoryInfo::GetAvailablePhysicalMemory() const {
   // Use MemAvailable from /proc/meminfo if available (Linux 3.14+), otherwise
   // fall back to MemFree.
   return available.is_positive() ? available : free;

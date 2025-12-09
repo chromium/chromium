@@ -75,6 +75,7 @@ class BASE_EXPORT SysInfo {
   // Return the number of bytes of physical memory on the current machine.
   // If low-end device mode is manually enabled via command line flag, this
   // will return the lesser of the actual physical memory, or 512MB.
+  // TODO(crbug.com/448661443): Switch to ByteSize as ByteCount is deprecated.
   static ByteCount AmountOfPhysicalMemory();
 
   // Return the number of bytes of current available physical memory on the
@@ -82,21 +83,23 @@ class BASE_EXPORT SysInfo {
   // (The amount of memory that can be allocated without any significant
   // impact on the system. It can lead to freeing inactive file-backed
   // and/or speculative file-backed memory).
+  // TODO(crbug.com/448661443): Switch to ByteSize as ByteCount is deprecated.
   static ByteCount AmountOfAvailablePhysicalMemory();
 
   // Return the number of bytes of virtual memory of this process. A return
   // value of zero means that there is no limit on the available virtual
   // memory.
+  // TODO(crbug.com/448661443): Switch to ByteSize as ByteCount is deprecated.
   static ByteCount AmountOfVirtualMemory();
 
   // Return the available disk space in bytes on the volume containing |path|,
   // or nullopt on failure.
-  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
+  // TODO(crbug.com/429140103): Convert the return type to ByteSize.
   static std::optional<int64_t> AmountOfFreeDiskSpace(const FilePath& path);
 
   // Return the total disk space in bytes on the volume containing |path|, or
   // nullopt on failure.
-  // TODO(crbug.com/429140103): Convert the return type to ByteCount.
+  // TODO(crbug.com/429140103): Convert the return type to ByteSize.
   static std::optional<int64_t> AmountOfTotalDiskSpace(const FilePath& path);
 
 #if BUILDFLAG(IS_FUCHSIA)

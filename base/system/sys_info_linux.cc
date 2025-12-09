@@ -12,12 +12,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <limits>
 #include <sstream>
 #include <type_traits>
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -73,11 +73,14 @@ ByteCount SysInfo::AmountOfAvailablePhysicalMemory(
   // https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=34e431b0ae398fc54ea69ff85ec700722c9da773
   // The fallback logic (when there is no MemAvailable) would be more precise
   // if we had info about zones watermarks (/proc/zoneinfo).
-  ByteCount res =
-      !info.available.is_zero()
-          ? std::max(info.available - info.active_file, ByteCount(0))
-          : info.free + info.reclaimable + info.inactive_file;
-  return res;
+  if (info.available.is_zero()) {
+    return ByteCount::FromUnsigned(
+        (info.free + info.reclaimable + info.inactive_file).InBytes());
+  } else if (info.available > info.active_file) {
+    return ByteCount((info.available - info.active_file).InBytes());
+  } else {
+    return ByteCount(0);
+  }
 }
 
 // static

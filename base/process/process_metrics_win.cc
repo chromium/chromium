@@ -13,7 +13,7 @@
 
 #include <algorithm>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -261,10 +261,10 @@ bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
     return false;
   }
 
-  meminfo->total = ByteCount::FromUnsigned(mem_status.ullTotalPhys);
-  meminfo->avail_phys = ByteCount::FromUnsigned(mem_status.ullAvailPhys);
-  meminfo->swap_total = ByteCount::FromUnsigned(mem_status.ullTotalPageFile);
-  meminfo->swap_free = ByteCount::FromUnsigned(mem_status.ullAvailPageFile);
+  meminfo->total = ByteSize(mem_status.ullTotalPhys);
+  meminfo->avail_phys = ByteSize(mem_status.ullAvailPhys);
+  meminfo->swap_total = ByteSize(mem_status.ullTotalPageFile);
+  meminfo->swap_free = ByteSize(mem_status.ullAvailPageFile);
 
   return true;
 }
@@ -315,7 +315,7 @@ BASE_EXPORT bool GetSystemPerformanceInfo(SystemPerformanceInfo* info) {
   return true;
 }
 
-ByteCount SystemMemoryInfo::GetAvailablePhysicalMemory() const {
+ByteSize SystemMemoryInfo::GetAvailablePhysicalMemory() const {
   // Use ullAvailPhys from MEMORYSTATUSEX, which represents physical memory
   // available without paging.
   return avail_phys;

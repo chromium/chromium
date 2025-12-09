@@ -194,6 +194,7 @@ class BASE_EXPORT ByteSize : public internal::ByteSizeBase {
     return ByteSize(std::numeric_limits<int64_t>::max());
   }
 
+  constexpr bool is_positive() const { return InBytes() > 0; }
   constexpr bool is_zero() const { return InBytes() == 0; }
 
   constexpr bool is_max() const { return *this == Max(); }

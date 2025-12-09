@@ -74,12 +74,12 @@ bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
   return false;
 }
 
-ByteCount SystemMemoryInfo::GetAvailablePhysicalMemory() const {
+ByteSize SystemMemoryInfo::GetAvailablePhysicalMemory() const {
   NOTIMPLEMENTED();
   // GetSystemMemoryInfo() is not implemented on Fuchsia, so this struct will
-  // contain default (zero) values. Return a zero ByteCount to satisfy the
+  // contain default (zero) values. Return a zero ByteSize to satisfy the
   // linker.
-  return ByteCount(0);
+  return ByteSize(0);
 }
 
 }  // namespace base

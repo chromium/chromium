@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
@@ -1662,11 +1663,12 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
 #if BUILDFLAG(IS_CHROMEOS)
     base::SystemMemoryInfo system_meminfo;
     if (base::GetSystemMemoryInfo(&system_meminfo)) {
-      int64_t mem_used_mb =
-          (system_meminfo.total - system_meminfo.available).InMiB();
+      const base::ByteSizeDelta mem_used =
+          system_meminfo.total - system_meminfo.available;
       UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.System.MemAvailableMB",
                                     system_meminfo.available.InMiB());
-      UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.System.MemUsedMB", mem_used_mb);
+      UMA_HISTOGRAM_LARGE_MEMORY_MB("Memory.System.MemUsedMB",
+                                    mem_used.InMiB());
     }
 #endif
   }

@@ -9,6 +9,8 @@
 #include <unistd.h>
 
 #include "base/android/child_process_binding_types.h"
+#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -126,7 +128,8 @@ void UserLevelMemoryPressureSignalGenerator::CollectMemoryMetrics() {
   latest_metrics_ = UserLevelMemoryPressureMetrics{
       .total_private_footprint =
           GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers(),
-      .available_memory = meminfo.available,
+      .available_memory =
+          base::ByteCount::FromUnsigned(meminfo.available.InBytes()),
       .total_process_count = total_process_count,
       .visible_renderer_count = visible_renderer_count,
   };

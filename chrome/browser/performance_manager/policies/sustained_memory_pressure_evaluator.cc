@@ -4,7 +4,7 @@
 
 #include "chrome/browser/performance_manager/policies/sustained_memory_pressure_evaluator.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
@@ -21,8 +21,8 @@ bool IsMemoryPressure() {
     return false;
   }
 
-  base::ByteCount total = info.total;
-  base::ByteCount avail = info.avail_phys;
+  base::ByteSize total = info.total;
+  base::ByteSize avail = info.avail_phys;
 
   // This is unexpected, do nothing.
   if (!total.is_positive()) {

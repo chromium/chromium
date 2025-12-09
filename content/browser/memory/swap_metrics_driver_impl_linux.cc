@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_metrics.h"
 #include "base/time/time.h"
@@ -20,7 +20,7 @@ bool HasSwap() {
   base::SystemMemoryInfo memory_info;
   if (!base::GetSystemMemoryInfo(&memory_info))
     return false;
-  return memory_info.swap_total > base::ByteCount(0);
+  return memory_info.swap_total > base::ByteSize(0);
 }
 
 }  // namespace

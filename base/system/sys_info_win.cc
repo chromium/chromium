@@ -20,6 +20,8 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
@@ -198,7 +200,7 @@ ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   if (!GetSystemMemoryInfo(&info)) {
     return ByteCount(0);
   }
-  return info.avail_phys;
+  return ByteCount::FromUnsigned(info.avail_phys.InBytes());
 }
 
 // static

@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -141,9 +141,8 @@ void SetCpusValue(const std::vector<CpuInfo>& infos,
 }
 
 double GetAvailablePhysicalMemory(const base::SystemMemoryInfo& info) {
-  base::ByteCount available =
+  const base::ByteSize available =
       info.available.is_zero() ? info.free + info.reclaimable : info.available;
-
   return available.InBytesF();
 }
 

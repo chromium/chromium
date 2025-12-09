@@ -12,6 +12,8 @@
 #include <sys/types.h>
 
 #include "base/apple/scoped_mach_port.h"
+#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -113,7 +115,7 @@ ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   }
   // We should add inactive file-backed memory also but there is no such
   // information from iOS unfortunately.
-  return info.free + info.speculative;
+  return ByteCount::FromUnsigned((info.free + info.speculative).InBytes());
 }
 
 // static

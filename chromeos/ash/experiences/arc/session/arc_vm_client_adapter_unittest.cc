@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
@@ -2263,7 +2263,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledOn32Bit) {
     bool GetSystemMemoryInfo(base::SystemMemoryInfo* info) override {
       // Return a value larger than k32bitVmRamMaxMib to verify that the VM
       // memory size is actually limited.
-      info->total = base::MiB(k32bitVmRamMaxMib + 1000);
+      info->total = base::MiBU(k32bitVmRamMaxMib + 1000);
       return true;
     }
     bool IsCrosvm32bit() override { return true; }
@@ -2547,7 +2547,7 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSwappinessValid) {
 TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_5GbSystem) {
   class TestDelegate : public ArcVmClientAdapterDelegate {
     bool GetSystemMemoryInfo(base::SystemMemoryInfo* info) override {
-      info->total = base::GiB(5);
+      info->total = base::GiBU(5);
       return true;
     }
     bool IsCrosvm32bit() override { return false; }
@@ -2572,7 +2572,7 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_5GbSystem) {
 TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_4GbSystem) {
   class TestDelegate : public ArcVmClientAdapterDelegate {
     bool GetSystemMemoryInfo(base::SystemMemoryInfo* info) override {
-      info->total = base::GiB(4);
+      info->total = base::GiBU(4);
       return true;
     }
     bool IsCrosvm32bit() override { return false; }
@@ -2597,7 +2597,7 @@ TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_4GbSystem) {
 TEST_F(ArcVmClientAdapterTest, ArcGuestZramSizeByPercentage_CustomMem) {
   class TestDelegate : public ArcVmClientAdapterDelegate {
     bool GetSystemMemoryInfo(base::SystemMemoryInfo* info) override {
-      info->total = base::GiB(6);
+      info->total = base::GiBU(6);
       return true;
     }
     bool IsCrosvm32bit() override { return false; }

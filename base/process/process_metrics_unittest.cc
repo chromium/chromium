@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -445,7 +445,7 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(355725,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo).InKiB());
   // Simulate as if there is no MemAvailable.
-  meminfo.available = ByteCount(0);
+  meminfo.available = ByteSize(0);
   EXPECT_EQ(374448u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo).InKiB());
   meminfo = {};
@@ -806,17 +806,17 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
   EXPECT_TRUE(GetSystemMemoryInfo(&info));
 
   // Ensure each field received a value.
-  EXPECT_GT(info.total, ByteCount(0));
+  EXPECT_GT(info.total, ByteSize(0));
 #if BUILDFLAG(IS_WIN)
-  EXPECT_GT(info.avail_phys, ByteCount(0));
+  EXPECT_GT(info.avail_phys, ByteSize(0));
 #else
-  EXPECT_GT(info.free, ByteCount(0));
+  EXPECT_GT(info.free, ByteSize(0));
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  EXPECT_GT(info.buffers, ByteCount(0));
-  EXPECT_GT(info.cached, ByteCount(0));
-  EXPECT_GT(info.active_anon + info.inactive_anon, ByteCount(0));
-  EXPECT_GT(info.active_file + info.inactive_file, ByteCount(0));
+  EXPECT_GT(info.buffers, ByteSize(0));
+  EXPECT_GT(info.cached, ByteSize(0));
+  EXPECT_GT(info.active_anon + info.inactive_anon, ByteSize(0));
+  EXPECT_GT(info.active_file + info.inactive_file, ByteSize(0));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
@@ -836,12 +836,12 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
         // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_APPLE)
-  EXPECT_GT(info.file_backed, ByteCount(0));
+  EXPECT_GT(info.file_backed, ByteSize(0));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS exposes shmem.
-  EXPECT_GT(info.shmem, ByteCount(0));
+  EXPECT_GT(info.shmem, ByteSize(0));
   EXPECT_LT(info.shmem, info.total);
 #endif
 }

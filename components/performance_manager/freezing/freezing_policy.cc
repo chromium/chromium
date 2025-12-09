@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
@@ -1425,8 +1426,8 @@ void FreezingPolicy::CheckMemoryPressureForFreezing() {
   const int kPressureThresholdPercent =
       features::kInfiniteTabsFreezingOnMemoryPressurePercent.Get();
 
-  base::ByteCount total = info.total;
-  base::ByteCount avail = info.avail_phys;
+  base::ByteSize total = info.total;
+  base::ByteSize avail = info.avail_phys;
 
   int available_percent = 0;
   if (total.is_positive()) {
