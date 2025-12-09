@@ -728,6 +728,16 @@ IOSChromeSafetyCheckManager::GetRunningCheckStateForTesting() const {
   return running_safety_check_state_;
 }
 
+void IOSChromeSafetyCheckManager::SetUpdateChromeCheckStateForTesting(
+    UpdateChromeSafetyCheckState state) {
+  SetUpdateChromeCheckState(state);
+}
+
+void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckStateForTesting(
+    SafeBrowsingSafetyCheckState state) {
+  SetSafeBrowsingCheckState(state);
+}
+
 void IOSChromeSafetyCheckManager::SetPasswordCheckStateForTesting(
     PasswordSafetyCheckState state) {
   SetPasswordCheckState(state);

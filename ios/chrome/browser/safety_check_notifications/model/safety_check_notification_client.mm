@@ -550,6 +550,15 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Remove delivered notifications that are now considered resolved.
+  std::set<SafetyCheckNotificationType> notification_types_to_remove =
+      GetResolvedSafetyCheckTypes(update_chrome_state, safe_browsing_state,
+                                  password_state);
+
+  if (!notification_types_to_remove.empty()) {
+    RemoveDeliveredNotifications(std::move(notification_types_to_remove));
+  }
+
   if ([interacted_notification_metadata_ count]) {
     Browser* browser = GetActiveForegroundBrowser();
 
@@ -713,6 +722,95 @@ void SafetyCheckNotificationClient::LogDismissedNotifications() {
 
   [UNUserNotificationCenter.currentNotificationCenter
       getDeliveredNotificationsWithCompletionHandler:completion];
+}
+
+void SafetyCheckNotificationClient::RemoveDeliveredNotifications(
+    std::set<SafetyCheckNotificationType> notification_types_to_remove) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (notification_types_to_remove.empty()) {
+    return;
+  }
+
+  auto callback = base::CallbackToBlock(base::BindPostTask(
+      task_runner_,
+      base::BindOnce(
+          &SafetyCheckNotificationClient::OnGetDeliveredNotificationsForRemoval,
+          weak_ptr_factory_.GetWeakPtr(),
+          std::move(notification_types_to_remove))));
+
+  [UNUserNotificationCenter.currentNotificationCenter
+      getDeliveredNotificationsWithCompletionHandler:callback];
+}
+
+void SafetyCheckNotificationClient::OnGetDeliveredNotificationsForRemoval(
+    std::set<SafetyCheckNotificationType> notification_types_to_remove,
+    NSArray<UNNotification*>* notifications) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  NSString* current_profile_name = nil;
+
+  if (IsMultiProfilePushNotificationHandlingEnabled()) {
+    ProfileIOS* profile = GetProfile();
+    CHECK(profile);
+    current_profile_name = base::SysUTF8ToNSString(profile->GetProfileName());
+  }
+
+  NSMutableArray<NSString*>* notification_ids_to_remove =
+      [NSMutableArray array];
+  std::set<SafetyCheckNotificationType> delivered_notification_types_found;
+
+  for (UNNotification* notification in notifications) {
+    std::optional<SafetyCheckNotificationType> type =
+        ParseSafetyCheckNotificationType(notification.request);
+
+    // Skip if not a valid Safety Check type or not in the set of types to
+    // remove.
+    if (!type.has_value() ||
+        !notification_types_to_remove.contains(type.value())) {
+      continue;
+    }
+
+    // Profile Check: Update Chrome notifications are effectively app-wide,
+    // others are per-profile.
+    if (IsMultiProfilePushNotificationHandlingEnabled() &&
+        type.value() != SafetyCheckNotificationType::kUpdateChrome) {
+      NSString* originating_profile_name =
+          notification.request.content.userInfo[kOriginatingProfileNameKey];
+      if (![originating_profile_name isEqualToString:current_profile_name]) {
+        continue;
+      }
+    }
+
+    [notification_ids_to_remove addObject:notification.request.identifier];
+    delivered_notification_types_found.insert(type.value());
+  }
+
+  if ([notification_ids_to_remove count] == 0) {
+    return;
+  }
+
+  [UNUserNotificationCenter.currentNotificationCenter
+      removeDeliveredNotificationsWithIdentifiers:notification_ids_to_remove];
+
+  // Clean up associated metrics for the types we are removing.
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  for (SafetyCheckNotificationType type : delivered_notification_types_found) {
+    const int type_int = static_cast<int>(type);
+
+    for (std::string_view pref_name :
+         {prefs::kIosSafetyCheckNotificationsLastTriggered,
+          prefs::kIosSafetyCheckNotificationsLastSent}) {
+      const PrefService::Preference* pref =
+          local_pref_service->FindPreference(pref_name);
+
+      if (pref && !pref->IsDefaultValue() &&
+          pref->GetValue()->GetInt() == type_int) {
+        local_pref_service->ClearPref(pref_name);
+      }
+    }
+  }
 }
 
 // Iterates through delivered notifications in the device's notification

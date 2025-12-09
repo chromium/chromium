@@ -9,6 +9,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import <optional>
+#import <set>
 
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -70,5 +71,12 @@ UNNotificationContent* NotificationForSafeBrowsingCheckState(
 // `std::nullopt` if the `request` is not a Safety Check notification.
 std::optional<SafetyCheckNotificationType> ParseSafetyCheckNotificationType(
     UNNotificationRequest* request);
+
+// Returns the set of `SafetyCheckNotificationType` that are now considered
+// resolved (e.g., "safe", "up-to-date") based on the current states.
+std::set<SafetyCheckNotificationType> GetResolvedSafetyCheckTypes(
+    UpdateChromeSafetyCheckState update_chrome_state,
+    SafeBrowsingSafetyCheckState safe_browsing_state,
+    PasswordSafetyCheckState password_state);
 
 #endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_NOTIFICATIONS_UTILS_UTILS_H_

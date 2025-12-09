@@ -492,3 +492,62 @@ TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesSafeBrowsingRequest) {
   ASSERT_TRUE(type.has_value());
   EXPECT_EQ(type.value(), SafetyCheckNotificationType::kSafeBrowsing);
 }
+
+// Tests that `GetResolvedSafetyCheckTypes()` returns the correct set of
+// notification types for various state combinations.
+TEST_F(SafetyCheckNotificationUtilsTest, GetResolvedSafetyCheckTypes) {
+  // Scenario 1: No issues resolved.
+  std::set<SafetyCheckNotificationType> result1 = GetResolvedSafetyCheckTypes(
+      UpdateChromeSafetyCheckState::kOutOfDate,
+      SafeBrowsingSafetyCheckState::kUnsafe,
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+  EXPECT_TRUE(result1.empty());
+
+  // Scenario 2: Only Passwords resolved.
+  std::set<SafetyCheckNotificationType> result2 = GetResolvedSafetyCheckTypes(
+      UpdateChromeSafetyCheckState::kOutOfDate,
+      SafeBrowsingSafetyCheckState::kUnsafe, PasswordSafetyCheckState::kSafe);
+  EXPECT_EQ(result2.size(), 1u);
+  EXPECT_TRUE(result2.count(SafetyCheckNotificationType::kPasswords));
+
+  // Scenario 3: Only Passwords resolved.
+  std::set<SafetyCheckNotificationType> result3 =
+      GetResolvedSafetyCheckTypes(UpdateChromeSafetyCheckState::kOutOfDate,
+                                  SafeBrowsingSafetyCheckState::kUnsafe,
+                                  PasswordSafetyCheckState::kSignedOut);
+  EXPECT_EQ(result3.size(), 1u);
+  EXPECT_TRUE(result3.count(SafetyCheckNotificationType::kPasswords));
+
+  // Scenario 4: Only Safe Browsing resolved.
+  std::set<SafetyCheckNotificationType> result4 = GetResolvedSafetyCheckTypes(
+      UpdateChromeSafetyCheckState::kOutOfDate,
+      SafeBrowsingSafetyCheckState::kSafe,
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+  EXPECT_EQ(result4.size(), 1u);
+  EXPECT_TRUE(result4.count(SafetyCheckNotificationType::kSafeBrowsing));
+
+  // Scenario 5: Only Update Chrome resolved.
+  std::set<SafetyCheckNotificationType> result5 = GetResolvedSafetyCheckTypes(
+      UpdateChromeSafetyCheckState::kUpToDate,
+      SafeBrowsingSafetyCheckState::kUnsafe,
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+  EXPECT_EQ(result5.size(), 1u);
+  EXPECT_TRUE(result5.count(SafetyCheckNotificationType::kUpdateChrome));
+
+  // Scenario 6: Passwords and Safe Browsing resolved.
+  std::set<SafetyCheckNotificationType> result6 = GetResolvedSafetyCheckTypes(
+      UpdateChromeSafetyCheckState::kOutOfDate,
+      SafeBrowsingSafetyCheckState::kSafe, PasswordSafetyCheckState::kSafe);
+  EXPECT_EQ(result6.size(), 2u);
+  EXPECT_TRUE(result6.count(SafetyCheckNotificationType::kPasswords));
+  EXPECT_TRUE(result6.count(SafetyCheckNotificationType::kSafeBrowsing));
+
+  // Scenario 7: All issues resolved.
+  std::set<SafetyCheckNotificationType> result7 = GetResolvedSafetyCheckTypes(
+      UpdateChromeSafetyCheckState::kUpToDate,
+      SafeBrowsingSafetyCheckState::kSafe, PasswordSafetyCheckState::kSafe);
+  EXPECT_EQ(result7.size(), 3u);
+  EXPECT_TRUE(result7.count(SafetyCheckNotificationType::kPasswords));
+  EXPECT_TRUE(result7.count(SafetyCheckNotificationType::kSafeBrowsing));
+  EXPECT_TRUE(result7.count(SafetyCheckNotificationType::kUpdateChrome));
+}

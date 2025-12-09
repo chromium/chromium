@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import <set>
+
 #import "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
@@ -21,6 +23,7 @@
 
 class Browser;
 class ProfileIOS;
+enum class SafetyCheckNotificationType;
 
 // A push notification client for managing Safety Check-related notifications.
 // Observes Safety Check state changes to ensure notifications are accurate, and
@@ -130,6 +133,20 @@ class SafetyCheckNotificationClient
   // Logs to a histogram if notifications that were requested have been
   // dismissed.
   void LogDismissedNotifications();
+
+  // Asynchronously fetches all delivered notifications from the user's
+  // notification center to filter and remove them if they match any of the
+  // provided `notification_types_to_remove` and belong to the current profile.
+  void RemoveDeliveredNotifications(
+      std::set<SafetyCheckNotificationType> notification_types_to_remove);
+
+  // Called with the list of all delivered notifications in the user's
+  // notification center. Filters for notifications matching any of the
+  // `notification_types_to_remove` and the current profile, and removes them
+  // from the user's notification center.
+  void OnGetDeliveredNotificationsForRemoval(
+      std::set<SafetyCheckNotificationType> notification_types_to_remove,
+      NSArray<UNNotification*>* notifications);
 
   // Called with all the delivered `notifications` that are still present in
   // Notification Center.

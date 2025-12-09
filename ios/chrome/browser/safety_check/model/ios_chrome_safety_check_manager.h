@@ -170,6 +170,8 @@ class IOSChromeSafetyCheckManager
   void StartOmahaCheckForTesting();
   bool IsOmahaCheckQueuedForTesting() const;
   RunningSafetyCheckState GetRunningCheckStateForTesting() const;
+  void SetUpdateChromeCheckStateForTesting(UpdateChromeSafetyCheckState state);
+  void SetSafeBrowsingCheckStateForTesting(SafeBrowsingSafetyCheckState state);
   void SetPasswordCheckStateForTesting(PasswordSafetyCheckState state);
   void SetInsecurePasswordCountsForTesting(
       password_manager::InsecurePasswordCounts counts);
