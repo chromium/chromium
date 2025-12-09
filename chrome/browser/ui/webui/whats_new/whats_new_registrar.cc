@@ -30,16 +30,6 @@ namespace features {
 
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // Register modules here.
-  // M142
-#if BUILDFLAG(ENABLE_GLIC)
-  registry->RegisterModule(WhatsNewModule(::features::kGlicIntro,
-                                          "birnie@google.com",
-                                          BrowserCommand::kOpenGlic));
-  // M142
-  registry->RegisterModule(WhatsNewModule(::features::kGlicLearnMore,
-                                          "birnie@google.com",
-                                          BrowserCommand::kOpenGlicSettings));
-#endif  // BUILDFLAG(ENABLE_GLIC)
   // 129
   registry->RegisterModule(
       WhatsNewModule("Googlepayreauth", "vinnypersky@google.com",
