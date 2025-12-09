@@ -104,6 +104,9 @@
 @implementation BackgroundRefreshAppAgent {
   base::Time _refresh_start;
   BGTask* _pendingTask;
+  base::Time _pendingTaskStartTime;
+  base::TimeDelta _startupWaitDuration;
+  BOOL _hasStartupWaitDuration;
   SEQUENCE_CHECKER(_sequenceChecker);
 }
 
@@ -111,6 +114,8 @@
   if ((self = [super init])) {
     _providers = [NSMutableSet set];
     _activeProviders = [NSMutableSet set];
+    _startupWaitDuration = base::TimeDelta();
+    _hasStartupWaitDuration = NO;
     [self registerBackgroundRefreshTask];
   }
   return self;
@@ -207,6 +212,10 @@
   base::UmaHistogramEnumeration(kLaunchTypeForBackgroundRefreshHistogram,
                                 launchType);
 
+  // Reset startup wait duration.
+  _startupWaitDuration = base::TimeDelta();
+  _hasStartupWaitDuration = NO;
+
   // Schedule another refresh.
   [self requestAppRefresh];
 
@@ -216,6 +225,7 @@
     [self executeProvidersForTask:task];
   } else {
     _pendingTask = task;
+    _pendingTaskStartTime = base::Time::Now();
   }
 }
 
@@ -224,6 +234,12 @@
 
   // Remove any pending task.
   _pendingTask = nil;
+
+  if (!_pendingTaskStartTime.is_null()) {
+    _startupWaitDuration = base::Time::Now() - _pendingTaskStartTime;
+    _hasStartupWaitDuration = YES;
+    _pendingTaskStartTime = base::Time();
+  }
 
   [self refreshStarted];
   self.providerCount = 0;
@@ -244,6 +260,10 @@
 
   // If none of the providers were due, mark the refresh complete.
   if (self.activeProviders.count == 0) {
+    if (_hasStartupWaitDuration) {
+      base::UmaHistogramMediumTimes(kStartupWaitDurationCompletedHistogram,
+                                    _startupWaitDuration);
+    }
     [task setTaskCompletedWithSuccess:YES];
     [self refreshComplete];
   }
@@ -263,8 +283,21 @@
   base::UmaHistogramCounts100(kTotalProviderCountAtTimeoutHistogram,
                               self.providerCount);
 
+  // If the task is still pending, then the refresh has timed out before startup
+  // finished kBrowserObjectsForBackgroundHandlers, and thus
+  // -executeProvidersForTask was never called. Record the
+  // "NeverStarted" delay time.
+  if (_pendingTask && !_pendingTaskStartTime.is_null()) {
+    base::UmaHistogramMediumTimes(kStartupWaitDurationNeverStartedHistogram,
+                                  base::Time::Now() - _pendingTaskStartTime);
+  } else if (_hasStartupWaitDuration) {
+    base::UmaHistogramMediumTimes(kStartupWaitDurationTimeoutHistogram,
+                                  _startupWaitDuration);
+  }
+
   // Remove any pending task.
   _pendingTask = nil;
+  _pendingTaskStartTime = base::Time();
 
   // Cancel all provider tasks. The completion callback will not be called.
   for (AppRefreshProvider* provider in self.activeProviders) {
@@ -284,8 +317,19 @@
 - (void)handleCompletedProvider:(AppRefreshProvider*)provider
                         forTask:(BGTask*)task {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  // If the provider is not in the active set, it means it was cancelled (e.g.
+  // due to timeout) and we should ignore this completion to avoid
+  // double-counting or double-completing the refresh task.
+  if (![self.activeProviders containsObject:provider]) {
+    return;
+  }
+
   [self.activeProviders removeObject:provider];
   if (self.activeProviders.count == 0) {
+    if (_hasStartupWaitDuration) {
+      base::UmaHistogramMediumTimes(kStartupWaitDurationCompletedHistogram,
+                                    _startupWaitDuration);
+    }
     self.providerCount = 0;
     [task setTaskCompletedWithSuccess:YES];
     [self refreshComplete];

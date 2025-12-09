@@ -28,6 +28,15 @@ const char kActiveProviderCountAtTimeoutHistogram[] =
 const char kTotalProviderCountAtTimeoutHistogram[] =
     "IOS.BackgroundRefresh.Timeout.TotalProviderCount";
 
+const char kStartupWaitDurationCompletedHistogram[] =
+    "IOS.BackgroundRefresh.StartupWait.Completed";
+
+const char kStartupWaitDurationTimeoutHistogram[] =
+    "IOS.BackgroundRefresh.StartupWait.Timeout";
+
+const char kStartupWaitDurationNeverStartedHistogram[] =
+    "IOS.BackgroundRefresh.StartupWait.NeverStarted";
+
 void RecordProviderExecutionDuration(NSString* provider_identifier,
                                      base::TimeDelta duration) {
   std::string histogram_name = "IOS.BackgroundRefresh.Provider.Duration.";

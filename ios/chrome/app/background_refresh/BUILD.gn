@@ -58,6 +58,7 @@ source_set("unit_tests") {
   deps = [
     ":background_refresh",
     ":headers",
+    ":metrics",
     "//base/test:test_support",
     "//components/test/ios",
     "//ios/chrome/app:constants",

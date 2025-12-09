@@ -75,6 +75,17 @@ extern const char kActiveProviderCountAtTimeoutHistogram[];
 // which timed out.
 extern const char kTotalProviderCountAtTimeoutHistogram[];
 
+// Histogram for the wait time for the app to reach the required init stage.
+extern const char kStartupWaitDurationCompletedHistogram[];
+
+// Histogram for the wait time for the app to reach the required init stage,
+// recorded when the task times out.
+extern const char kStartupWaitDurationTimeoutHistogram[];
+
+// Histogram for the wait time for the app to reach the required init stage,
+// recorded when the task times out without any providers having started.
+extern const char kStartupWaitDurationNeverStartedHistogram[];
+
 // Records the duration of a refresh for a specific provider.
 void RecordProviderExecutionDuration(NSString* provider_identifier,
                                      base::TimeDelta duration);

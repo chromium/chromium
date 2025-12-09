@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
+#import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 #import "ios/chrome/app/background_refresh_constants.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -242,8 +244,11 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
 
     // Stub the task request method to capture the last task request.
     OCMStub([task_scheduler_mock_
-        submitTaskRequest:CopyValueToVariable(last_task_request_)
-                    error:[OCMArg setTo:nil]]);
+                submitTaskRequest:CopyValueToVariable(last_task_request_)
+                            error:[OCMArg setTo:nil]])
+        .andDo(^(NSInvocation* invocation) {
+          task_request_count_++;
+        });
   }
 
   // Simulate the app entering the background by calling the relevant
@@ -309,6 +314,7 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
   id task_mock_;
   TaskExpirationBlock task_expiration_handler_;
   AppState* app_state_;
+  int task_request_count_ = 0;
 
   // Object under test and its audience.
   BackgroundRefreshAppAgent* agent_;
@@ -616,4 +622,123 @@ TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecution) {
   VerifyTaskCompleted(YES);
   EXPECT_TRUE(audience_.ended);
   EXPECT_TRUE([provider injectedTask].executed);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionMetrics) {
+  // Test that the startup wait duration is recorded when execution is delayed.
+  base::HistogramTester histogram_tester;
+
+  [app_state_
+      updateInitStage:AppInitStage::kBrowserObjectsForBackgroundHandlers];
+
+  TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
+  [agent_ addAppRefreshProvider:provider];
+
+  OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
+
+  SimulateAppBackgrounding();
+  InvokeTaskHandlerThen(run_loop_.QuitClosure());
+  run_loop_.Run();
+  // Ensure the dispatched handleExecutionForTask block runs on the main thread.
+  // This is signaled by the task request count being incremented (once for
+  // SimulateAppBackgrounding, once for handleExecutionForTask).
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return task_request_count_ >= 2;
+      }));
+
+  histogram_tester.ExpectTotalCount(kStartupWaitDurationCompletedHistogram, 0);
+
+  base::RunLoop second_run_loop;
+  audience_.runLoop = &second_run_loop;
+
+  AppInitStage refreshStage =
+      NextAppInitStage(AppInitStage::kBrowserObjectsForBackgroundHandlers);
+  [app_state_ updateInitStage:refreshStage];
+  [agent_ appState:app_state_ willTransitionToInitStage:refreshStage];
+
+  second_run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kStartupWaitDurationCompletedHistogram, 1);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionNeverStartedMetrics) {
+  // Test that the startup wait duration is recorded when execution times out
+  // while pending (i.e. before the app is ready).
+  base::HistogramTester histogram_tester;
+
+  [app_state_
+      updateInitStage:AppInitStage::kBrowserObjectsForBackgroundHandlers];
+
+  TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
+  [agent_ addAppRefreshProvider:provider];
+
+  OCMStub([task_mock_ setTaskCompletedWithSuccess:NO]);
+
+  SimulateAppBackgrounding();
+  InvokeTaskHandlerThen(run_loop_.QuitClosure());
+  run_loop_.Run();
+  // Ensure the dispatched handleExecutionForTask block runs on the main thread.
+  // This is signaled by the task request count being incremented (once for
+  // SimulateAppBackgrounding, once for handleExecutionForTask).
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return task_request_count_ >= 2;
+      }));
+
+  histogram_tester.ExpectTotalCount(kStartupWaitDurationNeverStartedHistogram,
+                                    0);
+
+  ExpireTask();
+  base::RunLoop second_run_loop;
+  audience_.runLoop = &second_run_loop;
+  second_run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kStartupWaitDurationNeverStartedHistogram,
+                                    1);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionTimeoutMetrics) {
+  // Test that the startup wait duration is recorded when execution starts but
+  // then times out.
+  base::HistogramTester histogram_tester;
+
+  [app_state_
+      updateInitStage:AppInitStage::kBrowserObjectsForBackgroundHandlers];
+
+  // Use a prolonged task so we can control when it finishes (or doesn't).
+  TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
+  provider.injectedTask = [[ProlongedTask alloc] init];
+  [agent_ addAppRefreshProvider:provider];
+
+  OCMStub([task_mock_ setTaskCompletedWithSuccess:NO]);
+
+  SimulateAppBackgrounding();
+  InvokeTaskHandlerThen(run_loop_.QuitClosure());
+  run_loop_.Run();
+  // Ensure the dispatched handleExecutionForTask block runs on the main thread.
+  // This is signaled by the task request count being incremented (once for
+  // SimulateAppBackgrounding, once for handleExecutionForTask).
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^bool {
+        return task_request_count_ >= 2;
+      }));
+
+  histogram_tester.ExpectTotalCount(kStartupWaitDurationTimeoutHistogram, 0);
+
+  base::RunLoop second_run_loop;
+  audience_.runLoop = &second_run_loop;
+
+  // Transition to ready state to start execution.
+  AppInitStage refreshStage =
+      NextAppInitStage(AppInitStage::kBrowserObjectsForBackgroundHandlers);
+  [app_state_ updateInitStage:refreshStage];
+  [agent_ appState:app_state_ willTransitionToInitStage:refreshStage];
+
+  // Now the task is running. We simulate a timeout.
+  ExpireTask();
+
+  second_run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(kStartupWaitDurationTimeoutHistogram, 1);
 }
