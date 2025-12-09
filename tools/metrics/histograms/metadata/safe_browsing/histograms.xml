@@ -475,17 +475,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.CheckUrl.IsDocumentCheckPrefetch"
-    enum="BooleanIsPrefetch" expires_after="2025-12-14">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    When a kDocument Safe Browsing URL check completes, logs whether the
-    triggering load flags were net::LOAD_PREFETCH, which corresponds to
-    rel=prefetch.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.CheckUrl.Timeout" enum="BooleanTimedOut"
     expires_after="2026-05-10">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still

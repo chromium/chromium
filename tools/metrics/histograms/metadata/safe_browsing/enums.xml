@@ -119,11 +119,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Ineligible"/>
 </enum>
 
-<enum name="BooleanIsPrefetch">
-  <int value="0" label="Is not prefetch"/>
-  <int value="1" label="Is prefetch"/>
-</enum>
-
 <enum name="BooleanManagedPref">
   <int value="0" label="Unmanaged Pref"/>
   <int value="1" label="Managed Pref"/>
