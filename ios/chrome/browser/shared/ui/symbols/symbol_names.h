@@ -14,51 +14,23 @@
 /// Import `symbols.h` and not this file directly.
 /// ****************************************************************************
 
-// Branded image names.
-// TODO(crbug.com/465345831): Move image names out of this file.
+// ****************************************************************************
+// Branded symbol names.
+// ****************************************************************************
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-extern NSString* const kChromeAIHubHeaderImage;
-extern NSString* const kChromeDefaultBrowserIllustrationImage;
-extern NSString* const kChromeDefaultBrowserScreenBannerImage;
-extern NSString* const kChromeGuidedTourBannerImage;
-extern NSString* const kChromeNotificationsOptInBannerImage;
-extern NSString* const kChromeNotificationsOptInBannerLandscapeImage;
-extern NSString* const kChromeSearchEngineChoiceIcon;
-extern NSString* const kChromeSigninBannerImage;
-extern NSString* const kChromeSigninPromoLogoImage;
-extern NSString* const kGeminiBrandedLogoImage;
 extern NSString* const kGeminiFullSymbol;
+extern NSString* const kGeminiBrandedLogoSymbol;
 extern NSString* const kGoogleDriveSymbol;
 extern NSString* const kGoogleFullSymbol;
 extern NSString* const kGoogleIconSymbol;
-extern NSString* const kGoogleSearchEngineLogoImage;
 extern NSString* const kGoogleShieldSymbol;
 extern NSString* const kGoogleMapsSymbol;
-extern NSString* const kGooglePasswordManagerWidgetPromoImage;
-extern NSString* const kGooglePasswordManagerWidgetPromoDisabledImage;
 extern NSString* const kGooglePaySymbol;
 extern NSString* const kGooglePhotosSymbol;
-extern NSString* const kGoogleSettingsPasswordsInOtherAppsBannerImage;
-extern NSString* const kLensKeyboardAccessoryImage;
 extern NSString* const kMulticolorChromeballSymbol;
 extern NSString* const kPageInsightsSymbol;
-extern NSString* const kFedexCarrierImage;
-extern NSString* const kUPSCarrierImage;
-extern NSString* const kUSPSCarrierImage;
 #else
-extern NSString* const kChromiumAIHubHeaderImage;
-extern NSString* const kChromiumDefaultBrowserIllustrationImage;
-extern NSString* const kChromiumDefaultBrowserScreenBannerImage;
-extern NSString* const kChromiumGuidedTourBannerImage;
-extern NSString* const kChromiumNotificationsOptInBannerImage;
-extern NSString* const kChromiumNotificationsOptInBannerLandscapeImage;
-extern NSString* const kChromiumPasswordManagerWidgetPromoImage;
-extern NSString* const kChromiumPasswordManagerWidgetPromoDisabledImage;
-extern NSString* const kChromiumSearchEngineChoiceIcon;
-extern NSString* const kChromiumSettingsPasswordsInOtherAppsBannerImage;
-extern NSString* const kChromiumSigninBannerImage;
-extern NSString* const kChromiumSigninPromoLogoImage;
-extern NSString* const kGeminiNonBrandedLogoImage;
+extern NSString* const kGeminiNonBrandedLogoSymbol;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
 // ****************************************************************************
@@ -103,8 +75,6 @@ extern NSString* const kMyDriveSymbol;
 extern NSString* const kSharedDrivesSymbol;
 extern NSString* const kEllipsisSquareFillSymbol;
 extern NSString* const kMagnifyingglassSparkSymbol;
-extern NSString* const kPasswordManagerTrustedVaultWidgetPromoImage;
-extern NSString* const kPasswordManagerTrustedVaultWidgetPromoDisabledImage;
 extern NSString* const kPhoneSparkleSymbol;
 extern NSString* const kTextSearchSymbol;
 extern NSString* const kIncognitoRectangle;

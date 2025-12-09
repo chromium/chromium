@@ -20,6 +20,7 @@ source_set("mediator") {
     "//ios/chrome/browser/ntp/search_engine_logo/ui",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/ui/image",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/url_loading/model",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/image/image_names.h"
 
 NSString* const kPasswordsTableViewID = @"PasswordsTableViewID";
 NSString* const kPasswordsSearchBarID = @"PasswordsSearchBar";

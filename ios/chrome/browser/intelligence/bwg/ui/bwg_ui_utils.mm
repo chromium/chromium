@@ -13,9 +13,9 @@
 
 + (UIImage*)brandedGeminiSymbolWithPointSize:(CGFloat)pointSize {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  return CustomSymbolWithPointSize(kGeminiBrandedLogoImage, pointSize);
+  return CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol, pointSize);
 #else
-  return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage, pointSize);
+  return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoSymbol, pointSize);
 #endif
 }
 

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_button.h"
 #import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_element.h"
+#import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_utils.h"

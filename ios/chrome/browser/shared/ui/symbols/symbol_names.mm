@@ -4,62 +4,23 @@
 
 #import "ios/chrome/browser/shared/ui/symbols/symbol_names.h"
 
+// ****************************************************************************
 // Branded symbol names.
+// ****************************************************************************
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-NSString* const kChromeDefaultBrowserIllustrationImage =
-    @"chrome_default_browser_illustration";
-NSString* const kChromeDefaultBrowserScreenBannerImage =
-    @"chrome_default_browser_screen_banner";
-NSString* const kChromeGuidedTourBannerImage = @"chrome_guided_tour_banner";
-NSString* const kChromeNotificationsOptInBannerImage =
-    @"chrome_notifications_opt_in_banner";
-NSString* const kChromeNotificationsOptInBannerLandscapeImage =
-    @"chrome_notifications_opt_in_banner_landscape";
-NSString* const kChromeSearchEngineChoiceIcon =
-    @"chrome_search_engine_choice_icon";
-NSString* const kChromeSigninBannerImage = @"chrome_signin_banner";
-NSString* const kChromeSigninPromoLogoImage = @"chrome_signin_promo_logo";
-NSString* const kGeminiBrandedLogoImage = @"gemini_logo";
 NSString* const kGeminiFullSymbol = @"gemini_full";
+NSString* const kGeminiBrandedLogoSymbol = @"gemini_logo";
 NSString* const kGoogleDriveSymbol = @"google_drive";
 NSString* const kGoogleFullSymbol = @"google_full";
 NSString* const kGoogleIconSymbol = @"google_icon";
-NSString* const kGoogleSearchEngineLogoImage = @"google_logo";
 NSString* const kGoogleShieldSymbol = @"google_shield";
 NSString* const kGoogleMapsSymbol = @"google_maps";
-NSString* const kGooglePasswordManagerWidgetPromoImage =
-    @"google_password_manager_widget_promo";
-NSString* const kGooglePasswordManagerWidgetPromoDisabledImage =
-    @"google_password_manager_widget_promo_disabled";
 NSString* const kGooglePaySymbol = @"google_pay";
 NSString* const kGooglePhotosSymbol = @"google_photos";
-NSString* const kGoogleSettingsPasswordsInOtherAppsBannerImage =
-    @"google_settings_passwords_in_other_apps_banner";
 NSString* const kMulticolorChromeballSymbol = @"multicolor_chromeball";
 NSString* const kPageInsightsSymbol = @"page_insights";
-// TODO(crbug.com/40934931): Move PNG images out of this file.
-NSString* const kFedexCarrierImage = @"parcel_tracking_carrier_fedex";
-NSString* const kUPSCarrierImage = @"parcel_tracking_carrier_ups";
-NSString* const kUSPSCarrierImage = @"parcel_tracking_carrier_usps";
 #else
-NSString* const kChromiumDefaultBrowserScreenBannerImage =
-    @"chromium_default_browser_screen_banner";
-NSString* const kChromiumGuidedTourBannerImage = @"chromium_guided_tour_banner";
-NSString* const kChromiumNotificationsOptInBannerImage =
-    @"chromium_notifications_opt_in_banner";
-NSString* const kChromiumNotificationsOptInBannerLandscapeImage =
-    @"chromium_notifications_opt_in_banner_landscape";
-NSString* const kChromiumPasswordManagerWidgetPromoImage =
-    @"chromium_password_manager_widget_promo";
-NSString* const kChromiumPasswordManagerWidgetPromoDisabledImage =
-    @"chromium_password_manager_widget_promo_disabled";
-NSString* const kChromiumSearchEngineChoiceIcon =
-    @"chromium_search_engine_choice_icon";
-NSString* const kChromiumSettingsPasswordsInOtherAppsBannerImage =
-    @"chromium_settings_passwords_in_other_apps_banner";
-NSString* const kChromiumSigninBannerImage = @"chromium_signin_banner";
-NSString* const kChromiumSigninPromoLogoImage = @"chromium_signin_promo_logo";
-NSString* const kGeminiNonBrandedLogoImage = @"sparkle";
+NSString* const kGeminiNonBrandedLogoSymbol = @"sparkle";
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
 // ****************************************************************************
@@ -105,10 +66,6 @@ NSString* const kMyDriveSymbol = @"my_drive";
 NSString* const kSharedDrivesSymbol = @"shared_drives";
 NSString* const kEllipsisSquareFillSymbol = @"ellipsis_square_fill";
 NSString* const kMagnifyingglassSparkSymbol = @"magnifyingglass_spark";
-NSString* const kPasswordManagerTrustedVaultWidgetPromoImage =
-    @"password_manager_trusted_vault_widget_promo";
-NSString* const kPasswordManagerTrustedVaultWidgetPromoDisabledImage =
-    @"password_manager_trusted_vault_widget_promo_disabled";
 NSString* const kPhoneSparkleSymbol = @"phone_sparkle";
 NSString* const kTextSearchSymbol = @"text_search";
 NSString* const kIncognitoRectangle = @"incognito_rectangle";

@@ -180,9 +180,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // Returns the branded version of the Gemini symbol.
 UIImage* GetBrandedGeminiSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  return CustomSettingsRootSymbol(kGeminiBrandedLogoImage);
+  return CustomSettingsRootSymbol(kGeminiBrandedLogoSymbol);
 #else
-  return DefaultSettingsRootSymbol(kGeminiNonBrandedLogoImage);
+  return DefaultSettingsRootSymbol(kGeminiNonBrandedLogoSymbol);
 #endif
 }
 

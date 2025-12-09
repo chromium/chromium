@@ -149,10 +149,10 @@ void ConfigureButtonShadow(UIButton* button) {
     UIButtonConfiguration* askGeminiConfiguration = ButtonConfiguration();
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
     askGeminiConfiguration.image =
-        GetCustomAppBarSymbol(kGeminiBrandedLogoImage);
+        GetCustomAppBarSymbol(kGeminiBrandedLogoSymbol);
 #else
     askGeminiConfiguration.image =
-        GetCustomAppBarSymbol(kGeminiNonBrandedLogoImage);
+        GetDefaultAppBarSymbol(kGeminiNonBrandedLogoSymbol);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
     askGeminiConfiguration.title =

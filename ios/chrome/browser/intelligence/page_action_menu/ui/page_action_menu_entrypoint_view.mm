@@ -191,11 +191,11 @@ NSTimeInterval kAnimationDuration = 0.3;
 - (void)setEntrypointIconWithScale:(CGFloat)scale {
   if (IsDirectBWGEntryPoint()) {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-    [self setImage:CustomSymbolWithPointSize(kGeminiBrandedLogoImage,
+    [self setImage:CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol,
                                              kIconPointSize * scale)
           forState:UIControlStateNormal];
 #else
-    [self setImage:DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage,
+    [self setImage:DefaultSymbolWithPointSize(kGeminiNonBrandedLogoSymbol,
                                               kIconPointSize * scale)
           forState:UIControlStateNormal];
 #endif

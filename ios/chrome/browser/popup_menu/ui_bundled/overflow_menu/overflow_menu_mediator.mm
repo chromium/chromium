@@ -900,10 +900,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   __weak __typeof(self) weakSelf = self;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   BOOL isBrandedIcon = YES;
-  NSString* symbolName = kGeminiBrandedLogoImage;
+  NSString* symbolName = kGeminiBrandedLogoSymbol;
 #else
   BOOL isBrandedIcon = NO;
-  NSString* symbolName = kGeminiNonBrandedLogoImage;
+  NSString* symbolName = kGeminiNonBrandedLogoSymbol;
 #endif
   return
       [self createOverflowMenuActionWithName:l10n_util::GetNSString(

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_promo_view_controller.h"
 
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
