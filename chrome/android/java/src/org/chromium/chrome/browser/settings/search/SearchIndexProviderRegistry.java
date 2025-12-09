@@ -31,8 +31,6 @@ public final class SearchIndexProviderRegistry {
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.toolbar.adaptive.settings
                             .AdaptiveToolbarSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
-                    org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment
-                            .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment
