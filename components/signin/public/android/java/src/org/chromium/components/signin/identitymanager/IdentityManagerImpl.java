@@ -8,7 +8,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -19,8 +18,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
-
-import java.util.List;
 
 /** IdentityManager provides access to native IdentityManager's public API to java components. */
 @NullMarked
@@ -88,11 +85,8 @@ public class IdentityManagerImpl implements IdentityManager {
     }
 
     @Override
-    public void refreshAccountInfoIfStale(List<AccountInfo> accountInfos) {
-        for (AccountInfo accountInfo : accountInfos) {
-            IdentityManagerImplJni.get()
-                    .refreshAccountInfoIfStale(mNativeIdentityManager, accountInfo.getId());
-        }
+    public void refreshAccountInfoIfStale() {
+        IdentityManagerImplJni.get().refreshAccountInfoIfStale(mNativeIdentityManager);
     }
 
     @Override
@@ -182,9 +176,7 @@ public class IdentityManagerImpl implements IdentityManager {
 
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
 
-        // TODO(crbug.com/40284908): Remove the accountId parameter.
-        void refreshAccountInfoIfStale(
-                long nativeIdentityManager, @JniType("CoreAccountId") CoreAccountId accountId);
+        void refreshAccountInfoIfStale(long nativeIdentityManager);
 
         boolean isClearPrimaryAccountAllowed(long nativeIdentityManager);
     }

@@ -12,8 +12,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
-import java.util.List;
-
 /** IdentityManager provides access to native IdentityManager's public API to java components. */
 @NullMarked
 public interface IdentityManager {
@@ -73,11 +71,10 @@ public interface IdentityManager {
      */
     @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(String email);
 
-    /**
-     * Refreshes extended {@link AccountInfo} with image for all accounts with a refresh token or
-     * the given list of {@link AccountInfo} if the existing ones are stale.
-     */
-    void refreshAccountInfoIfStale(List<AccountInfo> accountInfos);
+    /** Refreshes extended {@link AccountInfo} with image for all accounts with a refresh token. */
+    // TODO(crbug.com/365057341): This doesn't need to be exposed in Java. Move this logic to
+    // native.
+    void refreshAccountInfoIfStale();
 
     /** Returns true if the primary account can be cleared/removed from the browser. */
     boolean isClearPrimaryAccountAllowed();

@@ -65,7 +65,7 @@ public class FakeIdentityManager implements IdentityManager {
     }
 
     @Override
-    public void refreshAccountInfoIfStale(List<AccountInfo> accountInfos) {}
+    public void refreshAccountInfoIfStale() {}
 
     @Override
     public boolean isClearPrimaryAccountAllowed() {

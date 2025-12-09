@@ -493,10 +493,11 @@ void IdentityManager::RefreshAccountInfoIfStale(
   account_fetcher_service_->RefreshAccountInfoIfStale(account_id);
 }
 
-void IdentityManager::RefreshAccountInfoIfStale(
-    JNIEnv* env,
-    const CoreAccountId& core_account_id) {
-  RefreshAccountInfoIfStale(core_account_id);
+void IdentityManager::RefreshAccountInfoIfStale(JNIEnv* env) {
+  std::vector<CoreAccountInfo> accounts = GetAccountsWithRefreshTokens();
+  for (const CoreAccountInfo& account : accounts) {
+    RefreshAccountInfoIfStale(account.account_id);
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>

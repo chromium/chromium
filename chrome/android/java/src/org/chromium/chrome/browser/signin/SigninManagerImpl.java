@@ -666,7 +666,8 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         }
         mIdentityMutator.seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                 accounts, primaryAccountId);
-        mIdentityManager.refreshAccountInfoIfStale(accounts);
+        // TODO(crbug.com/365057341): move this logic to the native seed and reload method.
+        mIdentityManager.refreshAccountInfoIfStale();
         // Should be called after re-seeding accounts to make sure that we get the new email.
         maybeUpdateLegacyPrimaryAccountEmail();
     }
