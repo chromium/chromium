@@ -9,7 +9,6 @@ import android.view.KeyEvent;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 
-import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -30,14 +29,10 @@ import org.chromium.ui.base.WindowAndroid;
 @ServiceImpl(ExtensionToolbarCoordinator.class)
 public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordinator {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private final Callback<@Nullable Profile> mProfileUpdatedCallback =
-            (profile) -> mCurrentProfile = profile;
 
     private ObservableSupplier<@Nullable Profile> mProfileSupplier;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
     private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
-
-    private @Nullable Profile mCurrentProfile;
 
     @Override
     public void initializeWithNative(
@@ -50,7 +45,6 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
         mProfileSupplier = profileSupplier;
-        mProfileSupplier.addObserver(mProfileUpdatedCallback);
 
         extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
         LinearLayout container = (LinearLayout) extensionToolbarStub.inflate();
@@ -66,7 +60,6 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                 new ExtensionsMenuCoordinator(
                         context,
                         container.findViewById(R.id.extensions_menu_button),
-                        container.findViewById(R.id.extensions_divider),
                         themeColorProvider,
                         task,
                         profileSupplier,
@@ -78,7 +71,6 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     public void destroy() {
         mExtensionsMenuCoordinator.destroy();
         mExtensionActionListCoordinator.destroy();
-        mProfileSupplier.removeObserver(mProfileUpdatedCallback);
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
@@ -89,11 +81,12 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             return false;
         }
 
-        if (mCurrentProfile == null) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) {
             return false;
         }
 
-        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(mCurrentProfile);
+        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(profile);
         if (bridge == null) {
             return false;
         }

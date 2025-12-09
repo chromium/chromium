@@ -33,12 +33,10 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
@@ -86,7 +84,6 @@ public class ExtensionsMenuMediatorTest {
     @Mock private ChromeAndroidTask mTask;
     @Mock private Profile mProfile;
     @Mock private Runnable mDataReadyCallback;
-    @Mock private Callback<Boolean> mOnExtensionsSupportedCallback;
     @Mock private WebContents mWebContents;
     @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
     @Mock private MenuModelBridge mMenuModelBridge;
@@ -145,7 +142,6 @@ public class ExtensionsMenuMediatorTest {
                         mCurrentTabSupplier,
                         mModels,
                         mDataReadyCallback,
-                        mOnExtensionsSupportedCallback,
                         null);
 
         // Wait for the main thread to settle.
@@ -155,23 +151,6 @@ public class ExtensionsMenuMediatorTest {
     @After
     public void tearDown() {
         mMediator.destroy();
-    }
-
-    @Test
-    public void testExtensionsSupportedCallback() {
-        Mockito.clearInvocations(mOnExtensionsSupportedCallback);
-        mProfileSupplier.set(mProfile);
-        shadowOf(Looper.getMainLooper()).idle();
-        verify(mOnExtensionsSupportedCallback).onResult(true);
-
-        mProfileSupplier.set(null);
-        shadowOf(Looper.getMainLooper()).idle();
-        verify(mOnExtensionsSupportedCallback).onResult(false);
-
-        mUiBackendRule.setEnabled(false);
-        mProfileSupplier.set(mProfile);
-        shadowOf(Looper.getMainLooper()).idle();
-        verify(mOnExtensionsSupportedCallback).onResult(false);
     }
 
     @Test
