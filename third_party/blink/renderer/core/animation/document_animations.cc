@@ -95,8 +95,19 @@ void DocumentAnimations::UpdateTriggerAttachment(
     return;
   }
 
-  const Element* element = animation.OwningElement();
+  const Element* owning_element = animation.OwningElement();
+  if (!owning_element) {
+    return;
+  }
 
+  // Map to accumulate all scoped triggers known to ancestors (who might be
+  // aware of triggers that are outside the owning_element's ancestry but in the
+  // same trigger-scope - such a trigger might come later in tree-order and
+  // therefore be the correct candidate).
+  TriggerScopedNameMap* ancestors_named_triggers =
+      MakeGarbageCollected<TriggerScopedNameMap>();
+
+  const Element* element = owning_element;
   while (element) {
     const LayoutBox* element_box = element->GetLayoutBox();
     if (!element_box) {
@@ -105,24 +116,28 @@ void DocumentAnimations::UpdateTriggerAttachment(
     }
 
     for (const auto& fragment : element_box->PhysicalFragments()) {
-      const GCedNamedAnimationTriggerMap* named_triggers =
-          fragment.NamedTriggers();
+      const TriggerScopedNameMap* named_triggers = fragment.NamedTriggers();
       if (!named_triggers) {
         continue;
       }
 
-      for (auto& entry : *named_triggers) {
-        AnimationTrigger* trigger = entry.value.Get();
-
-        for (auto attachment : *animation_trigger_attachments) {
-          if (attachment->TriggerName()->GetName() == entry.key->GetName()) {
-            attach_function(*trigger, *attachment);
-          }
-        }
+      for (const auto& entry : *named_triggers) {
+        ancestors_named_triggers->Set(entry.key, entry.value);
       }
     }
 
     element = element->parentElement();
+  }
+
+  for (const auto& attachment : *animation_trigger_attachments) {
+    TriggerScopedName* trigger_scoped_name =
+        ToTriggerScopedName(*attachment->TriggerName(), *owning_element);
+
+    auto it = ancestors_named_triggers->find(trigger_scoped_name);
+    if (it != ancestors_named_triggers->end()) {
+      AnimationTrigger* trigger = it->value;
+      attach_function(*trigger, *attachment);
+    }
   }
 }
 

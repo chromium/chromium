@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
+#include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/layout/anchor_map.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
@@ -117,7 +117,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
         const GCedHeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
         const GCedHeapVector<Member<Element>>* snap_areas,
         const Member<const LayoutObject> scroll_initial_target,
-        const GCedNamedAnimationTriggerMap* named_triggers)
+        const TriggerScopedNameMap* named_triggers)
         : sticky_descendants(sticky_descendants),
           snap_areas(snap_areas),
           scroll_initial_target(scroll_initial_target),
@@ -127,7 +127,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
         sticky_descendants;
     Member<const GCedHeapVector<Member<Element>>> snap_areas;
     Member<const LayoutObject> scroll_initial_target;
-    Member<const GCedNamedAnimationTriggerMap> named_triggers;
+    Member<const TriggerScopedNameMap> named_triggers;
   };
 
   PhysicalFragment(FragmentBuilder* builder,
@@ -730,7 +730,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return oof_data_->GetAnchorMap();
   }
 
-  const GCedNamedAnimationTriggerMap* NamedTriggers() const {
+  const TriggerScopedNameMap* NamedTriggers() const {
     return propagated_data_ ? propagated_data_->named_triggers.Get() : nullptr;
   }
 

@@ -1354,7 +1354,7 @@ class CSSAnimationsTriggerTest : public CSSAnimationsTest {
       if (!fragment.NamedTriggers()) {
         continue;
       }
-      return fragment.NamedTriggers()->begin()->key;
+      return fragment.NamedTriggers()->begin()->key->GetScopedNameForTesting();
     }
     return nullptr;
   }

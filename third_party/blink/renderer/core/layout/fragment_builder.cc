@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
-#include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -1155,14 +1154,48 @@ void FragmentBuilder::PropagateSizeDependentData() {
   children_with_size_dependent_propagation_.clear();
 }
 
-void FragmentBuilder::PropagateNamedTriggers(const PhysicalFragment& child) {
-  const GCedNamedAnimationTriggerMap* names_map = child.NamedTriggers();
-  if (!names_map) {
+void FragmentBuilder::SetNamedTrigger(
+    const TriggerScopedName& trigger_scoped_name,
+    AnimationTrigger* trigger) {
+  TriggerScopedNameMap& named_triggers = EnsureNamedTriggers();
+
+  auto it = named_triggers.find(&trigger_scoped_name);
+  if (it == named_triggers.end()) {
+    named_triggers.Set(&trigger_scoped_name, trigger);
     return;
   }
 
-  for (const auto& entry : *names_map) {
-    EnsureNamedTriggers().Set(entry.key, entry.value);
+  if (it->value == trigger) {
+    // If we have the same name, scope and trigger, there is nothing to update.
+    // We can get here with elements that generate multiple fragments.
+    // IsBeforeInPreOrder below doesn't like looking at the same LayoutObjects.
+    return;
+  }
+
+  DCHECK(trigger->OwningElement());
+  DCHECK(trigger->OwningElement()->GetLayoutObject());
+  DCHECK(it->value->OwningElement());
+  DCHECK(it->value->OwningElement()->GetLayoutObject());
+  const LayoutObject* existing_layout_object =
+      it->value->OwningElement()->GetLayoutObject();
+
+  if (existing_layout_object->IsBeforeInPreOrder(
+          *trigger->OwningElement()->GetLayoutObject())) {
+    named_triggers.Set(&trigger_scoped_name, trigger);
+    it = named_triggers.find(&trigger_scoped_name);
+    DCHECK_EQ(it->value->OwningElement()->GetLayoutObject(),
+              trigger->OwningElement()->GetLayoutObject());
+  }
+}
+
+void FragmentBuilder::PropagateNamedTriggers(const PhysicalFragment& child) {
+  if (!child.NamedTriggers()) {
+    return;
+  }
+
+  const TriggerScopedNameMap* trigger_scoped_name_map = child.NamedTriggers();
+  for (const auto& entry : *trigger_scoped_name_map) {
+    SetNamedTrigger(*entry.key, entry.value);
   }
 }
 
@@ -1177,20 +1210,22 @@ void FragmentBuilder::CreateNamedTriggersForSelf() {
   }
 
   if (const CSSAnimationData* data = Style().Animations()) {
-    GCedNamedAnimationTriggerMap& named_triggers = EnsureNamedTriggers();
     for (const auto& name : data->TimelineTriggerNameList()) {
       if (name) {
         AnimationTrigger* trigger = element->NamedTrigger(name);
         DCHECK(trigger);
-        named_triggers.Set(name, trigger);
+
+        TriggerScopedName* trigger_scoped_name =
+            ToTriggerScopedName(*name, *element);
+        SetNamedTrigger(*trigger_scoped_name, trigger);
       }
     }
   }
 }
 
-GCedNamedAnimationTriggerMap& FragmentBuilder::EnsureNamedTriggers() {
+TriggerScopedNameMap& FragmentBuilder::EnsureNamedTriggers() {
   if (!named_triggers_) {
-    named_triggers_ = MakeGarbageCollected<GCedNamedAnimationTriggerMap>();
+    named_triggers_ = MakeGarbageCollected<TriggerScopedNameMap>();
   }
   return *named_triggers_;
 }

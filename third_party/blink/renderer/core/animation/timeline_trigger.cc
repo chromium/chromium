@@ -112,12 +112,15 @@ TimelineTrigger::TimelineTrigger(AnimationTimeline* timeline,
                                  RangeBoundary* range_start,
                                  RangeBoundary* range_end,
                                  RangeBoundary* exit_range_start,
-                                 RangeBoundary* exit_range_end)
+                                 RangeBoundary* exit_range_end,
+                                 Element* owning_element)
     : timeline_(timeline),
       range_start_(range_start),
       range_end_(range_end),
       exit_range_start_(exit_range_start),
       exit_range_end_(exit_range_end) {
+  owning_element_ = owning_element;
+
   if (timeline_) {
     timeline_->GetDocument()->GetDocumentAnimations().AddAnimationTrigger(
         *this);

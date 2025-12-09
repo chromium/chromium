@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
+#include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
 #include "third_party/blink/renderer/core/layout/anchor_map.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/break_appeal.h"
@@ -586,7 +586,9 @@ class CORE_EXPORT FragmentBuilder {
 
   void PropagateNamedTriggers(const PhysicalFragment& child);
   void CreateNamedTriggersForSelf();
-  GCedNamedAnimationTriggerMap& EnsureNamedTriggers();
+  TriggerScopedNameMap& EnsureNamedTriggers();
+  void SetNamedTrigger(const TriggerScopedName& trigger_scoped_name,
+                       AnimationTrigger* trigger);
 
   LayoutInputNode node_;
   const ConstraintSpace& space_;
@@ -607,7 +609,7 @@ class CORE_EXPORT FragmentBuilder {
   GCedHeapVector<Member<Element>>* snap_areas_ = nullptr;
   // Animation triggers belonging to the element to which this fragment belongs,
   // or an element in its subtree.
-  GCedNamedAnimationTriggerMap* named_triggers_ = nullptr;
+  TriggerScopedNameMap* named_triggers_ = nullptr;
   // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target
   const LayoutObject* scroll_start_target_ = nullptr;
   AnchorMap* anchor_map_ = nullptr;

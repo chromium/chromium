@@ -20,6 +20,7 @@
 namespace blink {
 
 class Animation;
+class Element;
 class ExceptionState;
 
 class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
@@ -61,6 +62,8 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override;
 
+  Element* OwningElement() { return owning_element_.Get(); }
+
  protected:
   AnimationBehaviorMap& BehaviorMap() { return animation_behavior_map_; }
   void PerformActivate();
@@ -72,6 +75,8 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   // The (main thread) cc::AnimationTrigger corresponding to |this|. The impl
   // thread version is cloned from this.
   scoped_refptr<cc::AnimationTrigger> compositor_trigger_;
+
+  WeakMember<Element> owning_element_;
 
  private:
   virtual void WillAddAnimation(Animation* animation,

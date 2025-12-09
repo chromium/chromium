@@ -674,6 +674,9 @@ const CSSValue& CSSValue::PopulateWithTreeScope(
       return To<CSSMathFunctionValue>(this)->PopulateWithTreeScope(tree_scope);
     case kValueListClass:
       return To<CSSValueList>(this)->PopulateWithTreeScope(tree_scope);
+    case kTriggerAttachmentClass:
+      return To<cssvalue::CSSTriggerAttachmentValue>(this)
+          ->PopulateWithTreeScope(tree_scope);
     default:
       NOTREACHED();
   }

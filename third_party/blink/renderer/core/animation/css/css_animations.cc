@@ -1667,10 +1667,11 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
                               existing_trigger, new_range_start, new_range_end,
                               new_exit_range_start, new_exit_range_end);
 
-  return need_new_trigger ? MakeGarbageCollected<TimelineTrigger>(
-                                new_timeline, new_range_start, new_range_end,
-                                new_exit_range_start, new_exit_range_end)
-                          : existing_trigger;
+  return need_new_trigger
+             ? MakeGarbageCollected<TimelineTrigger>(
+                   new_timeline, new_range_start, new_range_end,
+                   new_exit_range_start, new_exit_range_end, element)
+             : existing_trigger;
 }
 
 CSSAnimations::CSSAnimations() = default;

@@ -34,7 +34,9 @@ class CSSTriggerAttachmentValue : public CSSValue {
       : CSSValue(kTriggerAttachmentClass),
         trigger_name_(trigger_name),
         enter_behavior_(enter_behavior),
-        exit_behavior_(exit_behavior) {}
+        exit_behavior_(exit_behavior) {
+    needs_tree_scope_population_ = true;
+  }
 
   const CSSCustomIdentValue* TriggerName() const { return trigger_name_.Get(); }
   const CSSIdentifierValue* EnterBehavior() const {
@@ -47,6 +49,9 @@ class CSSTriggerAttachmentValue : public CSSValue {
   String CustomCSSText() const;
   bool Equals(const CSSTriggerAttachmentValue&) const;
   void TraceAfterDispatch(blink::Visitor*) const;
+
+  const CSSTriggerAttachmentValue& PopulateWithTreeScope(
+      const TreeScope* tree_scope) const;
 
  private:
   Member<const CSSCustomIdentValue> trigger_name_;

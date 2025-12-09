@@ -39,7 +39,8 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
                   RangeBoundary* range_start,
                   RangeBoundary* range_end,
                   RangeBoundary* exit_range_start,
-                  RangeBoundary* exit_range_end);
+                  RangeBoundary* exit_range_end,
+                  Element* owning_element = nullptr);
   static TimelineTrigger* Create(ExecutionContext* execution_context,
                                  TimelineTriggerOptions* options,
                                  ExceptionState& exception_state);
