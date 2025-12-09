@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/test/browser_task_environment.h"
@@ -107,6 +108,7 @@ class ClassroomPageHandlerImplTest : public testing::Test {
   std::unique_ptr<GaiaUrlsOverriderForTesting> gaia_urls_overrider_;
   testing::StrictMock<TestRequestHandler> request_handler_;
   std::unique_ptr<ClassroomPageHandlerImpl> classroom_handler_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(ClassroomPageHandlerImplTest, ListAllCourses) {
@@ -154,6 +156,7 @@ TEST_F(ClassroomPageHandlerImplTest, ListAllCourses) {
 }
 
 TEST_F(ClassroomPageHandlerImplTest, ListCoursesOnHttpError) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(request_handler(), HandleRequest(testing::_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
@@ -170,7 +173,10 @@ TEST_F(ClassroomPageHandlerImplTest, ListCoursesOnHttpError) {
       "foo",
       google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
   run_loop.Run();
-
+  histogram_tester.ExpectTotalCount("Ash.Boca.ListCourses.ErrorCode", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Boca.ListCourses.ErrorCode",
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, 1);
   ASSERT_EQ(response.size(), 0u);
 }
 
@@ -339,6 +345,7 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsOnHttpError) {
                                                         course_callback.Get()));
   course_run_loop.Run();
 
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(request_handler(), HandleRequest(testing::_))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
@@ -357,6 +364,10 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsOnHttpError) {
   run_loop.Run();
 
   ASSERT_EQ(response.size(), 0u);
+  histogram_tester.ExpectTotalCount("Ash.Boca.ListStudents.ErrorCode", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Boca.ListStudents.ErrorCode",
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, 1);
 }
 
 TEST_F(ClassroomPageHandlerImplTest, ListStudentsMultiplePages) {
@@ -775,6 +786,7 @@ TEST_P(ClassroomPageHandlerImplTestWithFlag, ListAssignmentsOnHttpError) {
                                                         course_callback.Get()));
   course_run_loop.Run();
 
+  base::HistogramTester histogram_tester;
   if (is_material_api_enabled) {
     EXPECT_CALL(request_handler(),
                 HandleRequest(Field(&HttpRequest::relative_url,
@@ -811,6 +823,11 @@ TEST_P(ClassroomPageHandlerImplTestWithFlag, ListAssignmentsOnHttpError) {
       course_response.at(0)->id,
       google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
   run_loop.Run();
+
+  histogram_tester.ExpectTotalCount("Ash.Boca.ListCourseWorks.ErrorCode", 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Boca.ListCourseWorks.ErrorCode",
+      google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR, 1);
 
   if (is_material_api_enabled) {
     ASSERT_EQ(response.size(), 1u);

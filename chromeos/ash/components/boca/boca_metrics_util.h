@@ -52,6 +52,10 @@ inline constexpr char kBocaSpotlightSetViewScreenSessionActive[] =
 inline constexpr char kBocaGoogleApiCallErrorCodeTemplate[] =
     "Ash.Boca.$1.ErrorCode";
 inline constexpr char kBocaGetSession[] = "GetSession";
+inline constexpr char kListCourses[] = "ListCourses";
+inline constexpr char kListStudents[] = "ListStudents";
+inline constexpr char kListCourseWorks[] = "ListCourseWorks";
+inline constexpr char kListCourseWorkMaterials[] = "ListCourseWorkMaterials";
 inline constexpr char kBocaCreateSession[] = "CreateSession";
 inline constexpr char kBocaEndSession[] = "EndSession";
 inline constexpr char kBocaUpdateSession[] = "UpdateSession";
@@ -175,6 +179,19 @@ void RecordSetViewScreenSessionActiveErrorCode(
 // Records the error code of the spotlight Google Api calls.
 void RecordSpotlightGoogleApiErrorCode(const std::string& name,
                                        google_apis::ApiErrorCode error_code);
+
+// Records the error code of Classroom ListCourses API
+void RecordListCoursesErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error code of Classroom ListStudents API
+void RecordListStudentsErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error  code of Classroom ListCourseWorks API
+void RecordListCourseWorksErrorCode(google_apis::ApiErrorCode error_code);
+
+// Records the error  code of Classroom ListMaterials API
+void RecordListCourseWorkMaterialsErrorCode(
+    google_apis::ApiErrorCode error_code);
 
 // Records the error code of the GetSession calls.
 void RecordGetSessionErrorCode(google_apis::ApiErrorCode error_code);

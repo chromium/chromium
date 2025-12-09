@@ -126,6 +126,23 @@ void RecordSpotlightGoogleApiErrorCode(const std::string& name,
       error_code);
 }
 
+void RecordListCoursesErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kListCourses, error_code);
+}
+
+void RecordListStudentsErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kListStudents, error_code);
+}
+
+void RecordListCourseWorksErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kListCourseWorks, error_code);
+}
+
+void RecordListCourseWorkMaterialsErrorCode(
+    google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kListCourseWorkMaterials, error_code);
+}
+
 void RecordGetSessionErrorCode(google_apis::ApiErrorCode error_code) {
   RecordGoogleApiErrorCode(kBocaGetSession, error_code);
 }
