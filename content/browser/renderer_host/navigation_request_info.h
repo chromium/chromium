@@ -10,7 +10,6 @@
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
@@ -51,7 +50,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       bool is_pdf,
       int initiator_process_id,
       std::optional<blink::DocumentToken> initiator_document_token,
-      const GlobalRenderFrameHostId& previous_render_frame_host_id,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           prefetch_serving_page_metrics_container,
       bool allow_cookies_from_browser,
@@ -140,11 +138,6 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // The initiator document's token and its process ID.
   const int initiator_process_id;
   const std::optional<blink::DocumentToken> initiator_document_token;
-
-  // The previous document's RenderFrameHostId, used for speculation rules
-  // prefetch.
-  // This corresponds to `NavigationRequest::GetPreviousRenderFrameHostId()`.
-  const GlobalRenderFrameHostId previous_render_frame_host_id;
 
   // For per-navigation metrics of speculation rules prefetch.
   base::WeakPtr<PrefetchServingPageMetricsContainer>
