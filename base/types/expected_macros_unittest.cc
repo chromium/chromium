@@ -338,6 +338,33 @@ TEST(AssignOrReturn, OptionalWorksWithLambda) {
   EXPECT_EQ(phase, 2);
 }
 
+TEST(AssignOrReturn, OptionalWorksWithDifferentTypes) {
+  int phase = 0;
+  const auto func = [&]() -> std::optional<std::string> {
+    phase = 1;
+    ASSIGN_OR_RETURN([[maybe_unused]] int value1, ReturnNullopt());
+    phase = 2;
+    return "";
+  };
+
+  EXPECT_EQ(func(), std::nullopt);
+  EXPECT_EQ(phase, 1);
+}
+
+TEST(AssignOrReturn, UniquePtrWorksWithNullptrAdapter) {
+  int phase = 0;
+  const auto func = [&]() -> std::unique_ptr<int> {
+    phase = 1;
+    ASSIGN_OR_RETURN(int value, ReturnError("ERROR"),
+                     [](auto&&) { return nullptr; });
+    phase = 2;
+    return std::make_unique<int>(value);
+  };
+
+  EXPECT_EQ(func(), nullptr);
+  EXPECT_EQ(phase, 1);
+}
+
 TEST(AssignOrReturn, WorksWithMoveOnlyType) {
   const auto func = []() -> std::unique_ptr<int> {
     ASSIGN_OR_RETURN([[maybe_unused]] const std::string s,
