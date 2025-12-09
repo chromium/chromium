@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
+#include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/protocol/target_handler.h"
@@ -146,7 +147,13 @@ bool WebContentsDevToolsAgentHost::IsDebuggerAttached(
 // static
 void WebContentsDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
+  auto* delegate = DevToolsManager::GetInstance()->delegate();
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
+    if (delegate && !delegate->ShouldReportAsTabTarget(wc).value_or(true)) {
+      // Skip the target if delegate explicitly indicates that it should not be
+      // reported as Tab.
+      continue;
+    }
     result->push_back(GetOrCreateFor(wc));
   }
 }

@@ -64,6 +64,8 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
                      NotHandledCallback callback) override;
   std::string GetTargetType(content::WebContents* web_contents) override;
   std::string GetTargetTitle(content::WebContents* web_contents) override;
+  std::optional<bool> ShouldReportAsTabTarget(
+      content::WebContents* web_contents) override;
 
   content::BrowserContext* CreateBrowserContext() override;
   void DisposeBrowserContext(content::BrowserContext*,
