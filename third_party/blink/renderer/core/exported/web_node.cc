@@ -66,6 +66,40 @@
 
 namespace blink {
 
+namespace {
+
+const AtomicString& GetEventTypeName(WebNode::EventType event_type) {
+  switch (event_type) {
+    case WebNode::EventType::kAutofill:
+      return event_type_names::kAutofill;
+    case WebNode::EventType::kSelectionchange:
+      return event_type_names::kSelectionchange;
+    case WebNode::EventType::kBeforeinput:
+      return event_type_names::kBeforeinput;
+    case WebNode::EventType::kInput:
+      return event_type_names::kInput;
+    case WebNode::EventType::kCompositionstart:
+      return event_type_names::kCompositionstart;
+    case WebNode::EventType::kCompositionupdate:
+      return event_type_names::kCompositionupdate;
+    case WebNode::EventType::kCompositionend:
+      return event_type_names::kCompositionend;
+    case WebNode::EventType::kDrop:
+      return event_type_names::kDrop;
+    case WebNode::EventType::kPaste:
+      return event_type_names::kPaste;
+    case WebNode::EventType::kKeydown:
+      return event_type_names::kKeydown;
+    case WebNode::EventType::kKeyup:
+      return event_type_names::kKeyup;
+    case WebNode::EventType::kKeypress:
+      return event_type_names::kKeypress;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 WebNode::WebNode() = default;
 
 WebNode::WebNode(const WebNode& n) {
@@ -333,12 +367,12 @@ base::ScopedClosureRunner WebNode::AddEventListener(
     }
 
     void AddListener() {
-      node_->addEventListener(event_type_name(), this,
+      node_->addEventListener(GetEventTypeName(event_type_), this,
                               /*use_capture=*/use_capture_);
     }
 
     void RemoveListener() {
-      node_->removeEventListener(event_type_name(), this,
+      node_->removeEventListener(GetEventTypeName(event_type_), this,
                                  /*use_capture=*/use_capture_);
     }
 
@@ -348,36 +382,6 @@ base::ScopedClosureRunner WebNode::AddEventListener(
     }
 
    private:
-    const AtomicString& event_type_name() {
-      switch (event_type_) {
-        case WebNode::EventType::kAutofill:
-          return event_type_names::kAutofill;
-        case EventType::kSelectionchange:
-          return event_type_names::kSelectionchange;
-        case EventType::kBeforeinput:
-          return event_type_names::kBeforeinput;
-        case EventType::kInput:
-          return event_type_names::kInput;
-        case EventType::kCompositionstart:
-          return event_type_names::kCompositionstart;
-        case EventType::kCompositionupdate:
-          return event_type_names::kCompositionupdate;
-        case EventType::kCompositionend:
-          return event_type_names::kCompositionend;
-        case EventType::kDrop:
-          return event_type_names::kDrop;
-        case EventType::kPaste:
-          return event_type_names::kPaste;
-        case EventType::kKeydown:
-          return event_type_names::kKeydown;
-        case EventType::kKeyup:
-          return event_type_names::kKeyup;
-        case EventType::kKeypress:
-          return event_type_names::kKeypress;
-      }
-      NOTREACHED();
-    }
-
     Member<Node> node_;
     EventType event_type_;
     base::RepeatingCallback<void(WebDOMEvent)> handler_;
@@ -391,6 +395,10 @@ base::ScopedClosureRunner WebNode::AddEventListener(
   listener->AddListener();
   return base::ScopedClosureRunner(BindOnce(
       &EventListener::RemoveListener, WrapWeakPersistent(listener.Get())));
+}
+
+bool WebNode::HasEventListeners(EventType event_type) const {
+  return private_->HasEventListeners(GetEventTypeName(event_type));
 }
 
 std::ostream& operator<<(std::ostream& ostream, const WebNode& node) {
