@@ -32,6 +32,7 @@
 class BrowserWindowInterface;
 
 namespace content {
+struct OpenURLParams;
 class BrowserContext;
 class WebContentsObserver;
 }  // namespace content
@@ -166,6 +167,10 @@ class ContextualTasksUI : public TaskInfoDelegate,
 
   mojo::Remote<contextual_tasks::mojom::Page>& page() { return page_; }
 
+  // Transfers an existing navigation to the page embedded in this WebUI. This
+  // API will only accept navigations to the AI or search results pages.
+  void TransferNavigationToEmbeddedPage(content::OpenURLParams params);
+
  private:
   // A an observer specifically to watch for the creation of the hosted remote
   // page. This is attached to the WebContents for the WebUI and notifies the
@@ -211,6 +216,10 @@ class ContextualTasksUI : public TaskInfoDelegate,
   std::unique_ptr<InnerFrameCreationObvserver>
       inner_web_contents_creation_observer_;
   std::unique_ptr<FrameNavObserver> nav_observer_;
+
+  // A handle to the embedded page for this WebUI. This is the WebContents that
+  // contains the AI thread (and sometimes the search results page).
+  base::WeakPtr<content::WebContents> embedded_web_contents_;
 
   // The ID of the task (concept that owns one or more threads) associated with
   // this WebUI, if it exists. This is a cached value tied to the most recent
