@@ -163,7 +163,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
     private void simulateScreenLock() {
         // Simulate the system state for screen off/locked
         mShadowKeyguardManager.setKeyguardLocked(true);
-        mMockContext.sendBroadcast(new Intent(Intent.ACTION_SCREEN_OFF));
+        MediaSessionHelper.simulateScreenOffForTesting();
         ShadowLooper.idleMainLooper();
     }
 
