@@ -2544,6 +2544,40 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
+       UnclassifiedFormInteractionDoesNotTriggerPreclassificationChecks) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({}, {kClientSideDetectionCreditCardForm});
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  NavigateAndCommit(url);
+
+  csd_host_->RegisterAutofillManager();
+
+  TestFuture<ClientSideDetectionType> future;
+  csd_host_->set_preclassification_started_callback_for_testing(
+      future.GetRepeatingCallback());
+
+  auto form_data = autofill::test::CreateTestUnclassifiedFormData();
+
+  // Don't call OnFormsSeen so that the form is not parsed and cached.
+  // Do call OnFocusOnFormField to interact with the form.
+  EXPECT_FALSE(autofill_manager()->FindCachedFormById(form_data.global_id()));
+  autofill_manager()->OnFocusOnFormField(
+      form_data, form_data.fields().begin()->global_id());
+
+  EXPECT_FALSE(future.IsReady());
+
+  // The event was not even logged (before pre-classification).
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent2.OnBeforeFocusOnFormField", 0);
+}
+
+TEST_F(ClientSideDetectionHostCreditCardFormTest,
        DetectionWhenESBDisabledDoesNotTriggerPreclassificationChecks) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();

@@ -307,6 +307,9 @@ class ClientSideDetectionHost
       NonCreditCardFormInteractionDoesNotTriggerPreclassificationChecks);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
+      UnclassifiedFormInteractionDoesNotTriggerPreclassificationChecks);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormTest,
       FeatureDisabledDoesNotTriggerPreclassificationChecks);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,

@@ -985,7 +985,7 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
     autofill::AutofillManager::Observer::FieldTypeSource source) {
   // Do nothing if the form is not a credit card form.
   const autofill::FormStructure* form = manager.FindCachedFormById(form_id);
-  if (form &&
+  if (!form ||
       !form->GetFormTypes().contains(autofill::FormType::kCreditCardForm)) {
     return;
   }
@@ -1015,7 +1015,7 @@ void ClientSideDetectionHost::OnBeforeFocusOnFormField(
     autofill::FieldGlobalId field_id) {
   // Do nothing if the form is not a credit card form.
   const autofill::FormStructure* form = manager.FindCachedFormById(form_id);
-  if (form &&
+  if (!form ||
       !form->GetFormTypes().contains(autofill::FormType::kCreditCardForm)) {
     return;
   }
