@@ -107,6 +107,16 @@ class TokenBindingHelper {
   // Returns `true` if empty.
   bool AreAllBindingKeysSame() const;
 
+  // Notifies `unexportable_key_service_` about a `wrapped_binding_key` being
+  // copied from another token service. This ensures that
+  // `unexportable_key_service_` properly tracks a key that was created by
+  // another UnexportableKeyService instance.
+  //
+  // Unlike `SetBindingKey()`, this method does not add `wrapped_binding_key`
+  // to the in-memory cache.
+  void CopyBindingKeyFromAnotherTokenService(
+      base::span<const uint8_t> wrapped_binding_key);
+
  private:
   struct BindingKeyData {
     explicit BindingKeyData(std::vector<uint8_t> wrapped_key);

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -72,7 +73,9 @@
 namespace {
 
 using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
+using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Key;
 using ::testing::SizeIs;
 
@@ -976,7 +979,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // This will be fired from UpdateCredentials.
   EXPECT_CALL(observer,
               OnAuthErrorChanged(
-                  ::testing::_, GoogleServiceAuthError::AuthErrorNone(),
+                  _, GoogleServiceAuthError::AuthErrorNone(),
                   signin_metrics::SourceForRefreshTokenOperation::kUnknown))
       .Times(2);
   oauth2_service_delegate_->UpdateCredentials(account_id1, "refresh_token1");
@@ -1382,10 +1385,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id));
     // `OnAuthErrorChanged()` is called after `OnRefreshTokenAvailable()`
     // after adding a new account on Desktop.
-    EXPECT_CALL(
-        observer,
-        OnAuthErrorChanged(account_id, GoogleServiceAuthError::AuthErrorNone(),
-                           testing::_));
+    EXPECT_CALL(observer,
+                OnAuthErrorChanged(account_id,
+                                   GoogleServiceAuthError::AuthErrorNone(), _));
     EXPECT_CALL(observer, OnEndBatchChanges());
     oauth2_service_delegate_->UpdateCredentials(account_id, "first_token");
     testing::Mock::VerifyAndClearExpectations(&observer);
@@ -1395,10 +1397,9 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     testing::InSequence sequence;
     EXPECT_CALL(observer, OnRefreshTokenAvailable(account_id));
     // `OnAuthErrorChanged()` is also called when a token is updated.
-    EXPECT_CALL(
-        observer,
-        OnAuthErrorChanged(account_id, GoogleServiceAuthError::AuthErrorNone(),
-                           testing::_));
+    EXPECT_CALL(observer,
+                OnAuthErrorChanged(account_id,
+                                   GoogleServiceAuthError::AuthErrorNone(), _));
     EXPECT_CALL(observer, OnEndBatchChanges());
 
     oauth2_service_delegate_->UpdateCredentials(account_id, "second_token");
@@ -1835,10 +1836,20 @@ class MutableProfileOAuth2TokenServiceDelegateBoundTokensTest
   void InitializeOAuth2ServiceDelegateWithTokenBinding() {
     oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
         signin::AccountConsistencyMethod::kDice,
-        std::make_unique<TokenBindingHelper>(fake_unexportable_key_service_));
+        std::make_unique<TokenBindingHelper>(std::visit(
+            [](auto& uks) -> unexportable_keys::UnexportableKeyService& {
+              return uks;
+            },
+            unexportable_key_service_)));
     oauth2_service_delegate_->SetOnRefreshTokenRevokedNotified(
         base::DoNothing());
     test_service_observation_.Observe(oauth2_service_delegate_.get());
+  }
+
+  unexportable_keys::MockUnexportableKeyService&
+  SwitchToMockUnexportableKeyService() {
+    return unexportable_key_service_
+        .emplace<unexportable_keys::MockUnexportableKeyService>();
   }
 
   void ShutdownOAuth2ServiceDelegate() {
@@ -1847,7 +1858,9 @@ class MutableProfileOAuth2TokenServiceDelegateBoundTokensTest
   }
 
  private:
-  unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service_;
+  std::variant<unexportable_keys::FakeUnexportableKeyService,
+               unexportable_keys::MockUnexportableKeyService>
+      unexportable_key_service_;
 };
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
@@ -2071,6 +2084,43 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   // TODO(alexilin): convert this test file to use the real unexportable key
   // service with `ScopedFakeUnexportableKeyProvider` to increase coverage.
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
+       ExtractCredentialsCopiesBindingKey) {
+  // Initialize the source service.
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  WaitForRefreshTokensLoaded();
+
+  // Setup destination service.
+  unexportable_keys::MockUnexportableKeyService& dest_uks =
+      SwitchToMockUnexportableKeyService();
+  sync_preferences::TestingPrefServiceSyncable dest_prefs;
+  ProfileOAuth2TokenService::RegisterProfilePrefs(dest_prefs.registry());
+  auto dest_delegate = CreateOAuth2ServiceDelegate(
+      signin::AccountConsistencyMethod::kDice,
+      std::make_unique<TokenBindingHelper>(dest_uks));
+  ProfileOAuth2TokenService dest_token_service(&dest_prefs,
+                                               std::move(dest_delegate));
+  dest_token_service.LoadCredentials(CoreAccountId());
+
+  // Add bound token to the source service.
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+  oauth2_service_delegate_->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
+
+  // Verify that the binding key is added to the destination service.
+  EXPECT_CALL(dest_uks,
+              FromWrappedSigningKeySlowlyAsync(
+                  Eq(kFakeWrappedBindingKey),
+                  unexportable_keys::BackgroundTaskPriority::kBestEffort, _));
+
+  oauth2_service_delegate_->ExtractCredentials(&dest_token_service, account_id);
 }
 
 class MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest

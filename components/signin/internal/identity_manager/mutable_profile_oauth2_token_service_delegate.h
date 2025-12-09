@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -107,6 +108,8 @@ class MutableProfileOAuth2TokenServiceDelegate
       std::string_view challenge,
       std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) override;
+  void AddBindingKeyToService(
+      base::span<const uint8_t> wrapped_binding_key) override;
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;

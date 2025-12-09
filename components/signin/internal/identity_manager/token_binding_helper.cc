@@ -166,6 +166,20 @@ bool TokenBindingHelper::AreAllBindingKeysSame() const {
   });
 }
 
+void TokenBindingHelper::CopyBindingKeyFromAnotherTokenService(
+    base::span<const uint8_t> wrapped_binding_key) {
+  // This will force a load of the `wrapped_binding_key` into the
+  // `unexportable_key_service_`. In stateful implementations like on macOS,
+  // this will furthermore ensure that the key representation on disk will be
+  // duplicated with metadata corresponding to `unexportable_key_service_`. This
+  // in turn will ensure that this key will not be deleted by garbage collection
+  // if the source token service no longer needs this key, but
+  // `unexportable_key_service_` still does.
+  unexportable_key_service_->FromWrappedSigningKeySlowlyAsync(
+      // TODO(crbug.com/455538352): Implement metrics.
+      wrapped_binding_key, kTokenBindingPriority, base::DoNothing());
+}
+
 TokenBindingHelper::BindingKeyData::BindingKeyData(
     std::vector<uint8_t> in_wrapped_key)
     : wrapped_key(in_wrapped_key) {}

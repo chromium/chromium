@@ -13,6 +13,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -472,6 +473,14 @@ void MutableProfileOAuth2TokenServiceDelegate::
     SetIgnoreNonOfficialApiKeysForTesting() {
   CHECK_IS_TEST();
   g_ignore_non_official_api_keys_for_testing = true;
+}
+
+void MutableProfileOAuth2TokenServiceDelegate::AddBindingKeyToService(
+    base::span<const uint8_t> wrapped_binding_key) {
+  if (token_binding_helper_) {
+    token_binding_helper_->CopyBindingKeyFromAnotherTokenService(
+        wrapped_binding_key);
+  }
 }
 
 std::vector<CoreAccountId>
@@ -948,7 +957,10 @@ void MutableProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
         signin_metrics::SourceForRefreshTokenOperation::
             kTokenService_ExtractCredentials,
         wrapped_binding_key);
+
+    to_service->GetDelegate()->AddBindingKeyToService(wrapped_binding_key);
   }
+
   RevokeCredentialsImpl(account_id, /*revoke_on_server=*/false);
 }
 

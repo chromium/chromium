@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -101,6 +102,9 @@ void FakeProfileOAuth2TokenServiceDelegate::
         TokenBindingHelper::GenerateAssertionCallback callback) {
   std::move(callback).Run(base::StrCat({challenge, ".signed"}));
 }
+
+void FakeProfileOAuth2TokenServiceDelegate::AddBindingKeyToService(
+    base::span<const uint8_t> wrapped_binding_key) {}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 std::string FakeProfileOAuth2TokenServiceDelegate::GetRefreshToken(

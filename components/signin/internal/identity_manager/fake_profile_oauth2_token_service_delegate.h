@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -69,6 +70,8 @@ class FakeProfileOAuth2TokenServiceDelegate
       std::string_view challenge,
       std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) override;
+  void AddBindingKeyToService(
+      base::span<const uint8_t> wrapped_binding_key) override;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   std::vector<CoreAccountId> GetAccounts() const override;
