@@ -18243,7 +18243,7 @@
             ]
         }
     ],
-    "PasskeyUnlockManager": [
+    "PasskeyUnlockErrorUi": [
         {
             "platforms": [
                 "chromeos",
@@ -18253,8 +18253,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_with_unlock_wording_20251209",
                     "enable_features": [
+                        "PasskeyUnlockErrorUi",
                         "PasskeyUnlockManager"
                     ]
                 }
