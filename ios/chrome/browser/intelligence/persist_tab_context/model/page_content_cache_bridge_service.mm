@@ -16,7 +16,9 @@ PageContentCacheBridgeService::PageContentCacheBridgeService(
     : page_content_cache_(
           base::FeatureList::IsEnabled(
               page_content_annotations::features::kPageContentCache) &&
-                  IsPersistTabContextEnabled()
+                  IsPersistTabContextEnabled() &&
+                  GetPersistTabContextStorageType() ==
+                      PersistTabStorageType::kSQLite
               ? std::make_unique<page_content_annotations::PageContentCache>(
                     os_crypt_async,
                     profile_path,
