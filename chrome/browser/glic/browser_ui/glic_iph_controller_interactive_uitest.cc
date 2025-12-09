@@ -155,6 +155,25 @@ IN_PROC_BROWSER_TEST_F(GlicIphControllerTestClassic, ShowPromo) {
                   StopObservingState(kFreWebUiState));
 }
 
+// Confirms that the promo is not shown if the user's profile has a signed-in
+// account that needs to be re-authenticated.
+IN_PROC_BROWSER_TEST_F(GlicIphControllerTestClassic,
+                       ShowPromoBlockedByAuthError) {
+  RunTestSequence(
+      // Prepares the browser to show the IPH.
+      InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, Title1()),
+      WaitForWebContentsReady(kFirstTab),
+      // Disable model execution capabilities for the profile's account.
+      Do([this]() { glic_test_service().SetModelExecutionCapability(false); }),
+      // Tries to trigger the showing of the IPH.
+      ShowPromoForTest(),
+      // Checks that the showing of the IPH was not actually requested to the
+      // user education system.
+      CheckPromoRequested(feature_engagement::kIPHGlicPromoFeature, false),
+      // Checks that the FRE was not pre-warmed.
+      ExpectWarmedFre(false));
+}
+
 class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {
  public:
   GlicIphControllerTestTryIt()

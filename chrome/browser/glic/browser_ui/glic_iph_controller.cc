@@ -6,8 +6,8 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -40,9 +40,11 @@ GlicIphController::GlicIphController(BrowserWindowInterface* browser_window,
           feature_engagement::kIPHGlicTryItFeature)),
       window_(*browser_window),
       glic_service_(glic_service) {
-  show_timer_.Start(FROM_HERE, GetPromoCheckInterval(),
-                    base::BindRepeating(&GlicIphController::MaybeShowPromo,
-                                        weak_ptr_factory_.GetWeakPtr()));
+  if (GlicEnabling::IsEnabledByFlags()) {
+    show_timer_.Start(FROM_HERE, GetPromoCheckInterval(),
+                      base::BindRepeating(&GlicIphController::MaybeShowPromo,
+                                          weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 GlicIphController::~GlicIphController() = default;
@@ -56,7 +58,8 @@ void GlicIphController::MaybeShowPromo() {
   auto* const contents = tab->GetContents();
   if (!contents->GetURL().SchemeIsHTTPOrHTTPS() ||
       contents->GetURL().GetHost() == GetGuestURL().GetHost() ||
-      !contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+      !contents->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
+      !GlicEnabling::IsEnabledForProfile(window_->GetProfile())) {
     return;
   }
 
