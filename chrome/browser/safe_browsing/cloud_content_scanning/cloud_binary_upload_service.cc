@@ -512,6 +512,9 @@ void CloudBinaryUploadService::OnGetRequestData(
              enterprise_connectors::kDlpScanPastedImages))
             ? ResumableUploadRequest::CreateStringRequest(
                   url_loader_factory_, url, metadata, data.contents,
+                  request->image_paste()
+                      ? enterprise_connectors::ConnectorUploadRequest::IMAGE
+                      : enterprise_connectors::ConnectorUploadRequest::STRING,
                   histogram_suffix, std::move(traffic_annotation),
                   std::move(verdict_received_callback),
                   std::move(content_uploaded_callback), force_sync_upload)

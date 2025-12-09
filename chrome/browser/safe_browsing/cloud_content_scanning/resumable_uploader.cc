@@ -77,6 +77,7 @@ ResumableUploadRequest::ResumableUploadRequest(
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
+    enterprise_connectors::ConnectorUploadRequest::DataSource data_source,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
@@ -86,6 +87,7 @@ ResumableUploadRequest::ResumableUploadRequest(
                                  base_url,
                                  metadata,
                                  data,
+                                 data_source,
                                  histogram_suffix,
                                  traffic_annotation,
                                  std::move(verdict_received_callback),
@@ -102,6 +104,7 @@ ResumableUploadRequest::CreateStringRequest(
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
+    enterprise_connectors::ConnectorUploadRequest::DataSource data_source,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
@@ -109,14 +112,15 @@ ResumableUploadRequest::CreateStringRequest(
     bool force_sync_upload) {
   if (factory_) {
     return factory_->CreateStringRequest(
-        url_loader_factory, base_url, metadata, data, histogram_suffix,
-        traffic_annotation,
+        url_loader_factory, base_url, metadata, data, data_source,
+        histogram_suffix, traffic_annotation,
         std::move(verdict_received_callback)
             .Then(std::move(content_uploaded_callback)));
   }
   return std::make_unique<ResumableUploadRequest>(
-      url_loader_factory, base_url, metadata, data, histogram_suffix,
-      traffic_annotation, std::move(verdict_received_callback),
+      url_loader_factory, base_url, metadata, data, data_source,
+      histogram_suffix, traffic_annotation,
+      std::move(verdict_received_callback),
       std::move(content_uploaded_callback), force_sync_upload);
 }
 

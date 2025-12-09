@@ -137,6 +137,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
+    DataSource data_source,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     VerdictReceivedCallback verdict_received_callback,
@@ -147,6 +148,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
                              base_url,
                              metadata,
                              data,
+                             data_source,
                              histogram_suffix,
                              traffic_annotation,
                              base::DoNothing(),
@@ -195,10 +197,9 @@ void ResumableUploadRequestBase::SetMetadataRequestHeaders(
   request->headers.SetHeader(kUploadCommandHeader, "start");
   request->headers.SetHeader(kUploadHeaderContentLengthHeader,
                              base::NumberToString(data_size_));
-  // `STRING` is only used for resumable requests for image pasting.
   request->headers.SetHeader(
       kUploadHeaderContentTypeHeader,
-      data_source_ == STRING ? kImageContentType : kUploadContentType);
+      data_source_ == IMAGE ? kImageContentType : kUploadContentType);
   if (!access_token_.empty()) {
     LogAuthenticatedCookieResets(
         *request, SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
@@ -240,6 +241,8 @@ std::string ResumableUploadRequestBase::GetRequestType() {
       return "Text";
     case PAGE:
       return "Print";
+    case IMAGE:
+      return "Image";
   }
 }
 
@@ -306,6 +309,7 @@ void ResumableUploadRequestBase::SendContentSoon(
     // data. Using resumable uploads for pasted images is enabled by the
     // `enterprise_connectors::kDlpScanPastedImages` feature flag. Text pastes
     // use multipart uploads.
+    case IMAGE:
     case STRING:
       SendContentNow(std::move(request));
       break;

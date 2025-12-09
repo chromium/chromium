@@ -61,6 +61,7 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      ConnectorUploadRequest::DataSource data_source,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       VerdictReceivedCallback verdict_received_callback,

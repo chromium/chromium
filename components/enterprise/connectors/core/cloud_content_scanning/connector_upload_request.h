@@ -31,6 +31,13 @@ class ConnectorUploadRequestFactory;
 // This class is neither movable nor copyable.
 class ConnectorUploadRequest {
  public:
+  enum DataSource {
+    STRING = 0,
+    FILE = 1,
+    PAGE = 2,
+    IMAGE = 3,
+  };
+
   using Callback = base::OnceCallback<
       void(bool success, int http_status, const std::string& response_data)>;
 
@@ -47,6 +54,7 @@ class ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      ConnectorUploadRequest::DataSource data_source,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback,
@@ -109,7 +117,7 @@ class ConnectorUploadRequest {
   std::string metadata_;
 
   // Indicates what the source of the data to upload is.
-  const enum { STRING = 0, FILE = 1, PAGE = 2 } data_source_;
+  DataSource data_source_;
 
   // String of content to upload. Only populated for STRING requests.
   std::string data_;
@@ -153,6 +161,7 @@ class ConnectorUploadRequestFactory {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      ConnectorUploadRequest::DataSource data_source,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) = 0;

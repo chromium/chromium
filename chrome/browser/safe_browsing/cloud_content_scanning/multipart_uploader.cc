@@ -92,9 +92,9 @@ MultipartUploadRequest::CreateStringRequest(
         traffic_annotation, std::move(callback));
   }
 
-  return factory_->CreateStringRequest(url_loader_factory, base_url, metadata,
-                                       data, histogram_suffix,
-                                       traffic_annotation, std::move(callback));
+  return factory_->CreateStringRequest(
+      url_loader_factory, base_url, metadata, data, DataSource::STRING,
+      histogram_suffix, traffic_annotation, std::move(callback));
 }
 
 // static

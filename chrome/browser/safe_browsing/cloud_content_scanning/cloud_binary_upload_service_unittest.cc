@@ -86,6 +86,7 @@ class FakeConnectorUploadRequest : public ConnectorUploadRequest {
             GURL(),
             /*metadata=*/"",
             /*data=*/"",
+            ConnectorUploadRequest::STRING,
             /*histogram_suffix=*/"",
             TRAFFIC_ANNOTATION_FOR_TESTS,
             base::DoNothing(),
@@ -134,6 +135,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      ConnectorUploadRequest::DataSource data_source,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override {

@@ -271,12 +271,28 @@ TEST_F(ResumableUploadStringRequestTest,
        GeneratesCorrectMetadataHeaders_StringRequest) {
   network::ResourceRequest resource_request;
   auto request = std::make_unique<MockResumableUploadRequestBase>(
-      nullptr, GURL(), "metadata", "string_data", "histogram_suffix",
+      nullptr, GURL(), "metadata", "string_data",
+      ConnectorUploadRequest::STRING, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   request->SetMetadataRequestHeaders(&resource_request);
 
-  VerifyMetadataRequestHeaders(std::move(resource_request), "11", "image/png");
+  VerifyMetadataRequestHeaders(std::move(resource_request), "11");
+}
+
+TEST_F(ResumableUploadStringRequestTest,
+       GeneratesCorrectMetadataHeaders_ImageRequest) {
+  network::ResourceRequest resource_request;
+  // PNG data.
+  std::string png_data = "\x89PNG\r\n\x1a\n";
+  auto request = std::make_unique<MockResumableUploadRequestBase>(
+      nullptr, GURL(), "metadata", png_data, ConnectorUploadRequest::IMAGE,
+      "histogram_suffix", TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(),
+      base::DoNothing(), false,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  request->SetMetadataRequestHeaders(&resource_request);
+
+  VerifyMetadataRequestHeaders(std::move(resource_request), "8", "image/png");
 }
 
 class ResumableUploadSendMetadataRequestTest
@@ -429,7 +445,8 @@ class ResumableUploadSendContentRequestBaseTest
         return std::make_unique<MockResumableUploadRequestBase>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
-            GURL("https://google.com"), "metadata", GetContent(), "DummySuffix",
+            GURL("https://google.com"), "metadata", GetContent(),
+            ConnectorUploadRequest::STRING, "DummySuffix",
             TRAFFIC_ANNOTATION_FOR_TESTS, std::move(verdict_received_callback),
             std::move(content_uploaded_callback), force_sync_upload,
             base::SingleThreadTaskRunner::GetCurrentDefault());

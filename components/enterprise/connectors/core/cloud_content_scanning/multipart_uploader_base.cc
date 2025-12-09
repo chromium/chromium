@@ -82,6 +82,7 @@ MultipartUploadRequestBase::MultipartUploadRequestBase(
                              base_url,
                              metadata,
                              data,
+                             DataSource::STRING,
                              histogram_suffix,
                              traffic_annotation,
                              std::move(callback),
