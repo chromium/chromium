@@ -700,9 +700,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             MultiInstancePersistentStore.readCustomTitle(i),
                             MultiInstancePersistentStore.readNormalTabCount(i),
                             MultiInstancePersistentStore.readIncognitoTabCount(i),
-                            readIncognitoSelected(i),
+                            MultiInstancePersistentStore.readIncognitoSelected(i),
                             lastAccessedTime,
-                            readClosedByUser(i)));
+                            MultiInstancePersistentStore.readClosedByUser(i)));
         }
         // Move the current instance always to the top of the list for favorable display on the UI.
         // It is possible that |currentItemPos| is invalid if this method is invoked early during
@@ -815,7 +815,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 // months post launch.
                 if (IncognitoUtils.shouldOpenIncognitoAsWindow()
                         && MultiInstancePersistentStore.readLastAccessedTime(i) != 0
-                        && readProfileType(i)
+                        && MultiInstancePersistentStore.readProfileType(i)
                                 != (isIncognitoIntent
                                         ? SupportedProfileType.OFF_THE_RECORD
                                         : SupportedProfileType.REGULAR)) {
@@ -856,18 +856,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             ? SupportedProfileType.OFF_THE_RECORD
                             : SupportedProfileType.REGULAR;
 
-            int profileTypeFromPreferences =
-                    ChromeSharedPreferences.getInstance()
-                            .readInt(
-                                    ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
-                                            String.valueOf(windowId)),
-                                    SupportedProfileType.UNSET);
-            if (profileTypeFromPreferences != SupportedProfileType.UNSET) {
-                // The profile type based on the new window intent and the value from
-                // ChromeSharedPreferences should not conflict. The intent should only
+            int persistedProfileType = MultiInstancePersistentStore.readProfileType(windowId);
+            if (persistedProfileType != SupportedProfileType.UNSET) {
+                // The profile type based on the new window intent and the value from the
+                // persistent store should not conflict. The intent should only
                 // specify SupportedProfileType for the new window, which will not have value in
-                // ChromeSharedPreferences.
-                profileType = profileTypeFromPreferences;
+                // persistent store.
+                profileType = persistedProfileType;
             }
         } else {
             profileType = SupportedProfileType.MIXED;
@@ -956,7 +951,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {
         mInstanceId = instanceId;
         MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
-        writeProfileType(instanceId, profileType);
+        MultiInstancePersistentStore.writeProfileType(instanceId, profileType);
         installTabModelObserver();
         recordInstanceCountHistogram();
         recordActivityCountHistogram();
@@ -1012,7 +1007,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                         mActiveTab = tab;
                         if (mActiveTab != null) {
                             mActiveTab.addObserver(mActiveTabObserver);
-                            writeIncognitoSelected(mInstanceId, mActiveTab);
+                            MultiInstancePersistentStore.writeIncognitoSelected(
+                                    mInstanceId, mActiveTab.isIncognito());
                             // When an incognito tab is focused, keep the normal active tab info.
                             Tab urlTab =
                                     mActiveTab.isIncognito()
@@ -1084,7 +1080,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             int persistedTaskId = MultiInstancePersistentStore.readTaskId(id);
 
             // Exclude ids not satisfying requirements.
-            int profileType = readProfileType(id);
+            int profileType = MultiInstancePersistentStore.readProfileType(id);
             if (includeOtr && profileType != SupportedProfileType.OFF_THE_RECORD) continue;
             if (includeRegular && profileType != SupportedProfileType.REGULAR) continue;
             if (includeActive && !activeTaskIds.contains(persistedTaskId)) continue;
@@ -1233,24 +1229,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         }
     }
 
-    @VisibleForTesting
-    static String incognitoSelectedKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_IS_INCOGNITO_SELECTED.createKey(
-                String.valueOf(index));
-    }
-
-    @VisibleForTesting
-    static void writeIncognitoSelected(int index, Tab tab) {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(incognitoSelectedKey(index), tab.isIncognito());
-    }
-
-    @VisibleForTesting
-    static boolean readIncognitoSelected(int index) {
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(incognitoSelectedKey(index), false);
-    }
-
     private static void writeTabCount(int index, TabModelSelector selector) {
         if (!selector.isTabStateInitialized()) return;
         int tabCount = selector.getModel(false).getCount();
@@ -1262,41 +1240,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             MultiInstancePersistentStore.writeActiveTabUrl(index, EMPTY_DATA);
             MultiInstancePersistentStore.writeActiveTabTitle(index, EMPTY_DATA);
         }
-    }
-
-    @VisibleForTesting
-    static String profileTypeKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(String.valueOf(index));
-    }
-
-    @VisibleForTesting
-    static @SupportedProfileType int readProfileType(int index) {
-        return ChromeSharedPreferences.getInstance().readInt(profileTypeKey(index));
-    }
-
-    private static void writeProfileType(int instanceId, @SupportedProfileType int profileType) {
-        // TODO(crbug.com/439670064): Only preserve regular and incognito type until we finalize the
-        // upgrade path.
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                && (profileType == SupportedProfileType.REGULAR
-                        || profileType == SupportedProfileType.OFF_THE_RECORD)) {
-            ChromeSharedPreferences.getInstance().writeInt(profileTypeKey(instanceId), profileType);
-        }
-    }
-
-    @VisibleForTesting
-    static String closedByUserKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_CLOSED_BY_USER.createKey(String.valueOf(index));
-    }
-
-    @VisibleForTesting
-    static boolean readClosedByUser(int index) {
-        return ChromeSharedPreferences.getInstance().readBoolean(closedByUserKey(index), false);
-    }
-
-    @VisibleForTesting
-    static void writeClosedByUser(int index, boolean closedByUser) {
-        ChromeSharedPreferences.getInstance().writeBoolean(closedByUserKey(index), closedByUser);
     }
 
     /**
@@ -1430,7 +1373,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             }
             mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         } else {
-            writeClosedByUser(instanceId, /* closedByUser= */ true);
+            MultiInstancePersistentStore.writeClosedByUser(instanceId, /* closedByUser= */ true);
         }
         Activity activity = getActivityById(instanceId);
         if (activity != null) activity.finishAndRemoveTask();
@@ -1520,7 +1463,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         int count = 0;
         for (Integer id : persistedIds) {
             // Exclude instances closed by the user.
-            if (readClosedByUser(id)) continue;
+            if (MultiInstancePersistentStore.readClosedByUser(id)) continue;
             if (!isRestorableInstance(id)) continue;
             count++;
         }
@@ -1558,16 +1501,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @VisibleForTesting
     static void removeInstanceInfo(int index, @CloseWindowAppSource int source) {
-        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        MultiInstancePersistentStore.removeActiveTabUrl(index);
-        MultiInstancePersistentStore.removeActiveTabTitle(index);
-        MultiInstancePersistentStore.removeCustomTitle(index);
-        MultiInstancePersistentStore.removeTabCount(index);
-        MultiInstancePersistentStore.removeTabCountForRelaunch(index);
-        prefs.removeKey(incognitoSelectedKey(index));
-        MultiInstancePersistentStore.removeLastAccessedTime(index);
-        prefs.removeKey(profileTypeKey(index));
-        prefs.removeKey(closedByUserKey(index));
+        MultiInstancePersistentStore.deleteInstanceState(index);
 
         RecordHistogram.recordEnumeratedHistogram(
                 CLOSE_WINDOW_APP_SOURCE_HISTOGRAM, source, CloseWindowAppSource.NUM_ENTRIES);

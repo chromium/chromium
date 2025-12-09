@@ -290,11 +290,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         private void addInstanceInfo(int instanceId, int taskId) {
             MultiInstancePersistentStore.writeLastAccessedTime(instanceId);
-            ChromeSharedPreferences.getInstance()
-                    .writeInt(
-                            ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
-                                    String.valueOf(instanceId)),
-                            SupportedProfileType.REGULAR);
+            MultiInstancePersistentStore.writeProfileType(instanceId, SupportedProfileType.REGULAR);
             if (mTestBuildInstancesList) {
                 int numberOfInstances = mTestInstanceInfos.size();
                 int type =
@@ -870,35 +866,27 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testGetInstanceInfo_filters() {
         MultiWindowTestUtils.enableMultiInstance();
 
         // Instance 0: Active, Regular
         assertEquals(0, allocInstanceIndex(0, mTabbedActivityPool[0]));
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        MultiInstanceManagerApi31.profileTypeKey(0), SupportedProfileType.REGULAR);
+        MultiInstancePersistentStore.writeProfileType(0, SupportedProfileType.REGULAR);
 
         // Instance 1: Active, Incognito
         assertEquals(1, allocInstanceIndex(1, mTabbedActivityPool[1]));
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        MultiInstanceManagerApi31.profileTypeKey(1),
-                        SupportedProfileType.OFF_THE_RECORD);
+        MultiInstancePersistentStore.writeProfileType(1, SupportedProfileType.OFF_THE_RECORD);
 
         // Instance 2: Inactive, Regular
         assertEquals(2, allocInstanceIndex(2, mTabbedActivityPool[2]));
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        MultiInstanceManagerApi31.profileTypeKey(2), SupportedProfileType.REGULAR);
+        MultiInstancePersistentStore.writeProfileType(2, SupportedProfileType.REGULAR);
         removeTaskOnRecentsScreen(mTabbedActivityPool[2]);
 
         // Instance 3: Inactive, Incognito
         assertEquals(3, allocInstanceIndex(3, mTabbedActivityPool[3]));
-        ChromeSharedPreferences.getInstance()
-                .writeInt(
-                        MultiInstanceManagerApi31.profileTypeKey(3),
-                        SupportedProfileType.OFF_THE_RECORD);
+        MultiInstancePersistentStore.writeProfileType(3, SupportedProfileType.OFF_THE_RECORD);
         removeTaskOnRecentsScreen(mTabbedActivityPool[3]);
 
         // Test PersistedInstanceType.ANY
@@ -1006,7 +994,7 @@ public class MultiInstanceManagerApi31UnitTest {
         triggerSelectTab(tabModelObserver, mTab1);
         assertFalse(
                 "Normal tab should be selected",
-                MultiInstanceManagerApi31.readIncognitoSelected(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoSelected(INSTANCE_ID_1));
         assertEquals(
                 "Title should be from the active normal tab",
                 TITLE1,
@@ -1020,7 +1008,7 @@ public class MultiInstanceManagerApi31UnitTest {
         triggerSelectTab(tabModelObserver, mTab2);
         assertFalse(
                 "Normal tab should be selected",
-                MultiInstanceManagerApi31.readIncognitoSelected(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoSelected(INSTANCE_ID_1));
         assertEquals(
                 "Title should be from the active normal tab",
                 TITLE2,
@@ -1034,7 +1022,7 @@ public class MultiInstanceManagerApi31UnitTest {
         triggerSelectTab(tabModelObserver, mTab3);
         assertTrue(
                 "Incognito tab should be selected",
-                MultiInstanceManagerApi31.readIncognitoSelected(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoSelected(INSTANCE_ID_1));
         assertEquals(
                 "Title should be from the active normal tab",
                 TITLE2,
@@ -1048,7 +1036,7 @@ public class MultiInstanceManagerApi31UnitTest {
         triggerSelectTab(tabModelObserver, null);
         assertTrue(
                 "Incognito tab should be selected",
-                MultiInstanceManagerApi31.readIncognitoSelected(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoSelected(INSTANCE_ID_1));
         assertEquals(
                 "Null tab should not affect the title",
                 TITLE2,
@@ -1296,11 +1284,11 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiInstancePersistentStore.writeTabCount(
                 index, /* normalTabCount= */ 1, /* incognitoTabCount= */ 1);
         MultiInstancePersistentStore.writeTabCountForRelaunchSync(index, /* tabCount= */ 2);
-        String incognitoSelectedKey = MultiInstanceManagerApi31.incognitoSelectedKey(index);
-        ChromeSharedPreferences.getInstance().writeBoolean(incognitoSelectedKey, false);
+        MultiInstancePersistentStore.writeIncognitoSelected(index, /* incognitoSelected= */ true);
         MultiInstancePersistentStore.writeLastAccessedTime(index);
-        String profileTypeKey = MultiInstanceManagerApi31.profileTypeKey(index);
-        ChromeSharedPreferences.getInstance().writeInt(profileTypeKey, 1);
+        MultiInstancePersistentStore.writeProfileType(
+                index, /* profileType= */ SupportedProfileType.MIXED);
+        MultiInstancePersistentStore.writeClosedByUser(index, /* closedByUser= */ true);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1333,15 +1321,19 @@ public class MultiInstanceManagerApi31UnitTest {
                 0,
                 MultiInstancePersistentStore.readIncognitoTabCount(index));
         assertFalse(
-                "Shared preference key should be removed.",
-                ChromeSharedPreferences.getInstance().contains(incognitoSelectedKey));
+                "Persistent store should be updated.",
+                MultiInstancePersistentStore.readIncognitoSelected(index));
         assertEquals(
                 "Persistent store should be updated.",
                 0,
                 MultiInstancePersistentStore.readLastAccessedTime(index));
+        assertEquals(
+                "Persistent store should be updated.",
+                SupportedProfileType.UNSET,
+                MultiInstancePersistentStore.readProfileType(index));
         assertFalse(
-                "Shared preference key should be removed.",
-                ChromeSharedPreferences.getInstance().contains(profileTypeKey));
+                "Persistent store should be updated.",
+                MultiInstancePersistentStore.readClosedByUser(index));
     }
 
     private void triggerSelectTab(TabModelObserver tabModelObserver, Tab tab) {
@@ -2525,7 +2517,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         final String defaultTitle = "Default Title";
         MultiInstancePersistentStore.writeActiveTabTitle(INSTANCE_ID_1, defaultTitle);
-        MultiInstancePersistentStore.removeCustomTitle(INSTANCE_ID_1);
+        MultiInstancePersistentStore.writeCustomTitle(INSTANCE_ID_1, /* title= */ null);
 
         manager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
 

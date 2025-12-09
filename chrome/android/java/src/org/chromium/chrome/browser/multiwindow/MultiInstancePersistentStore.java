@@ -9,6 +9,8 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -65,16 +67,23 @@ class MultiInstancePersistentStore {
         return readLastAccessedTime(instanceId) != 0;
     }
 
+    static void deleteInstanceState(int instanceId) {
+        removeActiveTabUrl(instanceId);
+        removeActiveTabTitle(instanceId);
+        removeCustomTitle(instanceId);
+        removeTabCount(instanceId);
+        removeIncognitoSelected(instanceId);
+        removeLastAccessedTime(instanceId);
+        removeProfileType(instanceId);
+        removeClosedByUser(instanceId);
+    }
+
     static long readLastAccessedTime(int instanceId) {
         return getManager().readLong(lastAccessedTimeKey(instanceId));
     }
 
     static void writeLastAccessedTime(int instanceId) {
         getManager().writeLong(lastAccessedTimeKey(instanceId), TimeUtils.currentTimeMillis());
-    }
-
-    static void removeLastAccessedTime(int instanceId) {
-        getManager().removeKey(lastAccessedTimeKey(instanceId));
     }
 
     static Map<String, Integer> readTaskMap() {
@@ -93,22 +102,17 @@ class MultiInstancePersistentStore {
         getManager().removeKey(taskIdKey(instanceId));
     }
 
-    static void writeTabCount(int instanceId, int normalTabCount, int incognitoTabCount) {
-        getManager().writeInt(normalTabCountKey(instanceId), normalTabCount);
-        getManager().writeInt(incognitoTabCountKey(instanceId), incognitoTabCount);
-    }
-
-    static void removeTabCount(int instanceId) {
-        getManager().removeKey(normalTabCountKey(instanceId));
-        getManager().removeKey(incognitoTabCountKey(instanceId));
-    }
-
     static int readNormalTabCount(int instanceId) {
         return getManager().readInt(normalTabCountKey(instanceId));
     }
 
     static int readIncognitoTabCount(int instanceId) {
         return getManager().readInt(incognitoTabCountKey(instanceId));
+    }
+
+    static void writeTabCount(int instanceId, int normalTabCount, int incognitoTabCount) {
+        getManager().writeInt(normalTabCountKey(instanceId), normalTabCount);
+        getManager().writeInt(incognitoTabCountKey(instanceId), incognitoTabCount);
     }
 
     static int readTabCountForRelaunch(int instanceId) {
@@ -119,20 +123,12 @@ class MultiInstancePersistentStore {
         getManager().writeIntSync(tabCountForRelaunchKey(instanceId), tabCount);
     }
 
-    static void removeTabCountForRelaunch(int instanceId) {
-        getManager().removeKey(tabCountForRelaunchKey(instanceId));
-    }
-
     static @Nullable String readActiveTabUrl(int instanceId) {
         return getManager().readString(urlKey(instanceId), null);
     }
 
     static void writeActiveTabUrl(int instanceId, String url) {
         getManager().writeString(urlKey(instanceId), url);
-    }
-
-    static void removeActiveTabUrl(int instanceId) {
-        getManager().removeKey(urlKey(instanceId));
     }
 
     static @Nullable String readActiveTabTitle(int instanceId) {
@@ -143,10 +139,6 @@ class MultiInstancePersistentStore {
         getManager().writeString(activeTabTitleKey(instanceId), title);
     }
 
-    static void removeActiveTabTitle(int instanceId) {
-        getManager().removeKey(activeTabTitleKey(instanceId));
-    }
-
     static @Nullable String readCustomTitle(int instanceId) {
         return getManager().readString(customTitleKey(instanceId), null);
     }
@@ -155,8 +147,68 @@ class MultiInstancePersistentStore {
         getManager().writeString(customTitleKey(instanceId), title);
     }
 
-    static void removeCustomTitle(int instanceId) {
+    static @SupportedProfileType int readProfileType(int instanceId) {
+        return getManager().readInt(profileTypeKey(instanceId), SupportedProfileType.UNSET);
+    }
+
+    static void writeProfileType(int instanceId, @SupportedProfileType int profileType) {
+        // TODO(crbug.com/439670064): Only preserve regular and incognito type until we finalize the
+        // upgrade path.
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()
+                && (profileType == SupportedProfileType.REGULAR
+                        || profileType == SupportedProfileType.OFF_THE_RECORD)) {
+            getManager().writeInt(profileTypeKey(instanceId), profileType);
+        }
+    }
+
+    static boolean readIncognitoSelected(int instanceId) {
+        return getManager().readBoolean(incognitoSelectedKey(instanceId), false);
+    }
+
+    static void writeIncognitoSelected(int instanceId, boolean incognitoSelected) {
+        getManager().writeBoolean(incognitoSelectedKey(instanceId), incognitoSelected);
+    }
+
+    static boolean readClosedByUser(int instanceId) {
+        return getManager().readBoolean(closedByUserKey(instanceId), false);
+    }
+
+    static void writeClosedByUser(int instanceId, boolean closedByUser) {
+        getManager().writeBoolean(closedByUserKey(instanceId), closedByUser);
+    }
+
+    private static void removeLastAccessedTime(int instanceId) {
+        getManager().removeKey(lastAccessedTimeKey(instanceId));
+    }
+
+    private static void removeTabCount(int instanceId) {
+        getManager().removeKey(normalTabCountKey(instanceId));
+        getManager().removeKey(incognitoTabCountKey(instanceId));
+        getManager().removeKey(tabCountForRelaunchKey(instanceId));
+    }
+
+    private static void removeActiveTabUrl(int instanceId) {
+        getManager().removeKey(urlKey(instanceId));
+    }
+
+    private static void removeActiveTabTitle(int instanceId) {
+        getManager().removeKey(activeTabTitleKey(instanceId));
+    }
+
+    private static void removeCustomTitle(int instanceId) {
         getManager().removeKey(customTitleKey(instanceId));
+    }
+
+    private static void removeProfileType(int instanceId) {
+        getManager().removeKey(profileTypeKey(instanceId));
+    }
+
+    private static void removeIncognitoSelected(int instanceId) {
+        getManager().removeKey(incognitoSelectedKey(instanceId));
+    }
+
+    private static void removeClosedByUser(int instanceId) {
+        getManager().removeKey(closedByUserKey(instanceId));
     }
 
     private static String lastAccessedTimeKey(int instanceId) {
@@ -192,6 +244,21 @@ class MultiInstancePersistentStore {
 
     private static String customTitleKey(int instanceId) {
         return ChromePreferenceKeys.MULTI_INSTANCE_CUSTOM_TITLE.createKey(
+                String.valueOf(instanceId));
+    }
+
+    private static String profileTypeKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
+                String.valueOf(instanceId));
+    }
+
+    private static String incognitoSelectedKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_IS_INCOGNITO_SELECTED.createKey(
+                String.valueOf(instanceId));
+    }
+
+    private static String closedByUserKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_CLOSED_BY_USER.createKey(
                 String.valueOf(instanceId));
     }
 }
