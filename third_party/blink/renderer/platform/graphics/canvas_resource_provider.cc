@@ -170,9 +170,7 @@ CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
                              /*delegate=*/nullptr) {}
 
 bool CanvasResourceProviderExternalBitmap::IsGpuContextLost() const {
-  auto* raster_interface = RasterInterface();
-  return !raster_interface ||
-         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+  return true;
 }
 
 bool CanvasResourceProviderExternalBitmap::IsValid() const {
