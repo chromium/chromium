@@ -20,7 +20,6 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="translate_switch"
-        android:summaryOn="@string/languages_offer_translate_switch"
-        android:summaryOff="@string/languages_offer_translate_switch" />
+        android:title="@string/languages_offer_translate_switch" />
 
 </PreferenceScreen>

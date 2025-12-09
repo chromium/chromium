@@ -7,6 +7,8 @@ package org.chromium.components.browser_ui.settings.search;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -30,6 +32,24 @@ public class SettingsIndexData {
     private final Map<String, Entry> mEntries = new LinkedHashMap<>();
     // Map from a child fragment's class name to the list of preference keys that can link to it.
     private final Map<String, List<String>> mChildFragmentToParentKeys = new HashMap<>();
+
+    private static @Nullable SettingsIndexData sInstance;
+
+    @EnsuresNonNull("sInstance")
+    public static SettingsIndexData createInstance() {
+        assert sInstance == null;
+        sInstance = new SettingsIndexData();
+        return sInstance;
+    }
+
+    @Nullable
+    public static SettingsIndexData getInstance() {
+        return sInstance;
+    }
+
+    public static void reset() {
+        sInstance = null;
+    }
 
     /**
      * Normalizes a string for search by converting it to lowercase and stripping diacritics.
@@ -209,35 +229,67 @@ public class SettingsIndexData {
     /**
      * Adds a new searchable preference entry to the index.
      *
-     * @param key The unique key of the preference. This is used as the primary identifier in the
+     * @param id The unique ID of the preference. This is used as the primary identifier in the
      *     internal map.
      * @param entry The {@link Entry} object containing all the data for this preference.
      * @throws IllegalStateException If a preference with the same key already exists in the index.
      */
-    public void addEntry(String key, Entry entry) {
-        if (mEntries.containsKey(key)) {
-            throw new IllegalStateException("Duplicate preference key found: " + key);
+    public void addEntry(String id, Entry entry) {
+        if (mEntries.containsKey(id)) {
+            throw new IllegalStateException("Duplicate ID found: " + id);
         }
-        mEntries.put(key, entry);
+        mEntries.put(id, entry);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     */
+    public void addEntryForKey(String prefFragment, String key, int titleId) {
+        String id = PreferenceParser.createUniqueId(prefFragment, key);
+        String title = ContextUtils.getApplicationContext().getString(titleId);
+        addEntry(id, new Entry.Builder(id, key, title, prefFragment).build());
     }
 
     @Nullable
-    public Entry getEntry(String key) {
-        return mEntries.get(key);
+    public Entry getEntry(String id) {
+        return mEntries.get(id);
     }
 
     /**
      * Replaces an existing entry with a new one.
      *
-     * @param key The key of the {@link Entry} to replace.
+     * @param id The ID of the {@link Entry} to replace.
      * @param updatedEntry The new {@link Entry} to place in place of the existing one.
      */
-    public void updateEntry(String key, Entry updatedEntry) {
-        mEntries.put(key, updatedEntry);
+    public void updateEntry(String id, Entry updatedEntry) {
+        mEntries.put(id, updatedEntry);
     }
 
     /**
-     * Removes a preference entry from the index without disabling its target fragment.
+     * Replaces an existing entry with a new one.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     * @throws IllegalStateException If a preference with the same key does not exist in the index.
+     */
+    public void updateEntryForKey(String prefFragment, String key, int titleId) {
+        String id = PreferenceParser.createUniqueId(prefFragment, key);
+        String title = ContextUtils.getApplicationContext().getString(titleId);
+        Entry entry = getEntry(id);
+        if (entry != null) {
+            updateEntry(id, new Entry.Builder(entry).setTitle(title).build());
+        } else {
+            throw new IllegalStateException("Existing ID cannot be found: " + id);
+        }
+    }
+
+    /**
+     * Removes a preference entry from the index.
      *
      * <p>This method should be used when a link to a fragment is being hidden from one screen, but
      * the fragment itself is still reachable via another path and should remain searchable.
@@ -247,10 +299,20 @@ public class SettingsIndexData {
      * "Appearance" screen. In this case, the MainSettings provider should call this method to
      * remove only the redundant link, without disabling the {@code TabsSettings} fragment.
      *
-     * @param key The unique key of the preference link to remove.
+     * @param id The unique ID of the preference link to remove.
      */
-    public void removeEntry(String key) {
-        mEntries.remove(key);
+    public void removeEntry(String id) {
+        mEntries.remove(id);
+    }
+
+    /**
+     * Removes a preference entry of a given key from the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the key belongs.
+     * @param key Key name of the preference entry.
+     */
+    public void removeEntryForKey(String prefFragment, String key) {
+        removeEntry(PreferenceParser.createUniqueId(prefFragment, key));
     }
 
     /** Set the flag indicating the index became stale and needs reindexing. */

@@ -246,7 +246,7 @@ public class SettingsSearchCoordinator {
     @EnsuresNonNull("mIndexData")
     private void initIndex() {
         if (mIndexData == null) {
-            mIndexData = new SettingsIndexData();
+            mIndexData = SettingsIndexData.createInstance();
         } else {
             if (!mIndexData.needsIndexing()) return;
         }
@@ -768,5 +768,8 @@ public class SettingsSearchCoordinator {
     public void destroy() {
         // Title supplier should be nulled out as we step out of Settings for cleanup.
         SearchResultsPreferenceFragment.reset();
+        if (mIndexData != null) {
+            SettingsIndexData.reset();
+        }
     }
 }
