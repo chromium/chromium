@@ -126,20 +126,10 @@ void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
       permissions_details.push_back(permissions.details[i]);
     }
 
-    ScopedJavaLocalRef<jstring> java_permissions_heading =
-        ConvertUTF16ToJavaString(env, permissions_heading);
-    ScopedJavaLocalRef<jobjectArray> java_permissions_text_array =
-        base::android::ToJavaArrayOfStrings(env, permissions_text);
-    ScopedJavaLocalRef<jobjectArray> java_permissions_details_array =
-        base::android::ToJavaArrayOfStrings(env, permissions_details);
-    ScopedJavaLocalRef<jstring> java_permissions_show_details =
-        ConvertUTF16ToJavaString(env, permissions_show_details);
-    ScopedJavaLocalRef<jstring> java_permissions_hide_details =
-        ConvertUTF16ToJavaString(env, permissions_hide_details);
     Java_ExtensionInstallDialogBridge_withPermissions(
-        env, java_object_, java_permissions_heading,
-        java_permissions_text_array, java_permissions_details_array,
-        java_permissions_show_details, java_permissions_hide_details);
+        env, java_object_, permissions_heading, permissions_text,
+        permissions_details, permissions_show_details,
+        permissions_hide_details);
   }
 
   bool requires_justification =
@@ -151,21 +141,13 @@ void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
     std::u16string justification_placeholder = l10n_util::GetStringUTF16(
         IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_PLACEHOLDER);
 
-    ScopedJavaLocalRef<jstring> java_justification_heading =
-        ConvertUTF16ToJavaString(env, justification_heading);
-    ScopedJavaLocalRef<jstring> java_justification_placeholder =
-        ConvertUTF16ToJavaString(env, justification_placeholder);
     Java_ExtensionInstallDialogBridge_withJustification(
-        env, java_object_, java_justification_heading,
-        java_justification_placeholder);
+        env, java_object_, justification_heading, justification_placeholder);
   }
 
   Java_ExtensionInstallDialogBridge_buildDialog(
-      env, java_object_,
-      ConvertUTF16ToJavaString(env, prompt_->GetDialogTitle()),
-      gfx::ConvertToJavaBitmap(prompt_->icon().AsBitmap()),
-      ConvertUTF16ToJavaString(env, prompt_->GetAcceptButtonLabel()),
-      ConvertUTF16ToJavaString(env, prompt_->GetAbortButtonLabel()));
+      env, java_object_, prompt_->GetDialogTitle(), prompt_->icon().AsBitmap(),
+      prompt_->GetAcceptButtonLabel(), prompt_->GetAbortButtonLabel());
 }
 
 }  // namespace extensions

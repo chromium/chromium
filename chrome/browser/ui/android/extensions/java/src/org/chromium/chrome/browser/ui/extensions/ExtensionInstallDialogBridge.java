@@ -23,6 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -88,7 +89,10 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
      */
     @CalledByNative
     public void buildDialog(
-            String title, Bitmap iconBitmap, String acceptButtonLabel, String cancelButtonLabel) {
+            @JniType("std::u16string") final String title,
+            @JniType("SkBitmap") final Bitmap iconBitmap,
+            @JniType("std::u16string") final String acceptButtonLabel,
+            @JniType("std::u16string") final String cancelButtonLabel) {
         Drawable iconDrawable = new BitmapDrawable(mContext.getResources(), iconBitmap);
         mPropertyModelBuilder
                 .with(ModalDialogProperties.TITLE, title)
@@ -112,11 +116,11 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
      */
     @CalledByNative
     public void withPermissions(
-            String permissionsHeading,
-            String[] permissionsText,
-            String[] permissionsDetails,
-            String permissionsShowDetails,
-            String permissionsHideDetails) {
+            @JniType("std::u16string") final String permissionsHeading,
+            @JniType("std::vector<std::u16string>") final String[] permissionsText,
+            @JniType("std::vector<std::u16string>") final String[] permissionsDetails,
+            @JniType("std::u16string") final String permissionsShowDetails,
+            @JniType("std::u16string") final String permissionsHideDetails) {
         View contentView = getContentView();
         LinearLayout scrollViewContainer = contentView.findViewById(R.id.scroll_view_container);
 
@@ -181,7 +185,8 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
      */
     @CalledByNative
     public void withJustification(
-            String justificationHeading, String justificationPlaceholderText) {
+            @JniType("std::u16string") final String justificationHeading,
+            @JniType("std::u16string") final String justificationPlaceholderText) {
         View contentView = getContentView();
         LinearLayout scrollViewContainer = contentView.findViewById(R.id.scroll_view_container);
 
