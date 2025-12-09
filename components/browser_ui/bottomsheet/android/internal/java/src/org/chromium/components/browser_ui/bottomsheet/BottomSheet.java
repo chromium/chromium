@@ -23,6 +23,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -644,7 +645,7 @@ class BottomSheet extends FrameLayout
         // If the sheet contents are cleared out before #onSheetClosed is called, do not try to
         // retrieve the accessibility string.
         if (getCurrentSheetContent() != null) {
-            announceForAccessibility(
+            updateA11yPaneTitle(
                     getResources()
                             .getString(
                                     getCurrentSheetContent()
@@ -1076,7 +1077,7 @@ class BottomSheet extends FrameLayout
                     mCurrentState == SheetState.FULL
                             ? getCurrentSheetContent().getSheetFullHeightAccessibilityStringId()
                             : getCurrentSheetContent().getSheetHalfHeightAccessibilityStringId();
-            setAccessibilityPaneTitle(getResources().getString(resId));
+            updateA11yPaneTitle(getResources().getString(resId));
 
             // TalkBack will announce the content description if it has changed, so wait to set the
             // content description until after announcing full/half height.
@@ -1500,6 +1501,12 @@ class BottomSheet extends FrameLayout
 
     private void invalidateContentDesiredHeight() {
         mContentDesiredHeight = HEIGHT_UNSPECIFIED;
+    }
+
+    private void updateA11yPaneTitle(CharSequence msg) {
+        // Set the pane title for the container. The bottom sheet view is not always accessible
+        // e.g. when sheet is dismissed.
+        ViewCompat.setAccessibilityPaneTitle(mSheetContainer, msg);
     }
 
     /**
