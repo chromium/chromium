@@ -25,7 +25,7 @@ union AddAppResult {
 };
 
 // Interface for communication between an extension and the Remote Apps
-// Manager or |RemoteAppsProxyLacros|.
+// Manager.
 //
 // Next MinVersion: 3
 // Next Method ID: 5
@@ -101,17 +101,6 @@ interface RemoteAppsFactory {
   // |OnRemoteAppLaunched| event is only dispatched to the observer associated
   // with the source which added the app.
   BindRemoteAppsAndAppLaunchObserver@0(string source_id,
-         pending_receiver<RemoteApps> remote_apps,
-         pending_remote<RemoteAppLaunchObserver> observer);
-};
-
-// Bridge for binding the |RemoteApps| interfaces from Lacros to Ash. Used by
-// |RemoteAppsProxyLacros|.
-[Stable, Uuid="80d5b638-317b-4e9c-b8fc-5ecfa7ec5f30"]
-interface RemoteAppsLacrosBridge {
-  // Binds to the |RemoteApps| implementation in Ash. All |OnRemoteAppLaunched|
-  // events will be dispatched to the observer.
-  BindRemoteAppsAndAppLaunchObserverForLacros@0(
          pending_receiver<RemoteApps> remote_apps,
          pending_remote<RemoteAppLaunchObserver> observer);
 };

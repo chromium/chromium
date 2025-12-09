@@ -57,8 +57,7 @@ class RemoteAppsManager
       public apps::RemoteApps::Delegate,
       public app_list::AppListSyncableService::Observer,
       public AppListModelUpdaterObserver,
-      public chromeos::remote_apps::mojom::RemoteAppsFactory,
-      public chromeos::remote_apps::mojom::RemoteAppsLacrosBridge {
+      public chromeos::remote_apps::mojom::RemoteAppsFactory {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -86,11 +85,6 @@ class RemoteAppsManager
   void BindFactoryInterface(
       mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsFactory>
           pending_remote_apps_factory);
-
-  void BindLacrosBridgeInterface(
-      mojo::PendingReceiver<
-          chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
-          pending_remote_apps_lacros_bridge);
 
   using AddAppCallback =
       base::OnceCallback<void(const std::string& id, RemoteAppsError error)>;
@@ -158,13 +152,6 @@ class RemoteAppsManager
       mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
           pending_observer) override;
 
-  // chromeos::remote_apps::mojom::RemoteAppsLacrosBridge:
-  void BindRemoteAppsAndAppLaunchObserverForLacros(
-      mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
-          pending_remote_apps,
-      mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
-          pending_observer) override;
-
   // apps::RemoteApps::Delegate:
   const std::map<std::string, RemoteAppsModel::AppInfo>& GetApps() override;
   void LaunchApp(const std::string& app_id) override;
@@ -212,8 +199,6 @@ class RemoteAppsManager
   base::ObserverList<Observer> observer_list_;
   mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteAppsFactory>
       factory_receivers_;
-  mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
-      bridge_receivers_;
   // Map from id to callback. The callback is run after |OnAppUpdate| for the
   // app has been observed.
   std::map<std::string, AddAppCallback> add_app_callback_map_;

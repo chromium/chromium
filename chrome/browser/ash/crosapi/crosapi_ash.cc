@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -206,19 +205,6 @@ void CrosapiAsh::BindReceiver(
   if (!disconnect_handler.is_null()) {
     disconnect_handler_map_.emplace(id, std::move(disconnect_handler));
   }
-}
-
-void CrosapiAsh::BindRemoteAppsLacrosBridge(
-    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
-        receiver) {
-  ash::RemoteAppsManager* remote_apps_manager =
-      ash::RemoteAppsManagerFactory::GetForProfile(GetAshProfile());
-
-  // RemoteApps are only available for managed guest sessions.
-  if (!remote_apps_manager) {
-    return;
-  }
-  remote_apps_manager->BindLacrosBridgeInterface(std::move(receiver));
 }
 
 void CrosapiAsh::BindSensorHalClient(

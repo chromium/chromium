@@ -6,7 +6,6 @@ module crosapi.mojom;
 
 import "chromeos/components/in_session_auth/mojom/in_session_auth.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
-import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
@@ -190,13 +189,7 @@ interface Crosapi {
   // BindPolicyService@60 was removed.
   // BindPrefs@16 was removed.
   // BindNonclosableAppToastService@131 was removed.
-
-  // Binds the RemoteAppsLacrosBridge for the Remote Apps private Mojo API.
-  // Added in M103.
-  [MinVersion=74] BindRemoteAppsLacrosBridge@77(
-      pending_receiver<chromeos.remote_apps.mojom.RemoteAppsLacrosBridge>
-          receiver);
-
+  // BindRemoteAppsLacrosBridge@77 was removed.
   // BindRemoting@37 was removed.
   // BindScreenAIDownloader@113 was removed.
   // BindScreenManager@1 was removed.

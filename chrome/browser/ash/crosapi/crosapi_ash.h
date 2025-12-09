@@ -97,10 +97,6 @@ class CrosapiAsh : public mojom::Crosapi {
           receiver) override;
   void BindNetworkChange(
       mojo::PendingReceiver<mojom::NetworkChange> receiver) override;
-  void BindRemoteAppsLacrosBridge(
-      mojo::PendingReceiver<
-          chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver)
-      override;
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
