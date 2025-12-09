@@ -47,6 +47,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -420,6 +421,7 @@ void RenderViewTest::SetUp() {
   // as it's not allowed to modify them later.
   v8::V8::SetFlagsFromString("--expose-gc");
 
+  skia::InitializeFontRendering();
   // ContentClient must be initialized before Blink, because Blink now eagerly
   // loads the default stylesheets, which are fetched from the resource bundle
   // using ContentClient.

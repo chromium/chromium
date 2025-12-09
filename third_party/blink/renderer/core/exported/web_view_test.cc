@@ -51,6 +51,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -264,6 +265,7 @@ class WebViewTest : public testing::Test {
     // Advance clock so time is not 0.
     test_task_runner_->FastForwardBy(base::Seconds(1));
     EventTiming::SetTickClockForTesting(test_task_runner_->GetMockTickClock());
+    skia::InitializeFontRendering();
   }
 
   void TearDown() override {

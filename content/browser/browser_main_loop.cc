@@ -156,6 +156,7 @@
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/video_capture/public/cpp/features.h"
 #include "skia/ext/event_tracer_impl.h"
+#include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "sql/sql_memory_dump_provider.h"
@@ -1006,6 +1007,7 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
           font_render_params.subpixel_rendering),
       font_render_params.text_contrast, font_render_params.text_gamma);
   viz::GpuHostImpl::InitFontRenderParams(font_render_params);
+  skia::InitializeFontRendering();
 
 #if BUILDFLAG(IS_ANDROID)
   bool use_display_wide_color_gamut =

@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
@@ -146,6 +147,8 @@ void PageTestBase::SetUp() {
   // We do a lot of one-offs in unit tests, so update this so that every
   // single test doesn't have to.
   GetStyleEngine().UpdateViewportSize();
+
+  skia::InitializeFontRendering();
 }
 
 void PageTestBase::SetUp(gfx::Size size) {
@@ -166,6 +169,8 @@ void PageTestBase::SetUp(gfx::Size size) {
   // We do a lot of one-offs in unit tests, so update this so that every
   // single test doesn't have to.
   GetStyleEngine().UpdateViewportSize();
+
+  skia::InitializeFontRendering();
 }
 
 void PageTestBase::SetupPageWithClients(

@@ -37,6 +37,7 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -460,6 +461,8 @@ class RenderTextTest : public testing::Test {
   RenderTextTest& operator=(const RenderTextTest&) = delete;
 
  protected:
+  void SetUp() override { skia::InitializeFontRendering(); }
+
   const cc::PaintFlags& GetRendererPaint() {
     return test::RenderTextTestApi::GetRendererPaint(renderer());
   }

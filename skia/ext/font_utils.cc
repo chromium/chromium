@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -140,6 +141,11 @@ sk_sp<SkTypeface> DefaultTypeface() {
 
 SkFont DefaultFont() {
   return SkFont(DefaultTypeface());
+}
+
+void InitializeFontRendering() {
+  // for Fontations and DirectWrite to process emojis
+  skia::EnsurePNGDecoderRegistered();
 }
 
 }  // namespace skia

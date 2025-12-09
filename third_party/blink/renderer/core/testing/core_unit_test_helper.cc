@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -133,6 +134,7 @@ const HitTestResult::NodeSet& RenderingTest::RectBasedHitTest(
 
 void RenderingTest::SetUp() {
   GetChromeClient().SetUp();
+  skia::InitializeFontRendering();
   SetupPageWithClients(&GetChromeClient(), local_frame_client_,
                        SettingOverrider());
   EXPECT_TRUE(
