@@ -3326,6 +3326,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Experimental.InputTiming.InputToNavigationStart.Coverage.{WithOrWithoutUserGesture}.{InitiatorOfNavigation}"
+    enum="Boolean" expires_after="2026-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records true if PageLoad.Experimental.InputTiming.InputToNavigationStart is
+    recorded for a {InitiatorOfNavigation} {WithOrWithoutUserGesture}, and false
+    otherwise. This is recorded when the navigation actually starting.
+  </summary>
+  <token key="InitiatorOfNavigation">
+    <variant name="BrowserInitiated" summary="browser-initiated navigation"/>
+    <variant name="RendererInitiated" summary="renderer-initiated navigation"/>
+  </token>
+  <token key="WithOrWithoutUserGesture">
+    <variant name="WithoutUserGesture" summary="without a user gesture"/>
+    <variant name="WithUserGesture" summary="with a user gesture"/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromLinkClick"
     units="ms" expires_after="2026-04-12">
   <owner>spelchat@chromium.org</owner>
