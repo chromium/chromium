@@ -559,8 +559,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testResizeStripOnTabClose_DoNotAnimateIfNotMoving() {
         final int numTabs = 10;
         initializeTest(false, false, 0, numTabs);
@@ -578,15 +576,9 @@ public class StripLayoutHelperTest {
         stripLayoutHelperSpy.handleCloseButtonClick(
                 tabs[closeTabIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
                 .startAnimations(animationListCaptor.capture(), any());
@@ -598,8 +590,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void
             testResizeStripOnTabClose_DoNotAnimateIfNotVisible_OutsideVisibleBounds_ToTheRight() {
         final int numTabs = 50;
@@ -625,25 +615,17 @@ public class StripLayoutHelperTest {
         stripLayoutHelperSpy.handleCloseButtonClick(
                 tabs[closeTabIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
                 .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
-        assertEquals("There should not be an animation", 0, animationList.size());
+        assertEquals("There should 1 animation for the closing tab.", 1, animationList.size());
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void
             testResizeStripOnTabClose_DoNotAnimateIfNotVisible_OutsideVisibleBounds_ToTheLeft() {
         final int numTabs = 50;
@@ -670,26 +652,17 @@ public class StripLayoutHelperTest {
         stripLayoutHelperSpy.handleCloseButtonClick(
                 tabs[closeTabIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
                 .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
-        assertEquals(
-                "There should be 11 animations for the visible tabs.", 11, animationList.size());
+        assertEquals("There should be 1 animations for the closing tab.", 1, animationList.size());
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testResizeStripOnTabClose_AnimateTab_MovingIntoVisibleBounds() {
         final int numTabs = 50;
         initializeTest(false, false, 0, numTabs);
@@ -724,15 +697,9 @@ public class StripLayoutHelperTest {
         stripLayoutHelperSpy.handleCloseButtonClick(
                 tabs[closeTabIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
                 .startAnimations(animationListCaptor.capture(), any());
@@ -744,81 +711,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
-    public void testResizeStripOnTabClose_AnimateNtb() {
-        int numTabs = 50;
-        initializeTest(false, false, 0, numTabs);
-        // Trigger a size change so the strip layout tab heights and widths get set.
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        // Set the initial scroll offset to trigger an update to draw X positions.
-        mStripLayoutHelper.setScrollOffsetForTesting(0);
-
-        final StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
-        final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        stripLayoutHelperSpy.handleCloseButtonClick(
-                tabs[tabs.length - 1], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-
-        // Verify the initial NTB offset.
-        assertEquals(
-                mStripLayoutHelper.getNewTabButton().getOffsetX(),
-                mStripLayoutHelper.getUnpinnedTabWidthForTesting() - TAB_OVERLAP_WIDTH_DP,
-                EPSILON);
-
-        final Animator runningAnimator = stripLayoutHelperSpy.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
-        final ArgumentCaptor<List<Animator>> animationListCaptor =
-                ArgumentCaptor.forClass(List.class);
-        final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
-        stripLayoutOrder
-                .verify(stripLayoutHelperSpy)
-                .startAnimations(animationListCaptor.capture(), any());
-        final List<Animator> animationList = animationListCaptor.getValue();
-        assertEquals(
-                "There should be one animation for the NTB sliding to its new position.",
-                1,
-                animationList.size());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
-    public void testResizeStripOnTabClose_AnimateNtb_OneTab() {
-        initializeTest(
-                /* rtl= */ false, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 1);
-
-        final StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.handleCloseButtonClick(
-                tabs[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-
-        // Verify the initial NTB offset.
-        assertEquals(
-                mStripLayoutHelper.getNewTabButton().getOffsetX(),
-                mStripLayoutHelper.getUnpinnedTabWidthForTesting() - TAB_OVERLAP_WIDTH_DP,
-                EPSILON);
-
-        final Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
-        // Initial animation is the tab removal animation, and after that ends the
-        // resizeStripOnTabClose animations begin.
-        runningAnimator.end();
-
-        // Verify that the end offset is immediately set, since we skip the animations when closing
-        // the final tab.
-        float expectedOffsetX = 0.f;
-        assertEquals(
-                "The NTB offset should immediately be reset.",
-                expectedOffsetX,
-                mStripLayoutHelper.getNewTabButton().getOffsetX(),
-                EPSILON);
-    }
-
-    @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testComputeAndUpdateTabWidth_DontAnimateIfSizeNotChanging() {
         // Create a high number of tabs to ensure they're already at the minimum size
         final int numTabs = 50;
@@ -845,9 +737,8 @@ public class StripLayoutHelperTest {
         verify(stripLayoutHelperSpy).startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
         assertEquals(
-                "There should be one animation for the newly created tab width, "
-                        + "plus one more animation for the new tab y offset",
-                2,
+                "There should be one animation for the newly created tab width",
+                1,
                 animationList.size());
     }
 
@@ -2765,8 +2656,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures(ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION)
     public void testBottomIndicatorWidthAfterTabResize_UngroupedTabClosed() {
         // Arrange
         int tabCount = 6;
@@ -2799,23 +2688,10 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.handleCloseButtonClick(
                 tabs[2], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        // Assert: Animations started.
-        assertTrue(
-                "MultiStepAnimations should have started.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Assert: Animations are still running.
-        assertTrue(
-                "MultiStepAnimations should still be running.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: End the animations to apply final values.
-        mStripLayoutHelper.finishAnimations();
-
         // Act: Fake the tab closure and end the animation, so the tab is removed from the model.
         Tab closingTab = mModel.getTabAt(2);
-        mStripLayoutHelper.tabClosed(closingTab);
         mStripLayoutHelper.finishAnimations();
+        mStripLayoutHelper.tabClosed(closingTab);
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
         // - groupTitleWidth(46) - titleOverlapWidth(4) = 680.
@@ -2830,9 +2706,6 @@ public class StripLayoutHelperTest {
                     stripTab.getWidth(),
                     0.1f);
         }
-        assertFalse(
-                "MultiStepAnimations should have ended.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Check bottom indicator end width.
         float expectedEndWidth =
@@ -3905,68 +3778,26 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
-    public void testTabClosing_NoTabResize() {
-        // Arrange
-        int tabCount = 15;
-        initializeTest(false, false, 14, tabCount);
-        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        mStripLayoutHelper.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
-        setupForAnimations();
-
-        mStripLayoutHelper.updateLayout(TIMESTAMP);
-
-        // Act: Call on close tab button handler.
-        mStripLayoutHelper.handleCloseButtonClick(
-                tabs[14], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
-
-        // Assert: Animations started.
-        assertTrue(
-                "MultiStepAnimations should have started.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: Only end the first animation, so the multi-step animations are still running.
-        Tab closingTab = mModel.getTabAt(14);
-        mStripLayoutHelper.getRunningAnimatorForTesting().end();
-        mStripLayoutHelper.tabClosed(closingTab);
-
-        // Assert: Tab is closed and animations are still running.
-        int expectedTabCount = 14;
-        assertEquals(
-                "Unexpected tabs count",
-                expectedTabCount,
-                mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        assertTrue(
-                "MultiStepAnimations should still be running.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: End next set of animations to apply final values.
-        mStripLayoutHelper.finishAnimations();
-
-        // Assert: Animations completed. The tab width is not resized and drawX does not change.
-        // stripRightBound = width(800) - offsetXRight(20) = 780;
-        // visibleTabRightBound = rightBound(780)- NTBWidth(32) - endPadding(8) = 740
-        // lastTabDrawX = visibleTabRightBound(740) - tabWidth(108) = 632
-        float expectedDrawX = 632.f;
-        StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
-        for (int i = updatedTabs.length - 1; i >= 0; i--) {
-            StripLayoutTab stripTab = updatedTabs[i];
-            assertEquals("Unexpected tab width after resize.", 108.f, stripTab.getWidth(), 0);
-            assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0);
-            expectedDrawX -= TAB_WIDTH_SMALL - TAB_OVERLAP_WIDTH_DP;
-        }
-        assertFalse(
-                "MultiStepAnimations should have stopped running.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
+    public void testTabClosing_UpdateDrawProperties_NoTabResize() {
+        float expectedDrawX = 10.f; // offsetXLeft(10)
+        doTestTabClosingUpdateDrawProperties(
+                /* tabCount= */ 15, /* closingIndex= */ 14, expectedDrawX, TAB_WIDTH_SMALL);
     }
 
     @Test
-    // TODO(crbug.com/425740363): Rewrite the test to work with the animation enabled.
-    @DisableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
-    public void testTabClosing_NonLastTab_TabResize() {
+    public void testTabClosing_UpdateDrawProperties_TabResize() {
+        float expectedDrawX = 10.f; // offsetXLeft(10)
+        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
+        // = 730
+        // expectedWidth = (availableSize(730) + 2 * overlap(28)) / 3  = 262
+        float expectedWidth = 262.f;
+        doTestTabClosingUpdateDrawProperties(
+                /* tabCount= */ 4, /* closingIndex= */ 2, expectedDrawX, expectedWidth);
+    }
+
+    private void doTestTabClosingUpdateDrawProperties(
+            int tabCount, int closingIndex, float expectedDrawX, float expectedWidth) {
         // Arrange
-        int tabCount = 4;
         initializeTest(false, false, 3, tabCount);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         mStripLayoutHelper.onSizeChanged(
@@ -3977,49 +3808,25 @@ public class StripLayoutHelperTest {
 
         // Act: Call on close tab button handler.
         mStripLayoutHelper.handleCloseButtonClick(
-                tabs[2], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+                tabs[closingIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        // Assert: Animations started.
-        assertTrue(
-                "MultiStepAnimations should have started.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: Only end the first animation, so the multi-step animations are still running.
-        Tab closingTab = mModel.getTabAt(2);
+        // Act: Finish the close animations.
+        Tab closingTab = mModel.getTabAt(closingIndex);
         mStripLayoutHelper.getRunningAnimatorForTesting().end();
         mStripLayoutHelper.tabClosed(closingTab);
 
-        // Assert: Tab is closed and animations are still running.
-        int expectedTabCount = 3;
+        // Assert: Tab is closed.
+        int expectedTabCount = tabCount - 1;
         assertEquals(expectedTabCount, mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        assertTrue(
-                "MultiStepAnimations should still be running.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
-        // Act: Finish the remaining animations.
-        mStripLayoutHelper.finishAnimations();
-
-        // Assert: Animations completed. The tab width is resized, tab.drawX is changed and
-        // newTabButton.drawX is also changed.
-        float expectedDrawX = 10.f; // offsetXLeft(10)
-        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
-        // = 730
-        // ExpectedWidth = (availableSize(730) + 2 * overlap(28)) / 3  = 262
-        float expectedWidthAfterResize = 262.f;
+        // Assert: Animations completed. The tab width and drawX may have changed.
         StripLayoutTab[] updatedTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         for (int i = 0; i < updatedTabs.length; i++) {
             StripLayoutTab stripTab = updatedTabs[i];
-            assertEquals(
-                    "Unexpected tab width after resize.",
-                    expectedWidthAfterResize,
-                    stripTab.getWidth(),
-                    0.1f);
-            assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), 0.1f);
-            expectedDrawX += (expectedWidthAfterResize - TAB_OVERLAP_WIDTH_DP);
+            assertEquals("Unexpected tab width.", expectedWidth, stripTab.getWidth(), EPSILON);
+            assertEquals("Unexpected tab position.", expectedDrawX, stripTab.getDrawX(), EPSILON);
+            expectedDrawX += (expectedWidth - TAB_OVERLAP_WIDTH_DP);
         }
-        assertFalse(
-                "MultiStepAnimations should have ended.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
     }
 
     @Test
@@ -6176,7 +5983,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
     public void testTabCreated_HorizontalAnimation() {
         // Initialize with default amount of tabs. Clear any animations.
         initializeTest(false, false, 3);
@@ -6191,8 +5997,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TABLET_TAB_STRIP_ANIMATION})
-    public void testTabClosing_NoTabResize_HorizontalAnimation() {
+    public void testTabClosing_HorizontalAnimation() {
         // Arrange
         int tabCount = 10;
         initializeTest(false, false, 9, tabCount);
