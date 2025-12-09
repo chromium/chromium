@@ -192,6 +192,7 @@ constexpr CGFloat kSectionFooterHeight = 8.;
     TableViewIdentityItem* item =
         [[TableViewIdentityItem alloc] initWithType:IdentityItemType];
     item.identityViewStyle = IdentityViewStyleConsistency;
+    item.accessibilityTraits |= UIAccessibilityTraitButton;
     [configurator configureIdentityChooser:item];
     [model addItem:item toSectionWithIdentifier:IdentitySectionIdentifier];
   }
