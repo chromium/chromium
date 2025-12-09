@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.SecureEnclaveOperation.Mac.{Operation}.Error"
-    enum="MacSecurityFrameworkOSStatus" expires_after="2025-10-05">
+    enum="MacSecurityFrameworkOSStatus" expires_after="2026-10-05">
   <owner>seblalancette@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>src/crypto/OWNERS</owner>
@@ -295,6 +295,9 @@ chromium-metrics-reviews@google.com.
     Collected on Mac when a {Operation} operation failed for a
     SecureEnclave-protected ECDSA key. Represents the OSStatus code returned by
     the API corresponding with that operation.
+
+    Warning: this histogram was expired from 2025-10-06 to 2025-12-08; data may
+    be missing.
   </summary>
   <token key="Operation">
     <variant name="MessageSigning" summary="signing"/>
