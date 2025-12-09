@@ -2410,8 +2410,8 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 }
 
 void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
-    base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
-  for (raw_ptr<FormStructure, VectorExperimental> form : forms) {
+    base::span<const raw_ref<FormStructure>> forms) {
+  for (const raw_ref<FormStructure>& form : forms) {
     OnDidIdentifyFormForMetrics(
         *form, autofill_metrics::FormEventLoggerBase::FormIdentificationTime::
                    kAfterServerPredictions);
@@ -2420,7 +2420,7 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
 }
 
 void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
-    base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
+    base::span<const raw_ref<FormStructure>> forms) {
   const AutofillAiModelCache* const model_cache =
       client().GetAutofillAiModelCache();
 
@@ -2428,7 +2428,7 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
     return;
   }
 
-  for (raw_ptr<FormStructure, VectorExperimental> form : forms) {
+  for (const raw_ref<FormStructure>& form : forms) {
     if (model_cache->Contains(form->form_signature())) {
       if (MayPerformAutofillAiAction(
               client(),
@@ -2486,7 +2486,7 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
               self->client().GetVariationConfigCountryCode(),
               self_as_bam->GetCurrentPageLanguage(),
               self_as_bam->log_manager());
-          self_as_bam->LogCurrentFieldTypes(form);
+          self_as_bam->LogCurrentFieldTypes(&*form);
           self->NotifyObservers(&Observer::OnFieldTypesDetermined,
                                 form->global_id(),
                                 Observer::FieldTypeSource::kAutofillAiModel);

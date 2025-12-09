@@ -280,8 +280,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FieldGlobalId& field_id,
       const std::u16string& old_value) override;
   void OnLoadedServerPredictionsImpl(
-      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms)
-      override;
+      base::span<const raw_ref<FormStructure>> forms) override;
   void Reset() override;
 
   // Retrieves the four digit combinations from the DOM of the current web page
@@ -639,7 +638,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Updates Autofill Ai's model cache after server predictions were loaded.
   void HandleLoadedServerPredictionsForAutofillAi(
-      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms);
+      base::span<const raw_ref<FormStructure>> forms);
 
   // Calls `OnDidIdentifyForms()` on all appropriate form event loggers,
   // depending on the form types of the `form_structure`.

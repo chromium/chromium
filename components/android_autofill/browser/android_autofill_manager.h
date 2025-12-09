@@ -110,8 +110,7 @@ class AndroidAutofillManager : public AutofillManager,
       const std::u16string& old_value) override {}
 
   void OnLoadedServerPredictionsImpl(
-      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms)
-      override {}
+      base::span<const raw_ref<FormStructure>> forms) override {}
 
   bool ShouldParseForms() override;
 

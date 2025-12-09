@@ -2447,7 +2447,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   FormStructure form(form_data);
   ParseRationalizeAndSection(form);
 
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -2508,7 +2508,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   AddFieldPredictionToForm(form_data.fields()[2], NAME_LAST, form_suggestion);
 
   // Parse the response and update the field type predictions.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -2556,7 +2556,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
                            form_suggestion);
 
   // Parse the response and update the field type predictions.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -2603,7 +2603,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_JoinedTypes) {
   AddFieldPredictionToForm(form_data.fields()[1], PASSWORD, form_suggestion);
 
   // Parse the response and update the field type predictions.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -2650,7 +2650,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_NoJoinedTypes) {
   AddFieldPredictionToForm(form_data.fields()[1], PASSWORD, form_suggestion);
 
   // Parse the response and update the field type predictions.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -2700,7 +2700,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
   std::string response_string = SerializeAndEncode(response);
 
   // Parse the response and update the field type predictions.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(
       response_string, forms, test::GetEncodedSignatures(forms), nullptr);
   ASSERT_EQ(form.field_count(), 3U);
@@ -2725,8 +2725,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
 
   // Also check the extreme case of an empty form.
   FormStructure empty_form{FormData()};
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> empty_forms{
-      &empty_form};
+  std::vector<raw_ref<FormStructure>> empty_forms = {raw_ref(empty_form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), empty_forms,
                                       test::GetEncodedSignatures(empty_forms),
                                       nullptr);
@@ -2759,7 +2758,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UnknownType) {
                            form_suggestion);
 
   // Parse the response and update the field type predictions.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -2830,8 +2829,7 @@ TEST_P(AutofillCrowdsourcingEncodingPredictionPrecedenceTest,
   form.set_fields(fields);
   form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
-  forms.push_back(&form_structure);
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   // Make serialized API response.
   AutofillQueryResponse api_response;
@@ -2923,7 +2921,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Setup the query response.
   AutofillQueryResponse response;
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   std::vector<FormSignature> encoded_signatures =
       test::GetEncodedSignatures(forms);
   // Main frame response.
@@ -2974,8 +2972,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   expected_types.push_back(NO_SERVER_DATA);
 
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
-  forms.push_back(&form_structure);
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   ASSERT_GE(form.fields().size(), 6u);
 
@@ -3046,10 +3043,6 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
                   {.label = u"radio_button",
                    .form_control_type = FormControlType::kInputRadio}}});
 
-  FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
-  forms.push_back(&form_structure);
-
   // Make form 2 data.
   FormData form2 = test::GetFormData(
       {.fields = {
@@ -3059,8 +3052,10 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
             .form_control_type = FormControlType::kInputPassword},
        }});
 
+  FormStructure form_structure(form);
   FormStructure form_structure2(form2);
-  forms.push_back(&form_structure2);
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure),
+                                               raw_ref(form_structure2)};
 
   // Make serialized API response.
   AutofillQueryResponse api_response;
@@ -3117,8 +3112,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   form.set_fields({field1, field2});
   form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   // The feature is only initialized here because the parameters contain the
   // form and field signatures.
@@ -3180,8 +3174,7 @@ TEST_F(
   form.set_fields({field1, field2});
   form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
   const FormSignature kFormSignature = CalculateFormSignature(form);
 
   // The feature is only initialized here because the parameters contain the
@@ -3243,8 +3236,7 @@ TEST_F(
   form.set_fields({field1, field2, field3});
   form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
   const FormSignature kFormSignature = CalculateFormSignature(form);
 
   // The feature is only initialized here because the parameters contain the
@@ -3324,8 +3316,7 @@ TEST_F(
   form.set_fields({field1, field2, field3, field4});
   form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
   const FormSignature kFormSignature = CalculateFormSignature(form);
 
   // The feature is only initialized here because the parameters contain the
@@ -3394,8 +3385,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   form.set_fields({field1, field2});
   form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   // The feature is only initialized here because the parameters contain the
   // form and field signatures.
@@ -3453,8 +3443,7 @@ TEST_F(
   form.set_fields({field1, field2});
   form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   // The feature is only initialized here because the parameters contain the
   // form and field signatures.
@@ -3509,8 +3498,7 @@ TEST_F(
   form.set_fields({name_field, password_field});
   form.set_url(GURL("http://foo.com"));
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   // The feature is only initialized here because the parameters contain the
   // form and field signatures. Only the prediction for the first field is
@@ -3566,8 +3554,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   FormStructure form_structure(form);
   form_structure.field(0)->set_server_predictions(
       {CreateFieldPrediction(NAME_FULL)});
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
-  forms.push_back(&form_structure);
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   std::string response_string = "invalid string that cannot be parsed";
   ParseServerPredictionsQueryResponse(std::move(response_string), forms,
@@ -3594,8 +3581,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   FormStructure form_structure(form);
   form_structure.field(0)->set_server_predictions(
       {CreateFieldPrediction(NAME_FULL)});
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
-  forms.push_back(&form_structure);
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   // Make a really simple serialized API response. We don't encode it in base64.
   AutofillQueryResponse api_response;
@@ -3632,8 +3618,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
   FormStructure form_structure(form);
   ParseRationalizeAndSection(form_structure);
 
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms = {
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
@@ -3685,8 +3670,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ParseRationalizeAndSection(form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms = {
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -3732,8 +3716,7 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
   ParseRationalizeAndSection(form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms = {
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -3783,8 +3766,7 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
   ParseRationalizeAndSection(form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms = {
-      &form_structure};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form_structure)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -3834,7 +3816,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_RankEqualSignatures) {
                            form_suggestion);
 
   // Parse the response and update the field type predictions.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -3873,7 +3855,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
                            form_suggestion);
 
   // Parse the response and update the field type predictions.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);
@@ -3899,8 +3881,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseRunAutofillAiModel) {
   FormStructure form_structure(form);
   EXPECT_FALSE(form_structure.may_run_autofill_ai_model());
   ParseServerPredictionsQueryResponse(
-      SerializeAndEncode(response), {&form_structure},
-      test::GetEncodedSignatures({&form_structure}), nullptr);
+      SerializeAndEncode(response), {raw_ref(form_structure)},
+      test::GetEncodedSignatures({raw_ref(form_structure)}), nullptr);
   EXPECT_TRUE(form_structure.may_run_autofill_ai_model());
 }
 
@@ -3946,7 +3928,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseFormatString) {
                              FormatString_Type_AFFIX, "asd", form_suggestion);
 
   // Parse the response.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  std::vector<raw_ref<FormStructure>> forms = {raw_ref(form)};
   ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
                                       test::GetEncodedSignatures(forms),
                                       nullptr);

@@ -532,12 +532,12 @@ void FillUploadField(AutofillUploadContents::Field* field,
 // Perhaps a neater way would be to move this to TestFormStructure.
 std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form);
 std::vector<FormSignature> GetEncodedSignatures(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
+    const std::vector<raw_ref<FormStructure>>& forms);
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
     const FormStructure& form);
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
+    const std::vector<raw_ref<FormStructure>>& forms);
 
 // Calls the required functions on the given external delegate to cause the
 // delegate to display a popup.

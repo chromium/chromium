@@ -158,7 +158,7 @@ EncodeAutofillPageQueryRequest(
 // `ProcessServerPredictionsQueryResponse`.
 void ParseServerPredictionsQueryResponse(
     std::string_view payload,
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+    const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
     LogManager* log_manager);
 
@@ -167,7 +167,7 @@ void ParseServerPredictionsQueryResponse(
 // constructing the query.
 void ProcessServerPredictionsQueryResponse(
     const AutofillQueryResponse& response,
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+    const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
     LogManager* log_manager);
 

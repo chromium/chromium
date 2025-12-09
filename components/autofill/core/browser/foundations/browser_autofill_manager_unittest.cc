@@ -5295,8 +5295,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
 
   std::string response_string;
   ASSERT_TRUE(response.SerializeToString(&response_string));
-  std::vector<FormSignature> signatures =
-      test::GetEncodedSignatures({form_structure, form_structure2});
+  std::vector<FormSignature> signatures = test::GetEncodedSignatures(
+      {raw_ref(*form_structure), raw_ref(*form_structure2)});
 
   // Run method under test.
   base::HistogramTester histogram_tester;

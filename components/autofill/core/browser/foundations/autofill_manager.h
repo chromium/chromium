@@ -426,7 +426,7 @@ class AutofillManager
       const FieldGlobalId& field_id,
       const std::u16string& old_value) = 0;
   virtual void OnLoadedServerPredictionsImpl(
-      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) = 0;
+      base::span<const raw_ref<FormStructure>> forms) = 0;
 
   // Return whether the |forms| from OnFormSeen() should be parsed to
   // form_structures.
@@ -442,13 +442,6 @@ class AutofillManager
   virtual void OnFormProcessed(const FormData& form_data,
                                const FormStructure& form_structure) = 0;
 
-  // Returns the number of FormStructures with the given |form_signature| and
-  // appends them to |form_structures|. Runs in linear time.
-  size_t FindCachedFormsBySignature(
-      FormSignature form_signature,
-      std::vector<raw_ptr<FormStructure, VectorExperimental>>* form_structures)
-      const;
-
   // Returns true only if the previewed form should be cleared.
   virtual bool ShouldClearPreviewedForm() = 0;
 
@@ -462,6 +455,12 @@ class AutofillManager
   friend class AutofillManagerTestApi;
 
   struct AsyncContext;
+
+  // Returns the number of FormStructures with the given |form_signature| and
+  // appends them to |form_structures|. Runs in linear time.
+  size_t FindCachedFormsBySignature(
+      FormSignature form_signature,
+      std::vector<raw_ref<FormStructure>>* form_structures) const;
 
   // Parses multiple forms in one go. The function proceeds in four stages:
   //

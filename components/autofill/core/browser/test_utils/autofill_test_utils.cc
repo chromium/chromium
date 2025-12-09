@@ -12,6 +12,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/containers/to_vector.h"
 #include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
@@ -1372,12 +1373,9 @@ std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form) {
 }
 
 std::vector<FormSignature> GetEncodedSignatures(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
-  std::vector<FormSignature> all_signatures;
-  for (const FormStructure* form : forms) {
-    all_signatures.push_back(form->form_signature());
-  }
-  return all_signatures;
+    const std::vector<raw_ref<FormStructure>>& forms) {
+  return base::ToVector(
+      forms, [](const auto& form) { return form->form_signature(); });
 }
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
@@ -1386,12 +1384,10 @@ std::vector<FormSignature> GetEncodedAlternativeSignatures(
 }
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
-  std::vector<FormSignature> all_signatures;
-  for (const FormStructure* form : forms) {
-    all_signatures.push_back(form->alternative_form_signature());
-  }
-  return all_signatures;
+    const std::vector<raw_ref<FormStructure>>& forms) {
+  return base::ToVector(forms, [](const auto& form) {
+    return form->alternative_form_signature();
+  });
 }
 
 FieldPrediction CreateFieldPrediction(FieldType type,

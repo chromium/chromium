@@ -46,7 +46,7 @@ class MockAutofillManager : public AutofillManager {
               (override));
   MOCK_METHOD(void,
               OnLoadedServerPredictionsImpl,
-              ((base::span<const raw_ptr<FormStructure, VectorExperimental>>)),
+              ((base::span<const raw_ref<FormStructure>>)),
               (override));
   MOCK_METHOD(void,
               OnFormSubmittedImpl,

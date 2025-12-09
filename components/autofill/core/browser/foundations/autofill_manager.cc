@@ -500,15 +500,13 @@ AutofillManager::FindCachedFormsBySignature(
 
 size_t AutofillManager::FindCachedFormsBySignature(
     FormSignature form_signature,
-    std::vector<raw_ptr<FormStructure, VectorExperimental>>* form_structures)
-    const {
+    std::vector<raw_ref<FormStructure>>* form_structures) const {
+  DCHECK(form_structures);
   size_t hits_num = 0;
   for (const auto& [form_id, form_structure] : form_structures_) {
     if (form_structure->form_signature() == form_signature) {
       ++hits_num;
-      if (form_structures) {
-        form_structures->push_back(form_structure.get());
-      }
+      form_structures->emplace_back(*form_structure);
     }
   }
   return hits_num;
@@ -864,7 +862,7 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // Get the current valid FormStructures represented by
   // `response->queried_form_signatures`.
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> queried_forms;
+  std::vector<raw_ref<FormStructure>> queried_forms;
   queried_forms.reserve(response->queried_form_signatures.size());
   for (const auto& form_signature : response->queried_form_signatures) {
     FindCachedFormsBySignature(form_signature, &queried_forms);
@@ -877,7 +875,8 @@ void AutofillManager::OnLoadedServerPredictions(
   // TODO(crbug.com/40123827): |queried_forms| could be a set data structure;
   // their order should be irrelevant.
   DCHECK_EQ(queried_forms.size(),
-            std::set<FormStructure*>(queried_forms.begin(), queried_forms.end())
+            std::set<raw_ref<FormStructure>>(queried_forms.begin(),
+                                             queried_forms.end())
                 .size());
 
   // If there are no current forms corresponding to the queried signatures, drop
@@ -896,14 +895,14 @@ void AutofillManager::OnLoadedServerPredictions(
     driver().ExposeDomNodeIdsInAllFrames();
   }
 
-  for (const raw_ptr<FormStructure, VectorExperimental> form : queried_forms) {
+  for (const raw_ref<FormStructure>& form : queried_forms) {
     form->RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
                                        GetCurrentPageLanguage(), log_manager());
 
     autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
         *form, client().GetFormInteractionsUkmLogger(),
         driver().GetPageUkmSourceId());
-    LogCurrentFieldTypes(form.get());
+    LogCurrentFieldTypes(&*form);
 
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),
                     Observer::FieldTypeSource::kAutofillServer);
