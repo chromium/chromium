@@ -943,6 +943,8 @@ class GPU_GLES2_EXPORT WebNNTensorRepresentation
   virtual IOSurfaceRef GetIOSurface() const;
 #endif  // BUILDFLAG(IS_APPLE)
  protected:
+  friend class WrappedWebNNTensorCompoundImageRepresentation;
+
 #if BUILDFLAG(IS_WIN)
   virtual scoped_refptr<gfx::D3DSharedFence> GetAcquireFence() const = 0;
   virtual void SetReleaseFence(

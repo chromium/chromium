@@ -38,13 +38,14 @@ enum class SharedImageAccessStream {
   kDawn,
   kDawnBuffer,
   kMemory,
-  kVaapi
+  kVaapi,
+  kWebNNTensor
 };
 
 // Used to represent what access streams a backing can be used for.
 using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
                                       SharedImageAccessStream::kSkia,
-                                      SharedImageAccessStream::kVaapi>;
+                                      SharedImageAccessStream::kWebNNTensor>;
 
 // A compound backing that combines a shared memory backing and real GPU
 // backing. The real GPU backing must implement `UploadFromMemory()` and not
@@ -180,6 +181,9 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
+  std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
 

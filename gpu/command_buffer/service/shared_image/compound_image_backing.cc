@@ -42,6 +42,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/d3d_shared_fence.h"
+#endif
+
 namespace gpu {
 namespace {
 
@@ -98,6 +102,11 @@ SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream) {
       return SHARED_IMAGE_USAGE_SCANOUT;
     case SharedImageAccessStream::kVaapi:
       return SHARED_IMAGE_USAGE_VIDEO_DECODE;
+    case SharedImageAccessStream::kWebNNTensor:
+      // Note that SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR is the main usage, we
+      // always need it for WebNN, the two other(*_TENSOR_READ/WRITE) are for
+      // additional functionality in webnn (upload/readback of the tensor).
+      return SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR;
     case SharedImageAccessStream::kMemory:
       // Below usage set ensures that only SharedMemoryImageBacking will be able
       // to support this stream.
@@ -444,6 +453,53 @@ class WrappedOverlayCompoundImageRepresentation
 
  private:
   std::unique_ptr<OverlayImageRepresentation> wrapped_;
+};
+
+class WrappedWebNNTensorCompoundImageRepresentation
+    : public WebNNTensorRepresentation {
+ public:
+  WrappedWebNNTensorCompoundImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      std::unique_ptr<WebNNTensorRepresentation> wrapped)
+      : WebNNTensorRepresentation(manager, backing, tracker),
+        wrapped_(std::move(wrapped)) {
+    DCHECK(wrapped_);
+  }
+
+#if BUILDFLAG(IS_WIN)
+  scoped_refptr<gfx::D3DSharedFence> GetAcquireFence() const final {
+    return wrapped_->GetAcquireFence();
+  }
+
+  void SetReleaseFence(scoped_refptr<gfx::D3DSharedFence> release_fence) final {
+    wrapped_->SetReleaseFence(std::move(release_fence));
+  }
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const final {
+    return wrapped_->GetD3D12Buffer();
+  }
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+  IOSurfaceRef GetIOSurface() const final { return wrapped_->GetIOSurface(); }
+#endif
+
+ private:
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
+  }
+
+  bool BeginAccess() final {
+    compound_backing()->NotifyBeginAccess(wrapped_->backing(),
+                                          AccessMode::kWrite);
+    return wrapped_->BeginAccess();
+  }
+
+  void EndAccess() final { wrapped_->EndAccess(); }
+
+  std::unique_ptr<WebNNTensorRepresentation> wrapped_;
 };
 
 // static
@@ -999,6 +1055,23 @@ CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
     return nullptr;
 
   return std::make_unique<WrappedOverlayCompoundImageRepresentation>(
+      manager, this, tracker, std::move(real_rep));
+}
+
+std::unique_ptr<WebNNTensorRepresentation>
+CompoundImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
+                                         MemoryTypeTracker* tracker) {
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kWebNNTensor);
+  if (!backing) {
+    return nullptr;
+  }
+
+  auto real_rep = backing->ProduceWebNNTensor(manager, tracker);
+  if (!real_rep) {
+    return nullptr;
+  }
+
+  return std::make_unique<WrappedWebNNTensorCompoundImageRepresentation>(
       manager, this, tracker, std::move(real_rep));
 }
 
