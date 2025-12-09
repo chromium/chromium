@@ -45,24 +45,6 @@ void HideToolbarUsingUI() {
       performAction:grey_swipeSlowInDirection(kGREYDirectionUp)];
 }
 
-// Asserts that the current URL is the `expectedURL` one.
-void AssertURLIs(const GURL& expectedURL) {
-  NSString* description = [NSString
-      stringWithFormat:@"Timeout waiting for the url to be %@",
-                       base::SysUTF8ToNSString(expectedURL.GetContent())];
-
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                            expectedURL.GetContent())]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return (error == nil);
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, condition),
-             description);
-}
-
 // A PDF itself can take a little longer to appear even after the page is
 // loaded. Instead, do an additional wait for the internal PDF class to appear
 // in the view hierarchy.
@@ -325,7 +307,7 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"link2"];
   [ChromeEarlGrey waitForMainTabCount:2];
 
-  AssertURLIs(destinationURL);
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 
   // Hide the toolbar.
   HideToolbarUsingUI();
@@ -454,7 +436,8 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
 
   [ChromeEarlGrey tapWebStateElementWithID:@"link"];
-  AssertURLIs(ErrorPageResponseProvider::GetDnsFailureUrl());
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:ErrorPageResponseProvider::GetDnsFailureUrl()];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 
