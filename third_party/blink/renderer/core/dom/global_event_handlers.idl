@@ -142,6 +142,7 @@ interface mixin GlobalEventHandlers {
 
   // CSS Animations
   // https://drafts.csswg.org/css-animations/#interface-globaleventhandlers-idl
+  attribute EventHandler onanimationcancel;
   attribute EventHandler onanimationend;
   attribute EventHandler onanimationiteration;
   attribute EventHandler onanimationstart;

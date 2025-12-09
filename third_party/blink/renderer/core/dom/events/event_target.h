@@ -230,6 +230,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   // but they will only actually be web-exposed for interfaces that include
   // GlobalEventHandlers as a mixin in the idl.
   DEFINE_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(animationcancel, kAnimationcancel)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(animationend, kAnimationend)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(animationiteration, kAnimationiteration)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(animationstart, kAnimationstart)

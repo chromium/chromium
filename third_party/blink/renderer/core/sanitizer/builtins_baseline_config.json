@@ -33,6 +33,7 @@
     "onabort",
     "onactivate",
     "onafterprint",
+    "onanimationcancel",
     "onanimationend",
     "onanimationiteration",
     "onanimationstart",

@@ -175,6 +175,7 @@
     "onanimationstart",
     "onanimationiteration",
     "onanimationend",
+    "onanimationcancel",
     "onautofill",
     "onauxclick",
     "onbeforecopy",

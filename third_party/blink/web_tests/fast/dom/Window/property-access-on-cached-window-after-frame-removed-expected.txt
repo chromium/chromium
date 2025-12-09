@@ -59,6 +59,7 @@ PASS childWindow.navigator.windowControlsOverlay.ongeometrychange is null
 PASS childWindow.navigator.windowControlsOverlay.visible is false
 PASS childWindow.onabort is null
 PASS childWindow.onafterprint is null
+PASS childWindow.onanimationcancel is null
 PASS childWindow.onanimationend is null
 PASS childWindow.onanimationiteration is null
 PASS childWindow.onanimationstart is null
