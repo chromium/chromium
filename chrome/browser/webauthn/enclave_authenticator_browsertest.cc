@@ -1499,8 +1499,16 @@ IN_PROC_BROWSER_TEST_F(
 
 // Regression test for https://crbug.com/445161563 ("Chrome on Linux crashes
 // after removing passkey access in GPM settings").
+// TODO(http://crbug.com/467196933) Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MakeCredential_WhenPasskeysBecomingUnregistered \
+  DISABLED_MakeCredential_WhenPasskeysBecomingUnregistered
+#else
+#define MAYBE_MakeCredential_WhenPasskeysBecomingUnregistered \
+  MakeCredential_WhenPasskeysBecomingUnregistered
+#endif
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
-                       MakeCredential_WhenPasskeysBecomingUnregistered) {
+                       MAYBE_MakeCredential_WhenPasskeysBecomingUnregistered) {
   // Starting from the passkeys unlocked state.
   EnableUVKeySupport();
   SetTrustedVaultRecoverable();
@@ -4420,7 +4428,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_THAT(GetDeviceLog(),
               testing::HasSubstr("\"largeBlob\": \"[redacted]\""));
 }
-
 
 }  // namespace
 
