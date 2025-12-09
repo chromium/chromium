@@ -110,19 +110,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
-  int32_t client_id() const { return client_id_; }
-
-  scoped_refptr<gpu::SharedContextState> shared_context_state() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return shared_context_state_;
-  }
-
- protected:
-  // SequenceChecker for WebNNContextProviderImpl. It attaches to the sequence
-  // on which this object is constructed. All message dispatches and any access
-  // to `main_thread_task_runner_` must happen on the same sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
-
  private:
   WebNNContextProviderImpl(
       scoped_refptr<gpu::SharedContextState> shared_context_state,
@@ -140,6 +127,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
                           CreateWebNNContextCallback callback) override;
 
   base::WeakPtr<WebNNContextProviderImpl> AsWeakPtr() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
     return weak_factory_.GetWeakPtr();
   }
 
@@ -185,7 +173,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info);
 #endif  // BUILDFLAG(IS_WIN)
 
-  scoped_refptr<gpu::SharedContextState> shared_context_state_;
+  scoped_refptr<gpu::SharedContextState> shared_context_state_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;
 
@@ -198,7 +187,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // destroy all contexts.
   LoseAllContextsCallback lose_all_contexts_callback_;
 
-  mojo::ReceiverSet<mojom::WebNNContextProvider> provider_receivers_;
+  mojo::ReceiverSet<mojom::WebNNContextProvider> provider_receivers_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // Lifetime of the scheduler is managed by the GPU service. The GPU service
   // destroys the WebNNContextProviderImpl and all its contexts when it
@@ -208,7 +198,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   // Contexts created by this provider. When a context disconnects,
   // it will destroy itself by removing itself from this set.
-  WebNNContextImplSet context_impls_ GUARDED_BY_CONTEXT(sequence_checker_);
+  WebNNContextImplSet context_impls_ GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // Specifies the thread on which the GPU scheduler should run tasks.
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
@@ -223,7 +213,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   mojo::SharedRemote<viz::mojom::GpuHost> gpu_host_;
 
-  base::WeakPtrFactory<WebNNContextProviderImpl> weak_factory_{this};
+  // SequenceChecker for WebNNContextProviderImpl. It attaches to the sequence
+  // on which this object is constructed. All message dispatches and any access
+  // to `main_thread_task_runner_` must happen on the same sequence.
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
+  base::WeakPtrFactory<WebNNContextProviderImpl> weak_factory_
+      GUARDED_BY_CONTEXT(main_sequence_checker_){this};
 };
 
 }  // namespace webnn

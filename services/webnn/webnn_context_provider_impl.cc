@@ -126,7 +126,7 @@ WebNNContextProviderImpl::WebNNContextProviderImpl(
 }
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 }
 
 std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
@@ -152,12 +152,13 @@ std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
 
 void WebNNContextProviderImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<mojom::WebNNContextProvider> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   provider_receivers_.Add(this, std::move(receiver));
 }
 
 void WebNNContextProviderImpl::RemoveWebNNContextImpl(
     const blink::WebNNContextToken& handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   auto it = context_impls_.find(handle);
   CHECK(it != context_impls_.end());
   context_impls_.erase(it);
@@ -166,7 +167,7 @@ void WebNNContextProviderImpl::RemoveWebNNContextImpl(
 #if BUILDFLAG(IS_WIN)
 void WebNNContextProviderImpl::DestroyAllContextsAndKillGpuProcess(
     const std::string& reason) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // Send the contexts lost reason to the renderer process.
   for (const auto& impl : context_impls_) {
     impl->OnLost(reason);
@@ -185,7 +186,7 @@ void WebNNContextProviderImpl::SetBackendForTesting(
 void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
     WebNNContextProvider::CreateWebNNContextCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // Generates unique IDs for WebNNContextImpl.
   static base::AtomicSequenceNumber g_next_route_id;
 
@@ -321,7 +322,7 @@ void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
     mojo::ScopedDataPipeProducerHandle write_tensor_producer,
     mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
     WebNNContextImplPtr context_impl) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   if (!context_impl) {
     // TODO(crbug.com/40206287): Supporting WebNN on the platform.
@@ -347,7 +348,7 @@ void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
 base::optional_ref<WebNNContextImpl>
 WebNNContextProviderImpl::GetWebNNContextImplForTesting(
     const blink::WebNNContextToken& handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   const auto it = context_impls_.find(handle);
   if (it == context_impls_.end()) {
     mojo::ReportBadMessage(kBadMessageInvalidContext);
