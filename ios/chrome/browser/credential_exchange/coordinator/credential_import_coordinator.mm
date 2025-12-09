@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
@@ -31,12 +32,15 @@
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface CredentialImportCoordinator () <
     CredentialImportMediatorDelegate,
     CredentialImportViewControllerDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     PasskeyKeychainProviderBridgeDelegate,
     PasskeyWelcomeScreenViewControllerDelegate>
 @end
@@ -59,11 +63,21 @@
 
   // Email of the signed in user account.
   std::string _userEmail;
+
+  // Reauthentication module used in credential import flow.
+  id<ReauthenticationProtocol> _reauthModule;
+
+  // Coordinator for blocking credential import until Local Authentication is
+  // passed. Used for requiring authentication when the app is
+  // backgrounded/foregrounded with credential import opened.
+  LocalReauthenticationCoordinator* _reauthCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                      UUID:(NSUUID*)UUID {
+                                      UUID:(NSUUID*)UUID
+                              reauthModule:
+                                  (id<ReauthenticationProtocol>)reauthModule {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _UUID = UUID;
@@ -114,6 +128,7 @@
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
+  [self startReauthCoordinator];
 }
 
 - (void)showConflictResolutionScreenWithPasswords:
@@ -194,6 +209,23 @@
                 initWithRootViewController:invalidPasswordsViewController]];
 }
 
+#pragma mark - LocalReauthenticationCoordinatorDelegate
+
+- (void)successfulReauthenticationWithCoordinator:
+    (LocalReauthenticationCoordinator*)coordinator {
+  // No-op.
+}
+
+- (void)dismissUIAfterFailedReauthenticationWithCoordinator:
+    (LocalReauthenticationCoordinator*)coordinator {
+  CHECK_EQ(_reauthCoordinator, coordinator);
+  [self.delegate credentialImportCoordinatorDidFinish:self];
+}
+
+- (void)willPushReauthenticationViewController {
+  // No-op.
+}
+
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
 
 - (void)performUserVerificationIfNeeded:(ProceduralBlock)completion {
@@ -257,6 +289,20 @@
                                 animated:YES
                               completion:nil];
   return YES;
+}
+
+// Starts reauthCoordinator. Once started, it observes scene state changes and
+// requires authentication when the scene is backgrounded and then foregrounded
+// while credential import is opened.
+// TODO(crbug.com/458733320): Explore EG test feasibility.
+- (void)startReauthCoordinator {
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
+      initWithBaseNavigationController:_navigationController
+                               browser:self.browser
+                reauthenticationModule:_reauthModule
+                           authOnStart:NO];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
 }
 
 @end

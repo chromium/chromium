@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class CredentialImportCoordinator;
+@protocol ReauthenticationProtocol;
 
 // Delegate for CredentialImportCoordinator.
 @protocol CredentialImportCoordinatorDelegate
@@ -29,6 +30,8 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                       UUID:(NSUUID*)UUID
+                              reauthModule:
+                                  (id<ReauthenticationProtocol>)reauthModule
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

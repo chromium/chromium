@@ -558,6 +558,7 @@
     (CredentialImportCoordinator*)coordinator {
   CHECK_EQ(coordinator, _credentialImportCoordinator);
   [self dismissCredentialImportCoordinator];
+  [self restartReauthCoordinator];
 }
 
 #pragma mark - Private
@@ -694,11 +695,13 @@
 
 // Starts the credential import coordinator.
 - (void)startCredentialImportCoordinator {
-  // TODO(crbug.com/450982128): Dismiss reauth coordinator before starting.
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
+
   _credentialImportCoordinator = [[CredentialImportCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                            UUID:self.credentialImportUUID];
+                            UUID:self.credentialImportUUID
+                    reauthModule:self.reauthModule];
   self.credentialImportUUID = nil;
   _credentialImportCoordinator.delegate = self;
   [_credentialImportCoordinator start];
