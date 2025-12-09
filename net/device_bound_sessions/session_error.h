@@ -106,8 +106,8 @@ struct NET_EXPORT SessionError {
   explicit SessionError(ErrorType type);
   ~SessionError();
 
-  SessionError(const SessionError&) = delete;
-  SessionError& operator=(const SessionError&) = delete;
+  SessionError(const SessionError&);
+  SessionError& operator=(const SessionError&);
 
   SessionError(SessionError&&) noexcept;
   SessionError& operator=(SessionError&&) noexcept;

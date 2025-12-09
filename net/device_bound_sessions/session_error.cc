@@ -12,6 +12,8 @@ SessionError::SessionError(SessionError::ErrorType type) : type(type) {}
 
 SessionError::~SessionError() = default;
 
+SessionError::SessionError(const SessionError&) = default;
+SessionError& SessionError::operator=(const SessionError&) = default;
 SessionError::SessionError(SessionError&&) noexcept = default;
 SessionError& SessionError::operator=(SessionError&&) noexcept = default;
 
