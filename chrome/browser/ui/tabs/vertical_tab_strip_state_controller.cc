@@ -19,7 +19,10 @@
 
 namespace tabs {
 
+DEFINE_USER_DATA(VerticalTabStripStateController);
+
 VerticalTabStripStateController::VerticalTabStripStateController(
+    BrowserWindowInterface* browser_window,
     PrefService* pref_service,
     actions::ActionItem* root_action_item,
     SessionService* session_service,
@@ -27,7 +30,9 @@ VerticalTabStripStateController::VerticalTabStripStateController(
     : pref_service_(pref_service),
       root_action_item_(root_action_item),
       session_service_(session_service),
-      session_id_(session_id) {
+      session_id_(session_id),
+      scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
+                                *this) {
   pref_change_registrar_.Init(pref_service_);
 
   pref_change_registrar_.Add(
@@ -49,6 +54,12 @@ VerticalTabStripStateController::~VerticalTabStripStateController() {
     session_service_->RemoveObserver(this);
     session_service_ = nullptr;
   }
+}
+
+// static
+VerticalTabStripStateController* VerticalTabStripStateController::From(
+    BrowserWindowInterface* browser_window) {
+  return Get(browser_window->GetUnownedUserDataHost());
 }
 
 bool VerticalTabStripStateController::ShouldDisplayVerticalTabs() const {

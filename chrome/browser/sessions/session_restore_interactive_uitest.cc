@@ -248,40 +248,23 @@ class SessionRestoreVerticalTabsInteractiveTest
 IN_PROC_BROWSER_TEST_F(SessionRestoreVerticalTabsInteractiveTest,
                        VerifyVerticalTabsSessionRestore) {
   // Enable vertical tabs.
-  browser()
-      ->browser_window_features()
-      ->vertical_tab_strip_state_controller()
-      ->SetVerticalTabsEnabled(true);
+  auto* controller = tabs::VerticalTabStripStateController::From(browser());
+  controller->SetVerticalTabsEnabled(true);
 
   // Set Collapsed State and Uncollapsed Width.
-  browser()
-      ->browser_window_features()
-      ->vertical_tab_strip_state_controller()
-      ->SetCollapsed(kIsCollapsed);
-  browser()
-      ->browser_window_features()
-      ->vertical_tab_strip_state_controller()
-      ->SetUncollapsedWidth(kUncollapsedWidth);
+  controller->SetCollapsed(kIsCollapsed);
+  controller->SetUncollapsedWidth(kUncollapsedWidth);
 
-  ASSERT_TRUE(browser()
-                  ->browser_window_features()
-                  ->vertical_tab_strip_state_controller()
-                  ->IsCollapsed() == kIsCollapsed);
-  ASSERT_TRUE(browser()
-                  ->browser_window_features()
-                  ->vertical_tab_strip_state_controller()
-                  ->GetUncollapsedWidth() == 200);
+  ASSERT_TRUE(controller->IsCollapsed() == kIsCollapsed);
+  ASSERT_TRUE(controller->GetUncollapsedWidth() == 200);
 
   // Quit and restore.
-  Browser* restored_browser = QuitBrowserAndRestore(browser());
+  Browser* const restored_browser = QuitBrowserAndRestore(browser());
+  controller = tabs::VerticalTabStripStateController::From(restored_browser);
 
   // Verify states persist after session restore.
-  ASSERT_TRUE(restored_browser->browser_window_features()
-                  ->vertical_tab_strip_state_controller()
-                  ->IsCollapsed() == kIsCollapsed);
-  ASSERT_TRUE(restored_browser->browser_window_features()
-                  ->vertical_tab_strip_state_controller()
-                  ->GetUncollapsedWidth() == kUncollapsedWidth);
+  ASSERT_TRUE(controller->IsCollapsed() == kIsCollapsed);
+  ASSERT_TRUE(controller->GetUncollapsedWidth() == kUncollapsedWidth);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

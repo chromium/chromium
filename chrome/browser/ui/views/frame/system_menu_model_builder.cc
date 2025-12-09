@@ -112,9 +112,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    if (browser()
-            ->browser_window_features()
-            ->vertical_tab_strip_state_controller()
+    if (tabs::VerticalTabStripStateController::From(browser())
             ->ShouldDisplayVerticalTabs()) {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  IDS_SWITCH_TO_HORIZONTAL_TAB);

@@ -2203,7 +2203,7 @@ void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser) {
 
 void ToggleVerticalTabs(Browser* browser) {
   tabs::VerticalTabStripStateController* controller =
-      browser->GetFeatures().vertical_tab_strip_state_controller();
+      tabs::VerticalTabStripStateController::From(browser);
   if (!controller) {
     return;
   }

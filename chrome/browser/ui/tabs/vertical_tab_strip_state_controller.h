@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+class BrowserWindowInterface;
 class PrefService;
 class SessionService;
 
@@ -23,7 +25,10 @@ namespace tabs {
 
 class VerticalTabStripStateController : public SessionServiceBaseObserver {
  public:
+  DECLARE_USER_DATA(VerticalTabStripStateController);
+
   explicit VerticalTabStripStateController(
+      BrowserWindowInterface* browser_window,
       PrefService* pref_service,
       actions::ActionItem* root_action_item,
       SessionService* session_service,
@@ -33,6 +38,9 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver {
   VerticalTabStripStateController& operator=(
       const VerticalTabStripStateController&) = delete;
   ~VerticalTabStripStateController() override;
+
+  static VerticalTabStripStateController* From(
+      BrowserWindowInterface* browser_window);
 
   bool ShouldDisplayVerticalTabs() const;
   void SetVerticalTabsEnabled(bool enabled);
@@ -73,6 +81,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver {
   const SessionID session_id_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
       on_state_changed_callback_list_;
+  ui::ScopedUnownedUserData<VerticalTabStripStateController>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace tabs

@@ -93,9 +93,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
 // This test checks that we can click the show tabs at the top button
 IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
                        MAYBE_VerifyTabsToTheTopButton) {
-  browser()
-      ->browser_window_features()
-      ->vertical_tab_strip_state_controller()
+  tabs::VerticalTabStripStateController::From(browser())
       ->SetVerticalTabsEnabled(true);
 
   EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_HORIZONTAL_TAB));

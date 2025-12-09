@@ -170,7 +170,7 @@ BrowserLiveTabContext::GetExtraDataForWindow() const {
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
     auto* controller =
-        browser_->GetFeatures().vertical_tab_strip_state_controller();
+        tabs::VerticalTabStripStateController::From(&browser_.get());
     if (controller) {
       data[tabs::VerticalTabStripStateController::kCollapsedKey] =
           base::ToString(controller->IsCollapsed());

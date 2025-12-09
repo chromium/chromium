@@ -42,9 +42,7 @@ class VerticalTabStripRegionViewTest : public InProcessBrowserTest {
   }
 
   tabs::VerticalTabStripStateController* controller() {
-    return browser()
-        ->browser_window_features()
-        ->vertical_tab_strip_state_controller();
+    return tabs::VerticalTabStripStateController::From(browser());
   }
 
  protected:

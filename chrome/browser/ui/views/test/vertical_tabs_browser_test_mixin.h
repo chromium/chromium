@@ -51,9 +51,7 @@ class VerticalTabsBrowserTestMixin : public T {
   TabStripModel* tab_strip_model() { return T::browser()->tab_strip_model(); }
 
   tabs::VerticalTabStripStateController* vertical_tab_strip_state_controller() {
-    return T::browser()
-        ->browser_window_features()
-        ->vertical_tab_strip_state_controller();
+    return tabs::VerticalTabStripStateController::From(T::browser());
   }
 
   VerticalTabStripController* vertical_tab_strip_controller() {

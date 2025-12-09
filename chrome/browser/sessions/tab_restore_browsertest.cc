@@ -3159,7 +3159,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreVerticalTabsTest,
   AddFileSchemeTabs(browser(), 1);
 
   auto* state_controller =
-      browser()->GetFeatures().vertical_tab_strip_state_controller();
+      tabs::VerticalTabStripStateController::From(browser());
   state_controller->SetCollapsed(kIsCollapsed);
   state_controller->SetUncollapsedWidth(kUncollapsedWidth);
 
@@ -3183,7 +3183,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreVerticalTabsTest,
 
   // Verify the state.
   auto* new_state_controller =
-      restored_browser->GetFeatures().vertical_tab_strip_state_controller();
+      tabs::VerticalTabStripStateController::From(restored_browser);
   EXPECT_EQ(new_state_controller->IsCollapsed(), kIsCollapsed);
   EXPECT_EQ(new_state_controller->GetUncollapsedWidth(), kUncollapsedWidth);
 }

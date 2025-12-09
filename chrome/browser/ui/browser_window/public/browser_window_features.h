@@ -312,10 +312,6 @@ class BrowserWindowFeatures {
     return tab_declutter_controller_.get();
   }
 
-  tabs::VerticalTabStripStateController* vertical_tab_strip_state_controller() {
-    return vertical_tab_strip_state_controller_.get();
-  }
-
   tabs::GlicNudgeController* glic_nudge_controller() {
     return glic_nudge_controller_.get();
   }

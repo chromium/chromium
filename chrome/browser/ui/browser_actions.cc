@@ -631,7 +631,7 @@ void BrowserActions::InitializeBrowserActions() {
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
                   auto* controller =
-                      bwi->GetFeatures().vertical_tab_strip_state_controller();
+                      tabs::VerticalTabStripStateController::From(bwi);
                   controller->SetCollapsed(!controller->IsCollapsed());
                 },
                 bwi))

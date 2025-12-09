@@ -981,7 +981,7 @@ BrowserView::BrowserView(Browser* browser)
     // TODO(466091787): just use BWI.
     auto vertical_tab_strip_container =
         std::make_unique<VerticalTabStripRegionView>(
-            browser_->GetFeatures().vertical_tab_strip_state_controller(),
+            tabs::VerticalTabStripStateController::From(browser_),
             browser_->GetActions()->root_action_item(), browser_);
 
     vertical_tab_strip_container_ =
@@ -1026,11 +1026,9 @@ BrowserView::BrowserView(Browser* browser)
         browser_->get_vertical_tabs_initial_uncollapsed_width();
     if (restored_state_collapsed.has_value() &&
         restored_state_uncollapsed_width.has_value()) {
-      browser_->GetFeatures()
-          .vertical_tab_strip_state_controller()
-          ->SetCollapsed(restored_state_collapsed.value());
-      browser_->GetFeatures()
-          .vertical_tab_strip_state_controller()
+      tabs::VerticalTabStripStateController::From(browser)->SetCollapsed(
+          restored_state_collapsed.value());
+      tabs::VerticalTabStripStateController::From(browser_)
           ->SetUncollapsedWidth(restored_state_uncollapsed_width.value());
     }
   }
@@ -1043,8 +1041,7 @@ BrowserView::BrowserView(Browser* browser)
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
     vertical_tab_subscription_ =
-        browser_->browser_window_features()
-            ->vertical_tab_strip_state_controller()
+        tabs::VerticalTabStripStateController::From(browser_)
             ->RegisterOnStateChanged(base::BindRepeating(
                 &BrowserView::OnVerticalTabStripStateChanged,
                 base::Unretained(this)));
@@ -1305,16 +1302,13 @@ bool BrowserView::ShouldDrawTabStrip() const {
 
 bool BrowserView::ShouldDrawVerticalTabStrip() const {
   return ShouldDrawTabStrip() && tabs::IsVerticalTabsFeatureEnabled() &&
-         browser()
-             ->browser_window_features()
-             ->vertical_tab_strip_state_controller()
+         tabs::VerticalTabStripStateController::From(browser_)
              ->ShouldDisplayVerticalTabs();
 }
 
 bool BrowserView::IsVerticalTabStripCollapsed() const {
-  if (auto* const controller = browser()
-                                   ->browser_window_features()
-                                   ->vertical_tab_strip_state_controller()) {
+  if (auto* const controller =
+          tabs::VerticalTabStripStateController::From(browser_)) {
     return controller->IsCollapsed();
   }
   return false;
@@ -4595,8 +4589,7 @@ void BrowserView::UpdateTabSearchBubbleHost() {
   }
 
   if (tabs::IsVerticalTabsFeatureEnabled() &&
-      browser_->GetFeatures()
-          .vertical_tab_strip_state_controller()
+      tabs::VerticalTabStripStateController::From(browser_)
           ->ShouldDisplayVerticalTabs()) {
     tab_search_bubble_host_ = std::make_unique<TabSearchBubbleHost>(
         vertical_tab_strip_container_->GetTopContainer()->GetTabSearchButton(),
@@ -5020,9 +5013,7 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
   // might be a popup window without a TabStrip.
   if (ShouldDrawTabStrip()) {
     if (tabs::IsVerticalTabsFeatureEnabled() &&
-        browser()
-            ->browser_window_features()
-            ->vertical_tab_strip_state_controller()
+        tabs::VerticalTabStripStateController::From(browser_)
             ->ShouldDisplayVerticalTabs()) {
       // See if the mouse pointer is within the bounds of the
       // VerticalTabStripRegionView.

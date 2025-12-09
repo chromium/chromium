@@ -131,12 +131,11 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 
   int num_tabs = indices.size();
 
-  bool showing_vertical_tabs = tabs::IsVerticalTabsFeatureEnabled() &&
-                               tab_strip->delegate()
-                                   ->GetBrowserWindowInterface()
-                                   ->GetFeatures()
-                                   .vertical_tab_strip_state_controller()
-                                   ->ShouldDisplayVerticalTabs();
+  bool showing_vertical_tabs =
+      tabs::IsVerticalTabsFeatureEnabled() &&
+      tabs::VerticalTabStripStateController::From(
+          tab_strip->delegate()->GetBrowserWindowInterface())
+          ->ShouldDisplayVerticalTabs();
 
   if (showing_vertical_tabs) {
     AddItemWithStringId(TabStripModel::CommandNewTabToRight,

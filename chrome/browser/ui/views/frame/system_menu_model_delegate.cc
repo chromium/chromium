@@ -125,8 +125,7 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
       }
       break;
     case IDC_TOGGLE_VERTICAL_TABS:
-      string_id = browser_->browser_window_features()
-                          ->vertical_tab_strip_state_controller()
+      string_id = tabs::VerticalTabStripStateController::From(browser_)
                           ->ShouldDisplayVerticalTabs()
                       ? IDS_SWITCH_TO_HORIZONTAL_TAB
                       : IDS_SWITCH_TO_VERTICAL_TAB;
