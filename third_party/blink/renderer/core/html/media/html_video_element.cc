@@ -222,11 +222,10 @@ void HTMLVideoElement::ParseAttribute(
       UpdatePosterImage();
     }
     // Notify the player when the poster image URL changes.
-    if (GetWebMediaPlayer()) {
-      GetWebMediaPlayer()->SetPoster(poster_image_url);
+    if (auto* wmp = GetWebMediaPlayer()) {
+      wmp->SetPoster(poster_image_url);
     }
     // Media remoting and picture in picture doesn't show the original poster
-    // image, instead, it shows a grayscaled and blurred copy.
     if (remoting_interstitial_)
       remoting_interstitial_->OnPosterImageChanged();
     if (picture_in_picture_interstitial_)
@@ -237,15 +236,17 @@ void HTMLVideoElement::ParseAttribute(
 }
 
 unsigned HTMLVideoElement::videoWidth() const {
-  if (!GetWebMediaPlayer())
-    return 0;
-  return GetWebMediaPlayer()->NaturalSize().width();
+  if (auto* wmp = GetWebMediaPlayer()) {
+    return wmp->NaturalSize().width();
+  }
+  return 0;
 }
 
 unsigned HTMLVideoElement::videoHeight() const {
-  if (!GetWebMediaPlayer())
-    return 0;
-  return GetWebMediaPlayer()->NaturalSize().height();
+  if (auto* wmp = GetWebMediaPlayer()) {
+    return wmp->NaturalSize().height();
+  }
+  return 0;
 }
 
 gfx::Size HTMLVideoElement::videoVisibleSize() const {
@@ -276,8 +277,9 @@ void HTMLVideoElement::UpdatePictureInPictureAvailability() {
 // using a settings. See `HTMLMediaElement::onMediaControlsEnabledChange`.
 void HTMLVideoElement::SetPersistentState(bool persistent) {
   SetPersistentStateInternal(persistent);
-  if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->SetPersistentState(persistent);
+  if (auto* wmp = GetWebMediaPlayer()) {
+    wmp->SetPersistentState(persistent);
+  }
 }
 
 void HTMLVideoElement::SetPersistentStateInternal(bool persistent) {
@@ -320,8 +322,9 @@ void HTMLVideoElement::SetPersistentStateInternal(bool persistent) {
       fullscreen_element->SetContainsPersistentVideo(false);
   }
 
-  if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
+  if (auto* wmp = GetWebMediaPlayer()) {
+    wmp->OnDisplayTypeChanged(GetDisplayType());
+  }
 }
 
 void HTMLVideoElement::CreateVisibilityTrackerIfNeeded() {
@@ -426,10 +429,9 @@ void HTMLVideoElement::RequestVisibility(
 void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
                                          const gfx::Rect& dest_rect,
                                          const cc::PaintFlags& flags) const {
-  if (!GetWebMediaPlayer()) {
-    return;
+  if (auto* wmp = GetWebMediaPlayer()) {
+    wmp->Paint(canvas, dest_rect, flags);
   }
-  GetWebMediaPlayer()->Paint(canvas, dest_rect, flags);
 }
 
 bool HTMLVideoElement::HasAvailableVideoFrame() const {
@@ -484,20 +486,20 @@ void HTMLVideoElement::DidEnterFullscreen() {
         .ExitPictureInPicture(this, nullptr);
   }
 
-  if (GetWebMediaPlayer()) {
+  if (auto* wmp = GetWebMediaPlayer()) {
     // FIXME: There is no embedder-side handling in web test mode.
     if (!WebTestSupport::IsRunningWebTest())
-      GetWebMediaPlayer()->EnteredFullscreen();
-    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
+      wmp->EnteredFullscreen();
+    wmp->OnDisplayTypeChanged(GetDisplayType());
   }
 }
 
 void HTMLVideoElement::DidExitFullscreen() {
   UpdateControlsVisibility();
 
-  if (GetWebMediaPlayer()) {
-    GetWebMediaPlayer()->ExitedFullscreen();
-    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
+  if (auto* wmp = GetWebMediaPlayer()) {
+    wmp->ExitedFullscreen();
+    wmp->OnDisplayTypeChanged(GetDisplayType());
   }
 
   if (RuntimeEnabledFeatures::VideoAutoFullscreenEnabled() &&
@@ -529,17 +531,17 @@ void HTMLVideoElement::DidMoveToNewDocument(Document& old_document) {
 }
 
 unsigned HTMLVideoElement::webkitDecodedFrameCount() const {
-  if (!GetWebMediaPlayer())
-    return 0;
-
-  return GetWebMediaPlayer()->DecodedFrameCount();
+  if (auto* wmp = GetWebMediaPlayer()) {
+    return wmp->DecodedFrameCount();
+  }
+  return 0;
 }
 
 unsigned HTMLVideoElement::webkitDroppedFrameCount() const {
-  if (!GetWebMediaPlayer())
-    return 0;
-
-  return GetWebMediaPlayer()->DroppedFrameCount();
+  if (auto* wmp = GetWebMediaPlayer()) {
+    return wmp->DroppedFrameCount();
+  }
+  return 0;
 }
 
 KURL HTMLVideoElement::PosterImageURL() const {
@@ -756,20 +758,21 @@ void HTMLVideoElement::OnExitedPictureInPicture() {
 
   PseudoStateChanged(CSSSelector::kPseudoPictureInPicture);
 
-  if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
+  if (auto* wmp = GetWebMediaPlayer()) {
+    wmp->OnDisplayTypeChanged(GetDisplayType());
+  }
 }
 
 void HTMLVideoElement::SetIsEffectivelyFullscreen(
     blink::WebFullscreenVideoStatus status) {
   is_effectively_fullscreen_ =
       status != blink::WebFullscreenVideoStatus::kNotEffectivelyFullscreen;
-  if (GetWebMediaPlayer()) {
+  if (auto* wmp = GetWebMediaPlayer()) {
     for (auto& observer : GetMediaPlayerObserverRemoteSet())
       observer->OnMediaEffectivelyFullscreenChanged(status);
 
-    GetWebMediaPlayer()->SetIsEffectivelyFullscreen(status);
-    GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
+    wmp->SetIsEffectivelyFullscreen(status);
+    wmp->OnDisplayTypeChanged(GetDisplayType());
   }
 }
 
@@ -839,11 +842,9 @@ void HTMLVideoElement::OnWebMediaPlayerCleared() {
 
 void HTMLVideoElement::RecordVideoOcclusionState(
     std::string_view occlusion_state) const {
-  if (!GetWebMediaPlayer()) {
-    return;
+  if (auto* wmp = GetWebMediaPlayer()) {
+    wmp->RecordVideoOcclusionState(occlusion_state);
   }
-
-  GetWebMediaPlayer()->RecordVideoOcclusionState(occlusion_state);
 }
 
 void HTMLVideoElement::AttributeChanged(
