@@ -2854,7 +2854,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     # Use the hash of the module_name instead of the entire name otherwise we will
     # exceed the maximum file name length (b/376452102).
     bp_module_hash = hashlib.sha256(
-        bp_module_name.encode('utf-8')).hexdigest()[:2]
+        bp_module_name.encode('utf-8')).hexdigest()[:4]
     bp_module_name = f"lib{target.crate_name}__{bp_module_hash}"
 
   if bp_module_name in blueprint.modules:
