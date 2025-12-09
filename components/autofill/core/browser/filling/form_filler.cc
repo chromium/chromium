@@ -464,6 +464,8 @@ struct FormFiller::RefillContext {
   // TODO(crbug.com/41490871): Remove in favor of
   // FormStructure::last_filling_timestamp_.
   const base::TimeTicks original_fill_time;
+  // Whether refills caused by DOM changes are allowed.
+  bool allows_automatic_refill = true;
   // The timer used to trigger a refill.
   base::OneShotTimer on_refill_timer;
   // The field type groups that were initially filled.
@@ -1028,7 +1030,12 @@ void FormFiller::FillOrPreviewForm(
 }
 
 void FormFiller::SuppressAutomaticRefills(const FillId& fill_id) {
-  NOTIMPLEMENTED();
+  RefillContext* refill_context = GetRefillContext(fill_id);
+  if (!refill_context) {
+    return;
+  }
+  refill_context->on_refill_timer.Stop();
+  refill_context->allows_automatic_refill = false;
 }
 
 void FormFiller::MaybeTriggerAutomaticRefill(
@@ -1041,7 +1048,8 @@ void FormFiller::MaybeTriggerAutomaticRefill(
   // Should not refill if a form with the same FormGlobalId has not been filled
   // before or if it has been refilled before.
   RefillContext* refill_context = GetRefillContext(form_structure.global_id());
-  if (!refill_context || refill_context->attempted_refill) {
+  if (!refill_context || !refill_context->allows_automatic_refill ||
+      refill_context->attempted_refill) {
     return;
   }
 
@@ -1192,6 +1200,13 @@ void FormFiller::SetRefillContext(FormGlobalId form_id,
 
 FormFiller::RefillContext* FormFiller::GetRefillContext(FormGlobalId form_id) {
   auto it = refill_context_.find(form_id);
+  return it != refill_context_.end() ? it->second.get() : nullptr;
+}
+
+FormFiller::RefillContext* FormFiller::GetRefillContext(const FillId& fill_id) {
+  auto it = std::ranges::find_if(refill_context_, [&](const auto& p) {
+    return p.second && p.second->fill_id == fill_id;
+  });
   return it != refill_context_.end() ? it->second.get() : nullptr;
 }
 

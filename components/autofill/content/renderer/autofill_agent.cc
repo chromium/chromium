@@ -997,6 +997,12 @@ void AutofillAgent::ApplyFieldsAction(
     return;
   }
 
+  if (document.HasEventListeners(WebNode::EventType::kAutofill)) {
+    if (auto* autofill_driver = unsafe_autofill_driver()) {
+      autofill_driver->SuppressAutomaticRefills(fill_id);
+    }
+  }
+
   ClearPreviewedForm();
   if (action_persistence == mojom::ActionPersistence::kPreview) {
     previewed_elements_ =

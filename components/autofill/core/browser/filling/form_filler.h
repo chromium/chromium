@@ -201,6 +201,7 @@ class FormFiller {
                         std::unique_ptr<RefillContext> context);
 
   RefillContext* GetRefillContext(FormGlobalId form_id);
+  RefillContext* GetRefillContext(const FillId& fill_id);
 
   // Schedules a call of TriggerRefill. Virtual for testing.
   virtual void ScheduleRefill(const FormData& form,

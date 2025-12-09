@@ -2045,6 +2045,69 @@ TEST_F(RefillTest, SelectOptionsChanged_IrrelevantSelectField) {
   }
 }
 
+// Test fixture for FormFiller::SuppressAutomaticRefills().
+class RefillTest_SuppressAutomaticRefills
+    : public RefillTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool should_suppress_automatic_refills() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         RefillTest_SuppressAutomaticRefills,
+                         testing::Bool());
+
+// Tests that SuppressAutomaticRefills() prevents automatic refills for the
+// given FillId.
+//
+// If `should_suppress_automatic_refills()` is false, the test calls
+// SuppressAutomaticRefills() with a random FillId. Since no such fill exists,
+// a refill is expected.
+TEST_P(RefillTest_SuppressAutomaticRefills, SuppressAutomaticRefills) {
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_driver(), ApplyFormAction)
+        .WillOnce(
+            [&](mojom::FormActionType action_type,
+                mojom::ActionPersistence action_persistence,
+                base::span<const FormFieldData> data, const FillId& fill_id,
+                bool supports_refill, const url::Origin& triggered_origin,
+                const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
+                const Section& section_for_clear_form_on_ios) {
+              mock_form_filler().SuppressAutomaticRefills(
+                  should_suppress_automatic_refills() ? fill_id
+                                                      : FillId::Create());
+              return std::vector<FieldGlobalId>{};
+            });
+    EXPECT_CALL(check, Call("initial fill complete"));
+    EXPECT_CALL(mock_form_filler(), ScheduleRefill)
+        .Times(should_suppress_automatic_refills() ? 0 : 1);
+  }
+
+  CreditCard credit_card = test::GetCreditCard();
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
+           {.role = CREDIT_CARD_NUMBER, .autocomplete_attribute = "cc-number"},
+           {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+            .autocomplete_attribute = "cc-exp"}}});
+
+  FormFieldData cvc_field = form.fields().back();
+  test_api(form).fields().pop_back();
+  FormsSeen({form});
+
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &credit_card,
+      *GetFormStructure(form),
+      *GetAutofillField(form.global_id(), form.fields().front().global_id()),
+      AutofillTriggerSource::kPopup);
+  check.Call("initial fill complete");
+
+  test_api(form).fields().push_back(std::move(cvc_field));
+  FormsSeen({form});
+}
+
 // The following Refill Tests ensure that Autofill can handle the situation
 // where it fills a credit card form with an expiration date like 04/2999
 // and the website tries to reformat the input with whitespaces around the
