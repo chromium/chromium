@@ -17,6 +17,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
+#include "components/secure_embed/browser/secure_embed_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -520,12 +521,12 @@ void FrameNodeImpl::SetViewportIntersection(
 
   // The outermost main frame or embedder is always fully intersecting with the
   // viewport, so it is not tracked.
-  if (!parent_or_outer_document_or_embedder()) {
-    // TODO(secure-embed): fix this. The PerformanceManagerTabHelper needs to
-    // observe the secure-embed at attachment time.
-    // mojo::ReportBadMessage(
-    //     "The viewport intersection is never sent for the outermost main "
-    //     "frame.");
+  if (!parent_or_outer_document_or_embedder() &&
+      !secure_embed::IsSecureEmbedGuestWebContents(
+          page_node()->GetWebContents().get())) {
+    mojo::ReportBadMessage(
+        "The viewport intersection is never sent for the outermost main "
+        "frame.");
     return;
   }
 
@@ -535,7 +536,8 @@ void FrameNodeImpl::SetViewportIntersection(
 
   // Inherit the state from the parent or outer document or embedder if
   // SetIsIntersectingLargeArea() was not called for this frame.
-  if (!has_is_intersecting_large_area_updates_) {
+  if (!has_is_intersecting_large_area_updates_ &&
+      parent_or_outer_document_or_embedder()) {
     is_intersecting_large_area_ =
         parent_or_outer_document_or_embedder()->IsIntersectingLargeArea();
   }

@@ -57,7 +57,6 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
       content::SecureEmbedConnector::FocusOperation focus_op) override;
   void ChildProcessGone() override;
   void DetachedByHost() override;
-  content::RenderFrameHost* ParentFrame() override;
   bool IsAttachedForTesting() const override;
 
  private:

@@ -34,7 +34,6 @@ class FrameNodeImpl;
 // host to the frame graph entity.
 class PerformanceManagerTabHelper
     : public content::WebContentsObserver,
-      public content::SecureEmbedConnector::Observer,
       public content::WebContentsUserData<PerformanceManagerTabHelper> {
  public:
   // Observer interface to be notified when a PerformanceManagerTabHelper is
@@ -108,14 +107,6 @@ class PerformanceManagerTabHelper
   void OnWebContentsLostFocus(
       content::RenderWidgetHost* render_widget_host) override;
   void AboutToBeDiscarded(content::WebContents* new_contents) override;
-
-  // SecureEmbedConnector::Observer overrides.
-  void OnSecureEmbedAttached(content::RenderFrameHost* parent_frame,
-                             content::WebContents* parent_web_contents,
-                             content::WebContents* child_web_contents) override;
-  void OnSecureEmbedDetached(content::RenderFrameHost* parent_frame,
-                             content::WebContents* parent_web_contents,
-                             content::WebContents* child_web_contents) override;
 
   void BindDocumentCoordinationUnit(
       content::RenderFrameHost* render_frame_host,

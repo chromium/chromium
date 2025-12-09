@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "secure_embed_host.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 
@@ -94,7 +95,11 @@ void SecureEmbedHost::AttachConnector(int64_t content_id) {
   DetachConnector();
 
   guest_contents_ = web_contents_to_attach->GetWeakPtr();
-  content::SecureEmbedConnector::Attach(web_contents_to_attach, this);
+  content::WebContents* parent_web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(render_frame_host_id_));
+  content::SecureEmbedConnector::Attach(parent_web_contents,
+                                        web_contents_to_attach, this);
 
   ++attached_instance_count_for_testing_;
 
@@ -215,10 +220,6 @@ void SecureEmbedHost::FocusInEmbedder(
   }
 
   secure_embed_->RequestFocus(mojo_focus_op);
-}
-
-content::RenderFrameHost* SecureEmbedHost::ParentFrame() {
-  return content::RenderFrameHost::FromID(render_frame_host_id_);
 }
 
 content::SecureEmbedConnector* SecureEmbedHost::GetConnector() {

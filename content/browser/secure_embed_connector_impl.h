@@ -69,9 +69,6 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   // SecureEmbedConnector:
   SecureEmbedConnector::Delegate* GetDelegate() override;
 
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-
   // CrossProcessFrameConnectorBase:
   // TODO(secure-embed): Some of the methods that we override here don't need to
   // be on CrossProcessFrameConnectorBase class at all. Go through them and
@@ -148,10 +145,6 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
 
   void OnRenderViewReady();
 
-  // Call to notify observers of attachment and detachment.
-  void AfterAttached();
-  void BeforeDetached();
-
  private:
   // Forward decl for internal observer that tracks WebContents events and
   // forwards them to this class.
@@ -222,8 +215,6 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   bool is_throttled_ = false;
   bool subtree_throttled_ = false;
   bool display_locked_ = false;
-
-  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace content

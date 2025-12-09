@@ -7,6 +7,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/features.h"
+#include "components/secure_embed/browser/secure_embed_utils.h"
 
 namespace performance_manager {
 
@@ -141,7 +142,10 @@ void FrameVisibilityDecorator::OnCurrentFrameChanged(
 
 void FrameVisibilityDecorator::OnViewportIntersectionChanged(
     const FrameNode* frame_node) {
-  CHECK(frame_node->GetParentOrOuterDocumentOrEmbedder());
+  if (!secure_embed::IsSecureEmbedGuestWebContents(
+          frame_node->GetPageNode()->GetWebContents().get())) {
+    CHECK(frame_node->GetParentOrOuterDocumentOrEmbedder());
+  }
   CHECK_NE(frame_node->GetViewportIntersection(),
            ViewportIntersection::kUnknown);
   OnFramePropertyChanged(frame_node);
