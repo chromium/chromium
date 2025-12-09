@@ -150,11 +150,6 @@ void CloseGroupAtIndex(int group_cell_index) {
 
 // Tests that TabGroupAppInterface creates synced tab groups correctly.
 - (void)testPreparedSyncedTabGroups {
-  // TODO(crbug.com/454868683): Re-enable the test.
-  if (@available(iOS 26.1, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
-  }
-
   GREYAssertEqual(0, [TabGroupAppInterface countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
   [TabGroupAppInterface prepareFakeSyncedTabGroups:3];
@@ -376,11 +371,6 @@ void CloseGroupAtIndex(int group_cell_index) {
 // Tests deleting a saved group from a distant device while the same group is
 // being viewed in the tab group view on the current device.
 - (void)testDeleteGroupOnAnotherDevice {
-  // TODO(crbug.com/454868683): Re-enable the test.
-  if (@available(iOS 26.1, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
-  }
-
   [TabGroupAppInterface prepareFakeSyncedTabGroups:1];
 
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
