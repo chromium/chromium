@@ -5,6 +5,7 @@
 #include "components/cronet/metrics_util.h"
 
 #include "base/check.h"
+#include "base/time/time.h"
 
 namespace cronet {
 
@@ -17,7 +18,8 @@ int64_t ConvertTime(const base::TimeTicks& ticks,
     return kNullTime;
   }
   DCHECK(!start_time.is_null());
-  return (start_time + (ticks - start_ticks)).InMillisecondsSinceUnixEpoch();
+  return (start_time + (ticks - start_ticks) - base::Time::UnixEpoch())
+      .InMicroseconds();
 }
 
 }  // namespace metrics_util

@@ -470,10 +470,10 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getReadCount()).isGreaterThan(0);
         assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
-        assertThat(trafficInfo.getTimeToEstablishDNSMillis()).isGreaterThan(-1);
-        assertThat(trafficInfo.getTimeToEstablishSSLMillis()).isGreaterThan(0);
-        assertThat(trafficInfo.getTimeToConnectMillis()).isGreaterThan(0);
-        assertThat(trafficInfo.getTimeToSendFirstByteMillis()).isGreaterThan(0);
+        assertThat(trafficInfo.getTimeToEstablishDNSMicros()).isGreaterThan(-1);
+        assertThat(trafficInfo.getTimeToEstablishSSLMicros()).isGreaterThan(0);
+        assertThat(trafficInfo.getTimeToConnectMicros()).isGreaterThan(0);
+        assertThat(trafficInfo.getTimeToSendFirstByteMicros()).isGreaterThan(0);
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -519,10 +519,10 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(-300);
         assertThat(trafficInfo.getFailureReason())
                 .isEqualTo(CronetTrafficInfo.RequestFailureReason.NETWORK);
-        assertThat(trafficInfo.getTimeToEstablishDNSMillis()).isEqualTo(-1);
-        assertThat(trafficInfo.getTimeToEstablishSSLMillis()).isEqualTo(-1);
-        assertThat(trafficInfo.getTimeToConnectMillis()).isEqualTo(-1);
-        assertThat(trafficInfo.getTimeToSendFirstByteMillis()).isEqualTo(-1);
+        assertThat(trafficInfo.getTimeToEstablishDNSMicros()).isEqualTo(-1);
+        assertThat(trafficInfo.getTimeToEstablishSSLMicros()).isEqualTo(-1);
+        assertThat(trafficInfo.getTimeToConnectMicros()).isEqualTo(-1);
+        assertThat(trafficInfo.getTimeToSendFirstByteMicros()).isEqualTo(-1);
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -694,10 +694,10 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(0);
             assertThat(trafficInfo.getFailureReason())
                     .isEqualTo(CronetTrafficInfo.RequestFailureReason.UNKNOWN);
-            assertThat(trafficInfo.getTimeToEstablishDNSMillis()).isGreaterThan(-1);
-            assertThat(trafficInfo.getTimeToEstablishSSLMillis()).isGreaterThan(0);
-            assertThat(trafficInfo.getTimeToConnectMillis()).isGreaterThan(0);
-            assertThat(trafficInfo.getTimeToSendFirstByteMillis()).isGreaterThan(0);
+            assertThat(trafficInfo.getTimeToEstablishDNSMicros()).isGreaterThan(-1);
+            assertThat(trafficInfo.getTimeToEstablishSSLMicros()).isGreaterThan(0);
+            assertThat(trafficInfo.getTimeToConnectMicros()).isGreaterThan(0);
+            assertThat(trafficInfo.getTimeToSendFirstByteMicros()).isGreaterThan(0);
             assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
             assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
         } finally {

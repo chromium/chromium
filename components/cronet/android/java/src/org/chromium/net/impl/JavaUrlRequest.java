@@ -1047,10 +1047,10 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     /* socketReused */ false,
                     ImplVersion.getCronetVersion(),
                     CronetSource.CRONET_SOURCE_FALLBACK,
-                    /* timeToEstablishDnsMillis= */ -1,
-                    /* timeToEstablishSSLMillis= */ -1,
-                    /* timeToConnectMillis= */ -1,
-                    /* timeToSendFirstByteMillis= */ -1);
+                    /* timeToEstablishDnsMicros= */ -1,
+                    /* timeToEstablishSSLMicros= */ -1,
+                    /* timeToConnectMicros= */ -1,
+                    /* timeToSendFirstByteMicros= */ -1);
         }
 
         // Maybe report metrics. This method should only be called on Callback's executor thread and

@@ -853,19 +853,19 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     @SuppressWarnings("unused")
     @CalledByNative
     private void onMetricsCollected(
-            long requestStartMs,
-            long dnsStartMs,
-            long dnsEndMs,
-            long connectStartMs,
-            long connectEndMs,
-            long sslStartMs,
-            long sslEndMs,
-            long sendingStartMs,
-            long sendingEndMs,
-            long pushStartMs,
-            long pushEndMs,
-            long responseStartMs,
-            long requestEndMs,
+            long requestStartMicros,
+            long dnsStartMicros,
+            long dnsEndMicros,
+            long connectStartMicros,
+            long connectEndMicros,
+            long sslStartMicros,
+            long sslEndMicros,
+            long sendingStartMicros,
+            long sendingEndMicros,
+            long pushStartMicros,
+            long pushEndMicros,
+            long responseStartMicros,
+            long requestEndMicros,
             boolean socketReused,
             long sentByteCount,
             long receivedByteCount,
@@ -876,19 +876,19 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
         }
         mMetrics =
                 new CronetMetrics(
-                        requestStartMs,
-                        dnsStartMs,
-                        dnsEndMs,
-                        connectStartMs,
-                        connectEndMs,
-                        sslStartMs,
-                        sslEndMs,
-                        sendingStartMs,
-                        sendingEndMs,
-                        pushStartMs,
-                        pushEndMs,
-                        responseStartMs,
-                        requestEndMs,
+                        requestStartMicros,
+                        dnsStartMicros,
+                        dnsEndMicros,
+                        connectStartMicros,
+                        connectEndMicros,
+                        sslStartMicros,
+                        sslEndMicros,
+                        sendingStartMicros,
+                        sendingEndMicros,
+                        pushStartMicros,
+                        pushEndMicros,
+                        responseStartMicros,
+                        requestEndMicros,
                         socketReused,
                         sentByteCount,
                         receivedByteCount);
@@ -1123,18 +1123,10 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 mMetrics.getSocketReused(),
                 ImplVersion.getCronetVersion(),
                 NativeCronetEngineBuilderImpl.getCronetSource(),
-                CronetMetrics.getDateDeltaMillisOrDefault(
-                        mMetrics.getDnsStart(), mMetrics.getDnsEnd(), /* defaultValue= */ -1),
-                CronetMetrics.getDateDeltaMillisOrDefault(
-                        mMetrics.getSslStart(), mMetrics.getSslEnd(), /* defaultValue= */ -1),
-                CronetMetrics.getDateDeltaMillisOrDefault(
-                        mMetrics.getConnectStart(),
-                        mMetrics.getConnectEnd(),
-                        /* defaultValue= */ -1),
-                CronetMetrics.getDateDeltaMillisOrDefault(
-                        mMetrics.getRequestStart(),
-                        mMetrics.getSendingStart(),
-                        /* defaultValue= */ -1));
+                mMetrics.getDnsDurationInMicroseconds(),
+                mMetrics.getSSLDurationInMicroseconds(),
+                mMetrics.getConnectDurationInMicroseconds(),
+                mMetrics.getTimeToWriteFirstByteInMicroseconds());
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and

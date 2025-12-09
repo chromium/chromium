@@ -120,9 +120,9 @@ int64_t DateToMillis(Cronet_DateTimePtr date_time) {
 // Verification check that the date isn't wildly off, somehow (perhaps due to
 // read of used memory, wild pointer, etc.).
 //
-// Interpreted as milliseconds after the UNIX timestamp, this timestamp occurs
-// at 37,648 C.E.
-constexpr int64_t kDateOverrunThreshold = 1LL << 50;
+// Interpreted as microseconds after the UNIX timestamp, this timestamp occurs
+// at 38,504 C.E.
+constexpr int64_t kDateOverrunThreshold = 1LL << 60;
 
 // Basic verification checking of all Cronet_Metrics fields. For optional
 // fields, we allow the field to be non-present. Start/end pairs should be

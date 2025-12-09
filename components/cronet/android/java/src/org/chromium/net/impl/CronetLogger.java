@@ -232,10 +232,10 @@ public abstract class CronetLogger {
         private final boolean mSocketReused;
         private final String mCronetVersion;
         private final CronetSource mCronetSource;
-        private final long mTimeToEstablishDnsMillis;
-        private final long mTimeToEstablishSSLMillis;
-        private final long mTimeToConnectMillis;
-        private final long mTimeToSendFirstByteMillis;
+        private final long mTimeToEstablishDnsMicros;
+        private final long mTimeToEstablishSSLMicros;
+        private final long mTimeToConnectMicros;
+        private final long mTimeToSendFirstByteMicros;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -262,10 +262,10 @@ public abstract class CronetLogger {
                 boolean sockedReused,
                 String cronetVersion,
                 CronetSource cronetSource,
-                long timeToEstablishDnsMillis,
-                long timeToEstablishSSLMillis,
-                long timeToConnectMillis,
-                long timeToSendFirstByteMillis) {
+                long timeToEstablishDnsMicros,
+                long timeToEstablishSSLMicros,
+                long timeToConnectMicros,
+                long timeToSendFirstByteMicros) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -290,10 +290,10 @@ public abstract class CronetLogger {
             mSocketReused = sockedReused;
             mCronetVersion = cronetVersion;
             mCronetSource = cronetSource;
-            mTimeToEstablishDnsMillis = timeToEstablishDnsMillis;
-            mTimeToEstablishSSLMillis = timeToEstablishSSLMillis;
-            mTimeToConnectMillis = timeToConnectMillis;
-            mTimeToSendFirstByteMillis = timeToSendFirstByteMillis;
+            mTimeToEstablishDnsMicros = timeToEstablishDnsMicros;
+            mTimeToEstablishSSLMicros = timeToEstablishSSLMicros;
+            mTimeToConnectMicros = timeToConnectMicros;
+            mTimeToSendFirstByteMicros = timeToSendFirstByteMicros;
         }
 
         /**
@@ -414,20 +414,20 @@ public abstract class CronetLogger {
             return mCronetSource;
         }
 
-        public long getTimeToEstablishDNSMillis() {
-            return mTimeToEstablishDnsMillis;
+        public long getTimeToEstablishDNSMicros() {
+            return mTimeToEstablishDnsMicros;
         }
 
-        public long getTimeToEstablishSSLMillis() {
-            return mTimeToEstablishSSLMillis;
+        public long getTimeToEstablishSSLMicros() {
+            return mTimeToEstablishSSLMicros;
         }
 
-        public long getTimeToConnectMillis() {
-            return mTimeToConnectMillis;
+        public long getTimeToConnectMicros() {
+            return mTimeToConnectMicros;
         }
 
-        public long getTimeToSendFirstByteMillis() {
-            return mTimeToSendFirstByteMillis;
+        public long getTimeToSendFirstByteMicros() {
+            return mTimeToSendFirstByteMicros;
         }
     }
 
