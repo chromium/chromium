@@ -316,9 +316,6 @@ class AutofillManager
   // Searches for any cached form that contains a field with `field_id`.
   FormStructure* FindCachedFormById(FieldGlobalId field_id) const;
 
-  // Returns the number of forms this Autofill handler is aware of.
-  size_t NumFormsDetected() const { return form_structures_.size(); }
-
   // Forwards call to the same-named `AutofillDriver` function.
   virtual bool CanShowAutofillUi() const;
 
