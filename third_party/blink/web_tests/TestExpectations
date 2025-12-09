@@ -6297,9 +6297,6 @@ crbug.com/1137228 [ Win ] external/wpt/infrastructure/testdriver/click_iframe_cr
 #Sheriff 2020-10-21
 crbug.com/1141206 scrollbars/overflow-scrollbar-combinations.html [ Failure Pass ]
 
-# Sheriff 2020-11-04
-crbug.com/40728742 http/tests/devtools/sources/debugger-ui/continue-to-location-markers-in-top-level-function.js [ Failure Pass Timeout ]
-
 # Sheriff 2020-11-16
 crbug.com/40732030 http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Failure Pass Timeout ]
 crbug.com/1150475 fast/dom/open-and-close-by-DOM.html [ Failure Pass ]
