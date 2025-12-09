@@ -243,7 +243,8 @@ class IsolatedWebAppUpdateManagerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    data_provider_.SetManagedAllowlist({kWebBundleId1});
+    data_provider_.Update(
+        [&](auto& update) { update.AddToManagedAllowlist(kWebBundleId1); });
     AddInitialBundle();
   }
 
@@ -327,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   IwaVersion installed_version = app_isolation_data.version();
 
   // Clear the allowlist, so the app is not allowlisted
-  data_provider_.SetManagedAllowlist({});
+  data_provider_.Update([&](auto& update) { update.SetManagedAllowlist({}); });
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
@@ -1339,7 +1340,8 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        Succeeds) {
-  data_provider_.SetManagedAllowlist({web_bundle_id_});
+  data_provider_.Update(
+      [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   auto app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
           .app_id();
@@ -1375,7 +1377,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListening({app_id});
   // Key rotation should trigger a discovery in the update manager.
-  data_provider_.RotateKey(kWebBundleId1, kKeyPair2.public_key.bytes());
+  data_provider_.Update([&](auto& update) {
+    update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
+  });
   manifest_updated_observer.Wait();
 
   // The app's integrity block data must be different now due to an update.
@@ -1393,7 +1397,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        AppStopsOpeningOnUpdateFailure) {
-  data_provider_.SetManagedAllowlist({web_bundle_id_});
+  data_provider_.Update(
+      [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   auto app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
           .app_id();
@@ -1437,7 +1442,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and clear the reader cache.
-  data_provider_.RotateKey(kWebBundleId1, kKeyPair2.public_key.bytes());
+  data_provider_.Update([&](auto& update) {
+    update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
+  });
 
   // Now an attempt to open the app should display the "missing or damaged"
   // page.
@@ -1478,7 +1485,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        DoesntAffectRunningApps) {
-  data_provider_.SetManagedAllowlist({web_bundle_id_});
+  data_provider_.Update(
+      [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
   auto app_id = url_info.app_id();
@@ -1520,7 +1528,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and queue a cache clear request for this bundle reader.
-  data_provider_.RotateKey(kWebBundleId1, kKeyPair2.public_key.bytes());
+  data_provider_.Update([&](auto& update) {
+    update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
+  });
 
   // The currently open app should not be affected.
   {
@@ -1551,7 +1561,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        PolicyReprocessOnComponentUpdate) {
-  data_provider_.SetManagedAllowlist({web_bundle_id_});
+  data_provider_.Update(
+      [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id_); });
   base::HistogramTester ht;
 
   auto url_info =
@@ -1589,7 +1600,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
   waiter.BeginListening({app_id});
 
   // Key rotation should trigger a policy reprocess.
-  data_provider_.RotateKey(kWebBundleId1, kKeyPair2.public_key.bytes());
+  data_provider_.Update([&](auto& update) {
+    update.AddToKeyRotations(kWebBundleId1, kKeyPair2.public_key.bytes());
+  });
 
   waiter.Wait();
 

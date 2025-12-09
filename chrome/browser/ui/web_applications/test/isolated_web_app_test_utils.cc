@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -86,11 +88,13 @@ IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() {
 
 IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
 
-void IsolatedWebAppBrowserTestHarness::PreRunTestOnMainThread() {
+void IsolatedWebAppBrowserTestHarness::CreatedBrowserMainParts(
+    content::BrowserMainParts* parts) {
+  WebAppBrowserTestBase::CreatedBrowserMainParts(parts);
   if (auto* provider = GetRuntimeDataProvider()) {
-    resetter_ = ChromeIwaRuntimeDataProvider::SetInstanceForTesting(provider);
+    static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+        std::make_unique<FakeIwaRuntimeDataProviderInitializer>(*provider));
   }
-  WebAppBrowserTestBase::PreRunTestOnMainThread();
 }
 
 std::unique_ptr<net::EmbeddedTestServer>

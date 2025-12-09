@@ -111,7 +111,8 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIInIsolatedWebAppTest,
       IsolatedWebAppBuilder(ManifestBuilder())
           .BuildBundle(GetWebBundleId(), {test::GetDefaultEd25519KeyPair()}));
 
-  data_provider_.SetManagedAllowlist({GetWebBundleId()});
+  data_provider_.Update(
+      [&](auto& update) { update.AddToManagedAllowlist(GetWebBundleId()); });
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
       base::Value::List().Append(

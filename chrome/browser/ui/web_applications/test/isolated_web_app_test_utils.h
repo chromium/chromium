@@ -57,7 +57,7 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   ~IsolatedWebAppBrowserTestHarness() override;
 
  protected:
-  void PreRunTestOnMainThread() override;
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
 
   std::unique_ptr<net::EmbeddedTestServer> CreateAndStartServer(
       base::FilePath::StringViewType chrome_test_data_relative_root);
@@ -82,8 +82,6 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   // stable channel doesn't enable a required feature.
   // TODO(b/309153867): Remove this when underlying issue is figured out.
   extensions::ScopedCurrentChannel channel_{version_info::Channel::CANARY};
-
-  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
 
 class UpdateDiscoveryTaskResultWaiter

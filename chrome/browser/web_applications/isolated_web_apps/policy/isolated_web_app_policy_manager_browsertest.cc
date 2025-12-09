@@ -37,11 +37,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/features.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_iwa_installer_factory.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -145,6 +144,13 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 #else
     EXPECT_TRUE(is_user_session_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    IsolatedWebAppPolicyManagerTestHarness::CreatedBrowserMainParts(parts);
+    static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+        std::make_unique<FakeIwaRuntimeDataProviderInitializer>(
+            data_provider_));
   }
 
   void SetUpOnMainThread() override {
@@ -309,10 +315,8 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 
   void SetIwaAllowlist(
       const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
-    EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0.0"))
-                  .WithManagedAllowlist(managed_allowlist)
-                  .Build()
-                  .UploadFromComponentFolder());
+    data_provider_.Update(
+        [&](auto& update) { update.SetManagedAllowlist(managed_allowlist); });
   }
 
   void SetPolicyWithOneApp() {
@@ -452,6 +456,7 @@ class IsolatedWebAppPolicyManagerBrowserTestBase
 
   policy::UserPolicyBuilder device_local_account_policy_;
   const bool is_user_session_;
+  FakeIwaRuntimeDataProvider data_provider_;
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -479,32 +484,12 @@ class IsolatedWebAppPolicyManagerBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   IsolatedWebAppPolicyManagerBrowserTest()
-      : IsolatedWebAppPolicyManagerBrowserTestBase(GetParam()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-#if !BUILDFLAG(IS_CHROMEOS)
-            features::kIsolatedWebApps,
-#endif  // BUILDFLAG(IS_CHROMEOS),
-            features::kIsolatedWebAppManagedAllowlist},
-        /*disabled_features=*/
-        {});
-  }
+      : IsolatedWebAppPolicyManagerBrowserTestBase(GetParam()) {}
+
   IsolatedWebAppPolicyManagerBrowserTest(
       const IsolatedWebAppPolicyManagerBrowserTest&) = delete;
   IsolatedWebAppPolicyManagerBrowserTest& operator=(
       const IsolatedWebAppPolicyManagerBrowserTest&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  // Override the pre-install component directory and its alternative directory
-  // so that the component update will not find the pre-installed key
-  // distribution component.
-  base::ScopedPathOverride preinstalled_dir_override_{
-      component_updater::DIR_COMPONENT_PREINSTALLED};
-  base::ScopedPathOverride preinstalled_alt_dir_override_{
-      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
@@ -535,8 +520,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
   // Empty the allowlist, so the app install is not allowed.
   SetIwaAllowlist(/*managed_allowlist=*/{});
 
-  EXPECT_FALSE(web_app::ChromeIwaRuntimeDataProvider::GetInstance()
-                   .IsManagedInstallPermitted(kWebBundleId1.id()));
+  EXPECT_FALSE(
+      ChromeIwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
+          kWebBundleId1.id()));
 
   base::RunLoop run_loop;
   IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
@@ -566,16 +552,16 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
                        AppInBlocklistNotInstalled) {
   AddUser();
   // Add also to allowlist to be sure that installation is blocked by blocklist
-  EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0"))
-                .WithManagedAllowlist({kWebBundleId1, kWebBundleId2})
-                .WithBlocklist({kWebBundleId1})
-                .Build()
-                .UploadFromComponentFolder());
+
+  data_provider_.Update([&](auto& update) {
+    update.SetManagedAllowlist({kWebBundleId1, kWebBundleId2})
+        .SetBlocklist({kWebBundleId1});
+  });
 
   EXPECT_TRUE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
+      ChromeIwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
           kWebBundleId1.id()));
-  EXPECT_TRUE(IwaKeyDistributionInfoProvider::GetInstance().IsBundleBlocklisted(
+  EXPECT_TRUE(ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
       kWebBundleId1.id()));
 
   base::RunLoop run_loop;
@@ -763,10 +749,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
                        AppsRemovedAfterBeingBlocklisted) {
   AddUser();
-  EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0"))
-                .WithManagedAllowlist({kWebBundleId1, kWebBundleId2})
-                .Build()
-                .UploadFromComponentFolder());
+  data_provider_.Update([&](auto& update) {
+    update.SetManagedAllowlist({kWebBundleId1, kWebBundleId2});
+  });
   WaitForUserAdded();
 
   // Log in to the managed guest session. There is no IWA policy set at the
@@ -795,11 +780,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerBrowserTest,
     uninstall_observer.BeginListening({kAppId1, kAppId2});
 
     // Verify uninstallation takes place regardless of app allowlisting
-    EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.1"))
-                  .WithManagedAllowlist({kWebBundleId1})
-                  .WithBlocklist({kWebBundleId1, kWebBundleId2})
-                  .Build()
-                  .UploadFromComponentFolder());
+    data_provider_.Update([&](auto& update) {
+      update.SetBlocklist({kWebBundleId1, kWebBundleId2})
+          .SetManagedAllowlist({kWebBundleId1});
+    });
 
     EXPECT_THAT(uninstall_observer.Wait(), testing::AnyOf(kAppId1, kAppId2));
 

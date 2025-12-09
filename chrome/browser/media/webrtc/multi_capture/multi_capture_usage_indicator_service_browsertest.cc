@@ -20,10 +20,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -128,17 +128,9 @@ class MultiCaptureUsageIndicatorBrowserTestBase
 
     notification_observation_.Observe(&notificiation_display_service());
 
-    web_app::IwaKeyDistributionInfoProvider::GetInstance()
-        .SkipManagedAllowlistChecksForTesting(true);
-    InstallIwas();
+    SetSkipNotificationsAndManagedAllowlist();
     SetCaptureAllowList();
-    SetSkipNotificationsAllowlist();
-  }
-
-  void TearDownOnMainThread() override {
-    web_app::IwaKeyDistributionInfoProvider::GetInstance()
-        .SkipManagedAllowlistChecksForTesting(false);
-    IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
+    InstallIwas();
   }
 
   void InstallIwa(const InstalledApp& app) {
@@ -164,7 +156,6 @@ class MultiCaptureUsageIndicatorBrowserTestBase
   }
 
   void InstallIwas() {
-    base::Value::List install_iwa_force_list;
     std::set<webapps::AppId> app_ids_to_wait_for;
     for (const auto& installed_app : installed_apps_) {
       InstallIwa(installed_app);
@@ -183,16 +174,21 @@ class MultiCaptureUsageIndicatorBrowserTestBase
                  std::move(capture_allow_list));
   }
 
-  void SetSkipNotificationsAllowlist() {
-    web_app::IwaKeyDistributionInfoProvider::SpecialAppPermissions
-        special_app_permissions;
-    auto component_builder =
-        web_app::test::KeyDistributionComponentBuilder(base::Version("1.0.0"));
-    for (const auto& skipping_app : skip_notification_apps_) {
-      component_builder.AddToSpecialAppPermissions(
-          skipping_app.bundle_id, {.skip_capture_started_notification = true});
-    }
-    std::move(component_builder).Build().InjectComponentDataDirectly();
+  void SetSkipNotificationsAndManagedAllowlist() {
+    data_provider_.Update([&](auto& update) {
+      for (const auto& skipping_app : skip_notification_apps_) {
+        update.AddToSpecialPermissions(
+            skipping_app.bundle_id,
+            {.skip_capture_started_notification = true});
+      }
+      for (const auto& installed_app : installed_apps_) {
+        update.AddToManagedAllowlist(installed_app.bundle_id);
+      }
+    });
+  }
+
+  web_app::ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
+    return &data_provider_;
   }
 
   const web_app::WebApp* GetIsolatedWebApp(const webapps::AppId& app_id) {
@@ -221,6 +217,7 @@ class MultiCaptureUsageIndicatorBrowserTestBase
 
   std::map<std::string, message_center::Notification> visible_notifications_;
   web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  web_app::FakeIwaRuntimeDataProvider data_provider_;
 
  private:
   const std::vector<InstalledApp> installed_apps_;
@@ -351,6 +348,9 @@ IN_PROC_BROWSER_TEST_F(MultiCaptureUsageIndicatorDynamicAppBrowserTest,
               Property(&message_center::Notification::notifier_id,
                        Field(&message_center::NotifierId::id,
                              "multi-capture-login-privacy-indicators"))))));
+
+  data_provider_.Update(
+      [&](auto& update) { update.AddToManagedAllowlist(kApp2.bundle_id); });
 
   InstallIwa(kApp2);
   ASSERT_EQ(visible_notifications_.size(), 1u);
