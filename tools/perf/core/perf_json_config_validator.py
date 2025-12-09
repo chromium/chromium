@@ -39,7 +39,7 @@ _VALID_PERF_POOLS = {
 _VALID_WEBVIEW_BROWSERS = {
     'android-webview',
     'android-webview-google',
-    'android-webview-trichrome-google-bundle',
+    'android-webview-standalone-google',
 }
 
 _PERFORMANCE_TEST_SUITES = {
