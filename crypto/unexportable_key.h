@@ -164,6 +164,11 @@ class CRYPTO_EXPORT StatefulUnexportableKeyProvider
   // `GetAllSigningKeysSlowly()` returns all previously stored keys matching
   // `Config` or nullopt in case of failures.
   //
+  // NOTE: For macOS this will perform prefix matching on
+  // `Config::application_tag`. That is, if `Config::application_tag` is
+  // "com.example.foo", this will return keys with application tags like
+  // "com.example.foo.1", "com.example.foo.1234", etc.
+  //
   // This can sometimes block, and therefore must not be called from the UI
   // thread.
   virtual std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>

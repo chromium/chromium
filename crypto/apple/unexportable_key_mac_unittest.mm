@@ -116,6 +116,52 @@ TEST_F(UnexportableKeyMacTest, GetAllSigningKeysFiltersByTag) {
               Optional(UnorderedElementsAre(WrappedKeyEq(other_key.get()))));
 }
 
+TEST_F(UnexportableKeyMacTest, GetAllSigningKeysPerformsPrefixMatching) {
+  // 1. Create a key with the base tag "test-tag".
+  UnexportableKeyProvider::Config config = config_;
+  config.application_tag = "test-tag";
+  std::unique_ptr<UnexportableKeyProvider> provider =
+      GetUnexportableKeyProvider(config);
+  ASSERT_TRUE(provider);
+  auto key1 = provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key1);
+
+  // 2. Create a key with a longer tag "test-tag.extension".
+  // This should be visible to the first provider because "test-tag" is a
+  // prefix of "test-tag.extension".
+  UnexportableKeyProvider::Config extended_config = config_;
+  extended_config.application_tag = "test-tag.extension";
+  std::unique_ptr<UnexportableKeyProvider> extended_provider =
+      GetUnexportableKeyProvider(extended_config);
+  ASSERT_TRUE(extended_provider);
+  auto key2 = extended_provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key2);
+
+  // 3. Create a key with a completely different tag "other-tag".
+  // This should NOT be visible to the first provider.
+  UnexportableKeyProvider::Config other_config = config_;
+  other_config.application_tag = "other-tag";
+  std::unique_ptr<UnexportableKeyProvider> other_provider =
+      GetUnexportableKeyProvider(other_config);
+  ASSERT_TRUE(other_provider);
+  auto key3 = other_provider->GenerateSigningKeySlowly(kAcceptableAlgos);
+  ASSERT_TRUE(key3);
+
+  // 4. Verify that the base provider sees both its own key and the extended
+  // key.
+  EXPECT_THAT(
+      provider->AsStatefulUnexportableKeyProvider()->GetAllSigningKeysSlowly(),
+      Optional(UnorderedElementsAre(WrappedKeyEq(key1.get()),
+                                    WrappedKeyEq(key2.get()))));
+
+  // 5. Verify that the extended provider only sees its own key.
+  // It should NOT see "test-tag" because "test-tag.extension" is not a
+  // prefix of "test-tag".
+  EXPECT_THAT(extended_provider->AsStatefulUnexportableKeyProvider()
+                  ->GetAllSigningKeysSlowly(),
+              Optional(UnorderedElementsAre(WrappedKeyEq(key2.get()))));
+}
+
 TEST_F(UnexportableKeyMacTest, DeleteSigningKey) {
   std::unique_ptr<UnexportableSigningKey> key =
       provider_->GenerateSigningKeySlowly(kAcceptableAlgos);

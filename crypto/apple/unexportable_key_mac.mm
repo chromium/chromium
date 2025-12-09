@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -49,6 +50,22 @@ namespace {
 // claims this should be a user-visible label, but there does not exist any UI
 // that shows this value. Therefore, it is left untranslated.
 constexpr char kAttrLabel[] = "Chromium unexportable key";
+
+std::string GetApplicationTag(CFDictionaryRef key_attributes) {
+  // kSecAttrApplicationTag can be CFStringRef for legacy credentials and
+  // CFDataRef for new ones, hence querying both.
+  if (CFStringRef str = base::apple::GetValueFromDictionary<CFStringRef>(
+          key_attributes, kSecAttrApplicationTag)) {
+    return base::SysCFStringRefToUTF8(str);
+  }
+
+  if (CFDataRef data = base::apple::GetValueFromDictionary<CFDataRef>(
+          key_attributes, kSecAttrApplicationTag)) {
+    return std::string(base::as_string_view(base::apple::CFDataToSpan(data)));
+  }
+
+  return "";
+}
 
 std::optional<std::vector<uint8_t>> Convertx963ToDerSpki(
     base::span<const uint8_t> x962) {
@@ -327,7 +344,7 @@ UnexportableKeyProviderMac::GetAllSigningKeysSlowly() {
     CFToNSPtrCast(kSecAttrKeyType) :
         CFToNSPtrCast(kSecAttrKeyTypeECSECPrimeRandom),
     CFToNSPtrCast(kSecAttrAccessGroup) : objc_storage_->keychain_access_group_,
-    CFToNSPtrCast(kSecAttrApplicationTag) : objc_storage_->application_tag_,
+    // Application tag is omitted from the query to allow for prefix matching.
     CFToNSPtrCast(kSecMatchLimit) : CFToNSPtrCast(kSecMatchLimitAll),
     CFToNSPtrCast(kSecReturnAttributes) : @YES,
     CFToNSPtrCast(kSecReturnRef) : @YES,
@@ -351,6 +368,8 @@ UnexportableKeyProviderMac::GetAllSigningKeysSlowly() {
     return std::nullopt;
   }
 
+  std::string application_tag_prefix =
+      base::SysNSStringToUTF8(objc_storage_->application_tag_);
   std::vector<std::unique_ptr<UnexportableSigningKey>> keys;
   CFIndex count = CFArrayGetCount(array);
   keys.reserve(count);
@@ -358,6 +377,10 @@ UnexportableKeyProviderMac::GetAllSigningKeysSlowly() {
     CFDictionaryRef dict =
         base::apple::CFCast<CFDictionaryRef>(CFArrayGetValueAtIndex(array, i));
     if (!dict) {
+      continue;
+    }
+
+    if (!GetApplicationTag(dict).starts_with(application_tag_prefix)) {
       continue;
     }
 
