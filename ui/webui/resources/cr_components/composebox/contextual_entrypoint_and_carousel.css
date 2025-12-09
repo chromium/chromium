@@ -26,6 +26,7 @@
 
 .context-menu-container {
   align-items: center;
+  cursor: text;
   display: flex;
   gap: 4px;
   margin-bottom: var(--contextual-entrypoint-and-carousel-context-menu-container-margin-bottom);
