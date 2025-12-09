@@ -22,12 +22,11 @@ class Environment;
 
 // `DeviceAllocator` wraps a device allocator created from a trivial session.
 // The allocator can create device tensors for a specific EP used by the
-// session. Currently, the device allocator is only used for OpenVINO EP.
+// session.
 class DeviceAllocator final : public base::RefCounted<DeviceAllocator> {
  public:
   // Returns a device allocator for a specific EP if it can be created
-  // successfully; otherwise, returns nullptr. Currently, using device allocator
-  // to create device tensors is only supported for OpenVINO EP.
+  // successfully; otherwise, returns nullptr.
   // TODO(crbug.com/445971854): Use device allocator to create tensors for
   // other EPs.
   static scoped_refptr<DeviceAllocator> Create(

@@ -22,9 +22,9 @@ namespace {
 // https://github.com/openvinotoolkit/openvino/blob/14bf903270f78592c4572c88c936bdf0120e2fb9/src/plugins/intel_npu/src/utils/include/intel_npu/utils/utils.hpp#L15
 constexpr size_t kIntelNpuStandardPageSize = 4096;
 
-// Creates memory info for a specific EP.
-// Returns an invalid memory info if the device allocator is not supported for
-// the EP.
+// Creates memory info for a specific EP. Currently, the device allocator only
+// supports OpenVINO and WebGPU EPs. Returns an invalid memory info if not
+// supported.
 ScopedOrtMemoryInfo CreateMemoryInfo(const OrtApi* ort_api,
                                      base::cstring_view ep_name) {
   ScopedOrtMemoryInfo memory_info;
@@ -42,8 +42,6 @@ ScopedOrtMemoryInfo CreateMemoryInfo(const OrtApi* ort_api,
         "WebGPU_Buffer", OrtDeviceAllocator, /*id*/ 0, OrtMemTypeDefault,
         ScopedOrtMemoryInfo::Receiver(memory_info).get()));
     CHECK(memory_info.get());
-  } else {
-    LOG(WARNING) << "[WebNN] Device allocator is not supported for " << ep_name;
   }
 
   return memory_info;
@@ -100,9 +98,11 @@ scoped_refptr<DeviceAllocator> DeviceAllocator::Create(
   CHECK(trivial_session.get());
 
   ScopedOrtAllocator device_allocator;
-  CHECK_STATUS(ort_api->CreateAllocator(
-      trivial_session.get(), memory_info.get(),
-      ScopedOrtAllocator::Receiver(device_allocator).get()));
+  if (ORT_CALL_FAILED(ort_api->CreateAllocator(
+          trivial_session.get(), memory_info.get(),
+          ScopedOrtAllocator::Receiver(device_allocator).get()))) {
+    return nullptr;
+  }
   CHECK(device_allocator.get());
 
   // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
