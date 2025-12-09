@@ -27,7 +27,8 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,7 +53,8 @@ public class SuggestionMetricsTrackerUnitTest {
     @Captor private ArgumentCaptor<Callback<Tab>> mTabObserverCaptor;
 
     @Spy
-    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
 
     private final Token mGtsGroupId = new Token(1, 1);
     private final Token mCpaGroupId = new Token(2, 2);

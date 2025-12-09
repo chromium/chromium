@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
@@ -19,14 +18,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 /** Tests for the TabSupplierObserver. */
-@Batch(Batch.PER_CLASS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabSupplierObserverTest {
@@ -34,8 +32,8 @@ public class TabSupplierObserverTest {
 
     @Mock private Tab mAnotherMockedTab;
 
-    private final ObservableSupplierImpl<Tab> mObservableTabSupplier =
-            new ObservableSupplierImpl<>(mMockTab);
+    private final SettableNullableObservableSupplier<Tab> mObservableTabSupplier =
+            ObservableSuppliers.createNullable();
 
     /** A test observer that provides access to the tab being observed. */
     private static class TestTabSupplierObserver extends TabSupplierObserver {
@@ -44,11 +42,12 @@ public class TabSupplierObserverTest {
 
         private boolean mDidCallObservingDifferentTab;
 
-        public TestTabSupplierObserver(ObservableSupplier<Tab> provider) {
+        public TestTabSupplierObserver(NullableObservableSupplier<Tab> provider) {
             this(provider, false);
         }
 
-        public TestTabSupplierObserver(ObservableSupplier<Tab> provider, boolean shouldTrigger) {
+        public TestTabSupplierObserver(
+                NullableObservableSupplier<Tab> provider, boolean shouldTrigger) {
             super(provider, shouldTrigger);
             mObservedTab = provider.get();
         }
@@ -63,6 +62,7 @@ public class TabSupplierObserverTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        mObservableTabSupplier.set(mMockTab);
     }
 
     private Tab getCurrentTab() {
@@ -107,13 +107,5 @@ public class TabSupplierObserverTest {
         assertTrue(
                 "Expected initial call to onObservingDifferentTab!",
                 tabSupplierObserver.mDidCallObservingDifferentTab);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"TabSupplierObserver"})
-    public void setToNull() {
-        mObservableTabSupplier.set(null);
-        assertNull("Expected that the tab is now null", getCurrentTab());
     }
 }

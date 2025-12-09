@@ -55,6 +55,8 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -220,7 +222,8 @@ public class EdgeToEdgeControllerTest {
     private Activity mActivity;
     private EdgeToEdgeControllerImpl mEdgeToEdgeControllerImpl;
 
-    private final ObservableSupplierImpl<Tab> mTabProvider = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mTabProvider =
+            ObservableSuppliers.createNullable();
     private final ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier =
             new ObservableSupplierImpl<>();
 

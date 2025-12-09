@@ -38,6 +38,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
@@ -101,7 +103,8 @@ public class ExtensionsMenuMediatorTest {
     private MockTab mTab1;
     private MockTab mTab2;
     private ObservableSupplierImpl<@Nullable Profile> mProfileSupplier;
-    private ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier;
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
     private ModelList mModels;
     private ExtensionsMenuMediator mMediator;
 
@@ -131,7 +134,6 @@ public class ExtensionsMenuMediatorTest {
         mTab1.setWebContentsOverrideForTesting(mWebContents);
         mTab2.setWebContentsOverrideForTesting(mWebContents);
         mProfileSupplier = new ObservableSupplierImpl<>();
-        mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
 
         mMediator =

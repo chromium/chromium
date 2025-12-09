@@ -40,7 +40,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -204,8 +206,8 @@ public class NewTabPage
     private @Nullable ViewGroup mSingleTabCardContainer;
     private @Nullable HomeModulesCoordinator mHomeModulesCoordinator;
     private @Nullable ViewGroup mHomeModulesContainer;
-    private final ObservableSupplierImpl<Tab> mMostRecentTabSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mMostRecentTabSupplier =
+            ObservableSuppliers.createNullable();
     private @Nullable Point mContextMenuStartPosition;
 
     private final Activity mActivity;

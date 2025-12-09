@@ -31,6 +31,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
@@ -72,7 +74,8 @@ public class HubToolbarCoordinatorUnitTest {
 
     private final ObservableSupplierImpl<Pane> mFocusedPaneSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
     private HubToolbarCoordinator mCoordinator;
     private HubToolbarView mHubToolbarView;
     private MenuButton mMenuButton;

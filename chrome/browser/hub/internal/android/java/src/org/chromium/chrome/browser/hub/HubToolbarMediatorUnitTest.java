@@ -59,6 +59,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -116,7 +117,7 @@ public class HubToolbarMediatorUnitTest {
             mTabSwitcherSearchBoxVisibilitySupplier = ObservableSuppliers.createNonNull(true);
     private ObservableSupplierImpl<DisplayButtonData>
             mIncognitoTabSwitcherReferenceButtonDataSupplier2;
-    private ObservableSupplierImpl<Tab> mCurrentTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private PropertyModel mModel;
 
     @Before
@@ -124,7 +125,7 @@ public class HubToolbarMediatorUnitTest {
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mTabSwitcherReferenceButtonDataSupplier1 = new ObservableSupplierImpl<>();
         mIncognitoTabSwitcherReferenceButtonDataSupplier2 = new ObservableSupplierImpl<>();
-        mCurrentTabSupplier = new ObservableSupplierImpl<>();
+        mCurrentTabSupplier = ObservableSuppliers.createNullable();
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mModel =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)

@@ -25,6 +25,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -72,9 +74,9 @@ public class ExtensionActionsUpdateHelperTest {
     private MockTab mTab1;
     private MockTab mTab2;
     private ObservableSupplierImpl<@Nullable Profile> mProfileSupplier;
-    private ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier;
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
     private ModelList mModels;
-    private ExtensionActionsUpdateHelper mHelper;
 
     @Before
     public void setUp() {
@@ -84,7 +86,6 @@ public class ExtensionActionsUpdateHelperTest {
         mTab2 = new MockTab(TAB2_ID, mProfile);
 
         mProfileSupplier = new ObservableSupplierImpl<>();
-        mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
 
         // Provide good defaults for action queries via JNI.
@@ -123,9 +124,7 @@ public class ExtensionActionsUpdateHelperTest {
                             return new ListItem(ListItemType.EXTENSION_ACTION, model);
                         });
 
-        mHelper =
-                new ExtensionActionsUpdateHelper(
-                        mModels, mProfileSupplier, mCurrentTabSupplier, mDelegate);
+        new ExtensionActionsUpdateHelper(mModels, mProfileSupplier, mCurrentTabSupplier, mDelegate);
     }
 
     @Test

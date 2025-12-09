@@ -30,7 +30,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,7 +53,7 @@ public class DesktopPopupHeaderMediatorUnitTest {
 
     private Context mContext;
     private PropertyModel mModel;
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private DesktopPopupHeaderMediator mMediator;
     private int mMinTitleWidth;
     private int mMinHeaderHeight;
@@ -65,7 +66,7 @@ public class DesktopPopupHeaderMediatorUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
 
         mModel = new PropertyModel.Builder(DesktopPopupHeaderProperties.ALL_KEYS).build();
-        mTabSupplier = new ObservableSupplierImpl<>();
+        mTabSupplier = ObservableSuppliers.createNullable();
 
         final Resources res = mContext.getResources();
         mMinTitleWidth = res.getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_min_width);

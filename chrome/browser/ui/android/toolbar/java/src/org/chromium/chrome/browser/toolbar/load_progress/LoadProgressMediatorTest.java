@@ -29,7 +29,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -54,7 +55,7 @@ public class LoadProgressMediatorTest {
     private PropertyModel mModel;
     private LoadProgressMediator mMediator;
     private TabObserver mTabObserver;
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private ShadowLooper mShadowLooper;
 
     @Before
@@ -68,7 +69,7 @@ public class LoadProgressMediatorTest {
 
     private void initMediator() {
         // ObservableSupplierImpl needs initialization in UI thread.
-        mTabSupplier = new ObservableSupplierImpl<>();
+        mTabSupplier = ObservableSuppliers.createNullable();
         mMediator = new LoadProgressMediator(mTabSupplier, mModel);
         mTabSupplier.set(mTab);
         verify(mTab).addObserver(mTabObserverCaptor.capture());

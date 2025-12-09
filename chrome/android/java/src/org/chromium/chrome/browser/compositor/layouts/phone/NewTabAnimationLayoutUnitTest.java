@@ -44,6 +44,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -121,7 +123,8 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private TopInsetCoordinator mTopInsetCoordinator;
     private SceneLayer mSceneLayer;
 
-    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
     private final ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =

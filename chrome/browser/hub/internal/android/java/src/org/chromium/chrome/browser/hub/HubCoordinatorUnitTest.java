@@ -42,6 +42,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -99,7 +100,8 @@ public class HubCoordinatorUnitTest {
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean>
             mIncognitoTabSwitcherBackPressSupplier = ObservableSuppliers.createNonNull(false);
-    private final ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mTabSupplier =
+            ObservableSuppliers.createNullable();
     private final ObservableSupplierImpl<Integer> mPreviousLayoutTypeSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =

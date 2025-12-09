@@ -32,6 +32,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.DisplayMode;
@@ -69,7 +71,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     private WebAppHeaderLayoutMediator mMediator;
     private PropertyModel mModel;
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private ObservableSupplierImpl<List<Rect>> mHeaderControlPositionSupplier;
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock public ThemeColorProvider mThemeColorProvider;
@@ -93,7 +95,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
 
-        mTabSupplier = new ObservableSupplierImpl<>(mTab);
+        mTabSupplier = ObservableSuppliers.createNullable(mTab);
         mHeaderControlPositionSupplier = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         mMediator =

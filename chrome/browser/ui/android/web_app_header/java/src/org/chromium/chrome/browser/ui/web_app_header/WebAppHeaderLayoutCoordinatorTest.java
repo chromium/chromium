@@ -42,7 +42,9 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -114,7 +116,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     private Activity mActivity;
     private ViewGroup mContentView;
     private ViewStub mViewStub;
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier;
     private AppHeaderState mAppHeaderState;
     private ShadowLooper mShadowLooper;
@@ -130,7 +132,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
         mScrimVisibilitySupplier = new ObservableSupplierImpl<>();
         when(mScrimManager.getScrimVisibilitySupplier()).thenReturn(mScrimVisibilitySupplier);
 
-        mTabSupplier = new ObservableSupplierImpl<>();
+        mTabSupplier = ObservableSuppliers.createNullable();
         mActivityScenarioRule.getScenario().onActivity(testActivity -> mActivity = testActivity);
         doReturn(mWindowAndroid).when(mTab).getWindowAndroid();
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));

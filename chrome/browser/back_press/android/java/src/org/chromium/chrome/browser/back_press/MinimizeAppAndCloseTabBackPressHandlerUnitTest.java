@@ -25,7 +25,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -56,7 +57,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     @Mock private Tab mTab;
 
     private MinimizeAppAndCloseTabBackPressHandler mHandler;
-    private ObservableSupplierImpl<Tab> mActivityTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mActivityTabSupplier;
 
     @Before
     public void setUp() {
@@ -209,7 +210,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivityTabSupplier = new ObservableSupplierImpl<>();
+                    mActivityTabSupplier = ObservableSuppliers.createNullable();
                 });
         mHandler =
                 ThreadUtils.runOnUiThreadBlocking(

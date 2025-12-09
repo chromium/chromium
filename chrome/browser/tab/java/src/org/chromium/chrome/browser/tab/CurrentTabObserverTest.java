@@ -16,7 +16,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for CurrentTabObserver. */
@@ -25,7 +26,7 @@ public class CurrentTabObserverTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private CurrentTabObserver mCurrentTabObserver;
 
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
 
     @Mock private Tab mTab;
 
@@ -37,7 +38,7 @@ public class CurrentTabObserverTest {
 
     @Before
     public void beforeTest() {
-        mTabSupplier = new ObservableSupplierImpl<>();
+        mTabSupplier = ObservableSuppliers.createNullable();
         mCurrentTabObserver = new CurrentTabObserver(mTabSupplier, mTabObserver, mSwapCallback);
     }
 

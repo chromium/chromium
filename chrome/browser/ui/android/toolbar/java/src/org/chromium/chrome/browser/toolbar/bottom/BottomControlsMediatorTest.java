@@ -34,6 +34,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -90,7 +92,8 @@ public class BottomControlsMediatorTest {
     @Mock EdgeToEdgeManager mEdgeToEdgeManager;
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
+    private final SettableNullableObservableSupplier<Tab> mTabObservableSupplier =
+            ObservableSuppliers.createNullable();
     private final ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl();
 
