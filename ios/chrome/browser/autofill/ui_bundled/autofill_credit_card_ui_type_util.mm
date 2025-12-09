@@ -24,6 +24,7 @@ autofill::FieldType AutofillTypeFromAutofillUITypeForCard(
     case AutofillCreditCardUIType::kExpDate:
     case AutofillCreditCardUIType::kBillingAddress:
     case AutofillCreditCardUIType::kSaveToChrome:
+    case AutofillCreditCardUIType::kNickname:
     default:
       NOTREACHED();
   }

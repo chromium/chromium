@@ -500,6 +500,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   nicknameItem.textFieldPlaceholder =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME);
   nicknameItem.textFieldEnabled = isEditing;
+  nicknameItem.autofillCreditCardUIType = AutofillCreditCardUIType::kNickname;
   nicknameItem.keyboardType = UIKeyboardTypeDefault;
   nicknameItem.hideIcon = !isEditing;
   nicknameItem.delegate = self;

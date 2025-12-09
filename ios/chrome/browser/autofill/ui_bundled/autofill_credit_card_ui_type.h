@@ -19,7 +19,8 @@ enum class AutofillCreditCardUIType {
   kExpDate,
   kSecurityCode,
   kBillingAddress,
-  kSaveToChrome
+  kSaveToChrome,
+  kNickname
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_CREDIT_CARD_UI_TYPE_H_

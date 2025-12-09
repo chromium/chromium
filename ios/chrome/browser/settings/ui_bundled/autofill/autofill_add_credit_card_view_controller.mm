@@ -493,21 +493,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME)
                            keyboardType:UIKeyboardTypeDefault
-               autofillCreditCardUIType:AutofillCreditCardUIType::kUnknown];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kNickname];
   return cardNicknameItem;
 }
 
 - (AutofillCreditCardEditItem*)cardCvcItem {
-  AutofillCreditCardEditItem* cardCvcItem =
-      [self createTableViewItemWithType:ItemTypeCardCvc
-                     fieldNameLabelText:l10n_util::GetNSString(
-                                            IDS_IOS_AUTOFILL_SECURITY_CODE)
-                         textFieldValue:_cardCvc
-                   textFieldPlaceholder:
-                       l10n_util::GetNSString(
-                           IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL)
-                           keyboardType:UIKeyboardTypeNumberPad
-               autofillCreditCardUIType:AutofillCreditCardUIType::kUnknown];
+  AutofillCreditCardEditItem* cardCvcItem = [self
+      createTableViewItemWithType:ItemTypeCardCvc
+               fieldNameLabelText:l10n_util::GetNSString(
+                                      IDS_IOS_AUTOFILL_SECURITY_CODE)
+                   textFieldValue:_cardCvc
+             textFieldPlaceholder:
+                 l10n_util::GetNSString(
+                     IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL)
+                     keyboardType:UIKeyboardTypeNumberPad
+         autofillCreditCardUIType:AutofillCreditCardUIType::kSecurityCode];
   return cardCvcItem;
 }
 
