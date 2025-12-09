@@ -3257,9 +3257,6 @@ TEST_F(DeveloperPrivateApiUnitTest,
   EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
 }
 
-// TODO(crbug.com/439448250): Enable on desktop android after pinned extensions
-// feature was implemented.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that an event is dispatched when the list of pinned extension actions
 // has changed.
 TEST_F(DeveloperPrivateApiUnitTest,
@@ -3300,7 +3297,6 @@ TEST_F(DeveloperPrivateApiUnitTest,
       test_observer, extension->id(),
       api::developer_private::EventType::kPinnedActionsChanged));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class DeveloperPrivateApiAllowlistUnitTest
     : public DeveloperPrivateApiUnitTest {

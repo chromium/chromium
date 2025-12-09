@@ -29,6 +29,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/worker_id.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/buildflags/buildflags.h"
@@ -72,6 +73,7 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
       ExtensionManagementFactory::GetForBrowserContext(profile));
   extension_allowlist_observer_.Observe(ExtensionAllowlist::Get(profile));
   command_service_observation_.Observe(CommandService::Get(profile));
+  toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
 
   pref_change_registrar_.Init(profile->GetPrefs());
   // The unretained is safe, since the PrefChangeRegistrar unregisters the
@@ -351,6 +353,21 @@ void DeveloperPrivateEventRouterShared::BroadcastItemStateChangedHelper(
       events::DEVELOPER_PRIVATE_ON_ITEM_STATE_CHANGED,
       developer::OnItemStateChanged::kEventName, std::move(args));
   event_router_->BroadcastEvent(std::move(event));
+}
+
+void DeveloperPrivateEventRouterShared::OnToolbarPinnedActionsChanged() {
+  // Currently, only enabled extensions are considered since they are the only
+  // ones that have extension actions.
+  // TODO(crbug.com/40280426): Since pinned info is stored as a pref, include
+  // disabled extensions in this event as well.
+  const ExtensionSet& extensions =
+      ExtensionRegistry::Get(profile_)->enabled_extensions();
+  for (const auto& extension : extensions) {
+    if (ui_util::ShouldDisplayInExtensionSettings(*extension)) {
+      BroadcastItemStateChanged(developer::EventType::kPinnedActionsChanged,
+                                extension->id());
+    }
+  }
 }
 
 }  // namespace extensions

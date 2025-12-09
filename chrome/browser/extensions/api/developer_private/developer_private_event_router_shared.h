@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/disable_reason.h"
@@ -30,7 +31,6 @@
 #include "extensions/browser/warning_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/command.h"
-#include "extensions/common/extension_id.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -49,7 +49,8 @@ class DeveloperPrivateEventRouterShared
       public ExtensionManagement::Observer,
       public ExtensionAllowlist::Observer,
       public CommandService::Observer,
-      public AccountExtensionTracker::Observer {
+      public AccountExtensionTracker::Observer,
+      public ToolbarActionsModel::Observer {
  public:
   static api::developer_private::UserSiteSettings ConvertToUserSiteSettings(
       const PermissionsManager::UserPermissionsSettings& settings);
@@ -150,6 +151,15 @@ class DeveloperPrivateEventRouterShared
   void OnExtensionUploadabilityChanged(const ExtensionId& id) override;
   void OnExtensionsUploadabilityChanged() override;
 
+  // ToolbarActionsModel::Observer:
+  void OnToolbarActionAdded(const ToolbarActionsModel::ActionId& id) override {}
+  void OnToolbarActionRemoved(
+      const ToolbarActionsModel::ActionId& id) override {}
+  void OnToolbarActionUpdated(
+      const ToolbarActionsModel::ActionId& id) override {}
+  void OnToolbarModelInitialized() override {}
+  void OnToolbarPinnedActionsChanged() override;
+
   // Handles a profile preference change.
   void OnProfilePrefChanged();
 
@@ -180,6 +190,8 @@ class DeveloperPrivateEventRouterShared
   base::ScopedObservation<AccountExtensionTracker,
                           AccountExtensionTracker::Observer>
       account_extension_tracker_observation_{this};
+  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
+      toolbar_actions_model_observation_{this};
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently
