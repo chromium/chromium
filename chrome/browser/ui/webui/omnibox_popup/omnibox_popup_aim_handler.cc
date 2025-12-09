@@ -53,7 +53,7 @@ void OmniboxPopupAimHandler::NavigateCurrentTab(const GURL& url) {
   browser_window_interface->OpenURL(params, base::NullCallback());
 }
 
-void OmniboxPopupAimHandler::OnShow(
+void OmniboxPopupAimHandler::OnWidgetShown(
     std::unique_ptr<SearchboxContextData::Context> context) {
   auto page_context = ToSearchContext(std::move(context));
   CHECK(page_context);

@@ -32,10 +32,8 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   void RequestClose() override;
   void NavigateCurrentTab(const GURL& url) override;
 
-  // Forwards an `OnShow()` call to the page with the given `context`. This call
-  // is intended to be used to notify the page that the widget in which the AIM
-  // popup view is embedded in has appeared.
-  void OnShow(std::unique_ptr<SearchboxContextData::Context> context);
+  // Forwards an `OnWidgetShown()` call to the page.
+  void OnWidgetShown(std::unique_ptr<SearchboxContextData::Context> context);
 
   // Forwards an `OnWidgetClosed()` call to the page.
   void OnWidgetClosed();
