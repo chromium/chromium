@@ -987,7 +987,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.OneTimePermission.{PermissionType}.{OTPCountPermissionAction}OTPCount"
-    units="count" expires_after="2026-01-15">
+    units="count" expires_after="2026-04-15">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
