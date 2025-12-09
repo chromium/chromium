@@ -67,6 +67,9 @@ class DesktopMediaList {
     std::u16string name;
 
     // The thumbnail for the source.
+    //
+    // This is sometimes a thumbnail and sometimes a favicon.
+    // TODO(https://crbug.com/466978541): Sort this out.
     gfx::ImageSkia thumbnail;
 
     // A preview for this source, used when both a thumbnail and preview are

@@ -41,9 +41,9 @@ class TabDesktopMediaList : public DesktopMediaListBase {
     base::WeakPtr<TabDesktopMediaList> list_;
   };
 
-  typedef std::map<content::DesktopMediaID, uint32_t> ImageHashesMap;
+  using ImageHashesMap = std::map<content::DesktopMediaID, uint32_t>;
 
-  void Refresh(bool update_thumnails) override;
+  void Refresh(bool update_thumbnails) override;
 
   // TODO(crbug.com/40187992): Combine the below logic for screenshotting with
   // the very similar behaviour in current_tab_desktop_media_list.h
