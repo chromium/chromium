@@ -1132,14 +1132,15 @@
             ],
             "experiments": [
                 {
-                    "name": "WithMemoryThreshold",
+                    "name": "FilterNTPNoMemoryThresholdWithKill",
                     "params": {
                         "kill_when_backgrounded": "true",
                         "lowest-ranking": "true",
                         "not-perceptible-binding": "false",
                         "omnibox_spare_renderer_delay_ms": "500",
+                        "only_for_navigation": "true",
+                        "only_warmup_after_web_page_loaded": "true",
                         "remove-binding-no-timeout": "true",
-                        "spare_renderer_available_memory_threshold_enabled": "true",
                         "spare_renderer_creation_timing": "after-loading",
                         "spare_renderer_timeout_seconds": "60"
                     },
