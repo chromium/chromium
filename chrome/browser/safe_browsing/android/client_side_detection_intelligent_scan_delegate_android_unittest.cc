@@ -339,7 +339,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
-       StartIntelligentScan_SecondInquiryBeforeFirstResponse) {
+       StartIntelligentScan_MultipleInquiries) {
   CreateDelegateWithOnDeviceModelResponse(
       /*is_enhanced_protection_enabled=*/true,
       ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
@@ -352,30 +352,32 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   task_environment_.RunUntilIdle();
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1);
 
-  // The second inquire is sent before the first one completes.
-  delegate_->SetPauseInquiryForTesting(false);
   base::test::TestFuture<IntelligentScanResult> future2;
   delegate_->StartIntelligentScan("test rendered text", future2.GetCallback());
   task_environment_.RunUntilIdle();
 
-  // Only the second inquire callback should be called.
-  EXPECT_FALSE(future1.IsReady());
-  EXPECT_TRUE(future2.IsReady());
+  EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 2);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
-       CancelIntelligentScan_AfterInquiryCreation) {
+       CancelIntelligentScan_MultipleInquiries) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/true,
                  ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION);
   task_environment_.RunUntilIdle();
   delegate_->SetPauseInquiryForTesting(true);
-  std::optional<base::UnguessableToken> scan_id =
+  std::optional<base::UnguessableToken> scan_id1 =
       delegate_->StartIntelligentScan("test rendered text", base::DoNothing());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1);
+  std::optional<base::UnguessableToken> scan_id2 =
+      delegate_->StartIntelligentScan("test rendered text", base::DoNothing());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 2);
 
-  // Reset the inquiry after inquiry is created.
-  EXPECT_TRUE(delegate_->CancelIntelligentScan(*scan_id));
+  // Cancel the inquiry after inquiry is created.
+  EXPECT_TRUE(delegate_->CancelIntelligentScan(*scan_id1));
+  EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1);
+  EXPECT_TRUE(delegate_->CancelIntelligentScan(*scan_id2));
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 0);
 }
 
