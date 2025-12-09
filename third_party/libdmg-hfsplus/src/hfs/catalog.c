@@ -114,6 +114,20 @@ void flipCatalogThread(HFSPlusCatalogThread* record, int out) {
   }
 }
 
+HFSPlusCatalogFolder* tryCatalogRecordAsFolder(HFSPlusCatalogRecord* rec) {
+  if (!rec || rec->recordType != kHFSPlusFolderRecord) {
+    return NULL;
+  }
+  return (HFSPlusCatalogFolder*)rec;
+}
+
+HFSPlusCatalogFile* tryCatalogRecordAsFile(HFSPlusCatalogRecord* rec) {
+  if (!rec || rec->recordType != kHFSPlusFileRecord) {
+    return NULL;
+  }
+  return (HFSPlusCatalogFile*)rec;
+}
+
 #define UNICODE_START (sizeof(uint16_t) + sizeof(HFSCatalogNodeID) + sizeof(uint16_t))
 
 static void catalogKeyPrint(BTKey* toPrint) {
@@ -273,15 +287,17 @@ static BTKey* catalogDataRead(off_t offset, io_func* io) {
   switch(recordType) {
     case kHFSPlusFolderRecord:
       record = (HFSPlusCatalogRecord*) malloc(sizeof(HFSPlusCatalogFolder));
-      if(!READ(io, offset, sizeof(HFSPlusCatalogFolder), record))
+      if(!READ(io, offset, sizeof(HFSPlusCatalogFolder), record)) {
         return NULL;
+      }
       flipCatalogFolder((HFSPlusCatalogFolder*)record);
       break;
 
     case kHFSPlusFileRecord:
       record = (HFSPlusCatalogRecord*) malloc(sizeof(HFSPlusCatalogFile));
-      if(!READ(io, offset, sizeof(HFSPlusCatalogFile), record))
+      if(!READ(io, offset, sizeof(HFSPlusCatalogFile), record)) {
         return NULL;
+      }
       flipCatalogFile((HFSPlusCatalogFile*)record);
       break;
 
@@ -348,8 +364,7 @@ HFSPlusCatalogRecord* getRecordByCNID(HFSCatalogNodeID CNID, Volume* volume) {
 
   if(record == NULL || exact == FALSE) {
     return NULL;
-  }
-  else {
+  } else {
     return record;
   }
 }
@@ -473,7 +488,7 @@ HFSPlusCatalogRecord* getLinkTarget(HFSPlusCatalogRecord* record, HFSCatalogNode
   } else if(record->recordType == kHFSPlusFileRecord && (((HFSPlusCatalogFile*)record)->userInfo.fileType) == kHardLinkFileType) {
     sprintf(pathBuffer, "iNode%d", ((HFSPlusCatalogFile*)record)->permissions.special.iNodeNum);
     nkey.parentID = volume->metadataDir;
-        ASCIIToUnicode(pathBuffer, &nkey.nodeName);
+    ASCIIToUnicode(pathBuffer, &nkey.nodeName);
     nkey.keyLength = sizeof(nkey.parentID) + sizeof(nkey.nodeName.length) + (sizeof(uint16_t) * nkey.nodeName.length);
 
     toReturn = (HFSPlusCatalogRecord*) search(volume->catalogTree, (BTKey*)(&nkey), &exact, NULL, NULL);

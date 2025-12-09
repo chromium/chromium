@@ -87,3 +87,11 @@ Local modifications:
     * For files that are already being reformatted this way, trim off trailing
       whitespace, use braces more consistently, and fix indentation that does
       not match the structure of the code.
+  * patches/2025-12-09-symlink-backend.patch
+    * Implements logic for configuring behavior when reading symlinks when
+      adding to an HFS archive. Not yet reachable by the CLI.
+    * Also implements flag for enabling or disabling "special chmod" behavior
+      specifically targeted at images intended to be installed on mobile
+      platforms.
+    * Minor cleanup for indentation, brackets, trailing whitespace, line breaks,
+      code structure, etc. encountered during implementation.

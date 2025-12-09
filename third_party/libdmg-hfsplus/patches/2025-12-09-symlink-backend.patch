@@ -1,0 +1,819 @@
+diff --git a/third_party/libdmg-hfsplus/src/hfs/catalog.c b/third_party/libdmg-hfsplus/src/hfs/catalog.c
+index cbe7a6f19fdaa..50c1ffa4ed477 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/catalog.c
++++ b/third_party/libdmg-hfsplus/src/hfs/catalog.c
+@@ -114,6 +114,20 @@ void flipCatalogThread(HFSPlusCatalogThread* record, int out) {
+   }
+ }
+ 
++HFSPlusCatalogFolder* tryCatalogRecordAsFolder(HFSPlusCatalogRecord* rec) {
++  if (!rec || rec->recordType != kHFSPlusFolderRecord) {
++    return NULL;
++  }
++  return (HFSPlusCatalogFolder*)rec;
++}
++
++HFSPlusCatalogFile* tryCatalogRecordAsFile(HFSPlusCatalogRecord* rec) {
++  if (!rec || rec->recordType != kHFSPlusFileRecord) {
++    return NULL;
++  }
++  return (HFSPlusCatalogFile*)rec;
++}
++
+ #define UNICODE_START (sizeof(uint16_t) + sizeof(HFSCatalogNodeID) + sizeof(uint16_t))
+ 
+ static void catalogKeyPrint(BTKey* toPrint) {
+@@ -273,15 +287,17 @@ static BTKey* catalogDataRead(off_t offset, io_func* io) {
+   switch(recordType) {
+     case kHFSPlusFolderRecord:
+       record = (HFSPlusCatalogRecord*) malloc(sizeof(HFSPlusCatalogFolder));
+-      if(!READ(io, offset, sizeof(HFSPlusCatalogFolder), record))
++      if(!READ(io, offset, sizeof(HFSPlusCatalogFolder), record)) {
+         return NULL;
++      }
+       flipCatalogFolder((HFSPlusCatalogFolder*)record);
+       break;
+ 
+     case kHFSPlusFileRecord:
+       record = (HFSPlusCatalogRecord*) malloc(sizeof(HFSPlusCatalogFile));
+-      if(!READ(io, offset, sizeof(HFSPlusCatalogFile), record))
++      if(!READ(io, offset, sizeof(HFSPlusCatalogFile), record)) {
+         return NULL;
++      }
+       flipCatalogFile((HFSPlusCatalogFile*)record);
+       break;
+ 
+@@ -348,8 +364,7 @@ HFSPlusCatalogRecord* getRecordByCNID(HFSCatalogNodeID CNID, Volume* volume) {
+ 
+   if(record == NULL || exact == FALSE) {
+     return NULL;
+-  }
+-  else {
++  } else {
+     return record;
+   }
+ }
+@@ -473,7 +488,7 @@ HFSPlusCatalogRecord* getLinkTarget(HFSPlusCatalogRecord* record, HFSCatalogNode
+   } else if(record->recordType == kHFSPlusFileRecord && (((HFSPlusCatalogFile*)record)->userInfo.fileType) == kHardLinkFileType) {
+     sprintf(pathBuffer, "iNode%d", ((HFSPlusCatalogFile*)record)->permissions.special.iNodeNum);
+     nkey.parentID = volume->metadataDir;
+-        ASCIIToUnicode(pathBuffer, &nkey.nodeName);
++    ASCIIToUnicode(pathBuffer, &nkey.nodeName);
+     nkey.keyLength = sizeof(nkey.parentID) + sizeof(nkey.nodeName.length) + (sizeof(uint16_t) * nkey.nodeName.length);
+ 
+     toReturn = (HFSPlusCatalogRecord*) search(volume->catalogTree, (BTKey*)(&nkey), &exact, NULL, NULL);
+diff --git a/third_party/libdmg-hfsplus/src/hfs/hfslib.c b/third_party/libdmg-hfsplus/src/hfs/hfslib.c
+index 051ed0f6c9e6f..cab1dcc0e69d6 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/hfslib.c
++++ b/third_party/libdmg-hfsplus/src/hfs/hfslib.c
+@@ -2,9 +2,11 @@
+ #include <unistd.h>
+ #include <dirent.h>
+ #include <time.h>
++#include <sys/param.h>
+ #include <sys/types.h>
+-#include <hfs/hfslib.h>
+-#include <hfs/hfscompress.h>
++#include "common.h"
++#include "hfs/hfslib.h"
++#include "hfs/hfscompress.h"
+ #include <sys/stat.h>
+ #include <inttypes.h>
+ #ifdef WIN32
+@@ -27,7 +29,7 @@ void writeToFile(HFSPlusCatalogFile* file, AbstractFile* output, Volume* volume)
+ 	io_func* io;
+ 	off_t curPosition;
+ 	size_t bytesLeft;
+-	
++
+ 	buffer = (unsigned char*) malloc(BUFSIZE);
+ 
+ 	if(file->permissions.ownerFlags & UF_COMPRESSED) {
+@@ -50,7 +52,7 @@ void writeToFile(HFSPlusCatalogFile* file, AbstractFile* output, Volume* volume)
+ 
+ 		curPosition = 0;
+ 		bytesLeft = file->dataFork.logicalSize;
+-	}	
++	}
+ 	while(bytesLeft > 0) {
+ 		if(bytesLeft > BUFSIZE) {
+ 			if(!READ(io, curPosition, BUFSIZE, buffer)) {
+@@ -84,7 +86,7 @@ void writeToHFSFile(HFSPlusCatalogFile* file, AbstractFile* input, Volume* volum
+ 	off_t bytesLeft;
+ 
+ 	buffer = (unsigned char*) malloc(BUFSIZE);
+-	
++
+ 	bytesLeft = input->getLength(input);
+ 
+ 	if(file->permissions.ownerFlags & UF_COMPRESSED) {
+@@ -103,9 +105,9 @@ void writeToHFSFile(HFSPlusCatalogFile* file, AbstractFile* input, Volume* volum
+ 		}
+ 		allocate((RawFile*)io->data, bytesLeft);
+ 	}
+-	
+-	curPosition = 0;	
+-	
++
++	curPosition = 0;
++
+ 	while(bytesLeft > 0) {
+ 		if(bytesLeft > BUFSIZE) {
+ 			if(input->read(input, buffer, BUFSIZE) != BUFSIZE) {
+@@ -135,9 +137,9 @@ void writeToHFSFile(HFSPlusCatalogFile* file, AbstractFile* input, Volume* volum
+ 
+ void get_hfs(Volume* volume, const char* inFileName, AbstractFile* output) {
+ 	HFSPlusCatalogRecord* record;
+-	
++
+ 	record = getRecordFromPath(inFileName, volume, NULL, NULL);
+-	
++
+ 	if(record != NULL) {
+ 		if(record->recordType == kHFSPlusFileRecord)
+ 			writeToFile((HFSPlusCatalogFile*)record,  output, volume);
+@@ -149,16 +151,16 @@ void get_hfs(Volume* volume, const char* inFileName, AbstractFile* output) {
+ 		printf("No such file or directory\n");
+ 		exit(0);
+ 	}
+-	
++
+ 	free(record);
+ }
+ 
+ int add_hfs(Volume* volume, AbstractFile* inFile, const char* outFileName) {
+ 	HFSPlusCatalogRecord* record;
+ 	int ret;
+-	
++
+ 	record = getRecordFromPath(outFileName, volume, NULL, NULL);
+-	
++
+ 	if(record != NULL) {
+ 		if(record->recordType == kHFSPlusFileRecord) {
+ 			writeToHFSFile((HFSPlusCatalogFile*)record, inFile, volume);
+@@ -176,12 +178,12 @@ int add_hfs(Volume* volume, AbstractFile* inFile, const char* outFileName) {
+ 			ret = FALSE;
+ 		}
+ 	}
+-	
++
+ 	inFile->close(inFile);
+ 	if(record != NULL) {
+ 		free(record);
+ 	}
+-	
++
+ 	return ret;
+ }
+ 
+@@ -191,11 +193,11 @@ void grow_hfs(Volume* volume, uint64_t newSize) {
+ 	uint64_t newMapSize;
+ 	uint64_t i;
+ 	unsigned char zero;
+-	
+-	zero = 0;	
+-	
++
++	zero = 0;
++
+ 	newBlocks = newSize / volume->volumeHeader->blockSize;
+-	
++
+ 	if(newBlocks <= volume->volumeHeader->totalBlocks) {
+ 		printf("Cannot shrink volume\n");
+ 		return;
+@@ -203,36 +205,36 @@ void grow_hfs(Volume* volume, uint64_t newSize) {
+ 
+ 	blocksToGrow = newBlocks - volume->volumeHeader->totalBlocks;
+ 	newMapSize = newBlocks / 8;
+-	
++
+ 	if(volume->volumeHeader->allocationFile.logicalSize < newMapSize) {
+ 		if(volume->volumeHeader->freeBlocks
+ 		   < ((newMapSize - volume->volumeHeader->allocationFile.logicalSize) / volume->volumeHeader->blockSize)) {
+ 			printf("Not enough room to allocate new allocation map blocks\n");
+ 			exit(0);
+ 		}
+-		
++
+ 		allocate((RawFile*) (volume->allocationFile->data), newMapSize);
+ 	}
+-	
+-	/* unreserve last block */	
++
++	/* unreserve last block */
+ 	setBlockUsed(volume, volume->volumeHeader->totalBlocks - 1, 0);
+ 	/* don't need to increment freeBlocks because we will allocate another alternate volume header later on */
+-	
++
+ 	/* "unallocate" the new blocks */
+ 	for(i = ((volume->volumeHeader->totalBlocks / 8) + 1); i < newMapSize; i++) {
+ 		ASSERT(WRITE(volume->allocationFile, i, 1, &zero), "WRITE");
+ 	}
+-	
++
+ 	/* grow backing store size */
+ 	ASSERT(WRITE(volume->image, newSize - 1, 1, &zero), "WRITE");
+-	
++
+ 	/* write new volume information */
+ 	volume->volumeHeader->totalBlocks = newBlocks;
+ 	volume->volumeHeader->freeBlocks += blocksToGrow;
+-	
+-	/* reserve last block */	
++
++	/* reserve last block */
+ 	setBlockUsed(volume, volume->volumeHeader->totalBlocks - 1, 1);
+-	
++
+ 	updateVolume(volume);
+ }
+ 
+@@ -244,18 +246,18 @@ void removeAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* pa
+ 	char* pathComponent;
+ 	int pathLen;
+ 	char isRoot;
+-	
++
+ 	HFSPlusCatalogFolder* folder;
+ 	theList = list = getFolderContents(folderID, volume);
+-	
++
+ 	strcpy(fullName, parentName);
+ 	pathComponent = fullName + strlen(fullName);
+-	
++
+ 	isRoot = FALSE;
+ 	if(strcmp(fullName, "/") == 0) {
+ 		isRoot = TRUE;
+ 	}
+-	
++
+ 	while(list != NULL) {
+ 		name = unicodeToAscii(&list->name);
+ 		if(isRoot && (name[0] == '\0' || strncmp(name, ".HFS+ Private Directory Data", sizeof(".HFS+ Private Directory Data") - 1) == 0)) {
+@@ -263,10 +265,10 @@ void removeAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* pa
+ 			list = list->next;
+ 			continue;
+ 		}
+-		
++
+ 		strcpy(pathComponent, name);
+ 		pathLen = strlen(fullName);
+-		
++
+ 		if(list->record->recordType == kHFSPlusFolderRecord) {
+ 			folder = (HFSPlusCatalogFolder*)list->record;
+ 			fullName[pathLen] = '/';
+@@ -276,13 +278,13 @@ void removeAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* pa
+ 			printf("%s\n", fullName);
+ 			removeFile(fullName, volume);
+ 		}
+-		
++
+ 		free(name);
+ 		list = list->next;
+ 	}
+-	
++
+ 	releaseCatalogRecordList(theList);
+-	
++
+ 	if(!isRoot) {
+ 		*(pathComponent - 1) = '\0';
+ 		printf("%s\n", fullName);
+@@ -290,129 +292,158 @@ void removeAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* pa
+ 	}
+ }
+ 
+-
+ void addAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* parentName) {
+-	CatalogRecordList* list;
+-	CatalogRecordList* theList;
+-	char cwd[1024];
++	addAllInFolder2(folderID, volume, parentName, kIncomingSymlinksTraverse, TRUE);
++}
++
++void addAllInFolder2(
++		HFSCatalogNodeID folderID, Volume* volume, const char* parentName,
++		IncomingSymlinksPolicy symlinkPolicy, char assignSpecialPermissions) {
+ 	char fullName[1024];
+-	char testBuffer[1024];
+-	char* pathComponent;
+-	int pathLen;
+-	
+-	char* name;
+-	
+-	DIR* dir;
+-	DIR* tmp;
+-	
+-	HFSCatalogNodeID cnid;
+-	
+-	struct dirent* ent;
+-	
+-	AbstractFile* file;
+-	HFSPlusCatalogFile* outFile;
+-	
+-	strcpy(fullName, parentName);
+-	pathComponent = fullName + strlen(fullName);
+-	
++	size_t nChars = strlen(parentName);
++	ASSERT(nChars < 1024, "addAllInFolder: parentName too long");
++	memcpy(fullName, parentName, nChars + 1);
++
++	char* pathComponent = fullName + nChars;
++	size_t componentBufSz = 1024 - nChars;
++
++	char cwd[1024];
+ 	ASSERT(getcwd(cwd, 1024) != NULL, "cannot get current working directory");
+-	
+-	theList = list = getFolderContents(folderID, volume);
+-	
+-	ASSERT((dir = opendir(cwd)) != NULL, "opendir");
+-	
+-	while((ent = readdir(dir)) != NULL) {
+-		if(ent->d_name[0] == '.' && (ent->d_name[1] == '\0' || (ent->d_name[1] == '.' && ent->d_name[2] == '\0'))) {
++
++	CatalogRecordList* theList = getFolderContents(folderID, volume);
++	DIR* dir = opendir(cwd);
++	ASSERT(dir, "addAllInFolder: cannot opendir CWD");
++
++	printf(
++		"info: addAllInFolder2: running in %s with symlink policy %d and permission setting %d\n",
++		cwd, symlinkPolicy, assignSpecialPermissions);
++
++	for (struct dirent* ent = readdir(dir); ent; ent = readdir(dir)) {
++		/* Skip `.` and `..` */
++		if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
+ 			continue;
+ 		}
+-		
+-		strcpy(pathComponent, ent->d_name);
+-		pathLen = strlen(fullName);
+-		
+-		cnid = 0;
+-		list = theList;
+-		while(list != NULL) {
+-			name = unicodeToAscii(&list->name);
++		nChars = strlen(ent->d_name);
++		ASSERT(nChars < componentBufSz, "addAllInFolder: assembled path too long");
++		memcpy(pathComponent, ent->d_name, nChars+1);
++		size_t pathLen = strlen(fullName);
++
++		/* Look for an existing item to overwrite. */
++		HFSCatalogNodeID cnid = 0;
++		for (CatalogRecordList* nextEntry = theList; nextEntry; nextEntry = nextEntry->next) {
++			char* name = unicodeToAscii(&nextEntry->name);
+ 			if(strcmp(name, ent->d_name) == 0) {
+-				cnid = (list->record->recordType == kHFSPlusFolderRecord) ? (((HFSPlusCatalogFolder*)list->record)->folderID)
+-				: (((HFSPlusCatalogFile*)list->record)->fileID);
++				/* Assignment inside condition is intended. */
++				HFSPlusCatalogFolder* recordAsFolder = tryCatalogRecordAsFolder(nextEntry->record);
++				if (recordAsFolder) {
++					cnid = recordAsFolder->folderID;
++				} else {
++					HFSPlusCatalogFile* recordAsFile = tryCatalogRecordAsFile(nextEntry->record);
++					ASSERT(recordAsFile, "addAllInFolder: trying to overwrite a strange record");
++					cnid = recordAsFile->fileID;
++				}
+ 				free(name);
+ 				break;
+ 			}
+ 			free(name);
+-			list = list->next;
+ 		}
+-		
+-		if((tmp = opendir(ent->d_name)) != NULL) {
+-			closedir(tmp);
++		struct stat st;
++		ASSERT(lstat(ent->d_name, &st) == 0, "addAllInFolder: lstat failed");
++		if (S_ISLNK(st.st_mode)) {
++			ASSERT(symlinkPolicy != kIncomingSymlinksFail,
++					"addAllInFolder: found a symlink when symlink policy is \"fail\"");
++			if (symlinkPolicy == kIncomingSymlinksCloneLink) {
++				char linkbuf[1024];
++				linkbuf[0] = '\0';
++				ssize_t zloc = readlink(ent->d_name, linkbuf, 1024);
++				ASSERT(zloc >= 0, "addAllInFolder: readlink failed");
++				ASSERT(zloc < 1024, "addAllInFolder: readlink overwrote");
++				/* readlink doesn't add a null terminator; we have to do it.*/
++				linkbuf[zloc] = '\0';
++				ASSERT(makeSymlink(fullName, linkbuf, volume),
++				    "addAllInFolder: makesymlink failed");
++				continue;
++			} else if (symlinkPolicy == kIncomingSymlinksTraverse) {
++				ASSERT(stat(ent->d_name, &st) == 0, "addallInFolder: stat failed");
++				/* Continue processing, using the stat record from the link target. */
++			} else {
++				ASSERT(0, "addAllInFolder: unrecognized symlink policy");
++			}
++		}
++		/* After traversing a symlink, continue processing the resolved item. */
++		if (S_ISDIR(st.st_mode)) {
+ 			printf("folder: %s\n", fullName); fflush(stdout);
+-			
++
+ 			if(cnid == 0) {
+ 				cnid = newFolder(fullName, volume);
+ 			}
+-			
++
++			ASSERT(pathLen < 1023, "addAllInFolder: path too long, can't recurse");
+ 			fullName[pathLen] = '/';
+ 			fullName[pathLen + 1] = '\0';
+ 			/* Copy permissions from the source folder */
+-			struct stat st;
+-			ASSERT (lstat(ent->d_name, &st) == 0, "lstat");
+ 			chmodFile(fullName, (int)st.st_mode, volume);
+ 			printf("Setting permissions to %06o for %s\n", st.st_mode, fullName);
++			/* Recurse */
+ 			ASSERT(chdir(ent->d_name) == 0, "chdir");
+-			addAllInFolder(cnid, volume, fullName);
++			addAllInFolder2(cnid, volume, fullName, symlinkPolicy, assignSpecialPermissions);
+ 			ASSERT(chdir(cwd) == 0, "chdir");
+-		} else {
++		} else if (S_ISREG(st.st_mode)) {
+ 			printf("file: %s\n", fullName);	fflush(stdout);
+ 			if(cnid == 0) {
+ 				cnid = newFile(fullName, volume);
+ 			}
+-			file = createAbstractFileFromFile(fopen(ent->d_name, "rb"));
++			AbstractFile* file = createAbstractFileFromFile(fopen(ent->d_name, "rb"));
+ 			ASSERT(file != NULL, "fopen");
+-			outFile = (HFSPlusCatalogFile*)getRecordByCNID(cnid, volume);
++			HFSPlusCatalogFile* outFile = (HFSPlusCatalogFile*)getRecordByCNID(cnid, volume);
+ 			writeToHFSFile(outFile, file, volume);
+ 			file->close(file);
+ 			free(outFile);
+ 			/* Copy permissions from the source file */
+-			struct stat st;
+-			ASSERT (lstat(ent->d_name, &st) == 0, "lstat");
+ 			chmodFile(fullName, (int)st.st_mode, volume);
+ 			printf("Setting permissions to %06o for %s\n", st.st_mode, fullName);
+-			
+-			if(strncmp(fullName, "/Applications/", sizeof("/Applications/") - 1) == 0) {
+-				testBuffer[0] = '\0';
+-				strcpy(testBuffer, "/Applications/");
+-				strcat(testBuffer, ent->d_name);
+-				strcat(testBuffer, ".app/");
+-				strcat(testBuffer, ent->d_name);
+-				if(strcmp(testBuffer, fullName) == 0) {
+-					if(strcmp(ent->d_name, "Installer") == 0
+-					|| strcmp(ent->d_name, "BootNeuter") == 0
+-					) {
+-						printf("Giving setuid permissions to %s...\n", fullName); fflush(stdout);
+-						chmodFile(fullName, 04755, volume);
+-					} else {
+-						printf("Giving permissions to %s\n", fullName); fflush(stdout);
+-						chmodFile(fullName, 0755, volume);
++
++			if (assignSpecialPermissions) {
++				if(strncmp(fullName, "/Applications/", sizeof("/Applications/") - 1) == 0) {
++					/* warning: buffer size is not checked here! */
++					char testBuffer[1024];
++					testBuffer[0] = '\0';
++					strcpy(testBuffer, "/Applications/");
++					strcat(testBuffer, ent->d_name);
++					strcat(testBuffer, ".app/");
++					strcat(testBuffer, ent->d_name);
++					if(strcmp(testBuffer, fullName) == 0) {
++						if(strcmp(ent->d_name, "Installer") == 0
++						|| strcmp(ent->d_name, "BootNeuter") == 0
++						) {
++							printf("Giving setuid permissions to %s...\n", fullName); fflush(stdout);
++							chmodFile(fullName, 04755, volume);
++						} else {
++							printf("Giving permissions to %s\n", fullName); fflush(stdout);
++							chmodFile(fullName, 0755, volume);
++						}
+ 					}
++				} else if(strncmp(fullName, "/bin/", sizeof("/bin/") - 1) == 0
++					|| strncmp(fullName, "/Applications/BootNeuter.app/bin/", sizeof("/Applications/BootNeuter.app/bin/") - 1) == 0
++					|| strncmp(fullName, "/sbin/", sizeof("/sbin/") - 1) == 0
++					|| strncmp(fullName, "/usr/sbin/", sizeof("/usr/sbin/") - 1) == 0
++					|| strncmp(fullName, "/usr/bin/", sizeof("/usr/bin/") - 1) == 0
++					|| strncmp(fullName, "/usr/libexec/", sizeof("/usr/libexec/") - 1) == 0
++					|| strncmp(fullName, "/usr/local/bin/", sizeof("/usr/local/bin/") - 1) == 0
++					|| strncmp(fullName, "/usr/local/sbin/", sizeof("/usr/local/sbin/") - 1) == 0
++					|| strncmp(fullName, "/usr/local/libexec/", sizeof("/usr/local/libexec/") - 1) == 0
++					) {
++					chmodFile(fullName, 0755, volume);
++					printf("Giving permissions to %s\n", fullName); fflush(stdout);
+ 				}
+-			} else if(strncmp(fullName, "/bin/", sizeof("/bin/") - 1) == 0
+-				|| strncmp(fullName, "/Applications/BootNeuter.app/bin/", sizeof("/Applications/BootNeuter.app/bin/") - 1) == 0
+-				|| strncmp(fullName, "/sbin/", sizeof("/sbin/") - 1) == 0
+-				|| strncmp(fullName, "/usr/sbin/", sizeof("/usr/sbin/") - 1) == 0
+-				|| strncmp(fullName, "/usr/bin/", sizeof("/usr/bin/") - 1) == 0
+-				|| strncmp(fullName, "/usr/libexec/", sizeof("/usr/libexec/") - 1) == 0
+-				|| strncmp(fullName, "/usr/local/bin/", sizeof("/usr/local/bin/") - 1) == 0
+-				|| strncmp(fullName, "/usr/local/sbin/", sizeof("/usr/local/sbin/") - 1) == 0
+-				|| strncmp(fullName, "/usr/local/libexec/", sizeof("/usr/local/libexec/") - 1) == 0
+-				) {
+-				chmodFile(fullName, 0755, volume);
+-				printf("Giving permissions to %s\n", fullName); fflush(stdout);
+ 			}
+-		}
+-	}
+-	
++		} else {
++			ASSERT(0, "addAllInFolder: cannot handle special file objects");
++		}  /* if (S_IS<something>(st.st_mode) */
++	}  /* for (... ent = readdir(dir)) */
++
+ 	closedir(dir);
+-	
++
+ 	releaseCatalogRecordList(theList);
+ }
+ 
+@@ -427,12 +458,12 @@ static void extractOne(HFSCatalogNodeID folderID, char* name, HFSPlusCatalogReco
+ #ifdef WIN32
+ 	HFSPlusCatalogRecord* targetRecord;
+ #endif
+-	struct utimbuf times;        
+-	
++	struct utimbuf times;
++
+ 	if(strncmp(name, ".HFS+ Private Directory Data", sizeof(".HFS+ Private Directory Data") - 1) == 0 || name[0] == '\0') {
+ 		return;
+ 	}
+-	
++
+ 	if(record->recordType == kHFSPlusFolderRecord) {
+ 		folder = (HFSPlusCatalogFolder*)record;
+ 		printf("folder: %s\n", name);
+@@ -506,11 +537,11 @@ void extractAllInFolder(HFSCatalogNodeID folderID, Volume* volume) {
+ 	CatalogRecordList* theList;
+ 	char cwd[1024];
+ 	char* name;
+-	
++
+ 	ASSERT(getcwd(cwd, 1024) != NULL, "cannot get current working directory");
+-	
++
+ 	theList = list = getFolderContents(folderID, volume);
+-	
++
+ 	while(list != NULL) {
+ 		name = unicodeToAscii(&list->name);
+ 		extractOne(folderID, name, list->record, volume, cwd);
+@@ -522,42 +553,39 @@ void extractAllInFolder(HFSCatalogNodeID folderID, Volume* volume) {
+ 
+ 
+ void addall_hfs(Volume* volume, const char* dirToMerge, const char* dest) {
+-	HFSPlusCatalogRecord* record;
+-	char* name;
++	addall_hfs_2(volume, dirToMerge, dest, kIncomingSymlinksTraverse, TRUE);
++}
++
++void addall_hfs_2(
++			Volume* volume, const char* dirToMerge, const char* dest,
++			IncomingSymlinksPolicy symlinkPolicy, char assignSpecialPermissions) {
+ 	char cwd[1024];
+-	char initPath[1024];
+-	int lastCharOfPath;
+-	
+-	ASSERT(getcwd(cwd, 1024) != NULL, "cannot get current working directory");
+-	
++	ASSERT(getcwd(cwd, 1024) != NULL, "addall_hfs_2: getcwd failed");
++
+ 	if(chdir(dirToMerge) != 0) {
+ 		printf("Cannot open that directory: %s\n", dirToMerge);
+-		exit(0);
++		exit(1);
+ 	}
++
++	HFSPlusCatalogRecord* record = getRecordFromPath(dest, volume, NULL, NULL);
++	ASSERT(record, "No such file or directory");
++	HFSPlusCatalogFolder* folderRecord = tryCatalogRecordAsFolder(record);
++	ASSERT(folderRecord, "Not a folder");
+ 	
+-	record = getRecordFromPath(dest, volume, &name, NULL);
+-	strcpy(initPath, dest);
+-	lastCharOfPath = strlen(dest) - 1;
+-	if(dest[lastCharOfPath] != '/') {
+-		initPath[lastCharOfPath + 1] = '/';
+-		initPath[lastCharOfPath + 2] = '\0';
++	/* reduced limit leaves room for appending '/' */
++	size_t nChars = strlen(dest);
++	ASSERT(nChars < 1023, "addall_hfs_2: dest too long");
++	char pathWithSlash[1024];
++	memcpy(pathWithSlash, dest, nChars+1);
++	if (pathWithSlash[nChars-1] != '/') {
++		pathWithSlash[nChars] = '/';
++		pathWithSlash[nChars+1] = '\0';
+ 	}
+-	
+-	if(record != NULL) {
+-		if(record->recordType == kHFSPlusFolderRecord)
+-			addAllInFolder(((HFSPlusCatalogFolder*)record)->folderID, volume, initPath);
+-		else {
+-			printf("Not a folder\n");
+-			exit(0);
+-		}
+-	} else {
+-		printf("No such file or directory\n");
+-		exit(0);
+-	}
+-	
++
++	addAllInFolder2(folderRecord->folderID, volume,  pathWithSlash,
++					symlinkPolicy, assignSpecialPermissions);
+ 	ASSERT(chdir(cwd) == 0, "chdir");
+ 	free(record);
+-	
+ }
+ 
+ int copyAcrossVolumes(Volume* volume1, Volume* volume2, char* path1, char* path2) {
+@@ -565,11 +593,11 @@ int copyAcrossVolumes(Volume* volume1, Volume* volume2, char* path1, char* path2
+ 	size_t bufferSize;
+ 	AbstractFile* tmpFile;
+ 	int ret;
+-	
++
+ 	buffer = malloc(1);
+ 	bufferSize = 0;
+ 	tmpFile = createAbstractFileFromMemoryFile((void**)&buffer, &bufferSize);
+-	
++
+ 	if(!silence)
+ 	{
+ 		printf("retrieving... "); fflush(stdout);
+@@ -589,9 +617,9 @@ int copyAcrossVolumes(Volume* volume1, Volume* volume2, char* path1, char* path2
+ 	{
+ 		printf("done\n");
+ 	}
+-	
++
+ 	free(buffer);
+-	
++
+ 	return ret;
+ }
+ 
+@@ -604,9 +632,9 @@ void displayFolder(HFSCatalogNodeID folderID, Volume* volume) {
+ 	struct tm *date;
+ 	HFSPlusDecmpfs* compressData;
+ 	size_t attrSize;
+-	
++
+ 	theList = list = getFolderContents(folderID, volume);
+-	
++
+ 	while(list != NULL) {
+ 		if(list->record->recordType == kHFSPlusFolderRecord) {
+ 			folder = (HFSPlusCatalogFolder*)list->record;
+@@ -630,7 +658,7 @@ void displayFolder(HFSCatalogNodeID folderID, Volume* volume) {
+ 			}
+ 			fileTime = APPLE_TO_UNIX_TIME(file->contentModDate);
+ 		}
+-			
++
+ 		date = localtime(&fileTime);
+ 		if(date != NULL) {
+ 			printf("%2d/%2d/%4d %02d:%02d ", date->tm_mon, date->tm_mday, date->tm_year + 1900, date->tm_hour, date->tm_min);
+@@ -640,10 +668,10 @@ void displayFolder(HFSCatalogNodeID folderID, Volume* volume) {
+ 
+ 		printUnicode(&list->name);
+ 		printf("\n");
+-		
++
+ 		list = list->next;
+ 	}
+-	
++
+ 	releaseCatalogRecordList(theList);
+ }
+ 
+@@ -651,7 +679,7 @@ void displayFileLSLine(Volume* volume, HFSPlusCatalogFile* file, const char* nam
+ 	time_t fileTime;
+ 	struct tm *date;
+ 	HFSPlusDecmpfs* compressData;
+-	
++
+ 	printf("%06o ", file->permissions.fileMode);
+ 	printf("%3d ", file->permissions.ownerID);
+ 	printf("%3d ", file->permissions.groupID);
+@@ -684,8 +712,8 @@ void displayFileLSLine(Volume* volume, HFSPlusCatalogFile* file, const char* nam
+ 			free(attrs->name);
+ 			free(attrs);
+ 			attrs = next;
+-		}	
+-	}	
++		}
++	}
+ }
+ 
+ void hfs_ls(Volume* volume, const char* path) {
+@@ -693,11 +721,11 @@ void hfs_ls(Volume* volume, const char* path) {
+ 	char* name;
+ 
+ 	record = getRecordFromPath(path, volume, &name, NULL);
+-	
++
+ 	printf("%s: \n", name);
+ 	if(record != NULL) {
+ 		if(record->recordType == kHFSPlusFolderRecord)
+-			displayFolder(((HFSPlusCatalogFolder*)record)->folderID, volume);  
++			displayFolder(((HFSPlusCatalogFolder*)record)->folderID, volume);
+ 		else
+ 			displayFileLSLine(volume, (HFSPlusCatalogFile*)record, name);
+ 	} else {
+@@ -705,7 +733,7 @@ void hfs_ls(Volume* volume, const char* path) {
+ 	}
+ 
+ 	printf("Total filesystem size: %d, free: %d\n", (volume->volumeHeader->totalBlocks - volume->volumeHeader->freeBlocks) * volume->volumeHeader->blockSize, volume->volumeHeader->freeBlocks * volume->volumeHeader->blockSize);
+-	
++
+ 	free(record);
+ }
+ 
+diff --git a/third_party/libdmg-hfsplus/src/includes/hfs/hfslib.h b/third_party/libdmg-hfsplus/src/includes/hfs/hfslib.h
+index 31da55e65f197..36469c535e92c 100644
+--- a/third_party/libdmg-hfsplus/src/includes/hfs/hfslib.h
++++ b/third_party/libdmg-hfsplus/src/includes/hfs/hfslib.h
+@@ -2,6 +2,27 @@
+ #include "hfsplus.h"
+ #include "abstractfile.h"
+ 
++/* Strategies for handling input files that are symlinks. */
++typedef enum {
++	/* Traverse symlinks encountered in the input. If a symlink points to a
++	   directory, recurse into that directory as though it were a subdirectory;
++	   if a symlink points to a file, treat that file as though it were
++	   literally in the location of the symlink. A chain of symlinks pointing
++	   to symlinks is followed in its entirety; a symlink loop wil crash,
++	   reporting an error in a `stat` call. */
++	kIncomingSymlinksTraverse,
++
++	/* Duplicate symlinks encountered in the input, creating symlinks with
++	   identical paths in the resulting HFS+ volume. Relative links are
++	   interpreted relative to their new location; absolute links remain
++	   absolute. The item referred to by the symlink (in its original location)
++	   is not evaluated and does not need to exist. */
++	kIncomingSymlinksCloneLink,
++
++	/* No symlinks should be in the input. If any are present, crash. */
++	kIncomingSymlinksFail
++} IncomingSymlinksPolicy;
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
+@@ -11,8 +32,35 @@ extern "C" {
+ 	int add_hfs(Volume* volume, AbstractFile* inFile, const char* outFileName);
+ 	void grow_hfs(Volume* volume, uint64_t newSize);
+ 	void removeAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* parentName);
++
++	/* Copies all files in the current working directory into the directory named
++	   `parentName` under the HFS folder with ID `folderID` in volume `volume`.
++	   Crashes on failure. Symlinks in the input are traversed. On name
++	   conflict, overwrite. Certain paths with fixed names receive special
++	   permissions. parentName must end with a forward slash (path separator) unless it is
++	   the empty string. */
+ 	void addAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* parentName);
++
++	/* Like `addAllInFolder`, except the `symlinkPolicy` parameter controls how
++	   symlinks in the input are handled, and `assignSpecialPermissions` controls
++	   whether to assign alternate permissions to some specific paths associated
++	   with system image installers, BootNeuter, and/or system binaries. */
++	void addAllInFolder2(
++			HFSCatalogNodeID folderID, Volume* volume, const char* parentName,
++			IncomingSymlinksPolicy symlinkPolicy, char assignSpecialPermissions);
++
++	/* Copies all files from the local filesystem directory named `dirToMerge`
++	   into the directory named `dest` inside volume `volume`. Crashes on failure.
++	   Symlinks are traversed. Some paths receive special permissions. */
+ 	void addall_hfs(Volume* volume, const char* dirToMerge, const char* dest);
++
++	/* Like `addall_hfs`, except `symlinkPolicy` controls how symlinks in the
++	   input are handled, and `assignSpecialPermissions` controls whether to
++	   assign alternate permisisons to some specific paths associated with system
++	   image installers, BootNeuter, and/or system binaries. */
++	void addall_hfs_2(
++			Volume* volume, const char* dirToMerge, const char* dest,
++			IncomingSymlinksPolicy symlinkPolicy, char assignSpecialPermissions);
+ 	void extractAllInFolder(HFSCatalogNodeID folderID, Volume* volume);
+ 	int copyAcrossVolumes(Volume* volume1, Volume* volume2, char* path1, char* path2);
+ 
+diff --git a/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h b/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h
+index 85816b06471de..98dae2d4915c7 100644
+--- a/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h
++++ b/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h
+@@ -541,6 +541,14 @@ extern "C" {
+ 	void flipCatalogFile(HFSPlusCatalogFile* record);
+ 	void flipCatalogThread(HFSPlusCatalogThread* record, int out);
+ 
++	/* If `rec` points to a catalog record with recordtype kHFSPlusFolderRecord,
++	 * return `rec` (cast to HFSPlusCatalogFolder*). Otherwise, return NULL. */
++	HFSPlusCatalogFolder* tryCatalogRecordAsFolder(HFSPlusCatalogRecord* rec);
++
++	/* If `rec` points to a catalog record with recordtype kHFSPlusFileRecord,
++	 * return `rec` (cast to HFSPlusCatalogFile*). Otherwise, return NULL. */
++	HFSPlusCatalogFile* tryCatalogRecordAsFile(HFSPlusCatalogRecord* rec);
++
+ 	BTree* openCatalogTree(io_func* file);
+ 	int updateCatalog(Volume* volume, HFSPlusCatalogRecord* catalogRecord);
+ 	int move(const char* source, const char* dest, Volume* volume);
