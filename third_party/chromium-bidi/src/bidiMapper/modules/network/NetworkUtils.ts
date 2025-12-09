@@ -195,7 +195,7 @@ export function cdpToBiDiCookie(
       cookie.sameSite === undefined
         ? Network.SameSite.None
         : sameSiteCdpToBiDi(cookie.sameSite),
-    ...(cookie.expires >= 0 ? {expiry: cookie.expires} : undefined),
+    ...(cookie.expires >= 0 ? {expiry: Math.round(cookie.expires)} : undefined),
   };
 
   // Extending with CDP-specific properties with `goog:` prefix.
