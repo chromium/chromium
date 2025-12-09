@@ -76,6 +76,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
@@ -161,6 +162,9 @@ import java.util.function.Supplier;
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+@DisableFeatures({
+    ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID,
+})
 public class TabGridDialogMediatorUnitTest {
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
@@ -2056,6 +2060,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void onLongPress_tabGroupParityEnabled() {
         CancelLongPressTabItemEventListener cancelLongPress =
                 mMediator.onLongPressEvent(TAB1_ID, mCardView, mTabGridContextMenuCoordinator);
@@ -2064,6 +2069,14 @@ public class TabGridDialogMediatorUnitTest {
         assertNotNull(cancelLongPress);
         cancelLongPress.cancelLongPress();
         verify(mTabGridContextMenuCoordinator).dismiss();
+    }
+
+    @Test
+    public void onLongPress_tabGroupParityDisabled() {
+        CancelLongPressTabItemEventListener cancelLongPress =
+                mMediator.onLongPressEvent(TAB1_ID, mCardView);
+        verify(mTabGridContextMenuCoordinator, never()).showMenu(any(), eq(TAB1_ID), anyBoolean());
+        assertNull(cancelLongPress);
     }
 
     @Test

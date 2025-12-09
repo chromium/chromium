@@ -1132,6 +1132,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void orchestratorCreatedOnParityEnabled() {
         mItemTouchHelperCallback = spy(mItemTouchHelperCallback);
         mItemTouchHelperCallback.setOnLongPressTabItemEventListener((a, b) -> () -> {});
@@ -1140,6 +1141,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test(expected = AssertionError.class)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void orchestratorNotCreatedTwice() {
         mItemTouchHelperCallback = spy(mItemTouchHelperCallback);
         mItemTouchHelperCallback.setOnLongPressTabItemEventListener((a, b) -> () -> {});
@@ -1149,6 +1151,16 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
+    public void orchestratorNotCreatedOnParityDisabled() {
+        mItemTouchHelperCallback = spy(mItemTouchHelperCallback);
+        mItemTouchHelperCallback.setOnLongPressTabItemEventListener((a, b) -> () -> {});
+        verify(mItemTouchHelperCallback, never())
+                .setTabGridItemLongPressOrchestrator(any(TabGridItemLongPressOrchestrator.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void orchestratorTriggeredOnSelectedChanged() {
         mItemTouchHelperCallback.setTabGridItemLongPressOrchestrator(
                 mTabGridItemLongPressOrchestrator);
@@ -1161,6 +1173,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void orchestratorTriggeredOnChildDraw() {
         mItemTouchHelperCallback.setTabGridItemLongPressOrchestrator(
                 mTabGridItemLongPressOrchestrator);
@@ -1179,6 +1192,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void orchestratorCancelledOnClearView() {
         mItemTouchHelperCallback.setTabGridItemLongPressOrchestrator(
                 mTabGridItemLongPressOrchestrator);

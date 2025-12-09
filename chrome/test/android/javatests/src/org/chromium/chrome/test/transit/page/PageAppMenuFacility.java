@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -69,8 +70,9 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
             mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
         }
 
-        mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
-
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
+        }
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             mNewWindow = declareMenuItem(items, NEW_WINDOW_ID);
             mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);

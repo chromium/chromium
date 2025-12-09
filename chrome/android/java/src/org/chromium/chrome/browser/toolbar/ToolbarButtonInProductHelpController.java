@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -297,17 +298,19 @@ public class ToolbarButtonInProductHelpController
     }
 
     private void showAddToGroupIph() {
-        mUserEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                mActivity.getResources(),
-                                FeatureConstants.MENU_ADD_TO_GROUP,
-                                R.string.tab_switcher_add_to_group_iph,
-                                R.string.tab_switcher_add_to_group_iph)
-                        .setAnchorView(mMenuButtonAnchorView)
-                        .setOnShowCallback(
-                                () -> turnOnHighlightForMenuItem(R.id.add_to_group_menu_id))
-                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
-                        .build());
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            mUserEducationHelper.requestShowIph(
+                    new IphCommandBuilder(
+                                    mActivity.getResources(),
+                                    FeatureConstants.MENU_ADD_TO_GROUP,
+                                    R.string.tab_switcher_add_to_group_iph,
+                                    R.string.tab_switcher_add_to_group_iph)
+                            .setAnchorView(mMenuButtonAnchorView)
+                            .setOnShowCallback(
+                                    () -> turnOnHighlightForMenuItem(R.id.add_to_group_menu_id))
+                            .setOnDismissCallback(this::turnOffHighlightForMenuItem)
+                            .build());
+        }
     }
 
     /**

@@ -18,6 +18,7 @@ import androidx.annotation.StringRes;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -40,6 +41,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator {
     private final Activity mActivity;
+    private final boolean mShouldShowIcons;
     private boolean mIsMenuFocusableUponCreation;
 
     /**
@@ -64,6 +66,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 collaborationService,
                 activity);
         mActivity = activity;
+        mShouldShowIcons = ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled();
     }
 
     /** Creates a {@link TabActionListener} that creates the menu and shows it when clicked. */
@@ -139,13 +142,13 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 buildListItem(
                         R.string.close_tab_group_menu_item,
                         R.id.close_tab_group,
-                        R.drawable.ic_tab_close_24dp,
+                        mShouldShowIcons ? R.drawable.ic_tab_close_24dp : Resources.ID_NULL,
                         isIncognito));
         itemList.add(
                 buildListItem(
                         R.string.rename_tab_group_menu_item,
                         R.id.edit_group_name,
-                        R.drawable.ic_edit_24dp,
+                        mShouldShowIcons ? R.drawable.ic_edit_24dp : Resources.ID_NULL,
                         isIncognito));
 
         if (!hasCollaborationData) {
@@ -153,7 +156,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     buildListItem(
                             R.string.ungroup_tab_group_menu_item,
                             R.id.ungroup_tab,
-                            R.drawable.ic_ungroup_tabs_24dp,
+                            mShouldShowIcons ? R.drawable.ic_ungroup_tabs_24dp : Resources.ID_NULL,
                             isIncognito));
             if (!isIncognito && mCollaborationService.getServiceStatus().isAllowedToCreate()) {
                 itemList.add(buildShareMenuItem(R.string.share_tab_group_menu_item));
@@ -170,7 +173,9 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     buildListItem(
                             R.string.delete_tab_group_menu_item,
                             R.id.delete_tab_group,
-                            R.drawable.material_ic_delete_24dp,
+                            mShouldShowIcons
+                                    ? R.drawable.material_ic_delete_24dp
+                                    : Resources.ID_NULL,
                             /* isIncognito= */ false));
         }
     }
@@ -183,28 +188,35 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                     buildListItem(
                             R.string.delete_tab_group_menu_item,
                             R.id.delete_shared_group,
-                            R.drawable.material_ic_delete_24dp,
+                            mShouldShowIcons
+                                    ? R.drawable.material_ic_delete_24dp
+                                    : Resources.ID_NULL,
                             /* isIncognito= */ false));
         } else if (memberRole == MemberRole.MEMBER) {
             itemList.add(
                     buildListItem(
                             R.string.leave_tab_group_menu_item,
                             R.id.leave_group,
-                            R.drawable.material_ic_delete_24dp,
+                            mShouldShowIcons
+                                    ? R.drawable.material_ic_delete_24dp
+                                    : Resources.ID_NULL,
                             /* isIncognito= */ false));
         }
     }
 
     @Override
     protected int getMenuWidth(int anchorViewWidthPx) {
-        return getDimensionPixelSize(R.dimen.tab_group_menu_with_icons_width);
+        return getDimensionPixelSize(
+                mShouldShowIcons
+                        ? R.dimen.tab_group_menu_with_icons_width
+                        : R.dimen.tab_group_menu_width);
     }
 
     private ListItem buildShareMenuItem(@StringRes int stringId) {
         return new ListItemBuilder()
                 .withTitleRes(stringId)
                 .withMenuId(R.id.share_group)
-                .withStartIconRes(R.drawable.ic_group_24dp)
+                .withStartIconRes(mShouldShowIcons ? R.drawable.ic_group_24dp : Resources.ID_NULL)
                 .withTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
                 .build();
     }

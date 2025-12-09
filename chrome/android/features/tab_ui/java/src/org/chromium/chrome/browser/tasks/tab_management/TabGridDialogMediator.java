@@ -554,51 +554,53 @@ public class TabGridDialogMediator
             }
         }
 
-        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        assumeNonNull(filter);
-        if (profile != null && modalDialogManager != null) {
-            TabGroupCreationDialogManager tabGroupCreationDialogManager =
-                    new TabGroupCreationDialogManager(activity, modalDialogManager, null);
-            TabGroupCreationCallback tabGroupCreationCallback =
-                    groupId -> tabGroupCreationDialogManager.showDialog(groupId, filter);
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+            assumeNonNull(filter);
+            if (profile != null && modalDialogManager != null) {
+                TabGroupCreationDialogManager tabGroupCreationDialogManager =
+                        new TabGroupCreationDialogManager(activity, modalDialogManager, null);
+                TabGroupCreationCallback tabGroupCreationCallback =
+                        groupId -> tabGroupCreationDialogManager.showDialog(groupId, filter);
 
-            // Dismiss the dialog if open. The dialog should be open when the bottom sheet is
-            // visible.
-            TabMovedCallback tabMovedCallback = () -> hideDialog(true);
-            mTabGroupListBottomSheetCoordinator =
-                    new TabGroupListBottomSheetCoordinator(
-                            activity,
-                            profile,
-                            tabGroupCreationCallback,
-                            tabMovedCallback,
-                            filter,
-                            bottomSheetController,
-                            true,
-                            false);
+                // Dismiss the dialog if open. The dialog should be open when the bottom sheet is
+                // visible.
+                TabMovedCallback tabMovedCallback = () -> hideDialog(true);
+                mTabGroupListBottomSheetCoordinator =
+                        new TabGroupListBottomSheetCoordinator(
+                                activity,
+                                profile,
+                                tabGroupCreationCallback,
+                                tabMovedCallback,
+                                filter,
+                                bottomSheetController,
+                                true,
+                                false);
 
-            CollaborationService collaborationService =
-                    CollaborationServiceFactory.getForProfile(profile);
-            ShowTabListEditor showTabListEditor =
-                    tabId -> {
-                        setupAndShowTabListEditor(mCurrentTabGroupId);
-                        TabListEditorController tabListEditorController =
-                                mTabListEditorControllerSupplier.get();
-                        assumeNonNull(tabListEditorController);
-                        tabListEditorController.selectTabs(
-                                Set.of(TabListEditorItemSelectionId.createTabId(tabId)));
-                    };
-            mTabGridContextMenuCoordinator =
-                    new TabGridContextMenuCoordinator(
-                            activity,
-                            tabBookmarkerSupplier,
-                            profile,
-                            filter,
-                            mTabGroupListBottomSheetCoordinator,
-                            tabGroupCreationDialogManager,
-                            shareDelegateSupplier,
-                            mTabGroupSyncService,
-                            collaborationService,
-                            showTabListEditor);
+                CollaborationService collaborationService =
+                        CollaborationServiceFactory.getForProfile(profile);
+                ShowTabListEditor showTabListEditor =
+                        tabId -> {
+                            setupAndShowTabListEditor(mCurrentTabGroupId);
+                            TabListEditorController tabListEditorController =
+                                    mTabListEditorControllerSupplier.get();
+                            assumeNonNull(tabListEditorController);
+                            tabListEditorController.selectTabs(
+                                    Set.of(TabListEditorItemSelectionId.createTabId(tabId)));
+                        };
+                mTabGridContextMenuCoordinator =
+                        new TabGridContextMenuCoordinator(
+                                activity,
+                                tabBookmarkerSupplier,
+                                profile,
+                                filter,
+                                mTabGroupListBottomSheetCoordinator,
+                                tabGroupCreationDialogManager,
+                                shareDelegateSupplier,
+                                mTabGroupSyncService,
+                                collaborationService,
+                                showTabListEditor);
+            }
         }
 
         mBottomSheetObserver =

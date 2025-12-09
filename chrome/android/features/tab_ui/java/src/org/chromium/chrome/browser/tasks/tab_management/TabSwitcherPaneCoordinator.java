@@ -894,7 +894,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
         assumeNonNull(filter);
         Tab tab = filter.getTabModel().getTabById(tabId);
-        if (tab == null || cardView == null) {
+        if (tab == null
+                || cardView == null
+                || !ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
             return null;
         }
 
