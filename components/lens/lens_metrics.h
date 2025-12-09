@@ -49,7 +49,8 @@ enum class CameraOpenEntryPoint {
   INTENTS = 10,
   WEB_IMAGES_SEARCH_BAR = 11,
   WHATS_NEW_PROMO = 12,
-  kMaxValue = WHATS_NEW_PROMO
+  COMPOSE_BOX = 13,
+  kMaxValue = COMPOSE_BOX
 };
 
 // Needs to be kept in sync with CameraResult enum in
@@ -94,7 +95,8 @@ enum class AmbientSearchEntryPoint {
   CONTEXT_MENU_SEARCH_REGION_WITH_LENS_OVERLAY_ACCESSIBILITY_FALLBACK = 26,
   CONTEXT_MENU_SEARCH_VIDEO_WITH_LENS_OVERLAY_ACCESSIBILITY_FALLBACK = 27,
   LENS_OVERLAY_LOCATION_BAR_ACCESSIBILITY_FALLBACK = 28,
-  kMaxValue = LENS_OVERLAY_LOCATION_BAR_ACCESSIBILITY_FALLBACK
+  COMPOSE_BOX = 29,
+  kMaxValue = COMPOSE_BOX
 };
 
 // This should be kept in sync with the LensRegionSearchAspectRatio enum

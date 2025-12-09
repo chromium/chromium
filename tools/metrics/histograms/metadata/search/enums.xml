@@ -80,6 +80,7 @@ chromium-metrics-reviews@google.com.
   <int value="28"
       label="Lens Overlay Location Bar entry point that leads to Lens
              Overlay, entered via keyboard (Image)"/>
+  <int value="29" label="Composebox"/>
 </enum>
 
 <enum name="AuxiliarySearchRequestStatus">
@@ -113,6 +114,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="iOS Shortcuts App"/>
   <int value="11" label="Web Images Search Bar"/>
   <int value="12" label="What's New Promo"/>
+  <int value="13" label="Composebox"/>
 </enum>
 
 <enum name="CameraResult">

@@ -86,6 +86,7 @@ std::optional<LensEntrypoint> LensBrowserAgent::CurrentResultsEntrypoint()
   // experience.
   switch (entry_point.value()) {
     case LensEntrypoint::Keyboard:
+    case LensEntrypoint::Composebox:
     case LensEntrypoint::NewTabPage:
     case LensEntrypoint::HomeScreenWidget:
       if (base::FeatureList::IsEnabled(kDisableLensCamera)) {
