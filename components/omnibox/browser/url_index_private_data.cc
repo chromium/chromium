@@ -16,6 +16,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/stack.h"
 #include "base/debug/crash_logging.h"
@@ -780,7 +782,7 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
   HistoryID history_id = static_cast<HistoryID>(row.id());
   // Split URL into individual, unique words then add in the title words.
   const GURL& gurl(row.url());
-  DCHECK(gurl.is_valid());
+  CHECK(gurl.is_valid());
   const std::u16string& url = omnibox::CleanUpUrlForMatching(gurl, nullptr);
   String16Set url_words = String16SetFromString16(
       url, word_starts ? &word_starts->url_word_starts_ : nullptr);
@@ -789,10 +791,10 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
       title, word_starts ? &word_starts->title_word_starts_ : nullptr);
   for (const auto& word :
        base::STLSetUnion<String16Set>(url_words, title_words)) {
-    // Speculative fix for crbug.com/348617573.
-    if (word.empty()) {
-      continue;
-    }
+    CHECK(!word.empty());
+    // Confirm no corruption after `CleanUpTitleForMatching()` above, which
+    // limits to `kCleanedUpTitleMaxLength` (1024).
+    CHECK_LT(word.length(), 1024u);
     // Some crash keys if the fix doesn't work.
     SCOPED_CRASH_KEY_STRING256("Bug348617573", "url", gurl.spec());
     SCOPED_CRASH_KEY_STRING32("Bug348617573", "word", base::UTF16ToUTF8(word));
