@@ -80075,12 +80075,12 @@
        ]
       ],
       "clip-border-area-on-body-not-propagated-to-root.html": [
-       "6530d2aa1f2e7d8b4cd2877eced95bcdd8304895",
+       "d49b36d2be59bc83cb837f367add4866a3aa7622",
        [
         null,
         [
          [
-          "/css/css-backgrounds/background-clip/clip-text-on-body-not-propagated-to-root-ref.html",
+          "/css/css-backgrounds/background-clip/clip-border-area-on-body-not-propagated-to-root-ref.html",
           "=="
          ]
         ],
@@ -104912,7 +104912,7 @@
       ]
      ],
      "color-mix-basic-001.html": [
-      "c69a292159003c578918bd1be9e495c6cbdb094e",
+      "3823d302373452bcb4523e753988cadee5b074dc",
       [
        null,
        [
@@ -104921,7 +104921,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            25088
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "color-mix-currentcolor-001.html": [
@@ -353372,6 +353388,10 @@
        "1db39c33f62aa9001b68f1a50eea2db86caa3887",
        []
       ],
+      "clip-border-area-on-body-not-propagated-to-root-ref.html": [
+       "56139d309ef7350373a0619fda0a49088d0fd143",
+       []
+      ],
       "clip-border-area-ref.html": [
        "1df7f6416db78d1149a8c66f3639b752945ceca9",
        []
@@ -381892,112 +381912,12 @@
       []
      ],
      "animation": {
-      "custom-property-animation-angle-comma-list-expected.txt": [
-       "26de94e887f4dbffacbbd49caa04ea7f62fea5ec",
-       []
-      ],
-      "custom-property-animation-angle-expected.txt": [
-       "6164b28b79b8d87d6cfa1b167681cec2cd588f1c",
-       []
-      ],
-      "custom-property-animation-angle-space-list-expected.txt": [
-       "0dc69614c519ba9423293a6e61f51d546aeab5f9",
-       []
-      ],
-      "custom-property-animation-color-comma-list-expected.txt": [
-       "c02dcc8284c796208c7253c207db16f244c1b7fd",
-       []
-      ],
-      "custom-property-animation-color-expected.txt": [
-       "cdcea791d3aca0e42fc6402e0a8a10024d1eb055",
-       []
-      ],
-      "custom-property-animation-color-space-list-expected.txt": [
-       "e2fe9d3189f82106b822cf374ac1b6e1126d3f42",
-       []
-      ],
-      "custom-property-animation-integer-comma-list-expected.txt": [
-       "f71ff0a7970bdf1936d931f47687ad93fa7e9c5e",
-       []
-      ],
-      "custom-property-animation-integer-expected.txt": [
-       "0b15ea43ca19321254cc7c18b441891ee60c5b3c",
-       []
-      ],
-      "custom-property-animation-integer-space-list-expected.txt": [
-       "4dfde63db363a8828b977bccd40db22d4e621ac1",
-       []
-      ],
-      "custom-property-animation-length-comma-list-expected.txt": [
-       "3abfb0ba97ef299d1da517152c881cf9de68e96e",
-       []
-      ],
-      "custom-property-animation-length-expected.txt": [
-       "13c1dce0a545bac9849892efedf94b5faf458cba",
-       []
-      ],
       "custom-property-animation-length-percentage-comma-list-expected.txt": [
-       "e2f508e0b3089722cc2a14ebd08b29cfc32a4c92",
-       []
-      ],
-      "custom-property-animation-length-percentage-expected.txt": [
-       "a778642a0e64836c703425bc1a669afb675d7782",
+       "f815f923ac984b6e9a7613224a19e3626646b848",
        []
       ],
       "custom-property-animation-length-percentage-space-list-expected.txt": [
-       "0894d5e0b4d2cabc22edeec99a2e30b1f3588157",
-       []
-      ],
-      "custom-property-animation-length-space-list-expected.txt": [
-       "8cb6199af153eb127fe6118ebc02a3b2a6ac823d",
-       []
-      ],
-      "custom-property-animation-number-comma-list-expected.txt": [
-       "bbee045017cef4b07606bdb53714bcc271ea1145",
-       []
-      ],
-      "custom-property-animation-number-expected.txt": [
-       "2d17852c96b361d41eb70d4fd0e9d082bb29030f",
-       []
-      ],
-      "custom-property-animation-number-space-list-expected.txt": [
-       "58b7a19b1e2d2594df98c727717277531bd8f42c",
-       []
-      ],
-      "custom-property-animation-percentage-comma-list-expected.txt": [
-       "44de54cd6ec6f89f30b0ce37fef5ada2f248372f",
-       []
-      ],
-      "custom-property-animation-percentage-expected.txt": [
-       "f5f6f84b11b1fabe961f623994215be391ca6b72",
-       []
-      ],
-      "custom-property-animation-percentage-space-list-expected.txt": [
-       "399d59f1dab2d8e78fd127b49f34f119838f25bb",
-       []
-      ],
-      "custom-property-animation-resolution-comma-list-expected.txt": [
-       "8335d6c8d988d327320868910bc1c7dd7fc44644",
-       []
-      ],
-      "custom-property-animation-resolution-expected.txt": [
-       "cd09a5a06bd6f61bc3f2c85da37e351bc229d1f5",
-       []
-      ],
-      "custom-property-animation-resolution-space-list-expected.txt": [
-       "cee8756589f6ec3fcb9a0fae01f2468875e8ca4b",
-       []
-      ],
-      "custom-property-animation-time-comma-list-expected.txt": [
-       "bb259b2cd20bab1b6c0b9a33cd5df9d1ddfb355c",
-       []
-      ],
-      "custom-property-animation-time-expected.txt": [
-       "e63ed1a114440d1616ec969807fdacbac11fdc54",
-       []
-      ],
-      "custom-property-animation-time-space-list-expected.txt": [
-       "96013c15e299ba1a4db29c531224509059cf2faf",
+       "7233bf29b5af8a650e1e76c76c28ec6e239af6b7",
        []
       ],
       "custom-property-animation-transform-function-expected.txt": [
@@ -404889,6 +404809,10 @@
      ],
      "query-target-in-load-event.part.html": [
       "7eb1baf15f05f95545a563fe216eac0655c38a74",
+      []
+     ],
+     "querySelector-mixed-case-expected.txt": [
+      "da802de74f48e4c4923d680dfdc1999e72ee1f35",
       []
      ],
      "remove-from-shadow-host-and-adopt-into-iframe-ref.html": [
@@ -450668,22 +450592,14 @@
       []
      ],
      "storage-access-beyond-cookies-iframe-iframe.html": [
-      "09eef3fe52fbb3d2370a6f9e631057eb4e39460b",
+      "61d04834def4e5e66a6ba6e2a94dcaa03e7836cd",
       []
      ],
      "storage-access-beyond-cookies-iframe.sub.html": [
-      "2e10d1cae157bbef7e7ca5a181335dca4152e39b",
+      "775aaa3d7a699958afefc9a0ef4d037505d973ef",
       []
      ]
     },
-    "storage-access-beyond-cookies.SharedWorker.sub.https.window-expected.txt": [
-     "62f9206e3ca86c0f2f2d50a6f52b72fe53bb4ea1",
-     []
-    ],
-    "storage-access-beyond-cookies.cookies.sub.https.window-expected.txt": [
-     "82210df8ee86f424b4a97123a1fb43122215e6d1",
-     []
-    ],
     "storage-access-beyond-cookies.unpartitioned.sub.https.window-expected.txt": [
      "3efdb8f865284878c7452851b88079d4ce886b28",
      []
@@ -456562,12 +456478,8 @@
        "bcb39cee5195f13425321e2cc913d238d807d172",
        []
       ],
-      "effect-value-context-filling-expected.txt": [
-       "71a2ebcfb6ec313e710d65ebaca5a5f20a4ad6d6",
-       []
-      ],
       "effect-value-iteration-composite-operation-expected.txt": [
-       "1ada4a6cb0869296e57b127e208799359bbaf3e3",
+       "5592f560c9be7d74ac26f466614ea9e14178d2aa",
        []
       ],
       "effect-value-opacity-replaced-effect-in-shadow-root-ref.html": [
@@ -456603,7 +456515,7 @@
      ]
     },
     "idlharness.window-expected.txt": [
-     "e51ec140c9d77a41abf750363bcbaa8c3830299e",
+     "00cb2d812c637adf541d271950fa00d9cace52be",
      []
     ],
     "interfaces": {
@@ -456628,18 +456540,6 @@
       ]
      },
      "KeyframeEffect": {
-      "constructor-expected.txt": [
-       "3d3521b5b0b25b60d281d427267c6861cb116f94",
-       []
-      ],
-      "iterationComposite-expected.txt": [
-       "a4c863ee7fee329a428a8fe4071e5efd47f19726",
-       []
-      ],
-      "style-change-events-expected.txt": [
-       "80051424c5552ed3720568d1e3bbdbfa12a77256",
-       []
-      ],
       "target-expected.txt": [
        "49e754725fb46d04df8882504e58b611cc89c2fc",
        []
@@ -461260,7 +461160,7 @@
     },
     "resources": {
      "websockets-test-helpers.sub.js": [
-      "5399a3eb7ced1014fdb6bec494f21c0c379c9dd8",
+      "854c30aab047000da673c2561acd184584bbe683",
       []
      ]
     },
@@ -575292,6 +575192,13 @@
        {}
       ]
      ],
+     "querySelector-mixed-case.html": [
+      "453fb70f17ad9dd4cc6a9345ff9a0d81d124c503",
+      [
+       null,
+       {}
+      ]
+     ],
      "remove-and-adopt-thcrash.html": [
       "d37015ec9f923bfc74319631723defa0b222654d",
       [
@@ -673055,7 +672962,7 @@
         ],
         "backward-navigation": {
          "does-not-move-when-on-focusgroup-root.html": [
-          "ace0a7bd9d1924c1e1fd8a450b053c0d96563e10",
+          "122915c7266a9d19cd5b5ab3692946f5fb5c327b",
           [
            null,
            {
@@ -673064,7 +672971,7 @@
           ]
          ],
          "does-not-move-when-on-non-focusgroup-item.html": [
-          "d6bae237a8ffe51bea62538855b872d824461a65",
+          "6cce4b3890926df231d6bb0cc41215b3a39000e2",
           [
            null,
            {
@@ -673091,7 +672998,7 @@
           ]
          ],
          "does-not-move-when-outside-focusgroup.html": [
-          "feb3712122dbb48229653451bb89e2397f017867",
+          "ac474db37cba7384bf66e53c3a9e237e2ac22cce",
           [
            null,
            {
@@ -673100,7 +673007,7 @@
           ]
          ],
          "does-not-wrap-when-not-supported.html": [
-          "02d6c6fb8d67e85a84163a16dc35b14c70d33663",
+          "1b9460e9c1ba454d69726e33add8d462cac868b5",
           [
            null,
            {
@@ -673110,7 +673017,7 @@
          ],
          "horizontal": {
           "does-not-ascend-out-of-focusgroup.html": [
-           "1c3a7ac291612934e61a05e84a901f2a913206f9",
+           "ef2cecf3b342a564b31518472e40203e971daf48",
            [
             null,
             {
@@ -673119,7 +673026,7 @@
            ]
           ],
           "does-not-move-when-axis-not-supported.html": [
-           "33d577d7c1cf3b4d11346189f06a1f42c301e428",
+           "3d82cf6252d4a33bac1e6f5a889cba59615ca5c2",
            [
             null,
             {
@@ -673128,7 +673035,7 @@
            ]
           ],
           "does-not-wrap-in-orthogonal-axis.html": [
-           "9263d4da548133f0973038bb24fb411b96d2bb60",
+           "b8b64cc933209a72d48a4a1ae8710cdce542cdbd",
            [
             null,
             {
@@ -673137,7 +673044,7 @@
            ]
           ],
           "moves-when-only-current-axis-supported.html": [
-           "e345de31a91c6863d2ba710b92732dc70c6b45a7",
+           "33b0ceb32541d5c92b588fc59b8a1b076e29d52d",
            [
             null,
             {
@@ -673146,7 +673053,7 @@
            ]
           ],
           "wraps-in-axis.html": [
-           "09308b53c0ee99ecf8b0657c4f8dd62bd37196bc",
+           "b51c8917e3d1c1130ade616edbe86e6c6e99631a",
            [
             null,
             {
@@ -673156,7 +673063,7 @@
           ]
          },
          "moves-to-previous-item-and-skips-focusable-item.html": [
-          "5427b4d4150bfa973e95f7ccacad06590b0b2e5d",
+          "ecbb0109a0e95d73c913125f6f36a30da6580a79",
           [
            null,
            {
@@ -673165,7 +673072,7 @@
           ]
          ],
          "moves-to-previous-item.html": [
-          "5c35729160e7076dc7cad8a764b82f33a185a511",
+          "f0132b15cc7575890e245cf65b08cbf1653ae935",
           [
            null,
            {
@@ -673174,7 +673081,7 @@
           ]
          ],
          "skips-non-focusgroup-subtree.html": [
-          "6a07936dd4a1939d5603399f8b11b0ff328fe109",
+          "87b1bcaa54a29f1b1fa9bf7f077087fb8ff4a4cd",
           [
            null,
            {
@@ -673183,7 +673090,7 @@
           ]
          ],
          "skips-root-focusgroup-complex-case.html": [
-          "99beb3e2470be13c5a12e7b1d1e79fa5450600f7",
+          "b33dd55e744c3f4fbb46f37a09357958cb69ec41",
           [
            null,
            {
@@ -673192,7 +673099,7 @@
           ]
          ],
          "skips-root-focusgroup.html": [
-          "11b99d1eb6bf4ca9d2df876bb6740a09bc121fc1",
+          "6013d7dbfd4a52a95cccac77b75a750ddc472a02",
           [
            null,
            {
@@ -673202,7 +673109,7 @@
          ],
          "vertical": {
           "does-not-ascend-out-of-focusgroup.html": [
-           "33be6021095c2585547c62505eaa3081f2b61d34",
+           "ae71851111a7a6ef00c90d93006d7a8cfb1c43f2",
            [
             null,
             {
@@ -673211,7 +673118,7 @@
            ]
           ],
           "does-not-move-when-axis-not-supported.html": [
-           "2dc717fe61242850c7bdce1d8366f08514621d0b",
+           "21ce39f3a57911e47477c88c393ca310d96939eb",
            [
             null,
             {
@@ -673220,7 +673127,7 @@
            ]
           ],
           "does-not-wrap-in-orthogonal-axis.html": [
-           "1efecb30749652f92e8e1685c96fe77464e22b8e",
+           "051cee6abc373c02987e59c0df1dabf28110c2bd",
            [
             null,
             {
@@ -673229,7 +673136,7 @@
            ]
           ],
           "moves-when-only-current-axis-supported.html": [
-           "4da9475e068754694918cf37433dbb01f6371c3e",
+           "f845bdd0da8ef996361885b8aeaa4b34d62082b6",
            [
             null,
             {
@@ -673238,7 +673145,7 @@
            ]
           ],
           "wraps-in-axis.html": [
-           "dc2af36c4675b779f9f9080e73ba3b2445bb2927",
+           "87f9ec7c07ae255dfbc30fd722d2fbe32e6aa1da",
            [
             null,
             {
@@ -673248,7 +673155,7 @@
           ]
          },
          "wraps-successfully-complex-case.html": [
-          "a5a99cc9959677ea5f65ab55bb0701aa7ed9399b",
+          "a33044e0f298176035b5ac0808b5ea973f91ff31",
           [
            null,
            {
@@ -673257,7 +673164,7 @@
           ]
          ],
          "wraps-successfully.html": [
-          "bddfd6805cc2c93283c62718c705d035b64488aa",
+          "109df6cb8adb0a83acaf2058df16b4c01f9a4289",
           [
            null,
            {
@@ -673267,7 +673174,7 @@
          ]
         },
         "behavior-first-requirement.html": [
-         "1040873afdb6bce80f0eae1b59030302d0a68a0d",
+         "db525892bb634e493f43a59eccdfa99432f9fb0f",
          [
           null,
           {
@@ -673276,7 +673183,7 @@
          ]
         ],
         "behavior-tokens-comprehensive.html": [
-         "d87178fcd6e7b1402dcbd8573affe33bc923f38c",
+         "b7483fe7afe51320ff5e9956b6cc5115d1e188ef",
          [
           null,
           {
@@ -673286,7 +673193,7 @@
         ],
         "descendant-navigation": {
          "deeply-nested-items.html": [
-          "a8d7062bf3559cc26fa55571942f05c4040e8c46",
+          "2ffe6d7a56341e52f2aedb317a3b35925036d2d9",
           [
            null,
            {
@@ -673295,7 +673202,7 @@
           ]
          ],
          "mixed-content-navigation.html": [
-          "77059c5079c70345e1ff22a4ffc0503b03063924",
+          "712eedb9f88f41c34de574637f78ca1bc0d2a472",
           [
            null,
            {
@@ -673304,7 +673211,7 @@
           ]
          ],
          "simple-descendant-test.html": [
-          "3bcfcbe4febbda8431b71d43e60ae1cb55ff5651",
+          "9918d2a2a50774178e46714bcf4ad789d1da81a3",
           [
            null,
            {
@@ -673313,7 +673220,7 @@
           ]
          ],
          "various-element-types.html": [
-          "426d177cd39b0856dc456da6a6e3eba3b59104ec",
+          "e20bb88e4daea495902e05659d4326692f72a611",
           [
            null,
            {
@@ -673322,7 +673229,7 @@
           ]
          ],
          "wrapping-with-descendants.html": [
-          "8edc5421d89d34a6d2924adcb9ec84f9b00ea2c9",
+          "167e5d97e914c3fc76d709e7cbaa673234c04961",
           [
            null,
            {
@@ -673333,7 +673240,7 @@
         },
         "forward-navigation": {
          "does-not-move-when-on-focusgroup-root.html": [
-          "548b391d7ffb0257dd5ca1dcf441b7e040bef9e2",
+          "a6c7029c8d21b2c4842909a26b69d57daf1a058a",
           [
            null,
            {
@@ -673342,7 +673249,7 @@
           ]
          ],
          "does-not-move-when-on-non-item.html": [
-          "c2627dee476fb2a451d865e11f1a4535b225583a",
+          "9a239e1e10934a38246be095e97c1447c42cb166",
           [
            null,
            {
@@ -673369,7 +673276,7 @@
           ]
          ],
          "does-not-move-when-outside-focusgroup.html": [
-          "e4736e25eef22968f618af3573b3f762e11702dd",
+          "985dba5634c0f03495b0ef8836cdb2eca3bbf41d",
           [
            null,
            {
@@ -673378,7 +673285,7 @@
           ]
          ],
          "does-not-wrap-when-not-supported.html": [
-          "6602c24f050a57b97714f83bb508e6c2310b42c8",
+          "65eba32421ec5a7d0e30263432fd025a99a24005",
           [
            null,
            {
@@ -673388,7 +673295,7 @@
          ],
          "horizontal": {
           "does-not-move-when-axis-not-supported.html": [
-           "558939dbde68ffdb743a251001a830afb09f157b",
+           "6ec08c31cfb432eca632087c9cb9725ce8cce291",
            [
             null,
             {
@@ -673397,7 +673304,7 @@
            ]
           ],
           "moves-when-only-current-axis-supported.html": [
-           "d4b719764b3ddf2fdf47bf7c627161855a993301",
+           "4433260d23eda10ca6ee22360424083347c67e2a",
            [
             null,
             {
@@ -673407,7 +673314,7 @@
           ]
          },
          "moves-to-next-item-and-skips-non-focusable.html": [
-          "221b0cecb0f19ba4e162e12034fb74d236844560",
+          "160e2bff4f17a60b999140569b2a90bdf20a4bd5",
           [
            null,
            {
@@ -673416,7 +673323,7 @@
           ]
          ],
          "moves-to-next-item.html": [
-          "4302e0b7e97ca8fb9aa5b9464c3a11d091a23b09",
+          "31456a7f8fcda4611bb35e2bcbdf135ad2a0e5a2",
           [
            null,
            {
@@ -673426,7 +673333,7 @@
          ],
          "vertical": {
           "does-not-move-when-axis-not-supported.html": [
-           "9609eb985ea1ca8de23cff8e55147205d13f7ca5",
+           "33a5ade9268451831b143d5144ebe65c94466cf3",
            [
             null,
             {
@@ -673435,7 +673342,7 @@
            ]
           ],
           "moves-when-only-current-axis-supported.html": [
-           "d1360310ac39ac31964e731b5b0ba3b95dd39acb",
+           "ccdbaec4a2bb5e11e6fa98e7337a4e0f379595a8",
            [
             null,
             {
@@ -673445,7 +673352,7 @@
           ]
          },
          "wraps-successfully.html": [
-          "43557b11a89e1608af2189b45f06100e49815433",
+          "5345dffa58f3b0ae873c79c7c97ec5a350089698",
           [
            null,
            {
@@ -673456,7 +673363,7 @@
         },
         "grid-navigation": {
          "col-flow-only.html": [
-          "a634412d53026e84aa37e1d98f86df0a9a686f43",
+          "d7d6e51d42d113c21e79da56e1c068a0fa73ff02",
           [
            null,
            {
@@ -673465,7 +673372,7 @@
           ]
          ],
          "col-wrap-and-row-flow.html": [
-          "b5f678a706f57e477d8366b2ff76170773903ec5",
+          "cf854413cfb3244cca954b94996bac1dca0ec547",
           [
            null,
            {
@@ -673474,7 +673381,7 @@
           ]
          ],
          "col-wrap-only.html": [
-          "ff19b8778ea089ecb7f8bebadfaaffc0bd609db8",
+          "4d8e8b4c5e64bb8840551a1198707720493481e7",
           [
            null,
            {
@@ -673483,7 +673390,7 @@
           ]
          ],
          "colspan.html": [
-          "c9daeffaeb130b89c224c2bdb66432f63ee40de5",
+          "8c91da9b798eb20e6940196345b96435ba130cd9",
           [
            null,
            {
@@ -673492,7 +673399,7 @@
           ]
          ],
          "css-table-not-focusgroup.html": [
-          "c0aea689aebd0fb60e78e3864381200a99cd4eb7",
+          "3209f6919bf04ea789ab398c387ba6b20974701d",
           [
            null,
            {
@@ -673501,7 +673408,7 @@
           ]
          ],
          "css-table.html": [
-          "45e1e2c472cc9a5a07c3cd56882db42b2b0e5481",
+          "63f7c9792f72a882604ebb8c760b05b12bc90497",
           [
            null,
            {
@@ -673510,7 +673417,7 @@
           ]
          ],
          "does-not-wrap-or-flow.html": [
-          "050dec3622aca2b07481c407ccb542699209729c",
+          "f03ca6c955bac603bf14521dbb933ac99b5d16f9",
           [
            null,
            {
@@ -673519,7 +673426,7 @@
           ]
          ],
          "empty-spaces.html": [
-          "a6674e0a31a141202f8b78bb2e57a38e62607011",
+          "920e80637038cbde11a61e95e7417cb53c690b77",
           [
            null,
            {
@@ -673529,7 +673436,7 @@
           ]
          ],
          "flows-in-both-axes.html": [
-          "86fc25456bf067842ac129d05524cadb60bc0a2c",
+          "c2b331390f3c99c29676a2c3f897919107aa675d",
           [
            null,
            {
@@ -673538,7 +673445,7 @@
           ]
          ],
          "moves-across-table-sections.html": [
-          "d7d1b55f459344ed48d74bde815b22507d7266b5",
+          "484bfadfba7f4ef00a4099aaf803d76961b8c89f",
           [
            null,
            {
@@ -673547,7 +673454,7 @@
           ]
          ],
          "non-table.html": [
-          "c02de186e652bca396e8cad8405738425c50dc6c",
+          "c14ae7c54455c6cce68ce487ca43e9faf676b436",
           [
            null,
            {
@@ -673556,7 +673463,7 @@
           ]
          ],
          "relayout-before-navigation.html": [
-          "d1fd0ce6ebbb3abee3802ce17fbbba17d6ada58c",
+          "e90b2aa21a0fe8aec9ceb6694a83cf50c680aed0",
           [
            null,
            {
@@ -673565,7 +673472,7 @@
           ]
          ],
          "row-flow-only.html": [
-          "138b1b33d545b0e647168c2090b1019fa599d51d",
+          "e270e7cd0dc29cf765c7ad6428551f963c770e05",
           [
            null,
            {
@@ -673574,7 +673481,7 @@
           ]
          ],
          "row-wrap-and-col-flow.html": [
-          "8ed69e2e3e778c9846174814cfa70613e7c38f71",
+          "1a3f35450f59acd68dce9684757302ad5ae43801",
           [
            null,
            {
@@ -673583,7 +673490,7 @@
           ]
          ],
          "row-wrap-only.html": [
-          "0154ee2125ba51a2dc4eab2b22f38f36929a5a86",
+          "55e9722db60d9f2813b852c9adab351405380de6",
           [
            null,
            {
@@ -673592,7 +673499,7 @@
           ]
          ],
          "rowspan.html": [
-          "81ab54ef8e66c3c499f1a35af2427e9882dd4b19",
+          "4cbe410925b228ad525ed7dca3ddbf236db9e739",
           [
            null,
            {
@@ -673601,7 +673508,7 @@
           ]
          ],
          "simple-case-with-non-focusable-cell-in-the-center.html": [
-          "25d2900a9ffc54df7c8109c5934001a0e1494234",
+          "375d03a768b6db82039fe4658a667557b87ca3cf",
           [
            null,
            {
@@ -673610,7 +673517,7 @@
           ]
          ],
          "simple-case.html": [
-          "738895ce0b34c10943cc5680d35249a4981fbd19",
+          "aca3dacbfd8a0660ee25671692839e8563f1ba88",
           [
            null,
            {
@@ -673619,7 +673526,7 @@
           ]
          ],
          "wraps-in-both-axes.html": [
-          "809ee5364578321c7a37471f1885546dc910ee8d",
+          "801b488c58759583b79bdf9bf205e0245f5311a1",
           [
            null,
            {
@@ -673630,7 +673537,7 @@
         },
         "opt-out-barriers": {
          "complex-nested-opt-out.html": [
-          "bd72e0e203dec320d776bd5aa94e0df2755ebfc3",
+          "339cf277016b76f28eb03a474009c2b7cd3e3f59",
           [
            null,
            {
@@ -673639,7 +673546,7 @@
           ]
          ],
          "none-creates-barriers.html": [
-          "5a9e5f359cbadb53567ef5adcd57c18ed75a636c",
+          "f1c209a963ccb1669e84b88ef113ebb93dabd7c1",
           [
            null,
            {
@@ -673659,7 +673566,7 @@
           ]
          ],
          "fallback-to-dom-order.html": [
-          "8322096d5bfeaf7f7c998948107fd6b26a43b5d3",
+          "cf970aaa9553b6eeb44cc5de2a6ae858505c721a",
           [
            null,
            {
@@ -673704,9 +673611,74 @@
           ]
          ]
         },
+        "sequential-navigation": {
+         "basic-tab-behavior.html": [
+          "c5fa86a1b91288cd2fb2d14ec7d4c2ea7261d933",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "dynamic-changes.html": [
+          "1bbd2703b58b15f6cc5269eaf71d9bdf0f6fac2a",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "empty-and-non-focusable.html": [
+          "e4c44115f164d0c9514781a8a4faae0f39ecc9a7",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "focusgroup-segments.html": [
+          "058e042538ba9858c996e2e9b689e2e53a754f53",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "guaranteed-tab-stop-priority.html": [
+          "4da81d0b5d013499874e38656dbc4dfd50c3c22a",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "memory-behavior.html": [
+          "ec946e12791d1b133b5ccaccd2439f9b7a58a697",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "nested-focusgroups.html": [
+          "47463a71365dea03e3da8835faee99f98d5c0d8f",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ]
+        },
         "shadow": {
          "shadow-items-basic.html": [
-          "e6fb928d0ddf5b07f6f83aefd68a8cc7d6af4042",
+          "7b0a247c8e192a667e8a16b098874416e9a9e694",
           [
            null,
            {
@@ -673715,7 +673687,7 @@
           ]
          ],
          "shadow-nested-scope.html": [
-          "154793ee89094ae6135b2a877987bb2ba5d08d7c",
+          "ad52ec2908e9acc97427c0535130bfdafcabe8b4",
           [
            null,
            {
@@ -683491,7 +683463,7 @@
          ]
         ],
         "selectedcontent-mutations.html": [
-         "45f2ff7813992313292b4aa682a9bcd43e4fb277",
+         "9b53b33ef194a6ab7d11cc61bdd6da91f96262ca",
          [
           null,
           {}
@@ -711506,6 +711478,13 @@
      ]
     },
     "ordering-and-transition": {
+     "anchor-download-aborts-previous-navigation.html": [
+      "929290ca23008a971c9cf1c3351f5da58282f6f2",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-download-intercept-reject.html": [
       "5af651eb890ff69c3974a4008e50580891209da4",
       [
