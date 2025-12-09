@@ -408,8 +408,7 @@ ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
   DCHECK(manifest_data_changes_.app_icon_identity_change);
 
   const WebApp& web_app = GetWebApp();
-  if (CanWebAppSilentlyUpdateIdentity(web_app) ||
-      base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating)) {
+  if (CanWebAppSilentlyUpdateIdentity(web_app)) {
     return IdentityUpdateDecision::kSilentlyAllow;
   }
 
