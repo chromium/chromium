@@ -116,6 +116,13 @@ bool IsDefaultCpuEpDevice(const OrtEpDevice* device) {
          kCpuExecutionProvider;
 }
 
+bool IsDmlEpDevice(const OrtEpDevice* device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  return UNSAFE_BUFFERS(base::cstring_view(ort_api->EpDevice_EpName(device))) ==
+         kDmlExecutionProvider;
+}
+
 bool MatchesEpVendor(const OrtEpDevice* ep_device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
@@ -161,6 +168,23 @@ bool IsDiscreteGpu(const OrtEpDevice* device) {
   }
 
   return false;
+}
+
+bool IsSoftwareGpu(const OrtEpDevice* device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  const OrtHardwareDevice* hardware_device = ort_api->EpDevice_Device(device);
+  if (ort_api->HardwareDevice_Type(hardware_device) !=
+      OrtHardwareDeviceType_GPU) {
+    return false;
+  }
+
+  // Starting with Windows 8, an adapter called the "Microsoft Basic Render
+  // Driver" is always present. This adapter has a VendorId of 0x1414 and a
+  // DeviceID of 0x8c.
+  // https://docs.microsoft.com/en-us/windows/desktop/direct3ddxgi/d3d10-graphics-programming-guide-dxgi#new-info-about-enumerating-adapters-for-windows-8
+  return ort_api->HardwareDevice_VendorId(hardware_device) == 0x1414 &&
+         ort_api->HardwareDevice_DeviceId(hardware_device) == 0x8c;
 }
 
 // Select the first device of specified hardware device type from the sorted
@@ -251,6 +275,11 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForGpu(
       sorted_devices, OrtHardwareDeviceType_GPU);
 
   if (!first_gpu) {
+    return SelectEpDevicesForCpu(sorted_devices);
+  } else if (IsDmlEpDevice(first_gpu) && IsSoftwareGpu(first_gpu)) {
+    // Skip DirectML EP for software GPU adaptor, because it will throw
+    // exception and cause GPU process to crash. See more details in
+    // crbug.com/466848120.
     return SelectEpDevicesForCpu(sorted_devices);
   }
 
