@@ -44,6 +44,13 @@
 
 using enum OmniboxKeyboardAction;
 
+namespace {
+
+/// Minimum vertical inset, defaults from UITextView.
+const CGFloat kMinVerticalInset = 8.0;
+
+}  // namespace
+
 @interface OmniboxTextViewIOS () <UIGestureRecognizerDelegate,
                                   UITextViewDelegate>
 
@@ -75,6 +82,9 @@ using enum OmniboxKeyboardAction;
   // text present.
   NSString* _customPlaceholderText;
   NSString* _defaultPlaceholderText;
+
+  // Constraint for the placeholder label top anchor.
+  NSLayoutConstraint* _placeholderTopConstraint;
 }
 
 @synthesize omniboxTextInputDelegate = _omniboxTextInputDelegate;
@@ -120,6 +130,7 @@ using enum OmniboxKeyboardAction;
 
     // Force initial layout of internal text label.
     self.font = self.currentFont;
+    [self updateTextContainerInset];
 
     _tapGestureRecognizer =
         [[UITapGestureRecognizer alloc] initWithTarget:self
@@ -164,9 +175,11 @@ using enum OmniboxKeyboardAction;
   // directly to the text view's frame and then adding the internal insets.
   UIEdgeInsets textInsets = self.textContainerInset;
   CGFloat linePadding = self.textContainer.lineFragmentPadding;
+  _placeholderTopConstraint =
+      [placeholderLabel.topAnchor constraintEqualToAnchor:self.topAnchor
+                                                 constant:textInsets.top];
   [NSLayoutConstraint activateConstraints:@[
-    [placeholderLabel.topAnchor constraintEqualToAnchor:self.topAnchor
-                                               constant:textInsets.top],
+    _placeholderTopConstraint,
     [placeholderLabel.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
                        constant:textInsets.left + linePadding],
@@ -181,6 +194,14 @@ using enum OmniboxKeyboardAction;
   }
   _allowsReturnKeyWithEmptyText = allowsReturnKeyWithEmptyText;
   [self reloadInputViews];
+}
+
+- (void)setMinimumHeight:(CGFloat)minimumHeight {
+  if (_minimumHeight == minimumHeight) {
+    return;
+  }
+  _minimumHeight = minimumHeight;
+  [self updateTextContainerInset];
 }
 
 - (void)setText:(NSAttributedString*)text
@@ -1131,9 +1152,52 @@ using enum OmniboxKeyboardAction;
 - (void)updateTextProperitesOnTraitChange {
   // Reset the fonts to the appropriate ones in this size class.
   self.font = self.currentFont;
+  [self updateTextContainerInset];
   self.placeholderLabel.font = self.font;
   [self setAttributedText:self.attributedText];
   [self updateOmniboxTypingAttributes];
+}
+
+- (void)updateTextContainerInset {
+  if (self.minimumHeight <= 0) {
+    // Reset to default values.
+    self.textContainerInset =
+        UIEdgeInsetsMake(kMinVerticalInset, 0, kMinVerticalInset, 0);
+    _placeholderTopConstraint.constant = kMinVerticalInset;
+    return;
+  }
+  CGFloat lineHeight = [self singleLineHeight];
+  CGFloat minHeight = self.minimumHeight;
+  CGFloat verticalPadding =
+      MAX(kMinVerticalInset * 2.0, (minHeight - lineHeight));
+  // Distribute padding.
+  CGFloat topPadding = verticalPadding / 2.0;
+  CGFloat bottomPadding = verticalPadding - topPadding;
+  self.textContainerInset = UIEdgeInsetsMake(topPadding, 0, bottomPadding, 0);
+  _placeholderTopConstraint.constant = topPadding;
+}
+
+/// Returns the height of a single line of text with the current font.
+- (CGFloat)singleLineHeight {
+  UIFont* font = self.font ?: self.currentFont;
+  // Create a sample attributed string for one line.
+  NSAttributedString* singleLineSampler =
+      [[NSAttributedString alloc] initWithString:@"T"
+                                      attributes:@{NSFontAttributeName : font}];
+  CGSize singleLineConstraint = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+  NSStringDrawingOptions options =
+      NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading;
+  CGRect singleLineBoundingRect =
+      [singleLineSampler boundingRectWithSize:singleLineConstraint
+                                      options:options
+                                      context:nil];
+  CGFloat measuredSingleLineHeight = ceilf(singleLineBoundingRect.size.height);
+
+  // If for some reason measurement fails, fall back to font.lineHeight.
+  if (measuredSingleLineHeight <= 0) {
+    measuredSingleLineHeight = font.lineHeight;
+  }
+  return measuredSingleLineHeight;
 }
 
 - (void)updatePlaceholderVisibility {

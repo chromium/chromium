@@ -46,6 +46,9 @@
 // placeholder.
 - (void)setCustomPlaceholderText:(NSString*)customPlaceholderText;
 
+// The minimum height of the text field.
+- (void)setMinimumHeight:(CGFloat)minimumHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_TEXT_FIELD_VIEW_CONTAINING_H_
