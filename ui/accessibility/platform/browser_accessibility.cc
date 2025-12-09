@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -1257,11 +1258,19 @@ std::optional<size_t> BrowserAccessibility::GetIndexInParent() const {
 
 gfx::AcceleratedWidget
 BrowserAccessibility::GetTargetForNativeAccessibilityEvent() {
-  AXPlatformTreeManagerDelegate* root_delegate =
-      manager()->GetDelegateFromRootManager();
-  if (!root_delegate)
+  // Views trees can use their manager's delegate because it always maps to a
+  // native widget, but web trees need the root manager's delegate so nested
+  // iframes get the right target.
+  AXPlatformTreeManagerDelegate* delegate =
+      features::IsAccessibilityTreeForViewsEnabled() && !IsWebContent()
+          ? manager()->delegate()
+          : manager()->GetDelegateFromRootManager();
+
+  if (!delegate) {
     return gfx::kNullAcceleratedWidget;
-  return root_delegate->AccessibilityGetAcceleratedWidget();
+  }
+
+  return delegate->AccessibilityGetAcceleratedWidget();
 }
 
 AXPlatformNode* BrowserAccessibility::GetTableCaption() const {
