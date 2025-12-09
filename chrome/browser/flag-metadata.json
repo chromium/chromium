@@ -1007,7 +1007,7 @@
       "joshuatan@google.com",
       "payments-autofill-team@google.com"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 149
   },
   {
     "name": "autofill-enable-support-for-home-and-work",
@@ -4986,7 +4986,7 @@
       "joshuatan@google.com",
       "payments-autofill-team@google.com"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 149
   },
   {
     "name": "fast-drm-master-drop",
