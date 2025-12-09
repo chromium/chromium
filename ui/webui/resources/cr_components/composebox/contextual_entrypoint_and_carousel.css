@@ -49,7 +49,7 @@
   padding-inline-start: var(--text-input-inline-start-spacing);
 }
 
-.upload-icon {
+.upload-button {
   --cr-icon-button-focus-outline-color:
       var(--color-searchbox-results-icon-focused-outline);
   --cr-icon-button-icon-size: 24px;
@@ -59,7 +59,7 @@
   color: var(--color-composebox-upload-button);
 }
 
-:host([inputs-disabled_]) .upload-icon {
+:host([inputs-disabled_]) .upload-button {
   color: var(--color-composebox-upload-button-disabled);
 }
 

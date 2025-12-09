@@ -261,6 +261,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextMenuEntrypoint) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, LensSearch) {
+  RunTest("cr_components/composebox/composebox_lens_search_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, RecentTabChip) {
   RunTest("cr_components/composebox/recent_tab_chip_test.js", "mocha.run()");
 }

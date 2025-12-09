@@ -288,6 +288,11 @@ const base::FeatureParam<bool> kShowCreateImageTool(
     &internal::kWebUIOmniboxAimPopup,
     "ShowCreateImageTool",
     false);
+// TODO(crbug.com/462739330): Enable lens chip.
+const base::FeatureParam<bool> kShowLensSearchChip(
+    &internal::kWebUIOmniboxAimPopup,
+    "ShowLensSearchChip",
+    false);
 const base::FeatureParam<bool> kShowRecentTabChip(
     &internal::kWebUIOmniboxAimPopup,
     "ShowRecentTabChip",
