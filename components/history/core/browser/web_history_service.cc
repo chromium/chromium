@@ -68,12 +68,12 @@ class RequestImpl : public WebHistoryService::Request {
 
   // Returns the response code received from the server, which will only be
   // valid if the request succeeded.
-  int GetResponseCode() override { return response_code_; }
+  int GetResponseCode() const override { return response_code_; }
 
   // Returns the contents of the response body received from the server.
-  const std::string& GetResponseBody() override { return response_body_; }
+  const std::string& GetResponseBody() const override { return response_body_; }
 
-  bool IsPending() override { return is_pending_; }
+  bool IsPending() const override { return is_pending_; }
 
  private:
   friend class history::WebHistoryService;
@@ -351,22 +351,24 @@ void WebHistoryService::RemoveObserver(WebHistoryServiceObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-WebHistoryService::Request* WebHistoryService::CreateRequest(
+std::unique_ptr<WebHistoryService::Request> WebHistoryService::CreateRequest(
     const GURL& url,
     CompletionCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
-  return new RequestImpl(identity_manager_, url_loader_factory_, url,
-                         std::move(callback), partial_traffic_annotation);
+  // Can't use std::make_unique due to private constructor.
+  return base::WrapUnique(
+      new RequestImpl(identity_manager_, url_loader_factory_, url,
+                      std::move(callback), partial_traffic_annotation));
 }
 
 // static
 std::optional<base::Value::Dict> WebHistoryService::ReadResponse(
-    WebHistoryService::Request* request) {
-  if (request->GetResponseCode() != net::HTTP_OK) {
+    const WebHistoryService::Request& request) {
+  if (request.GetResponseCode() != net::HTTP_OK) {
     return std::nullopt;
   }
   std::optional<base::Value> value = base::JSONReader::Read(
-      request->GetResponseBody(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+      request.GetResponseBody(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (value && value->is_dict()) {
     return std::move(*value).TakeDict();
   }
@@ -461,10 +463,11 @@ void WebHistoryService::QueryWebAndAppActivity(
       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   GURL url(kQueryWebAndAppActivityUrl);
-  Request* request = CreateRequest(url, std::move(completion_callback),
-                                   partial_traffic_annotation);
-  pending_web_and_app_activity_requests_[request] = base::WrapUnique(request);
-  request->Start();
+  std::unique_ptr<Request> request = CreateRequest(
+      url, std::move(completion_callback), partial_traffic_annotation);
+  Request* request_raw = request.get();
+  pending_web_and_app_activity_requests_[request_raw] = std::move(request);
+  request_raw->Start();
 }
 
 void WebHistoryService::QueryOtherFormsOfBrowsingHistory(
@@ -486,22 +489,23 @@ void WebHistoryService::QueryOtherFormsOfBrowsingHistory(
   url = url.ReplaceComponents(replace_path);
   DCHECK(url.is_valid());
 
-  Request* request = CreateRequest(url, std::move(completion_callback),
-                                   partial_traffic_annotation);
+  std::unique_ptr<Request> request = CreateRequest(
+      url, std::move(completion_callback), partial_traffic_annotation);
+  Request* request_raw = request.get();
 
   // Set the Sync-specific user agent.
   request->SetUserAgent(syncer::MakeUserAgentForSync(channel));
 
-  pending_other_forms_of_browsing_history_requests_[request] =
-      base::WrapUnique(request);
+  pending_other_forms_of_browsing_history_requests_[request_raw] =
+      std::move(request);
 
   // Set the request protobuf.
   sync_pb::HistoryStatusRequest request_proto;
   std::string post_data;
   request_proto.SerializeToString(&post_data);
-  request->SetPostDataAndType(post_data, kSyncProtoMimeType);
+  request_raw->SetPostDataAndType(post_data, kSyncProtoMimeType);
 
-  request->Start();
+  request_raw->Start();
 }
 
 // static
@@ -510,7 +514,7 @@ void WebHistoryService::QueryHistoryCompletionCallback(
     WebHistoryService::Request* request,
     bool success) {
   std::move(callback).Run(request,
-                          success ? ReadResponse(request) : std::nullopt);
+                          success ? ReadResponse(*request) : std::nullopt);
 }
 
 void WebHistoryService::ExpireHistoryCompletionCallback(
@@ -526,7 +530,7 @@ void WebHistoryService::ExpireHistoryCompletionCallback(
     return;
   }
 
-  std::optional<base::Value::Dict> response = ReadResponse(request);
+  std::optional<base::Value::Dict> response = ReadResponse(*request);
   if (!response) {
     std::move(callback).Run(/*success=*/false);
     return;
@@ -555,7 +559,7 @@ void WebHistoryService::QueryWebAndAppActivityCompletionCallback(
     return;
   }
 
-  if (std::optional<base::Value::Dict> response = ReadResponse(request)) {
+  if (std::optional<base::Value::Dict> response = ReadResponse(*request)) {
     if (std::optional<bool> enabled =
             response->FindBool("history_recording_enabled")) {
       std::move(callback).Run(

@@ -114,7 +114,7 @@ class TestBrowsingHistoryDriver : public BrowsingHistoryDriver {
 
 class TestWebHistoryService : public FakeWebHistoryService {
  public:
-  TestWebHistoryService() : FakeWebHistoryService() {}
+  TestWebHistoryService() = default;
 
   void TriggerOnWebHistoryDeleted() {
     TestRequest request;
@@ -125,9 +125,9 @@ class TestWebHistoryService : public FakeWebHistoryService {
   class TestRequest : public WebHistoryService::Request {
    private:
     // WebHistoryService::Request implementation.
-    bool IsPending() override { return false; }
-    int GetResponseCode() override { return net::HTTP_OK; }
-    const std::string& GetResponseBody() override { return body_; }
+    bool IsPending() const override { return false; }
+    int GetResponseCode() const override { return net::HTTP_OK; }
+    const std::string& GetResponseBody() const override { return body_; }
     void SetPostData(const std::string& post_data) override {}
     void SetPostDataAndType(const std::string& post_data,
                             const std::string& mime_type) override {}
@@ -155,11 +155,12 @@ class ReversedWebHistoryService : public TestWebHistoryService {
 class TimeoutWebHistoryService : public TestWebHistoryService {
  private:
   // WebHistoryService implementation.
-  Request* CreateRequest(const GURL& url,
-                         CompletionCallback callback,
-                         const net::PartialNetworkTrafficAnnotationTag&
-                             partial_traffic_annotation) override {
-    return new TestWebHistoryService::TestRequest();
+  std::unique_ptr<Request> CreateRequest(
+      const GURL& url,
+      CompletionCallback callback,
+      const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation)
+      override {
+    return std::make_unique<TestWebHistoryService::TestRequest>();
   }
 };
 

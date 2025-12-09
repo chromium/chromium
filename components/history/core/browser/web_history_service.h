@@ -57,14 +57,14 @@ class WebHistoryService : public KeyedService {
 
     // Returns true if the request is "pending" (i.e., it has been started, but
     // is not yet been complete).
-    virtual bool IsPending() = 0;
+    virtual bool IsPending() const = 0;
 
     // Returns the response code received from the server, which will only be
     // valid if the request succeeded.
-    virtual int GetResponseCode() = 0;
+    virtual int GetResponseCode() const = 0;
 
     // Returns the contents of the response body received from the server.
-    virtual const std::string& GetResponseBody() = 0;
+    virtual const std::string& GetResponseBody() const = 0;
 
     virtual void SetPostData(const std::string& post_data) = 0;
 
@@ -141,10 +141,9 @@ class WebHistoryService : public KeyedService {
                                 partial_traffic_annotation);
 
   // Queries whether web and app activity is enabled on the server.
-  virtual void QueryWebAndAppActivity(
-      QueryWebAndAppActivityCallback callback,
-      const net::PartialNetworkTrafficAnnotationTag&
-          partial_traffic_annotation);
+  void QueryWebAndAppActivity(QueryWebAndAppActivityCallback callback,
+                              const net::PartialNetworkTrafficAnnotationTag&
+                                  partial_traffic_annotation);
 
   // Whether there are other forms of browsing history stored on the server.
   void QueryOtherFormsOfBrowsingHistory(
@@ -154,17 +153,17 @@ class WebHistoryService : public KeyedService {
           partial_traffic_annotation);
 
  protected:
-  // This function is pulled out for testing purposes. Caller takes ownership of
-  // the new Request.
-  virtual Request* CreateRequest(const GURL& url,
-                                 CompletionCallback callback,
-                                 const net::PartialNetworkTrafficAnnotationTag&
-                                     partial_traffic_annotation);
+  // Virtual for testing.
+  virtual std::unique_ptr<Request> CreateRequest(
+      const GURL& url,
+      CompletionCallback callback,
+      const net::PartialNetworkTrafficAnnotationTag&
+          partial_traffic_annotation);
 
   // Extracts a JSON-encoded HTTP response into a base::Value::Dict.
   // If `request`'s HTTP response code indicates failure, or if the response
   // body is not JSON, nullopt is returned.
-  static std::optional<base::Value::Dict> ReadResponse(Request* request);
+  static std::optional<base::Value::Dict> ReadResponse(const Request& request);
 
   // Called by `request` when a web history query has completed. Unpacks the
   // response and calls `callback`, which is the original callback that was
