@@ -73,7 +73,7 @@
 - (UIEdgeInsets)separatorInsets {
   CGFloat leadingInset = kTableViewHorizontalSpacing;
   if (_leadingConfiguration) {
-    leadingInset += kTableViewHorizontalSpacing;
+    leadingInset += kTableViewImagePadding;
     leadingInset += [_leadingConfiguration contentSize].width;
   }
   return UIEdgeInsetsMake(0, leadingInset, 0, 0);
