@@ -49,6 +49,7 @@
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/controls/button/label_button.h"
@@ -5683,7 +5684,10 @@ TEST_F(WidgetWithAXTree, WidgetAXManagerInitializedWhenFlagIsOn) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
   widget->Show();
 
-  EXPECT_NE(widget->ax_manager(), nullptr);
+  // Not all platforms support Views accessibility tree, e.g., ChromeOS.
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    EXPECT_NE(widget->ax_manager(), nullptr);
+  }
 }
 
 TEST_F(WidgetTest, RootViewAccessibilityCacheInitialized) {

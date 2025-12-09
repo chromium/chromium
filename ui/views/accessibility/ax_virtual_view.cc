@@ -59,7 +59,7 @@ AXVirtualView::AXVirtualView() : ViewAccessibility(nullptr) {
   // accessibility tree are created from the WidgetAXManager serialization
   // of that virtual node. Avoid creating one here as that would be a
   // duplicate.
-  if (!::features::IsAccessibilityTreeForViewsEnabled()) {
+  if (!ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
     ax_platform_node_ = ui::AXPlatformNode::Create(*this);
     DCHECK(ax_platform_node_);
   }
@@ -221,7 +221,7 @@ const char* AXVirtualView::GetViewClassName() const {
 }
 
 gfx::NativeViewAccessible AXVirtualView::GetNativeObject() const {
-  if (::features::IsAccessibilityTreeForViewsEnabled()) {
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
     return ViewAccessibility::GetNativeObject();
   }
   DCHECK(ax_platform_node_);

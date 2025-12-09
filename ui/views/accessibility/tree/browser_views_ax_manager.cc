@@ -29,6 +29,7 @@
 #include "ui/views/accessibility/ax_root_obj_wrapper.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -46,7 +47,7 @@ BrowserViewsAXManager::LifetimeHandle::LifetimeHandle(
 BrowserViewsAXManager::LifetimeHandle::~LifetimeHandle() = default;
 
 BrowserViewsAXManager::BrowserViewsAXManager(LifetimeHandlePassKey) {
-  CHECK(::features::IsAccessibilityTreeForViewsEnabled());
+  CHECK(ViewAccessibility::IsViewsAccessibilityTreeEnabled());
   CHECK(!g_instance);
   g_instance = this;
   ui::AXPlatform::GetInstance().AddModeObserver(this);
@@ -64,7 +65,7 @@ BrowserViewsAXManager::~BrowserViewsAXManager() {
 
 std::unique_ptr<BrowserViewsAXManager::LifetimeHandle>
 BrowserViewsAXManager::Create() {
-  CHECK(::features::IsAccessibilityTreeForViewsEnabled());
+  CHECK(ViewAccessibility::IsViewsAccessibilityTreeEnabled());
   CHECK(!g_instance);
   return std::make_unique<LifetimeHandle>(
       LifetimeHandle::BrowserViewsAXManagerPassKey());

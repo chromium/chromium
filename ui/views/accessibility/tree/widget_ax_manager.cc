@@ -32,7 +32,7 @@ WidgetAXManager::WidgetAXManager(Widget* widget)
     : widget_(widget),
       ax_tree_id_(ui::AXTreeID::CreateNewAXTreeID()),
       cache_(std::make_unique<WidgetViewAXCache>()) {
-  CHECK(::features::IsAccessibilityTreeForViewsEnabled())
+  CHECK(ViewAccessibility::IsViewsAccessibilityTreeEnabled())
       << "WidgetAXManager should only be created when the "
          "accessibility tree feature is enabled.";
 

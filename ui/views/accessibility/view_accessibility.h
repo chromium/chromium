@@ -76,6 +76,11 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   static std::unique_ptr<ViewAccessibility> Create(View* view);
 
+  // Returns whether the Views-sourced accessibility tree is enabled. This
+  // encodes platform policy: returns false on ChromeOS (which never uses the
+  // ViewsAX tree) and defers to the feature flag on other platforms.
+  static bool IsViewsAccessibilityTreeEnabled();
+
   ViewAccessibility(const ViewAccessibility&) = delete;
   ViewAccessibility& operator=(const ViewAccessibility&) = delete;
   ~ViewAccessibility() override;

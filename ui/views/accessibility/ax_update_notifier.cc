@@ -43,7 +43,7 @@ void AXUpdateNotifier::NotifyViewEvent(views::View* view,
   // need to register all WidgetAXManagers as observers and broadcasting events
   // to unrelated widgets.
   auto* widget = view->GetWidget();
-  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled() && widget) {
     widget->ax_manager()->OnEvent(view->GetViewAccessibility(), event_type);
   }
 }
@@ -59,7 +59,7 @@ void AXUpdateNotifier::NotifyVirtualViewEvent(
   // the need to register all WidgetAXManagers as observers and broadcasting
   // events to unrelated widgets.
   auto* widget = virtual_view->GetWidget();
-  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled() && widget) {
     widget->ax_manager()->OnEvent(*virtual_view, event_type);
   }
 }
@@ -76,7 +76,7 @@ void AXUpdateNotifier::NotifyViewDataChanged(views::View* view) {
   // to register all WidgetAXManagers as observers and broadcasting updates to
   // unrelated widgets.
   auto* widget = view->GetWidget();
-  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled() && widget) {
     widget->ax_manager()->OnDataChanged(view->GetViewAccessibility());
   }
 }
@@ -94,7 +94,7 @@ void AXUpdateNotifier::NotifyVirtualViewDataChanged(
   // to register all WidgetAXManagers as observers and broadcasting updates to
   // unrelated widgets.
   auto* widget = virtual_view->GetWidget();
-  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled() && widget) {
     widget->ax_manager()->OnDataChanged(*virtual_view);
   }
 }
@@ -109,7 +109,7 @@ void AXUpdateNotifier::NotifyChildAdded(views::ViewAccessibility* child,
   // need to register all WidgetAXManagers as observers and broadcasting updates
   // to unrelated widgets.
   auto* widget = parent->GetWidget();
-  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled() && widget) {
     widget->ax_manager()->OnChildAdded(*child, *parent);
   }
 }
@@ -124,7 +124,7 @@ void AXUpdateNotifier::NotifyChildRemoved(views::ViewAccessibility* child,
   // need to register all WidgetAXManagers as observers and broadcasting updates
   // to unrelated widgets.
   auto* widget = parent->GetWidget();
-  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled() && widget) {
     widget->ax_manager()->OnChildRemoved(*child, *parent);
   }
 }

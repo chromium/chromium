@@ -90,7 +90,7 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
   // the `BrowserAccessibilityManager` owned by the `BrowserViewsAXManager`.
   // ViewAccessibility is only used to managed the current accessibility state
   // for a view.
-  if (::features::IsAccessibilityTreeForViewsEnabled()) {
+  if (IsViewsAccessibilityTreeEnabled()) {
     // Cannot use std::make_unique because constructor is protected.
     return base::WrapUnique(new ViewAccessibility(view));
   }
@@ -104,6 +104,17 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
   return ViewAXPlatformNodeDelegateMac::CreatePlatformSpecific(view);
 #elif BUILDFLAG(IS_LINUX)
   return ViewAXPlatformNodeDelegateAuraLinux::CreatePlatformSpecific(view);
+#endif
+}
+
+// static
+bool ViewAccessibility::IsViewsAccessibilityTreeEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS never uses the Views accessibility tree, even if the feature is
+  // enabled elsewhere. Instead, it uses the Automation API.
+  return false;
+#else
+  return ::features::IsAccessibilityTreeForViewsEnabled();
 #endif
 }
 
@@ -1454,7 +1465,7 @@ void ViewAccessibility::SetChildTreeScaleFactor(float scale_factor) {
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
-  if (!::features::IsAccessibilityTreeForViewsEnabled()) {
+  if (!IsViewsAccessibilityTreeEnabled()) {
     return gfx::NativeViewAccessible();
   }
 

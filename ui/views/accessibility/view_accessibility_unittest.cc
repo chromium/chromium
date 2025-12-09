@@ -5,6 +5,9 @@
 #include "ui/views/accessibility/view_accessibility.h"
 
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -501,6 +504,27 @@ TEST_F(ViewAccessibilityTest,
   view->GetViewAccessibility().AddVirtualChildView(std::move(parent));
 
   EXPECT_EQ(child_ptr->GetUnignoredParent(), &view->GetViewAccessibility());
+}
+
+TEST_F(ViewAccessibilityTest, FeatureFlagEnabled) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS should always return false, even when the feature is enabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAccessibilityTreeForViews);
+  EXPECT_FALSE(ViewAccessibility::IsViewsAccessibilityTreeEnabled());
+#else
+  // Other platforms should respect the feature flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAccessibilityTreeForViews);
+  EXPECT_TRUE(ViewAccessibility::IsViewsAccessibilityTreeEnabled());
+#endif
+}
+
+TEST_F(ViewAccessibilityTest, FeatureFlagDisabled) {
+  // All platforms should return false when the feature is disabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAccessibilityTreeForViews);
+  EXPECT_FALSE(ViewAccessibility::IsViewsAccessibilityTreeEnabled());
 }
 
 }  // namespace views::test
