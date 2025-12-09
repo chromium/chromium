@@ -46,10 +46,12 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
 RendererURLLoaderThrottle::RendererURLLoaderThrottle(
     mojom::SafeBrowsing* safe_browsing,
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-    mojom::ExtensionWebRequestReporter* extension_web_request_reporter)
+    mojo::PendingRemote<mojom::ExtensionWebRequestReporter>
+        extension_web_request_reporter)
     : safe_browsing_(safe_browsing),
       frame_token_(local_frame_token.CopyAsOptional()),
-      extension_web_request_reporter_(extension_web_request_reporter) {}
+      extension_web_request_reporter_(
+          std::move(extension_web_request_reporter)) {}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 RendererURLLoaderThrottle::~RendererURLLoaderThrottle() {
@@ -66,12 +68,12 @@ void RendererURLLoaderThrottle::DetachFromCurrentSequence() {
   safe_browsing_ = nullptr;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Create a new pipe to the ExtensionWebRequestReporter interface that can be
-  // bound to a different sequence.
-  extension_web_request_reporter_->Clone(
-      extension_web_request_reporter_pending_remote_
-          .InitWithNewPipeAndPassReceiver());
-  extension_web_request_reporter_ = nullptr;
+  // Pass the pipe to the ExtensionWebRequestReporter interface to be bound to
+  // a different sequence.
+  if (extension_web_request_reporter_) {
+    pending_extension_web_request_reporter_ =
+        extension_web_request_reporter_.Unbind();
+  }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
@@ -111,7 +113,6 @@ void RendererURLLoaderThrottle::WillRedirectRequest(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   BindExtensionWebRequestReporterPipeIfDetached();
-
   // Send redirected request data to the browser if request originated from an
   // extension and the redirected url is HTTP/HTTPS scheme only.
   if (!origin_extension_id_.empty() &&
@@ -217,18 +218,15 @@ void RendererURLLoaderThrottle::OnMojoDisconnect() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void RendererURLLoaderThrottle::
     BindExtensionWebRequestReporterPipeIfDetached() {
-  if (extension_web_request_reporter_pending_remote_.is_valid()) {
-    extension_web_request_reporter_remote_.Bind(
-        std::move(extension_web_request_reporter_pending_remote_));
-    extension_web_request_reporter_ =
-        extension_web_request_reporter_remote_.get();
+  if (pending_extension_web_request_reporter_) {
+    extension_web_request_reporter_.Bind(
+        std::move(pending_extension_web_request_reporter_));
   }
 }
 
 void RendererURLLoaderThrottle::MaybeSendExtensionWebRequestData(
     network::ResourceRequest* request) {
   BindExtensionWebRequestReporterPipeIfDetached();
-
   // Skip if request destination isn't HTTP/HTTPS (ex. extension scheme).
   if (!request->url.SchemeIsHTTPOrHTTPS()) {
     return;

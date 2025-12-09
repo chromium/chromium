@@ -640,6 +640,81 @@ class UnitTest(unittest.TestCase):
     self.assertIn('/fake_src/out/Default/cc_perftests.isolated.gen.json',
                   mbw.files)
 
+  def test_ReadIsolateMap(self):
+    # Test merging multiple isolate maps.
+    files = {
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'cc_perftests': {"
+         "  'label': '//cc:cc_perftests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+        '/fake_src/testing/buildbot/gn_isolate_map2.pyl':
+        ("{'cc_perftests2': {"
+         "  'label': '//cc:cc_perftests2',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+    }
+    mbw = self.fake_mbw(files=files)
+    mbw.ParseArgs([
+        'gen', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map2.pyl', '//out/Default'
+    ])
+    isolate_map = mbw.ReadIsolateMap()
+    self.assertEqual(
+        isolate_map, {
+            'cc_perftests': {
+                'label': '//cc:cc_perftests',
+                'type': 'console_test_launcher',
+            },
+            'cc_perftests2': {
+                'label': '//cc:cc_perftests2',
+                'type': 'console_test_launcher',
+            }
+        })
+
+  def test_ReadIsolateMap_dup(self):
+    files = {
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'cc_perftests': {"
+         "  'label': '//cc:cc_perftests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+        '/fake_src/testing/buildbot/gn_isolate_map2.pyl':
+        ("{'cc_perftests': {"
+         "  'label': '//cc:cc_perftests2',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+    }
+    mbw = self.fake_mbw(files=files)
+
+    # Test duplicate targets raise an error.
+    mbw.ParseArgs([
+        'gen', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map2.pyl', '//out/Default'
+    ])
+    with self.assertRaises(mb.MBErr) as e:
+      mbw.ReadIsolateMap()
+    self.assertIn('Duplicate targets in isolate map files: cc_perftests',
+                  str(e.exception))
+
+    # Test --allow-dup-isolate-entry allows duplicates and the last one wins.
+    mbw.ParseArgs([
+        'gen', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map2.pyl',
+        '--allow-dup-isolate-entry', '//out/Default'
+    ])
+    isolate_map = mbw.ReadIsolateMap()
+    self.assertEqual(
+        isolate_map, {
+            'cc_perftests': {
+                'label': '//cc:cc_perftests2',
+                'type': 'console_test_launcher',
+            }
+        })
+
   def test_multiple_isolate_maps(self):
     files = {
         '/tmp/swarming_targets':

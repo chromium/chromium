@@ -93,6 +93,8 @@ class CONTENT_EXPORT Database {
   // Number of connections that have progressed passed initial open call.
   size_t ConnectionCount() const { return connections_.size(); }
 
+  bool IsAcceptingConnections() const { return !force_closing_; }
+
   // Number of active open/delete calls (running or blocked on other
   // connections).
   size_t ActiveOpenDeleteCount() const {
