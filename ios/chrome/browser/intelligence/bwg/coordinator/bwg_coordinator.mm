@@ -189,7 +189,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 }
 
 - (void)dismissBWGFlow {
-  [_BWGCommandsHandler dismissBWGFlowWithCompletion:nil];
+  [_BWGCommandsHandler dismissGeminiFlowWithCompletion:nil];
 }
 
 #pragma mark - UISheetPresentationControllerDelegate
@@ -197,7 +197,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 // Handles the dismissal of the UI.
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [_BWGCommandsHandler dismissBWGFlowWithCompletion:nil];
+  [_BWGCommandsHandler dismissGeminiFlowWithCompletion:nil];
 }
 
 #pragma mark - Private
@@ -319,7 +319,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   for (base::WeakPtr<Browser> browser : otherBrowsers) {
     id<BWGCommands> BWGCommandsHandler =
         HandlerForProtocol(browser->GetCommandDispatcher(), BWGCommands);
-    [BWGCommandsHandler dismissBWGFlowWithCompletion:^() {
+    [BWGCommandsHandler dismissGeminiFlowWithCompletion:^() {
       barrier.Run();
     }];
   }

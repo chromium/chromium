@@ -369,7 +369,7 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
     cached_snapshot_ =
         bwg_snapshot_utils::GetCroppedFullscreenSnapshot(web_state_->GetView());
     is_bwg_session_active_in_background_ = true;
-    [bwg_commands_handler_ dismissBWGFlowWithCompletion:nil];
+    [bwg_commands_handler_ dismissGeminiFlowWithCompletion:nil];
   }
 
   UpdateWebStateSnapshotInStorage();

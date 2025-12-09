@@ -98,7 +98,7 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
 
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
                           serverID:(NSString*)serverID {
-  [_BWGHandler dismissBWGFlowWithCompletion:nil];
+  [_BWGHandler dismissGeminiFlowWithCompletion:nil];
   [self setSessionActive:NO clientID:clientID];
 
   web::WebState* webState = [self webStateWithClientID:clientID];

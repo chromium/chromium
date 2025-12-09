@@ -289,7 +289,7 @@ TEST_F(BwgTabHelperTest, TestWasShown_RestoresSession) {
 }
 
 TEST_F(BwgTabHelperTest, TestWasHidden_BackgroundsSession) {
-  OCMExpect([mock_bwg_handler_ dismissBWGFlowWithCompletion:nil]);
+  OCMExpect([mock_bwg_handler_ dismissGeminiFlowWithCompletion:nil]);
 
   // Show the UI and then hide the tab.
   tab_helper_->SetBwgUiShowing(true);

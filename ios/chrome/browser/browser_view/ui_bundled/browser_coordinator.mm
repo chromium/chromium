@@ -3147,7 +3147,7 @@ const char kChromeAppStoreUrl[] =
   [_BWGCoordinator start];
 }
 
-- (void)dismissBWGFlowWithCompletion:(ProceduralBlock)completion {
+- (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion {
   if (!_BWGCoordinator && completion) {
     completion();
     return;

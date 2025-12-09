@@ -246,8 +246,8 @@ TEST_F(GeminiCoordinatorTest, DismissOtherWindows) {
                    forProtocol:@protocol(BWGCommands)];
 
   OCMExpect([second_bwg_handler
-      dismissBWGFlowWithCompletion:[OCMArg checkWithBlock:^BOOL(
-                                               ProceduralBlock block) {
+      dismissGeminiFlowWithCompletion:[OCMArg checkWithBlock:^BOOL(
+                                                  ProceduralBlock block) {
         if (block) {
           block();
         }
@@ -258,13 +258,13 @@ TEST_F(GeminiCoordinatorTest, DismissOtherWindows) {
 
   // Emulate starting the floaty from the first window.
   OCMStub([mock_bwg_command_handler_
-      dismissBWGFlowWithCompletion:[OCMArg
-                                       checkWithBlock:^(ProceduralBlock block) {
-                                         if (block) {
-                                           block();
-                                         }
-                                         return YES;
-                                       }]]);
+      dismissGeminiFlowWithCompletion:[OCMArg checkWithBlock:^(
+                                                  ProceduralBlock block) {
+        if (block) {
+          block();
+        }
+        return YES;
+      }]]);
 
   EXPECT_OCMOCK_VERIFY(mock_bwg_command_handler_);
   EXPECT_OCMOCK_VERIFY(second_bwg_handler);

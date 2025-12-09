@@ -23,8 +23,8 @@ enum class EntryPoint;
 - (void)startGeminiFlowWithImageAttachment:(UIImage*)image
                                 entryPoint:(bwg::EntryPoint)entryPoint;
 
-// Dismiss the BWG flow with a completion block.
-- (void)dismissBWGFlowWithCompletion:(ProceduralBlock)completion;
+// Dismiss the Gemini flow with a completion block.
+- (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion;
 
 // Attempts to display the automatic BWG promo depending on whether the active
 // web state is eligible. If the page is ineligible, does nothing.
