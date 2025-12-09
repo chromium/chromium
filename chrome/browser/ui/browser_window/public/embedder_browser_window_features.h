@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_EMBEDDER_BROWSER_WINDOW_FEATURES_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_EMBEDDER_BROWSER_WINDOW_FEATURES_H_
 
-#include <memory>
-
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserView;
@@ -27,6 +25,11 @@ class EmbedderBrowserWindowFeatures {
   ~EmbedderBrowserWindowFeatures();
 
   static EmbedderBrowserWindowFeatures* From(BrowserWindowInterface* browser);
+
+  // Called exactly once to initialize features. This is called prior to
+  // instantiating BrowserView, to allow the view hierarchy to depend on state
+  // in this class.
+  void Init(BrowserWindowInterface* browser);
 
   // Called exactly once to initialize features that depend on the window object
   // being created.

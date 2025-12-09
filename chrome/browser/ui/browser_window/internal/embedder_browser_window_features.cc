@@ -20,6 +20,10 @@ EmbedderBrowserWindowFeatures* EmbedderBrowserWindowFeatures::From(
   return Get(browser->GetUnownedUserDataHost());
 }
 
+void EmbedderBrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
+  // Embedder implementation goes here.
+}
+
 void EmbedderBrowserWindowFeatures::InitPostWindowConstruction(
     BrowserWindowInterface* browser) {
   // Embedder implementation goes here.
