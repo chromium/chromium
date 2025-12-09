@@ -10,6 +10,7 @@
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
@@ -18,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -223,8 +225,17 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
   // Save continuation for |OnUnhandledSpokenFeedbackEvent()|.
   chromevox_continuation_ = continuation;
 
-  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled() ||
-      !event.IsKeyEvent()) {
+  if (!event.IsKeyEvent()) {
+    return false;
+  }
+
+  if (Shell::Get()->accessibility_controller()->GetActiveUserPrefs() &&
+      !Shell::Get()
+           ->accessibility_controller()
+           ->GetActiveUserPrefs()
+           ->GetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled)) {
+    // Check the ChromeVox enabled pref directly, as it's possible for
+    // spoken_feedback().enabled() to return a stale result.
     return false;
   }
 
