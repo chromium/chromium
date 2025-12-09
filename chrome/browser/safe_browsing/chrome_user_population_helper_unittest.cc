@@ -35,7 +35,11 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 
 }  // namespace
 
-TEST(GetUserPopulationForProfileTest, PopulatesPopulation) {
+TEST(GetUserPopulationForProfileTest,
+     PopulatesPopulation_WithoutSBERDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   SetSafeBrowsingState(profile.GetPrefs(),
@@ -55,6 +59,38 @@ TEST(GetUserPopulationForProfileTest, PopulatesPopulation) {
   population = GetUserPopulationForProfile(&profile);
   EXPECT_EQ(population.user_population(),
             ChromeUserPopulation::EXTENDED_REPORTING);
+}
+
+TEST(GetUserPopulationForProfileTest, PopulatesPopulation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  SetSafeBrowsingState(profile.GetPrefs(),
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
+  EXPECT_EQ(population.user_population(), ChromeUserPopulation::SAFE_BROWSING);
+
+  SetSafeBrowsingState(profile.GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  population = GetUserPopulationForProfile(&profile);
+  EXPECT_EQ(population.user_population(),
+            ChromeUserPopulation::ENHANCED_PROTECTION);
+}
+
+TEST(GetUserPopulationForProfileTest, PopulatesPopulation_EsbIgnoresSberPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+
+  SetSafeBrowsingState(profile.GetPrefs(),
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  SetExtendedReportingPrefForTests(profile.GetPrefs(), true);
+  ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
+  EXPECT_EQ(population.user_population(), ChromeUserPopulation::SAFE_BROWSING);
 }
 
 TEST(GetUserPopulationForProfileTest, PopulatesMBB) {

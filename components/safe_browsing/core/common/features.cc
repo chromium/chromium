@@ -199,7 +199,8 @@ BASE_FEATURE(kEsbAsASyncedSetting,
 );
 
 BASE_FEATURE(kExtendedReportingRemovePrefDependency,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             "ExtendedReportingRemovePrefDependency",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtendedReportingRemovePrefDependencyIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -261,10 +262,10 @@ constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsKeyFetchUrl{
 
 BASE_FEATURE(kHashPrefixRealTimeLookupsSamplePing,
              "SafeBrowsingHashPrefixRealTimeLookupsSamplePing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate{
     &kHashPrefixRealTimeLookupsSamplePing,
-    "HashPrefixRealTimeLookupsSampleRate", /*default_value=*/100};
+    "HashPrefixRealTimeLookupsSampleRate", /*default_value=*/5};
 
 BASE_FEATURE(kLocalListsUseSBv5,
              "SafeBrowsingLocalListsUseSBv5",

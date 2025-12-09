@@ -301,6 +301,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void EnableExtendedReporting() {
+    feature_list_.InitAndDisableFeature(
+        safe_browsing::kExtendedReportingRemovePrefDependency);
     EnableMbb();
     test_pref_service_.SetUserPref(prefs::kSafeBrowsingEnabled,
                                    std::make_unique<base::Value>(true));
@@ -1628,6 +1630,19 @@ TEST_F(RealTimeUrlLookupServiceTest, TestConcurrentSendSampledRequests) {
 
 TEST_F(RealTimeUrlLookupServiceTest,
        TestCanSendRTSampleRequest_FeatureEnabled) {
+  feature_list_.InitAndEnableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
+  // When SBER is deprecated, sample requests are only sent when ESB is
+  // enabled.
+  EXPECT_FALSE(CanSendRTSampleRequest());
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  rt_service()->set_bypass_probability_for_tests(true);
+  EXPECT_TRUE(CanSendRTSampleRequest());
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestCanSendRTSampleRequest_WithoutSBERDeprecation) {
   // When extended reporting is not enabled,
   // sample request will not be sent.
   EXPECT_FALSE(CanSendRTSampleRequest());

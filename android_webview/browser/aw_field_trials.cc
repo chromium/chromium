@@ -297,6 +297,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       features::kAndroidEnableBackgroundMediaLargeFormFactors);
 
+  // Disable ExtendedReportingRemovePrefDependency for WebView, because WebView
+  // doesn't support ESB
+  aw_feature_overrides.DisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
+
   // SystemTracing is enabled by default only in WebView for now.
   aw_feature_overrides.EnableFeature(features::kEnablePerfettoSystemTracing);
 

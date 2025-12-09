@@ -52,6 +52,7 @@ class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
     safe_browsing::RegisterProfilePrefs(prefs_.registry());
     prefs_.SetBoolean(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
     prefs_.SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled, true);
+    SetSafeBrowsingState(&prefs_, SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
   void CreateTrigger(bool monitor_mode) {

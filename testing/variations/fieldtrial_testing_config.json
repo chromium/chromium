@@ -10375,39 +10375,6 @@
             ]
         }
     ],
-    "ExtendedReportingRemovePrefDependency": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledRemovePrefDependency",
-                    "enable_features": [
-                        "ExtendedReportingRemovePrefDependency"
-                    ],
-                    "disable_features": [
-                        "SafeBrowsingHashPrefixRealTimeLookupsSamplePing"
-                    ]
-                },
-                {
-                    "name": "EnabledRemovePrefDependencyAndHprtSamplePing",
-                    "params": {
-                        "HashPrefixRealTimeLookupsSampleRate": "50"
-                    },
-                    "enable_features": [
-                        "ExtendedReportingRemovePrefDependency",
-                        "SafeBrowsingHashPrefixRealTimeLookupsSamplePing"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExtensionManifestV2Deprecation": [
         {
             "platforms": [

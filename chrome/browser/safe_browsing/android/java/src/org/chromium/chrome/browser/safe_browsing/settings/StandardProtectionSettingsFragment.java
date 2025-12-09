@@ -12,6 +12,7 @@ import androidx.preference.Preference;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
@@ -35,6 +36,11 @@ public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFrag
         mManagedPreferenceDelegate = createManagedPreferenceDelegate();
 
         mExtendedReportingPreference = findPreference(PREF_EXTENDED_REPORTING);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY)) {
+            getPreferenceScreen().removePreference(mExtendedReportingPreference);
+            return;
+        }
         mExtendedReportingPreference.setOnPreferenceChangeListener(this);
         mExtendedReportingPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
