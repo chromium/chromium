@@ -4,10 +4,12 @@
 
 #include "components/metrics/field_trials_provider.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -15,6 +17,8 @@
 namespace variations {
 
 namespace {
+
+std::optional<bool> g_seed_has_active_limited_layer;
 
 void WriteFieldTrials(const std::vector<ActiveGroupId>& field_trial_ids,
                       metrics::SystemProfileProto* system_profile) {
@@ -32,6 +36,13 @@ FieldTrialsProvider::FieldTrialsProvider(SyntheticTrialRegistry* registry,
                                          std::string_view suffix)
     : registry_(registry), suffix_(suffix) {}
 FieldTrialsProvider::~FieldTrialsProvider() = default;
+
+// static
+void FieldTrialsProvider::UpdateAppliedSeedHasActiveLimitedLayer(
+    bool has_limited_layer) {
+  CHECK(!g_seed_has_active_limited_layer.has_value());
+  g_seed_has_active_limited_layer = has_limited_layer;
+}
 
 void FieldTrialsProvider::GetFieldTrialIds(
     std::vector<ActiveGroupId>* field_trial_ids) const {
@@ -58,6 +69,11 @@ void FieldTrialsProvider::ProvideSystemProfileMetricsWithLogCreationTime(
   const std::string& version = variations::GetSeedVersion();
   if (!version.empty()) {
     system_profile_proto->set_variations_seed_version(version);
+  }
+
+  if (g_seed_has_active_limited_layer.has_value()) {
+    system_profile_proto->set_seed_has_active_limited_layer(
+        *g_seed_has_active_limited_layer);
   }
 
   // TODO(crbug.com/40133600): Determine whether this can be deleted.

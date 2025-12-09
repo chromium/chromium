@@ -32,6 +32,12 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
 
   ~FieldTrialsProvider() override;
 
+  // Updates a global variable denoting whether the variations seed applied by
+  // the client has a limited layer that is referenced by any studies in which
+  // the client is eligible to participate based on their channel, platform,
+  // version, and form factor.
+  static void UpdateAppliedSeedHasActiveLimitedLayer(bool has_limited_layer);
+
   // metrics::MetricsProvider:
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
