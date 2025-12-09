@@ -415,10 +415,12 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
 - (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {
   _omniboxPopupContainer.hidden = NO;
+  [self.proxiedPresenterDelegate popupDidOpenForPresenter:presenter];
 }
 
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
   _omniboxPopupContainer.hidden = YES;
+  [self.proxiedPresenterDelegate popupDidCloseForPresenter:presenter];
 }
 
 @end
