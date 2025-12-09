@@ -262,6 +262,10 @@ const base::FeatureParam<std::string> kADPFSocManufacturerAllowlist{
 const base::FeatureParam<std::string> kADPFSocManufacturerBlocklist{
     &kAdpf, "soc_manufacturer_blocklist", ""};
 
+// If enabled, Chrome includes the Renderer Main thread(s) into the
+// ADPF(Android Dynamic Performance Framework) hint session.
+BASE_FEATURE(kEnableADPFRendererMain, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, Chrome puts Renderer Main threads into a separate
 // ADPF(Android Dynamic Performance Framework) hint session, and does not
 // report any timing hints from this session.

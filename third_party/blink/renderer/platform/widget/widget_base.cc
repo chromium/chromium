@@ -734,7 +734,9 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
           std::move(render_frame_metadata_client_remote));
 
   params.embedder_params->io_thread_id = Platform::Current()->GetIOThreadId();
-  params.embedder_params->main_thread_id = main_thread_id_;
+  if (base::FeatureList::IsEnabled(::features::kEnableADPFRendererMain)) {
+    params.embedder_params->main_thread_id = main_thread_id_;
+  }
 
   params.embedder_params->compositor_task_runner =
       Platform::Current()->CompositorThreadTaskRunner();
