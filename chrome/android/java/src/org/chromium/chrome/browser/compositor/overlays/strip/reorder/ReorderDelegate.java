@@ -84,13 +84,11 @@ public class ReorderDelegate {
         /**
          * Update strip - resize all views on tab strip.
          *
-         * @param animate Whether to animate the resize.
          * @param tabToAnimate Tab to additionally animate. Must be null if animate is false.
          * @param animateTabAdded Run tab added animation on tabToAnimate if true. Run tab closed
          *     animation if false.
          */
-        void resizeTabStrip(
-                boolean animate, @Nullable StripLayoutTab tabToAnimate, boolean animateTabAdded);
+        void resizeTabStrip(@Nullable StripLayoutTab tabToAnimate, boolean animateTabAdded);
 
         /**
          * Requests an update to strip (view properties etc) based on current state (eg: reorder,

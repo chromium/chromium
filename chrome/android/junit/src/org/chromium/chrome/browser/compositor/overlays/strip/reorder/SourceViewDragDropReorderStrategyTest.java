@@ -202,7 +202,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         // Verify
         verify(mStripUpdateDelegate).setCompositorButtonsVisible(false);
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
-        verify(mStripUpdateDelegate).resizeTabStrip(false, null, false);
+        verify(mStripUpdateDelegate).resizeTabStrip(null, false);
         verify(mTabStrategy)
                 .startReorderMode(
                         eq(mStripViews),
@@ -229,7 +229,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         // Verify
         verify(mStripUpdateDelegate).setCompositorButtonsVisible(false);
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
-        verify(mStripUpdateDelegate).resizeTabStrip(false, null, false);
+        verify(mStripUpdateDelegate).resizeTabStrip(null, false);
         verify(mMultiTabStrategy)
                 .startReorderMode(
                         eq(mStripViews),
@@ -345,7 +345,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verify(mStripUpdateDelegate).setCompositorButtonsVisible(true);
         verify(mMultiTabStrategy).stopReorderMode(mStripViews, mGroupTitles);
         verify(mAnimationHost, times(2)).finishAnimationsAndPushTabUpdates();
-        verify(mStripUpdateDelegate, times(2)).resizeTabStrip(false, null, false);
+        verify(mStripUpdateDelegate, times(2)).resizeTabStrip(null, false);
         verifyNoMoreInteractions(mMultiTabStrategy);
     }
 
@@ -382,7 +382,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verify(mStripUpdateDelegate).setCompositorButtonsVisible(true);
         verify(mTabStrategy).stopReorderMode(mStripViews, mGroupTitles);
         verify(mAnimationHost, times(2)).finishAnimationsAndPushTabUpdates();
-        verify(mStripUpdateDelegate).resizeTabStrip(true, mInteractingTab, false);
+        verify(mStripUpdateDelegate).resizeTabStrip(mInteractingTab, false);
         verifyNoMoreInteractions(mTabStrategy);
     }
 
@@ -503,7 +503,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
         // Verify restore.
         verify(mAnimationHost, times(2)).finishAnimationsAndPushTabUpdates();
-        verify(mStripUpdateDelegate).resizeTabStrip(true, mInteractingTab, true);
+        verify(mStripUpdateDelegate).resizeTabStrip(mInteractingTab, true);
         assertFalse("DraggedOffStrip should be false", mInteractingTab.isDraggedOffStrip());
         assertEquals("Width should be 0", 0f, mInteractingTab.getWidth(), EPSILON);
     }
@@ -536,7 +536,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
         // Verify restore.
         verify(mAnimationHost, times(2)).finishAnimationsAndPushTabUpdates();
-        verify(mStripUpdateDelegate, times(2)).resizeTabStrip(false, null, false);
+        verify(mStripUpdateDelegate, times(2)).resizeTabStrip(null, false);
         assertFalse("DraggedOffStrip should be false", mInteractingGroupTitle.isDraggedOffStrip());
         assertEquals("offsetY should be 0", 0f, mInteractingGroupTitle.getOffsetY(), EPSILON);
     }
@@ -571,7 +571,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
         // Verify restore.
         verify(mAnimationHost, times(2)).finishAnimationsAndPushTabUpdates();
-        verify(mStripUpdateDelegate, times(2)).resizeTabStrip(false, null, false);
+        verify(mStripUpdateDelegate, times(2)).resizeTabStrip(null, false);
         assertFalse("DraggedOffStrip should be false", mInteractingTab.isDraggedOffStrip());
         assertFalse("DraggedOffStrip should be false", mOtherSelectedTab.isDraggedOffStrip());
         assertEquals("offsetY should be 0", 0f, mInteractingTab.getOffsetY(), EPSILON);

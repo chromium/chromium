@@ -360,7 +360,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             mAnimationHost.finishAnimationsAndPushTabUpdates();
             bringViewOntoStripAndOffset(draggedTab);
             mStripUpdateDelegate.resizeTabStrip(
-                    /* animate= */ false, /* tabToAnimate= */ null, /* animateTabAdded= */ false);
+                    /* tabToAnimate= */ null, /* animateTabAdded= */ false);
 
             // 3. Start to reorder within strip - delegate to the wrapped strategy.
             super.startReorderMode(
@@ -398,8 +398,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             // like a closed tab. Resize strip views accordingly.
             mAnimationHost.finishAnimationsAndPushTabUpdates();
             removeViewOutOfStrip(draggedTab);
-            mStripUpdateDelegate.resizeTabStrip(
-                    /* animate= */ true, draggedTab, /* animateTabAdded= */ false);
+            mStripUpdateDelegate.resizeTabStrip(draggedTab, /* animateTabAdded= */ false);
         }
 
         @Override
@@ -439,8 +438,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
 
                 // Animate the tab translating back up onto the tab strip.
                 draggedTab.setWidth(0.f);
-                mStripUpdateDelegate.resizeTabStrip(
-                        /* animate= */ true, draggedTab, /* animateTabAdded= */ true);
+                mStripUpdateDelegate.resizeTabStrip(draggedTab, /* animateTabAdded= */ true);
             }
             super.onStopViewDragAction(stripViews, groupTitles);
         }
@@ -485,7 +483,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 bringViewOntoStripAndOffset(view);
             }
             mStripUpdateDelegate.resizeTabStrip(
-                    /* animate= */ false, /* tabToAnimate= */ null, /* animateTabAdded= */ false);
+                    /* tabToAnimate= */ null, /* animateTabAdded= */ false);
 
             // 3. Re-select the previously selected dragged tab, if needed.
             reselectDraggedSelectedTab(mModel, mSelectedDraggedTab);
@@ -513,7 +511,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 removeViewOutOfStrip(view);
             }
             mStripUpdateDelegate.resizeTabStrip(
-                    /* animate= */ false, /* tabToAnimate= */ null, /* animateTabAdded= */ false);
+                    /* tabToAnimate= */ null, /* animateTabAdded= */ false);
         }
 
         @Override
@@ -609,9 +607,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                     bringViewOntoStrip(view);
                 }
                 mStripUpdateDelegate.resizeTabStrip(
-                        /* animate= */ false,
-                        /* tabToAnimate= */ null,
-                        /* animateTabAdded= */ false);
+                        /* tabToAnimate= */ null, /* animateTabAdded= */ false);
                 // TODO(crbug.com/445152399) Re-select the dragged tab, if needed.
             }
             super.onStopViewDragAction(stripViews, groupTitles);
@@ -660,9 +656,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                     bringViewOntoStrip(view);
                 }
                 mStripUpdateDelegate.resizeTabStrip(
-                        /* animate= */ false,
-                        /* tabToAnimate= */ null,
-                        /* animateTabAdded= */ false);
+                        /* tabToAnimate= */ null, /* animateTabAdded= */ false);
                 // TODO(crbug.com/445152399) Re-select the dragged tab, if needed.
             }
             super.onStopViewDragAction(stripViews, groupTitles);

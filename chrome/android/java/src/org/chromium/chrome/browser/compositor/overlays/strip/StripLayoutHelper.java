@@ -176,10 +176,9 @@ public class StripLayoutHelper
     private static final float SPINNER_DPMS = 0.33f;
     private static final int ANIM_TAB_CREATED_MS = 150;
     private static final int ANIM_TAB_CLOSED_MS = 150;
-    private static final int ANIM_TAB_RESIZE_MS = 250;
+    private static final int ANIM_TAB_RESIZE_MS = 200;
     private static final int ANIM_TAB_DRAW_X_MS = 250;
     private static final int ANIM_BUTTONS_FADE_MS = 150;
-    private static final int NEW_ANIM_TAB_RESIZE_MS = 200;
 
     // Visibility Constants
     private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
@@ -1809,9 +1808,7 @@ public class StripLayoutHelper
         StripLayoutTab stripTab = findTabById(id);
         if (stripTab != null) {
             updateTabCollapsed(stripTab, collapsed, false);
-            if (!onStartup && !collapsed) {
-                runTabAddedAnimator(animationList, stripTab, /* fromTabCreation= */ true);
-            }
+            if (!onStartup && !collapsed) startAnimations(animationList);
         }
 
         // 4. If the new tab will be selected, scroll it to view. If the new tab will not be
@@ -1846,19 +1843,15 @@ public class StripLayoutHelper
         mUpdateHost.requestUpdate();
     }
 
-    private void runTabAddedAnimator(
-            List<Animator> animationList, StripLayoutTab tab, boolean fromTabCreation) {
-        if (!fromTabCreation) {
-            animationList.add(
-                    CompositorAnimator.ofFloatProperty(
-                            mUpdateHost.getAnimationHandler(),
-                            tab,
-                            StripLayoutTab.Y_OFFSET,
-                            tab.getHeight(),
-                            0f,
-                            ANIM_TAB_CREATED_MS));
-        }
-
+    private void runTabAddedAnimator(List<Animator> animationList, StripLayoutTab tab) {
+        animationList.add(
+                CompositorAnimator.ofFloatProperty(
+                        mUpdateHost.getAnimationHandler(),
+                        tab,
+                        StripLayoutTab.Y_OFFSET,
+                        tab.getHeight(),
+                        0f,
+                        ANIM_TAB_CREATED_MS));
         startAnimations(animationList);
     }
 
@@ -2950,7 +2943,7 @@ public class StripLayoutHelper
                         finishAnimationsAndCloseDyingTabs(allowUndo);
                     }
                 };
-        runTabRemovalAnimation(listener);
+        startAnimations(getTabClosingAnimators(), listener);
 
         // 3. If we're closing the selected tab, attempt to select the next expanded tab now. If
         // none exists, we'll default to the normal auto-selection behavior (i.e. selecting the
@@ -2976,10 +2969,6 @@ public class StripLayoutHelper
         List<Animator> tabClosingAnimators =
                 computeAndUpdateTabWidth(/* animate= */ true, /* deferAnimations= */ true);
         return tabClosingAnimators == null ? new ArrayList<>() : tabClosingAnimators;
-    }
-
-    private void runTabRemovalAnimation(AnimatorListener listener) {
-        startAnimations(getTabClosingAnimators(), listener);
     }
 
     private void resizeStripOnTabClose() {
@@ -3016,20 +3005,6 @@ public class StripLayoutHelper
                             ANIM_TAB_DRAW_X_MS);
             tabStripAnimators.add(drawXAnimator);
         }
-
-        // 4. Add new tab button offset animation if needed.
-        if (mNewTabButton.getOffsetX() != 0.f) {
-            tabStripAnimators.add(
-                    CompositorAnimator.ofFloatProperty(
-                            mUpdateHost.getAnimationHandler(),
-                            mNewTabButton,
-                            StripLayoutView.X_OFFSET,
-                            mNewTabButton.getOffsetX(),
-                            /* endValue= */ 0.f,
-                            ANIM_TAB_RESIZE_MS));
-        }
-
-        // 5. Add animation completion listener and start animations.
         startAnimations(tabStripAnimators);
     }
 
@@ -4424,11 +4399,9 @@ public class StripLayoutHelper
     }
 
     @Override
-    public void resizeTabStrip(
-            boolean animate, @Nullable StripLayoutTab tabToAnimate, boolean tabAddedAnimation) {
+    public void resizeTabStrip(@Nullable StripLayoutTab tabToAnimate, boolean tabAddedAnimation) {
         finishAnimationsAndCloseDyingTabs(/* allowUndo= */ true);
         if (tabToAnimate != null) {
-            assert animate;
             if (!tabAddedAnimation) {
                 // Resize the tab strip accordingly.
                 resizeStripOnTabClose();
@@ -4436,11 +4409,11 @@ public class StripLayoutHelper
                 List<Animator> animationList =
                         computeAndUpdateTabWidth(/* animate= */ true, /* deferAnimations= */ true);
                 if (animationList != null) {
-                    runTabAddedAnimator(animationList, tabToAnimate, /* fromTabCreation= */ false);
+                    runTabAddedAnimator(animationList, tabToAnimate);
                 }
             }
         } else {
-            computeAndUpdateTabWidth(animate, /* deferAnimations= */ animate);
+            computeAndUpdateTabWidth(/* animate= */ false, /* deferAnimations= */ false);
         }
 
         // Update the ideal view positions, since these are needed for reorder offset calculations.
@@ -4670,8 +4643,7 @@ public class StripLayoutHelper
                 // Handle animating a tab being closed for TabletTabStripAnimation.
                 if (tab.isDying()) {
                     resizeAnimationList.add(
-                            getViewWidthAnimator(
-                                    tab, TAB_OVERLAP_WIDTH_DP, NEW_ANIM_TAB_RESIZE_MS));
+                            getViewWidthAnimator(tab, TAB_OVERLAP_WIDTH_DP, ANIM_TAB_RESIZE_MS));
                     continue;
                 }
 
@@ -4681,7 +4653,7 @@ public class StripLayoutHelper
                 }
 
                 resizeAnimationList.add(
-                        getViewWidthAnimator(tab, cachedTabWidth, NEW_ANIM_TAB_RESIZE_MS));
+                        getViewWidthAnimator(tab, cachedTabWidth, ANIM_TAB_RESIZE_MS));
             } else {
                 mStripTabs[i].setWidth(cachedTabWidth);
             }

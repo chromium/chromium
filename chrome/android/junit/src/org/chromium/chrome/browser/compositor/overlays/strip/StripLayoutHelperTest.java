@@ -3890,8 +3890,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setPendingMouseTabClosureForTesting(true);
 
         // Attempt a resize.
-        mStripLayoutHelper.resizeTabStrip(
-                /* animate= */ true, /* tabToAnimate= */ null, /* tabAddedAnimation= */ false);
+        mStripLayoutHelper.resizeTabStrip(/* tabToAnimate= */ null, /* tabAddedAnimation= */ false);
 
         // Verify resize was suppressed.
         verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ true);
