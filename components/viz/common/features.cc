@@ -356,11 +356,6 @@ BASE_FEATURE(kBatchResourceRelease, base::FEATURE_DISABLED_BY_DEFAULT);
 // latency and jank. Instead the client will receive the next BeginFrame.
 BASE_FEATURE(kNoLateBeginFrames, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Stops BeginFrame issue to use |last_vsync_interval_| instead of the current
-// set of BeginFrameArgs.
-// TODO(b/333940735): Should be removed if the issue isn't fixed.
-BASE_FEATURE(kLastVSyncArgsKillswitch, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables IPCs to directly target Viz's compositor thread for non-root
 // CompositorFrameSink messages without hopping through the IO thread first.
 BASE_FEATURE(kVizDirectCompositorThreadIpcNonRoot,

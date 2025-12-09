@@ -465,13 +465,9 @@ void DelayBasedBeginFrameSource::IssueBeginFrameToObserver(
   //
   // Both cases can cause the double tick check below to fail and an unexpected
   // frame drop. To avoid this, we use the cached |last_vsync_interval_| here.
-  auto interval_for_margin =
-      base::FeatureList::IsEnabled(features::kLastVSyncArgsKillswitch)
-          ? args.interval
-          : last_vsync_interval_;
   const base::TimeDelta double_tick_margin =
       max_vrr_interval_.has_value() ? base::TimeDelta()
-                                    : interval_for_margin / kDoubleTickDivisor;
+                                    : last_vsync_interval_ / kDoubleTickDivisor;
   if (!last_args.IsValid() ||
       (args.frame_time > last_args.frame_time + double_tick_margin)) {
     if (args.type == BeginFrameArgs::MISSED) {
