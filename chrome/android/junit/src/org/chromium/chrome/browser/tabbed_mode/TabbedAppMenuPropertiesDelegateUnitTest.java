@@ -169,7 +169,6 @@ import java.util.List;
     DomDistillerFeatures.READER_MODE_DISTILL_IN_APP
 })
 @EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID,
     ChromeFeatureList.SUBMENUS_IN_APP_MENU,
     ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS
 })
@@ -2459,7 +2458,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testAddToGroup() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
@@ -2468,16 +2466,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
-    public void testAddToGroup_noParity() {
-        setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
-        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
-        assertFalse(isMenuVisible(modelList, R.id.add_to_group_menu_id));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     @DisableFeatures(ChromeFeatureList.TAB_MODEL_INIT_FIXES)
     public void testAddToGroup_preInitNoFixes() {
         setUpMocksForPageMenu();
@@ -2488,10 +2476,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID,
-        ChromeFeatureList.TAB_MODEL_INIT_FIXES
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_MODEL_INIT_FIXES})
     public void testAddToGroup_preInit() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());

@@ -55,8 +55,7 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
-    ChromeFeatureList.ANDROID_THEME_MODULE,
-    ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID
+    ChromeFeatureList.ANDROID_THEME_MODULE
 })
 public class DataSharingServiceStartupTest {
     // Reset to a single blank tab between each test, without restarting the ChromeTabbedActivity.

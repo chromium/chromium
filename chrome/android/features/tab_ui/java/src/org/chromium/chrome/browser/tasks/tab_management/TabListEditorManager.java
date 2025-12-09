@@ -172,23 +172,14 @@ public class TabListEditorManager {
                             ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT,
                             IconPosition.START));
-            if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
-                mTabListEditorActions.add(
-                        TabListEditorAddToGroupAction.createAction(
-                                mActivity,
-                                mTabGroupCreationDialogManager,
-                                ShowMode.MENU_ONLY,
-                                ButtonType.ICON_AND_TEXT,
-                                IconPosition.START));
-            } else {
-                mTabListEditorActions.add(
-                        TabListEditorLegacyGroupAction.createAction(
-                                mActivity,
-                                mTabGroupCreationDialogManager,
-                                ShowMode.MENU_ONLY,
-                                ButtonType.ICON_AND_TEXT,
-                                IconPosition.START));
-            }
+
+            mTabListEditorActions.add(
+                    TabListEditorAddToGroupAction.createAction(
+                            mActivity,
+                            mTabGroupCreationDialogManager,
+                            ShowMode.MENU_ONLY,
+                            ButtonType.ICON_AND_TEXT,
+                            IconPosition.START));
             mTabListEditorActions.add(
                     TabListEditorBookmarkAction.createAction(
                             mActivity,

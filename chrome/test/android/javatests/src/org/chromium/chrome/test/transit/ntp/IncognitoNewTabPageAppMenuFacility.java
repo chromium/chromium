@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
 
@@ -18,9 +17,7 @@ public class IncognitoNewTabPageAppMenuFacility
         }
         mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
 
-        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
-            mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
-        }
+        mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
 
         mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID);
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
