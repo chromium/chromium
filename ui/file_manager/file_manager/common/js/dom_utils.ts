@@ -58,8 +58,9 @@ export function htmlEscape(str: string): string {
         return '&gt;';
       case '&':
         return '&amp;';
+      default:
+        return entity;
     }
-    return entity;
   });
 }
 

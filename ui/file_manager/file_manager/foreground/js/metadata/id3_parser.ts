@@ -41,6 +41,8 @@ export class Id3Parser extends MetadataParser {
         // fall through
       case 1:
         rv |= reader.readScalar(1, false);
+      default:
+        break;
     }
 
     return rv;
@@ -214,6 +216,8 @@ export class Id3Parser extends MetadataParser {
         frame.size = Id3Parser.readSynchSafe_(reader, 4);
         frame.headerSize = 10;
         frame.flags = reader.readScalar(2, false);
+        break;
+      default:
         break;
     }
 

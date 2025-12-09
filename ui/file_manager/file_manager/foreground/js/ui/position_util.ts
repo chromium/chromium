@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
+
 /**
  * @fileoverview This file provides utility functions for position popups.
  */
@@ -106,6 +108,8 @@ function positionPopupAroundRect(
         type = AnchorType.AFTER;
       }
       break;
+    default:
+      assertNotReachedCase(type);
   }
   // flipping done
 
@@ -143,6 +147,8 @@ function positionPopupAroundRect(
         style.left = '0';
       }
       break;
+    default:
+      assertNotReachedCase(type);
   }
 
   // Secondary direction
@@ -193,6 +199,8 @@ function positionPopupAroundRect(
         style.top = '0';
       }
       break;
+    default:
+      assertNotReachedCase(type);
   }
 }
 

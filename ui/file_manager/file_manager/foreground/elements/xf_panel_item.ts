@@ -5,6 +5,7 @@
 import './xf_button.js';
 import './xf_circular_progress.js';
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {str} from '../../common/js/translations.js';
@@ -205,6 +206,10 @@ export class PanelItem extends HTMLElement {
       case PanelType.SYNC_PROGRESS:
         this.setAttribute('indicator', 'progress');
         break;
+      case PanelType.DEFAULT:
+        break;
+      default:
+        assertNotReachedCase(type);
     }
 
     this.panelType_ = type;
@@ -270,6 +275,8 @@ export class PanelItem extends HTMLElement {
               indicator.setAttribute('icon', `files36:${status}`);
             }
             break;
+          default:
+            break;
         }
         this.indicator_ = indicator;
         if (indicator) {
@@ -327,6 +334,8 @@ export class PanelItem extends HTMLElement {
         } else {
           textNode.textContent = newValue;
         }
+        break;
+      default:
         break;
     }
   }

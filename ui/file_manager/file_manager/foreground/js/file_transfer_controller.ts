@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import type {ProgressCenter} from '../../background/js/progress_center.js';
@@ -1796,9 +1795,12 @@ export class PastePlan {
       case TransferConfirmationType.COPY_FROM_OTHER_TO_SHARED_DRIVE:
         return [strf(
             'DRIVE_CONFIRM_TD_MEMBERS_GAIN_ACCESS_TO_COPY', destinationName)];
+      case TransferConfirmationType.NONE:
+        assertNotReached();
+      default:
+        assertNotReachedCase(
+            confirmationType, 'Invalid confirmation type: ' + confirmationType);
     }
-    assertNotReached('Invalid confirmation type: ' + confirmationType);
-    return [];
   }
 }
 

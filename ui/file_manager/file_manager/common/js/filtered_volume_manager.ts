@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
+
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {VolumeInfoList} from '../../background/js/volume_info_list.js';
@@ -219,6 +221,8 @@ export class FilteredVolumeManager extends VolumeManager {
       case AllowedPaths.NATIVE_PATH:
         // 'Kernel-visible' means native (nat) or fusebox (fwf) volumes.
         return !fsf;  // Equivalent to (nat || fwf).
+      default:
+        assertNotReachedCase(this.allowedPaths_);
     }
   }
 
@@ -306,6 +310,8 @@ export class FilteredVolumeManager extends VolumeManager {
           this.dispatchEvent(
               new CustomEvent(event.type, {detail: event.detail}));
         }
+        break;
+      default:
         break;
     }
   }

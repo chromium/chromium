@@ -212,6 +212,8 @@ export class QuickViewController {
         case 'Delete':
           this.deleteSelectedEntry_();
           break;
+        default:
+          break;
       }
     }
   }
@@ -612,6 +614,8 @@ export class QuickViewController {
             }
             return params;
           }
+          break;
+        default:
           break;
       }
 

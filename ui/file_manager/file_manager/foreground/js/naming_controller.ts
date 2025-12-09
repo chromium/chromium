@@ -238,6 +238,9 @@ export class NamingController {
         this.commitRename_();
         event.preventDefault();
         break;
+
+      default:
+        break;
     }
   }
 

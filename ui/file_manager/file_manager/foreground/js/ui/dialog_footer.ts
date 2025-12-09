@@ -249,6 +249,8 @@ export class DialogFooter {
           changeSelection(selectedItem.previousSibling);
         }
         break;
+      default:
+        break;
     }
   }
 

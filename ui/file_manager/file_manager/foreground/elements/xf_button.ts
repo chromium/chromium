@@ -59,6 +59,8 @@ export class PanelButton extends HTMLElement {
         case 'expand':
           iconButton?.setAttribute('iron-icon', 'cr:expand-less');
           break;
+        default:
+          break;
       }
     }
   }

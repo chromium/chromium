@@ -582,6 +582,8 @@ export class TaskController {
       case chrome.fileManagerPrivate.IoTaskState.NEED_PASSWORD:
         this.handleMissingPassword_(taskId);
         break;
+      default:
+        break;
     }
   }
 

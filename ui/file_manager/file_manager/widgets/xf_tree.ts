@@ -318,6 +318,8 @@ export class XfTree extends XfBase {
       case 'End':
         itemToFocus = this.tabbableItems[this.tabbableItems.length - 1];
         break;
+      default:
+        break;
     }
 
     if (itemToFocus) {

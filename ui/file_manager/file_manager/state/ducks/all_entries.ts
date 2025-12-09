@@ -225,6 +225,8 @@ function getEntryIcon(
                                               ICON_TYPES.USB;
       case VolumeType.DRIVE:
         return ICON_TYPES.DRIVE;
+      default:
+        break;
     }
   }
 
@@ -436,9 +438,11 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
           return EntryType.RECENT;
         case RootType.PROVIDED:
           return EntryType.PLACEHOLDER;
+        default:
+          console.warn(
+              `Invalid fakeEntry.rootType='${entry.rootType} rootType`);
+          return EntryType.PLACEHOLDER;
       }
-      console.warn(`Invalid fakeEntry.rootType='${entry.rootType} rootType`);
-      return EntryType.PLACEHOLDER;
     case 'GuestOsPlaceholder':
       return EntryType.PLACEHOLDER;
     case 'TrashEntry':

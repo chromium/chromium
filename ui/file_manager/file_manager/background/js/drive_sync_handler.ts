@@ -263,6 +263,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
         case 'misc':
           item.message = strf('SYNC_MISC_ERROR', name);
           break;
+        default:
+          break;
       }
       if (!item.id) {
         item.id = ErrorPrefix.NORMAL + (this.errorIdCounter_++);

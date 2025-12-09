@@ -1193,6 +1193,8 @@ export class FileManager {
               this.fileTransferController_, this.directoryModel_);
         }
         break;
+      default:
+        break;
     }
   }
 

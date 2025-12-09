@@ -258,6 +258,8 @@ export class MenuItem extends HTMLElement {
       case 'checkedChange':
         this.checked = this.command.checked;
         break;
+      default:
+        break;
     }
   }
 

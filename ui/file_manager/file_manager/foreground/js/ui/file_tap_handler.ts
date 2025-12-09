@@ -120,7 +120,8 @@ export class FileTapHandler {
         this.lastTouchY_ = touch?.clientY ?? 0;
         this.totalMoveX_ = 0;
         this.totalMoveY_ = 0;
-      } break;
+        break;
+      }
 
       case 'touchmove': {
         const touch = this.findActiveTouch_(event.changedTouches);
@@ -148,7 +149,8 @@ export class FileTapHandler {
 
         this.lastTouchX_ = touch.clientX;
         this.lastTouchY_ = touch.clientY;
-      } break;
+        break;
+      }
 
       case 'touchend': {
         // Mark as no longer being touched.
@@ -181,7 +183,10 @@ export class FileTapHandler {
             return true;
           }
         }
-      } break;
+        break;
+      }
+      default:
+        break;
     }
 
     return false;

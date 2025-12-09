@@ -134,6 +134,8 @@ export class CircularProgress extends HTMLElement {
         const progress = Number(newValue);
         this.progress_ = this.setProgress(progress);
         break;
+      default:
+        break;
     }
   }
 
