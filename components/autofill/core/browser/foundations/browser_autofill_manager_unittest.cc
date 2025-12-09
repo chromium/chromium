@@ -957,6 +957,8 @@ class MockAutofillDriver : public TestAutofillDriver {
               (mojom::FormActionType action_type,
                mojom::ActionPersistence action_persistence,
                base::span<const FormFieldData> data,
+               const FillId& fill_id,
+               bool supports_refill,
                const url::Origin& triggered_origin,
                (const base::flat_map<FieldGlobalId, FieldType>&),
                (const Section&)),
@@ -1285,6 +1287,7 @@ class BrowserAutofillManagerTest
                       mojom::FormActionType action_type,
                       mojom::ActionPersistence action_persistence,
                       base::span<const FormFieldData> data,
+                      const FillId& fill_id, bool supports_refill,
                       const url::Origin& triggered_origin,
                       const base::flat_map<FieldGlobalId, FieldType>&,
                       const Section&) {
@@ -9561,10 +9564,10 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
   base::flat_map<FieldGlobalId, FieldType> expected_types = {
       {form.fields()[0].global_id(), ONE_TIME_CODE}};
   std::vector<FormFieldData> filled_fields;
-  EXPECT_CALL(
-      autofill_driver(),
-      ApplyFormAction(mojom::FormActionType::kFill,
-                      mojom::ActionPersistence::kFill, _, _, expected_types, _))
+  EXPECT_CALL(autofill_driver(),
+              ApplyFormAction(mojom::FormActionType::kFill,
+                              mojom::ActionPersistence::kFill, _, _, _, _,
+                              expected_types, _))
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
                       Return(base::flat_set<FieldGlobalId>{})));
 

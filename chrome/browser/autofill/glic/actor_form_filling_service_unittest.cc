@@ -159,13 +159,15 @@ class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
       mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
       base::span<const FormFieldData> fields,
+      const FillId& fill_id,
+      bool supports_refill,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
       const Section& section_for_clear_form_on_ios) override {
     base::flat_set<FieldGlobalId> filled_fields =
         TestContentAutofillDriver::ApplyFormAction(
-            action_type, action_persistence, fields, triggered_origin,
-            field_type_map, section_for_clear_form_on_ios);
+            action_type, action_persistence, fields, fill_id, supports_refill,
+            triggered_origin, field_type_map, section_for_clear_form_on_ios);
     for (const FormFieldData& field : fields) {
       if (filled_fields.contains(field.global_id())) {
         last_filled_values_[field.global_id()] = field.value();

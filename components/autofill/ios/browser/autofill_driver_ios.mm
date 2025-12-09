@@ -250,6 +250,8 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     base::span<const FormFieldData> fields,
+    const FillId& fill_id,
+    bool supports_refill,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
     const Section& section_for_clear_form_on_ios) {
@@ -262,7 +264,8 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
                           AutofillDriver& driver,
                           mojom::FormActionType action_type,
                           mojom::ActionPersistence action_persistence,
-                          const std::vector<FormFieldData::FillData>& fields) {
+                          const std::vector<FormFieldData::FillData>& fields,
+                          const FillId& fill_id, bool supports_refill) {
         web::WebFrame* frame = cast(&driver)->web_frame();
         if (frame) {
           [cast(&driver)->bridge_ fillData:fields
@@ -274,14 +277,16 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
       const url::Origin main_origin =
           client_->GetLastCommittedPrimaryMainFrameOrigin();
       if (IsAcrossIframesEnabled()) {
-        return router_->ApplyFormAction(callback, action_type,
-                                        action_persistence, fields, main_origin,
-                                        triggered_origin, field_type_map);
+        return router_->ApplyFormAction(
+            callback, action_type, action_persistence, fields, fill_id,
+            supports_refill, main_origin, triggered_origin, field_type_map);
       } else {
         callback(*this, action_type, action_persistence,
-                 base::ToVector(fields, [](const FormFieldData& field) {
-                   return FormFieldData::FillData(field);
-                 }));
+                 base::ToVector(fields,
+                                [](const FormFieldData& field) {
+                                  return FormFieldData::FillData(field);
+                                }),
+                 fill_id, supports_refill);
         return base::ToVector(fields, &FormFieldData::global_id);
       }
     }

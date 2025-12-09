@@ -15,6 +15,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -63,6 +64,8 @@ using ::testing::Contains;
 using ::testing::DoAll;
 using ::testing::Each;
 using ::testing::Eq;
+using ::testing::InSequence;
+using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Optional;
@@ -106,6 +109,8 @@ class MockAutofillDriver : public TestAutofillDriver {
               (mojom::FormActionType action_type,
                mojom::ActionPersistence action_persistence,
                base::span<const FormFieldData> data,
+               const FillId& fill_id,
+               bool supports_refill,
                const url::Origin& triggered_origin,
                (const base::flat_map<FieldGlobalId, FieldType>&),
                (const Section&)),
@@ -1850,9 +1855,105 @@ TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
   // Expect that this test doesn't cause a crash.
 }
 
+// Tests that two initial fills are assigned distinct IDs.
+TEST_F(FormFillerTest, InitialFillsHaveDistinctIds) {
+  FillId fill_id1;
+  FillId fill_id2;
+  base::RunLoop run_loop;
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_driver(), ApplyFormAction)
+        .WillOnce(
+            DoAll(SaveArg<3>(&fill_id1), Return(std::vector<FieldGlobalId>{})));
+    EXPECT_CALL(autofill_driver(), ApplyFormAction)
+        .WillOnce(DoAll(SaveArg<3>(&fill_id2),
+                        base::test::RunOnceClosure(run_loop.QuitClosure()),
+                        Return(std::vector<FieldGlobalId>{})));
+  }
+
+  CreditCard credit_card = test::GetCreditCard();
+  FormData form1 = test::GetFormData(
+      {.fields = {
+           {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
+           {.role = CREDIT_CARD_NUMBER, .autocomplete_attribute = "cc-number"},
+           {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+            .autocomplete_attribute = "cc-exp"}}});
+  FormData form2 = test::GetFormData(
+      {.fields = {
+           {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
+           {.role = CREDIT_CARD_NUMBER, .autocomplete_attribute = "cc-number"},
+           {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+            .autocomplete_attribute = "cc-exp"}}});
+
+  FormsSeen({form1, form2});
+
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form1, &credit_card,
+      *GetFormStructure(form1),
+      *GetAutofillField(form1.global_id(), form1.fields().front().global_id()),
+      AutofillTriggerSource::kPopup);
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form2, &credit_card,
+      *GetFormStructure(form2),
+      *GetAutofillField(form2.global_id(), form2.fields().front().global_id()),
+      AutofillTriggerSource::kPopup);
+
+  std::move(run_loop).Run();
+  EXPECT_FALSE(fill_id1->is_empty());
+  EXPECT_FALSE(fill_id2->is_empty());
+  EXPECT_NE(fill_id1, fill_id2);
+}
+
+// Tests that the initial fill and a refill are assigned the same IDs.
+TEST_F(FormFillerTest, FillAndRefillHaveSameFillId) {
+  FillId initial_fill_id;
+  FillId refill_fill_id;
+  MockFunction<void(std::string_view)> check;
+  base::RunLoop run_loop;
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_driver(), ApplyFormAction)
+        .WillOnce(DoAll(SaveArg<3>(&initial_fill_id),
+                        Return(std::vector<FieldGlobalId>{})));
+    EXPECT_CALL(check, Call("initial fill complete"));
+    EXPECT_CALL(autofill_driver(), ApplyFormAction)
+        .WillOnce(DoAll(SaveArg<3>(&refill_fill_id),
+                        base::test::RunOnceClosure(run_loop.QuitClosure()),
+                        Return(std::vector<FieldGlobalId>{})));
+  }
+
+  CreditCard credit_card = test::GetCreditCard();
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
+           {.role = CREDIT_CARD_NUMBER, .autocomplete_attribute = "cc-number"},
+           {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+            .autocomplete_attribute = "cc-exp"}}});
+
+  FormFieldData cvc_field = form.fields().back();
+  test_api(form).fields().pop_back();
+  FormsSeen({form});
+
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &credit_card,
+      *GetFormStructure(form),
+      *GetAutofillField(form.global_id(), form.fields().front().global_id()),
+      AutofillTriggerSource::kPopup);
+  check.Call("initial fill complete");
+
+  test_api(form).fields().push_back(std::move(cvc_field));
+  FormsSeen({form});
+
+  std::move(run_loop).Run();
+  EXPECT_FALSE(initial_fill_id->is_empty());
+  EXPECT_FALSE(refill_fill_id->is_empty());
+  EXPECT_EQ(initial_fill_id, refill_fill_id);
+}
+
 class MockFormFiller : public TestFormFiller {
  public:
-  MockFormFiller(BrowserAutofillManager& manager) : TestFormFiller(manager) {}
+  explicit MockFormFiller(BrowserAutofillManager& manager)
+      : TestFormFiller(manager) {}
   MOCK_METHOD(void,
               ScheduleRefill,
               (const FormData& form,

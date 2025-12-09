@@ -24,9 +24,21 @@ interface AutofillAgent {
   // Fills or previews the form identified by `form` with the data of its
   // fields. `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
+  //
+  // `fill_id` uniquely identifies the fill operation. It does *not* uniquely
+  // identify this ApplyFormAction() call. See `FillId` for details.
+  //
+  // Only if `supports_refill` is true, the renderer may request a refill via
+  // a subsequent AutofillDriver::RequestRefill() call. It is still at the
+  // discretion of the browser process whether to honor the request. For
+  // example, the browser process ignores refill requests after a certain
+  // timeout.
+  // TODO(crbug.com/466333215): Add RequestRefill().
   ApplyFieldsAction(FormActionType action_type,
                     ActionPersistence action_persistence,
-                    array<FormFieldData_FillData> fields);
+                    array<FormFieldData_FillData> fields,
+                    FillId fill_id,
+                    bool supports_refill);
 
   // Fills or previews the field identified by `field` with `value`.
   // `action_persistence` denotes if the operation is a Fill or Preview.

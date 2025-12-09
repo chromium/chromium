@@ -79,6 +79,15 @@ struct StructTraits<autofill::mojom::FieldRendererIdDataView,
 };
 
 template <>
+struct StructTraits<autofill::mojom::FillIdDataView, autofill::FillId> {
+  static const base::UnguessableToken& id(const autofill::FillId& r) {
+    return r.value();
+  }
+
+  static bool Read(autofill::mojom::FillIdDataView data, autofill::FillId* out);
+};
+
+template <>
 struct StructTraits<autofill::mojom::SelectOptionDataView,
                     autofill::SelectOption> {
   static const std::u16string& value(const autofill::SelectOption& r) {

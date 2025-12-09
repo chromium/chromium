@@ -449,10 +449,14 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
 base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     RoutedCallback<mojom::FormActionType,
                    mojom::ActionPersistence,
-                   const std::vector<FormFieldData::FillData>&> callback,
+                   const std::vector<FormFieldData::FillData>&,
+                   const FillId&,
+                   bool> callback,
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     base::span<const FormFieldData> data,
+    const FillId& fill_id,
+    bool supports_refill,
     const url::Origin& main_origin,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
@@ -483,7 +487,8 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
   }
   for (const auto& [target, fields] : fields_of_driver) {
     CHECK(!fields.empty());
-    callback(CHECK_DEREF(target), action_type, action_persistence, fields);
+    callback(CHECK_DEREF(target), action_type, action_persistence, fields,
+             fill_id, supports_refill);
   }
   return renderer_forms.safe_fields;
 }

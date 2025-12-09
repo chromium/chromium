@@ -272,6 +272,11 @@ struct FieldRendererId {
   uint64 id;
 };
 
+// autofill::FillId (components/autofill/core/common/unique_ids.h)
+struct FillId {
+  mojo_base.mojom.UnguessableToken id;
+};
+
 // autofill::SelectOption (components/autofill/core/common/form_field_data.h)
 struct SelectOption {
   mojo_base.mojom.String16 value;

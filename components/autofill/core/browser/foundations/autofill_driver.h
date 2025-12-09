@@ -277,7 +277,17 @@ class AutofillDriver {
   virtual void ExtractFormWithField(FieldGlobalId field_id,
                                     BrowserFormHandler response_handler) = 0;
 
-  // Forwards `form` to the renderer.
+  // Tells the renderer to set the value of the given `fields`. Depending on
+  // `action_type`, this is either an autofill or an undo operation.
+  // The `action_persistence` determines whether it is merely a preview or not.
+  //
+  // `fill_id` uniquely identifies the fill operation. It does *not* uniquely
+  // identify this ApplyFormAction() call. See `FillId` for details.
+  //
+  // If `supports_refill` is true, the browser might respond to subsequent
+  // mojom::AutofillDriver::RequestRefill() calls with another
+  // ApplyFormAction().
+  // TODO(crbug.com/466333215): Add RequestRefill().
   //
   // `field_type_map` contains the type predictions of the fields that may be
   // modified; this parameter can be taken into account to decide which fields
@@ -301,7 +311,9 @@ class AutofillDriver {
   virtual base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
-      base::span<const FormFieldData> data,
+      base::span<const FormFieldData> fields,
+      const FillId& fill_id,
+      bool supports_refill,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
       const Section& section_for_clear_form_on_ios) = 0;

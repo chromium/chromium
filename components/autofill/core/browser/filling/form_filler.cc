@@ -411,9 +411,11 @@ struct FormFiller::AugmentedFillingPayload {
 struct FormFiller::RefillContext {
   // |filling_payload| contains the data used to perform the initial filling
   // operation.
-  RefillContext(const AutofillField& field,
+  RefillContext(const FillId& fill_id,
+                const AutofillField& field,
                 const AugmentedFillingPayload& filling_payload)
-      : filled_field_id(field.global_id()),
+      : fill_id(fill_id),
+        filled_field_id(field.global_id()),
         filled_field_signature(field.GetFieldSignature()),
         filled_origin(field.origin()),
         original_fill_time(base::TimeTicks::Now()) {
@@ -441,6 +443,8 @@ struct FormFiller::RefillContext {
 
   ~RefillContext() = default;
 
+  // Uniquely identifies the initial fill operation.
+  const FillId fill_id;
   // Whether a refill attempt was made.
   bool attempted_refill = false;
   // The profile or credit card that was used for the initial fill. This is
@@ -745,7 +749,7 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
   // dummy values for `triggered_origin` and `field_type_map`.
   manager_->driver().ApplyFormAction(
       mojom::FormActionType::kUndo, action_persistence, form.fields(),
-      url::Origin(),
+      FillId::Create(), /*supports_refill=*/false, url::Origin(),
       /*field_type_map=*/{}, /*section_for_clear_form_on_ios=*/Section());
 }
 
@@ -823,13 +827,15 @@ void FormFiller::FillOrPreviewForm(
     return;
   }
 
+  FillId fill_id = FillId::Create();
   if (action_persistence == mojom::ActionPersistence::kFill &&
       !refill_trigger_reason) {
     form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
     if (augmented_filling_payload.supports_refills()) {
-      SetRefillContext(form_structure.global_id(),
-                       std::make_unique<RefillContext>(
-                           autofill_trigger_field, augmented_filling_payload));
+      SetRefillContext(
+          form_structure.global_id(),
+          std::make_unique<RefillContext>(fill_id, autofill_trigger_field,
+                                          augmented_filling_payload));
     }
   }
 
@@ -842,6 +848,9 @@ void FormFiller::FillOrPreviewForm(
       refill_trigger_reason.has_value() && refill_context
           ? RefillOptions::Refill(refill_context->type_groups_originally_filled)
           : RefillOptions::NotRefill();
+  if (refill_trigger_reason.has_value() && refill_context) {
+    fill_id = refill_context->fill_id;
+  }
 
   std::vector<FormFieldData> result_fields = form.fields();
   CHECK_EQ(result_fields.size(), form_structure.field_count());
@@ -948,6 +957,8 @@ void FormFiller::FillOrPreviewForm(
   base::flat_set<FieldGlobalId> safe_filled_field_ids =
       manager_->driver().ApplyFormAction(
           mojom::FormActionType::kFill, action_persistence, result_fields,
+          fill_id,
+          /*supports_refill=*/augmented_filling_payload.supports_refills(),
           autofill_trigger_field.origin(),
           base::flat_map<FieldGlobalId, FieldType>(
               std::move(filled_field_types)),

@@ -687,7 +687,9 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     fields.push_back(field);
 
     autofill_agent_->ApplyFieldsAction(mojom::FormActionType::kFill,
-                                       mojom::ActionPersistence::kFill, fields);
+                                       mojom::ActionPersistence::kFill, fields,
+                                       FillId::Create(),
+                                       /*supports_refill=*/false);
   }
 
   void SimulateUsernameFieldChange(FieldChangeSource change_source) {

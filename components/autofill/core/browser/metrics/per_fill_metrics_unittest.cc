@@ -190,8 +190,8 @@ TEST_F(PerFillMetricsTest, ModifiedFieldsCount) {
   EXPECT_CALL(autofill_driver(), ApplyFormAction)
       .WillOnce([](mojom::FormActionType action_type,
                    mojom::ActionPersistence action_persistence,
-                   base::span<const FormFieldData> data,
-                   const url::Origin& triggered_origin,
+                   base::span<const FormFieldData> data, const FillId& fill_id,
+                   bool supports_refill, const url::Origin& triggered_origin,
                    const base::flat_map<FieldGlobalId, FieldType>&,
                    const Section&) {
         return base::ToVector(data, &FormFieldData::global_id);

@@ -71,14 +71,15 @@ MockAutofillDriver::MockAutofillDriver(TestAutofillClient* client)
       .WillByDefault(
           [this](mojom::FormActionType action_type,
                  mojom::ActionPersistence action_persistence,
-                 base::span<const FormFieldData> data,
-                 const url::Origin& triggered_origin,
+                 base::span<const FormFieldData> data, const FillId& fill_id,
+                 bool supports_refill, const url::Origin& triggered_origin,
                  const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
                  const Section& section_for_clear_form_on_ios)
               -> base::flat_set<FieldGlobalId> {
             return TestAutofillDriver::ApplyFormAction(
-                action_type, action_persistence, data, triggered_origin,
-                field_type_map, section_for_clear_form_on_ios);
+                action_type, action_persistence, data, fill_id, supports_refill,
+                triggered_origin, field_type_map,
+                section_for_clear_form_on_ios);
           });
 }
 

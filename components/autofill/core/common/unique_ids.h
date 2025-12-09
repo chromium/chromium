@@ -167,6 +167,25 @@ struct GlobalId {
 using FormGlobalId = internal::GlobalId<FormRendererId>;
 using FieldGlobalId = internal::GlobalId<FieldRendererId>;
 
+// Uniquely identifies an "autofill operation" (fill, refill, preview, undo)
+// initiated by the user.
+//
+// An autofill operation can affect forms in multiple frames, in which case the
+// messages to the frames share the same FillId.
+//
+// A fill and subsequent refills always share the same FillId (regardless of the
+// reason that triggered the refills). The FillId exists predominantly to
+// associate a fill and a refill operation.
+//
+// Previews and undo operations are always assigned unique FillIds.
+class FillId
+    : public base::StrongAlias<class FillIdMarker, base::UnguessableToken> {
+ public:
+  using base::StrongAlias<class FillIdMarker,
+                          base::UnguessableToken>::StrongAlias;
+  static FillId Create() { return FillId(base::UnguessableToken::Create()); }
+};
+
 class LogBuffer;
 
 std::ostream& operator<<(std::ostream& os, const FormRendererId& form);

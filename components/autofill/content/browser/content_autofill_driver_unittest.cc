@@ -217,10 +217,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override {}
 
-  void ApplyFieldsAction(
-      mojom::FormActionType action_type,
-      mojom::ActionPersistence action_persistence,
-      const std::vector<FormFieldData::FillData>& fields) override {
+  void ApplyFieldsAction(mojom::FormActionType action_type,
+                         mojom::ActionPersistence action_persistence,
+                         const std::vector<FormFieldData::FillData>& fields,
+                         const FillId& fill_id,
+                         bool supports_refill) override {
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
         preview_form_fields_ = fields;
@@ -692,7 +693,8 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFormAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
-      address_form().fields(), triggered_origin, {}, Section());
+      address_form().fields(), FillId::Create(),
+      /*supports_refill=*/false, triggered_origin, {}, Section());
 
   run_loop.RunUntilIdle();
 
@@ -718,7 +720,8 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFormAction(
       mojom::FormActionType::kFill, mojom::ActionPersistence::kPreview,
-      address_form().fields(), triggered_origin, {}, Section());
+      address_form().fields(), FillId::Create(),
+      /*supports_refill=*/false, triggered_origin, {}, Section());
 
   run_loop.RunUntilIdle();
 

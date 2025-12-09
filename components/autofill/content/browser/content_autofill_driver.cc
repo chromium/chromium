@@ -54,6 +54,7 @@ template <typename T>
            AnyOf<T,
                  bool,
                  AutofillDriverRouter::RoutedCallback<>,
+                 FillId,
                  base::TimeTicks,
                  std::u16string>)
 T&& Lift(ContentAutofillDriver& source, T&& x) {
@@ -170,6 +171,7 @@ template <typename T>
            AnyOf<T,
                  bool,
                  FieldGlobalId,
+                 FillId,
                  base::TimeTicks,
                  gfx::Rect,
                  std::u16string,
@@ -463,6 +465,8 @@ base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     base::span<const FormFieldData> data,
+    const FillId& fill_id,
+    bool supports_refill,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
     const Section& section_for_clear_form_on_ios) {
@@ -479,8 +483,8 @@ base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
   }();
   return RouteToAgent(router(), &AutofillDriverRouter::ApplyFormAction,
                       &mojom::AutofillAgent::ApplyFieldsAction, action_type,
-                      action_persistence, data, main_origin, triggered_origin,
-                      field_type_map);
+                      action_persistence, data, fill_id, supports_refill,
+                      main_origin, triggered_origin, field_type_map);
 }
 
 void ContentAutofillDriver::ApplyFieldAction(
