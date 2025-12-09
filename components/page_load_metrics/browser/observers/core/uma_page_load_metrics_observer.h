@@ -79,6 +79,7 @@ extern const char kHistogramPageLoadCpuTotalUsageForegrounded[];
 
 extern const char kHistogramInputToNavigation[];
 extern const char kHistogramInputToNavigationLinkClick[];
+extern const char kHistogramInputToNavigationFormSubmit[];
 extern const char kHistogramInputToNavigationOmnibox[];
 extern const char kHistogramInputToFirstContentfulPaint[];
 extern const char kHistogramInputCoverageWithUserGestureBrowserInitiated[];

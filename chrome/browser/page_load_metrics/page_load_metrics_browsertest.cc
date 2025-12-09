@@ -2878,6 +2878,107 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_InputEventsForClick) {
       {url, embedded_test_server()->GetURL("/title1.html")});
 }
 
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       InputEventsForFormSubmission) {
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Initial browser initiated navigation.
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  waiter->Wait();
+  histogram_tester_->ExpectTotalCount(internal::kHistogramInputToNavigation, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputToNavigationLinkClick, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputToNavigationFormSubmit, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputToFirstContentfulPaint, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureBrowserInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureRendererInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated, 0);
+
+  // Renderer initiated navigation via script without a user gesture.
+  waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     R"(
+                       var form = document.createElement('form');
+                       form.method = 'POST';
+                       form.action = '/title2.html';
+                       const input = document.createElement('input');
+                       input.type = 'text';
+                       input.name = 'q';
+                       input.value = 'test';
+                       form.appendChild(input);
+                       document.body.appendChild(form);
+                       form.submit();
+                     )",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  waiter->Wait();
+  histogram_tester_->ExpectTotalCount(internal::kHistogramInputToNavigation, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputToNavigationLinkClick, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputToNavigationFormSubmit, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputToFirstContentfulPaint, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureBrowserInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureRendererInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated, 1);
+
+  // Renderer initiated navigation with key input.
+  waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     R"(
+                       var form = document.createElement('form');
+                       form.method = 'POST';
+                       form.action = '/title3.html';
+                       input = document.createElement('input');
+                       input.type = 'text';
+                       input.name = 'q';
+                       input.value = 'test';
+                       form.appendChild(input);
+                       document.body.appendChild(form);
+                       input.focus();
+                     )",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  SimulateKeyPress(web_contents(), ui::DomKey::ENTER, ui::DomCode::ENTER,
+                   ui::VKEY_RETURN, false, false, false, false);
+  waiter->Wait();
+  histogram_tester_->ExpectTotalCount(internal::kHistogramInputToNavigation, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputToNavigationLinkClick, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputToNavigationFormSubmit, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputToFirstContentfulPaint, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureBrowserInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureRendererInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated, 1);
+}
+
 class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
  public:
   void TestSoftNavigation(bool soft_navs_is_web_exposed) {

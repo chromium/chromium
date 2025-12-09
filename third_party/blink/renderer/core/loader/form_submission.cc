@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
@@ -187,6 +188,9 @@ inline FormSubmission::FormSubmission(
       origin_window_(origin_window),
       initiator_frame_token_(initiator_frame_token),
       has_rel_opener_(has_rel_opener),
+      input_start_time_(CurrentInputEvent::Get()
+                            ? CurrentInputEvent::Get()->TimeStamp()
+                            : base::TimeTicks()),
       source_location_(source_location),
       initiator_navigation_state_keep_alive_handle_(
           std::move(initiator_navigation_state_keep_alive_handle)) {}
@@ -418,6 +422,7 @@ void FormSubmission::Navigate() {
   frame_request.SetInitiatorNavigationStateKeepAliveHandle(
       std::move(initiator_navigation_state_keep_alive_handle_));
   frame_request.SetSourceLocation(source_location_);
+  frame_request.SetInputStartTime(input_start_time_);
   if (has_rel_opener_) {
     frame_request.SetExplicitOpener();
   }

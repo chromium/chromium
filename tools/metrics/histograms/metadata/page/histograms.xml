@@ -3387,6 +3387,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromFormSubmit"
+    units="ms" expires_after="2026-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time between the OS-level input event and navigation start, for the
+    form-submit in the renderer. This is recorded when the navigation actually
+    starting.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Experimental.InputTiming.InputToNavigationStart.FromLinkClick"
     units="ms" expires_after="2026-04-12">
   <owner>spelchat@chromium.org</owner>

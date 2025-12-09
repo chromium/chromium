@@ -228,6 +228,8 @@ const char kHistogramInputToNavigation[] =
     "PageLoad.Experimental.InputTiming.InputToNavigationStart";
 const char kHistogramInputToNavigationLinkClick[] =
     "PageLoad.Experimental.InputTiming.InputToNavigationStart.FromLinkClick";
+const char kHistogramInputToNavigationFormSubmit[] =
+    "PageLoad.Experimental.InputTiming.InputToNavigationStart.FromFormSubmit";
 const char kHistogramInputToNavigationOmnibox[] =
     "PageLoad.Experimental.InputTiming.InputToNavigationStart.FromOmnibox";
 const char kHistogramInputToFirstContentfulPaint[] =
@@ -486,6 +488,10 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
 
       if (ui::PageTransitionCoreTypeIs(transition_, ui::PAGE_TRANSITION_LINK)) {
         PAGE_LOAD_HISTOGRAM(internal::kHistogramInputToNavigationLinkClick,
+                            timing.input_to_navigation_start.value());
+      } else if (ui::PageTransitionCoreTypeIs(
+                     transition_, ui::PAGE_TRANSITION_FORM_SUBMIT)) {
+        PAGE_LOAD_HISTOGRAM(internal::kHistogramInputToNavigationFormSubmit,
                             timing.input_to_navigation_start.value());
       } else if (ui::PageTransitionCoreTypeIs(transition_,
                                               ui::PAGE_TRANSITION_GENERATED) ||
