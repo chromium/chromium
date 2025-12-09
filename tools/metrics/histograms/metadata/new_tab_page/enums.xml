@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.mm:NewTabPageLogoShowniOSThirdPartyDSEEnum) -->
 
 <enum name="NewTabPageVoiceAction">
-  <int value="0" label="Activated by clicking on the fakebox icon"/>
+  <int value="0" label="Activated by clicking on the icon"/>
   <int value="1" label="Activated by keyboard shortcut"/>
   <int value="2" label="Closed overlay by a user's explicit action"/>
   <int value="3" label="Submitted voice query"/>
