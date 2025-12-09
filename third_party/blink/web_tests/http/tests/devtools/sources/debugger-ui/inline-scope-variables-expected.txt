@@ -1,9 +1,0 @@
-Tests that inline scope variables are rendering correctly.
-
-Set timer for test function.
-12: length = 123
-13: a = (3) [1, 2, 3]
-14: 
-15: b = 42
-16: a = (3) [1, 2, 3]
-
