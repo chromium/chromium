@@ -149,6 +149,10 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         assert mActiveSubStrategy != null : "Attempted to drag without an active sub-strategy.";
         // Delegate to the active substrategy.
         if (reorderType == ReorderType.DRAG_ONTO_STRIP) {
+            // TODO(crbug.com/467093887): A fix was added to prevent the drag shadow's touch offset
+            //  from being negative. The dragged view itself, however, isn't "snapped" to match the
+            //  drag shadow's position in this case, which we should be able to do here with the
+            //  provided touch point.
             assumeNonNull(mViewBeingDragged);
             mActiveSubStrategy.startReorderMode(
                     stripViews, stripTabs, groupTitles, mViewBeingDragged, new PointF(endX, 0f));

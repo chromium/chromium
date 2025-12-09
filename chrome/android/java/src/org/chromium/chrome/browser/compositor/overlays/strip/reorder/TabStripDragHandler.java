@@ -666,7 +666,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     @VisibleForTesting
     static class TabDragShadowBuilder extends View.DragShadowBuilder {
         // Touch offset for drag shadow view.
-        private final PointF mDragShadowOffset;
+        private final Point mDragShadowOffset;
         // Source initiating drag - to call updateDragShadow().
         private final View mDragSourceView;
         // Whether drag shadow should be shown.
@@ -675,7 +675,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         private final Paint mShadowPaint;
         private final float mCornerRadius;
 
-        public TabDragShadowBuilder(View dragSourceView, View shadowView, PointF dragShadowOffset) {
+        public TabDragShadowBuilder(View dragSourceView, View shadowView, Point dragShadowOffset) {
             // Store the View parameter.
             super(shadowView);
             mDragShadowOffset = dragShadowOffset;
@@ -732,18 +732,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         // back to the system.
         @Override
         public void onProvideShadowMetrics(Point size, Point touch) {
-            // Set the width of the shadow to half the width of the original
-            // View.
-            int width = getView().getWidth();
-
-            // Set the height of the shadow to half the height of the original
-            // View.
-            int height = getView().getHeight();
-
-            // Set the size parameter's width and height values. These get back
-            // to the system through the size parameter.
-            size.set(width, height);
-            touch.set(Math.round(mDragShadowOffset.x), Math.round(mDragShadowOffset.y));
+            // Set the size parameter's width and height values. These get back to the system
+            // through the size parameter.
+            size.set(getView().getWidth(), getView().getHeight());
+            touch.set(mDragShadowOffset.x, mDragShadowOffset.y);
             Log.d(TAG, "DnD onProvideShadowMetrics: " + mDragShadowOffset);
         }
 
@@ -754,16 +746,17 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     DragShadowBuilder createDragShadowBuilder(
             View dragSourceView, PointF startPoint, float tabPositionX) {
-        PointF dragShadowOffset;
+        Resources resources = dragSourceView.getContext().getResources();
+        float headerHeight = resources.getDimension(R.dimen.tab_grid_card_header_height);
+        float cardMargin = resources.getDimension(R.dimen.tab_grid_card_margin);
 
         // Set the touch point of the drag shadow:
         // Horizontally matching user's touch point within the tab title;
         // Vertically centered in the tab title.
-        Resources resources = dragSourceView.getContext().getResources();
-        float dragShadowOffsetY =
-                resources.getDimension(R.dimen.tab_grid_card_header_height) / 2
-                        + resources.getDimension(R.dimen.tab_grid_card_margin);
-        dragShadowOffset = new PointF((startPoint.x - tabPositionX) / mPxToDp, dragShadowOffsetY);
+        int dragShadowOffsetX = Math.max(0, Math.round((startPoint.x - tabPositionX) / mPxToDp));
+        int dragShadowOffsetY = Math.round((headerHeight / 2) + cardMargin);
+        Point dragShadowOffset = new Point(dragShadowOffsetX, dragShadowOffsetY);
+
         assert mShadowView != null;
         return new TabDragShadowBuilder(dragSourceView, mShadowView, dragShadowOffset);
     }
