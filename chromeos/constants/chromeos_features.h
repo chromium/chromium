@@ -204,8 +204,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsFeatureManagementHistoryEmbeddingEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsWebAppManifestProtocolHandlerSupportEnabled();
 
 }  // namespace features
 }  // namespace chromeos

@@ -64,12 +64,7 @@ GURL GetGoogleURL() {
 class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
  public:
   BrowserNavigatorIwaTest() {
-    std::vector<base::test::FeatureRef> features = {features::kIsolatedWebApps};
-#if BUILDFLAG(IS_CHROMEOS)
-    features.emplace_back(
-        chromeos::features::kWebAppManifestProtocolHandlerSupport);
-#endif
-    scoped_feature_list_.InitWithFeatures(features, {});
+    scoped_feature_list_.InitWithFeatures({features::kIsolatedWebApps}, {});
   }
 
   void SetUpOnMainThread() override {

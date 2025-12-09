@@ -164,8 +164,6 @@ class ProtocolHandlerPickerUITest
 
  private:
   std::optional<webapps::AppId> selected_app_id_;
-  base::test::ScopedFeatureList features_{
-      chromeos::features::kWebAppManifestProtocolHandlerSupport};
 };
 
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerPickerUITest, AcceptForOneApp) {

@@ -48,8 +48,7 @@ static void JNI_ChromeAutocompleteSchemeClassifier_DeleteAutocompleteClassifier(
 namespace {
 bool IsCustomSchemeHandledByWebApp(Profile* profile,
                                    const std::string& scheme) {
-  return chromeos::features::IsWebAppManifestProtocolHandlerSupportEnabled() &&
-         !web_app::GetWebAppIdsForProtocolUrl(
+  return !web_app::GetWebAppIdsForProtocolUrl(
               profile, GURL(scheme + url::kStandardSchemeSeparator))
               .empty();
 }

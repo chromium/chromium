@@ -10647,11 +10647,6 @@
     "expiry_milestone": 149
   },
   {
-    "name": "web-app-manifest-protocol-handlers",
-    "owners": [ "greengrape@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "web-app-migrate-preinstalled-chat",
     "owners": [ "pwa-team@google.com", "mek@chromium.org" ],
     "expiry_milestone": 146

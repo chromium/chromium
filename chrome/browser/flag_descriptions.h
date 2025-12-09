@@ -1734,12 +1734,6 @@ inline constexpr char
         "logged "
         "into a managed guest session.";
 
-inline constexpr char kWebAppManifestProtocolHandlersName[] =
-    "Enable web app manifest protocol handlers";
-inline constexpr char kWebAppManifestProtocolHandlersDescription[] =
-    "Enables support for protocol handlers registered via the "
-    "`protocol_handlers` web app manifest field.";
-
 inline constexpr char kEnableIsolatedWebAppAllowlistName[] =
     "Enable an allowlist for Isolated Web Apps";
 inline constexpr char kEnableIsolatedWebAppAllowlistDescription[] =
