@@ -194,9 +194,8 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
                 target_node, pointer_event->clientX(),
                 pointer_event->clientY()));
       }
-    }
-    if (event_type == event_type_names::kPointerdown ||
-        event_type == event_type_names::kPointerup) {
+    } else if (event_type == event_type_names::kPointerdown ||
+               event_type == event_type_names::kPointerup) {
       // Per spec, run the popover light dismiss actions first, which will take
       // care of light dismissing popovers, including nested popovers. Then run
       // dialog light dismiss.
@@ -1237,7 +1236,11 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     ProcessPendingPointerCapture(pointer_event);
     mouse_event_manager_->DispatchMouseClickIfNeeded(
         mouse_target, captured_click_target, mouse_event,
-        pointer_event->pointerId(), pointer_event->pointerType());
+        pointer_event->pointerId(), pointer_event->pointerType(),
+        pointer_event_factory_->GetPointerDownTarget(
+            pointer_event->pointerId()),
+        pointer_event_factory_->GetPointerUpTarget(pointer_event->pointerId()));
+    pointer_event_factory_->RemovePointerTargets(pointer_event->pointerId());
   }
 
   // Send got/lostpointercapture rightaway if necessary.

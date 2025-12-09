@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_DIALOG_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/events/toggle_event.h"
 #include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -84,8 +85,19 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   String closedBy() const;
   void setClosedBy(const String& return_value);
 
+  // HandleDialogLightDismiss is only called when the LightDismissFromClick flag
+  // is disabled, and HandleDialogLightDismissForClick is only called when
+  // LightDismissFromClick is enabled.
+  // HandleDialogLightDismiss is called twice for each click, once for
+  // pointerdown and once for pointerup.
+  // HandleDialogLightDismissForClick is only called once for each click and
+  // contains the relevant information from the corresponding pointerdown and
+  // pointerup events.
   static void HandleDialogLightDismiss(const PointerEvent& pointer_event,
                                        const Node& target_node);
+  static void HandleDialogLightDismissForClick(
+      const PointerEventFactory::PointerTarget& pointer_down_target,
+      const PointerEventFactory::PointerTarget& pointer_up_target);
 
   void CloseWatcherFiredCancel(Event*);
   void CloseWatcherFiredClose();

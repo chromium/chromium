@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
@@ -192,14 +193,17 @@ void MouseEventManager::SendBoundaryEvents(EventTarget* exited_target,
 }
 
 std::pair<MouseEvent*, WebInputEventResult>
-MouseEventManager::DispatchMouseEvent(EventTarget* target,
-                                      const AtomicString& mouse_event_type,
-                                      const WebMouseEvent& mouse_event,
-                                      const gfx::PointF* last_position,
-                                      EventTarget* related_target,
-                                      bool check_for_listener,
-                                      const PointerId& pointer_id,
-                                      const String& pointer_type) {
+MouseEventManager::DispatchMouseEvent(
+    EventTarget* target,
+    const AtomicString& mouse_event_type,
+    const WebMouseEvent& mouse_event,
+    const gfx::PointF* last_position,
+    EventTarget* related_target,
+    bool check_for_listener,
+    const PointerId& pointer_id,
+    const String& pointer_type,
+    PointerEventFactory::PointerTarget* pointer_down_target,
+    PointerEventFactory::PointerTarget* pointer_up_target) {
   DCHECK(mouse_event_type == event_type_names::kMouseup ||
          mouse_event_type == event_type_names::kMousedown ||
          mouse_event_type == event_type_names::kMousemove ||
@@ -239,6 +243,26 @@ MouseEventManager::DispatchMouseEvent(EventTarget* target,
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
+
+      // If the target nodes have been removed and a gc has been run, then it is
+      // possible for the pointer targets to be null. In this case, don't run a
+      // light dismiss. Also, in order to match the logic in
+      // MouseEventManager::HandleRemoveSubtree, don't do anything if the
+      // clicked node was removed.
+      bool pointer_down_connected = pointer_down_target &&
+                                    pointer_down_target->node &&
+                                    pointer_down_target->node->isConnected();
+      bool pointer_up_connected = pointer_up_target &&
+                                  pointer_up_target->node &&
+                                  pointer_up_target->node->isConnected();
+      if (RuntimeEnabledFeatures::LightDismissFromClickEnabled() &&
+          mouse_event_type == event_type_names::kClick &&
+          pointer_down_connected && pointer_up_connected) {
+        HTMLElement::HandlePopoverLightDismissForClick(
+            *pointer_down_target->node, *pointer_up_target->node);
+        HTMLDialogElement::HandleDialogLightDismissForClick(
+            *pointer_down_target, *pointer_up_target);
+      }
       if (frame_ && frame_->DomWindow()) {
         event_timing =
             EventTiming::TryCreate(frame_->DomWindow(), *event, target);
@@ -280,7 +304,9 @@ WebInputEventResult
 MouseEventManager::SetElementUnderMouseAndDispatchMouseEvent(
     Element* target_element,
     const AtomicString& event_type,
-    const WebMouseEvent& web_mouse_event) {
+    const WebMouseEvent& web_mouse_event,
+    PointerEventFactory::PointerTarget* pointer_down_target,
+    PointerEventFactory::PointerTarget* pointer_up_target) {
   // This method is used by GestureManager::HandleGestureTap to apply hover
   // states based on the tap. Note that we do not want to update the cached
   // mouse position here (using SetLastKnownMousePosition), since that would
@@ -296,7 +322,8 @@ MouseEventManager::SetElementUnderMouseAndDispatchMouseEvent(
              element_under_mouse_, event_type, web_mouse_event, nullptr,
              nullptr, false, web_mouse_event.id,
              PointerEventFactory::PointerTypeNameForWebPointPointerType(
-                 web_mouse_event.pointer_type))
+                 web_mouse_event.pointer_type),
+             pointer_down_target, pointer_up_target)
       .second;
 }
 
@@ -305,7 +332,9 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
     Element* captured_click_target,
     const WebMouseEvent& mouse_event,
     const PointerId& pointer_id,
-    const String& pointer_type) {
+    const String& pointer_type,
+    PointerEventFactory::PointerTarget* pointer_down_target,
+    PointerEventFactory::PointerTarget* pointer_up_target) {
   // We only prevent click event when the click may cause contextmenu to popup.
   // However, we always send auxclick.
   bool context_menu_event = false;
@@ -342,7 +371,8 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
           : event_type_names::kAuxclick;
 
   return DispatchMouseEvent(click_target_node, click_event_type, mouse_event,
-                            nullptr, nullptr, false, pointer_id, pointer_type)
+                            nullptr, nullptr, false, pointer_id, pointer_type,
+                            pointer_down_target, pointer_up_target)
       .second;
 }
 
