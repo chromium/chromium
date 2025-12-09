@@ -72,7 +72,8 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac FYI Experimental Release (Apple M1)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Mac FYI Experimental Release (Apple M1)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

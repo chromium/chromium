@@ -70,7 +70,8 @@
           "group": "tryserver.chromium.win"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Win10 FYI x64 Release (NVIDIA)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Win10 FYI x64 Release (NVIDIA)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

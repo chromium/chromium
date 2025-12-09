@@ -80,7 +80,8 @@
           "group": "tryserver.chromium.win"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

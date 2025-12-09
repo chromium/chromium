@@ -69,7 +69,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/build/Mac Tests Siso FYI/targets"
+      "targets_spec_directory": "infra/config/generated/builders/build/Mac Tests Siso FYI/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

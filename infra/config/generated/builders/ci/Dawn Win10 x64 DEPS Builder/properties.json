@@ -115,7 +115,8 @@
           "group": "tryserver.chromium.dawn"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Win10 x64 DEPS Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Win10 x64 DEPS Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

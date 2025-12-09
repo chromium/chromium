@@ -78,7 +78,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI Linux Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI Linux Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

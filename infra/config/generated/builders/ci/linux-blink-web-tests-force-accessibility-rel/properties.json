@@ -44,7 +44,8 @@
           "group": "tryserver.chromium.accessibility"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-blink-web-tests-force-accessibility-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/linux-blink-web-tests-force-accessibility-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
