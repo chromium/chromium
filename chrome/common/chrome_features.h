@@ -666,11 +666,6 @@ BASE_DECLARE_FEATURE(kGlicUseToolbarHeightSidePanel);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicButtonPressedState);
 
-// When enabled, GLIC will check a new CanUseGeminiInChrome account capability
-// to determine profile eligibility, instead of CanUseModelExecutionFeatures.
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicEligibilitySeparateAccountCapability);
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicLiveModeOnlyGlow);
 

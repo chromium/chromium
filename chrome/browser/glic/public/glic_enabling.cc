@@ -29,6 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
@@ -104,7 +105,7 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     // Check account capabilities.
     signin::Tribool capability_value =
         base::FeatureList::IsEnabled(
-            features::kGlicEligibilitySeparateAccountCapability)
+            switches::kGlicEligibilitySeparateAccountCapability)
             ? primary_account.capabilities.can_use_gemini_in_chrome()
             : primary_account.capabilities.can_use_model_execution_features();
     result.primary_account_not_capable =
@@ -114,7 +115,7 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     // is known and different for the two capabilities, add them to a synthetic
     // trial.
     base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
-        features::kGlicEligibilitySeparateAccountCapability);
+        switches::kGlicEligibilitySeparateAccountCapability);
     if (field_trial &&
         (primary_account.capabilities.can_use_gemini_in_chrome() !=
          signin::Tribool::kUnknown) &&

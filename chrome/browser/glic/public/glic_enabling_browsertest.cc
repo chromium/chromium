@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/metrics_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -116,7 +117,7 @@ class GlicEnablingWithSeparateAccountCapabilityTest : public GlicEnablingTest {
             {features::kGlic, {}},
             {features::kTabstripComboButton, {}},
             {features::kGlicRollout, {}},
-            {features::kGlicEligibilitySeparateAccountCapability, {}},
+            {switches::kGlicEligibilitySeparateAccountCapability, {}},
 #if BUILDFLAG(IS_CHROMEOS)
             {chromeos::features::kFeatureManagementGlic, {}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -150,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
 IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
                        UnaffectedUserNotAddedToSyntheticFieldTrial) {
   ASSERT_NE(base::FeatureList::GetFieldTrial(
-                features::kGlicEligibilitySeparateAccountCapability),
+                switches::kGlicEligibilitySeparateAccountCapability),
             nullptr);
   auto initial_num_trials = g_browser_process->metrics_service()
                                 ->GetSyntheticTrialRegistry()
@@ -178,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
 IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
                        AffectedUserAddedToSyntheticFieldTrial) {
   ASSERT_NE(base::FeatureList::GetFieldTrial(
-                features::kGlicEligibilitySeparateAccountCapability),
+                switches::kGlicEligibilitySeparateAccountCapability),
             nullptr);
   auto initial_num_trials = g_browser_process->metrics_service()
                                 ->GetSyntheticTrialRegistry()
@@ -211,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(
     GlicEnablingWithSeparateAccountCapabilityTest,
     AffectedUserAddedToSyntheticFieldTrial_EligibilityChanges) {
   ASSERT_NE(base::FeatureList::GetFieldTrial(
-                features::kGlicEligibilitySeparateAccountCapability),
+                switches::kGlicEligibilitySeparateAccountCapability),
             nullptr);
   auto initial_num_trials = g_browser_process->metrics_service()
                                 ->GetSyntheticTrialRegistry()

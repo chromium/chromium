@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -257,7 +258,7 @@ void SetGlicCapability(Profile* profile, bool enabled) {
 
 void SetGlicCapability(AccountCapabilitiesTestMutator& mutator, bool enabled) {
   base::FeatureList::IsEnabled(
-      features::kGlicEligibilitySeparateAccountCapability)
+      switches::kGlicEligibilitySeparateAccountCapability)
       ? mutator.set_can_use_gemini_in_chrome(enabled)
       : mutator.set_can_use_model_execution_features(enabled);
 }
