@@ -643,8 +643,20 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
         return;
       }
 
-      // Save the error to prevent re-launch and show the error-toast.
-      KioskAppLaunchError::Save(local_state_.get(), error);
+      // Save the error to prevent re-launch and show the error-toast, but do
+      // not overwrite if an error was already saved. This can happen in cases
+      // like `kChromeAppDeprecated` followed by `kUserCancel`, where this
+      // method shows a deprecation message in the splash screen, and the user
+      // then cancels launch.
+      if (KioskAppLaunchError::Get(local_state_.get()) ==
+          KioskAppLaunchError::Error::kNone) {
+        KioskAppLaunchError::Save(local_state_.get(), error);
+      }
+      // Save `kUserCancel` separately so it can be used to prevent auto-launch
+      // when Chrome restarts.
+      if (error == Error::kUserCancel) {
+        KioskAppLaunchError::SaveUserCancelledLaunch(local_state_.get());
+      }
       std::move(attempt_logout_).Run();
       break;
   }

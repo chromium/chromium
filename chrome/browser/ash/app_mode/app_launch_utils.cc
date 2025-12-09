@@ -14,17 +14,12 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/notimplemented.h"
-#include "base/notreached.h"
-#include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
@@ -42,7 +37,25 @@ const char* const kPrefsToReset[] = {"settings.accessibility",  // ChromeVox
 // their own list.
 std::vector<std::string>* test_prefs_to_reset = nullptr;
 
-bool ShouldAutoLaunchAfterAppLaunchError(KioskAppLaunchError::Error error) {
+// Refers to `KioskAppLaunchError` to find if the previous Kiosk launch ended
+// with an error. The logic is as follows:
+//
+// 1. The user cancelled the previous launch => block auto-launch.
+// 2. The previous launch succeeded => allow auto-launch.
+// 3. The previous launch failed with `kChromeAppDeprecated` or
+// `kIsolatedAppNotAllowed` => allow auto-launch.
+// 4. The previous launch failed with any other error => block auto-launch.
+//
+// If there was a launch error we generally block auto-launch to prevent a
+// launch-error-loop, and Kiosk displays a toast in the login screen. The
+// exception is (3) where a decision was made to display these errors in the
+// splash screen instead. For this reason auto-launch is allowed only in those
+// errors.
+bool ShouldAutoLaunchAfterLastError(const PrefService& local_state) {
+  if (KioskAppLaunchError::DidUserCancelLaunch(local_state)) {
+    return false;
+  }
+  auto error = KioskAppLaunchError::Get(local_state);
   return error == KioskAppLaunchError::Error::kNone ||
          error == KioskAppLaunchError::Error::kChromeAppDeprecated ||
          error == KioskAppLaunchError::Error::kIsolatedAppNotAllowed;
@@ -89,8 +102,7 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
 
   return command_line.HasSwitch(switches::kLoginManager) &&
          KioskController::Get().GetAutoLaunchApp().has_value() &&
-         ShouldAutoLaunchAfterAppLaunchError(
-             KioskAppLaunchError::Get(local_state)) &&
+         ShouldAutoLaunchAfterLastError(local_state) &&
          // IsOobeCompleted() is needed to prevent kiosk session start in case
          // of enterprise rollback, when keeping the enrollment, policy, not
          // clearing TPM, but wiping stateful partition.
