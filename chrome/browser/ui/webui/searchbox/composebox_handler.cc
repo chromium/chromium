@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_url_utils.h"
@@ -99,7 +100,9 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
   std::string query_text;
   net::GetValueForKeyInQuery(destination_url, "q", &query_text);
   composebox_handler_->SubmitQuery(
-      query_text, disposition, omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+      query_text, disposition,
+      PageClassificationToAimEntryPoint(
+          GetPageClassification(/*is_prefetch=*/false)),
       additional_params);
 }
 
@@ -244,10 +247,11 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  // TODO(crbug.com/463664553): Fix how `submitQuery()` is logged when it's
-  // not a part of an autocomplete match. Right now this flow is called on
-  // voice search submission, or when a file query is submitted with no text.
-  SubmitQuery(query_text, disposition, omnibox::UNKNOWN_AIM_ENTRY_POINT,
+  omnibox::ChromeAimEntryPoint aim_entry_point =
+      PageClassificationToAimEntryPoint(
+          omnibox_controller()->client()->GetPageClassification(
+              /*is_prefetch=*/false));
+  SubmitQuery(query_text, disposition, aim_entry_point,
               /*additional_params=*/{});
 }
 

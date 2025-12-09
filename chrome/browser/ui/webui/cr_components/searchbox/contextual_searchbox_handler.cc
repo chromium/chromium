@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -445,13 +446,13 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  // TODO(crbug.com/463664553): Fix how `submitQuery()` aep is logged when it
-  // is not a part of an autocomplete match. Right now this flow is called on
-  // voice search submission, or when a file query is submitted with no text.
-  // This implementation may be able to be removed for now since this is
-  // handled in `ComposeboxHandler`.
-  ComputeAndOpenQueryUrl(query_text, disposition,
-                         omnibox::UNKNOWN_AIM_ENTRY_POINT,
+  // TODO(crbug.com/465427521): This implementation may be able to be removed
+  // for now since this is handled in `ComposeboxHandler`.
+  omnibox::ChromeAimEntryPoint aim_entry_point =
+      PageClassificationToAimEntryPoint(
+          omnibox_controller()->client()->GetPageClassification(
+              /*is_prefetch=*/false));
+  ComputeAndOpenQueryUrl(query_text, disposition, aim_entry_point,
                          /*additional_params=*/{});
 }
 
