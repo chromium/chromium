@@ -396,15 +396,32 @@ const Element* FocusgroupControllerUtils::GetEntryElementForFocusgroupSegment(
     const Element& owner) {
   DCHECK(IsFocusgroupItemWithOwner(&item, &owner));
 
+  // Always start from the beginning of the segment.
+  const Element* first_item_in_segment = FirstFocusgroupItemInSegment(item);
+
+  if (!first_item_in_segment) {
+    return nullptr;
+  }
+
+  return GetEntryElementForFocusgroupSegmentFromFirst(*first_item_in_segment,
+                                                      owner);
+}
+
+const Element*
+FocusgroupControllerUtils::GetEntryElementForFocusgroupSegmentFromFirst(
+    const Element& first_item_in_segment,
+    const Element& owner) {
+  DCHECK(IsFocusgroupItemWithOwner(&first_item_in_segment, &owner));
+  // Validate precondition: element must be the first item in its segment.
+  DCHECK_EQ(FirstFocusgroupItemInSegment(first_item_in_segment),
+            &first_item_in_segment)
+      << "GetEntryElementForFocusgroupSegmentFromFirst called with element "
+         "that is not the first item in its segment.";
+
   Element* memory_item = owner.GetFocusgroupLastFocused();
 
   // Walk through all items in the segment to find the best candidate.
-  // Always start from the beginning of the segment.
-  const Element* item_in_segment = FirstFocusgroupItemInSegment(item);
-
-  if (!item_in_segment) {
-    return nullptr;
-  }
+  const Element* item_in_segment = &first_item_in_segment;
 
   const Element* entry_priority_item = nullptr;
   const Element* first_item = nullptr;

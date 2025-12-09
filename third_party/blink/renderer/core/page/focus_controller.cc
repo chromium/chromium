@@ -809,11 +809,10 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
     segment_entry = it->value;
   } else {
     // Cache miss - compute and cache the entry element for this segment.
-    // TODO(janewman): Create a version of GetEntryElementForFocusgroupSegment
-    // that assumes(DCHECK) that the element is the first item in the segment,
-    // to avoid redundant work.
+    // Use the optimized version since segment_first_item is already the first
+    // item in the segment.
     segment_entry =
-        FocusgroupControllerUtils::GetEntryElementForFocusgroupSegment(
+        FocusgroupControllerUtils::GetEntryElementForFocusgroupSegmentFromFirst(
             *segment_first_item, *focusgroup_owner);
     // By definition, a segment must have an entry element.
     CHECK(segment_entry) << "Focusgroup with owner "

@@ -172,6 +172,15 @@ class CORE_EXPORT FocusgroupControllerUtils {
       const Element& item,
       const Element& owner);
 
+  // Optimized version of GetEntryElementForFocusgroupSegment that assumes
+  // |first_item_in_segment| is already the first item in its segment.
+  // Skips the call to FirstFocusgroupItemInSegment to avoid redundant work.
+  // |first_item_in_segment|: The first focusgroup item in the segment.
+  // |owner|: The focusgroup owner of |first_item_in_segment| (must be valid).
+  static const Element* GetEntryElementForFocusgroupSegmentFromFirst(
+      const Element& first_item_in_segment,
+      const Element& owner);
+
   // Returns true if the element is opted out or within an opted-out focusgroup
   // subtree.
   static bool IsElementInOptedOutSubtree(const Element* element);
