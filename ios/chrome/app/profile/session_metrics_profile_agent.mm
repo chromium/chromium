@@ -12,6 +12,8 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_service.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
@@ -121,6 +123,11 @@
   _sessionStartTimestamp = base::TimeTicks();
   IOSProfileSessionDurationsServiceFactory::GetForProfile(profile)
       ->OnSessionEnded(duration);
+
+  // TabUsageRecorderServiceFactory may return null during tests.
+  if (auto* service = TabUsageRecorderServiceFactory::GetForProfile(profile)) {
+    service->RecordSessionMetrics();
+  }
 }
 
 @end

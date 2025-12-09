@@ -153,7 +153,7 @@ source_set("scene") {
     "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
     "//ios/chrome/browser/main/ui_bundled:incognito_blocker_scene_agent",
     "//ios/chrome/browser/main/ui_bundled:scene",
-    "//ios/chrome/browser/metrics/model:metrics_browser_agent",
+    "//ios/chrome/browser/metrics/model:tab_usage_recorder_browser_agent",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/passwords/model",

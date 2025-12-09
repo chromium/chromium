@@ -91,7 +91,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/constants.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/components/cookie_util/cookie_util.h"
@@ -447,19 +446,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   // Nothing to do if the profile is not yet fully loaded.
   if (_state.initStage < ProfileInitStage::kPrepareUI) {
     return;
-  }
-
-  DCHECK(_state.profile);
-  ProfileIOS* profile = _state.profile;
-
-  // Record session metrics for the regular profile and off-the-record profile
-  // (if it exists, do not force its creation).
-  SessionMetrics::FromProfile(profile)->RecordAndClearSessionMetrics(
-      MetricsToRecordFlags::kActivatedTabCount);
-  if (profile->HasOffTheRecordProfile()) {
-    SessionMetrics::FromProfile(profile->GetOffTheRecordProfile())
-        ->RecordAndClearSessionMetrics(
-            MetricsToRecordFlags::kActivatedTabCount);
   }
 }
 

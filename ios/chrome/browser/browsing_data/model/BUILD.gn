@@ -52,7 +52,7 @@ source_set("model") {
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/language/model",
-    "//ios/chrome/browser/metrics/model:metrics_browser_agent",
+    "//ios/chrome/browser/metrics/model:tab_usage_recorder_browser_agent",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/profile/model:ios_thread",

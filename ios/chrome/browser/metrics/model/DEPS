@@ -16,7 +16,6 @@ include_rules = [
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/variations/model",
   "+ios/chrome/browser/voice/model",
-  "+ios/chrome/browser/web_state_list/model/session_metrics.h",
 ]
 
 specific_include_rules = {
