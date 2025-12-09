@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.chromium.base.FeatureList;
 import org.chromium.build.annotations.NullMarked;
@@ -32,6 +31,7 @@ public class FeedStreamViewResizer extends ViewResizer {
 
     private final View mView;
     private final Activity mActivity;
+    private final int mToolbarHeightPx;
 
     /**
      * @param activity The activity displays the view.
@@ -39,7 +39,7 @@ public class FeedStreamViewResizer extends ViewResizer {
      * @param config The UiConfig object to subscribe to.
      * @param defaultPaddingPixels Padding to use in {@link HorizontalDisplayStyle#REGULAR}.
      * @param minWidePaddingPixels Minimum lateral padding to use in {@link
-     *         HorizontalDisplayStyle#WIDE}.
+     *     HorizontalDisplayStyle#WIDE}.
      */
     public FeedStreamViewResizer(
             Activity activity,
@@ -50,6 +50,9 @@ public class FeedStreamViewResizer extends ViewResizer {
         super(view, config, defaultPaddingPixels, minWidePaddingPixels);
         mView = view;
         mActivity = activity;
+
+        mToolbarHeightPx =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.default_action_bar_height);
     }
 
     /**
@@ -106,7 +109,7 @@ public class FeedStreamViewResizer extends ViewResizer {
         float dpToPx = resources.getDisplayMetrics().density;
         float screenWidth = getScreenWidth();
         float screenHeight = resources.getConfiguration().screenHeightDp * dpToPx;
-        float useableHeight = screenHeight - statusBarHeight() - toolbarHeight();
+        float useableHeight = screenHeight - statusBarHeight() - mToolbarHeightPx;
         int customPadding =
                 (int) ((screenWidth - useableHeight * FEED_IMAGE_OR_VIDEO_ASPECT_RATIO) / 2);
         return Math.max(customPadding, padding);
@@ -143,18 +146,6 @@ public class FeedStreamViewResizer extends ViewResizer {
             screenWidth = resources.getConfiguration().screenWidthDp * dpToPx;
         }
         return screenWidth;
-    }
-
-    private int toolbarHeight() {
-        ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
-        if (contentContainer == null) {
-            return 0;
-        }
-        View toolbarView = contentContainer.findViewById(R.id.toolbar_container);
-        if (toolbarView == null) {
-            return 0;
-        }
-        return toolbarView.getHeight();
     }
 
     private int statusBarHeight() {
