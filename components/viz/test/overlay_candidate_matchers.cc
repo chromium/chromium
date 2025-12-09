@@ -95,7 +95,7 @@ testing::Matcher<const OverlayCandidate&> OverlayIsFullScreen() {
 
 MATCHER_P(ApproximatelyEquals, expected, "") {
   constexpr float threshold = 0.001f;
-  return expected.ApproximatelyEqual(expected, threshold, threshold);
+  return arg.ApproximatelyEqual(expected, threshold, threshold);
 }
 
 testing::Matcher<const OverlayCandidate&> OverlayTargetRectIs(

@@ -3647,7 +3647,7 @@ TEST_F(OverlayProcessorWinFullScreenWithAdjustmentTest, AdjustToLetterbox) {
   CreateYUVTextureQuadAt(resource_provider_.get(),
                          child_resource_provider_.get(), child_provider_.get(),
                          CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
-                         pass.get(), gfx::Rect(0, 90, 255, 64));
+                         pass.get(), gfx::Rect(0, 90, 256, 64));
 
   CreateSolidColorQuadAt(CreateSharedQuadStateWithLayerNamespaceId(pass.get()),
                          SkColors::kBlack, pass.get(), pass->output_rect);
@@ -3660,7 +3660,7 @@ TEST_F(OverlayProcessorWinFullScreenWithAdjustmentTest, AdjustToLetterbox) {
       result.candidates(),
       CandidatesAreSortedAndElementsAre({
           testing::AllOf(test::OverlayIsFullScreen(),
-                         test::OverlayTargetRectIs(gfx::RectF(0, 96, 255, 64))),
+                         test::OverlayTargetRectIs(gfx::RectF(0, 96, 256, 64))),
       }));
 }
 
