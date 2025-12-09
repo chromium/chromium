@@ -34,9 +34,7 @@ class CORE_EXPORT ClipPathPaintImageGenerator
   // union of all keyframes and the rect is as small as possible). If this is
   // is not possible for some reason, it will return either nullopt, if the
   // animation cannot be contained, or InfiniteIntRect() if the animation
-  // needs to be clipped by the cull rect during paint-time. However, currently,
-  // this function always returns an arbitrary 'infinite' rect (*not*
-  // InfiniteIntRect()) as the above functionality is unimplemented.
+  // needs to be clipped by the cull rect during paint-time.
   virtual std::optional<gfx::RectF> GetAnimationBoundingRect(
       const LayoutObject& obj) = 0;
 

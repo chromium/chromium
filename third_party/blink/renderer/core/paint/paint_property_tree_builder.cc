@@ -2415,10 +2415,23 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
                                     ->GetClipPathPaintImageGenerator()
                                     ->GetAnimationBoundingRect(object_);
 
-        // GetAnimationBoundingRect always returns a value for now.
-        CHECK(paint_clip_path_rect_);
+        // A null return indicates that neither the cull rect or the animation
+        // keyframes can be used to limit the mask image size. Additionally,
+        // fallback in the case of clip-path: none and perspective transform, as
+        // cull rects are set to infinite in that case as well.
+        bool has_any_perspective =
+            object_.StyleRef().HasPerspective() ||
+            object_.StyleRef().Transform().HasPerspective() ||
+            context_.current.transform->Unalias().Matrix().HasPerspective();
 
-        if (!precise_clip_path_rect_) {
+        if (!paint_clip_path_rect_ ||
+            (has_any_perspective &&
+             gfx::ToEnclosingRect(*paint_clip_path_rect_) ==
+                 InfiniteIntRect())) {
+          paint_clip_path_rect_ = std::nullopt;
+          needs_mask_based_clip_path_ = false;
+          ClipPathClipper::FallbackClipPathAnimationDueToAbsentBounds(object_);
+        } else if (!precise_clip_path_rect_) {
           // In the case where clip-path: none, it is okay for the precise clip
           // path to equal the expanded rect, since we need to assign it a value
           precise_clip_path_rect_ = paint_clip_path_rect_;

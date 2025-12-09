@@ -24,6 +24,8 @@ class CORE_EXPORT ClipPathClipper {
   STATIC_ONLY(ClipPathClipper);
 
  public:
+  // Composited Clip Path Animation Functions
+
   // Value used for HasCompositeClipPathAnimation to determine what, if any
   // update is required.
   enum class CompositedStateResolutionType {
@@ -54,9 +56,6 @@ class CORE_EXPORT ClipPathClipper {
   // animation. Returns nullptr if the animation is not compositable.
   static Animation* GetClipPathAnimation(const LayoutObject& layout_object);
 
-  static ContouredRect RoundedReferenceBox(GeometryBox geometry_box,
-                                           const LayoutObject& object);
-
   // Checks the composited paint status for a given Layout Object and checks
   // whether it contains a composited clip path animation. Assumes
   // ResolveClipPathStatus has been called, will fail otherwise.
@@ -70,9 +69,29 @@ class CORE_EXPORT ClipPathClipper {
       const LayoutObject& layout_object,
       bool is_in_block_fragmentation);
 
+  // Called by the paint property tree builder if a maximum clip area can't be
+  // sufficiently determined.
+  static void FallbackClipPathAnimationDueToAbsentBounds(
+      const LayoutObject& layout_object);
+
+  // General clip-related functions
+
+  static bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner);
+
+  static ContouredRect RoundedReferenceBox(GeometryBox geometry_box,
+                                           const LayoutObject& object);
+
   static void PaintClipPathAsMaskImage(GraphicsContext&,
                                        const LayoutObject&,
                                        const DisplayItemClient&);
+
+  // Returns the local reference box for a given operation. Useful for
+  // when the desired operation is already known, or clip-path is not currently
+  // set in style (e.g. with a cc clip path animation.)
+  static gfx::RectF CalcLocalReferenceBox(
+      const LayoutObject& object,
+      const ClipPathOperation::OperationType clip_path_operation,
+      GeometryBox geometry_box);
 
   // Returns the reference box used by CSS clip-path.
   static gfx::RectF LocalReferenceBox(const LayoutObject&);

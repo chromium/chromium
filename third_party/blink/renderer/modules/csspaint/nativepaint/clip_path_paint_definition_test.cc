@@ -553,6 +553,66 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathInital) {
           UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate));
 }
 
+// Clip-path: none requires the cull rect, but perspective makes the cull rect
+// infinite, as a result, we must fall back in this case.
+TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathNoneWithPerspective) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(10% at 30% 30%);
+            }
+            100% {
+                clip-path: none;
+            }
+        }
+        .animation {
+            animation: clippath 4s infinite;
+        }
+    </style>
+    <div style="transform: perspective(200px);">
+        <div id ="target" style="width: 100px; height: 100px;">
+        </div>
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  // Init clock.
+  UpdateAndAdvanceTimeTo(0);
+
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kNotComposited, element,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  Animation* animation = GetFirstAnimation(element);
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  // Advance the animation time.
+  UpdateAndAdvanceTimeTo(500);
+
+  // Animation should not be updating the composited paint status, but we do
+  // expect scheduled animation updates since the main thread is responsible for
+  // the animation.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
+
+  // Advance the animation time to the next meaningful frame.
+  UpdateAndAdvanceTimeTo(2000 + 1);
+
+  // Main frame should still be producing frames.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      static_cast<UpdatesNeededForNextFrame>(
+          UpdatesNeededForNextFrame::kScheduledAnimationUpdate |
+          UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate));
+}
+
 // <br> cannot be composited due to it not supporting paint properties, so we
 // fall back in this case. See crbug.com/401076540.
 TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
@@ -650,6 +710,69 @@ TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       CompositedPaintStatus::kNoAnimation, element, animation,
       UpdatesNeededForNextFrame::kAllUpdates);
+}
+
+// Clip-path animations with descendant transform animations must fall back to
+// main thread due to difficulty determining animation bounds.
+TEST_F(ClipPathPaintDefinitionTest,
+       FallbackWithNoneKeyframeAndChildTransformAnimation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(30% at 30% 30%);
+            }
+            100% {
+                clip-path: none;
+            }
+        }
+        @keyframes transform {
+            0% {
+                transform: translateX(0px);
+            }
+            100% {
+                transform: translateX(100px);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+        .child-animation {
+            animation: transform 4s;
+        }
+    </style>
+    <div id="target" style="width: 100px; height: 100px;">
+      <div id="child" style="width: 50px; height: 50px;">
+      </div>
+    </div>
+  )HTML");
+  InitPaintArtifactCompositor();
+
+  Element* element = GetElementById("target");
+  Element* child = GetElementById("child");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+  child->setAttribute(html_names::kClassAttr, AtomicString("child-animation"));
+
+  // Init clock.
+  UpdateAndAdvanceTimeTo(0);
+
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kNotComposited, element,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  Animation* animation = GetFirstAnimation(element);
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  UpdateAndAdvanceTimeTo(500);
+
+  // Animation should still run, but the composited paint status should not
+  // change due to the child transform animation.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
 }
 
 // Test the case where a 2nd composited clip path animation causes a fallback to
@@ -1011,6 +1134,130 @@ TEST_F(ClipPathPaintDefinitionTest, TransitionRetarget) {
   // removed from memory.
   element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
   UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_F(ClipPathPaintDefinitionTest, BoundingRectCorrectForSimpleKeyframeUnion) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(20% at 20% 20%);
+            }
+            100% {
+                clip-path: circle(20% at 70% 70%);
+            }
+        }
+        .animation {
+            animation: clippath 4s;
+        }
+    </style>
+    <div id ="target" style="width: 200px; height: 200px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  // Init
+  UpdateAndAdvanceTimeTo(0);
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+
+  const LayoutObject* layout_object = element->GetLayoutObject();
+
+  gfx::RectF reference_box = ClipPathClipper::CalcLocalReferenceBox(
+      *layout_object, ClipPathOperation::OperationType::kShape,
+      GeometryBox::kBorderBox);
+
+  // Keyframe 0: circle(20% at 20% 20%)
+  BasicShapeCircle* circle1 = MakeGarbageCollected<BasicShapeCircle>();
+  circle1->SetCenterX(BasicShapeCenterCoordinate(
+      BasicShapeCenterCoordinate::kTopLeft, Length::Percent(20.0f)));
+  circle1->SetCenterY(BasicShapeCenterCoordinate(
+      BasicShapeCenterCoordinate::kTopLeft, Length::Percent(20.0f)));
+  circle1->SetRadius(BasicShapeRadius(Length::Percent(20.0f)));
+
+  // Keyframe 100: circle(20% at 70% 70%)
+  BasicShapeCircle* circle2 = MakeGarbageCollected<BasicShapeCircle>();
+  circle2->SetCenterX(BasicShapeCenterCoordinate(
+      BasicShapeCenterCoordinate::kTopLeft, Length::Percent(70.0f)));
+  circle2->SetCenterY(BasicShapeCenterCoordinate(
+      BasicShapeCenterCoordinate::kTopLeft, Length::Percent(70.0f)));
+  circle2->SetRadius(BasicShapeRadius(Length::Percent(20.0f)));
+
+  // Get bounding rects from the generated paths
+  gfx::RectF bounds1 =
+      circle1->GetPath(reference_box, 1.f /* zoom */, 1.f /* scale */)
+          .BoundingRect();
+  gfx::RectF bounds2 =
+      circle2->GetPath(reference_box, 1.f /* zoom */, 1.f /* scale */)
+          .BoundingRect();
+
+  // Compute union of both bounding rects to get animation bounds
+  gfx::RectF animation_bounds = bounds1;
+  animation_bounds.Union(bounds2);
+
+  // Test that we can access the animation generator for comparison
+  ClipPathPaintImageGenerator* generator =
+      layout_object->GetFrame()->GetClipPathPaintImageGenerator();
+
+  std::optional<gfx::RectF> generator_bounds =
+      generator->GetAnimationBoundingRect(*layout_object);
+
+  EXPECT_TRUE(generator_bounds.has_value());
+  EXPECT_TRUE(generator_bounds->Contains(animation_bounds));
+}
+
+TEST_F(ClipPathPaintDefinitionTest, BoundingRectCorrectForExtrapolation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: inset(10% 10%);
+            }
+            100% {
+                clip-path: inset(0% 0%);
+            }
+        }
+        .animation {
+            animation: clippath 4s cubic-bezier(0,10,1,10);
+        }
+    </style>
+    <div id ="target" style="width: 200px; height: 200px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  // Init
+  UpdateAndAdvanceTimeTo(0);
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+
+  const LayoutObject* layout_object = element->GetLayoutObject();
+
+  // The animation bounds should encompass the entire extrapolated range
+  // From original rect (0,0,200,200) to maximally extrapolated position
+  // cubic-bezier(0,10,1,10) has a maximum value just higher than 7.629
+  // Extrapolation factor: 7.629 - 1 = 6.629
+  // Keyframe difference: inset(10% 10%) - inset(0% 0%) = 10% on each side
+  // With 200px dimensions: 10% = 20px per side
+  // Rect dimensions will be 200px + 20px * 6.629 for both sides, with positions
+  // being (width - 200)/2, (height - 200)/2
+
+  gfx::RectF expected_bounds(-10.f * 6.629f, -10.f * 6.629f,
+                             200.f + (20.f * 6.629f), 200.f + (20.f * 6.629f));
+
+  // Test that we can access the animation generator for comparison
+  ClipPathPaintImageGenerator* generator =
+      layout_object->GetFrame()->GetClipPathPaintImageGenerator();
+
+  std::optional<gfx::RectF> generator_bounds =
+      generator->GetAnimationBoundingRect(*layout_object);
+
+  EXPECT_TRUE(generator_bounds.has_value());
+  EXPECT_TRUE(generator_bounds->Contains(expected_bounds));
 }
 
 }  // namespace blink

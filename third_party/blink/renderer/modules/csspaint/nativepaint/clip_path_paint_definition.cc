@@ -29,10 +29,13 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -265,6 +268,55 @@ BasicShape* GetAnimatedShapeFromKeyframe(const PropertySpecificKeyframe* frame,
   }
 }
 
+std::optional<SkPath> GetFillRequiredByEffect(const AnimationEffect* effect,
+                                              const LayoutObject& obj,
+                                              const gfx::RectF& reference_box,
+                                              const gfx::Vector2dF& clip_offset,
+                                              const float zoom,
+                                              SkPath first_keyframe) {
+  switch (effect->SpecifiedTiming().fill_mode) {
+    case Timing::FillMode::AUTO:
+    case Timing::FillMode::NONE:
+    case Timing::FillMode::FORWARDS: {
+      if (obj.StyleRef().HasClipPath()) {
+        ClipPathOperation* static_op = obj.StyleRef().ClipPath();
+        Path path;
+        switch (static_op->GetType()) {
+          case ClipPathOperation::kShape:
+            path = To<ShapeClipPathOperation>(static_op)->GetPath(
+                reference_box, zoom, /*path_scale=*/1.f);
+            if (!clip_offset.IsZero()) {
+              path = PathBuilder(path).Translate(clip_offset).Finalize();
+            }
+            break;
+          case ClipPathOperation::kGeometryBox: {
+            ContouredRect box = ClipPathClipper::RoundedReferenceBox(
+                To<GeometryBoxClipPathOperation>(static_op)->GetGeometryBox(),
+                obj);
+            if (!clip_offset.IsZero()) {
+              box.Move(clip_offset);
+            }
+            path = box.GetPath();
+            break;
+          }
+          case ClipPathOperation::kReference:
+            // Reference clip paths are implemented with mask images, and are
+            // not reducible to single SkPaths.
+            NOTREACHED();
+        }
+        return path.GetSkPath();
+      } else {
+        // Caller decides what to do for clip-path: none.
+        return std::nullopt;
+      }
+    }
+    case Timing::FillMode::BOTH:
+    case Timing::FillMode::BACKWARDS: {
+      return first_keyframe;
+    }
+  }
+}
+
 bool ValidateClipPathValue(const Element* element,
                            const CSSValue* value,
                            const InterpolableValue* interpolable_value) {
@@ -413,6 +465,11 @@ PaintRecord ClipPathPaintDefinition::Paint(
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   input->ApplyTranslation(canvas);
+
+  // TODO(crbug.com/451650621): Painting a full Skia path every time is
+  // expensive. Main-thread clip-path animations use RRects when possible, and
+  // this behavior should be replicated here. See:
+  // SynthesizedClip::PaintContentsToDisplayList.
   canvas->drawPath(cur_path, flags);
 
   return paint_recorder.finishRecordingAsPicture();
@@ -495,54 +552,10 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     }
   }
   progress = effect->Progress();
-  SkPath static_path;
-
-  switch (effect->SpecifiedTiming().fill_mode) {
-    case Timing::FillMode::AUTO:
-    case Timing::FillMode::NONE:
-    case Timing::FillMode::FORWARDS: {
-      // In the case where there is not currently a clip path, and the fill mode
-      // isn't backwards or both, we will need to ensure no items are clipped
-      // during the delay. Use an 'infinite' clip rect to do this.
-      if (element->GetLayoutObject()->StyleRef().HasClipPath()) {
-        ClipPathOperation* static_op =
-            element->GetLayoutObject()->StyleRef().ClipPath();
-        Path path;
-        switch (static_op->GetType()) {
-          case ClipPathOperation::kShape: {
-            path = To<ShapeClipPathOperation>(static_op)->GetPath(
-                reference_box, zoom, /*path_scale=*/1.f);
-            if (!clip_offset.IsZero()) {
-              path = PathBuilder(path).Translate(clip_offset).Finalize();
-            }
-            break;
-          }
-          case ClipPathOperation::kGeometryBox: {
-            ContouredRect box = ClipPathClipper::RoundedReferenceBox(
-                To<GeometryBoxClipPathOperation>(static_op)->GetGeometryBox(),
-                *element->GetLayoutObject());
-            if (!clip_offset.IsZero()) {
-              box.Move(clip_offset);
-            }
-            path = box.GetPath();
-            break;
-          }
-          case ClipPathOperation::kReference:
-            // Reference clip paths are implemented with mask images, and are
-            // not reducible to single SkPaths.
-            NOTREACHED();
-        }
-        static_path = path.GetSkPath();
-      } else {
-        static_path = SkPath::Rect(gfx::RectFToSkRect(clip_area_rect));
-      }
-      break;
-    }
-    case Timing::FillMode::BOTH:
-    case Timing::FillMode::BACKWARDS: {
-      static_path = paths[0];
-    }
-  }
+  SkPath static_path =
+      GetFillRequiredByEffect(effect, *element->GetLayoutObject(),
+                              reference_box, clip_offset, zoom, paths[0])
+          .value_or(SkPath::Rect(gfx::RectFToSkRect(clip_area_rect)));
 
   node.GetLayoutObject()->GetMutableForPainting().EnsureId();
   CompositorElementId element_id = CompositorElementIdFromUniqueObjectId(
@@ -563,13 +576,157 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
                                            clip_area_rect.size());
 }
 
+// Helper functions for GetAnimationBoundingRect
+namespace {
+
+// Returns a definite containing rectangle for all keyframes and fills for
+// this animation, or none, if clip-path: none is encountered. For the
+// typical case, this is simply the enclosing rect of the union of all
+// keyframes. For animations with timing functions outside [0,1], extra
+// work is done to account for keyframe extrapolation.
+std::optional<gfx::RectF> ComputeKeyframeUnionIncludingExtrapolation(
+    const LayoutObject& obj,
+    const Element* element,
+    const KeyframeEffect* effect) {
+  const KeyframeEffectModelBase* model = effect->Model();
+  const PropertySpecificKeyframeVector* frames =
+      model->GetPropertySpecificKeyframes(
+          PropertyHandle(GetCSSPropertyClipPath()));
+
+  HeapVector<Member<BasicShape>> animated_shapes;
+  gfx::RectF clip_area;
+
+  for (const auto& frame : *frames) {
+    BasicShape* shape = GetAnimatedShapeFromKeyframe(frame, model, element);
+    if (!shape) {
+      // clip-path: none
+      return std::nullopt;
+    }
+    animated_shapes.push_back(shape);
+  }
+
+  scoped_refptr<TimingFunction> effect_timing =
+      effect->SpecifiedTiming().timing_function;
+
+  // TODO(crbug.com/379052285): these assumptions are currently valid
+  // because of value filters. Eventually, these should be removed when
+  // proper geometry-box support is added.
+  gfx::RectF reference_box = ClipPathClipper::CalcLocalReferenceBox(
+      obj, ClipPathOperation::OperationType::kShape, GeometryBox::kBorderBox);
+  const float zoom = ClipPathClipper::UsesZoomedReferenceBox(obj)
+                         ? 1
+                         : obj.StyleRef().EffectiveZoom();
+
+  if (effect->SpecifiedTiming().start_delay.time_delay > AnimationTimeDelta()) {
+    std::optional<SkPath> fill = GetFillRequiredByEffect(
+        effect, obj, reference_box, gfx::Vector2dF(0.f, 0.f), zoom, SkPath());
+    if (!fill.has_value()) {
+      // clip-path: none
+      return std::nullopt;
+    }
+
+    if (!fill->isEmpty()) {
+      clip_area.Union(gfx::SkRectToRectF(fill->getBounds()));
+    }
+  }
+
+  double min_total_progress = 0.0;
+  double max_total_progress = 1.0;
+  effect_timing->Range(&min_total_progress, &max_total_progress);
+
+  for (unsigned i = 0; i < frames->size(); i++) {
+    BasicShape* cur_shape = animated_shapes[i];
+    CHECK(cur_shape);
+
+    const Path path = cur_shape->GetPath(reference_box, zoom, 1.f);
+    clip_area.Union(path.BoundingRect());
+
+    if (i + 1 == frames->size()) {
+      break;
+    }
+
+    double min_progress =
+        i == 0 ? ((min_total_progress - frames->at(0)->Offset()) /
+                  (frames->at(1)->Offset() - frames->at(0)->Offset()))
+               : 0.0;
+    double max_progress =
+        (i + 2) == frames->size()
+            ? ((max_total_progress - frames->at(i)->Offset()) /
+               (frames->at(i + 1)->Offset() - frames->at(i)->Offset()))
+            : 1.0;
+
+    TimingFunction& timing = frames->at(i)->Easing();
+    timing.Range(&min_progress, &max_progress);
+
+    // If the timing function results in values outside [0,1], this
+    // will result in extrapolated values that could potentially be
+    // larger than either keyframe in the pair. Do the extrapolation
+    // ourselves for the maximal value to find the clip area for
+    // this keyframe pair.
+
+    if (min_progress < 0) {
+      BasicShape* next_shape = animated_shapes[i + 1];
+      Path toPath = next_shape->GetPath(reference_box, zoom, 1.f);
+      SkPath interpolated =
+          InterpolatePaths(cur_shape->GetType() == next_shape->GetType(),
+                           path.GetSkPath(), toPath.GetSkPath(), min_progress);
+      clip_area.Union(gfx::SkRectToRectF(interpolated.getBounds()));
+    }
+    if (max_progress > 1) {
+      BasicShape* next_shape = animated_shapes[i + 1];
+      Path toPath = next_shape->GetPath(reference_box, zoom, 1.f);
+      SkPath interpolated =
+          InterpolatePaths(cur_shape->GetType() == next_shape->GetType(),
+                           path.GetSkPath(), toPath.GetSkPath(), max_progress);
+      clip_area.Union(gfx::SkRectToRectF(interpolated.getBounds()));
+    }
+  }
+
+  return clip_area;
+}
+
+}  // namespace
+
 // static
 std::optional<gfx::RectF> ClipPathPaintDefinition::GetAnimationBoundingRect(
     const LayoutObject& obj) {
-  // TODO(clchambers): Replace with actual content-aware bounds calculation.
-  constexpr int kInfiniteXY = LayoutUnit::Min().ToInt() / 64;
-  constexpr int kInfiniteWH = LayoutUnit::Max().ToInt() / 32;
-  return gfx::RectF(kInfiniteXY, kInfiniteXY, kInfiniteWH, kInfiniteWH);
+  const Element* element = To<Element>(obj.GetNode());
+
+  CHECK(element);
+
+  const Animation* animation = GetAnimationIfCompositable(element);
+  CHECK(animation);
+
+  const AnimationEffect* effect = animation->effect();
+  CHECK(effect);
+  CHECK(effect->IsKeyframeEffect());
+
+  const std::optional<gfx::RectF> keyframe_union =
+      ComputeKeyframeUnionIncludingExtrapolation(obj, element,
+                                                 To<KeyframeEffect>(effect));
+  if (keyframe_union.has_value()) {
+    return *keyframe_union;
+  }
+
+  // The interaction between clip-path animations with clip-path: none and
+  // descendant transform animations requires a fallback, because right now
+  // there is no way to estimate the maximum visible area
+  // TODO(clchambers): Once compositor and main-thread clip-path implementations
+  // are merged, it may be possible to remove this case by either inverting the
+  // blend mode (kXor?) or using edge mode for this case on cc/viz side.
+  // Alternatively, since cc knows the definite state of any cc-animated
+  // transforms, it's possible that the required mask size could be computed
+  // directly at impl-side paint time, making the size of the painted mask image
+  // variable (which would potentially involve (re)allocating new tiles).
+  if (obj.PaintingLayer()->HasDescendantWithTransformAnim() ||
+      obj.StyleRef().HasCurrentTransformRelatedAnimation()) {
+    return std::nullopt;
+  }
+
+  // Return an infinite rect. This won't actually be used as the mask image
+  // size. Instead, it is the responsibility of ClipPathClipper during
+  // paint-time to use the current cull rect as the image size.
+  return gfx::RectF(InfiniteIntRect());
 }
 
 void ClipPathPaintDefinition::Trace(Visitor* visitor) const {

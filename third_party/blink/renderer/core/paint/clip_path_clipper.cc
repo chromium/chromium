@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/style/clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
@@ -113,12 +114,6 @@ bool UsesPaintOffset(const LayoutObject& clip_path_owner) {
   return !clip_path_owner.IsSVGChild();
 }
 
-// Is the reference box (as returned by LocalReferenceBox) for |clip_path_owner|
-// zoomed with EffectiveZoom()?
-bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner) {
-  return !clip_path_owner.IsSVGChild() || clip_path_owner.IsSVGForeignObject();
-}
-
 CompositedPaintStatus CompositeClipPathStatus(Node* node) {
   Element* element = DynamicTo<Element>(node);
   if (!element) {
@@ -182,7 +177,7 @@ void PaintWorkletBasedClip(GraphicsContext& context,
   // have an origin of 0,0 as it has its own coordinate space.
   gfx::RectF src_rect = gfx::RectF(dst_rect.size());
 
-  float zoom = UsesZoomedReferenceBox(clip_path_owner)
+  float zoom = ClipPathClipper::UsesZoomedReferenceBox(clip_path_owner)
                    ? clip_path_owner.StyleRef().EffectiveZoom()
                    : 1;
 
@@ -195,31 +190,8 @@ void PaintWorkletBasedClip(GraphicsContext& context,
                     kRespectImageOrientation);
 }
 
-gfx::RectF CalcLocalReferenceBox(
-    const LayoutObject& object,
-    const ClipPathOperation::OperationType clip_path_operation,
-    GeometryBox geometry_box) {
-  if (object.IsSVGChild()) {
-    // Use the object bounding box for url() references.
-    if (clip_path_operation == ClipPathOperation::kReference) {
-      geometry_box = GeometryBox::kFillBox;
-    }
-    gfx::RectF unzoomed_reference_box = SVGResources::ReferenceBoxForEffects(
-        object, geometry_box, SVGResources::ForeignObjectQuirk::kDisabled);
-    if (UsesZoomedReferenceBox(object)) {
-      return gfx::ScaleRect(unzoomed_reference_box,
-                            object.StyleRef().EffectiveZoom());
-    }
-    return unzoomed_reference_box;
-  }
-
-  const auto& box = To<LayoutBoxModelObject>(object);
-  PhysicalRect reference_box = BorderBoxRect(box);
-  reference_box.Expand(
-      GeometryBoxUtils::ReferenceBoxBorderBoxOutsets(geometry_box, box));
-  return gfx::RectF(reference_box);
-}
-
+// TODO(crbug.com/454365238): Fallback point for cc clip-path animations, should
+// be annotated with a histogram.
 bool ClipPathAnimationShouldFallback(const LayoutObject& layout_object,
                                      bool is_in_block_fragmentation) {
   // If not all the fragments of this layout object have been populated yet, it
@@ -258,6 +230,13 @@ bool ClipPathAnimationShouldFallback(const LayoutObject& layout_object,
 }
 
 }  // namespace
+
+// Is the reference box (as returned by LocalReferenceBox) for |clip_path_owner|
+// zoomed with EffectiveZoom()?
+bool ClipPathClipper::UsesZoomedReferenceBox(
+    const LayoutObject& clip_path_owner) {
+  return !clip_path_owner.IsSVGChild() || clip_path_owner.IsSVGForeignObject();
+}
 
 ContouredRect ClipPathClipper::RoundedReferenceBox(GeometryBox geometry_box,
                                                    const LayoutObject& object) {
@@ -336,6 +315,8 @@ bool ClipPathClipper::HasCompositeClipPathAnimation(
       }
 
       Animation* animation = GetClipPathAnimation(layout_object);
+      // TODO(crbug.com/454365238): Fallback point for cc clip-path animations,
+      // should be annotated with a histogram.
       if (animation &&
           AdjustClipPathStatusForCompositingFailureReasons(
               layout_object, *animation,
@@ -362,7 +343,6 @@ bool ClipPathClipper::ClipPathStatusResolved(
 
   return status != CompositedPaintStatus::kNeedsRepaint;
 }
-
 void ClipPathClipper::FallbackClipPathAnimationIfNecessary(
     const LayoutObject& layout_object,
     bool is_in_block_fragmentation) {
@@ -382,6 +362,39 @@ void ClipPathClipper::FallbackClipPathAnimationIfNecessary(
     SetCompositeClipPathStatus(layout_object.GetNode(),
                                CompositedPaintStatus::kNotComposited);
   }
+}
+
+// TODO(crbug.com/454365238): Fallback point for cc clip-path animations, should
+// be annotated with a histogram.
+void ClipPathClipper::FallbackClipPathAnimationDueToAbsentBounds(
+    const LayoutObject& layout_object) {
+  SetCompositeClipPathStatus(layout_object.GetNode(),
+                             CompositedPaintStatus::kNotComposited);
+}
+
+gfx::RectF ClipPathClipper::CalcLocalReferenceBox(
+    const LayoutObject& object,
+    const ClipPathOperation::OperationType clip_path_operation,
+    GeometryBox geometry_box) {
+  if (object.IsSVGChild()) {
+    // Use the object bounding box for url() references.
+    if (clip_path_operation == ClipPathOperation::kReference) {
+      geometry_box = GeometryBox::kFillBox;
+    }
+    gfx::RectF unzoomed_reference_box = SVGResources::ReferenceBoxForEffects(
+        object, geometry_box, SVGResources::ForeignObjectQuirk::kDisabled);
+    if (ClipPathClipper::UsesZoomedReferenceBox(object)) {
+      return gfx::ScaleRect(unzoomed_reference_box,
+                            object.StyleRef().EffectiveZoom());
+    }
+    return unzoomed_reference_box;
+  }
+
+  const auto& box = To<LayoutBoxModelObject>(object);
+  PhysicalRect reference_box = BorderBoxRect(box);
+  reference_box.Expand(
+      GeometryBoxUtils::ReferenceBoxBorderBoxOutsets(geometry_box, box));
+  return gfx::RectF(reference_box);
 }
 
 gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
@@ -459,7 +472,7 @@ static AffineTransform UserSpaceToClipPathTransform(
     const gfx::RectF& reference_box,
     const LayoutObject& reference_box_object) {
   AffineTransform clip_path_transform;
-  if (UsesZoomedReferenceBox(reference_box_object)) {
+  if (ClipPathClipper::UsesZoomedReferenceBox(reference_box_object)) {
     // If the <clipPath> is using "userspace on use" units, then the origin of
     // the coordinate system is the top-left of the reference box.
     if (clipper.ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
@@ -473,7 +486,8 @@ static AffineTransform UserSpaceToClipPathTransform(
 static Path GetPathWithObjectZoom(const ShapeClipPathOperation& shape,
                                   const gfx::RectF& reference_box,
                                   const LayoutObject& reference_box_object) {
-  bool uses_zoomed_reference_box = UsesZoomedReferenceBox(reference_box_object);
+  bool uses_zoomed_reference_box =
+      ClipPathClipper::UsesZoomedReferenceBox(reference_box_object);
   float zoom = reference_box_object.StyleRef().EffectiveZoom();
   const gfx::RectF zoomed_reference_box =
       uses_zoomed_reference_box ? reference_box
@@ -533,7 +547,7 @@ static AffineTransform MaskToContentTransform(
   AffineTransform mask_to_content;
   if (resource_clipper.ClipPathUnits() ==
       SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
-    if (UsesZoomedReferenceBox(reference_box_object)) {
+    if (ClipPathClipper::UsesZoomedReferenceBox(reference_box_object)) {
       if (UsesPaintOffset(reference_box_object)) {
         mask_to_content.Translate(reference_box.x(), reference_box.y());
       }
@@ -645,6 +659,16 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
       layout_object, CompositedStateResolutionType::kReadCache);
   gfx::Rect clip_area_size =
       gfx::ToEnclosingRect(properties->MaskClip()->PaintClipRect().Rect());
+
+  // If the given mask image rect is infinite, it means that the clip-path
+  // animation on this element has clip-path none somewhere inside of it. To
+  // prevent unbounded mask images and limit perf degradation in this case, we
+  // clip by the cull rect here. Visually, this should be a NOP.
+  if (has_cc_clip_path_anim &&
+      clip_area_size.size() == InfiniteIntRect().size()) {
+    clip_area_size = gfx::ToEnclosingRect(
+        gfx::RectF(layout_object.FirstFragment().GetContentsCullRect().Rect()));
+  }
 
   DrawingRecorder recorder(context, display_item_client, DisplayItem::kSVGClip,
                            clip_area_size);

@@ -388,6 +388,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     has_self_painting_layer_descendant_ = false;
     descendant_needs_check_position_visibility_ = false;
     has_backdrop_filter_descendant_ = false;
+    has_descendant_with_transform_anim_ = false;
 
     bool can_contain_abs =
         GetLayoutObject().CanContainAbsolutePositionObjects();
@@ -445,6 +446,13 @@ void PaintLayer::UpdateDescendantDependentFlags() {
           has_backdrop_filter_descendant_ ||
           child->HasBackdropFilterDescendant() ||
           child->GetLayoutObject().StyleRef().HasNonInitialBackdropFilter();
+
+      has_descendant_with_transform_anim_ =
+          has_descendant_with_transform_anim_ ||
+          child->HasDescendantWithTransformAnim() ||
+          child->GetLayoutObject()
+              .StyleRef()
+              .HasCurrentTransformRelatedAnimation();
     }
 
     // See SetInvisibleForPositionVisibility() for explanation for
