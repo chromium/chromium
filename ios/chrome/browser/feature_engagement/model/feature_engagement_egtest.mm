@@ -141,11 +141,6 @@ void RequestDesktopVersion() {
 
 // Verifies that the IPH for Request desktop shows when triggered
 - (void)testRequestDesktopTip {
-  // TODO(crbug.com/454538651): Re-enable the test.
-  if (@available(iOS 26.1, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
-  }
-
   [self enableDemoModeForFeature:"IPH_DefaultSiteView"];
 
   self.testServer->AddDefaultHandlers();
