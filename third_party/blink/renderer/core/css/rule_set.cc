@@ -908,11 +908,6 @@ void RuleSet::AddPageRule(StyleRulePage* rule, const CascadeLayer* layer) {
   page_rules_.push_back(CascadeLayered<StyleRulePage>(rule, layer));
 }
 
-void RuleSet::AddNavigationRule(StyleRuleNavigation* rule) {
-  need_compaction_ = true;
-  navigation_rules_.push_back(rule);
-}
-
 void RuleSet::AddFontFaceRule(StyleRuleFontFace* rule,
                               const CascadeLayer* layer) {
   need_compaction_ = true;
@@ -1799,7 +1794,6 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(view_transition_rules_);
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
-  visitor->Trace(navigation_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(position_try_rules_);
   visitor->Trace(function_rules_);
