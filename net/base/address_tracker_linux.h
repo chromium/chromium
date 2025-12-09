@@ -5,14 +5,9 @@
 #ifndef NET_BASE_ADDRESS_TRACKER_LINUX_H_
 #define NET_BASE_ADDRESS_TRACKER_LINUX_H_
 
-#include <sys/socket.h>  // Needed to include netlink.
-
-// Mask superfluous definition of |struct net|. This is fixed in Linux 2.6.38.
-
-#define net net_kernel
 #include <linux/rtnetlink.h>
-#undef net
 #include <stddef.h>
+#include <sys/socket.h>
 
 #include <map>
 #include <memory>
