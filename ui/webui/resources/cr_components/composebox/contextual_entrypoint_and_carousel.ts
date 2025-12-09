@@ -199,6 +199,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowCreateImageButton');
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
+  private suggestedTabToken_: UnguessableToken|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -249,6 +250,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
             title: file.title,
             url: file.url,
             delayUpload: file.delayUpload,
+            replaceSuggestedTabToken: false,
           },
         }));
       } else {
@@ -362,6 +364,32 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.files_ = newFiles;
   }
 
+  updateSuggestedTabContext(tab: TabInfo|null) {
+    // If there is already a suggested tab context, remove it.
+    if (this.suggestedTabToken_) {
+      this.onDeleteFile_(new CustomEvent('deleteTabContext', {
+        detail: {
+          uuid: this.suggestedTabToken_,
+        },
+      }));
+      this.suggestedTabToken_ = null;
+    }
+
+    if (!tab) {
+      return;  // No new tab to add, so we're done.
+    }
+
+    this.addTabContext_(new CustomEvent('addTabContext', {
+      detail: {
+        id: tab.tabId,
+        title: tab.title,
+        url: tab.url,
+        delayUpload: /*delay_upload=*/ true,
+        replaceSuggestedTabToken: true,
+      },
+    }));
+  }
+
   private addFileFromAttachment_(fileAttachment: FileAttachmentStub) {
     const pendingStatus = this.pendingFiles_.get(fileAttachment.uuid);
     const composeboxFile: ComposeboxFile = {
@@ -388,6 +416,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         title: tabAttachment.title,
         url: tabAttachment.url,
         delayUpload: /*delay_upload=*/ false,
+        replaceSuggestedTabToken: false,
       },
     }));
   }
@@ -531,6 +560,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     title: string,
     url: Url,
     delayUpload: boolean,
+    replaceSuggestedTabToken: boolean,
   }>) {
     e.stopPropagation();
 
@@ -543,6 +573,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.files_ = new Map([...this.files_.entries(), [file.uuid, file]]);
         this.addedTabsIds_ = new Map(
             [...this.addedTabsIds_.entries(), [e.detail.id, file.uuid]]);
+        if (e.detail.replaceSuggestedTabToken) {
+          this.suggestedTabToken_ = file.uuid;
+        }
       },
     });
   }

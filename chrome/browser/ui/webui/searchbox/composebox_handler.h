@@ -82,6 +82,9 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
 
   omnibox::ChromeAimToolsAndModels GetAimToolMode() override;
 
+  // Called to update the suggested tab context chip in the compose box.
+  virtual void UpdateSuggestedTabContext(searchbox::mojom::TabInfoPtr tab_info);
+
  protected:
   ComposeboxHandler(
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,

@@ -70,11 +70,6 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
 
 ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() = default;
 
-void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
-    searchbox::mojom::TabInfoPtr tab_info) {
-  // TODO(http://crbug.com/451688545): Push the `tab_info` to ComposeBox UI.
-}
-
 void ContextualTasksComposeboxHandler::SubmitQuery(
     const std::string& query_text,
     uint8_t mouse_button,
