@@ -23,7 +23,10 @@ class VIEWS_EXAMPLES_EXPORT AnimationExample : public ExampleBase {
   void CreateExampleView(View* container) override;
 
  private:
-  std::unique_ptr<AnimationAbortHandle> abort_handle_;
+  void AbortAnimations();
+
+  std::unique_ptr<AnimationAbortHandle> corners_animation_abort_handle_;
+  std::unique_ptr<AnimationAbortHandle> opacity_animation_abort_handle_;
 };
 
 }  // namespace views::examples
