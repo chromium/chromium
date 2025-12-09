@@ -92,14 +92,16 @@ ProfileDownloader::PictureStatus ProfileDownloader::GetProfilePictureStatus()
   return picture_status_;
 }
 
-std::string ProfileDownloader::GetProfilePictureURL() const {
-  GURL url(account_info_.picture_url);
-  if (!url.is_valid())
-    return std::string();
+GURL ProfileDownloader::GetProfilePictureURL() const {
+  if (!account_info_.GetAvatarUrl().has_value()) {
+    return GURL();
+  }
+  GURL url(*account_info_.GetAvatarUrl());
+  if (!url.is_valid()) {
+    return GURL();
+  }
   return signin::GetAvatarImageURLWithOptions(
-             GURL(account_info_.picture_url),
-             delegate_->GetDesiredImageSideLength(), true /* no_silhouette */)
-      .spec();
+      url, delegate_->GetDesiredImageSideLength(), /*no_silhouette=*/true);
 }
 
 void ProfileDownloader::StartFetchingImage() {
@@ -143,7 +145,8 @@ void ProfileDownloader::FetchImageData() {
     return;
   }
 
-  if (account_info_.picture_url == kNoPictureURLFound) {
+  if (account_info_.GetAvatarUrl().has_value() &&
+      account_info_.GetAvatarUrl()->empty()) {
     VLOG(1) << "No picture URL for account " << account_info_.email
             << ". Using the default profile picture.";
     picture_status_ = PICTURE_DEFAULT;
@@ -151,8 +154,8 @@ void ProfileDownloader::FetchImageData() {
     return;
   }
 
-  std::string image_url_with_size = GetProfilePictureURL();
-  if (!image_url_with_size.empty() &&
+  GURL image_url_with_size = GetProfilePictureURL();
+  if (!image_url_with_size.is_empty() &&
       image_url_with_size == delegate_->GetCachedPictureURL()) {
     VLOG(1) << "Picture URL matches cached picture URL";
     picture_status_ = PICTURE_CACHED;
@@ -160,11 +163,10 @@ void ProfileDownloader::FetchImageData() {
     return;
   }
 
-  GURL image_url_to_fetch(image_url_with_size);
-  if (!image_url_to_fetch.is_valid()) {
-    VLOG(1) << "Profile picture URL with size |" << image_url_to_fetch << "| "
+  if (!image_url_with_size.is_valid()) {
+    VLOG(1) << "Profile picture URL with size |" << image_url_with_size << "| "
             << "is not valid (the account picture URL is "
-            << "|" << account_info_.picture_url << "|)";
+            << "|" << account_info_.GetAvatarUrl().value_or("UNKNOWN") << "|)";
     delegate_->OnProfileDownloadFailure(
         this,
         ProfileDownloaderDelegate::FailureReason::INVALID_PROFILE_PICTURE_URL);
@@ -205,10 +207,10 @@ void ProfileDownloader::FetchImageData() {
           }
         })");
 
-  VLOG(1) << "Loading profile image from " << image_url_to_fetch;
+  VLOG(1) << "Loading profile image from " << image_url_with_size;
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = image_url_to_fetch;
+  resource_request->url = image_url_with_size;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   if (!auth_token_.empty()) {
     resource_request->headers.SetHeader(

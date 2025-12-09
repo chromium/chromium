@@ -840,8 +840,8 @@ network::mojom::URLLoaderFactory* UserImageManagerImpl::GetURLLoaderFactory() {
       .get();
 }
 
-std::string UserImageManagerImpl::GetCachedPictureURL() const {
-  return profile_image_url_.spec();
+const GURL& UserImageManagerImpl::GetCachedPictureURL() const {
+  return profile_image_url_;
 }
 
 void UserImageManagerImpl::OnProfileDownloadSuccess(
