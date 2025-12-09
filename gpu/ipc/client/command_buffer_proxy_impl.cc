@@ -117,7 +117,6 @@ ContextResult CommandBufferProxyImpl::Initialize(
       command_buffer_.BindNewEndpointAndPassReceiver(channel->io_task_runner()),
       client_receiver_.BindNewEndpointAndPassRemote(callback_thread_), &result,
       &capabilities_, &gl_capabilities_);
-  capabilities_.gpu_rasterization = enable_gpu_rasterization;
   if (!sent) {
     command_buffer_.reset();
     client_receiver_.reset();

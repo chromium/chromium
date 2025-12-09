@@ -502,7 +502,6 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
   }
 
   *params.capabilities = decoder_->GetCapabilities();
-  params.capabilities->gpu_rasterization = params.enable_gpu_rasterization;
   *params.gl_capabilities = decoder_->GetGLCapabilities();
 
   return gpu::ContextResult::kSuccess;
