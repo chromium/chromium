@@ -77718,6 +77718,19 @@
        ]
       ]
      },
+     "grid-position-area-basic.html": [
+      "b8e336b16f151082a2ab3d43660a77d86e50d299",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/grid-position-area-basic-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "inherit-height-from-fallback.html": [
       "a1179c62ed04d671e9fdb5c43a270d066a13da38",
       [
@@ -149192,7 +149205,7 @@
           ]
          ],
          "column-dense-packing-002.html": [
-          "893d899e1695f77df37ead6bd54ae12083126982",
+          "17d34f5bcd5ec84b07fc4a2b25885bc4e7fe1b4c",
           [
            null,
            [
@@ -149231,7 +149244,7 @@
           ]
          ],
          "column-dense-packing-005.html": [
-          "edca00f74a30541a338d87db2bd6d4a0d9de6a3d",
+          "5a2a647ebe5e2bbe50ae8e03cd148b663c5d510a",
           [
            null,
            [
@@ -149270,7 +149283,7 @@
           ]
          ],
          "column-dense-packing-multi-span-002.html": [
-          "2f1fb0fb79deb6aa3c218acfdbe669a44a088b10",
+          "42fe11b6f27b7c245bdc36f7fccfdf9454268f3b",
           [
            null,
            [
@@ -149374,7 +149387,7 @@
           ]
          ],
          "row-dense-packing-002.html": [
-          "54327df59f9d08b2b7b25754275ac4914df383d6",
+          "c83a7a2b7fcbe03ddbedf681a2731c0a534db284",
           [
            null,
            [
@@ -149426,7 +149439,7 @@
           ]
          ],
          "row-dense-packing-multi-span-002.html": [
-          "48c135db3328366e30e33358fb5a4bbec9522bd2",
+          "7ea761f561cec93565a69749e4da6af0ff7b63ae",
           [
            null,
            [
@@ -295540,6 +295553,19 @@
        {}
       ]
      ],
+     "at-custom-media-basic.html": [
+      "949d964f0ba03800b9763676bfc8a37d7f04a1d3",
+      [
+       null,
+       [
+        [
+         "/css/reference/green.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "device-aspect-ratio-002.html": [
       "dd0f0a1b49b5a2f6848a901faf2feea3d3841052",
       [
@@ -352595,6 +352621,10 @@
        []
       ]
      },
+     "grid-position-area-basic-ref.html": [
+      "e937cd8b7ff836b8ae2a8dcefa778c175e26ec6f",
+      []
+     ],
      "no-anchor-anchor-center-ref.html": [
       "0dfdc0272ef2ac206b0f82d4d12a20da73068aa1",
       []
@@ -372334,7 +372364,7 @@
           []
          ],
          "column-dense-packing-002-ref.html": [
-          "d7ee1a8e6cddf9f4164ff6a904b920a358e79155",
+          "2a3a22498d9e3a101543789658d3cbafc143ba97",
           []
          ],
          "column-dense-packing-003-ref.html": [
@@ -372346,7 +372376,7 @@
           []
          ],
          "column-dense-packing-005-ref.html": [
-          "f819d8800c7f247cf98b5063fbef37ece55d42c2",
+          "1d2b9a105498523bcdebb09d902b53cc3446060b",
           []
          ],
          "column-dense-packing-006-ref.html": [
@@ -372358,7 +372388,7 @@
           []
          ],
          "column-dense-packing-multi-span-002-ref.html": [
-          "2593347e89aa9717b58fd2ba338bf7311f13744c",
+          "de16c9511bfc5e2fd92482a057ecbaf1ac5127d8",
           []
          ],
          "column-dense-packing-multi-span-003-ref.html": [
@@ -372390,7 +372420,7 @@
           []
          ],
          "row-dense-packing-002-ref.html": [
-          "34d62268205428dc39d9e2e06bcbf6ab2c60541d",
+          "3ae4675fe95d0c2db222f46c070de6b88b88be15",
           []
          ],
          "row-dense-packing-003-ref.html": [
@@ -372406,7 +372436,7 @@
           []
          ],
          "row-dense-packing-multi-span-002-ref.html": [
-          "7b09a2d70c44c7783aa52708d7ec431e40a90d97",
+          "b3244afcb4273907850136aba0e1783500fb10c5",
           []
          ],
          "row-dense-packing-multi-span-003-ref.html": [
@@ -495001,37 +495031,6 @@
        }
       ]
      ],
-     "language-model-create-sticky-user-activation.tentative.https.window.js": [
-      "66bf7669c7c410386bde0a1540a0f9647f8f0955",
-      [
-       "ai/language-model/language-model-create-sticky-user-activation.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "LanguageModel.create() User Activation Tests"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
      "language-model-create-user-activation.tentative.https.window.js": [
       "c37f0852f4108d85463d8082f56c87bfba7752cd",
       [
@@ -527900,7 +527899,7 @@
        ]
       ],
       "color-computed-color-mix-function.html": [
-       "a20852473784fc1ff47ddad11df43c0ac54b41fa",
+       "7ded5de5377d4544144cf1d3709eaf1f1ae7b5c1",
        [
         null,
         {}
