@@ -57,4 +57,7 @@ extern NSString* const kPasswordSettingsChangePinDescriptionId;
 // Accessibility ID of automatic passkey upgrade toggle.
 extern NSString* const kPasswordSettingsAutomaticPasskeyUpgradeToggleId;
 
+// Accessibility ID of export credentials button.
+extern NSString* const kPasswordSettingsCredentialExportButtonId;
+
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSTANTS_H_

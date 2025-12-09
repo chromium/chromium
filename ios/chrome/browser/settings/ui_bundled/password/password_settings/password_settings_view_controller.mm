@@ -617,6 +617,8 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
     }
   }
   exportPasswordsItem.accessibilityTraits = UIAccessibilityTraitButton;
+  exportPasswordsItem.accessibilityIdentifier =
+      kPasswordSettingsCredentialExportButtonId;
   return exportPasswordsItem;
 }
 
