@@ -17,7 +17,11 @@ namespace {
 // trailing label (25).
 constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
-constexpr CGFloat kLabelVerticalSpacing = 5;
+// Spacing between the different labels, vertically.
+constexpr CGFloat kLabelVerticalSpacing = 4;
+
+// Spacing between the different labels, horizontally.
+constexpr CGFloat kLabelHorizontalSpacing = 8;
 
 // The margin for the trailing edge of the content view, when there is an
 // accessory view in the cell.
@@ -435,6 +439,7 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
 - (UIStackView*)createAllTextStack {
   UIStackView* stack = [[UIStackView alloc] init];
   stack.translatesAutoresizingMaskIntoConstraints = NO;
+  stack.spacing = kLabelHorizontalSpacing;
   return stack;
 }
 
