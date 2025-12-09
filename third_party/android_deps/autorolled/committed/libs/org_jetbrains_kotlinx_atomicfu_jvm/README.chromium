@@ -1,7 +1,7 @@
 Name: atomicfu
 Short Name: atomicfu-jvm
-URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/atomicfu-jvm/0.23.2/atomicfu-jvm-0.23.2.jar
-Version: 0.23.2
+URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/atomicfu-jvm/0.30.0-beta/atomicfu-jvm-0.30.0-beta.jar
+Version: 0.30.0-beta
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

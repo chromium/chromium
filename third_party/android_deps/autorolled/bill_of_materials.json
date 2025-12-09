@@ -212,12 +212,12 @@
     {
         "name": "runtime-annotation",
         "group": "androidx.compose.runtime",
-        "version": "1.11.0-SNAPSHOT"
+        "version": "1.11.0-alpha01"
     },
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.11.0-SNAPSHOT"
+        "version": "1.11.0-alpha01"
     },
     {
         "name": "runtime-retain",
@@ -417,62 +417,62 @@
     {
         "name": "datastore",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-core-okio",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-core-okio-jvm",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-preferences",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-preferences-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-preferences-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-preferences-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-preferences-external-protobuf",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "datastore-preferences-proto",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha01"
+        "version": "1.3.0-alpha02"
     },
     {
         "name": "documentfile",
@@ -507,7 +507,7 @@
     {
         "name": "exifinterface",
         "group": "androidx.exifinterface",
-        "version": "1.4.1"
+        "version": "1.4.2"
     },
     {
         "name": "fragment",
@@ -957,22 +957,22 @@
     {
         "name": "sqlite",
         "group": "androidx.sqlite",
-        "version": "2.6.2"
+        "version": "2.7.0-SNAPSHOT"
     },
     {
         "name": "sqlite-android",
         "group": "androidx.sqlite",
-        "version": "2.6.2"
+        "version": "2.7.0-SNAPSHOT"
     },
     {
         "name": "sqlite-framework",
         "group": "androidx.sqlite",
-        "version": "2.6.2"
+        "version": "2.7.0-SNAPSHOT"
     },
     {
         "name": "sqlite-framework-android",
         "group": "androidx.sqlite",
-        "version": "2.6.2"
+        "version": "2.7.0-SNAPSHOT"
     },
     {
         "name": "startup-runtime",
@@ -982,7 +982,7 @@
     {
         "name": "swiperefreshlayout",
         "group": "androidx.swiperefreshlayout",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0"
     },
     {
         "name": "espresso-contrib",
@@ -1027,12 +1027,12 @@
     {
         "name": "uiautomator-shell",
         "group": "androidx.test.uiautomator",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "2.4.0-SNAPSHOT"
     },
     {
         "name": "uiautomator-shell-android",
         "group": "androidx.test.uiautomator",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "2.4.0-SNAPSHOT"
     },
     {
         "name": "annotation",
@@ -1092,7 +1092,7 @@
     {
         "name": "transition",
         "group": "androidx.transition",
-        "version": "1.7.0-alpha01"
+        "version": "1.7.0-beta01"
     },
     {
         "name": "tvprovider",
@@ -1382,7 +1382,7 @@
     {
         "name": "impress",
         "group": "com.google.ar",
-        "version": "0.0.8"
+        "version": "0.0.9"
     },
     {
         "name": "auto-service-annotations",
@@ -1497,7 +1497,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.33.1"
+        "version": "4.33.2"
     },
     {
         "name": "protobuf-lite",
@@ -1845,9 +1845,14 @@
         "version": "1.8.21"
     },
     {
+        "name": "atomicfu",
+        "group": "org.jetbrains.kotlinx",
+        "version": "0.28.0"
+    },
+    {
         "name": "atomicfu-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "0.23.2"
+        "version": "0.30.0-beta"
     },
     {
         "name": "kotlinx-coroutines-android",
