@@ -4,10 +4,13 @@
 
 #include "ash/system/hotspot/hotspot_icon.h"
 
+#include <optional>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash::hotspot_icon {
@@ -21,6 +24,19 @@ class HotspotIconTest : public AshTestBase {
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
   ~HotspotIconTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  }
+  void TearDown() override {
+    normal_duration_.reset();
+    AshTestBase::TearDown();
+  }
+
+ private:
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(HotspotIconTest, HotspotEnabledIcon) {

@@ -59,7 +59,7 @@ class TestAnimation : public LinearAnimation {
 
   void AnimateToState(double state) override {}
 
-  using LinearAnimation::duration;
+  using LinearAnimation::GetDuration;
 };
 
 }  // namespace
@@ -163,7 +163,7 @@ TEST_F(AnimationContainerTest, AnimationsRunAcrossRunnerChange) {
   animation.SetContainer(container.get());
 
   animation.Start();
-  test_api.IncrementTime(animation.duration() / 2);
+  test_api.IncrementTime(animation.GetDuration() / 2);
   EXPECT_FALSE(delegate.finished());
 
   container->SetAnimationRunner(nullptr);
@@ -172,7 +172,7 @@ TEST_F(AnimationContainerTest, AnimationsRunAcrossRunnerChange) {
   ASSERT_FALSE(runner->step_is_null_for_testing());
   EXPECT_FALSE(delegate.finished());
 
-  test_api.IncrementTime(animation.duration() / 2);
+  test_api.IncrementTime(animation.GetDuration() / 2);
   EXPECT_TRUE(delegate.finished());
 }
 

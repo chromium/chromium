@@ -69,6 +69,8 @@ component("animation") {
     ]
   }
 
+  public_deps = [ "//ui/gfx:animation_scale" ]
+
   deps = [
     "//base",
     "//skia",

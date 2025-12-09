@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -751,6 +752,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
 #endif
 TEST_F(PrivacyIndicatorsTrayItemViewTest,
        MAYBE_HidingDelayTimerEnabledWithMultipleAppsAccess) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
   UpdateCameraAndMicrophoneUsage(

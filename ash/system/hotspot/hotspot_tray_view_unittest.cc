@@ -25,6 +25,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
@@ -94,6 +95,9 @@ class HotspotTrayViewTest : public AshTestBase {
 };
 
 TEST_F(HotspotTrayViewTest, HotspotIconImage) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
   SetHotspotStateAndClientCount(HotspotState::kDisabled, 0);
   EXPECT_TRUE(AreImagesEqual(
       hotspot_tray_view_->image_view()->GetImage(),

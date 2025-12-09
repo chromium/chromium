@@ -6,6 +6,7 @@
 
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -13,6 +14,9 @@ namespace {
 using OverlayControlsFadeAnimationTest = ChromeViewsTestBase;
 
 TEST_F(OverlayControlsFadeAnimationTest, AnimatesViewLayerOpacity) {
+  gfx::ScopedAnimationDurationScaleMode normal(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
   auto view1 = std::make_unique<views::View>();
   view1->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   ASSERT_EQ(1.0, view1->layer()->opacity());
