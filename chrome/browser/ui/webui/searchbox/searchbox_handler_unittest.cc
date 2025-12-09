@@ -484,3 +484,9 @@ TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
       searchbox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion,
       selection->state);
 }
+
+TEST_F(WebuiOmniboxHandlerTest, OnShow) {
+  EXPECT_CALL(page_, OnShow());
+  handler_->OnShow();
+  page_.FlushForTesting();
+}

@@ -236,6 +236,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.processFiles_(files);
   }
 
+  blurEntrypoint() {
+    this.$.contextEntrypoint.blur();
+  }
+
   setContextFiles(files: ContextualUpload[]) {
     for (const file of files) {
       if ('tabId' in file) {
