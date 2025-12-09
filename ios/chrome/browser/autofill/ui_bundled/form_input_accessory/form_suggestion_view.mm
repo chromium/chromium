@@ -322,8 +322,22 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
 
   // Check if the view is in the current hierarchy before performing layouts.
   if (self.stackView.window) {
+    // Because [self.stackView addArrangedSubview:] is called from
+    // createAndInsertArrangedSubviews just before this function is called, it
+    // is possible that a temporary condition (like a zero-height constraint
+    // resolving) may cause the UIStackView to internally decide to remove an
+    // arranged subview from its arrangedSubviews array. Because we use fast
+    // enumeration (for(... in ...)) of self.stackView.arrangedSubviews below,
+    // we have to make a snapshot of the subviews to avoid issues. The
+    // documentation mentions that: "You cannot mutate a collection during fast
+    // enumeration, even if the collection is mutable. If you attempt to add or
+    // remove a collected object from within the loop, you’ll generate a runtime
+    // exception." See:
+    // https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/FoundationTypesandCollections/FoundationTypesandCollections.html#//apple_ref/doc/uid/TP40011210-CH7-SW30
+    NSArray<UIView*>* subviewsSnapshot = [self.stackView.arrangedSubviews copy];
+
     // Make sure all subview layouts are done before computing frame offsets.
-    for (UIView* view in self.stackView.arrangedSubviews) {
+    for (UIView* view in subviewsSnapshot) {
       [view layoutIfNeeded];
     }
   }
