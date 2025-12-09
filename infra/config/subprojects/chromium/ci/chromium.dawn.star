@@ -2700,6 +2700,9 @@ ci.thin_tester(
         ],
         mixins = [
             "win10_intel_uhd_770_stable",
+            # TODO(b/400462723): Remove the limited_capacity_bot mixin once the
+            # issue with machines going offline is resolved.
+            "limited_capacity_bot",
         ],
         per_test_modifications = {
             "gl_tests_passthrough": targets.mixin(

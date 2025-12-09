@@ -24,6 +24,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -53,6 +54,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -83,6 +85,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -112,6 +115,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -140,6 +144,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -169,6 +174,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -198,6 +204,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -226,6 +233,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -257,6 +265,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -288,6 +297,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -312,6 +322,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
@@ -344,6 +355,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -376,6 +388,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -413,6 +426,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
@@ -452,6 +466,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
@@ -493,6 +508,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
@@ -532,6 +548,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
@@ -570,6 +587,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
@@ -607,6 +625,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
@@ -646,6 +665,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
@@ -679,6 +699,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -711,6 +732,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "io_timeout": 1800,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -749,6 +771,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
@@ -790,6 +813,7 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
+          "expiration": 21600,
           "hard_timeout": 1800,
           "idempotent": false,
           "io_timeout": 1800,
