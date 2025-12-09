@@ -555,7 +555,9 @@ CGFloat CompactButtonHorizontalPadding() {
       if (_undoActive) {
         _undoButton.hidden = NO;
       } else {
-        _editButton.hidden = NO;
+        BOOL overflowEnabled =
+            base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu);
+        _editButton.hidden = overflowEnabled;
       }
       _smallNewTabButton.hidden = NO;
       _doneButton.hidden = NO;

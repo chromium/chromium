@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_container_view_controller.h"
@@ -188,6 +189,8 @@ constexpr CGFloat kFacePileAvatarSize = 16;
                                   profile)];
   _mediator.consumer = gridViewController;
   _mediator.regularDelegate = self;
+  _mediator.quickDeleteCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QuickDeleteCommands);
 
   gridViewController.dragDropHandler = _mediator;
   gridViewController.mutator = _mediator;

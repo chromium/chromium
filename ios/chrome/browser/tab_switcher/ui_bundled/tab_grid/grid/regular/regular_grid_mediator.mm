@@ -25,7 +25,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_consumer.h"
@@ -129,7 +132,35 @@ using ScopedTabGroupSyncObservation =
 // TODO(crbug.com/40273478): Refactor the grid commands to have the same
 // function name to close all.
 - (void)closeAllItems {
-  NOTREACHED() << "Regular tabs should be saved before close all.";
+  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
+    [self.inactiveTabsGridCommands closeAllItems];
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
+
+    // Save tabs groups before closing.
+    const int tabGroupCount = self.webStateList->GetGroups().size();
+    if (_tabGroupSyncService) {
+      for (const TabGroup* tab_group : self.webStateList->GetGroups()) {
+        tab_groups::TabGroupId local_id = tab_group->tab_group_id();
+        std::optional<tab_groups::SavedTabGroup> saved_group =
+            _tabGroupSyncService->GetGroup(local_id);
+        if (saved_group) {
+          _tabGroupSyncService->RemoveLocalTabGroupMapping(
+              local_id, tab_groups::ClosingSource::kCloseAllTabs);
+        }
+      }
+    }
+
+    const int closedTabsCount =
+        self.webStateList->count() - self.webStateList->pinned_tabs_count();
+    RecordTabGridCloseTabsCount(closedTabsCount);
+    CloseAllNonPinnedWebStates(*self.webStateList,
+                               WebStateList::ClosingReason::kUserAction);
+    SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
+    [self showTabGroupSnackbarOrIPH:tabGroupCount];
+  } else {
+    NOTREACHED() << "Regular tabs should be saved before close all.";
+  }
 }
 
 - (void)saveAndCloseAllItems {
@@ -189,6 +220,10 @@ using ScopedTabGroupSyncObservation =
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
+  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
+    [self.regularDelegate showCloseAllConfirmationFromSourceView:sender];
+    return;
+  }
   // TODO(crbug.com/40273478): Clean this in order to have "Close All" and
   // "Undo" separated actions. This was saved as a stack: first save the
   // inactive tabs, then the active tabs. So undo in the reverse order: first
@@ -202,9 +237,9 @@ using ScopedTabGroupSyncObservation =
     [self saveAndCloseAllItems];
     [self.consumer didCloseAll];
   }
-  // This is needed because configure button is called (web state list observer
-  // in base grid mediator) when regular tabs are modified but not when inactive
-  // tabs are modified.
+  // This is needed because configure button is called (web state list
+  // observer in base grid mediator) when regular tabs are modified but not
+  // when inactive tabs are modified.
   [self configureToolbarsButtons];
 }
 
@@ -239,6 +274,11 @@ using ScopedTabGroupSyncObservation =
   id<TabGridCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), TabGridCommands);
   [handler showPageActionMenuFromTabGrid];
+}
+
+- (void)deleteBrowsingDataButtonTapped:(id)sender {
+  [self.quickDeleteCommandHandler
+      showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
 }
 
 #pragma mark - Parent's function
@@ -277,6 +317,7 @@ using ScopedTabGroupSyncObservation =
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc]
           initWithPage:TabGridPageRegularTabs];
+  toolbarsConfiguration.overflowMenuButton = YES;
 
   if (self.modeHolder.mode == TabGridMode::kSelection) {
     [self configureButtonsInSelectionMode:toolbarsConfiguration];

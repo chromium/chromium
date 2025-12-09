@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
@@ -95,6 +96,16 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 @end
 
 @implementation PinnedTabsGenericConsistencyTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testCloseAllRegularThenPinnedTabs)] ||
+      [self isRunningTest:@selector(testCloseAllPinnedThenRegularTabs)]) {
+    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
+  }
+
+  return config;
+}
 
 // Waits for the animation (context modal disappearance) to complete.
 - (void)waitForAnimationCompletionWithMacther:(id<GREYMatcher>)elementMatcher {
@@ -329,8 +340,9 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
       assertWithMatcher:grey_enabled()];
 
-  // Verify "Edit" button is enabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_enabled()];
 
   // Long tap on the first regular tab.
@@ -347,11 +359,10 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
       assertWithMatcher:grey_enabled()];
 
-  // Verify "Edit" button is disabled.
-  [self
-      waitForAnimationCompletionWithMacther:grey_allOf(
-                                                GetMatcherForEditButton(),
-                                                grey_not(grey_enabled()), nil)];
+  // Verify Overflow Menu button is enabled.
+  [self waitForAnimationCompletionWithMacther:
+            grey_allOf(chrome_test_util::TabGridOverflowMenuButton(),
+                       grey_enabled(), nil)];
 
   [self waitForAnimationCompletionWithMacther:GetMatcherForPinnedCellWithTitle(
                                                   @"PinnedTab0")];
@@ -387,9 +398,10 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
                                                 GetMatcherForDoneButton(),
                                                 grey_not(grey_enabled()), nil)];
 
-  // Verify "Edit" button is disabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
 // Tests closing all the pinned tabs and then all the regular tabs.
@@ -413,8 +425,9 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
       assertWithMatcher:grey_enabled()];
 
-  // Verify "Edit" button is enabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_enabled()];
 
   // Long tap on the first pinned tab.
@@ -446,8 +459,9 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
       assertWithMatcher:grey_enabled()];
 
-  // Verify "Edit" button is enabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_enabled()];
 
   [self waitForAnimationCompletionWithMacther:GetMatcherForRegularCellWithTitle(
@@ -469,9 +483,10 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
                                                 GetMatcherForDoneButton(),
                                                 grey_not(grey_enabled()), nil)];
 
-  // Verify "Edit" button is disabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
 // TODO(crbug.com/441313129): This test is disabled because of its flakiness.

@@ -53,6 +53,11 @@ using testing::Return;
   return [[FakeFacePileProvider alloc] init];
 }
 
+- (void)showCloseAllConfirmationFromSourceView:(UIView*)sourceView {
+  // This method is not being tested in this test suite and it is only included
+  // to satisfy the FakeRegularGridMediatorDelegate requirements.
+}
+
 @end
 
 @interface TestRegularGridMediator

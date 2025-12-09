@@ -43,6 +43,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 using collaboration::FlowType;
 using collaboration::IOSCollaborationControllerDelegate;
@@ -146,6 +147,52 @@ using collaboration::CollaborationControllerDelegate;
     return _tabGroupCoordinator.viewController.gridViewController.view;
   }
   return nil;
+}
+
+- (void)showCloseAllConfirmationFromSourceView:(UIView*)sourceView {
+  // Configure the action sheet to ask for confirmation to close tabs and tab
+  // groups.
+  NSString* confirmationMessage = l10n_util::GetNSString(
+      IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_AND_GROUPS_ACTION_SHEET_MESSAGE);
+  UIAlertController* closeAllConfirmation = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_AND_GROUPS_ACTION_SHEET_TITLE)
+                       message:confirmationMessage
+                preferredStyle:UIAlertControllerStyleActionSheet];
+
+  closeAllConfirmation.popoverPresentationController.sourceView =
+      self.gridViewController.view;
+  closeAllConfirmation.popoverPresentationController.sourceRect =
+      [sourceView convertRect:sourceView.bounds
+                       toView:self.gridViewController.view];
+  closeAllConfirmation.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionUp;
+
+  __weak BaseGridCoordinator* weakSelf = self;
+
+  UIAlertAction* closeAllAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS)
+                style:UIAlertActionStyleDestructive
+              handler:^(UIAlertAction* action) {
+                [weakSelf closeAllTabsAndGroups];
+              }];
+
+  UIAlertAction* cancelCloseAllAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_APP_CANCEL)
+                               style:UIAlertActionStyleCancel
+                             handler:^(UIAlertAction* action){
+                             }];
+  [closeAllConfirmation addAction:closeAllAction];
+  [closeAllConfirmation addAction:cancelCloseAllAction];
+  [self.baseViewController presentViewController:closeAllConfirmation
+                                        animated:YES
+                                      completion:nil];
+}
+
+- (void)closeAllTabsAndGroups {
+  [self.mediator closeAllItems];
 }
 
 - (void)stopChildCoordinators {

@@ -58,6 +58,7 @@ using chrome_test_util::TabGridEditSelectAllButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridGroupCellWithName;
 using chrome_test_util::TabGridNewTabButton;
+using chrome_test_util::TabGridOverflowMenuButton;
 using chrome_test_util::TabGridSearchBar;
 using chrome_test_util::TabGridSearchTabsButton;
 using chrome_test_util::TabGridSelectTabsMenuButton;
@@ -255,12 +256,37 @@ UIViewController* TopPresentedViewController() {
   return topController;
 }
 
+// Taps the overflow menu button in the tab grid.
+void TapTabGridOverflowMenuButton() {
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
+      performAction:grey_tap()];
+}
+
 // Taps the edit button in the tab grid.
 void TapTabGridEditButton() {
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(TabGridEditButton(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  // Both the top toolbar and bottom toolbar "Edit" buttons are recognized so
+  // specify the toolbar depending on the device.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    id<GREYMatcher> topToolbar = grey_kindOfClassName(@"TabGridTopToolbar");
+    id<GREYMatcher> topToolbarEditButton =
+        grey_allOf(chrome_test_util::TabGridEditButton(),
+                   grey_ancestor(topToolbar), grey_sufficientlyVisible(), nil);
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(topToolbarEditButton,
+                                            grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  } else {
+    id<GREYMatcher> bottomToolbar =
+        grey_kindOfClassName(@"TabGridBottomToolbar");
+    id<GREYMatcher> bottomToolbarEditButton = grey_allOf(
+        chrome_test_util::TabGridEditButton(), grey_ancestor(bottomToolbar),
+        grey_sufficientlyVisible(), nil);
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(bottomToolbarEditButton,
+                                            grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  }
 }
 
 }  // namespace
@@ -289,6 +315,11 @@ void TapTabGridEditButton() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
+  if ([self isRunningTest:@selector(testCloseAllAndUndo)]) {
+    config.features_disabled.push_back(kTabSwitcherOverflowMenu);
+  } else {
+    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
+  }
   return config;
 }
 
@@ -957,7 +988,7 @@ void TapTabGridEditButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the selection mode.
-  TapTabGridEditButton();
+  TapTabGridOverflowMenuButton();
   [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
 
@@ -1002,7 +1033,7 @@ void TapTabGridEditButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the selection mode.
-  TapTabGridEditButton();
+  TapTabGridOverflowMenuButton();
   [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
 
@@ -1056,7 +1087,7 @@ void TapTabGridEditButton() {
   CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Enter the selection mode.
-  TapTabGridEditButton();
+  TapTabGridOverflowMenuButton();
   [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
 
@@ -1353,7 +1384,7 @@ void TapTabGridEditButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(TabGridEditButton(),
+      selectElementWithMatcher:grey_allOf(TabGridOverflowMenuButton(),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
@@ -1672,8 +1703,8 @@ void TapTabGridEditButton() {
 
   CreateDefaultFirstGroupFromTabCellAtIndex(0);
 
-  // Tap on "Edit" then "Select tabs".
-  TapTabGridEditButton();
+  // Tap on the Overflow Menu then "Select tabs".
+  TapTabGridOverflowMenuButton();
   [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
 

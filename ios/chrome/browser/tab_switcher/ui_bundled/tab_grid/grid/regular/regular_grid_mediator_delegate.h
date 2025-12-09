@@ -14,6 +14,9 @@
 - (id<FacePileProviding>)facePileProviderForGroupID:(const std::string&)groupID
                                          groupColor:(UIColor*)groupColor;
 
+// Displays an action sheet to confirm closing all regular tabs.
+- (void)showCloseAllConfirmationFromSourceView:(UIView*)sourceView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_REGULAR_REGULAR_GRID_MEDIATOR_DELEGATE_H_

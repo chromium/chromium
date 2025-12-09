@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -127,6 +128,12 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(ApplicationCommands)];
+
+    // Set up QuickDeleteCommands mock.
+    id mock_quick_delete_handler_ =
+        OCMStrictProtocolMock(@protocol(QuickDeleteCommands));
+    [dispatcher startDispatchingToTarget:mock_quick_delete_handler_
+                             forProtocol:@protocol(QuickDeleteCommands)];
 
     AddAgentsToBrowser(browser_.get());
 

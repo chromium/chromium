@@ -23,6 +23,7 @@
 @property(nonatomic) BOOL closeAllButton;
 @property(nonatomic) BOOL selectTabsButton;
 @property(nonatomic) BOOL undoButton;
+@property(nonatomic) BOOL overflowMenuButton;
 
 // YES if the button should be enabled. If NO, the button is grayed out.
 @property(nonatomic) BOOL doneButton;

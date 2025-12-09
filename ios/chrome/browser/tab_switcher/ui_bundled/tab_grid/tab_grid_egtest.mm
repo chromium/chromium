@@ -119,8 +119,20 @@ id<GREYMatcher> SelectAllButton() {
 }
 
 id<GREYMatcher> VisibleTabGridEditButton() {
-  return grey_allOf(chrome_test_util::TabGridEditButton(),
-                    grey_sufficientlyVisible(), nil);
+  // Both the top toolbar and bottom toolbar "Edit" buttons are recognized so
+  // specify the top or bottom toolbar "Edit" button depending on the device.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    id<GREYMatcher> topToolbar = grey_kindOfClassName(@"TabGridTopToolbar");
+    return grey_allOf(chrome_test_util::TabGridEditButton(),
+                      grey_ancestor(topToolbar), grey_sufficientlyVisible(),
+                      nil);
+  } else {
+    id<GREYMatcher> bottomToolbar =
+        grey_kindOfClassName(@"TabGridBottomToolbar");
+    return grey_allOf(chrome_test_util::TabGridEditButton(),
+                      grey_ancestor(bottomToolbar), grey_sufficientlyVisible(),
+                      nil);
+  }
 }
 
 // Returns a matcher for the scrim view on the tab search.
@@ -225,9 +237,16 @@ void PerformTabGridSearch(NSString* text) {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 }
 
-// Taps the edit button in the tab grid.
+// Taps the edit button in the bottom toolbar on the tab grid.
 void TapVisibleTabGridEditButton() {
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      performAction:grey_tap()];
+}
+
+// Taps the overflow menu button in the tab grid.
+void TapTabGridOverflowMenuButton() {
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       performAction:grey_tap()];
 }
 
@@ -277,6 +296,19 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector(testDragAndDropCreatesGroup)]) {
     config.features_enabled.push_back(kTabGridDragAndDrop);
+  }
+
+  if ([self isRunningTest:@selector(testCloseAllAndUndoCloseAll)] ||
+      [self isRunningTest:@selector
+            (testCloseAllAndUndoCloseAllWithInactiveTabs)] ||
+      [self isRunningTest:@selector
+            (testCloseAllAndUndoCloseAllForIncognitoGrid)] ||
+      [self isRunningTest:@selector
+            (testUndoCloseAllNotAvailableAfterNewTabCreation)] ||
+      [self isRunningTest:@selector(testTabGroupsDoneButtonAndRegularTabs)]) {
+    config.features_disabled.push_back(kTabSwitcherOverflowMenu);
+  } else {
+    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
   }
 
   return config;
@@ -384,12 +416,23 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                   @"Expected that the \"Close All Tabs\" button should not "
                   @"close tabs in other pages.");
 
-  // Ensure undo button is visible and edit button is not visible.
+  // Ensure undo button is visible and edit button is not enabled.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
-      assertWithMatcher:grey_nil()];
+
+  // The Top and Bottom toolbar treat the Edit button differently. Assert the
+  // correct behavior depending on which toolbar the Edit button button is on.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+        assertWithMatcher:grey_allOf(grey_notNil(),
+                                     grey_accessibilityTrait(
+                                         UIAccessibilityTraitNotEnabled),
+                                     nil)];
+  } else {
+    [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+        assertWithMatcher:grey_nil()];
+  }
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridRegularTabsEmptyStateView()]
@@ -429,7 +472,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Close all tabs.
-  TapVisibleTabGridEditButton();
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridEditMenuCloseAllButton()]
       performAction:grey_tap()];
@@ -592,12 +636,16 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey waitForMainTabCount:2];
   [ChromeEarlGrey waitForIncognitoTabCount:0];
 
-  // Ensure undo button is not visible and edit button is visible
+  // Ensure undo button is not visible.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       assertWithMatcher:grey_nil()];
+  // Ensure the edit button not interactable.
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_allOf(grey_notNil(),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled),
+                                   nil)];
 }
 
 // Tests that the Undo button is no longer available after tapping Close All,
@@ -716,7 +764,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 - (void)testIncognitoButtons {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_interactable()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
@@ -1077,7 +1126,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   GREYWaitForAppToIdle(@"App failed to idle");
 
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
-  TapVisibleTabGridEditButton();
+  TapTabGridOverflowMenuButton();
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
@@ -1315,7 +1364,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [ChromeEarlGreyUI openTabGrid];
 
-  TapVisibleTabGridEditButton();
+  TapTabGridOverflowMenuButton();
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
@@ -1346,7 +1395,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_notNil()];
 
   // Verify edit mode is exited.
-  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -1366,7 +1416,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [ChromeEarlGreyUI openTabGrid];
 
-  TapVisibleTabGridEditButton();
+  TapTabGridOverflowMenuButton();
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
@@ -1390,7 +1440,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
 
   // Verify edit mode is exited.
-  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -1410,7 +1461,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [ChromeEarlGreyUI openTabGrid];
 
-  TapVisibleTabGridEditButton();
+  TapTabGridOverflowMenuButton();
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
@@ -1466,7 +1517,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [ChromeEarlGreyUI openTabGrid];
 
-  TapVisibleTabGridEditButton();
+  TapTabGridOverflowMenuButton();
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
@@ -1578,7 +1629,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [ChromeEarlGreyUI openTabGrid];
 
-  TapVisibleTabGridEditButton();
+  TapTabGridOverflowMenuButton();
 
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
@@ -2677,6 +2728,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
+  if (![self isRunningTest:@selector
+             (testCloseAllAndUndoCloseAllWithInactiveTabs)]) {
+    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
+  }
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 

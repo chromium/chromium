@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_metrics.h"
@@ -57,6 +58,9 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kEnableNTPViewHierarchyRepair);
+  if ([self isRunningTest:@selector(testIncognitoTabsDestroyedOnSignin)]) {
+    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
+  }
   return config;
 }
 
@@ -291,10 +295,10 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
   [[EarlGrey selectElementWithMatcher:SupervisedIncognitoMessage()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Check that the edit button is disabled.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(chrome_test_util::TabGridEditButton(),
-                                          grey_sufficientlyVisible(), nil)]
+  // Check that the overflow menu button is disabled.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::TabGridOverflowMenuButton(),
+                            grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_not(grey_enabled())];
 }
 

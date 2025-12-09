@@ -239,6 +239,8 @@ chromium-metrics-reviews@google.com.
   <int value="69" label="Pin the site to most visited sites section"/>
   <int value="70" label="Unpin the site from most visited sites section"/>
   <int value="71" label="Edit on pinned site on most visited sites section"/>
+  <int value="72" label="Delete browsing data"/>
+  <int value="73" label="Create empty tab group"/>
 </enum>
 
 <enum name="IOSMenuScenario">

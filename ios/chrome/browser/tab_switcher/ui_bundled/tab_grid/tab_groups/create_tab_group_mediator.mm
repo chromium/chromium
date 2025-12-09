@@ -229,7 +229,8 @@
       // Insert a new tab before creating the group to prevent empty groups.
       id<ApplicationCommands> dispatcher = HandlerForProtocol(
           _browser->GetCommandDispatcher(), ApplicationCommands);
-      OpenNewTabCommand* command = [OpenNewTabCommand command];
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithIncognito:_browser->GetProfile()->IsOffTheRecord()];
       [dispatcher openURLInNewTab:command];
 
       web::WebState* activeWebState = _webStateList->GetActiveWebState();

@@ -16,8 +16,10 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_entrypoint_view.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -68,6 +70,7 @@ CGFloat HorizontalMargin() {
   UIButton* _doneButton;
   UIButton* _undoButton;
   UIButton* _editButton;
+  UIButton* _overflowMenuButton;
   // Search mode
   UISearchBar* _searchBar;
   UIButton* _cancelSearchButton;
@@ -81,10 +84,15 @@ CGFloat HorizontalMargin() {
   // Constraints for the positioning of the search button.
   NSLayoutConstraint* _pageActionMenuEntrypointFirstConstraint;
   NSLayoutConstraint* _pageActionMenuEntrypointBeforeDoneConstraint;
+  NSLayoutConstraint* _searchAfterOverflowConstraint;
+  // Constraints for the positioning of the overflow menu button.
+  NSLayoutConstraint* _overflowMenuConstraint;
+  NSLayoutConstraint* _overflowMenuBeforeDoneConstraint;
 
   NSArray<UIView*>* _allViews;
 
   BOOL _undoActive;
+  BOOL _selectTabsActionEnabled;
 
   BOOL _scrolledToEdge;
   TabGridToolbarBackground* _backgroundView;
@@ -122,6 +130,7 @@ CGFloat HorizontalMargin() {
     return;
   }
   _page = page;
+  _overflowMenuButton.menu = [self createOverflowMenu];
   [self setButtonsForTraitCollection:self.traitCollection];
 }
 
@@ -172,6 +181,11 @@ CGFloat HorizontalMargin() {
 
 - (void)setSearchButtonEnabled:(BOOL)enabled {
   _searchButton.enabled = enabled;
+}
+
+- (void)setSelectTabsActionEnabled:(BOOL)enabled {
+  _selectTabsActionEnabled = enabled;
+  _overflowMenuButton.menu = [self createOverflowMenu];
 }
 
 - (void)setUndoButtonEnabled:(BOOL)enabled {
@@ -280,6 +294,12 @@ CGFloat HorizontalMargin() {
   _pageActionMenuEntrypointView.hidden = !visible;
 }
 
+#pragma mark Overflow Menu
+
+- (void)setOverflowMenuEnabled:(BOOL)enabled {
+  _overflowMenuButton.enabled = enabled;
+}
+
 #pragma mark Search Bar
 
 - (void)setSearchBarText:(NSString*)text {
@@ -378,9 +398,15 @@ CGFloat HorizontalMargin() {
   _searchFirstConstraint.active = NO;
   _searchAfterEditConstraint.active = NO;
   _searchAfterUndoConstraint.active = NO;
-
   _pageActionMenuEntrypointFirstConstraint.active = NO;
   _pageActionMenuEntrypointBeforeDoneConstraint.active = NO;
+  _searchAfterOverflowConstraint.active = NO;
+  _overflowMenuConstraint.active = NO;
+  _overflowMenuBeforeDoneConstraint.active = NO;
+
+  BOOL overflowEnabled = base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu);
+  _overflowMenuButton.hidden = !overflowEnabled;
+  _editButton.hidden = overflowEnabled;
 
   if ([self shouldUseCompactLayout:traitCollection]) {
     switch (_mode) {
@@ -389,6 +415,11 @@ CGFloat HorizontalMargin() {
         _pageActionMenuEntrypointFirstConstraint.active = YES;
         _searchButton.hidden = NO;
         _pageControl.hidden = NO;
+        if (self.page == TabGridPageTabGroups) {
+          _overflowMenuButton.hidden = YES;
+        } else {
+          _overflowMenuConstraint.active = YES;
+        }
         break;
       case TabGridMode::kSearch:
         _searchRegularWidthConstraint.active = NO;
@@ -399,17 +430,27 @@ CGFloat HorizontalMargin() {
         _selectAllButton.hidden = NO;
         _selectedTabsLabel.hidden = NO;
         _doneButton.hidden = NO;
+        _overflowMenuButton.hidden = YES;
         break;
     }
   } else {
     switch (_mode) {
       case TabGridMode::kNormal: {
         if (_undoActive) {
+          CHECK(!overflowEnabled);
           _undoButton.hidden = NO;
           _searchAfterUndoConstraint.active = YES;
         } else {
-          _editButton.hidden = NO;
-          _searchAfterEditConstraint.active = YES;
+          if (self.page == TabGridPageTabGroups) {
+            _overflowMenuButton.hidden = YES;
+          } else {
+            if (overflowEnabled) {
+              _overflowMenuBeforeDoneConstraint.active = YES;
+            } else {
+              _editButton.hidden = NO;
+              _searchAfterEditConstraint.active = YES;
+            }
+          }
         }
         _pageActionMenuEntrypointBeforeDoneConstraint.active = YES;
         _searchButton.hidden = NO;
@@ -426,6 +467,7 @@ CGFloat HorizontalMargin() {
         _selectAllButton.hidden = NO;
         _selectedTabsLabel.hidden = NO;
         _doneButton.hidden = NO;
+        _overflowMenuButton.hidden = YES;
         break;
     }
   }
@@ -481,6 +523,16 @@ CGFloat HorizontalMargin() {
   _editButton.showsMenuAsPrimaryAction = YES;
   _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
 
+  UIImage* overflowMenuImage =
+      DefaultSymbolWithPointSize(kMenuSymbol, kSymbolSearchImagePointSize);
+  _overflowMenuButton = [self createButtonWithImage:overflowMenuImage
+                                              title:nil
+                                     targetSelector:nil];
+  _overflowMenuButton.showsMenuAsPrimaryAction = YES;
+  _overflowMenuButton.accessibilityIdentifier =
+      kTabGridOverflowMenuButtonIdentifier;
+  _overflowMenuButton.menu = [self createOverflowMenu];
+
   _selectAllButton =
       [self createButtonWithImage:nil
                             title:nil
@@ -535,6 +587,52 @@ CGFloat HorizontalMargin() {
   [self setUpConstraintsForContainerView:containerView];
 }
 
+// Configures and returns the overflow menu. Returns `nil` if the
+// `kTabSwitcherOverflowMenu` feature is disabled.
+- (UIMenu*)createOverflowMenu {
+  UIMenu* menu = nil;
+  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
+    NSMutableArray<UIMenuElement*>* menuElements =
+        [[NSMutableArray alloc] init];
+
+    ActionFactory* actionFactory = [[ActionFactory alloc]
+        initWithScenario:kMenuScenarioHistogramTabGridEdit];
+    __weak __typeof(self) weakSelf = self;
+
+    [menuElements
+        addObject:[actionFactory actionToCreateEmptyTabGroupWithBlock:^{
+          [weakSelf.buttonsDelegate createNewTabGroupButtonTapped:nil];
+        }]];
+
+    // Only display the Select Tabs action if there are tabs.
+    if (_selectTabsActionEnabled) {
+      [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
+                      [weakSelf.buttonsDelegate selectTabsButtonTapped:nil];
+                    }]];
+    }
+
+    UIButton* currentOverflowMenuButton = _overflowMenuButton;
+    [menuElements addObject:[actionFactory actionToCloseAllTabsWithBlock:^{
+                    TabGridTopToolbar* strongSelf = weakSelf;
+                    if (!strongSelf) {
+                      return;
+                    }
+                    [strongSelf.buttonsDelegate
+                        closeAllButtonTapped:currentOverflowMenuButton];
+                  }]];
+
+    if (_page == TabGridPageRegularTabs) {
+      [menuElements
+          addObject:[actionFactory actionToDeleteBrowsingDataWithBlock:^{
+            [weakSelf.buttonsDelegate deleteBrowsingDataButtonTapped:nil];
+          }]];
+    }
+
+    menu = [UIMenu menuWithChildren:menuElements];
+  }
+  return menu;
+}
+
 // Adds the different views to the view hierarchy and setup their constraints.
 - (void)setUpConstraintsForContainerView:(UIView*)containerView {
   [self addSubview:containerView];
@@ -560,9 +658,9 @@ CGFloat HorizontalMargin() {
   ]];
 
   _allViews = @[
-    _selectAllButton, _editButton, _undoButton, _searchButton, _pageControl,
-    _selectedTabsLabel, _searchBar, _cancelSearchButton, _doneButton,
-    _pageActionMenuEntrypointView
+    _selectAllButton, _editButton, _overflowMenuButton, _undoButton,
+    _searchButton, _pageControl, _selectedTabsLabel, _searchBar,
+    _cancelSearchButton, _doneButton, _pageActionMenuEntrypointView
   ];
 
   for (UIView* view in _allViews) {
@@ -598,6 +696,13 @@ CGFloat HorizontalMargin() {
           constraintEqualToAnchor:_doneButton.leadingAnchor
                          constant:-HorizontalMargin()];
 
+  _overflowMenuConstraint = [_overflowMenuButton.trailingAnchor
+      constraintEqualToAnchor:containerView.trailingAnchor
+                     constant:-HorizontalMargin()];
+  _overflowMenuBeforeDoneConstraint = [_overflowMenuButton.trailingAnchor
+      constraintEqualToAnchor:_doneButton.leadingAnchor
+                     constant:-HorizontalMargin()];
+
   NSLayoutConstraint* centeredLabelConstraint =
       [_selectedTabsLabel.centerXAnchor
           constraintEqualToAnchor:containerView.centerXAnchor];
@@ -605,7 +710,6 @@ CGFloat HorizontalMargin() {
 
   [NSLayoutConstraint activateConstraints:@[
     searchBarMaximumWidth,
-
     [_undoButton.leadingAnchor
         constraintEqualToAnchor:containerView.leadingAnchor
                        constant:HorizontalMargin()],
@@ -625,7 +729,6 @@ CGFloat HorizontalMargin() {
     [_selectedTabsLabel.trailingAnchor
         constraintLessThanOrEqualToAnchor:_doneButton.leadingAnchor
                                  constant:-HorizontalMargin()],
-
     [_doneButton.trailingAnchor
         constraintEqualToAnchor:containerView.trailingAnchor
                        constant:-HorizontalMargin()],

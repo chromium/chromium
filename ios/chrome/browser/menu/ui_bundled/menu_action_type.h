@@ -82,7 +82,9 @@ enum class MenuActionType {
   PinSite = 69,
   UnpinSite = 70,
   EditPinnedSite = 71,
-  kMaxValue = EditPinnedSite,
+  DeleteBrowsingData = 72,
+  CreateEmptyTabGroup = 73,
+  kMaxValue = CreateEmptyTabGroup,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
 

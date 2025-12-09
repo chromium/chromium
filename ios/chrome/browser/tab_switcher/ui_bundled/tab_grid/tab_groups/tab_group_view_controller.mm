@@ -1075,4 +1075,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   NOTREACHED();
 }
 
+- (void)createNewTabGroupButtonTapped:(id)sender {
+  NOTREACHED();
+}
+
+- (void)deleteBrowsingDataButtonTapped:(id)sender {
+  NOTREACHED();
+}
+
 @end

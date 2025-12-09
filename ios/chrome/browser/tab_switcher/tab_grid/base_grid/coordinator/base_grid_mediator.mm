@@ -1965,6 +1965,14 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   _modeHolder.mode = TabGridMode::kSelection;
 }
 
+- (void)createNewTabGroupButtonTapped:(id)sender {
+  [self.tabGroupsHandler showTabGroupCreationWithoutTabs];
+}
+
+- (void)deleteBrowsingDataButtonTapped:(id)sender {
+  NOTREACHED() << "Should be implemented in a subclass.";
+}
+
 #pragma mark - GridViewControllerMutator
 
 - (void)userTappedOnItemID:(GridItemIdentifier*)itemID {

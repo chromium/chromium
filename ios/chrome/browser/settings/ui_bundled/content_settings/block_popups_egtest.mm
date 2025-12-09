@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/block_popups_app_interface.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -81,6 +82,15 @@ class ScopedBlockPopupsException {
 @end
 
 @implementation BlockPopupsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testSettingsPageWithExceptions)]) {
+    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
+  }
+
+  return config;
+}
 
 // Opens the block popups settings page and verifies that accessibility is set
 // up properly.

@@ -117,6 +117,9 @@ class TabGroup;
 // Creates a UIAction instance for closing all the other tabs.
 - (UIAction*)actionToCloseAllOtherTabsWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for deleting all browsing data.
+- (UIAction*)actionToDeleteBrowsingDataWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance for saving an image.
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block;
 
@@ -142,6 +145,9 @@ class TabGroup;
 // `MobileWebContextMenuOpenTab` user action.
 - (ProceduralBlock)recordMobileWebContextMenuOpenTabActionWithBlock:
     (ProceduralBlock)block;
+
+// Creates a UIAction instance for creating a tab group without providing a tab.
+- (UIAction*)actionToCreateEmptyTabGroupWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance for adding `tabsNumber` tab in a new tab group.
 // `inSubmenu` changes the string to be displayed.

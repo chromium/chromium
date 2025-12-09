@@ -39,6 +39,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions",
     "//ios/web/public",
     "//ui/base",
+    "//ui/strings",
   ]
 }
 
