@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
+#include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
@@ -70,8 +71,17 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
           // TODO(crbug.com/460536208): Implement callbacks.
           views::Button::PressedCallback(
               base::DoNothingAs<void(const ui::Event&)>()),
-          base::DoNothingAs<void(views::View*, const ui::MouseEvent&)>()))) {
+          base::DoNothingAs<void(views::View*, const ui::MouseEvent&)>()))),
+      hover_controller_(gfx::Animation::ShouldRenderRichAnimation()
+                            ? std::make_unique<GlowHoverController>(this)
+                            : nullptr) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
+  // So we get don't get enter/exit on children and don't prematurely stop the
+  // hover.
+  SetNotifyEnterExitOnChild(true);
+
   node_destroyed_subscription_ =
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalTabView::ResetCollectionNode, base::Unretained(this)));
@@ -87,6 +97,20 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
 
 VerticalTabView::~VerticalTabView() = default;
 
+void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
+  // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
+  // an enter event and fail to hover the tab.
+  UpdateHovered(true);
+}
+
+void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
+  UpdateHovered(true);
+}
+
+void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
+  UpdateHovered(false);
+}
+
 void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
   // TODO(crbug.com/465540287): Properly paint background with fill image and
   // hover opacity.
@@ -94,10 +118,9 @@ void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  // TODO(crbug.com/457525745): Use the actual hovered state and animation value
-  // here.
   flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
-      GetSelectionState(), false, 0.0f, IsFrameActive(), GetColorProvider()));
+      GetSelectionState(), hovered_, GetHoverAnimationValue(), IsFrameActive(),
+      GetColorProvider()));
   canvas->DrawRect(GetLocalBounds(), flags);
 }
 
@@ -189,6 +212,11 @@ views::ProposedLayout VerticalTabView::CalculateProposedLayout(
   return layouts;
 }
 
+bool VerticalTabView::GetHitTestMask(SkPath* mask) const {
+  *mask = GetPath();
+  return true;
+}
+
 bool VerticalTabView::ShouldEnableMuteToggle(int required_width) {
   // TODO(crbug.com/454686636): Determine if there is enough space to activate
   // the tab in collapsed, pinned, or split states.
@@ -204,8 +232,9 @@ bool VerticalTabView::IsApparentlyActive() const {
   if (active_) {
     return true;
   }
-  // TODO(crbug.com/457525745): Use hover state to determine if the tab looks
-  // like it is active.
+  if (hovered_) {
+    return GetHoverOpacity() > 0.5f;
+  }
   return selected_;
 }
 
@@ -225,6 +254,24 @@ void VerticalTabView::ShowContextMenuForViewImpl(
                                          source_type);
     }
   }
+}
+
+void VerticalTabView::UpdateHovered(bool hovered) {
+  if (hovered_ == hovered) {
+    return;
+  }
+
+  hovered_ = hovered;
+  if (hover_controller_) {
+    if (hovered_) {
+      hover_controller_->SetSubtleOpacityScale(radial_highlight_opacity_);
+      hover_controller_->Show(TabStyle::ShowHoverStyle::kSubtle);
+    } else {
+      hover_controller_->Hide(TabStyle::HideHoverStyle::kGradual);
+    }
+  }
+  UpdateColors();
+  UpdateCloseButtonVisibility();
 }
 
 void VerticalTabView::ResetCollectionNode() {
@@ -251,9 +298,7 @@ void VerticalTabView::OnDataChanged() {
   alert_indicator_->TransitionToAlertState(
       tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state));
   UpdateAlertIndicatorVisibility();
-  // TODO(crbug.com/457522224): Set visibility based on active and hovered
-  // states.
-  close_button_->SetVisible(tab->IsActivated());
+  UpdateCloseButtonVisibility();
 
   UpdateColors();
   InvalidateLayout();
@@ -265,16 +310,53 @@ void VerticalTabView::UpdateAlertIndicatorVisibility() {
       alert_indicator_->showing_alert_state().has_value());
 }
 
+void VerticalTabView::UpdateCloseButtonVisibility() {
+  close_button_->SetVisible(active_ || hovered_);
+}
+
 void VerticalTabView::UpdateColors() {
-  // TODO(crbug.com/457525745): Use the actual hovered state here.
+  UpdateContrastRatioValues();
   TabStyle::TabColors colors = tab_style_->CalculateTargetColors(
-      GetSelectionState(), IsApparentlyActive(), false, IsFrameActive(),
+      GetSelectionState(), IsApparentlyActive(), hovered_, IsFrameActive(),
       GetColorProvider());
   title_->SetEnabledColor(colors.foreground_color);
   close_button_->SetColors(colors);
   alert_indicator_->OnParentTabButtonColorChanged();
   // TODO(crbug.com/465159185): Update focus ring colors.
   SchedulePaint();
+}
+
+void VerticalTabView::UpdateContrastRatioValues() {
+  auto [hover_opacity_min, hover_opacity_max, radial_highlight_opacity, _] =
+      tab_style_->GetContrastRatioValues(IsFrameActive(), GetColorProvider());
+  hover_opacity_min_ = hover_opacity_min;
+  hover_opacity_max_ = hover_opacity_max;
+  radial_highlight_opacity_ = radial_highlight_opacity;
+
+  SchedulePaint();
+}
+
+double VerticalTabView::GetHoverAnimationValue() const {
+  if (!hover_controller_) {
+    return hovered_ ? 1.0 : 0.0;
+  }
+  return hover_controller_->GetAnimationValue();
+}
+
+float VerticalTabView::GetHoverOpacity() const {
+  // Opacity boost varies on tab width.  The interpolation is nonlinear so
+  // that most tabs will fall on the low end of the opacity range, but very
+  // narrow tabs will still stand out on the high end.
+  // TODO(crbug.com/457525745): Determine what the min and max widths should be.
+  constexpr float kWidthForMinHoverOpacity = 216.0f;
+  constexpr float kWidthForMaxHoverOpacity = 32.0f;
+  const float value_in_range = static_cast<float>(width());
+  const float t =
+      std::clamp((kWidthForMinHoverOpacity - value_in_range) /
+                     (kWidthForMinHoverOpacity - kWidthForMaxHoverOpacity),
+                 0.0f, 1.0f);
+  return gfx::Tween::FloatValueBetween(t * t, hover_opacity_min_,
+                                       hover_opacity_max_);
 }
 
 SkPath VerticalTabView::GetPath() const {

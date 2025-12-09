@@ -13,8 +13,10 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view.h"
 
+class GlowHoverController;
 class TabCloseButton;
 class TabCollectionNode;
 class TabIcon;
@@ -26,6 +28,7 @@ class Label;
 // View for a vertical tabstrip's tab.
 class VerticalTabView : public views::View,
                         public views::LayoutDelegate,
+                        public views::MaskedTargeterDelegate,
                         public AlertIndicatorButton::Delegate,
                         public views::ContextMenuController {
   METADATA_HEADER(VerticalTabView, views::View)
@@ -37,6 +40,9 @@ class VerticalTabView : public views::View,
   ~VerticalTabView() override;
 
   // views::View
+  void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
@@ -45,6 +51,9 @@ class VerticalTabView : public views::View,
   // views::LayoutDelegate
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+
+  // views::MaskedTargeterDelegate:
+  bool GetHitTestMask(SkPath* mask) const override;
 
   // AlertIndicatorButton::Delegate
   bool ShouldEnableMuteToggle(int required_width) override;
@@ -58,6 +67,8 @@ class VerticalTabView : public views::View,
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) override;
 
+  void UpdateHovered(bool hovered);
+
   TabIcon* icon_for_testing() { return icon_; }
   AlertIndicatorButton* alert_indicator_for_testing() {
     return alert_indicator_;
@@ -70,8 +81,13 @@ class VerticalTabView : public views::View,
   void OnDataChanged();
 
   void UpdateAlertIndicatorVisibility();
+  void UpdateCloseButtonVisibility();
 
   void UpdateColors();
+  void UpdateContrastRatioValues();
+
+  double GetHoverAnimationValue() const;
+  float GetHoverOpacity() const;
 
   SkPath GetPath() const;
 
@@ -93,6 +109,12 @@ class VerticalTabView : public views::View,
 
   bool active_ = false;
   bool selected_ = false;
+  bool hovered_ = false;
+
+  std::unique_ptr<GlowHoverController> hover_controller_;
+  float hover_opacity_min_;
+  float hover_opacity_max_;
+  float radial_highlight_opacity_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_

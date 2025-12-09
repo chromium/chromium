@@ -186,9 +186,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
   // The initial tab is the first child of the unpinned collection which is the
   // second child of the root node.
   TabCollectionNode* tab_node = root_node.children()[1]->children()[0].get();
-  TabCloseButton* close_button =
-      static_cast<VerticalTabView*>(tab_node->get_view_for_testing())
-          ->close_button_for_testing();
+  VerticalTabView* tab_view =
+      static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
+  TabCloseButton* close_button = tab_view->close_button_for_testing();
 
   // Expect the close button to be showing initially.
   EXPECT_TRUE(close_button->GetVisible());
@@ -198,6 +198,20 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
   NavigateToURLWithDisposition(browser(), GURL(url::kAboutBlankURL),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_FALSE(close_button->GetVisible());
+
+  // After the mouse enters the tab, the close button should be showing.
+  ui::MouseEvent mouse_entered_event(ui::EventType::kMouseEntered, gfx::Point(),
+                                     gfx::Point(), base::TimeTicks(),
+                                     ui::EF_NONE, ui::EF_NONE);
+  tab_view->OnMouseEntered(mouse_entered_event);
+  EXPECT_TRUE(close_button->GetVisible());
+
+  // After the mouse exits the tab, the close button should be hidden.
+  ui::MouseEvent mouse_exited_event(ui::EventType::kMouseExited, gfx::Point(),
+                                    gfx::Point(), base::TimeTicks(),
+                                    ui::EF_NONE, ui::EF_NONE);
+  tab_view->OnMouseExited(mouse_exited_event);
   EXPECT_FALSE(close_button->GetVisible());
 }
 
