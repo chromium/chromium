@@ -64,11 +64,13 @@ import java.util.function.Supplier;
 /** Mediator for the Fusebox component. */
 @NullMarked
 public class FuseboxMediator {
-    // TODO(crbug.com/457825183): Supply this class name and extra string externally.
+    // TODO(crbug.com/457825183): Supply this class name and extra strings externally.
     @VisibleForTesting
     /* package */ static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
             "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
+
     public static final String EXTRA_PRESELECTED_TAB_IDS = "EXTRA_PRESELECTED_TAB_IDS";
+    public static final String EXTRA_IS_INCOGNITO_BRANDED = "EXTRA_IS_INCOGNITO_BRANDED";
     public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
     public static final String EXTRA_ALLOWED_SELECTION_COUNT = "ALLOWED_SELECTION_COUNT";
 
@@ -373,6 +375,14 @@ public class FuseboxMediator {
                     new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS))
                             .putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedTabIds);
             ProfileIntentUtils.addProfileToIntent(mProfile, intent);
+
+            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+            boolean isIncognitoBrandedModelSelected = false;
+            if (tabModelSelector != null) {
+                isIncognitoBrandedModelSelected =
+                        tabModelSelector.isIncognitoBrandedModelSelected();
+            }
+            intent.putExtra(EXTRA_IS_INCOGNITO_BRANDED, isIncognitoBrandedModelSelected);
         } catch (ClassNotFoundException e) {
             return;
         }

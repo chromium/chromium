@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.chrome_item_picker;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.ViewGroup;
 
@@ -302,12 +304,11 @@ public class TabItemPickerCoordinator {
     /** Creates a TabGroupModelFilter instance required by the TabListEditorCoordinator. */
     private ObservableSupplier<@Nullable TabGroupModelFilter> createTabGroupModelFilterSupplier(
             TabModelSelector tabModelSelector) {
-        Profile profile = mProfileSupplier.get();
+        boolean isIncognito = assumeNonNull(mProfileSupplier.get()).isIncognitoBranded();
         return new ObservableSupplierImpl<@Nullable TabGroupModelFilter>(
                 tabModelSelector
                         .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(
-                                profile == null ? false : profile.isIncognitoBranded()));
+                        .getTabGroupModelFilter(isIncognito));
     }
 
     /** Creates a TabContentManager instance required by the TabListEditorCoordinator. */
