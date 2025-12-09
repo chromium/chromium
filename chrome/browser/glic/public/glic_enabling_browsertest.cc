@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/public/glic_enabling.h"
 
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -17,12 +18,16 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/metrics_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -102,19 +107,35 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingTest, AttributeEntryUpdatesOnChange) {
 class GlicEnablingWithSeparateAccountCapabilityTest : public GlicEnablingTest {
  public:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
+    // InitWithFeaturesAndParameters is used instead of InitWithFeatures
+    // because it has the side-effect of creating a FieldTrial, which is
+    // required for the synthetic field trial to be populated.
+    // allow empty feature parameters.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            features::kGlic,
-            features::kTabstripComboButton,
-            features::kGlicRollout,
-            features::kGlicEligibilitySeparateAccountCapability,
+            {features::kGlic, {}},
+            {features::kTabstripComboButton, {}},
+            {features::kGlicRollout, {}},
+            {features::kGlicEligibilitySeparateAccountCapability, {}},
 #if BUILDFLAG(IS_CHROMEOS)
-            chromeos::features::kFeatureManagementGlic,
+            {chromeos::features::kFeatureManagementGlic, {}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
         },
         {});
   }
   ~GlicEnablingWithSeparateAccountCapabilityTest() override = default;
+
+  void SetLegacyAccountCapability(bool capability_value) {
+    auto* const identity_manager =
+        IdentityManagerFactory::GetForProfile(profile());
+    AccountInfo primary_account =
+        identity_manager->FindExtendedAccountInfoByAccountId(
+            identity_manager->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin));
+    AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+    mutator.set_can_use_model_execution_features(capability_value);
+    signin::UpdateAccountInfoForAccount(identity_manager, primary_account);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
@@ -124,6 +145,116 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
   ForceSigninAndGlicCapability(profile());
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
+                       UnaffectedUserNotAddedToSyntheticFieldTrial) {
+  ASSERT_NE(base::FeatureList::GetFieldTrial(
+                features::kGlicEligibilitySeparateAccountCapability),
+            nullptr);
+  auto initial_num_trials = g_browser_process->metrics_service()
+                                ->GetSyntheticTrialRegistry()
+                                ->GetCurrentSyntheticFieldTrialsForTest()
+                                .size();
+
+  //  Sign in the user, and mark them as eligible via the new account
+  // capability.
+  ForceSigninAndGlicCapability(profile());
+
+  // Set the legacy account capability to true, so that their eligibility is not
+  // affected by the experiment.
+  SetLegacyAccountCapability(true);
+
+  // Check user eligibility.
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  // Check that no new synthetic field trials were added.
+  auto synthetic_trials = g_browser_process->metrics_service()
+                              ->GetSyntheticTrialRegistry()
+                              ->GetCurrentSyntheticFieldTrialsForTest();
+  ASSERT_EQ(synthetic_trials.size(), initial_num_trials);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
+                       AffectedUserAddedToSyntheticFieldTrial) {
+  ASSERT_NE(base::FeatureList::GetFieldTrial(
+                features::kGlicEligibilitySeparateAccountCapability),
+            nullptr);
+  auto initial_num_trials = g_browser_process->metrics_service()
+                                ->GetSyntheticTrialRegistry()
+                                ->GetCurrentSyntheticFieldTrialsForTest()
+                                .size();
+
+  //  Sign in the user, and mark them as eligible via the new account
+  // capability.
+  ForceSigninAndGlicCapability(profile());
+
+  // Set the legacy account capability to false, so that their eligibility is
+  // affected by the experiment.
+  SetLegacyAccountCapability(false);
+
+  // Check user eligibility. This method will have the side-effect of adding
+  // them to the synthetic field trial.
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  // Check the user is in the synthetic field trial.
+  auto synthetic_trials = g_browser_process->metrics_service()
+                              ->GetSyntheticTrialRegistry()
+                              ->GetCurrentSyntheticFieldTrialsForTest();
+  ASSERT_EQ(synthetic_trials.size(), initial_num_trials + 1);
+  EXPECT_EQ(synthetic_trials[synthetic_trials.size() - 1].name,
+            base::HashFieldTrialName(
+                kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicEnablingWithSeparateAccountCapabilityTest,
+    AffectedUserAddedToSyntheticFieldTrial_EligibilityChanges) {
+  ASSERT_NE(base::FeatureList::GetFieldTrial(
+                features::kGlicEligibilitySeparateAccountCapability),
+            nullptr);
+  auto initial_num_trials = g_browser_process->metrics_service()
+                                ->GetSyntheticTrialRegistry()
+                                ->GetCurrentSyntheticFieldTrialsForTest()
+                                .size();
+
+  //  Sign in the user, and mark them as eligible via the new account
+  // capability.
+  ForceSigninAndGlicCapability(profile());
+
+  // Set the legacy account capability to false, so that their eligibility is
+  // affected by the experiment. This adds the user to a synthetic field trial.
+  SetLegacyAccountCapability(false);
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  // Check the user is in the synthetic field trial.
+  auto synthetic_trials = g_browser_process->metrics_service()
+                              ->GetSyntheticTrialRegistry()
+                              ->GetCurrentSyntheticFieldTrialsForTest();
+  ASSERT_EQ(synthetic_trials.size(), initial_num_trials + 1);
+  const auto& trial = synthetic_trials[synthetic_trials.size() - 1];
+  EXPECT_EQ(trial.name,
+            base::HashFieldTrialName(
+                kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName));
+  auto synthetic_trial_group = trial.group;
+
+  // Set the legacy account capability to true, making the user's eligibility no
+  // longer affected by the experiment.
+  SetLegacyAccountCapability(true);
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  // Check that the user's synthetic field trial group is unchanged - the
+  // previous trial membership is preserved until the next session, and this is
+  // not treated as a "MultiProfileDetected" conflict.
+  synthetic_trials = g_browser_process->metrics_service()
+                         ->GetSyntheticTrialRegistry()
+                         ->GetCurrentSyntheticFieldTrialsForTest();
+  ASSERT_EQ(synthetic_trials.size(), initial_num_trials + 1);
+  const auto& updated_trial = synthetic_trials[synthetic_trials.size() - 1];
+  EXPECT_EQ(updated_trial.name,
+            base::HashFieldTrialName(
+                kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName));
+  EXPECT_EQ(updated_trial.group, synthetic_trial_group);
 }
 
 class GlicEnablingTieredRolloutTest : public GlicEnablingTest {
@@ -205,7 +336,6 @@ class GlicEnablingSimultaneousRolloutTest
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementGlic,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
         },
         {});
   }

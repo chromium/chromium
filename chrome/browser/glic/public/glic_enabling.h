@@ -29,6 +29,32 @@ namespace mojom {
 enum class ProfileReadyState : int32_t;
 }  // namespace mojom
 
+// This synthetic field trial is registered for users who are affected by the
+// kGlicEligibilitySeparateAccountCapability feature.
+//
+// Users who have a different value for the "old" and "new" account capability
+// are added to this synthetic field trial, with the group corresponding to
+// their field trial group for the main
+// (kGlicEligibilitySeparateAccountCapability) feature.
+//
+// For example:
+// - GlicEligibilitySeparateAccountCapabilityAffectedUsers:Control contains
+// clients in the Control group of main experiment, where at least one profile
+// has a different value for the "old" and "new" account capability.
+// - GlicEligibilitySeparateAccountCapabilityAffectedUsers:Enabled contains
+// clients in the Enabled group of the main experiment, where at least one
+// profile has a different value for the "old" and "new" account capability.
+//
+// Clients in the Control or Enabled groups of the main experiment, where all
+// profiles have the same value for the "old" and "new" account capability, are
+// not added to this synthetic field trial.
+//
+// This synthetic trial is re-evaluated in each session, and takes into account
+// only loaded profiles.
+inline constexpr char
+    kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName[] =
+        "GlicEligibilitySeparateAccountCapabilityAffectedUsers";
+
 // This class provides a central location for checking if GLIC is enabled. It
 // allows for future expansion to include other ways the feature may be disabled
 // such as based on user preferences or system settings.

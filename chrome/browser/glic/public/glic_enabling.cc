@@ -15,6 +15,8 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
+#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -107,6 +109,25 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
             : primary_account.capabilities.can_use_model_execution_features();
     result.primary_account_not_capable =
         (capability_value != signin::Tribool::kTrue);
+
+    // If the feature is overridden by a field trial, and the user's eligibility
+    // is known and different for the two capabilities, add them to a synthetic
+    // trial.
+    base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
+        features::kGlicEligibilitySeparateAccountCapability);
+    if (field_trial &&
+        (primary_account.capabilities.can_use_gemini_in_chrome() !=
+         signin::Tribool::kUnknown) &&
+        (primary_account.capabilities.can_use_model_execution_features() !=
+         signin::Tribool::kUnknown) &&
+        (primary_account.capabilities.can_use_gemini_in_chrome() !=
+         primary_account.capabilities.can_use_model_execution_features())) {
+      g_browser_process->GetFeatures()
+          ->glic_synthetic_trial_manager()
+          ->SetSyntheticExperimentState(
+              kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName,
+              field_trial->GetGroupNameWithoutActivation());
+    }
   }
 
   if (profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) !=
