@@ -1288,7 +1288,8 @@ bool PaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
 }
 
 bool PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
   // There is no need to show the promo if the feature is already enabled.
   if (prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_)) {
 #if BUILDFLAG(IS_ANDROID)
@@ -1326,7 +1327,8 @@ bool PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
   return allowed_by_strike_database;
 #else
   return false;
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }
 
 void PaymentsDataManager::
