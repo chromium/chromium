@@ -145,18 +145,32 @@ def get_simulator_runtime_by_platform_and_version(simulators,
   Raises:
     test_runner.SimulatorNotFoundError when the version can't be found.
   """
-  for runtime in simulators['runtimes']:
-    # The output might use version with a patch number (e.g. 17.0.1)
-    # but the passed in version does not have a patch number (e.g. 17.0)
-    # Therefore, we should use startswith for substring match.
-    if runtime['version'].startswith(version):
-      if any(supported_device_type['name'] == platform
-             for supported_device_type in runtime['supportedDeviceTypes']):
-        return runtime['identifier']
+  runtimes = simulators['runtimes']
+  max_retries = 2
+  for attempt in range(0, max_retries):
+    version_found = False
+    for runtime in runtimes:
+      # The output might use version with a patch number (e.g. 17.0.1)
+      # but the passed in version does not have a patch number (e.g. 17.0)
+      # Therefore, we should use startswith for substring match.
+      if runtime['version'].startswith(version):
+        version_found = True
+        if any(supported_device_type['name'] == platform
+               for supported_device_type in runtime['supportedDeviceTypes']):
+          return runtime.get('identifier') or runtime.get('runtimeIdentifier')
+    LOGGER.error(f'(attempt {attempt + 1} of {max_retries}) failed to find '
+                 f'simulator matching version: {version} and platform: '
+                 f'{platform}.')
+    if version_found:
+      LOGGER.error('Version found, but not platform.')
+    if attempt + 1 < max_retries:
+      # try again by listing available runtimes with a different command
+      time.sleep(5)
+      runtimes = get_simulator_runtime_list().values()
   # TODO(crbug.com/454911750): remove debugging after bug is resolved
-  debug_missing_simulator(simulators['runtimes'], out_dir)
+  debug_missing_simulator(runtimes, out_dir)
   raise test_runner.SimulatorNotFoundError('Not found "%s" SDK in runtimes %s' %
-                                           (version, simulators['runtimes']))
+                                           (version, runtimes))
 
 
 def get_simulator_runtime_by_device_udid(simulator_udid):
