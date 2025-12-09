@@ -727,7 +727,7 @@ class GnParser:
       deps = override_deps
 
     # Recurse in dependencies.
-    for gn_dep_name in set(deps) | set(build_only_deps):
+    for gn_dep_name in sorted(set(deps) | set(build_only_deps)):
       dep = self.parse_gn_desc(gn_desc, gn_dep_name, is_test_target)
 
       if dep.type == 'proto_library':

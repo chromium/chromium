@@ -2622,7 +2622,8 @@ def _get_cflags(cflags, defines):
     cflags.append(f"-U{libcpp_hardening_flag}")
 
   # Consider proper allowlist or denylist if needed
-  cflags.extend(["-D%s" % define.replace("\"", "\\\"") for define in defines])
+  cflags.extend(
+      sorted(["-D%s" % define.replace("\"", "\\\"") for define in defines]))
   return cflags
 
 
@@ -2708,9 +2709,9 @@ def _is_allowed_ldflag(flag):
 
 def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
                         blueprint):
-  module.cflags.extend(_get_cflags(cflags, defines))
+  module.cflags = _get_cflags(cflags, defines)
   ldflags, linker_script = _extract_linker_script(ldflags)
-  module.ldflags.extend({flag for flag in ldflags if _is_allowed_ldflag(flag)})
+  module.ldflags = [flag for flag in ldflags if _is_allowed_ldflag(flag)]
   if linker_script:
     # Unfortunately, Soong does not allow accessing linker scripts from parent
     # path. So create a filegroup at the top-level Android.bp and reference it instead.
