@@ -301,6 +301,12 @@
   </if>
   <!-- End of Desktop to iOS Promo strings. -->
 
+  <!-- UNO Promo strings for bookmarks -->
+  <message name="IDS_BOOKMARK_PROMO_TITLE" desc="This is the body text of a confirmation message and means that the bookmark was either saved locally, or to the user's pending account storage if their sign-in credentials have expired. It appears after a bookmark save if the user is not signed in to Chrome or their sign-in credentials have expired. If the user wants to save this data to their Google Account, they can click the button at the bottom of this message. The tone should be motivating.">
+    Use bookmarks across devices
+  </message>
+  <!-- End of UNO Promo strings for bookmarks -->
+
   <!-- Begin of Bookmark Editor strings. -->
   <message name="IDS_BOOKMARK_EDITOR_NAME_LABEL" desc="Label shown before the title/name of the URL." meaning="Name of an inanimate object">
     Name

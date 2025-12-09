@@ -21,7 +21,7 @@ BookmarkSigninPromoBubbleView::BookmarkSigninPromoBubbleView(
   CHECK(web_contents);
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  SetTitle(IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARKED);
+  SetTitle(IDS_BOOKMARK_PROMO_TITLE);
   SetShowCloseButton(true);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
