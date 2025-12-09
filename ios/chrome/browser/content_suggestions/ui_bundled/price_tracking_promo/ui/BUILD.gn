@@ -12,32 +12,15 @@ source_set("ui") {
     "price_tracking_promo_module_view.h",
     "price_tracking_promo_module_view.mm",
   ]
+  public_deps = [ "//ios/chrome/browser/content_suggestions/ui_bundled/cells:standalone_module_view" ]
   deps = [
-    "//base:i18n",
+    "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/public:constants",
-    "//ios/chrome/browser/ntp/ui_bundled:theme",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "price_tracking_promo_module_view+testing.h",
-    "price_tracking_promo_module_view_unittest.mm",
-  ]
-  deps = [
-    ":ui",
-    "//testing/gtest",
-  ]
 }

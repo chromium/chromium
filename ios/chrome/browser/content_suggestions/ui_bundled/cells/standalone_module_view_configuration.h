@@ -11,10 +11,15 @@
 // view.
 @interface StandaloneModuleViewConfiguration : MagicStackModule
 
-// Favicon image for the module.
+// Product image for the module
+@property(nonatomic, strong) UIImage* productImage;
+
+// Favicon image for the module. Appears as a small stamp when `productImage` is
+// set. Appears as a larger icon when `productImage` is not set.
 @property(nonatomic, strong) UIImage* faviconImage;
 
-// Fallack image for the module for when faviconImage is unset.
+// Fallback image for the module for when `productImage` and `faviconImage` are
+// unset.
 @property(nonatomic, strong) UIImage* fallbackSymbolImage;
 
 // Title text for the module.
@@ -25,6 +30,9 @@
 
 // Text for the button for the module.
 @property(nonatomic, copy) NSString* buttonText;
+
+// Accessibility identifier for the module.
+@property(nonatomic, copy) NSString* accessibilityIdentifier;
 
 @end
 

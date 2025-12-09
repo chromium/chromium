@@ -186,7 +186,8 @@
       [[PriceTrackingPromoModuleView alloc] initWithFrame:CGRectZero];
   [priceTrackingPromoItem.priceTrackingPromoFaviconConsumerSource
       addConsumer:view];
-  view.commandHandler = priceTrackingPromoItem.commandHandler;
+  view.priceTrackingPromoHandler =
+      priceTrackingPromoItem.priceTrackingPromoHandler;
   [view configureView:priceTrackingPromoItem];
   return view;
 }

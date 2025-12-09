@@ -53,7 +53,10 @@ source_set("standalone_module_view") {
   public_deps = [ "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public:constants" ]
   deps = [
     "//base",
+    "//base:i18n",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:public",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
@@ -134,10 +137,14 @@ source_set("constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "content_suggestions_tile_saver_unittest.mm" ]
+  sources = [
+    "content_suggestions_tile_saver_unittest.mm",
+    "standalone_module_view_unittest.mm",
+  ]
   deps = [
     ":cells",
     ":constants",
+    ":standalone_module_view",
     ":tile_saver",
     "//base",
     "//base/test:test_support",
@@ -162,6 +169,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",

@@ -10,13 +10,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/ui/send_tab_promo_item.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
-namespace {
-
-// `SendTabPromoView` accessibility ID.
-NSString* const kSendTabPromoViewID = @"kSendTabPromoViewID";
-
-}  // namespace
-
 @interface SendTabPromoView () <StandaloneModuleViewTapDelegate>
 
 @end
@@ -59,7 +52,6 @@ NSString* const kSendTabPromoViewID = @"kSendTabPromoViewID";
   }
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
-  self.accessibilityIdentifier = kSendTabPromoViewID;
 
   _contentView = [self standaloneModuleView];
   [self addSubview:_contentView];

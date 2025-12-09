@@ -5,7 +5,12 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/standalone_module_view.h"
 
 #import "base/check.h"
+#import "base/i18n/rtl.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/standalone_module_view_configuration.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -33,20 +38,47 @@ const CGFloat kLargeCornerRadius = 10.0;
 const CGFloat kMediumCornerRadius = 4.0;
 // Width and height of image.
 const CGFloat kImageWidthHeight = 48.0;
+// Rounded corners of the product image radius
+const CGFloat kProductImageCornerRadius = 8.0;
+// Alpha for top of gradient overlay on a product image.
+const CGFloat kGradientOverlayTopAlpha = 0.0;
+// Alpha for bottom of gradienet overlay on a product image.
+const CGFloat kGradientOverlayBottomAlpha = 0.14;
 // Width and height of the favicon.
 const CGFloat kFaviconWidthHeight = 26.0;
+// Properties for Favicon image view when displayed over a product image.
+const CGFloat kFaviconImageViewCornerRadius = 2.0;
+const CGFloat kFaviconImageViewTrailingCornerRadius = 4.0;
+const CGFloat kFaviconImageViewHeightWidth = 10.0;
+// Properties for Favicon image container.
+const CGFloat kFaviconImageContainerCornerRadius = 3.0;
+const CGFloat kFaviconImageContainerTrailingCornerRadius = 6.0;
+const CGFloat kFaviconImageContainerHeightWidth = 15.0;
+const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
 // Separator height.
 const CGFloat kSeparatorHeight = 0.5;
 
 }  // namespace
 
+@interface StandaloneModuleView () <NewTabPageColorUpdating>
+@end
+
 @implementation StandaloneModuleView {
+  ContentSuggestionsModuleType _moduleType;
+  StandaloneModuleViewConfiguration* _config;
   UILabel* _titleLabel;
   UILabel* _descriptionLabel;
   UIButton* _button;
-  ContentSuggestionsModuleType _moduleType;
-  StandaloneModuleViewConfiguration* _config;
+  // Ivars for constructing an icon view using a product image, favicon, and
+  // gradient overlay.
+  UIView* _productImage;
+  UIImageView* _productImageView;
+  UIImageView* _faviconImageView;
+  UIView* _faviconImageContainer;
+  UIView* _gradientOverlay;
 }
+
+#pragma mark - Public
 
 - (void)configureView:(StandaloneModuleViewConfiguration*)config {
   CHECK(config);
@@ -55,6 +87,7 @@ const CGFloat kSeparatorHeight = 0.5;
   _config = config;
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
+  self.accessibilityIdentifier = _config.accessibilityIdentifier;
 
   _titleLabel = [self titleLabel];
   _descriptionLabel = [self descriptionLabel];
@@ -90,6 +123,32 @@ const CGFloat kSeparatorHeight = 0.5;
       @[ UITraitPreferredContentSizeCategory.class ]);
   [self registerForTraitChanges:traits
                      withAction:@selector(hideDescriptionOnTraitChange)];
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    [self registerForTraitChanges:@[ NewTabPageTrait.class ]
+                       withAction:@selector(applyBackgroundColors)];
+  }
+  [self applyBackgroundColors];
+}
+
+- (void)updateProductImageViewWithFavicon:(UIImage*)faviconImage {
+  [self populateProductImageFaviconContainerAndView:faviconImage];
+  [self addFaviconToProductImage];
+  [self addConstraintsForProductImage];
+  [self addConstraintsForProductImageFavicon];
+}
+
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+  if (colorPalette) {
+    [_button setTitleColor:colorPalette.tintColor
+                  forState:UIControlStateNormal];
+  } else {
+    [_button setTitleColor:[UIColor colorNamed:kBlueColor]
+                  forState:UIControlStateNormal];
+  }
 }
 
 #pragma mark - Private
@@ -124,16 +183,61 @@ const CGFloat kSeparatorHeight = 0.5;
   return descriptionLabel;
 }
 
-// Creates and returns the icon image view for the view. Uses the `faviconImage`
-// from the config if it is set. Otherwise, uses the the `fallbackSymbolImage`
-// from the config.
+// Creates and returns the icon image view for the view. Uses the `productImage`
+// and/or `faviconImage` from the config if it is set. Otherwise, uses the the
+// `fallbackSymbolImage` from the config.
 - (UIView*)iconView {
-  UIImage* faviconImage = _config.faviconImage;
-  return faviconImage ? [self faviconImageView] : [self fallbackImageView];
+  if (_config.productImage) {
+    return [self productImage];
+  } else if (_config.faviconImage) {
+    return [self faviconImageView];
+  } else {
+    return [self fallbackImageView];
+  }
+}
+
+// Creates the icon view using the `productImage` from the config.
+- (UIView*)productImage {
+  CHECK(_config.productImage);
+  _productImage = [[UIView alloc] init];
+  _productImageView = [[UIImageView alloc] init];
+  _productImageView.image = _config.productImage;
+  _productImageView.contentMode = UIViewContentModeScaleAspectFill;
+  _productImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _productImageView.layer.borderWidth = 0;
+  _productImageView.layer.cornerRadius = kProductImageCornerRadius;
+  _productImageView.layer.masksToBounds = YES;
+  _productImageView.backgroundColor = UIColor.whiteColor;
+
+  _gradientOverlay = [[GradientView alloc]
+      initWithTopColor:[[UIColor blackColor]
+                           colorWithAlphaComponent:kGradientOverlayTopAlpha]
+           bottomColor:[[UIColor blackColor] colorWithAlphaComponent:
+                                                 kGradientOverlayBottomAlpha]];
+  _gradientOverlay.translatesAutoresizingMaskIntoConstraints = NO;
+  _gradientOverlay.layer.cornerRadius = kProductImageCornerRadius;
+  _gradientOverlay.layer.zPosition = 1;
+
+  if (_config.faviconImage) {
+    [self populateProductImageFaviconContainerAndView:_config.faviconImage];
+  }
+
+  [_productImage addSubview:_productImageView];
+  [_productImageView addSubview:_gradientOverlay];
+  if (_faviconImageContainer) {
+    [self addFaviconToProductImage];
+  }
+
+  [self addConstraintsForProductImage];
+  if (_faviconImageContainer) {
+    [self addConstraintsForProductImageFavicon];
+  }
+  return _productImage;
 }
 
 // Creates the icon view using the `faviconImage` from the config.
 - (UIView*)faviconImageView {
+  CHECK(_config.faviconImage);
   UIImageView* faviconImageView = [[UIImageView alloc] init];
   faviconImageView.image = _config.faviconImage;
   faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -170,6 +274,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
 // Creates the icon view using the `fallbackSymbolImage` from the config.
 - (UIView*)fallbackImageView {
+  CHECK(_config.fallbackSymbolImage);
   UIView* iconView = [[UIView alloc] init];
   UIImageView* fallbackImageView = [[UIImageView alloc] init];
   fallbackImageView.image = _config.fallbackSymbolImage;
@@ -208,7 +313,6 @@ const CGFloat kSeparatorHeight = 0.5;
       [[UITapGestureRecognizer alloc] initWithTarget:self
                                               action:@selector(buttonTapped:)];
   [button addGestureRecognizer:tapRecognizer];
-
   return button;
 }
 
@@ -220,6 +324,117 @@ const CGFloat kSeparatorHeight = 0.5;
 - (void)hideDescriptionOnTraitChange {
   _descriptionLabel.hidden = self.traitCollection.preferredContentSizeCategory >
                              UIContentSizeCategoryExtraExtraLarge;
+}
+
+// Populates `_faviconImageContainer` and `_faviconImageView` for a product
+// image with a `faviconImage`.
+- (void)populateProductImageFaviconContainerAndView:(UIImage*)faviconImage {
+  if (_faviconImageView) {
+    _faviconImageView.image = faviconImage;
+    return;
+  }
+
+  _faviconImageContainer = [[UIView alloc] init];
+  _faviconImageContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _faviconImageContainer.layer.borderWidth = 0;
+  _faviconImageContainer.backgroundColor =
+      [UIColor colorNamed:kBackgroundColor];
+  _faviconImageContainer.layer.cornerRadius =
+      kFaviconImageContainerCornerRadius;
+  _faviconImageContainer.layer.masksToBounds = YES;
+  // Apply bottom right radius mask
+  _faviconImageContainer.layer.mask = [self
+      productImageFaviconMaskWithRadius:
+          kFaviconImageContainerTrailingCornerRadius
+                       imageHeightWidth:kFaviconImageContainerHeightWidth];
+
+  _faviconImageView = [[UIImageView alloc] init];
+  _faviconImageView.image = faviconImage;
+  _faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
+  _faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _faviconImageView.layer.borderWidth = 0;
+  _faviconImageView.layer.cornerRadius = kFaviconImageViewCornerRadius;
+  _faviconImageView.layer.masksToBounds = YES;
+  _faviconImageView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  // Apply bottom right radius mask
+  _faviconImageView.layer.mask = [self
+      productImageFaviconMaskWithRadius:kFaviconImageViewTrailingCornerRadius
+                       imageHeightWidth:kFaviconImageViewHeightWidth];
+}
+
+// Create a mask with radius applied to the trailing corner.
+- (CAShapeLayer*)productImageFaviconMaskWithRadius:(CGFloat)trailingCornerRadius
+                                  imageHeightWidth:(CGFloat)imageHeightWidth {
+  UIRectCorner bottomTrail =
+      base::i18n::IsRTL() ? UIRectCornerBottomLeft : UIRectCornerBottomRight;
+  CGSize cornerRadiusSize =
+      CGSizeMake(trailingCornerRadius, trailingCornerRadius);
+  UIBezierPath* bezierPath =
+      [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, imageHeightWidth,
+                                                         imageHeightWidth)
+                            byRoundingCorners:bottomTrail
+                                  cornerRadii:cornerRadiusSize];
+  CAShapeLayer* mask = [CAShapeLayer layer];
+  mask.path = bezierPath.CGPath;
+  return mask;
+}
+
+// Adds a favicon overlay to a product image.
+- (void)addFaviconToProductImage {
+  [_productImage addSubview:_faviconImageContainer];
+  [_faviconImageContainer addSubview:_faviconImageView];
+}
+
+// Adds constraints for a product image.
+- (void)addConstraintsForProductImage {
+  NSMutableArray<NSLayoutConstraint*>* constraints = [[NSMutableArray alloc]
+      initWithObjects:[_productImage.heightAnchor
+                          constraintEqualToConstant:kImageWidthHeight],
+                      [_productImage.widthAnchor
+                          constraintEqualToAnchor:_productImage.heightAnchor],
+                      nil];
+  if (_productImageView) {
+    [constraints addObjectsFromArray:@[
+      [_productImageView.heightAnchor
+          constraintEqualToConstant:kImageWidthHeight],
+      [_productImageView.widthAnchor
+          constraintEqualToAnchor:_productImageView.heightAnchor]
+    ]];
+  }
+
+  if (_gradientOverlay) {
+    [constraints addObjectsFromArray:@[
+      [_gradientOverlay.heightAnchor
+          constraintEqualToConstant:kImageWidthHeight],
+      [_gradientOverlay.widthAnchor
+          constraintEqualToAnchor:_gradientOverlay.heightAnchor]
+    ]];
+  }
+  [NSLayoutConstraint activateConstraints:constraints];
+}
+
+// Adds constraints for a favicon overlayed on a product image.
+- (void)addConstraintsForProductImageFavicon {
+  [NSLayoutConstraint activateConstraints:@[
+    [_faviconImageContainer.heightAnchor
+        constraintEqualToConstant:kFaviconImageContainerHeightWidth],
+    [_faviconImageContainer.widthAnchor
+        constraintEqualToAnchor:_faviconImageContainer.heightAnchor],
+    [_faviconImageContainer.trailingAnchor
+        constraintEqualToAnchor:_productImage.trailingAnchor
+                       constant:kFaviconImageContainerTrailingMargin],
+    [_faviconImageContainer.bottomAnchor
+        constraintEqualToAnchor:_productImage.bottomAnchor
+                       constant:kFaviconImageContainerTrailingMargin],
+    [_faviconImageView.heightAnchor
+        constraintEqualToConstant:kFaviconImageViewHeightWidth],
+    [_faviconImageView.widthAnchor
+        constraintEqualToAnchor:_faviconImageView.heightAnchor],
+    [_faviconImageView.centerXAnchor
+        constraintEqualToAnchor:_faviconImageContainer.centerXAnchor],
+    [_faviconImageView.centerYAnchor
+        constraintEqualToAnchor:_faviconImageContainer.centerYAnchor],
+  ]];
 }
 
 #pragma mark - Testing category methods
@@ -234,6 +449,10 @@ const CGFloat kSeparatorHeight = 0.5;
 
 - (NSString*)allowLabelTextForTesting {
   return _button.currentTitle;
+}
+
+- (void)addConstraintsForProductImageForTesting {
+  [self addConstraintsForProductImage];
 }
 
 @end

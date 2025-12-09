@@ -249,7 +249,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/coordinator:unit_tests",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/ui:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/coordinator:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model:unit_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui:unit_tests",

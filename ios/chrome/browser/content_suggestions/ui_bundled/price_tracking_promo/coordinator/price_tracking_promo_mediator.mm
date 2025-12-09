@@ -333,7 +333,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   // will be displayed but with the fallback image.
   if (most_recent_subscription_product_image_url.is_empty()) {
     _priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
-    _priceTrackingPromoItem.commandHandler = self;
+    _priceTrackingPromoItem.priceTrackingPromoHandler = self;
     _priceTrackingPromoItem.priceTrackingPromoFaviconConsumerSource = self;
     [self onNewSubscriptionAvailable];
   } else {
@@ -384,7 +384,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
                   productUrl:(const GURL&)productUrl {
   self->_priceTrackingPromoItem = [[PriceTrackingPromoItem alloc] init];
   self->_priceTrackingPromoItem.priceTrackingPromoFaviconConsumerSource = self;
-  self->_priceTrackingPromoItem.commandHandler = self;
+  self->_priceTrackingPromoItem.priceTrackingPromoHandler = self;
   NSData* data = [NSData dataWithBytes:imageData.data()
                                 length:imageData.size()];
   if (data) {

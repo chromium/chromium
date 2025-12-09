@@ -28,6 +28,9 @@ enum class ContentSuggestionsModuleType;
 // Configures this view with `config`.
 - (void)configureView:(StandaloneModuleViewConfiguration*)config;
 
+// Updates the product image view with a new `faviconImage`.
+- (void)updateProductImageViewWithFavicon:(UIImage*)faviconImage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CELLS_STANDALONE_MODULE_VIEW_H_

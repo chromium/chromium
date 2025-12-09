@@ -13,6 +13,9 @@ namespace {
 
 const CGFloat kSymbolSize = 10;
 
+// `SendTabPromoView` accessibility ID.
+NSString* const kSendTabPromoViewID = @"kSendTabPromoViewID";
+
 }  // namespace
 
 @implementation SendTabPromoItem
@@ -39,6 +42,10 @@ const CGFloat kSymbolSize = 10;
 
 - (NSString*)buttonText {
   return l10n_util::GetNSString(IDS_IOS_SEND_TAB_PROMO_ALLOW_BUTTON);
+}
+
+- (NSString*)accessibilityIdentifier {
+  return kSendTabPromoViewID;
 }
 
 @end
