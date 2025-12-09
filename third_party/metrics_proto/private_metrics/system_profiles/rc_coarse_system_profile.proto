@@ -35,5 +35,8 @@ message RcCoarseSystemProfile {
   // RegionalCapabilitiesService::GetCountryId().
   //
   // See <go/chrome-regionalcapabilities/country-determination#rcaps-country>.
+  //
+  // When a country is not available from the RegionalCapabilitiesService, this
+  // field falls back to the default value indicating an unknown country.
   optional int32 profile_country_id = 5;
 }
