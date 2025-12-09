@@ -1005,6 +1005,11 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
       } else if (usage.Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ)) {
         heap_properties =
             d3d12_device_->GetCustomHeapProperties(0, D3D12_HEAP_TYPE_READBACK);
+      } else {
+        // Default to UPLOAD heap to enable CPU read-write access. This is
+        // currently required for ORT interop.
+        heap_properties =
+            d3d12_device_->GetCustomHeapProperties(0, D3D12_HEAP_TYPE_UPLOAD);
       }
     }
   }
