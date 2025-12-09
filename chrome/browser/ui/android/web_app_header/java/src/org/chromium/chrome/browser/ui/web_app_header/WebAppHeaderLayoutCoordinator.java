@@ -564,6 +564,10 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         if (mMenuButtonCoordinator != null) {
             mMenuButtonCoordinator.setBackgroundInsets(Insets.of(0, 0, 0, bottomInset));
         }
+
+        if (mAppOriginView != null) {
+            mAppOriginView.setPadding(0, 0, 0, bottomInset);
+        }
     }
 
     /**
