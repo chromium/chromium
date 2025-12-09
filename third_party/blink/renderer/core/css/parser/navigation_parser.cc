@@ -38,7 +38,7 @@ struct URLPatternParseResult {
 URLPatternParseResult ParseURLPattern(CSSParserTokenStream& stream,
                                       const Document& document) {
   if (stream.Peek().GetType() != kFunctionToken ||
-      stream.Peek().Value() != "urlpattern") {
+      stream.Peek().Value() != "url-pattern") {
     return URLPatternParseResult();
   }
 

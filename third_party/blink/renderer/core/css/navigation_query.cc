@@ -35,7 +35,7 @@ const Route* NavigationLocation::FindOrCreateRoute(Document& document) const {
 void NavigationLocation::SerializeTo(StringBuilder& builder) const {
   DCHECK(!string_.IsNull());
   if (url_pattern_) {
-    builder.Append("urlpattern(\"");
+    builder.Append("url-pattern(\"");
     builder.Append(string_);
     builder.Append("\")");
   } else {

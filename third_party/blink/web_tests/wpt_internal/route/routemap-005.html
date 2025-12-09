@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>@navigation with urlpattern()</title>
+<title>@navigation with url-pattern()</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
 <style>
@@ -9,36 +9,36 @@
   }
 
   /* Assuming here that "route" is part of the test path but no other parts of the URL. */
-  @navigation (at: urlpattern("*route*")) {
+  @navigation (at: url-pattern("*route*")) {
     #target { width: 100px; }
   }
 
-  @navigation (from: urlpattern("*route*")) {
+  @navigation (from: url-pattern("*route*")) {
     #target { padding-top: 20px; }
   }
 
-  @navigation (to: urlpattern("match-later-r2")) {
+  @navigation (to: url-pattern("match-later-r2")) {
     #target { padding-bottom: 30px; }
   }
 
-  @navigation (at: urlpattern("match-later-r2")) {
+  @navigation (at: url-pattern("match-later-r2")) {
     #target { height: 90px; }
   }
 
-  @navigation (from: urlpattern("match-later-r2")) {
+  @navigation (from: url-pattern("match-later-r2")) {
     #target { margin-left: 70px; }
   }
 
-  @navigation (to: urlpattern("match-later-r4")) {
+  @navigation (to: url-pattern("match-later-r4")) {
     #target { margin-right: 80px; }
   }
 
   /* These should never match in the test. */
-  @navigation (to: urlpattern("*route*")) {
+  @navigation (to: url-pattern("*route*")) {
     #target { padding-left: 666px; }
   }
 
-  @navigation (from: urlpattern("match-later-r4")) {
+  @navigation (from: url-pattern("match-later-r4")) {
     #target { padding-right: 666px; }
   }
 </style>
@@ -68,7 +68,7 @@
   }
 
   promise_test(async (t) => {
-    // at:urlpattern("*route*") should match.
+    // at:url-pattern("*route*") should match.
     let state = "at initial";
     assert_equals(getComputedStyle(target).width, "100px", state);
     assert_equals(getComputedStyle(target).height, "7px", state);
@@ -80,8 +80,8 @@
 
     navigation.navigate("match-later-r2");
     await entrychange.promise;
-    // at:urlpattern("match-later-r2"), from:urlpattern("*route*"),
-    // and "to:urlpattern("match-later-r2")" should match.
+    // at:url-pattern("match-later-r2"), from:url-pattern("*route*"),
+    // and "to:url-pattern("match-later-r2")" should match.
     state = "to match-later-r2";
     assert_equals(getComputedStyle(target).width, "7px", state);
     assert_equals(getComputedStyle(target).height, "90px", state);
@@ -91,7 +91,7 @@
     assert_equals(getComputedStyle(target).marginRight, "0px", state);
     assert_invariants(state);
     await finished.promise;
-    // at:urlpattern("match-later-r2") should match.
+    // at:url-pattern("match-later-r2") should match.
     state = "at match-later-r2";
     assert_equals(getComputedStyle(target).width, "7px", state);
     assert_equals(getComputedStyle(target).height, "90px", state);
@@ -103,7 +103,7 @@
 
     navigation.navigate("match-later-r3");
     await entrychange.promise;
-    // from:urlpattern("match-later-r2") should match.
+    // from:url-pattern("match-later-r2") should match.
     state = "to match-later-r3";
     assert_equals(getComputedStyle(target).width, "7px", state);
     assert_equals(getComputedStyle(target).height, "7px", state);
@@ -118,7 +118,7 @@
 
     navigation.navigate("match-later-r4");
     await entrychange.promise;
-    // to:urlpattern("match-later-r4") should match.
+    // to:url-pattern("match-later-r4") should match.
     state = "to match-later-r4";
     assert_equals(getComputedStyle(target).width, "7px", state);
     assert_equals(getComputedStyle(target).height, "7px", state);

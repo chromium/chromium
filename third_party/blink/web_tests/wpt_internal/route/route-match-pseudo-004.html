@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<title>:link-to(urlpattern()) serialization</title>
+<title>:link-to(url-pattern()) serialization</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://issues.chromium.org/issues/436805487">
 <style id="style">
-  :link-to(  urlpattern(  "*route/other.html"  )  )  {   }
+  :link-to(  url-pattern(  "*route/other.html"  )  )  {   }
 </style>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,6 +11,6 @@
   test(()=> {
     assert_equals(style.sheet.rules.length, 1);
     assert_equals(style.sheet.rules[0].cssText,
-                  ':link-to(urlpattern("*route/other.html")) { }');
+                  ':link-to(url-pattern("*route/other.html")) { }');
   }, "Serialize");
 </script>

@@ -33,7 +33,7 @@
       height: 7px;
     }
   }
-  @navigation (urlpattern("*route*")) and (r3) {
+  @navigation (url-pattern("*route*")) and (r3) {
     #match3 {
       height: 7px;
     }
@@ -84,7 +84,7 @@
     }
   }
 
-  @navigation ((r1) and (r2) and (r3) and (from: r1) and (to: r1) and (from: r2) and (to: r2) and (from: r3) and (to: r3)) or (at: urlpattern("*route*")) {
+  @navigation ((r1) and (r2) and (r3) and (from: r1) and (to: r1) and (from: r2) and (to: r2) and (from: r3) and (to: r3)) or (at: url-pattern("*route*")) {
     #match13 {
       height: 7px;
     }
