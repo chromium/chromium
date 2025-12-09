@@ -53,6 +53,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kHidePastePopupOnGSB,
     &features::kReduceGpuPriorityOnBackground,
     &features::kContinueGestureOnLosingFocus,
+    &features::kScrollAfterOSKViewportShrinkFix,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,
     &features::kWebBluetoothNewPermissionsBackend,

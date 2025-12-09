@@ -600,6 +600,13 @@ BASE_FEATURE(kRestrictOrientationLockToPhones,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Fix for scrolling to focused editable input fields after tapping to show the
+// on-screen keyboard (crbug.com/462636368).
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kScrollAfterOSKViewportShrinkFix,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kServiceWorkerAvoidMainThreadForInitialization,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
