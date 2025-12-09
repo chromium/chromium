@@ -170,12 +170,20 @@ public class TabGridDialogView extends FrameLayout {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = findViewById(R.id.title);
-            if (v != null && v.isFocused()) {
-                Rect rect = new Rect();
-                v.getGlobalVisibleRect(rect);
-                if (!rect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                    v.clearFocus();
+            View title = findViewById(R.id.title);
+
+            if (title != null && title.isFocused()) {
+                Rect viewRect = new Rect();
+                // 1. Get the text view's local bounds (0, 0, width, height)
+                title.getDrawingRect(viewRect);
+
+                // 2. Map those bounds to THIS toolbar's coordinate system
+                // This handles all nesting (LinearLayout inside FrameLayout) automatically.
+                offsetDescendantRectToMyCoords(title, viewRect);
+
+                // 3. Compare with event.getX()/getY() which are also relative to this toolbar
+                if (!viewRect.contains((int) event.getX(), (int) event.getY())) {
+                    title.clearFocus();
                 }
             }
         }
