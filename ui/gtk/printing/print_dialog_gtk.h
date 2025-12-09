@@ -20,6 +20,10 @@
 #include "ui/base/glib/scoped_gsignal.h"
 #include "ui/gtk/gtk_compat.h"
 
+namespace gtk {
+class GtkUiPlatform;
+}  // namespace gtk
+
 namespace printing {
 class MetafilePlayer;
 class PrintSettings;
@@ -34,7 +38,8 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
  public:
   // Creates and returns a print dialog.
   static printing::PrintDialogLinuxInterface* CreatePrintDialog(
-      PrintingContextLinux* context);
+      PrintingContextLinux* context,
+      gtk::GtkUiPlatform* platform);
 
   PrintDialogGtk(const PrintDialogGtk&) = delete;
   PrintDialogGtk& operator=(const PrintDialogGtk&) = delete;
@@ -61,7 +66,7 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
   friend class base::RefCountedDeleteOnSequence<PrintDialogGtk>;
   friend class base::DeleteHelper<PrintDialogGtk>;
 
-  explicit PrintDialogGtk(PrintingContextLinux* context);
+  PrintDialogGtk(PrintingContextLinux* context, gtk::GtkUiPlatform* platform);
   ~PrintDialogGtk() override;
 
   // Handles dialog response.
@@ -80,6 +85,7 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
   // Printing dialog callback.
   PrintingContextLinux::PrintSettingsCallback callback_;
   raw_ptr<PrintingContextLinux> context_;
+  const raw_ptr<gtk::GtkUiPlatform> platform_;
 
   // Print dialog settings. PrintDialogGtk owns |dialog_| and holds references
   // to the other objects.

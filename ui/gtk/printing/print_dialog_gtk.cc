@@ -191,14 +191,17 @@ ScopedGObject<GtkPrinter> GetPrinterWithName(const char* name) {
 
 // static
 printing::PrintDialogLinuxInterface* PrintDialogGtk::CreatePrintDialog(
-    PrintingContextLinux* context) {
-  return new PrintDialogGtk(context);
+    PrintingContextLinux* context,
+    gtk::GtkUiPlatform* platform) {
+  return new PrintDialogGtk(context, platform);
 }
 
-PrintDialogGtk::PrintDialogGtk(PrintingContextLinux* context)
+PrintDialogGtk::PrintDialogGtk(PrintingContextLinux* context,
+                               gtk::GtkUiPlatform* platform)
     : base::RefCountedDeleteOnSequence<PrintDialogGtk>(
           base::SequencedTaskRunner::GetCurrentDefault()),
-      context_(context) {
+      context_(context),
+      platform_(platform) {
   // Paired with the ReleaseDialog() call.
   AddRef();
 }
@@ -210,7 +213,7 @@ PrintDialogGtk::~PrintDialogGtk() {
     aura::Window* parent = gtk::GetAuraTransientParent(dialog_);
     if (parent) {
       parent->RemoveObserver(this);
-      gtk::ClearAuraTransientParent(dialog_, parent);
+      gtk::ClearAuraTransientParent(dialog_, parent, platform_);
     }
     gtk::GtkWindowDestroy(dialog_.ExtractAsDangling());
   }
@@ -415,7 +418,7 @@ void PrintDialogGtk::ShowDialog(
   DCHECK(callback_);
 
   dialog_ = gtk_print_unix_dialog_new(nullptr, nullptr);
-  gtk::SetGtkTransientForAura(dialog_, parent_view);
+  gtk::SetGtkTransientForAura(dialog_, parent_view, platform_);
   if (parent_view)
     parent_view->AddObserver(this);
   if (gtk::GtkCheckVersion(4)) {
@@ -459,7 +462,7 @@ void PrintDialogGtk::ShowDialog(
       base::BindRepeating(&PrintDialogGtk::OnResponse, base::Unretained(this)));
   gtk_widget_show(dialog_);
 
-  gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog_.get()));
+  platform_->ShowGtkWindow(GTK_WINDOW(dialog_.get()));
 }
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
@@ -646,7 +649,7 @@ void PrintDialogGtk::InitPrintSettings(
 void PrintDialogGtk::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(gtk::GetAuraTransientParent(dialog_), window);
 
-  gtk::ClearAuraTransientParent(dialog_, window);
+  gtk::ClearAuraTransientParent(dialog_, window, platform_);
   window->RemoveObserver(this);
   if (callback_)
     std::move(callback_).Run(printing::mojom::ResultCode::kCanceled);

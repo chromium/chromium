@@ -33,7 +33,7 @@ class GtkUiPlatform {
   // Creates/Gets a GdkWindow out of a Aura window id. Caller owns the returned
   // object. This function is meant to be used in GtkIM-based IME implementation
   // and is supported only in X11 backend (both Aura and Ozone).
-  virtual GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) = 0;
+  virtual GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) const = 0;
 
   // Gtk dialog windows must be set transient for the browser window. This
   // function abstracts away such functionality.

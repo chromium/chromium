@@ -25,6 +25,8 @@ class Window;
 
 namespace gtk {
 
+class GtkUiPlatform;
+
 const char* GtkCssMenu();
 const char* GtkCssMenuItem();
 const char* GtkCssMenuScrollbar();
@@ -33,13 +35,17 @@ const char* GtkCssMenuScrollbar();
 
 // Sets |dialog| as transient for |parent|, which will keep it on top and center
 // it above |parent|. Do nothing if |parent| is nullptr.
-void SetGtkTransientForAura(GtkWidget* dialog, aura::Window* parent);
+void SetGtkTransientForAura(GtkWidget* dialog,
+                            aura::Window* parent,
+                            GtkUiPlatform* platform);
 
 // Gets the transient parent aura window for |dialog|.
 aura::Window* GetAuraTransientParent(GtkWidget* dialog);
 
 // Clears the transient parent for |dialog|.
-void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent);
+void ClearAuraTransientParent(GtkWidget* dialog,
+                              aura::Window* parent,
+                              GtkUiPlatform* platform);
 
 // Disable input events handling on `parent` to make `dialog` modal.  The caller
 // is responsible for running the returned closure when the dialog is hidden to

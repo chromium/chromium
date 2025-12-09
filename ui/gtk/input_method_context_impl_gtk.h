@@ -20,12 +20,15 @@ using GtkWidget = struct _GtkWidget;
 
 namespace gtk {
 
+class GtkUiPlatform;
+
 // An implementation of LinuxInputMethodContext which uses GtkIMContext
 // (gtk-immodule) as a bridge from/to underlying IMEs.
 class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
  public:
   explicit InputMethodContextImplGtk(
-      ui::LinuxInputMethodContextDelegate* delegate);
+      ui::LinuxInputMethodContextDelegate* delegate,
+      const GtkUiPlatform* platform);
 
   InputMethodContextImplGtk(const InputMethodContextImplGtk&) = delete;
   InputMethodContextImplGtk& operator=(const InputMethodContextImplGtk&) =
@@ -60,8 +63,12 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   // type.
   GtkIMContext* GetIMContext();
 
+  GdkWindow* GetTargetWindow(const ui::KeyEvent& key_event);
+
   // A set of callback functions.  Must not be nullptr.
   const raw_ptr<ui::LinuxInputMethodContextDelegate> delegate_;
+
+  const raw_ptr<const GtkUiPlatform> platform_;
 
   // Tracks the input field type.
   ui::TextInputType type_ = ui::TEXT_INPUT_TYPE_NONE;

@@ -202,14 +202,16 @@ bool GtkInitFromCommandLine(int* argc, char** argv) {
   return GtkInitCheck(argc, argv);
 }
 
-void SetGtkTransientForAura(GtkWidget* dialog, aura::Window* parent) {
+void SetGtkTransientForAura(GtkWidget* dialog,
+                            aura::Window* parent,
+                            GtkUiPlatform* platform) {
   if (!parent || !parent->GetHost()) {
     return;
   }
 
   gtk_widget_realize(dialog);
   gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
-  GtkUi::GetPlatform()->SetGtkWidgetTransientFor(dialog, parent_id);
+  platform->SetGtkWidgetTransientFor(dialog, parent_id);
 
   // We also set the |parent| as a property of |dialog|, so that we can unlink
   // the two later.
@@ -221,7 +223,9 @@ aura::Window* GetAuraTransientParent(GtkWidget* dialog) {
       g_object_get_data(G_OBJECT(dialog), kAuraTransientParent));
 }
 
-void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
+void ClearAuraTransientParent(GtkWidget* dialog,
+                              aura::Window* parent,
+                              GtkUiPlatform* platform) {
   CHECK(dialog);
   g_object_set_data(G_OBJECT(dialog), kAuraTransientParent, nullptr);
 
@@ -230,7 +234,7 @@ void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
   }
 
   gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
-  GtkUi::GetPlatform()->ClearTransientFor(parent_id);
+  platform->ClearTransientFor(parent_id);
 }
 
 base::OnceClosure DisableHostInputHandling(GtkWidget* dialog,

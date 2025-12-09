@@ -27,20 +27,6 @@ namespace gtk {
 
 namespace {
 
-// Get IME KeyEvent's target window. Assumes root aura::Window is set to
-// Event::target(), otherwise returns null.
-GdkWindow* GetTargetWindow(const ui::KeyEvent& key_event) {
-  if (!key_event.target()) {
-    return nullptr;
-  }
-
-  aura::Window* window = static_cast<aura::Window*>(key_event.target());
-  DCHECK(window) << "KeyEvent target window not set.";
-
-  auto window_id = window->GetHost()->GetAcceleratedWidget();
-  return GtkUi::GetPlatform()->GetGdkWindow(window_id);
-}
-
 int GetKeyEventProperty(const ui::KeyEvent& key_event,
                         const char* property_key) {
   auto* properties = key_event.properties();
@@ -128,9 +114,25 @@ GdkEventKey* GdkEventFromImeKeyEvent(const ui::KeyEvent& key_event) {
 
 }  // namespace
 
+// Get IME KeyEvent's target window. Assumes root aura::Window is set to
+// Event::target(), otherwise returns null.
+GdkWindow* InputMethodContextImplGtk::GetTargetWindow(
+    const ui::KeyEvent& key_event) {
+  if (!key_event.target()) {
+    return nullptr;
+  }
+
+  aura::Window* window = static_cast<aura::Window*>(key_event.target());
+  DCHECK(window) << "KeyEvent target window not set.";
+
+  auto window_id = window->GetHost()->GetAcceleratedWidget();
+  return platform_->GetGdkWindow(window_id);
+}
+
 InputMethodContextImplGtk::InputMethodContextImplGtk(
-    ui::LinuxInputMethodContextDelegate* delegate)
-    : delegate_(delegate) {
+    ui::LinuxInputMethodContextDelegate* delegate,
+    const GtkUiPlatform* platform)
+    : delegate_(delegate), platform_(platform) {
   CHECK(delegate_);
 
   gtk_context_ = TakeGObject(gtk_im_multicontext_new());

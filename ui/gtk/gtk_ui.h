@@ -53,10 +53,6 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   ~GtkUi() override;
 
-  // Static delegate getter, used by different objects (created by GtkUi), e.g:
-  // Dialogs, IME Context, when platform-specific functionality is required.
-  static GtkUiPlatform* GetPlatform();
-
   // Setters used by SettingsProvider:
   void SetWindowButtonOrdering(
       const std::vector<views::FrameButton>& leading_buttons,

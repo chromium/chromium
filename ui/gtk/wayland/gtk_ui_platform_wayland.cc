@@ -35,7 +35,7 @@ void GtkUiPlatformWayland::OnInitialized() {
 }
 
 GdkWindow* GtkUiPlatformWayland::GetGdkWindow(
-    gfx::AcceleratedWidget window_id) {
+    gfx::AcceleratedWidget window_id) const {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }

@@ -47,7 +47,8 @@ void GtkUiPlatformX11::OnInitialized() {
   x11::SetXlibErrorHandler();
 }
 
-GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
+GdkWindow* GtkUiPlatformX11::GetGdkWindow(
+    gfx::AcceleratedWidget window_id) const {
   DCHECK(!gtk::GtkCheckVersion(4));
   GdkDisplay* display = gdk_display_get_default();
   GdkWindow* gdk_window = gdk_x11_window_lookup_for_display(
@@ -99,7 +100,7 @@ void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
 std::unique_ptr<ui::LinuxInputMethodContext>
 GtkUiPlatformX11::CreateInputMethodContext(
     ui::LinuxInputMethodContextDelegate* delegate) const {
-  return std::make_unique<InputMethodContextImplGtk>(delegate);
+  return std::make_unique<InputMethodContextImplGtk>(delegate, this);
 }
 
 bool GtkUiPlatformX11::IncludeFontScaleInDeviceScale() const {
