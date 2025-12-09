@@ -100,23 +100,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 @implementation ExplainWithGeminiMediatorTestCase
 
-// TODO(crbug.com/429537743): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testExplainWithGeminiInReadingMode \
-  testExplainWithGeminiInReadingMode
-#else
-#define MAYBE_testExplainWithGeminiInReadingMode \
-  DISABLED_testExplainWithGeminiInReadingMode
-#endif
-
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled_and_params.push_back(
       {kExplainGeminiEditMenu, {{{kExplainGeminiEditMenuParams, "2"}}}});
   config.features_enabled_and_params.push_back(
       {kBWGPromoConsent, {{{kBWGPromoConsentParams, "3"}}}});
-  if ([self
-          isRunningTest:@selector(MAYBE_testExplainWithGeminiInReadingMode)]) {
+  if ([self isRunningTest:@selector(testExplainWithGeminiInReadingMode)]) {
     config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
     config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
   }
@@ -244,7 +234,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Checks if Explain With Gemini button is present in Reading Mode.
-- (void)MAYBE_testExplainWithGeminiInReadingMode {
+- (void)testExplainWithGeminiInReadingMode {
   [self loadPage];
 
   // Open Reader Mode UI.
@@ -252,10 +242,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
       @"Reader mode content could not be loaded.");
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
+      waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:
+      waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
 
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
