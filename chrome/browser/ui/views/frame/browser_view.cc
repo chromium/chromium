@@ -1311,6 +1311,15 @@ bool BrowserView::ShouldDrawVerticalTabStrip() const {
              ->ShouldDisplayVerticalTabs();
 }
 
+bool BrowserView::IsVerticalTabStripCollapsed() const {
+  if (auto* const controller = browser()
+                                   ->browser_window_features()
+                                   ->vertical_tab_strip_state_controller()) {
+    return controller->IsCollapsed();
+  }
+  return false;
+}
+
 bool BrowserView::GetIncognito() const {
   return browser_->GetProfile()->IsIncognitoProfile();
 }

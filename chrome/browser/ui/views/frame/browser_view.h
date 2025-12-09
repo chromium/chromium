@@ -332,6 +332,9 @@ class BrowserView : public BrowserWindow,
   // Returns whether a vertical tabstrip should be shown.
   bool ShouldDrawVerticalTabStrip() const;
 
+  // Returns whether the vertical tabstrip is collapsed.
+  bool IsVerticalTabStripCollapsed() const;
+
   // Returns true if the profile associated with this Browser window is
   // incognito.
   bool GetIncognito() const;

@@ -273,14 +273,17 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void OnTouchUiChanged();
 
-  void UpdateClipPath();
+  void UpdateClipPath(int leading_corner_radius, int trailing_corner_radius);
 
   // Called when active state for the window changes.
   void ActiveStateChanged();
 
   void NewTabButtonPressed(const ui::Event& event);
 
-  void UpdateRecedingCornerRadius();
+  // Determines which corners are painted. Return value is whether to show
+  // leading and/or trailing curves, respectively. See comments on
+  // `leading_curve_` and `trailing_curve_`.
+  std::pair<bool, bool> GetCornersToShow() const;
 
   gfx::SlideAnimation size_animation_{this};
 
@@ -339,11 +342,10 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // container_view_ is transparent with the same dimensions as ToolbarView.
   // All children are added to container_view_ and layout_manager_ applies to
-  // container_view_. The reason for this layer of indiretion is because
+  // container_view_. The reason for this layer of indirection is because
   // container_view_ has a clip path set in UpdateClipPath() which adds rounded
   // corners. This leaves some unpainted pixels, which are painted by
-  // background_view_left_ and background_view_right_.
-  // the future.
+  // leading_curve_ and trailing_curve_.
   raw_ptr<ContainerView> container_view_ = nullptr;
 
   // A chevron button that indicates some toolbar elements have overflowed
@@ -352,18 +354,20 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<OverflowButton> overflow_button_ = nullptr;
 
   // The toolbar's top corners recede lower into the toolbar bounds, and need to
-  // have the frame's color painted into it. The receding_corner_radius_ is the
-  // size of the corner radius that's clipped out, and the background_view_left_
-  //  background_view_right_ are the area painted behind the toolbar which give
-  // the effect of the toolbar raising up into the tabstrip region.
-  // The receding_corner_radius_ can change based on whether if WebUiTabStrip is
-  // being used and if the first tab is active or not.
-  int receding_corner_radius_ = 0;
-  raw_ptr<View> background_view_left_ = nullptr;
-  raw_ptr<View> background_view_right_ = nullptr;
+  // have the frame's color painted into it. Similarly, in vertical tabstrip
+  // mode, the top of the tabstrip edge (when adjacent to the toolbar) curves
+  // int it.
+  //
+  // The `leading_curve_` and `trailing_curve_` are the area
+  // painted behind the toolbar which give the melding effect of the toolbar
+  // raising up into the tabstrip region or blending with the vertical tabstrip.
+  //
+  // These views will either be shown or hidden based on visual need.
+  raw_ptr<View> leading_curve_ = nullptr;
+  raw_ptr<View> trailing_curve_ = nullptr;
 
-  // Listens to changes to window active state to update background_view_right_
-  // and background_view_left_, as their background depends on active state.
+  // Listens to changes to window active state to update trailing_curve_
+  // and leading_curve_, as their background depends on active state.
   base::CallbackListSubscription active_state_subscription_;
 };
 

@@ -292,11 +292,11 @@ void ToolbarView::Init() {
 #endif
 
   // The background views must be behind container_view_.
-  background_view_left_ = AddChildViewAt(std::make_unique<View>(), 0);
-  background_view_left_->SetBackground(
+  leading_curve_ = AddChildViewAt(std::make_unique<View>(), 0);
+  leading_curve_->SetBackground(
       std::make_unique<TabstripLikeBackground>(browser_view_));
-  background_view_right_ = AddChildViewAt(std::make_unique<View>(), 0);
-  background_view_right_->SetBackground(
+  trailing_curve_ = AddChildViewAt(std::make_unique<View>(), 0);
+  trailing_curve_->SetBackground(
       std::make_unique<TabstripLikeBackground>(browser_view_));
 
   active_state_subscription_ =
@@ -641,7 +641,7 @@ void ToolbarView::UpdateForWebUITabStrip() {
     new_tab_button_->SetVisible(false);
   }
 
-  UpdateRecedingCornerRadius();
+  InvalidateLayout();
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
 
@@ -828,11 +828,13 @@ void ToolbarView::Layout(PassKey) {
 
   // The background views should be behind the top-left and top-right corners
   // of the container_view_.
-  background_view_left_->SetBounds(0, 0, receding_corner_radius_,
-                                   receding_corner_radius_);
-  background_view_right_->SetBounds(width() - receding_corner_radius_, 0,
-                                    receding_corner_radius_,
-                                    receding_corner_radius_);
+  const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
+  const auto [draw_leading_corner, draw_trailing_corner] = GetCornersToShow();
+  const int leading_corner_radius = draw_leading_corner ? corner_radius : 0;
+  const int trailing_corner_radius = draw_trailing_corner ? corner_radius : 0;
+  leading_curve_->SetBounds(0, 0, leading_corner_radius, leading_corner_radius);
+  trailing_curve_->SetBounds(width() - trailing_corner_radius, 0,
+                             trailing_corner_radius, trailing_corner_radius);
 
   if (display_mode_ == DisplayMode::kCustomTab) {
     custom_tab_bar_->SetBounds(0, 0, width(),
@@ -843,7 +845,7 @@ void ToolbarView::Layout(PassKey) {
 
   if (display_mode_ == DisplayMode::kNormal) {
     LayoutCommon();
-    UpdateClipPath();
+    UpdateClipPath(leading_corner_radius, trailing_corner_radius);
   }
 
   if (toolbar_controller_) {
@@ -881,7 +883,8 @@ void ToolbarView::OnThemeChanged() {
   SchedulePaint();
 }
 
-void ToolbarView::UpdateClipPath() {
+void ToolbarView::UpdateClipPath(int leading_corner_radius,
+                                 int trailing_corner_radius) {
   const gfx::Rect local_bounds = GetLocalBounds();
   // The bottom of the toolbar may be clipped more than necessary in
   // certain scale factor so adds extra 2dp so that even if the origin
@@ -896,14 +899,14 @@ void ToolbarView::UpdateClipPath() {
   const SkPath path =
       SkPathBuilder()
           .moveTo(0, local_bounds.height())
-          .lineTo(0, receding_corner_radius_)
-          .arcTo(SkVector(receding_corner_radius_, receding_corner_radius_), 0,
+          .lineTo(0, leading_corner_radius)
+          .arcTo(SkVector(leading_corner_radius, leading_corner_radius), 0,
                  SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-                 SkPoint(receding_corner_radius_, 0))
-          .lineTo(local_bounds.width() - receding_corner_radius_, 0)
-          .arcTo(SkVector(receding_corner_radius_, receding_corner_radius_), 0,
+                 SkPoint(leading_corner_radius, 0))
+          .lineTo(local_bounds.width() - trailing_corner_radius, 0)
+          .arcTo(SkVector(trailing_corner_radius, trailing_corner_radius), 0,
                  SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
-                 SkPoint(local_bounds.width(), receding_corner_radius_))
+                 SkPoint(local_bounds.width(), trailing_corner_radius))
           .lineTo(local_bounds.width(), extended_height)
           .lineTo(0, extended_height)
           .detach();
@@ -911,8 +914,8 @@ void ToolbarView::UpdateClipPath() {
 }
 
 void ToolbarView::ActiveStateChanged() {
-  background_view_left_->SchedulePaint();
-  background_view_right_->SchedulePaint();
+  leading_curve_->SchedulePaint();
+  trailing_curve_->SchedulePaint();
 }
 
 void ToolbarView::NewTabButtonPressed(const ui::Event& event) {
@@ -1289,36 +1292,54 @@ void ToolbarView::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  UpdateRecedingCornerRadius();
-}
-
-void ToolbarView::UpdateRecedingCornerRadius() {
-  const bool tab_strip_has_trailing_frame_buttons =
-      browser_view_->browser_widget()
-          ->GetFrameView()
-          ->CaptionButtonsOnTrailingEdge();
-  bool tab_strip_has_leading_action_buttons =
-      (!tabs::GetTabSearchTrailingTabstrip(browser()->profile()) &&
-       !features::HasTabSearchToolbarButton());
-  bool first_tab_selected = browser_->tab_strip_model()->IsTabInForeground(0);
-
-  int new_corner_radius;
-
-  // If there is anything on the leading side or not the first tab is selected,
-  // then the corner radius is shown, otherwise we hide the corner radius.
-  // Also when showing WebUITabStrip, toolbar should not have receding corners.
-  if (!browser_view_->webui_tab_strip() &&
-      (!tab_strip_has_trailing_frame_buttons ||
-       tab_strip_has_leading_action_buttons || !first_tab_selected)) {
-    new_corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
-  } else {
-    new_corner_radius = 0;
-  }
-
-  if (receding_corner_radius_ != new_corner_radius) {
-    receding_corner_radius_ = new_corner_radius;
+  // Corner rendering can be changed when selection model changes.
+  // This can be optimized by only detecting if the first tab is
+  // selected/unselected.
+  if (selection.selection_changed()) {
     InvalidateLayout();
   }
+}
+
+std::pair<bool, bool> ToolbarView::GetCornersToShow() const {
+  const auto* const frame_view =
+      browser_view_->browser_widget()->GetFrameView();
+  const bool has_leading_frame_buttons =
+      frame_view->CaptionButtonsOnLeadingEdge();
+  const bool webui_tabstrip = browser_view_->webui_tab_strip();
+  const bool vertical_tabstrip = browser_view_->ShouldDrawVerticalTabStrip();
+
+  bool leading = false;
+  bool trailing = false;
+
+  if (vertical_tabstrip) {
+    if (!browser_view_->IsFullscreen()) {
+      // Draw leading corner if vertical tabstrip is directly adjacent to
+      // toolbar.
+      if (!has_leading_frame_buttons ||
+          !browser_view_->IsVerticalTabStripCollapsed()) {
+        leading = true;
+      }
+    }
+  } else if (!webui_tabstrip) {
+    // Trailing curve is always shown for normal horizontal tabstrip.
+    trailing = true;
+
+    // If there is anything on the leading side or the first tab is not
+    // selected, then the corner radius is shown, otherwise we hide the corner
+    // radius. Also when showing WebUITabStrip, toolbar should not have receding
+    // corners.
+    const bool tab_strip_has_leading_action_buttons =
+        (!tabs::GetTabSearchTrailingTabstrip(browser()->profile()) &&
+         !features::HasTabSearchToolbarButton());
+    const bool first_tab_selected =
+        browser_->tab_strip_model()->IsTabInForeground(0);
+    if (has_leading_frame_buttons || tab_strip_has_leading_action_buttons ||
+        !first_tab_selected) {
+      leading = true;
+    }
+  }
+
+  return std::make_pair(leading, trailing);
 }
 
 BEGIN_METADATA(ToolbarView)
