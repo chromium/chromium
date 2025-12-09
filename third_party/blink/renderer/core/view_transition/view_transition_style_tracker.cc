@@ -1744,14 +1744,12 @@ gfx::Transform ViewTransitionStyleTracker::ComputeTransformForParticipant(
       << first_fragment.PaintOffset();
   auto paint_properties = first_fragment.LocalBorderBoxProperties();
 
-  LayoutBox* scope_box = object.GetDocument().GetLayoutView();
-  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-    auto* scope = OriginatingElement();
-    scope_box = scope->IsDocumentElement()
-                    ? scope->GetDocument().GetLayoutView()
-                    : DynamicTo<LayoutBox>(scope->GetLayoutObject());
-    CHECK(scope_box);
-  }
+  auto* scope = OriginatingElement();
+  LayoutBox* scope_box = scope->IsDocumentElement()
+                             ? scope->GetDocument().GetLayoutView()
+                             : DynamicTo<LayoutBox>(scope->GetLayoutObject());
+  CHECK(scope_box);
+
   auto& scope_fragment = scope_box->FirstFragment();
   const auto& scope_properties = scope_fragment.LocalBorderBoxProperties();
 
@@ -1768,13 +1766,13 @@ gfx::Transform ViewTransitionStyleTracker::ComputeTransformForParticipant(
         gfx::Vector2dF(layout_inline->PhysicalLinesBoundingBox().offset));
   }
 
-  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled() &&
-      !scope_box->IsLayoutView()) {
+  if (!scope_box->IsLayoutView()) {
+    DCHECK(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled());
+
     // TODO(crbug.com/394052227): Should we force compositing on the scope?
     // If we do, its paint offset will always be zero.
 
     // Adjust for the scope element's borders and scrollbars.
-    // TODO(crbug.com/394052227): Is this correct in RTL / all writing modes?
     transform.Translate(-scope_box->ClientLeft(), -scope_box->ClientTop());
     transform.Translate(-gfx::Vector2dF(scope_fragment.PaintOffset()));
   }

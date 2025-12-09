@@ -9887,13 +9887,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
 
   PseudoElement* pseudo_element =
       PseudoElement::Create(this, pseudo_id, pseudo_argument);
-  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-    if (!pseudo_element) {
-      // TODO(crbug.com/405117185): Replace with DCHECK(pseudo_element) once we
-      // properly track per-scope view transition names.
-      return nullptr;
-    }
-  }
+  DCHECK(pseudo_element);
   EnsureElementRareData().SetPseudoElement(pseudo_id, pseudo_element,
                                            pseudo_argument);
   pseudo_element->InsertedInto(*this);
