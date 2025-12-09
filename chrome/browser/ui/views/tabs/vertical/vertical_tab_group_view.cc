@@ -6,10 +6,10 @@
 
 #include <numeric>
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_group.h"
@@ -20,8 +20,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
@@ -33,29 +31,22 @@ constexpr int kTabVerticalPadding = 2;
 constexpr int kGroupLineWidth = 2;
 constexpr int kGroupLineCornerRadius = 4;
 constexpr int kGroupHeaderHeight = 26;
-constexpr int kGroupHeaderCornerRadius = 8;
-constexpr int kGroupHeaderHorizontalInset = 8;
 constexpr int kTabLeadingPadding = 10;
 
-class VerticalTabGroupHeader : public views::Label {
-  METADATA_HEADER(VerticalTabGroupHeader, views::Label)
- public:
-  VerticalTabGroupHeader() {
-    SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    SetElideBehavior(gfx::FADE_TAIL);
-    SetAutoColorReadabilityEnabled(false);
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(0, kGroupHeaderHorizontalInset)));
-  }
-};
+const tab_groups::TabGroupVisualData* GetTabGroupVisualDataFromNode(
+    TabCollectionNode* node) {
+  return static_cast<const tabs::TabGroupTabCollection*>(
+             std::get<const tabs::TabCollection*>(node->GetNodeData()))
+      ->GetTabGroup()
+      ->visual_data();
+}
 
-BEGIN_METADATA(VerticalTabGroupHeader)
-END_METADATA
 }  // namespace
 
 VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
-      group_header_(AddChildView(std::make_unique<VerticalTabGroupHeader>())),
+      group_header_(AddChildView(std::make_unique<VerticalTabGroupHeaderView>(
+          GetTabGroupVisualDataFromNode(collection_node_)))),
       group_line_(AddChildView(std::make_unique<views::View>())) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   node_destroyed_subscription_ =
@@ -127,17 +118,12 @@ void VerticalTabGroupView::ResetCollectionNode() {
 }
 
 void VerticalTabGroupView::OnDataChanged() {
-  const TabGroup* tab_group =
-      static_cast<const tabs::TabGroupTabCollection*>(
-          std::get<const tabs::TabCollection*>(collection_node_->GetNodeData()))
-          ->GetTabGroup();
-  group_header_->SetText(tab_group->visual_data()->title());
+  const tab_groups::TabGroupVisualData* visual_data =
+      GetTabGroupVisualDataFromNode(collection_node_);
+  group_header_->OnDataChanged(visual_data);
   if (GetColorProvider()) {
     SkColor color = GetColorProvider()->GetColor(GetTabGroupTabStripColorId(
-        tab_group->visual_data()->color(), GetWidget()->ShouldPaintAsActive()));
-    group_header_->SetEnabledColor(color_utils::GetColorWithMaxContrast(color));
-    group_header_->SetBackground(
-        views::CreateRoundedRectBackground(color, kGroupHeaderCornerRadius));
+        visual_data->color(), GetWidget()->ShouldPaintAsActive()));
     group_line_->SetBackground(views::CreateRoundedRectBackground(
         color, gfx::RoundedCornersF(0, kGroupLineCornerRadius,
                                     kGroupLineCornerRadius, 0)));

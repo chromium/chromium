@@ -12,10 +12,7 @@
 #include "ui/views/view.h"
 
 class TabCollectionNode;
-
-namespace views {
-class Label;
-}
+class VerticalTabGroupHeaderView;
 
 // Container for a tab group in the vertical tabstrip.
 class VerticalTabGroupView : public views::View, public views::LayoutDelegate {
@@ -41,7 +38,7 @@ class VerticalTabGroupView : public views::View, public views::LayoutDelegate {
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription data_changed_subscription_;
 
-  const raw_ptr<views::Label> group_header_ = nullptr;
+  const raw_ptr<VerticalTabGroupHeaderView> group_header_ = nullptr;
   const raw_ptr<views::View> group_line_ = nullptr;
 };
 
