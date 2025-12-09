@@ -13,7 +13,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
@@ -41,11 +40,11 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     private @Nullable Profile mCurrentProfile;
 
     @Override
-    public void initialize(
+    public void initializeWithNative(
             Context context,
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,
-            OneshotSupplier<ChromeAndroidTask> taskSupplier,
+            ChromeAndroidTask task,
             ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
@@ -60,7 +59,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         context,
                         container.findViewById(R.id.extension_action_list),
                         windowAndroid,
-                        taskSupplier,
+                        task,
                         profileSupplier,
                         currentTabSupplier);
         mExtensionsMenuCoordinator =
@@ -69,7 +68,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         container.findViewById(R.id.extensions_menu_button),
                         container.findViewById(R.id.extensions_divider),
                         themeColorProvider,
-                        taskSupplier,
+                        task,
                         profileSupplier,
                         currentTabSupplier,
                         tabCreator);

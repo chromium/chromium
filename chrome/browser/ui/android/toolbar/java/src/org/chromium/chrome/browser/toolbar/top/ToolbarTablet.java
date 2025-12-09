@@ -371,7 +371,6 @@ public class ToolbarTablet extends ToolbarLayout {
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
-            @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             @Nullable Supplier<Integer> incognitoWindowCountSupplier) {
@@ -389,7 +388,6 @@ public class ToolbarTablet extends ToolbarLayout {
                 backButtonCoordinator,
                 forwardButtonCoordinator,
                 homeButtonDisplay,
-                extensionToolbarCoordinator,
                 themeColorProvider,
                 incognitoStateProvider,
                 incognitoWindowCountSupplier);
@@ -397,7 +395,6 @@ public class ToolbarTablet extends ToolbarLayout {
         mBackButtonCoordinator = assertNonNull(backButtonCoordinator);
         mForwardButtonCoordinator = assertNonNull(forwardButtonCoordinator);
         menuButtonCoordinator.setVisibility(true);
-        mExtensionToolbarCoordinator = extensionToolbarCoordinator;
 
         assert incognitoWindowCountSupplier != null;
         mIncognitoIndicatorCoordinator =
@@ -425,6 +422,12 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarWidthConsumers[ToolbarComponentId.MENU] = menuButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.PADDING] =
                 new ToolbarPaddingWidthConsumer(this, mStartPaddingWithButtons);
+    }
+
+    @Override
+    public void setExtensionToolbarCoordinator(
+            ExtensionToolbarCoordinator extensionToolbarCoordinator) {
+        mExtensionToolbarCoordinator = extensionToolbarCoordinator;
     }
 
     @Override

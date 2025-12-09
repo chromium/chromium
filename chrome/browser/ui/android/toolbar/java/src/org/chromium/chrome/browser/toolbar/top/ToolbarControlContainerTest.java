@@ -653,7 +653,6 @@ public class ToolbarControlContainerTest {
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
                 mHomeButtonDisplay,
-                /* extensionToolbarCoordinator= */ null,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ null);

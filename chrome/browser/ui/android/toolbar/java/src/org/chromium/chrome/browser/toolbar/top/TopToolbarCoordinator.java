@@ -210,7 +210,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
-            @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
             TopControlsStacker topControlsStacker,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Integer> incognitoWindowCountSupplier) {
@@ -287,7 +286,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 mBackButtonCoordinator,
                 forwardButtonCoordinator,
                 homeButtonDisplay,
-                extensionToolbarCoordinator,
                 normalThemeColorProvider,
                 incognitoStateProvider,
                 incognitoWindowCountSupplier);
@@ -405,6 +403,19 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                             .registerComponentCallbacks(mTabStripTransitionCoordinator);
                     mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
                 });
+    }
+
+    /**
+     * Sets the {@link ExtensionToolbarCoordinator}.
+     *
+     * <p>This method is not called if the extension toolbar is unavailable. If it is called, it is
+     * after native initialization.
+     *
+     * @param extensionToolbarCoordinator The {@link ExtensionToolbarCoordinator} to be set.
+     */
+    public void setExtensionToolbarCoordinator(
+            ExtensionToolbarCoordinator extensionToolbarCoordinator) {
+        mToolbarLayout.setExtensionToolbarCoordinator(extensionToolbarCoordinator);
     }
 
     /** Returns the color of the hairline drawn underneath the toolbar. */

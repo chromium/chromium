@@ -13,7 +13,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
@@ -38,7 +37,7 @@ import org.chromium.ui.widget.RectProvider;
 class ExtensionsMenuMediator implements Destroyable {
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
     private final Context mContext;
-    private final OneshotSupplier<ChromeAndroidTask> mTaskSupplier;
+    private final ChromeAndroidTask mTask;
     private final ObservableSupplier<@Nullable Profile> mProfileSupplier;
     private final Runnable mOnUpdateFinishedRunnable;
     private final Callback<Boolean> mOnExtensionsAvailableCallback;
@@ -48,14 +47,14 @@ class ExtensionsMenuMediator implements Destroyable {
 
     public ExtensionsMenuMediator(
             Context context,
-            OneshotSupplier<ChromeAndroidTask> taskSupplier,
+            ChromeAndroidTask task,
             ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ModelList extensionModels,
             Runnable onUpdateFinishedRunnable,
             Callback<Boolean> onExtensionsAvailableCallback,
             View rootView) {
-        mTaskSupplier = taskSupplier;
+        mTask = task;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mProfileUpdatedCallback);
 
@@ -109,11 +108,6 @@ class ExtensionsMenuMediator implements Destroyable {
     }
 
     private void onPrimaryClick(ListMenuButton buttonView, String actionId) {
-        ChromeAndroidTask task = mTaskSupplier.get();
-        if (task == null) {
-            return;
-        }
-
         Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
         if (currentTab == null) {
             return;
@@ -126,7 +120,7 @@ class ExtensionsMenuMediator implements Destroyable {
 
         ExtensionActionContextMenuBridge bridge =
                 new ExtensionActionContextMenuBridge(
-                        task, actionId, webContents, ContextMenuSource.MENU_ITEM);
+                        mTask, actionId, webContents, ContextMenuSource.MENU_ITEM);
 
         ExtensionActionContextMenuUtils.showContextMenu(
                 mContext,

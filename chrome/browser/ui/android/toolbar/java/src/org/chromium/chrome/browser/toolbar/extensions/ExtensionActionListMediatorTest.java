@@ -39,7 +39,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
@@ -92,7 +91,6 @@ public class ExtensionActionListMediatorTest {
     private FakeExtensionActionsBridge.ProfileModel mProfileModel;
     private MockTab mTab1;
     private MockTab mTab2;
-    private OneshotSupplierImpl<ChromeAndroidTask> mTaskSupplier;
     private ObservableSupplierImpl<@Nullable Profile> mProfileSupplier;
     private ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier;
     private ModelList mModels;
@@ -118,8 +116,6 @@ public class ExtensionActionListMediatorTest {
         mTab2 = new MockTab(TAB2_ID, mProfile);
         mTab1.setWebContentsOverrideForTesting(mWebContents);
         mTab2.setWebContentsOverrideForTesting(mWebContents);
-        mTaskSupplier = new OneshotSupplierImpl<>();
-        mTaskSupplier.set(mTask);
         mProfileSupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
@@ -128,7 +124,7 @@ public class ExtensionActionListMediatorTest {
                         context,
                         mWindowAndroid,
                         mModels,
-                        mTaskSupplier,
+                        mTask,
                         mProfileSupplier,
                         mCurrentTabSupplier);
 

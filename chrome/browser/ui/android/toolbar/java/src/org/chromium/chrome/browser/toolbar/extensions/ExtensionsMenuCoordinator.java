@@ -19,7 +19,6 @@ import com.google.android.material.divider.MaterialDivider;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -84,7 +83,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
             ListMenuButton extensionsMenuButton,
             MaterialDivider extensionsMenuTabSwitcherDivider,
             ThemeColorProvider themeColorProvider,
-            OneshotSupplier<ChromeAndroidTask> taskSupplier,
+            ChromeAndroidTask task,
             ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator) {
@@ -133,7 +132,7 @@ public class ExtensionsMenuCoordinator implements Destroyable {
         mMediator =
                 new ExtensionsMenuMediator(
                         mContext,
-                        taskSupplier,
+                        task,
                         profileSupplier,
                         mCurrentTabSupplier,
                         mExtensionModels,

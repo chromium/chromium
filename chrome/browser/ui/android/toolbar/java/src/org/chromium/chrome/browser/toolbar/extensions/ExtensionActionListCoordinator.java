@@ -11,7 +11,6 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,7 +39,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
             Context context,
             ExtensionActionListContainer container,
             WindowAndroid windowAndroid,
-            OneshotSupplier<ChromeAndroidTask> taskSupplier,
+            ChromeAndroidTask task,
             ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier) {
         mContainer = container;
@@ -48,12 +47,7 @@ public class ExtensionActionListCoordinator implements Destroyable {
         mModels = new ModelList();
         mMediator =
                 new ExtensionActionListMediator(
-                        context,
-                        windowAndroid,
-                        mModels,
-                        taskSupplier,
-                        profileSupplier,
-                        currentTabSupplier);
+                        context, windowAndroid, mModels, task, profileSupplier, currentTabSupplier);
         mAdapter =
                 new ViewGroupAdapter.Builder(mContainer, mModels)
                         .registerType(

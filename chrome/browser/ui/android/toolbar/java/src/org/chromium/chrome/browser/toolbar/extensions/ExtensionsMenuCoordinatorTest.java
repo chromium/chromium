@@ -29,7 +29,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,8 +53,6 @@ public class ExtensionsMenuCoordinatorTest {
 
     private Activity mContext;
 
-    private final OneshotSupplierImpl<ChromeAndroidTask> mTaskSupplier =
-            new OneshotSupplierImpl<>();
     private final ObservableSupplierImpl<@Nullable Profile> mProfileSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier =
@@ -88,8 +85,6 @@ public class ExtensionsMenuCoordinatorTest {
         mExtensionsMenuTabSwitcherDivider = new MaterialDivider(activity);
         activity.setContentView(mExtensionsMenuButton);
 
-        mTaskSupplier.set(mTask);
-
         mProfileModel = mBridge.getOrCreateProfileModel(mProfile);
         mProfileModel.setInitialized(true);
 
@@ -104,7 +99,7 @@ public class ExtensionsMenuCoordinatorTest {
                         mExtensionsMenuButton,
                         mExtensionsMenuTabSwitcherDivider,
                         mThemeColorProvider,
-                        mTaskSupplier,
+                        mTask,
                         mProfileSupplier,
                         mCurrentTabSupplier,
                         mTabCreator);
@@ -126,7 +121,7 @@ public class ExtensionsMenuCoordinatorTest {
                         mExtensionsMenuButton,
                         mExtensionsMenuTabSwitcherDivider,
                         mThemeColorProvider,
-                        mTaskSupplier,
+                        mTask,
                         mProfileSupplier,
                         mCurrentTabSupplier,
                         mTabCreator);

@@ -165,7 +165,6 @@ public abstract class ToolbarLayout extends FrameLayout
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
-            @Nullable ExtensionToolbarCoordinator extensionToolbarCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             @Nullable Supplier<Integer> incognitoWindowCountSupplier) {
@@ -178,6 +177,17 @@ public abstract class ToolbarLayout extends FrameLayout
         setThemeColorProvider(themeColorProvider);
         setIncognitoStateProvider(incognitoStateProvider);
     }
+
+    /**
+     * Sets the {@link ExtensionToolbarCoordinator}.
+     *
+     * <p>This method is not called if the extension toolbar is unavailable. If it is called, it is
+     * after native initialization.
+     *
+     * @param extensionToolbarCoordinator The {@link ExtensionToolbarCoordinator} to be set.
+     */
+    public void setExtensionToolbarCoordinator(
+            ExtensionToolbarCoordinator extensionToolbarCoordinator) {}
 
     /**
      * @param overlay The coordinator for the texture version of the top toolbar.

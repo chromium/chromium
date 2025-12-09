@@ -345,6 +345,8 @@ public class ToolbarManager
     private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     private final SettableNonNullObservableSupplier<@ControlsPosition Integer>
             mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.NONE);
+    private final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
+
     private @MonotonicNonNull HomeButtonCoordinator mHomeButtonCoordinator;
     private @MonotonicNonNull HomePageButtonsCoordinator mHomePageButtonsCoordinator;
     private @MonotonicNonNull ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
@@ -886,6 +888,7 @@ public class ToolbarManager
                 !mIsTablet
                         && ChromeFeatureList.sNewTabPageCustomization.isEnabled()
                         && ChromeFeatureList.sNewTabPageCustomizationToolbarButton.isEnabled();
+        mChromeAndroidTaskSupplier = chromeAndroidTaskSupplier;
 
         mToolbarLayout = mActivity.findViewById(R.id.toolbar);
         mNtpDelegate = createNewTabPageDelegate();
@@ -1131,21 +1134,6 @@ public class ToolbarManager
                             historyDelegate,
                             browsingModeThemeColorProvider,
                             mIncognitoStateProvider);
-        }
-
-        ViewStub extensionToolbarStub =
-                controlContainer.findViewById(R.id.extension_toolbar_container_stub);
-        if (extensionToolbarStub != null) {
-            mExtensionToolbarCoordinator =
-                    ExtensionToolbarCoordinator.maybeCreate(
-                            mActivity,
-                            extensionToolbarStub,
-                            windowAndroid,
-                            chromeAndroidTaskSupplier,
-                            profileSupplier,
-                            tabProvider.asObservable(),
-                            mTabCreatorManager.getTabCreator(false),
-                            browsingModeThemeColorProvider);
         }
 
         mToolbarLongPressMenuHandler =
@@ -2018,7 +2006,6 @@ public class ToolbarManager
                         mBackButtonCoordinator,
                         mForwardButtonCoordinator,
                         homeButtonDisplay,
-                        mExtensionToolbarCoordinator,
                         topControlsStacker,
                         mBrowserControlsSizer,
                         () -> MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true));
@@ -2380,6 +2367,28 @@ public class ToolbarManager
         assert profile != null;
 
         mOverrideUrlLoadingDelegate.setOpenGridTabSwitcherCallback(openGridTabSwitcherHandler);
+
+        ViewStub extensionToolbarStub =
+                mControlContainer.findViewById(R.id.extension_toolbar_container_stub);
+        if (extensionToolbarStub != null) {
+            ChromeAndroidTask task = mChromeAndroidTaskSupplier.get();
+            // ChromeAndroidTask is available only on Desktop Android.
+            if (task != null) {
+                mExtensionToolbarCoordinator =
+                        ExtensionToolbarCoordinator.maybeCreate(
+                                mActivity,
+                                extensionToolbarStub,
+                                mWindowAndroid,
+                                task,
+                                mProfileSupplier,
+                                mActivityTabProvider.asObservable(),
+                                mTabCreatorManager.getTabCreator(false),
+                                getBrowsingModeThemeColorProvider());
+                if (mExtensionToolbarCoordinator != null) {
+                    mToolbar.setExtensionToolbarCoordinator(mExtensionToolbarCoordinator);
+                }
+            }
+        }
 
         // Must be initialized before Toolbar attempts to use it.
         mLocationBarModel.initializeWithNative();

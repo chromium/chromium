@@ -329,7 +329,6 @@ public final class ToolbarTabletUnitTest {
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
                 /* homeButtonDisplay= */ null,
-                /* extensionToolbarCoordinator= */ null,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ () -> 1);
@@ -433,7 +432,6 @@ public final class ToolbarTabletUnitTest {
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
                 /* homeButtonDisplay= */ null,
-                /* extensionToolbarCoordinator= */ null,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ () -> 1);
@@ -551,7 +549,6 @@ public final class ToolbarTabletUnitTest {
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
                 /* homeButtonDisplay= */ null,
-                /* extensionToolbarCoordinator= */ null,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ () -> 1);
