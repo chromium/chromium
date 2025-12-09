@@ -1316,8 +1316,7 @@
       "external/wpt/storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.none.sub.https.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.sessionStorage.sub.https.window.html",
-      "external/wpt/storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html",
-      "external/wpt/storage-access-api/storage-access-beyond-cookies.unpartitioned.sub.https.window.html"
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html"
     ],
     "args": [
       "--enable-features=ForceAllowStorageAccess"

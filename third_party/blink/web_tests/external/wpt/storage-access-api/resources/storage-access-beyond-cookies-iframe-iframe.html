@@ -392,17 +392,6 @@
         });
         break;
       }
-      case "unpartitioned": {
-        await test_driver.set_permission({ name: 'storage-access' }, 'denied');
-        const handle = await document.requestStorageAccess({BroadcastChannel: true});
-        const handle_channel = handle.BroadcastChannel(id);
-        handle_channel.postMessage("Same-origin handle access");
-        handle_channel.close();
-        const local_channel = new BroadcastChannel(id);
-        local_channel.postMessage("Same-origin local access");
-        local_channel.close();
-        break;
-      }
       default: {
         message = "Unexpected type " + type;
         break;

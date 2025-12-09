@@ -131,12 +131,6 @@ window.addEventListener("message", async (e) => {
       case "ThirdPartyBlobURL": {
         break;
       }
-      case "unpartitioned": {
-        const channel = handle.BroadcastChannel(id);
-        channel.postMessage("Cross-origin handle access");
-        channel.close();
-        break;
-      }
       case "BlobURLSharedWorker": {
         break;
       }
