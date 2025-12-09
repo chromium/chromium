@@ -314,7 +314,13 @@ class AutofillManager
   FormStructure* FindCachedFormById(FormGlobalId form_id) const;
 
   // Searches for any cached form that contains a field with `field_id`.
+  // Runs in linear time.
   FormStructure* FindCachedFormById(FieldGlobalId field_id) const;
+
+  // Returns all FormStructures with the given `form_signature` and
+  // Runs in linear time.
+  std::vector<raw_ref<const FormStructure>> FindCachedFormsBySignature(
+      FormSignature form_signature) const;
 
   // Forwards call to the same-named `AutofillDriver` function.
   virtual bool CanShowAutofillUi() const;

@@ -229,12 +229,11 @@ void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
     for (auto [form_id, filling_state] : form_filling_states_) {
       autofill::FormSignature form_signature = form_id.first;
       autofill::DenseSet<autofill::FormTypeNameForLogging> form_types;
-      for (auto& [_, form] : autofill_manager_->form_structures()) {
-        if (form->form_signature() == form_signature) {
-          form_types =
-              autofill::autofill_metrics::GetFormTypesForLogging(*form);
-          break;
-        }
+      std::vector<raw_ref<const autofill::FormStructure>> forms =
+          autofill_manager_->FindCachedFormsBySignature(form_signature);
+      if (!forms.empty()) {
+        form_types =
+            autofill::autofill_metrics::GetFormTypesForLogging(*forms.front());
       }
       ukm::builders::FastCheckout_FormStatus form_status_builder(
           autofill_client_->GetWebContents()
@@ -522,14 +521,12 @@ void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
   if (!IsFilling() || !credit_card_form_global_id_) {
     return;
   }
-  if (!autofill_manager_->form_structures().contains(
-          credit_card_form_global_id_.value())) {
+  const autofill::FormStructure* form = autofill_manager_->FindCachedFormById(
+      credit_card_form_global_id_.value());
+  if (!form) {
     credit_card_form_global_id_ = std::nullopt;
     return;
   }
-  const std::unique_ptr<autofill::FormStructure>& form =
-      autofill_manager_->form_structures().at(
-          credit_card_form_global_id_.value());
   if (const autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/true)) {
     autofill::CreditCard card_with_cvc = card;
