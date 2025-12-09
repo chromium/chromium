@@ -825,7 +825,8 @@ CreateInputDataFromAnnotatedPageContent(
   if (_items.count == 1) {
     shouldRestartAutocomplete = YES;
     if (_items.firstItem.type ==
-        ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
+            ComposeboxInputItemType::kComposeboxInputItemTypeImage &&
+        _modeHolder.mode != ComposeboxMode::kImageGeneration) {
       shouldRestartAutocomplete =
           IsComposeboxFetchContextualSuggestionsForImageEnabled();
     }
@@ -1124,6 +1125,16 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - ComposeboxOmniboxClientDelegate
+
+- (omnibox::ChromeAimToolsAndModels)composeboxToolMode {
+  if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
+    return _items.count > 0
+               ? omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD
+               : omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN;
+  }
+
+  return omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
+}
 
 - (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs {
   if (!_contextualSearchSession) {

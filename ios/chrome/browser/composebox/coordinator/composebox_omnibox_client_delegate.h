@@ -6,12 +6,15 @@
 #define IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_OMNIBOX_CLIENT_DELEGATE_H_
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
+#import "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 
 struct UrlLoadParams;
 enum class WindowOpenDisposition;
 
 /// Delegate for ComposeboxOmniboxClient.
 @protocol ComposeboxOmniboxClientDelegate
+
+- (omnibox::ChromeAimToolsAndModels)composeboxToolMode;
 
 /// Returns the current attached suggest input in the composebox.
 - (std::optional<lens::proto::LensOverlaySuggestInputs>)suggestInputs;
