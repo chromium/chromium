@@ -13,10 +13,6 @@ source_set("platform_apps") {
     "chrome_apps_api_permissions.h",
     "chrome_apps_api_provider.cc",
     "chrome_apps_api_provider.h",
-    "media_galleries_permission.cc",
-    "media_galleries_permission.h",
-    "media_galleries_permission_data.cc",
-    "media_galleries_permission_data.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -26,6 +22,14 @@ source_set("platform_apps") {
     "//chrome/common/apps/platform_apps/api",
     "//chrome/common/apps/platform_apps/api:apps_features",
     "//extensions/common",
-    "//ipc",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      "media_galleries_permission.cc",
+      "media_galleries_permission.h",
+      "media_galleries_permission_data.cc",
+      "media_galleries_permission_data.h",
+    ]
+  }
 }

@@ -23,7 +23,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/renderer/extensions/api/app_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/identity_hooks_delegate.h"
-#include "chrome/renderer/extensions/api/media_galleries_custom_bindings.h"
 #include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/native_handler.h"
@@ -34,6 +33,7 @@
 #include "chrome/renderer/extensions/api/accessibility_private_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/file_browser_handler_custom_bindings.h"
 #include "chrome/renderer/extensions/api/file_manager_private_custom_bindings.h"
+#include "chrome/renderer/extensions/api/media_galleries_custom_bindings.h"
 #include "chrome/renderer/extensions/api/platform_keys_natives.h"
 #if BUILDFLAG(USE_CUPS)
 #include "chrome/renderer/extensions/api/printing_hooks_delegate.h"
@@ -78,10 +78,10 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "file_manager_private",
       std::make_unique<FileManagerPrivateCustomBindings>(context));
-#endif  // BUILDFLAG(IS_CHROMEOS)
   module_system->RegisterNativeHandler(
       "mediaGalleries",
       std::make_unique<MediaGalleriesCustomBindings>(context));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
