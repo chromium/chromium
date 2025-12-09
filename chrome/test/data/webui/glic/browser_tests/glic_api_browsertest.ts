@@ -37,6 +37,10 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testDoNothing() {}
 
+  async testWebClientReadyOnFullLoad() {}
+
+  async testWebClientReadyOnPreload() {}
+
   // This test should fail even if the ApiTestError is captured in a try-catch
   // block.
   async testFailureForCapturedApiTestError() {

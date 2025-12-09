@@ -525,7 +525,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
     // by `webClientReady`.
     this.loadingTimer = setTimeout(() => {
-      if (this.webview?.waitingOnPanelWillOpen()) {
+      if (!loadTimeData.getBoolean('glicWebContentsWarming') &&
+          this.webview?.waitingOnPanelWillOpen()) {
         console.warn('Exceeded timeout waiting for notifyPanelWillOpen');
         this.setState(WebUiState.kError);
       } else if (

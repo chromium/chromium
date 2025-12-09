@@ -51,7 +51,9 @@
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/glic_region_capture_controller.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
@@ -167,6 +169,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithWebActuationSettingDisabled",
       "GlicApiTestWithWebActuationSettingEnabled",
       "GlicApiTestWithGeminiActOnWebPolicy",
+      "GlicApiTestWithWebContentsWarming",
   };
 }
 
@@ -585,6 +588,28 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class GlicApiTestWithWebContentsWarming : public GlicApiTest {
+ public:
+  GlicApiTestWithWebContentsWarming() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebContentsWarming, {}},
+         {features::kGlicWarming,
+          {{features::kGlicWarmingDelayMs.name, "0"},
+           {features::kGlicWarmingJitterMs.name, "0"}}}},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    GlicApiTest::SetUpOnMainThread();
+    // Clear any warming that was done before the guest URL was set to
+    // the test client.
+    GetService()->web_contents_warming_pool().Shutdown();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Note: Test names must match test function names in api_test.ts.
 
 // TODO(harringtond): Many of these tests are minimal, and could be improved
@@ -593,6 +618,51 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
 // Just verify the test harness works.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDoNothing) {
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
+                       testWebClientReadyOnFullLoad) {
+  // Opening the glic window will trigger the bootstrap, which should transition
+  // the WebUI state to kReady.
+  NavigateTabAndOpenGlic();
+  ExecuteJsTest();
+  WaitForWebUiState(mojom::WebUiState::kReady);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebContentsWarming,
+                       testWebClientReadyOnPreload) {
+  auto container = GetService()->web_contents_warming_pool().TakeContainer();
+  ASSERT_TRUE(container);
+  auto* web_contents = container->web_contents();
+
+  // Wait for the WebUI to initialize and reach the kReady state.
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // We can't use ExecuteJsTest because it relies on the host being attached.
+  // Instead, we check the state directly in the WebUI.
+  constexpr char kCheckReadyScript[] = R"js(
+    (async () => {
+      const controller = window.appRouter.glicController;
+      return new Promise((resolve, reject) => {
+        // Poll for state change.
+        const interval = setInterval(() => {
+          if (controller.state === 8 /* kReady */) {
+            clearInterval(interval);
+            resolve(true);
+          } else if (controller.state === 5 /* kError */ ||
+                     controller.state === 6 /* kOffline */ ||
+                     controller.state === 7 /* kUnavailable */ ||
+                     controller.state === 10 /* kSignIn */ ||
+                     controller.state === 11 /* kGuestError */ ||
+                     controller.state === 12 /* kDisabledByAdmin */) {
+            clearInterval(interval);
+            reject(new Error('WebUI entered error state: ' + controller.state));
+          }
+        }, 10);
+      });
+    })()
+  )js";
+  EXPECT_EQ(true, content::EvalJs(web_contents, kCheckReadyScript));
 }
 
 // Confirms that JS assertion errors captured by try-catch blocks will still
@@ -3414,6 +3484,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithGeminiActOnWebPolicy,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWithWebContentsWarming,
+                         DefaultTestParamSet(),
+                         WithTestParams::PrintTestVariant);
 
 }  // namespace
 }  // namespace glic

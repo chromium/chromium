@@ -73,6 +73,10 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     this.host.detailedWebClientState =
         DetailedWebClientState.WEB_CLIENT_NOT_INITIALIZED;
 
+    if (loadTimeData.getBoolean('glicWebContentsWarming')) {
+      this.embedder.webClientReady();
+    }
+
     const webClientImpl = new WebClientImpl(this.host, this.embedder);
     this.receiver = new WebClientReceiver(webClientImpl);
     const {initialState} = await this.handler.webClientCreated(

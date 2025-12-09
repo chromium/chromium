@@ -4,6 +4,8 @@
 
 // This file handles messages from the browser, sending messages to the client.
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
+
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
 import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, FocusedTabData as FocusedTabDataMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
 import type * as api from '../../glic_api/glic_api.js';
@@ -40,7 +42,9 @@ export class WebClientImpl implements WebClientInterface {
 
     // The web client is ready to show, ensure the webview is
     // displayed.
-    this.embedder.webClientReady();
+    if (!loadTimeData.getBoolean('glicWebContentsWarming')) {
+      this.embedder.webClientReady();
+    }
 
     const openPanelInfoMojo: OpenPanelInfoMojo = {
       webClientMode: webClientModeToMojo(result.openPanelInfo?.startingMode),
