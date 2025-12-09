@@ -45,6 +45,12 @@
 // The background color of the image generation button.
 - (UIColor*)imageGenerationButtonBackgroundColor;
 
+// The foreground color for the send button.
+- (UIColor*)sendButtonForegroundColorHighlighted:(BOOL)highlighted;
+
+// The background color for the send button.
+- (UIColor*)sendButtonBackgroundColorHighlighted:(BOOL)highlighted;
+
 // Creates a newc instance with the given configuration
 - (instancetype)initWithInputPlatePosition:
                     (ComposeboxInputPlatePosition)position
