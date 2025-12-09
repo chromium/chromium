@@ -71,8 +71,6 @@ const char kThreeSecondsThreshold[] = "3";
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
-  config.additional_args.push_back("--mock-shopping-service=is-eligible,"
-                                   "has-empty-price-tracked-bookmarks-results");
 
   if ([self isRunningTest:@selector(FLAKY_testShowTabGroupInGridOnStart)] ||
       [self isRunningTest:@selector
@@ -113,20 +111,7 @@ const char kThreeSecondsThreshold[] = "3";
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
-// TODO(crbug.com/443695878): Test disabled on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testColdStartOpenStartSurface \
-  DISABLED_testColdStartOpenStartSurface
-#else
-#define MAYBE_testColdStartOpenStartSurface testColdStartOpenStartSurface
-#endif
-- (void)MAYBE_testColdStartOpenStartSurface {
-// TODO(crbug.com/40262902): Test is flaky on iPad device. Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad device.");
-  }
-#endif
+- (void)testColdStartOpenStartSurface {
   [self loadFirstTabURL];
 
   [[AppLaunchManager sharedManager]
@@ -142,14 +127,7 @@ const char kThreeSecondsThreshold[] = "3";
 
 // Tests that navigating to a page and then backgrounding and foregrounding, an
 // NTP page is opened.
-// TODO(crbug.com/443695878): Test disabled on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testWarmStartOpenStartSurface \
-  DISABLED_testWarmStartOpenStartSurface
-#else
-#define MAYBE_testWarmStartOpenStartSurface testWarmStartOpenStartSurface
-#endif
-- (void)MAYBE_testWarmStartOpenStartSurface {
+- (void)testWarmStartOpenStartSurface {
   [self loadFirstTabURL];
 
   [ChromeEarlGrey
@@ -168,8 +146,7 @@ const char kThreeSecondsThreshold[] = "3";
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
-// TODO(crbug.com/441260657): Re-enable when fixed.
-- (void)DISABLED_testRemoveRecentTabRemovesReturnToRecentTabTile {
+- (void)testRemoveRecentTabRemovesReturnToRecentTabTile {
   [self loadFirstTabURL];
 
   int non_start_tab_index = [ChromeEarlGrey indexOfActiveNormalTab];
