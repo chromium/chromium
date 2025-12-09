@@ -32,11 +32,16 @@ class ContextualTasksNavigationThrottle : public content::NavigationThrottle {
 
   const char* GetNameForLogging() override;
   ThrottleCheckResult WillStartRequest() override;
+  ThrottleCheckResult WillRedirectRequest() override;
 
   // Adds the navigation throttle if the URL being navigated to and its host
   // WebContents meet specific criteria. See `ContextualTasksUiService` for more
   // details.
   static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
+
+ private:
+  // A helper to handle both normal navigation and reidrects.
+  ThrottleCheckResult ProcessNavigation();
 };
 
 }  // namespace contextual_tasks
