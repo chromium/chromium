@@ -100,6 +100,8 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
@@ -162,6 +164,167 @@ static bool MatchesUniversalTagName(const Element& element,
   const AtomicString& namespace_uri = tag_q_name.NamespaceURI();
   return namespace_uri == g_star_atom ||
          namespace_uri == element.namespaceURI();
+}
+
+// Validates a language range against RFC 4647 extended language range grammar:
+// extended-language-range = (1*8ALPHA / "*") *("-" (1*8alphanum / "*"))
+static bool IsValidExtendedLanguageRange(const String& range) {
+  if (range.empty()) {
+    return false;
+  }
+
+  const wtf_size_t len = range.length();
+  wtf_size_t pos = 0;
+  bool is_first_subtag = true;
+
+  while (pos < len) {
+    // Find the end of the current subtag (next hyphen or end of string).
+    const wtf_size_t subtag_start = pos;
+    while (pos < len && range[pos] != '-') {
+      ++pos;
+    }
+    const wtf_size_t subtag_len = pos - subtag_start;
+
+    // Empty subtag indicates leading, consecutive, or trailing hyphen.
+    if (subtag_len == 0) {
+      return false;
+    }
+
+    // Check if the subtag is a wildcard.
+    const bool is_wildcard = (subtag_len == 1 && range[subtag_start] == '*');
+
+    if (!is_wildcard) {
+      // Each subtag is limited to 8 characters.
+      if (subtag_len > 8) {
+        return false;
+      }
+
+      // First subtag must be alphabetic, subsequent ones can be alphanumeric.
+      for (wtf_size_t j = subtag_start; j < pos; ++j) {
+        const bool valid = is_first_subtag ? IsASCIIAlpha(range[j])
+                                           : IsASCIIAlphanumeric(range[j]);
+        if (!valid) {
+          return false;
+        }
+      }
+    }
+
+    is_first_subtag = false;
+
+    // Skip the hyphen separator if present.
+    if (pos < len) {
+      ++pos;
+      // Trailing hyphen: no more subtags after the hyphen.
+      if (pos == len) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+// Matches the element's content language against one or more language ranges,
+// both represented in BCP 47 syntax, by following the extended filtering
+// algorithm defined in [RFC4647] Matching of Language Tags (section 3.3.2).
+// A language range matches a particular language tag if each respective list
+// of subtags matches. Comparisons are case-insensitive within the ASCII range.
+// See: https://www.rfc-editor.org/rfc/rfc4647#section-3.3.2
+static bool MatchesLangPseudoClass(
+    const AtomicString& language,
+    const Vector<AtomicString>& language_ranges) {
+  // Iterator class to traverse subtags within a language tag or range.
+  class LanguageTagIterator {
+    STACK_ALLOCATED();
+
+   public:
+    explicit LanguageTagIterator(const AtomicString& language_range)
+        : language_range_(language_range),
+          language_range_length_(language_range.length()),
+          subtag_end_(
+              std::min(language_range.find('-', 0), language_range.length())) {}
+    void operator++() {
+      if (subtag_end_ >= language_range_length_) {
+        subtag_start_ = language_range_length_;
+        subtag_end_ = language_range_length_;
+        return;
+      }
+      subtag_start_ = subtag_end_ + 1;
+      subtag_end_ = std::min(language_range_.find('-', subtag_start_),
+                             language_range_length_);
+    }
+    bool AtEnd() const {
+      return subtag_start_ >= subtag_end_ ||
+             subtag_start_ >= language_range_length_;
+    }
+    StringView CurrentSubtag() const {
+      return {language_range_, subtag_start_, subtag_end_ - subtag_start_};
+    }
+    bool Matches(const LanguageTagIterator& other) const {
+      return EqualIgnoringASCIICase(CurrentSubtag(), other.CurrentSubtag());
+    }
+    bool MatchesWildcard() const {
+      StringView subtag = CurrentSubtag();
+      return subtag.length() == 1 && subtag[0] == '*';
+    }
+    bool IsSingleton() const {
+      return (subtag_end_ - subtag_start_) == 1 && subtag_start_ > 0;
+    }
+
+   private:
+    const AtomicString& language_range_;
+    wtf_size_t language_range_length_;
+    wtf_size_t subtag_start_ = 0;
+    wtf_size_t subtag_end_;
+  };
+
+  for (const AtomicString& range : language_ranges) {
+    if (language.empty()) {
+      // Per CSS Selectors 4, :lang("") matches elements with lang="".
+      if (!language.IsNull() && range.empty()) {
+        return true;
+      }
+      continue;
+    }
+
+    // Malformed language ranges never match.
+    if (!IsValidExtendedLanguageRange(range.GetString())) {
+      continue;
+    }
+
+    LanguageTagIterator range_subtag(range);
+    LanguageTagIterator language_subtag(language);
+    if (!range_subtag.Matches(language_subtag) &&
+        !range_subtag.MatchesWildcard()) {
+      continue;
+    }
+
+    // Compare the subtags of language and range, taking wildcards into account.
+    // The match succeeds when all the language range subtags can be matched to
+    // the language subtags, and fails otherwise.
+    ++range_subtag;
+    ++language_subtag;
+    while (!range_subtag.AtEnd() && !language_subtag.AtEnd()) {
+      if (range_subtag.MatchesWildcard()) {
+        // A wildcard must match at least one subtag, so consume it
+        ++language_subtag;
+        ++range_subtag;
+      } else if (range_subtag.Matches(language_subtag)) {
+        ++range_subtag;
+        ++language_subtag;
+      } else if (language_subtag.IsSingleton()) {
+        // Singleton blocks further matching for this range, try next range.
+        break;
+      } else {
+        ++language_subtag;
+      }
+    }
+
+    if (range_subtag.AtEnd()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // The associated host, if we are matching in the context of a shadow tree.
@@ -2657,16 +2820,20 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       auto* vtt_element = DynamicTo<VTTElement>(element);
       AtomicString value = vtt_element ? vtt_element->Language()
                                        : element.ComputeInheritedLanguage();
-      const AtomicString& argument = selector.Argument();
-      if (value.empty() ||
-          !value.StartsWith(argument, kTextCaseASCIIInsensitive)) {
-        break;
+      if (!RuntimeEnabledFeatures::CSSLangExtendedRangesEnabled()) {
+        DCHECK_EQ(selector.ArgumentList()->size(), 1u);
+        const AtomicString& argument = (*selector.ArgumentList())[0];
+        if (value.empty() ||
+            !value.StartsWith(argument, kTextCaseASCIIInsensitive)) {
+          break;
+        }
+        if (value.length() != argument.length() &&
+            value[argument.length()] != '-') {
+          break;
+        }
+        return true;
       }
-      if (value.length() != argument.length() &&
-          value[argument.length()] != '-') {
-        break;
-      }
-      return true;
+      return MatchesLangPseudoClass(value, *selector.ArgumentList());
     }
     case CSSSelector::kPseudoDir: {
       const AtomicString& argument = selector.Argument();

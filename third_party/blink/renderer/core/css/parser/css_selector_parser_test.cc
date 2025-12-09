@@ -1718,4 +1718,215 @@ TEST(CSSSelectorParserTest, ImplicitSelectorIsScopeContaining) {
                   .IsScopeContaining());
 }
 
+// Helper function for :lang() parsing validation tests
+bool ValidateLang(const String& selector_text) {
+  CSSSelectorList* selector_list =
+      css_test_helpers::ParseSelectorList(selector_text);
+  return selector_list && selector_list->First();
+}
+
+// This class is used to validate :lang() parsing against the RFC 4647 basic
+// language range grammar, regardless of the value of CSSLangExtendedRanges.
+// language-range = (1*8ALPHA *("-" 1*8alphanum)) / "*"
+class LangParsingInvariantTest : public testing::TestWithParam<bool>,
+                                 public ScopedCSSLangExtendedRangesForTest {
+ public:
+  LangParsingInvariantTest() : ScopedCSSLangExtendedRangesForTest(GetParam()) {}
+
+ private:
+  test::TaskEnvironment task_environment_;
+};
+
+INSTANTIATE_TEST_SUITE_P(CSSSelectorParser,
+                         LangParsingInvariantTest,
+                         testing::Bool());
+
+// Test class for values that only parse when the runtime flag is enabled.
+class LangParsingFlagDependentTest : public testing::TestWithParam<bool>,
+                                     public ScopedCSSLangExtendedRangesForTest {
+ public:
+  LangParsingFlagDependentTest()
+      : ScopedCSSLangExtendedRangesForTest(GetParam()) {}
+
+ private:
+  test::TaskEnvironment task_environment_;
+};
+
+INSTANTIATE_TEST_SUITE_P(CSSSelectorParser,
+                         LangParsingFlagDependentTest,
+                         testing::Bool());
+
+TEST_P(LangParsingInvariantTest, EmptyTest) {
+  EXPECT_FALSE(ValidateLang(":lang()"));
+}
+
+// A CSS ident containing a valid language range.
+TEST_P(LangParsingInvariantTest, LanguageRangeIdentTest) {
+  EXPECT_TRUE(ValidateLang(":lang(en)"));
+  EXPECT_TRUE(ValidateLang(":lang(pt-BR)"));
+  EXPECT_TRUE(ValidateLang(":lang(zh-Hant)"));
+  EXPECT_TRUE(ValidateLang(":lang(zh-cmn-Hans-CN)"));
+
+  // Whitespace around the ident is ignored.
+  EXPECT_TRUE(ValidateLang(":lang( en)"));
+  EXPECT_TRUE(ValidateLang(":lang(en )"));
+  EXPECT_TRUE(ValidateLang(":lang( en )"));
+}
+
+// A CSS ident can contain wildcards as long as they are escaped.
+TEST_P(LangParsingInvariantTest, EscapedWildcardsLanguageRangeIdentTest) {
+  EXPECT_TRUE(ValidateLang(":lang(\\*)"));
+  EXPECT_TRUE(ValidateLang(":lang(\\*-US)"));
+  EXPECT_TRUE(ValidateLang(":lang(en-\\*)"));
+  EXPECT_TRUE(ValidateLang(":lang(\\*-\\*)"));
+}
+
+// A CSS ident containing a malformed range should be accepted by the parser.
+TEST_P(LangParsingInvariantTest, MalformedLanguageRangeIdentTest) {
+  // Hyphens in unexpected positions.
+  EXPECT_TRUE(ValidateLang(":lang(--)"));
+  EXPECT_TRUE(ValidateLang(":lang(-en)"));
+  EXPECT_TRUE(ValidateLang(":lang(en-)"));
+  EXPECT_TRUE(ValidateLang(":lang(en--US)"));
+  EXPECT_TRUE(ValidateLang(":lang(en--23)"));
+  EXPECT_TRUE(ValidateLang(":lang(--2)"));
+
+  // Numbers in first tag.
+  EXPECT_TRUE(ValidateLang(":lang(en123)"));
+  EXPECT_TRUE(ValidateLang(":lang(e123n)"));
+
+  // Tag too long.
+  EXPECT_TRUE(ValidateLang(":lang(ninechars)"));
+  EXPECT_TRUE(ValidateLang(":lang(en-123456789)"));
+  EXPECT_TRUE(ValidateLang(":lang(en-ninechars)"));
+  EXPECT_TRUE(ValidateLang(":lang(en-US-ninechars)"));
+}
+
+// A CSS ident containing invalid characters should be accepted by the parser.
+TEST_P(LangParsingInvariantTest, InvalidCharsLanguageRangeIdentTest) {
+  // Non-ASCII characters.
+  EXPECT_TRUE(ValidateLang(":lang(café)"));
+  EXPECT_TRUE(ValidateLang(":lang(es-España)"));
+  EXPECT_TRUE(ValidateLang(":lang(日本語)"));
+
+  // Underscore and escaped special characters.
+  EXPECT_TRUE(ValidateLang(":lang(en_US)"));
+  EXPECT_TRUE(ValidateLang(":lang( my\\.thing )"));
+  EXPECT_TRUE(ValidateLang(":lang( you\\&me )"));
+  EXPECT_TRUE(ValidateLang(":lang( j\\ a )"));
+  EXPECT_TRUE(ValidateLang(":lang(me\\ \\&\\ you)"));
+}
+
+// Content is not a valid CSS ident.
+TEST_P(LangParsingInvariantTest, NotIdentTest) {
+  // Single hyphen is not a valid ident.
+  EXPECT_FALSE(ValidateLang(":lang(-)"));
+
+  // Hyphen followed by digit or wildcard.
+  EXPECT_FALSE(ValidateLang(":lang(-1)"));
+  EXPECT_FALSE(ValidateLang(":lang(-*)"));
+
+  // Digit at start.
+  EXPECT_FALSE(ValidateLang(":lang(3en)"));
+  EXPECT_FALSE(ValidateLang(":lang(1-en)"));
+  EXPECT_FALSE(ValidateLang(":lang(3.14)"));
+
+  // Unescaped wildcards and other special characters.
+  EXPECT_FALSE(ValidateLang(":lang(*)"));
+  EXPECT_FALSE(ValidateLang(":lang(en-*)"));
+  EXPECT_FALSE(ValidateLang(":lang(en*US)"));
+  EXPECT_FALSE(ValidateLang(":lang(+)"));
+  EXPECT_FALSE(ValidateLang(":lang(.)"));
+  EXPECT_FALSE(ValidateLang(":lang(!)"));
+  EXPECT_FALSE(ValidateLang(":lang(@)"));
+
+  // Space in the middle.
+  EXPECT_FALSE(ValidateLang(":lang( - en )"));
+  EXPECT_FALSE(ValidateLang(":lang( en - )"));
+  EXPECT_FALSE(ValidateLang(":lang( en -US )"));
+  EXPECT_FALSE(ValidateLang(":lang( en- US )"));
+  EXPECT_FALSE(ValidateLang(":lang( en - US )"));
+
+  // Invalid comma usage.
+  EXPECT_FALSE(ValidateLang(":lang(,)"));
+  EXPECT_FALSE(ValidateLang(":lang(en,)"));
+  EXPECT_FALSE(ValidateLang(":lang(,en)"));
+  EXPECT_FALSE(ValidateLang(":lang(en,,fr)"));
+  EXPECT_FALSE(ValidateLang(":lang(en, fr,)"));
+  EXPECT_FALSE(ValidateLang(":lang(en fr, de)"));
+
+  // Multiple values without comma separator.
+  EXPECT_FALSE(ValidateLang(":lang(en fr)"));
+  EXPECT_FALSE(ValidateLang(":lang(\"en\" fr)"));
+  EXPECT_FALSE(ValidateLang(":lang(en \"fr\")"));
+  EXPECT_FALSE(ValidateLang(":lang(\"en\" \"fr\")"));
+
+  // String combined with idents and hyphens.
+  EXPECT_FALSE(ValidateLang(":lang(en')"));
+  EXPECT_FALSE(ValidateLang(":lang(en\")"));
+  EXPECT_FALSE(ValidateLang(":lang(\"en\"- )"));
+  EXPECT_FALSE(ValidateLang(":lang(\"en\"-US)"));
+  EXPECT_FALSE(ValidateLang(":lang(en-\"US\")"));
+  EXPECT_FALSE(ValidateLang(":lang(\"en\"-\"US\")"));
+
+  // Numbers and dimensions.
+  EXPECT_FALSE(ValidateLang(":lang(123)"));
+  EXPECT_FALSE(ValidateLang(":lang(1e2)"));
+  EXPECT_FALSE(ValidateLang(":lang(50% )"));
+  EXPECT_FALSE(ValidateLang(":lang(2em )"));
+  EXPECT_FALSE(ValidateLang(":lang(#FFF )"));
+}
+
+// Values that are not parsed regardless of the runtime flag.
+TEST_P(LangParsingInvariantTest, InvalidListValues) {
+  EXPECT_FALSE(ValidateLang(":lang(en,  *  )"));
+  EXPECT_FALSE(ValidateLang(":lang(en,  -  )"));
+  EXPECT_FALSE(ValidateLang(":lang(en, en-*)"));
+  EXPECT_FALSE(ValidateLang(":lang(en, 123 )"));
+  EXPECT_FALSE(ValidateLang(":lang(en, 1e2 )"));
+  EXPECT_FALSE(ValidateLang(":lang(en, 50% )"));
+  EXPECT_FALSE(ValidateLang(":lang(en, 2em )"));
+  EXPECT_FALSE(ValidateLang(":lang(en, #FFF)"));
+}
+
+// Values that only parse when extended lang ranges are enabled.
+TEST_P(LangParsingFlagDependentTest, ExtendedLangRangesParsing) {
+  // Comma-separated lists.
+  EXPECT_EQ(ValidateLang(":lang(en, fr)"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(en-US, fr-FR, ja-JP)"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(en, fr, de)"), GetParam());
+
+  // Lists mixing valid and malformed ranges, as long as all parse as idents.
+  EXPECT_EQ(ValidateLang(":lang(my\\.thing, en)"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(fr, en_US, ---)"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang( café, en_US, j\\ a )"), GetParam());
+
+  // Strings.
+  EXPECT_EQ(ValidateLang(":lang(\"en\")"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(\"\")"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(\"  \")"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(\"*\")"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(\"*-US\")"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(\"en-*\")"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(\"*-*-*\")"), GetParam());
+
+  // Single-quote strings.
+  EXPECT_EQ(ValidateLang(":lang('en')"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang('*-US')"), GetParam());
+
+  // Strings containing characters that are not allowed unescaped in idents.
+  EXPECT_EQ(ValidateLang(":lang(\"en US\")"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(\"en.US\")"), GetParam());
+
+  // List with idents and strings.
+  EXPECT_EQ(ValidateLang(":lang(en, \"*-US\")"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(\"*\", en)"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(en, \"fr-*\", ja)"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang(\"en\", fr)"), GetParam());
+
+  // List with whitespace.
+  EXPECT_EQ(ValidateLang(":lang(  en  ,  fr  ,  de  )"), GetParam());
+  EXPECT_EQ(ValidateLang(":lang( \"*\" , en )"), GetParam());
+}
+
 }  // namespace blink
