@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
 #include "chrome/common/url_constants.h"
+#include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "content/public/browser/web_contents.h"
 
 namespace wallet {
@@ -65,6 +66,9 @@ void WalletablePassConsentBubbleController::OnLearnMoreClicked() {
     SetReshowOnActivation(true);
     chrome::ShowSettingsSubPage(browser, chrome::kAutofillAiSubPage);
   }
+  metrics::LogOptInEvent(
+      pass_category(),
+      metrics::WalletablePassOptInFunnelEvents::kLearnMoreButtonClicked);
 }
 
 }  // namespace wallet

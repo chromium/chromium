@@ -35,7 +35,10 @@ source_set("wallet") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "walletable_pass_save_bubble_controller_unittest.cc" ]
+  sources = [
+    "walletable_pass_consent_bubble_controller_unittest.cc",
+    "walletable_pass_save_bubble_controller_unittest.cc",
+  ]
 
   deps = [
     ":wallet",

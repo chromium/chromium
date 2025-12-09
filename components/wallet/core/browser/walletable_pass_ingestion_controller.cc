@@ -11,6 +11,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/strike_database/strike_database_base.h"
 #include "components/wallet/core/browser/data_models/walletable_pass.h"
+#include "components/wallet/core/browser/metrics/wallet_metrics.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 #include "components/wallet/core/browser/walletable_permission_utils.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -20,6 +21,8 @@ namespace wallet {
 namespace {
 
 using enum WalletablePassClient::WalletablePassBubbleResult;
+using WalletablePassOptInFunnelEvents =
+    metrics::WalletablePassOptInFunnelEvents;
 
 PassCategory GetPassCategory(const WalletablePass& walletable_pass) {
   return std::visit(
@@ -84,6 +87,8 @@ void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
   if (GetWalletablePassDetectionOptInStatus(client_->GetPrefService(),
                                             client_->GetIdentityManager())) {
     MaybeStartExtraction(url, *pass_category);
+    metrics::LogOptInEvent(
+        *pass_category, WalletablePassOptInFunnelEvents::kUserAlreadyOptedIn);
     return;
   }
 
@@ -124,6 +129,9 @@ void WalletablePassIngestionController::ShowConsentBubble(
     const GURL& url,
     PassCategory pass_category) {
   if (consent_strike_db_->ShouldBlockFeature()) {
+    metrics::LogOptInEvent(
+        pass_category,
+        WalletablePassOptInFunnelEvents::kConsentBubbleWasBlockedByStrike);
     return;
   }
   client_->ShowWalletablePassConsentBubble(
@@ -131,6 +139,8 @@ void WalletablePassIngestionController::ShowConsentBubble(
       base::BindOnce(
           &WalletablePassIngestionController::OnGetConsentBubbleResult,
           weak_ptr_factory_.GetWeakPtr(), url, pass_category));
+  metrics::LogOptInEvent(
+      pass_category, WalletablePassOptInFunnelEvents::kConsentBubbleWasShown);
 }
 
 void WalletablePassIngestionController::OnGetConsentBubbleResult(
@@ -145,19 +155,31 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
                                             /*opt_in_status=*/true);
       consent_strike_db_->ClearStrikes();
       MaybeStartExtraction(url, pass_category);
+      metrics::LogOptInEvent(
+          pass_category,
+          WalletablePassOptInFunnelEvents::kConsentBubbleWasAccepted);
       break;
     case kDeclined:
-    case kClosed:
-      // Add strikes for cases where user rejects explicitly
       consent_strike_db_->AddStrikes(
           WalletablePassConsentStrikeDatabaseTraits::kMaxStrikeLimit);
-      // TODO(crbug.com/452779539): Report user rejects explicitly to UMA.
+      metrics::LogOptInEvent(
+          pass_category,
+          WalletablePassOptInFunnelEvents::kConsentBubbleWasRejected);
+      break;
+    case kClosed:
+      consent_strike_db_->AddStrikes(
+          WalletablePassConsentStrikeDatabaseTraits::kMaxStrikeLimit);
+      metrics::LogOptInEvent(
+          pass_category,
+          WalletablePassOptInFunnelEvents::kConsentBubbleWasClosed);
       break;
     case kLostFocus:
     case kUnknown:
     case kDiscarded:
       consent_strike_db_->AddStrike();
-      // TODO(crbug.com/452779539): Report other outcomes to UMA.
+      metrics::LogOptInEvent(
+          pass_category,
+          WalletablePassOptInFunnelEvents::kConsentBubbleLostFocus);
       break;
   }
 }

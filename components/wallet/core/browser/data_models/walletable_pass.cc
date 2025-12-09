@@ -9,6 +9,7 @@
 
 namespace wallet {
 
+// LINT.IfChange(PassCategoryToString)
 std::string PassCategoryToString(PassCategory category) {
   switch (category) {
     case PassCategory::kLoyaltyCard:
@@ -24,6 +25,7 @@ std::string PassCategoryToString(PassCategory category) {
   }
   NOTREACHED();
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/wallet/histograms.xml:Wallet.WalletablePass.PassCategory)
 
 // static
 LoyaltyCard LoyaltyCard::FromProto(
