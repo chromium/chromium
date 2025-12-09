@@ -413,9 +413,7 @@ ui::KeyboardCode PdfCaret::GetLogicalKeyAfterTextDirection(
 void PdfCaret::MoveHorizontallyToNextChar(bool move_right, bool should_select) {
   std::optional<PageCharacterIndex> next_char =
       GetAdjacentCaretPos(index_, move_right);
-  if (next_char.has_value()) {
-    MoveToChar(next_char.value(), should_select);
-  }
+  MoveToChar(next_char.value_or(index_), should_select);
 }
 
 void PdfCaret::MoveVerticallyToNextChar(bool move_down, bool should_select) {

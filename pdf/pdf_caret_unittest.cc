@@ -1696,6 +1696,14 @@ TEST_F(PdfCaretSelectionTest, SelectRight) {
   EXPECT_TRUE(caret().OnKeyDown(
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
 
+  TestDrawCaretFails(kTestChar1Caret);
+
+  // Move right. Select char 2.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  ExpectExtendAndInvalidateSelectionByChar(kTestChar2);
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
+
   TestDrawCaretFails(kTestChar1EndCaret);
 
   // Move right without shift.
@@ -1719,6 +1727,14 @@ TEST_F(PdfCaretSelectionTest, SelectLeft) {
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
 
   TestDrawCaretFails(kTestChar1Caret);
+
+  // Move left. Select char 0.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  ExpectExtendAndInvalidateSelectionByChar(kTestChar0);
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
+
+  TestDrawCaretFails(kTestChar0Caret);
 
   // Move left without shift.
   EXPECT_CALL(client(), ClearTextSelection());
