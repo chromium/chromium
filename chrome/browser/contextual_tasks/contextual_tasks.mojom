@@ -105,6 +105,14 @@ interface Page {
   // task is updated (e.g. tabs added/removed). This is used for updating the
   // icon shown on the sources menu entry point.
   OnContextUpdated(array<Tab> context_tabs);
+
+  // Called by the browser process (C++) when the AIM server sends a HideInput
+  // command to hide the compose box.
+  HideInput();
+
+  // Called by the browser process (C++) when the AIM server sends a
+  // RestoreInput command to show the compose box.
+  RestoreInput();
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.

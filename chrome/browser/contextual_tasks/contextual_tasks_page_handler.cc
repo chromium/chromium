@@ -161,6 +161,14 @@ void ContextualTasksPageHandler::OnWebviewMessage(
 
   if (aim_to_client_message.has_handshake_response()) {
     web_ui_controller_->page()->OnHandshakeComplete();
+  } else if (aim_to_client_message.has_hide_input()) {
+    web_ui_controller_->page()->HideInput();
+  } else if (aim_to_client_message.has_restore_input()) {
+    web_ui_controller_->page()->RestoreInput();
+  } else if (aim_to_client_message.has_enter_basic_mode()) {
+    web_ui_controller_->page()->HideInput();
+  } else if (aim_to_client_message.has_exit_basic_mode()) {
+    web_ui_controller_->page()->RestoreInput();
   }
 }
 

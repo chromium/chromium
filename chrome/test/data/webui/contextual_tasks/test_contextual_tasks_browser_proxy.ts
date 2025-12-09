@@ -26,6 +26,8 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'onSidePanelStateChanged',
       'setOAuthToken',
       'onContextUpdated',
+      'hideInput',
+      'restoreInput',
     ]);
   }
 
@@ -62,6 +64,14 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   setOAuthToken(oauthToken: string) {
     this.methodCalled('setOAuthToken', oauthToken);
+  }
+
+  hideInput() {
+    this.methodCalled('hideInput');
+  }
+
+  restoreInput() {
+    this.methodCalled('restoreInput');
   }
 }
 
