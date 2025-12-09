@@ -101,6 +101,11 @@ void TopContainerView::OnPaintBackground(gfx::Canvas* canvas) {
       canvas->DrawColor(color);
     }
   }
+
+  // In some cases, a background may be set by e.g. the immersive mode
+  // controller, in which case it must be rendered in addition to anything done
+  // above. See https://crbug.com/467112888 for an example of how this can fail.
+  View::OnPaintBackground(canvas);
 }
 
 void TopContainerView::ChildPreferredSizeChanged(views::View* child) {
