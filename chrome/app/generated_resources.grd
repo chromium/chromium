@@ -19693,9 +19693,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_NTP_EXTENSIONS_PROMO" desc="The text shown in the body of the New Tab Page extensions promotion">
         Add extensions to stay organized, simplify tasks, and enhance your browsing
       </message>
-      <message name="IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS" desc="The text shown in the body of the New Tab Page sign in promotion">
-        Sign in to Chrome to get your passwords, bookmarks, and more on all your devices
-      </message>
     </if>
 
     <!-- Save to Drive -->

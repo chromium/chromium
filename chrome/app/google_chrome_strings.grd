@@ -1149,6 +1149,13 @@ Google Chrome is unable to recover your settings.
         Make Chrome Yours
       </message>
 
+      <!-- New Tab Page browser feature promotions. -->
+      <if expr="not is_android">
+        <message name="IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS" desc="The text shown in the body of the New Tab Page sign in promotion">
+          Sign in to Chrome to get your passwords, bookmarks, and more on all your devices
+        </message>
+      </if>
+
       <!-- Customize Chrome Auto Promo Strings -->
       <message name="IDS_IPH_CUSTOMIZE_CHROME_AUTO_OPEN_BODY" desc="The description of the IPH to auto open Customize Chrome">
         Customize Chrome to give it a new look
