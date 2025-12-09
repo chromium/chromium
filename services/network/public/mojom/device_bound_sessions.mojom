@@ -104,6 +104,95 @@ struct DeviceBoundSessionParams {
 
 // LINT.ThenChange(//net/device_bound_sessions/session_params.h:SessionParams)
 
+// LINT.IfChange(DeviceBoundSessionError)
+enum DeviceBoundSessionError {
+  kSuccess = 0,  // Only used for metrics, a session error will never have
+                   // this error type.
+
+  kKeyError = 1,
+  kSigningError = 2,
+  // Deprecated: kNetError = 3,
+  // Deprecated: kHttpError = 4,
+  kServerRequestedTermination = 5,
+  // Deprecated: kInvalidConfigJson = 6,
+  kInvalidSessionId = 7,
+  // Deprecated: kInvalidCredentials = 8,
+  kInvalidChallenge = 9,
+  kTooManyChallenges = 10,
+  kInvalidFetcherUrl = 11,
+  kInvalidRefreshUrl = 12,
+  kTransientHttpError = 13,
+  // Deprecated: kPersistentHttpError = 14,
+  kScopeOriginSameSiteMismatch = 15,
+  kRefreshUrlSameSiteMismatch = 16,
+  // Deprecated: kInvalidScopeOrigin = 17,
+  kMismatchedSessionId = 18,
+  // Deprecated: kInvalidRefreshInitiators = 19,
+  // Deprecated: kInvalidScopeRule = 20,
+  kMissingScope = 21,
+  kNoCredentials = 22,
+  // Deprecated: kInvalidScopeIncludeSite = 23,
+  kSubdomainRegistrationWellKnownUnavailable = 24,
+  kSubdomainRegistrationUnauthorized = 25,
+  kSubdomainRegistrationWellKnownMalformed = 26,
+  // Deprecated: kFederatedNotAuthorized = 27,
+  kSessionProviderWellKnownUnavailable = 28,
+  // Deprecated: kSessionProviderWellKnownMalformed = 29,
+  kRelyingPartyWellKnownUnavailable = 30,
+  // Deprecated: kRelyingPartyWellKnownMalformed = 31,
+  kFederatedKeyThumbprintMismatch = 32,
+  kInvalidFederatedSessionUrl = 33,
+  // Deprecated: kInvalidFederatedSession = 34,
+  kInvalidFederatedKey = 35,
+  kTooManyRelyingOriginLabels = 36,
+  kBoundCookieSetForbidden = 37,
+  kNetError = 38,
+  kProxyError = 39,
+  // Deprecated: kInvalidConfigJson = 40,
+  kEmptySessionConfig = 41,
+  kInvalidCredentialsConfig = 42,
+  kInvalidCredentialsType = 43,
+  kInvalidCredentialsEmptyName = 44,
+  kInvalidCredentialsCookie = 45,
+  kPersistentHttpError = 46,
+  kRegistrationAttemptedChallenge = 47,
+  kInvalidScopeOrigin = 48,
+  kScopeOriginContainsPath = 49,
+  kRefreshInitiatorNotString = 50,
+  kRefreshInitiatorInvalidHostPattern = 51,
+  kInvalidScopeSpecification = 52,
+  kMissingScopeSpecificationType = 53,
+  kEmptyScopeSpecificationDomain = 54,
+  kEmptyScopeSpecificationPath = 55,
+  kInvalidScopeSpecificationType = 56,
+  kInvalidScopeIncludeSite = 57,
+  kMissingScopeIncludeSite = 58,
+  kFederatedNotAuthorizedByProvider = 59,
+  kFederatedNotAuthorizedByRelyingParty = 60,
+  kSessionProviderWellKnownMalformed = 61,
+  kSessionProviderWellKnownHasProviderOrigin = 62,
+  kRelyingPartyWellKnownMalformed = 63,
+  kRelyingPartyWellKnownHasRelyingOrigins = 64,
+  kInvalidFederatedSessionProviderSessionMissing = 65,
+  kInvalidFederatedSessionWrongProviderOrigin = 66,
+  kInvalidCredentialsCookieCreationTime = 67,
+  kInvalidCredentialsCookieName = 68,
+  kInvalidCredentialsCookieParsing = 69,
+  kInvalidCredentialsCookieUnpermittedAttribute = 70,
+  kInvalidCredentialsCookieInvalidDomain = 71,
+  kInvalidCredentialsCookiePrefix = 72,
+  kInvalidScopeRulePath = 73,
+  kInvalidScopeRuleHostPattern = 74,
+  kScopeRuleOriginScopedHostPatternMismatch = 75,
+  kScopeRuleSiteScopedHostPatternMismatch = 76,
+  kSigningQuotaExceeded = 77,
+  kInvalidConfigJson = 78,
+  kInvalidFederatedSessionProviderFailedToRestoreKey = 79,
+  kFailedToUnwrapKey = 80,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)
+
 // DeviceBoundSessionManager is a privileged interface that should only
 // be used in trusted processes.
 [RequireContext=sandbox.mojom.Context.kBrowser]
@@ -132,15 +221,14 @@ interface DeviceBoundSessionManager {
   // Creates a session for each param in `params`, and sets each cookie in
   // `cookies_to_set`. This combined functionality allows callers to
   // prevent sessions from applying to stale cookies and to ensure that
-  // sessions always apply to the new cookies. Returns whether the session was
-  // created and cookies set.
-  //
-  // TODO(crbug.com/439821296): Add a better error type so callers can
-  // distinguish various reasons they may have failed.
+  // sessions always apply to the new cookies. Returns the results of creating
+  // each session and setting each cookie.
   CreateBoundSessions(array<DeviceBoundSessionParams> params,
                       array<uint8> wrapped_key,
                       array<CanonicalCookie> cookies_to_set,
-                      CookieOptions cookie_options) => (bool success);
+                      CookieOptions cookie_options)
+      => (array<DeviceBoundSessionError> session_results,
+          array<CookieInclusionStatus> cookie_results);
 };
 
 // Observer that is notified on use of a device bound session.

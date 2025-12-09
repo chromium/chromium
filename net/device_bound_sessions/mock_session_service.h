@@ -85,7 +85,7 @@ class SessionServiceMock : public SessionService {
               (const SchemefulSite& site,
                SessionParams params,
                base::span<const uint8_t> wrapped_key,
-               base::OnceCallback<void(bool)> callback),
+               base::OnceCallback<void(SessionError::ErrorType)> callback),
               (override));
   MOCK_METHOD(const SignedRefreshChallenge*,
               GetLatestSignedRefreshChallenge,

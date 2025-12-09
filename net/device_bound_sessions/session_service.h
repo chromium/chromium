@@ -24,7 +24,7 @@ class IsolationInfo;
 class URLRequest;
 class URLRequestContext;
 class HttpRequestHeaders;
-}
+}  // namespace net
 
 namespace net::device_bound_sessions {
 
@@ -187,12 +187,13 @@ class NET_EXPORT SessionService {
 
   // Adds a session to the service for the site `site` and with session
   // config from `params`. `params.key_id` is ignored in favor of
-  // importing `wrapped_key`. Calls `callback` when complete with a
-  // boolean indicating whether session addition was successful.
-  virtual void AddSession(const SchemefulSite& site,
-                          SessionParams params,
-                          base::span<const uint8_t> wrapped_key,
-                          base::OnceCallback<void(bool)> callback) = 0;
+  // importing `wrapped_key`. Calls `callback` when complete with a a
+  // `SessionError` indicating whether session addition was successful.
+  virtual void AddSession(
+      const SchemefulSite& site,
+      SessionParams params,
+      base::span<const uint8_t> wrapped_key,
+      base::OnceCallback<void(SessionError::ErrorType)> callback) = 0;
 
   // Finds the latest signed refresh challenge and relevant signing context for
   // the `session_key`. If no challenge is found, returns nullptr.
