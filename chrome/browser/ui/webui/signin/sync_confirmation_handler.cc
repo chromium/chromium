@@ -212,10 +212,10 @@ void SyncConfirmationHandler::RecordConsent(
 }
 
 void SyncConfirmationHandler::OnAvatarChanged(const AccountInfo& info) {
-  DCHECK(info.IsValid());
+  CHECK(info.GetAvatarUrl().has_value());
   avatar_notified_ = true;
 
-  GURL picture_gurl(info.picture_url);
+  GURL picture_gurl(*info.GetAvatarUrl());
   GURL picture_gurl_with_options = signin::GetAvatarImageURLWithOptions(
       picture_gurl, kProfileImageSize, /*no_silhouette=*/false);
 

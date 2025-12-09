@@ -190,10 +190,12 @@ class HistorySyncOptinServiceTestBase : public testing::Test {
     if (with_managed_account_info_available) {
       UpdateAccountManagementInfo(account_info, identity_test_env_adaptor);
     }
-    account_info.full_name = "fullname";
-    account_info.given_name = "givenname";
-    account_info.locale = "en";
-    account_info.picture_url = "https://example.com";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("fullname")
+                       .SetGivenName("givenname")
+                       .SetLocale("en")
+                       .SetAvatarUrl("https://example.com")
+                       .Build();
     identity_test_env_adaptor->identity_test_env()->UpdateAccountInfoForAccount(
         account_info);
     return account_info;
