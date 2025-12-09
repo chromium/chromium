@@ -23,6 +23,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/platform_color.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 
@@ -166,11 +167,18 @@ void TextureLayerImpl::AppendQuads(const AppendQuadsContext& context,
   const bool nearest_neighbor =
       GetFilterQuality() == PaintFlags::FilterQuality::kNone;
 
+  gfx::PointF top_left = uv_top_left_;
+  gfx::PointF bottom_right = uv_bottom_right_;
+
+  const gfx::Size resource_size = transferable_resource_.GetSize();
+  top_left.Scale(resource_size.width(), resource_size.height());
+  bottom_right.Scale(resource_size.width(), resource_size.height());
+
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
-               resource_id_, uv_top_left_, uv_bottom_right_, bg_color,
-               nearest_neighbor,
-               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+               resource_id_, top_left, bottom_right, bg_color, nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
   quad->dynamic_range_limit = GetDynamicRangeLimit();
   ValidateQuadResources(quad);
 }
