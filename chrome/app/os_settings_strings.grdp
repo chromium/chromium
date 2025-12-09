@@ -851,16 +851,16 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE_HALFWIDTH" desc="The label for input modes option to set the space input style for the Japanese keyboard to Halfwidth mode. In Japanese, this string should be '半角'.">
     Halfwidth
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT" desc="The label for the Japanese keyboard settings dropdown to set the shortcut selection hotkeys for Japanese candidate selection. In Japanese, this string should be '候補選択ショートカット'.">
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT" desc="The label for the Japanese keyboard settings dropdown to set the shortcut selection hotkeys for Japanese candidate selection. In Japanese, this string should be '候補選択ショートカット'.">
     Selection shortcut
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_NO_SHORTCUT" desc="The label for the Japanese keyboard settings option to set that there is no shortcut set for the Japanese keyboard candidate selection. In Japanese, this string should be 'なし'.">
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT_NO_SHORTCUT" desc="The label for the Japanese keyboard settings option to set that there is no shortcut set for the Japanese keyboard candidate selection. In Japanese, this string should be 'なし'.">
     No shortcut
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_123456789" translateable="false">
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT_123456789" translateable="false">
     1 -- 9
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_ASDFGHJKL" translateable="false">
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT_ASDFGHJKL" translateable="false">
     A -- L
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE" desc="The label for Japanese keyboard settings dropdown within the settings page to set the keymap style for the Japanese keyboard. The available dropdown values are 'Custom keymap', 'ATOK', 'MS-IME', 'Kotoeri', and 'ChromeOS'. In Japanese, this string should be 'キー設定の選択'.">

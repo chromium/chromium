@@ -35,8 +35,12 @@ inline constexpr std::string_view kJpPrefPunctuationStyle =
 inline constexpr std::string_view kJpPrefSymbolStyle = "JapaneseSymbolStyle";
 inline constexpr std::string_view kJpPrefSpaceInputStyle =
     "JapaneseSpaceInputStyle";
+
+// "...Section..." in the string value below is a typo, but persisted in CrOS
+// Prefs storage so must NOT be fixed unless user data are migrated first.
 inline constexpr std::string_view kJpPrefSelectionShortcut =
     "JapaneseSectionShortcut";
+
 inline constexpr std::string_view kJpPrefKeymapStyle = "JapaneseKeymapStyle";
 inline constexpr std::string_view kJpPrefDisablePersonalizedSuggestions =
     "JapaneseDisableSuggestions";
