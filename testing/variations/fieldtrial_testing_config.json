@@ -11321,23 +11321,6 @@
             ]
         }
     ],
-    "GlicAppendModelQualityClientId": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicAppendModelQualityClientId"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicButtonAltLabel": [
         {
             "platforms": [
