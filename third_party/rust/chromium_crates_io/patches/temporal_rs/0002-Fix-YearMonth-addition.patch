@@ -1,0 +1,57 @@
+From b7bc9a0f7784c265d1191ec2e340fc6038e0c3f1 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Mon, 8 Dec 2025 23:19:40 +0000
+Subject: [PATCH] Fix YearMonth addition
+
+Uplift https://github.com/boa-dev/temporal/pull/645
+
+Change-Id: I19e4ef76a5b9f1f44279682ba42d085f42ec5832
+---
+ .../src/builtins/core/plain_year_month.rs     | 23 +++++++++++++++----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs
+index 27b6c8eed4992..943729f1ef7ee 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_year_month.rs
+@@ -220,14 +220,13 @@ impl PlainYearMonth {
+                 &one_month_duration,
+                 Overflow::Constrain,
+             )?;
++            let next_month = next_month.iso;
+ 
+             // c. Let date be BalanceISODate(nextMonth.[[Year]], nextMonth.[[Month]], nextMonth.[[Day]] - 1).
+             let date = IsoDate::balance(
+-                next_month.year(),
+-                i32::from(next_month.month()),
+-                i32::from(next_month.day())
+-                    .checked_sub(1)
+-                    .temporal_unwrap()?,
++                next_month.year,
++                i32::from(next_month.month),
++                i32::from(next_month.day).checked_sub(1).temporal_unwrap()?,
+             );
+ 
+             // d. Assert: ISODateWithinLimits(date) is true.
+@@ -1157,4 +1156,18 @@ mod tests {
+             )
+             .is_err());
+     }
++
++    #[test]
++    fn test_subtract_one_month() {
++        // https://github.com/boa-dev/temporal/issues/643
++        let chinese_m12_1 = PlainYearMonth::from_str("2002-01-13[u-ca=chinese]").unwrap();
++        let minus_one_month = Duration::from_str("P1M").unwrap();
++        let prev = chinese_m12_1
++            .subtract(&minus_one_month, Overflow::Constrain)
++            .unwrap();
++        assert_eq!(
++            prev.to_ixdtf_string(Default::default()),
++            "2001-12-15[u-ca=chinese]"
++        );
++    }
+ }
+-- 
+2.52.0.223.gf5cc29aaa4-goog
+

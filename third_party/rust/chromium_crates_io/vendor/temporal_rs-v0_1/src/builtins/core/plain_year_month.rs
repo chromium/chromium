@@ -220,14 +220,13 @@ impl PlainYearMonth {
                 &one_month_duration,
                 Overflow::Constrain,
             )?;
+            let next_month = next_month.iso;
 
             // c. Let date be BalanceISODate(nextMonth.[[Year]], nextMonth.[[Month]], nextMonth.[[Day]] - 1).
             let date = IsoDate::balance(
-                next_month.year(),
-                i32::from(next_month.month()),
-                i32::from(next_month.day())
-                    .checked_sub(1)
-                    .temporal_unwrap()?,
+                next_month.year,
+                i32::from(next_month.month),
+                i32::from(next_month.day).checked_sub(1).temporal_unwrap()?,
             );
 
             // d. Assert: ISODateWithinLimits(date) is true.
@@ -1156,5 +1155,19 @@ mod tests {
                 }
             )
             .is_err());
+    }
+
+    #[test]
+    fn test_subtract_one_month() {
+        // https://github.com/boa-dev/temporal/issues/643
+        let chinese_m12_1 = PlainYearMonth::from_str("2002-01-13[u-ca=chinese]").unwrap();
+        let minus_one_month = Duration::from_str("P1M").unwrap();
+        let prev = chinese_m12_1
+            .subtract(&minus_one_month, Overflow::Constrain)
+            .unwrap();
+        assert_eq!(
+            prev.to_ixdtf_string(Default::default()),
+            "2001-12-15[u-ca=chinese]"
+        );
     }
 }
