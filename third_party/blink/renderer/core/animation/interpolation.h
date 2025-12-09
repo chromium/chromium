@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_H_
 
+#include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -61,7 +62,10 @@ class CORE_EXPORT Interpolation : public GarbageCollected<Interpolation> {
   Interpolation& operator=(const Interpolation&) = delete;
   virtual ~Interpolation() {}
 
-  virtual void Interpolate(int iteration, double fraction) = 0;
+  virtual void Interpolate(
+      int iteration,
+      double fraction,
+      EffectModel::IterationCompositeOperation iteration_composite) = 0;
 
   virtual bool IsInvalidatableInterpolation() const { return false; }
   virtual bool IsTransitionInterpolation() const { return false; }

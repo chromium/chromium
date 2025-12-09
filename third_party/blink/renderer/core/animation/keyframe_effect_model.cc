@@ -197,6 +197,12 @@ void KeyframeEffectModelBase::SetComposite(CompositeOperation composite) {
   ClearCachedData();
 }
 
+void KeyframeEffectModelBase::SetIterationComposite(
+    IterationCompositeOperation iteration_composite) {
+  iteration_composite_ = iteration_composite;
+  ClearCachedData();
+}
+
 bool KeyframeEffectModelBase::Sample(
     int iteration,
     double fraction,
@@ -212,8 +218,8 @@ bool KeyframeEffectModelBase::Sample(
   last_iteration_ = iteration;
   last_fraction_ = fraction;
   last_iteration_duration_ = iteration_duration;
-  interpolation_effect_->GetActiveInterpolations(fraction, limit_direction,
-                                                 result);
+  interpolation_effect_->GetActiveInterpolations(
+      iteration, fraction, iteration_composite_, limit_direction, result);
   return changed;
 }
 
@@ -538,7 +544,7 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
       has_synthetic_keyframes_ = true;
 
     entry.value->RemoveRedundantKeyframes();
-    entry.value->CheckIfStatic();
+    entry.value->CheckIfStatic(*this);
   }
 }
 
@@ -578,6 +584,9 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
                                                           *keyframes[0]);
       continue;
     }
+
+    const Keyframe::PropertySpecificKeyframe* final_keyframe = keyframes.back();
+
     for (wtf_size_t i = 0; i < keyframes.size() - 1; i++) {
       wtf_size_t start_index = i;
       wtf_size_t end_index = i + 1;
@@ -604,7 +613,7 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
       if (apply_from != apply_to) {
         interpolation_effect_->AddInterpolationsFromKeyframes(
             entry.key, *keyframes[start_index], *keyframes[end_index],
-            apply_from, apply_to);
+            final_keyframe, apply_from, apply_to);
       }
       // else the interpolation will never be used in sampling
     }
@@ -774,8 +783,17 @@ bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
   }
 }
 
-void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::CheckIfStatic() {
+void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::CheckIfStatic(
+    const KeyframeEffectModelBase& model) {
   static_check_result_ = StaticCheckResult::kStatic;
+
+  // Properties cannot be static when using iterationComposite: accumulate
+  // because their values will change across iterations.
+  if (model.IterationComposite() ==
+      IterationCompositeOperation::kIterationCompositeAccumulate) {
+    static_check_result_ = StaticCheckResult::kDynamic;
+    return;
+  }
 
   // Transitions are only started if the end-points mismatch with caveat for
   // visited/unvisited properties. For now, limit to detected static properties

@@ -193,6 +193,8 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Animation affects an !important property"/>
   <int value="20"
       label="Target SVG element uses an individual transform property"/>
+  <int value="21"
+      label="Effect has an iteration composite mode other than 'replace'"/>
 </enum>
 
 <enum name="CompressionStreamsFormat">

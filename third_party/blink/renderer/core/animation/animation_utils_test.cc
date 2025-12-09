@@ -54,7 +54,9 @@ class AnimationUtilsTest : public RenderingTest {
     Interpolation* interpolation =
         MakeGarbageCollected<InvalidatableInterpolation>(
             property_handle, from_keyframe, to_keyframe);
-    interpolation->Interpolate(/*iteration=*/0, /*progress=*/1);
+    interpolation->Interpolate(/*iteration=*/0,
+                               /*fraction=*/1,
+                               EffectModel::kIterationCompositeReplace);
     active_interpolations->push_back(interpolation);
   }
 

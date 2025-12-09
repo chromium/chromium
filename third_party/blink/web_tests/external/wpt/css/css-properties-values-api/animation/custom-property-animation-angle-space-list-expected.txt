@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Animating a custom property of type <angle>+ with iterationComposite
-  assert_equals: expected "250deg 275deg" but got "50deg 75deg"
-Harness: the test ran to completion.
-

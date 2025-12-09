@@ -1294,6 +1294,11 @@
       status: "stable",
     },
     {
+      // https://drafts.csswg.org/web-animations-2/#iteration-composite-operation
+      name: "CSSAnimationIterationComposite",
+      status: "experimental",
+    },
+    {
       // Whether <image> values are allowed as counter style <symbol>
       name: "CSSAtRuleCounterStyleImageSymbols",
     },

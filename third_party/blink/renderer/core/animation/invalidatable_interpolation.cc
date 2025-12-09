@@ -7,21 +7,31 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
+#include "third_party/blink/renderer/core/animation/interpolable_filter.h"
+#include "third_party/blink/renderer/core/animation/interpolable_transform_list.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-void InvalidatableInterpolation::Interpolate(int, double fraction) {
-  if (fraction == current_fraction_) {
+void InvalidatableInterpolation::Interpolate(
+    int iteration,
+    double fraction,
+    EffectModel::IterationCompositeOperation iteration_composite) {
+  if (fraction == current_fraction_ && iteration == current_iteration_ &&
+      iteration_composite == current_iteration_composite_) {
     return;
   }
 
   current_fraction_ = fraction;
+  current_iteration_ = iteration;
+  current_iteration_composite_ = iteration_composite;
   if (is_conversion_cached_ && cached_pair_conversion_) {
     cached_pair_conversion_->InterpolateValue(fraction, cached_value_);
+    ApplyIterationAccumulation();
   }
   // We defer the interpolation to ensureValidConversion() if
   // |cached_pair_conversion_| is null.
@@ -120,12 +130,18 @@ void InvalidatableInterpolation::ClearConversionCache(
   cached_pair_conversion_.Clear();
   conversion_checkers_.clear();
   cached_value_.Clear();
+  cached_end_value_.Clear();
+  cached_iteration_composite_ = EffectModel::kIterationCompositeReplace;
 }
 
 bool InvalidatableInterpolation::IsConversionCacheValid(
     const CSSInterpolationEnvironment& environment,
     const UnderlyingValueOwner& underlying_value_owner) const {
   if (!is_conversion_cached_) {
+    return false;
+  }
+  // Check if iteration_composite changed since cache was built
+  if (current_iteration_composite_ != cached_iteration_composite_) {
     return false;
   }
   if (IsNeutralKeyframeActive()) {
@@ -164,15 +180,48 @@ InvalidatableInterpolation::EnsureValidConversion(
       MaybeConvertPairwise(environment, underlying_value_owner);
   if (pairwise_conversion) {
     cached_value_ = pairwise_conversion->InitialValue();
+    bool needs_end_interpolation = false;
+
+    if (current_iteration_composite_ ==
+        EffectModel::kIterationCompositeAccumulate) {
+      // Use the final keyframe value when accumulating across iterations.
+      if (final_keyframe_ && final_keyframe_ != end_keyframe_) {
+        cached_end_value_ = ConvertSingleKeyframe(*final_keyframe_, environment,
+                                                  underlying_value_owner);
+      }
+      if (!cached_end_value_) {
+        cached_end_value_ = pairwise_conversion->InitialValue();
+        needs_end_interpolation = true;
+      }
+    }
     cached_pair_conversion_ = std::move(pairwise_conversion);
+    if (needs_end_interpolation) {
+      cached_pair_conversion_->InterpolateValue(1.0, cached_end_value_);
+    }
   } else {
     cached_pair_conversion_ = MakeGarbageCollected<FlipPrimitiveInterpolation>(
         ConvertSingleKeyframe(*start_keyframe_, environment,
                               underlying_value_owner),
         ConvertSingleKeyframe(*end_keyframe_, environment,
                               underlying_value_owner));
+
+    // Use the final keyframe value when accumulating across iterations.
+    if (current_iteration_composite_ ==
+        EffectModel::kIterationCompositeAccumulate) {
+      if (final_keyframe_ && final_keyframe_ != end_keyframe_) {
+        cached_end_value_ = ConvertSingleKeyframe(*final_keyframe_, environment,
+                                                  underlying_value_owner);
+      } else {
+        cached_end_value_ = ConvertSingleKeyframe(*end_keyframe_, environment,
+                                                  underlying_value_owner);
+      }
+    }
   }
+
+  cached_iteration_composite_ = current_iteration_composite_;
+
   cached_pair_conversion_->InterpolateValue(current_fraction_, cached_value_);
+  ApplyIterationAccumulation();
   is_conversion_cached_ = true;
   return cached_value_.Get();
 }
@@ -222,6 +271,52 @@ double InvalidatableInterpolation::UnderlyingFraction() const {
   return cached_pair_conversion_->InterpolateUnderlyingFraction(
       start_keyframe_->UnderlyingFraction(),
       end_keyframe_->UnderlyingFraction(), current_fraction_);
+}
+
+void InvalidatableInterpolation::ApplyIterationAccumulation() const {
+  // Only apply accumulation if we're past the first iteration and
+  // iterationComposite is set to accumulate.
+  if (current_iteration_ <= 0 ||
+      current_iteration_composite_ !=
+          EffectModel::kIterationCompositeAccumulate ||
+      !cached_end_value_) {
+    return;
+  }
+
+  DCHECK(RuntimeEnabledFeatures::CSSAnimationIterationCompositeEnabled());
+
+  // TODO(crbug.com/41133485): Implement transform accumulation.
+  if (cached_value_->GetInterpolableValue().IsTransformList()) {
+    return;
+  }
+
+  InterpolableValue* result_value =
+      cached_value_->MutableValue().interpolable_value.Get();
+  const InterpolableValue* end_value =
+      cached_end_value_->Value().interpolable_value.Get();
+
+  // For filter lists, skip accumulation if their types don't match. Same logic
+  // as CSSFilterListInterpolationType::PerformAccumulativeComposition.
+  if (result_value->IsList() && end_value->IsList()) {
+    const auto& result_list = To<InterpolableList>(*result_value);
+    const auto& end_list = To<InterpolableList>(*end_value);
+    for (wtf_size_t i = 0; i < result_list.length() && i < end_list.length();
+         i++) {
+      const auto* result_filter =
+          DynamicTo<InterpolableFilter>(result_list.Get(i));
+      const auto* end_filter = DynamicTo<InterpolableFilter>(end_list.Get(i));
+      if (result_filter && end_filter &&
+          result_filter->GetType() != end_filter->GetType()) {
+        return;
+      }
+    }
+  }
+
+  // Iteration accumulation (Web Animations Level 2). Accumulate the final
+  // keyframe value with the current value, |current_iteration| times.
+  Member<InterpolableValue> scaled_end = end_value->Clone();
+  scaled_end->Scale(current_iteration_);
+  result_value->ScaleAndAdd(1.0, *scaled_end);
 }
 
 void InvalidatableInterpolation::ApplyStack(

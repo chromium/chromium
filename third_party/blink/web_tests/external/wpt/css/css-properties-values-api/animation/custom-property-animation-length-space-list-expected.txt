@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Animating a custom property of type <length>+ with iterationComposite
-  assert_equals: expected "250px 275px" but got "50px 75px"
-Harness: the test ran to completion.
-

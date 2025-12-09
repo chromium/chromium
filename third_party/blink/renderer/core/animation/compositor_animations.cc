@@ -246,6 +246,12 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
   FailureReasons reasons = kNoFailure;
   const auto& keyframe_effect = To<KeyframeEffectModelBase>(effect);
 
+  // TODO(crbug.com/41133485): Compositor support for iterationComposite.
+  if (keyframe_effect.IterationComposite() !=
+      EffectModel::kIterationCompositeReplace) {
+    reasons |= kEffectHasNonReplaceIterationCompositeMode;
+  }
+
   LayoutObject* layout_object = target_element.GetLayoutObject();
   // Elements with subtrees containing will-change: contents are not
   // composited for animations as if the contents change the tiles

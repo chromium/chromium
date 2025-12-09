@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] AnimationTimeline interface: operation play(optional AnimationEffect?)
   assert_own_property: interface prototype object missing non-static operation expected property "play" missing
 [FAIL] AnimationTimeline interface: document.timeline must inherit property "currentTime" with the proper type
@@ -22,10 +22,6 @@ Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "replace" missing
 [FAIL] AnimationEffect interface: operation remove()
   assert_own_property: interface prototype object missing non-static operation expected property "remove" missing
-[FAIL] KeyframeEffect interface: attribute iterationComposite
-  assert_true: The prototype object must have a property "iterationComposite" expected true got false
-[FAIL] KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "iterationComposite" with the proper type
-  assert_inherits: property "iterationComposite" not found in prototype chain
 [FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "parent" with the proper type
   assert_inherits: property "parent" not found in prototype chain
 [FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "previousSibling" with the proper type

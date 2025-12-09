@@ -289,6 +289,24 @@ void InterpolableFilter::Add(const InterpolableValue& other) {
   }
 }
 
+void InterpolableFilter::Scale(double scale) {
+  // The following types have an initial value of 1 for interpolation, so
+  // scaling for them is one-based: result = 1 + (value - 1) * scale
+  switch (type_) {
+    case FilterOperation::OperationType::kBrightness:
+    case FilterOperation::OperationType::kContrast:
+    case FilterOperation::OperationType::kOpacity:
+    case FilterOperation::OperationType::kSaturate:
+      value_->Add(*MakeGarbageCollected<InterpolableNumber>(-1));
+      value_->Scale(scale);
+      value_->Add(*MakeGarbageCollected<InterpolableNumber>(1));
+      break;
+    default:
+      value_->Scale(scale);
+      break;
+  }
+}
+
 void InterpolableFilter::AssertCanInterpolateWith(
     const InterpolableValue& other) const {
   const InterpolableFilter& other_filter = To<InterpolableFilter>(other);

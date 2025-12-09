@@ -5621,12 +5621,14 @@ interface KeyboardLayoutMap
 interface KeyframeEffect : AnimationEffect
     attribute @@toStringTag
     getter composite
+    getter iterationComposite
     getter pseudoElement
     getter target
     method constructor
     method getKeyframes
     method setKeyframes
     setter composite
+    setter iterationComposite
     setter pseudoElement
     setter target
 interface LanguageDetector

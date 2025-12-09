@@ -141,6 +141,8 @@ KeyframeEffect* KeyframeEffect::Create(
     return nullptr;
 
   EffectModel::CompositeOperation composite = EffectModel::kCompositeReplace;
+  EffectModel::IterationCompositeOperation iteration_composite =
+      EffectModel::kIterationCompositeReplace;
   String pseudo = String();
   if (options->IsKeyframeEffectOptions()) {
     auto* effect_options = options->GetAsKeyframeEffectOptions();
@@ -157,12 +159,19 @@ KeyframeEffect* KeyframeEffect::Create(
         return nullptr;
       }
     }
+    if (RuntimeEnabledFeatures::CSSAnimationIterationCompositeEnabled() &&
+        effect_options->hasIterationComposite()) {
+      iteration_composite = EffectModel::EnumToIterationCompositeOperation(
+          effect_options->iterationComposite().AsEnum());
+    }
   }
 
   KeyframeEffectModelBase* model = EffectInput::Convert(
       element, keyframes, composite, script_state, exception_state);
   if (exception_state.HadException())
     return nullptr;
+
+  model->SetIterationComposite(iteration_composite);
   KeyframeEffect* effect =
       MakeGarbageCollected<KeyframeEffect>(element, model, timing);
 
@@ -291,6 +300,21 @@ V8CompositeOperation KeyframeEffect::composite() const {
 void KeyframeEffect::setComposite(const V8CompositeOperation& composite) {
   Model()->SetComposite(
       EffectModel::EnumToCompositeOperation(composite.AsEnum()));
+
+  ClearEffects();
+  InvalidateAndNotifyOwner();
+}
+
+V8IterationCompositeOperation KeyframeEffect::iterationComposite() const {
+  return V8IterationCompositeOperation(
+      EffectModel::IterationCompositeOperationToEnum(
+          Model()->IterationComposite()));
+}
+
+void KeyframeEffect::setIterationComposite(
+    const V8IterationCompositeOperation& iteration_composite) {
+  Model()->SetIterationComposite(EffectModel::EnumToIterationCompositeOperation(
+      iteration_composite.AsEnum()));
 
   ClearEffects();
   InvalidateAndNotifyOwner();

@@ -149,7 +149,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
    private:
     void RemoveRedundantKeyframes();
-    void CheckIfStatic();
+    void CheckIfStatic(const KeyframeEffectModelBase& model);
     bool AddSyntheticKeyframeIfRequired(
         scoped_refptr<TimingFunction> zero_offset_easing);
     const CSSPropertySpecificKeyframe* FirstCssKeyframeWithSetValue() const;
@@ -243,6 +243,11 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   CompositeOperation Composite() const { return composite_; }
   void SetComposite(CompositeOperation composite);
+
+  IterationCompositeOperation IterationComposite() const {
+    return iteration_composite_;
+  }
+  void SetIterationComposite(IterationCompositeOperation iteration_composite);
 
   const PropertySpecificKeyframeVector* GetPropertySpecificKeyframes(
       const PropertyHandle& property) const {
@@ -385,6 +390,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   mutable double last_fraction_;
   mutable AnimationTimeDelta last_iteration_duration_;
   CompositeOperation composite_;
+  IterationCompositeOperation iteration_composite_ = kIterationCompositeReplace;
   scoped_refptr<TimingFunction> default_keyframe_easing_;
 
   mutable bool has_synthetic_keyframes_ = false;
@@ -423,14 +429,18 @@ class KeyframeEffectModel : public KeyframeEffectModelBase {
       Keyframe* new_keyframe = keyframe->Clone();
       keyframes.push_back(static_cast<K*>(new_keyframe));
     }
-    return MakeGarbageCollected<KeyframeEffectModel<K>>(
+    auto* cloned = MakeGarbageCollected<KeyframeEffectModel<K>>(
         keyframes, composite_, default_keyframe_easing_);
+    cloned->SetIterationComposite(iteration_composite_);
+    return cloned;
   }
 
   KeyframeEffectModel<StringKeyframe>* CloneAsEmptyStringKeyframeModel() {
     HeapVector<Member<StringKeyframe>> empty_keyframes;
-    return MakeGarbageCollected<KeyframeEffectModel<StringKeyframe>>(
+    auto* cloned = MakeGarbageCollected<KeyframeEffectModel<StringKeyframe>>(
         empty_keyframes, composite_, default_keyframe_easing_);
+    cloned->SetIterationComposite(iteration_composite_);
+    return cloned;
   }
 
  private:

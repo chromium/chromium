@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLATION_EFFECT_H_
 
+#include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -29,9 +30,12 @@ class CORE_EXPORT InterpolationEffect
     interpolations_.clear();
   }
 
-  void GetActiveInterpolations(double fraction,
-                               TimingFunction::LimitDirection limit_direction,
-                               HeapVector<Member<Interpolation>>&) const;
+  void GetActiveInterpolations(
+      int iteration,
+      double fraction,
+      EffectModel::IterationCompositeOperation iteration_composite,
+      TimingFunction::LimitDirection limit_direction,
+      HeapVector<Member<Interpolation>>&) const;
 
   void AddInterpolation(Interpolation* interpolation,
                         scoped_refptr<TimingFunction> easing,
@@ -47,6 +51,7 @@ class CORE_EXPORT InterpolationEffect
       const PropertyHandle&,
       const Keyframe::PropertySpecificKeyframe& keyframe_a,
       const Keyframe::PropertySpecificKeyframe& keyframe_b,
+      const Keyframe::PropertySpecificKeyframe* final_keyframe,
       double apply_from,
       double apply_to);
 

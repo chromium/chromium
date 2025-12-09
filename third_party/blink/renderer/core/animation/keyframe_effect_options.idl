@@ -5,7 +5,7 @@
 // https://w3.org/TR/web-animations-1/#the-keyframeeffectoptions-dictionary
 
 dictionary KeyframeEffectOptions : EffectTiming {
-    // TODO(alancutter): Implement iterationComposite
   CompositeOperation composite = "replace";
+  [RuntimeEnabled=CSSAnimationIterationComposite] IterationCompositeOperation iterationComposite = "replace";
   CSSOMString?       pseudoElement = null;
 };

@@ -249,9 +249,13 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
     virtual PropertySpecificKeyframe* NeutralKeyframe(
         double offset,
         scoped_refptr<TimingFunction> easing) const = 0;
+    // Creates an interpolation between this keyframe and 'end'.
+    // 'final_keyframe' is the keyframe at offset 1.0; it may differ from 'end'
+    // in multi-keyframe animations and it is used for iteration accumulation.
     virtual Interpolation* CreateInterpolation(
         const PropertyHandle&,
-        const Keyframe::PropertySpecificKeyframe& end) const;
+        const Keyframe::PropertySpecificKeyframe& end,
+        const Keyframe::PropertySpecificKeyframe* final_keyframe) const;
 
     virtual void Trace(Visitor*) const {}
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_iteration_composite_operation.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -44,6 +45,28 @@ V8CompositeOperation::Enum EffectModel::CompositeOperationToEnum(
       return V8CompositeOperation::Enum::kAdd;
     case EffectModel::kCompositeReplace:
       return V8CompositeOperation::Enum::kReplace;
+  }
+}
+
+EffectModel::IterationCompositeOperation
+EffectModel::EnumToIterationCompositeOperation(
+    V8IterationCompositeOperation::Enum iteration_composite) {
+  switch (iteration_composite) {
+    case V8IterationCompositeOperation::Enum::kAccumulate:
+      return EffectModel::kIterationCompositeAccumulate;
+    case V8IterationCompositeOperation::Enum::kReplace:
+      return EffectModel::kIterationCompositeReplace;
+  }
+}
+
+V8IterationCompositeOperation::Enum
+EffectModel::IterationCompositeOperationToEnum(
+    IterationCompositeOperation iteration_composite) {
+  switch (iteration_composite) {
+    case EffectModel::kIterationCompositeAccumulate:
+      return V8IterationCompositeOperation::Enum::kAccumulate;
+    case EffectModel::kIterationCompositeReplace:
+      return V8IterationCompositeOperation::Enum::kReplace;
   }
 }
 }  // namespace blink

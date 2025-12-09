@@ -7,7 +7,9 @@
 namespace blink {
 
 void InterpolationEffect::GetActiveInterpolations(
+    int iteration,
     double fraction,
+    EffectModel::IterationCompositeOperation iteration_composite,
     TimingFunction::LimitDirection limit_direction,
     HeapVector<Member<Interpolation>>& result) const {
   wtf_size_t existing_size = result.size();
@@ -20,7 +22,7 @@ void InterpolationEffect::GetActiveInterpolations(
       // The first sample will cache a value, which will be reused in
       // subsequent calls as long as the cache is not invalidated.
       interpolation = record->interpolation_;
-      interpolation->Interpolate(0, 0);
+      interpolation->Interpolate(iteration, 0, iteration_composite);
     } else {
       if (fraction >= record->apply_from_ && fraction < record->apply_to_) {
         // TODO(kevers): There is room to expand the optimization to allow a
@@ -36,7 +38,8 @@ void InterpolationEffect::GetActiveInterpolations(
           local_fraction =
               record->easing_->Evaluate(local_fraction, limit_direction);
         }
-        interpolation->Interpolate(0, local_fraction);
+        interpolation->Interpolate(iteration, local_fraction,
+                                   iteration_composite);
       }
     }
     if (interpolation) {
@@ -56,18 +59,20 @@ void InterpolationEffect::AddInterpolationsFromKeyframes(
     const PropertyHandle& property,
     const Keyframe::PropertySpecificKeyframe& keyframe_a,
     const Keyframe::PropertySpecificKeyframe& keyframe_b,
+    const Keyframe::PropertySpecificKeyframe* final_keyframe,
     double apply_from,
     double apply_to) {
-  AddInterpolation(keyframe_a.CreateInterpolation(property, keyframe_b),
-                   &keyframe_a.Easing(), keyframe_a.Offset(),
-                   keyframe_b.Offset(), apply_from, apply_to);
+  AddInterpolation(
+      keyframe_a.CreateInterpolation(property, keyframe_b, final_keyframe),
+      &keyframe_a.Easing(), keyframe_a.Offset(), keyframe_b.Offset(),
+      apply_from, apply_to);
 }
 
 void InterpolationEffect::AddStaticValuedInterpolation(
     const PropertyHandle& property,
     const Keyframe::PropertySpecificKeyframe& keyframe) {
   interpolations_.push_back(MakeGarbageCollected<InterpolationRecord>(
-      keyframe.CreateInterpolation(property, keyframe)));
+      keyframe.CreateInterpolation(property, keyframe, nullptr)));
 }
 
 void InterpolationEffect::Trace(Visitor* visitor) const {
