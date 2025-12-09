@@ -7,7 +7,13 @@
 #include <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>
 
+#include "base/no_destructor.h"
 #include "ui/base/idle/idle_internal.h"
+
+namespace ui {
+// Forward declaration of the function.
+base::RepeatingCallbackList<void(bool)>& GetScreenLockCallbacks();
+}  // namespace ui
 
 @interface MacScreenMonitor : NSObject
 
@@ -51,19 +57,21 @@
 }
 
 - (void)onScreenSaverStarted:(NSNotification*)notification {
-   _screensaverRunning = YES;
+  _screensaverRunning = YES;
 }
 
 - (void)onScreenSaverStopped:(NSNotification*)notification {
-   _screensaverRunning = NO;
+  _screensaverRunning = NO;
 }
 
 - (void)onScreenLocked:(NSNotification*)notification {
-   _screenLocked = YES;
+  _screenLocked = YES;
+  ui::GetScreenLockCallbacks().Notify(true);
 }
 
 - (void)onScreenUnlocked:(NSNotification*)notification {
-   _screenLocked = NO;
+  _screenLocked = NO;
+  ui::GetScreenLockCallbacks().Notify(false);
 }
 
 @end
@@ -75,9 +83,22 @@ static MacScreenMonitor* g_screenMonitor = nil;
 
 }  // namespace
 
+base::RepeatingCallbackList<void(bool)>& GetScreenLockCallbacks() {
+  static base::NoDestructor<base::RepeatingCallbackList<void(bool)>> callbacks;
+  return *callbacks;
+}
+
 void InitIdleMonitor() {
   if (!g_screenMonitor)
     g_screenMonitor = [[MacScreenMonitor alloc] init];
+}
+
+base::CallbackListSubscription AddScreenLockCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  if (GetScreenLockCallbacks().empty()) {
+    InitIdleMonitor();
+  }
+  return GetScreenLockCallbacks().Add(std::move(callback));
 }
 
 int CalculateIdleTime() {

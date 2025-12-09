@@ -6,8 +6,15 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "ui/base/idle/idle_internal.h"
+
+namespace ui {
+base::RepeatingCallbackList<void(bool)>& GetScreenLockCallbacks();
+}  // namespace ui
 
 @interface IOSScreenMonitor : NSObject
 
@@ -57,16 +64,32 @@
 }
 
 - (void)onDeviceLocked:(NSNotification*)notification {
+  ui::GetScreenLockCallbacks().Notify(true);
   _deviceLocked = YES;
 }
 
 - (void)onDeviceUnlocked:(NSNotification*)notification {
+  ui::GetScreenLockCallbacks().Notify(false);
   _deviceLocked = NO;
 }
 
 @end
 
 namespace ui {
+
+base::RepeatingCallbackList<void(bool)>& GetScreenLockCallbacks() {
+  static base::NoDestructor<base::RepeatingCallbackList<void(bool)>> callbacks;
+  return *callbacks;
+}
+
+base::CallbackListSubscription AddScreenLockCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  if (GetScreenLockCallbacks().empty()) {
+    InitIdleMonitor();
+  }
+  return GetScreenLockCallbacks().Add(std::move(callback));
+}
+
 namespace {
 
 static IOSScreenMonitor* g_screenMonitor = nil;

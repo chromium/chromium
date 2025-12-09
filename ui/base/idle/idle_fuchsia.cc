@@ -8,6 +8,13 @@
 
 namespace ui {
 
+base::CallbackListSubscription AddScreenLockCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  // TODO(crbug.com/40151210): Implement this.
+  NOTIMPLEMENTED();
+  return {};
+}
+
 int CalculateIdleTime() {
   // TODO(crbug.com/40151210): Implement this.
   NOTIMPLEMENTED();

@@ -49,11 +49,13 @@ void IdlePollingService::AddObserver(Observer* observer) {
   if (observers_.empty()) {
     DCHECK(!timer_.IsRunning());
     PollIdleState();
+    // We still use the polling logic for idle time calculation.
     timer_.Start(FROM_HERE, poll_interval_,
                  base::BindRepeating(&IdlePollingService::PollIdleState,
                                      base::Unretained(this)));
+    lock_state_subscription_ = AddScreenLockCallback(base::BindRepeating(
+        &IdlePollingService::OnLockStateChanged, base::Unretained(this)));
   }
-
   observers_.AddObserver(observer);
 }
 
@@ -64,6 +66,7 @@ void IdlePollingService::RemoveObserver(Observer* observer) {
   // Stop polling when there are no observers to save resources.
   if (observers_.empty()) {
     timer_.Stop();
+    lock_state_subscription_ = {};
   }
 }
 
@@ -96,6 +99,16 @@ IdlePollingService::IdlePollingService()
 }
 
 IdlePollingService::~IdlePollingService() = default;
+
+void IdlePollingService::OnLockStateChanged(bool locked) {
+  if (last_state_.locked == locked) {
+    return;
+  }
+
+  last_state_.locked = locked;
+  last_state_.idle_time = provider_->CalculateIdleTime();
+  observers_.Notify(&Observer::OnIdleStateChange, last_state_);
+}
 
 IdlePollingService::State IdlePollingService::CreateCurrentIdleState() const {
   return {

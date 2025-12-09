@@ -4,12 +4,65 @@
 
 #include "ui/base/idle/idle.h"
 
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "ui/base/idle/idle_internal.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace ui {
+
+namespace {
+
+// A class that bridges PowerManagerClient's idle signals with Idle's observer.
+class PowerManagerClientObserverImpl
+    : public ash::SessionManagerClient::Observer {
+ public:
+  static PowerManagerClientObserverImpl* GetInstance() {
+    static base::NoDestructor<PowerManagerClientObserverImpl> instance;
+    return instance.get();
+  }
+
+  PowerManagerClientObserverImpl(const PowerManagerClientObserverImpl&) =
+      delete;
+  PowerManagerClientObserverImpl& operator=(
+      const PowerManagerClientObserverImpl&) = delete;
+
+  base::CallbackListSubscription AddCallback(
+      base::RepeatingCallback<void(bool)> callback) {
+    return callbacks_.Add(std::move(callback));
+  }
+
+ private:
+  friend class base::NoDestructor<PowerManagerClientObserverImpl>;
+
+  PowerManagerClientObserverImpl() {
+    if (ash::SessionManagerClient::Get()) {
+      ash::SessionManagerClient::Get()->AddObserver(this);
+    }
+  }
+
+  ~PowerManagerClientObserverImpl() override {
+    if (ash::SessionManagerClient::Get()) {
+      ash::SessionManagerClient::Get()->RemoveObserver(this);
+    }
+  }
+
+  void ScreenLockedStateUpdated() override {
+    bool is_locked = ash::SessionManagerClient::Get()->IsScreenLocked();
+    callbacks_.Notify(is_locked);
+  }
+
+  base::RepeatingCallbackList<void(bool)> callbacks_;
+};
+
+}  // namespace
+
+base::CallbackListSubscription AddScreenLockCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  return PowerManagerClientObserverImpl::GetInstance()->AddCallback(
+      std::move(callback));
+}
 
 int CalculateIdleTime() {
   const base::TimeDelta idle_time =
