@@ -984,10 +984,9 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
     autofill::FormGlobalId form_id,
     autofill::AutofillManager::Observer::FieldTypeSource source) {
   // Do nothing if the form is not a credit card form.
-  if (auto it = manager.form_structures().find(form_id);
-      it != manager.form_structures().end() &&
-      !it->second.get()->GetFormTypes().contains(
-          autofill::FormType::kCreditCardForm)) {
+  const autofill::FormStructure* form = manager.FindCachedFormById(form_id);
+  if (form &&
+      !form->GetFormTypes().contains(autofill::FormType::kCreditCardForm)) {
     return;
   }
 
@@ -1015,27 +1014,21 @@ void ClientSideDetectionHost::OnBeforeFocusOnFormField(
     autofill::FormGlobalId form_id,
     autofill::FieldGlobalId field_id) {
   // Do nothing if the form is not a credit card form.
-  if (auto it = manager.form_structures().find(form_id);
-      it != manager.form_structures().end() &&
-      !it->second.get()->GetFormTypes().contains(
-          autofill::FormType::kCreditCardForm)) {
+  const autofill::FormStructure* form = manager.FindCachedFormById(form_id);
+  if (form &&
+      !form->GetFormTypes().contains(autofill::FormType::kCreditCardForm)) {
     return;
   }
 
   credit_card_form::FieldDetectionHeuristic field_heuristic =
       credit_card_form::kNoDetectionHeuristic;
-  bool has_local_heuristic = !manager
-                                  .GetHeuristicPredictionForForm(
-                                      autofill::GetActiveHeuristicSource(),
-                                      form_id, base::span_from_ref(field_id))
-                                  .empty();
-  bool has_server_heuristic =
-      !manager
-           .GetServerPredictionsForForm(form_id, base::span_from_ref(field_id))
-           .empty();
-  if (has_server_heuristic) {
+  if (form &&
+      !form->GetServerPredictions(base::span_from_ref(field_id)).empty()) {
     field_heuristic = credit_card_form::kAutofillServer;
-  } else if (has_local_heuristic) {
+  } else if (form && !form->GetHeuristicPredictions(
+                              autofill::GetActiveHeuristicSource(),
+                              base::span_from_ref(field_id))
+                          .empty()) {
     field_heuristic = credit_card_form::kAutofillLocal;
   }
 
