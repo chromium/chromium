@@ -6306,7 +6306,6 @@ crbug.com/1150475 fast/dom/open-and-close-by-DOM.html [ Failure Pass ]
 
 #Sheriff 2020-11-23
 crbug.com/40732030 http/tests/devtools/sources/debugger-frameworks/frameworks-sourcemap.js [ Failure Pass ]
-crbug.com/40732030 http/tests/devtools/sources/debugger-ui/continue-to-location-markers.js [ Failure Pass Timeout ]
 crbug.com/40732030 http/tests/devtools/sources/debugger-ui/inline-scope-variables.js [ Failure Pass Timeout ]
 
 #Sheriff 2020-11-24
