@@ -344,10 +344,10 @@ TEST_F(SessionTest, DeferredSession) {
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
@@ -371,7 +371,8 @@ TEST_F(SessionTest, NotDeferredAsExcluded) {
   // session on the same site as `request`.
   request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
-  EXPECT_FALSE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_FALSE(session->IsInScope(dbsc_request));
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
@@ -391,7 +392,8 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   // session on the same site as `request`.
   request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
-  EXPECT_FALSE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_FALSE(session->IsInScope(dbsc_request));
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
@@ -415,10 +417,11 @@ TEST_F(SessionTest, DeferredIncludedSubdomain) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
-  EXPECT_TRUE(session->IsInScope(request.get()));
+
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
@@ -433,10 +436,11 @@ TEST_F(SessionTest, NotDeferredWithCookieSession) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  EXPECT_TRUE(session->IsInScope(request.get()));
+
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 
@@ -448,10 +452,10 @@ TEST_F(SessionTest, NotDeferredWithCookieSession) {
   ASSERT_TRUE(cookie);
   CookieAccessResult access_result;
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
-  EXPECT_TRUE(session->IsInScope(request.get()));
+
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_FALSE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   // Even though the second session didn't defer, the request was
   // deferred by the first session.
@@ -474,7 +478,8 @@ TEST_F(SessionTest, NotDeferredInsecure) {
   // session on the same site as `request`.
   request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
-  EXPECT_FALSE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_FALSE(session->IsInScope(dbsc_request));
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
@@ -493,10 +498,10 @@ TEST_F(SessionTest, DeferredEmptyCookieAttributesCredentialsField) {
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
@@ -515,10 +520,10 @@ TEST_F(SessionTest, DeferredNarrowerScopeOrigin) {
                               &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
@@ -539,7 +544,8 @@ TEST_F(SessionTest, NotDeferredNarrowerScopeOrigin) {
   // session on the same site as `request`.
   request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
-  EXPECT_FALSE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_FALSE(session->IsInScope(dbsc_request));
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
@@ -556,10 +562,10 @@ TEST_F(SessionTest, DeferredMissingScopeOrigin) {
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
@@ -584,34 +590,33 @@ TEST_F(SessionTest, DeferredAllowedRefreshInitiators) {
 
   // Browser-initiated requests can always be deferred
   request->set_initiator(std::nullopt);
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
 
   // Initiators on the site can always be deferred, despite no matching
   // initiator pattern.
   request->set_initiator(url::Origin::Create(GURL("https://example.test/")));
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
 
   // Initiators matching the pattern can be deferred.
   request->set_initiator(
       url::Origin::Create(GURL("https://subdomain.not-example.test/")));
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
 
   // Initiators not on the site or matching a rule cannot be deferred.
   request->set_initiator(
       url::Origin::Create(GURL("https://some-other-not-example.test/")));
-  EXPECT_FALSE(session->IsInScope(request.get()));
+  EXPECT_FALSE(session->IsInScope(dbsc_request));
 }
 
 class InsecureDelegate : public CookieAccessDelegate {
@@ -666,10 +671,10 @@ TEST_F(SessionTest, NotDeferredNotSameSiteForCookies) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_FALSE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(),
             SessionUsage::kInScopeNotDeferred);
@@ -687,10 +692,10 @@ TEST_F(SessionTest, DeferredNotSameSiteDelegate) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
@@ -710,10 +715,10 @@ TEST_F(SessionTest, DeferredHostCookie) {
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
@@ -742,10 +747,10 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_FALSE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(),
             SessionUsage::kInScopeNotDeferred);
@@ -772,10 +777,10 @@ TEST_F(SessionTest, NetLogSessionInfo) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   RecordingNetLogObserver net_log_observer;
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   EXPECT_EQ(
       net_log_observer.GetEntriesWithType(NetLogEventType::DBSC_REQUEST).size(),
@@ -794,10 +799,10 @@ TEST_F(SessionTest, NetLogMissingCookie) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   RecordingNetLogObserver net_log_observer;
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_TRUE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
       NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
@@ -827,10 +832,10 @@ TEST_F(SessionTest, NetLogNoRefresh) {
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
 
   RecordingNetLogObserver net_log_observer;
-  EXPECT_TRUE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_TRUE(session->IsInScope(dbsc_request));
   EXPECT_FALSE(
-      session
-          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+      session->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
           .is_zero());
   std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
       NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
@@ -859,7 +864,8 @@ TEST_F(SessionTest, NetLogWrongInitiator) {
       url::Origin::Create(GURL("https://not-example.test/")));
 
   RecordingNetLogObserver net_log_observer;
-  EXPECT_FALSE(session->IsInScope(request.get()));
+  DbscRequest dbsc_request(request.get());
+  EXPECT_FALSE(session->IsInScope(dbsc_request));
 
   std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
       NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
@@ -917,10 +923,11 @@ TEST_F(SessionTest, Backoff) {
       session->InformOfRefreshResult(/*was_proactive=*/false, kSuccess);
     }
     FastForwardBy(base::Seconds(1));
-    EXPECT_TRUE(session->IsInScope(request.get()));
+    DbscRequest dbsc_request(request.get());
+    EXPECT_TRUE(session->IsInScope(dbsc_request));
     EXPECT_TRUE(
         session
-            ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+            ->MinimumBoundCookieLifetime(dbsc_request, FirstPartySetMetadata())
             .is_zero());
 
     // Four errors in a row will enter backoff, if necessary

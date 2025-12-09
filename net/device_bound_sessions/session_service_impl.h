@@ -20,6 +20,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
+#include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session.h"
@@ -89,17 +90,17 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const std::optional<url::Origin>& original_request_initiator) override;
 
   std::optional<DeferralParams> ShouldDefer(
-      URLRequest* request,
+      DbscRequest& request,
       HttpRequestHeaders* extra_headers,
       const FirstPartySetMetadata& first_party_set_metadata) override;
 
-  void DeferRequestForRefresh(URLRequest* request,
+  void DeferRequestForRefresh(DbscRequest& request,
                               DeferralParams deferral,
                               RefreshCompleteCallback callback) override;
 
   void SetChallengeForBoundSession(
       OnAccessCallback on_access_callback,
-      const URLRequest& request,
+      DbscRequest& request,
       const FirstPartySetMetadata& first_party_set_metadata,
       const SessionChallengeParam& param) override;
 
@@ -265,7 +266,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Helper function for starting a refresh
   void RefreshSessionInternal(
       RefreshTrigger trigger,
-      base::WeakPtr<URLRequest> request,
+      base::WeakPtr<URLRequest> maybe_request,
       const SessionKey& session_key,
       std::optional<unexportable_keys::UnexportableKeyId> key_id);
 
@@ -274,7 +275,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // Add a header to `request` indicating which sessions should have
   // applied, but did not due to error conditions.
-  void AddDebugHeader(URLRequest* request);
+  void AddDebugHeader(const DbscRequest& request);
 
   // Removes `fetcher` from the set of active fetchers. If `fetcher` is
   // null, does nothing.
@@ -310,7 +311,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // pending refreshes for `session_key`, start a proactive refresh.
   void MaybeStartProactiveRefresh(
       SessionService::OnAccessCallback per_request_callback,
-      URLRequest* request,
+      DbscRequest& request,
       const SessionKey& session_key,
       base::TimeDelta minimum_cookie_lifetime);
 

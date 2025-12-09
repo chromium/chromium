@@ -72,24 +72,24 @@ bool SessionMatchesFilter(
 
 class DebugHeaderBuilder {
  public:
-  void AddSkippedSession(SessionKey key, SessionService::RefreshResult result) {
+  void AddSkippedSession(SessionKey key, RefreshResult result) {
     structured_headers::Item item;
     switch (result) {
-      case SessionService::RefreshResult::kRefreshed:
-      case SessionService::RefreshResult::kFatalError:
+      case RefreshResult::kRefreshed:
+      case RefreshResult::kFatalError:
         return;
-      case SessionService::RefreshResult::kInitializedService:
+      case RefreshResult::kInitializedService:
         NOTREACHED();
-      case SessionService::RefreshResult::kUnreachable:
+      case RefreshResult::kUnreachable:
         item = structured_headers::Item("unreachable",
                                         structured_headers::Item::kTokenType);
         break;
-      case SessionService::RefreshResult::kServerError:
+      case RefreshResult::kServerError:
         item = structured_headers::Item("server_error",
                                         structured_headers::Item::kTokenType);
         break;
-      case SessionService::RefreshResult::kRefreshQuotaExceeded:
-      case SessionService::RefreshResult::kSigningQuotaExceeded:
+      case RefreshResult::kRefreshQuotaExceeded:
+      case RefreshResult::kSigningQuotaExceeded:
         item = structured_headers::Item("quota_exceeded",
                                         structured_headers::Item::kTokenType);
         break;
@@ -510,21 +510,21 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
 }
 
 std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
-    URLRequest* request,
+    DbscRequest& request,
     HttpRequestHeaders* extra_headers,
     const FirstPartySetMetadata& first_party_set_metadata) {
   if (pending_initialization_) {
     return DeferralParams();
   }
 
-  if (request->device_bound_session_usage() < SessionUsage::kNoUsage) {
-    request->set_device_bound_session_usage(SessionUsage::kNoUsage);
+  if (request.device_bound_session_usage() < SessionUsage::kNoUsage) {
+    request.set_device_bound_session_usage(SessionUsage::kNoUsage);
   }
 
-  SchemefulSite site(request->url());
+  SchemefulSite site(request.url());
   DebugHeaderBuilder debug_header_builder;
   const base::flat_map<SessionKey, RefreshResult>& previous_deferrals =
-      request->device_bound_session_deferrals();
+      request.device_bound_session_deferrals();
   for (const auto& [_, session] : GetSessionsForSite(site)) {
     if (!session->IsInScope(request)) {
       continue;
@@ -541,13 +541,13 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
         continue;
       }
 
-      NotifySessionAccess(request->device_bound_session_access_callback(),
+      NotifySessionAccess(request.device_bound_session_access_callback(),
                           SessionAccess::AccessType::kUpdate, session_key,
                           *session);
       return DeferralParams(session->id());
     }
 
-    MaybeStartProactiveRefresh(request->device_bound_session_access_callback(),
+    MaybeStartProactiveRefresh(request.device_bound_session_access_callback(),
                                request, session_key, minimum_lifetime);
   }
 
@@ -560,11 +560,10 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
 }
 
 void SessionServiceImpl::DeferRequestForRefresh(
-    URLRequest* request,
+    DbscRequest& request,
     DeferralParams deferral,
     RefreshCompleteCallback callback) {
   CHECK(callback);
-  CHECK(request);
 
   if (deferral.is_pending_initialization) {
     CHECK(pending_initialization_);
@@ -576,7 +575,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
     return;
   }
 
-  SessionKey session_key{SchemefulSite(request->url()), *deferral.session_id};
+  SessionKey session_key{SchemefulSite(request.url()), *deferral.session_id};
   // For the first deferring request, create a new vector and add the request.
   auto [it, inserted] = deferred_requests_.try_emplace(session_key);
   // Add the request callback to the deferred list.
@@ -593,7 +592,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
     return;
   }
   // Notify the request that it has been deferred for refreshed cookies.
-  NotifySessionAccess(request->device_bound_session_access_callback(),
+  NotifySessionAccess(request.device_bound_session_access_callback(),
                       SessionAccess::AccessType::kUpdate, session_key,
                       *session);
   if (!inserted) {
@@ -617,21 +616,21 @@ void SessionServiceImpl::DeferRequestForRefresh(
   if (!key_id.has_value()) {
     if (key_id.error() == unexportable_keys::ServiceError::kKeyNotReady) {
       RestoreSessionKey(
-          session_key, request->device_bound_session_access_callback(),
+          session_key, request.device_bound_session_access_callback(),
           base::BindOnce(&SessionServiceImpl::RefreshSessionInternal,
                          weak_factory_.GetWeakPtr(),
-                         RefreshTrigger::kMissingCookie, request->GetWeakPtr(),
+                         RefreshTrigger::kMissingCookie, request.GetWeakPtr(),
                          session_key));
     } else {
       UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
       DeleteSessionAndNotify(DeletionReason::kFailedToRestoreKey, session_key,
-                             request->device_bound_session_access_callback());
+                             request.device_bound_session_access_callback());
     }
 
     return;
   }
 
-  RefreshSessionInternal(RefreshTrigger::kMissingCookie, request->GetWeakPtr(),
+  RefreshSessionInternal(RefreshTrigger::kMissingCookie, request.GetWeakPtr(),
                          session_key, *key_id);
 }
 
@@ -765,7 +764,7 @@ void SessionServiceImpl::UnblockDeferredRequests(
 
 void SessionServiceImpl::SetChallengeForBoundSession(
     OnAccessCallback on_access_callback,
-    const URLRequest& request,
+    DbscRequest& request,
     const FirstPartySetMetadata& first_party_set_metadata,
     const SessionChallengeParam& param) {
   if (!param.session_id()) {
@@ -1131,16 +1130,18 @@ void SessionServiceImpl::OnSessionKeyRestored(
 
 void SessionServiceImpl::RefreshSessionInternal(
     RefreshTrigger trigger,
-    base::WeakPtr<URLRequest> request,
+    base::WeakPtr<URLRequest> maybe_request,
     const SessionKey& session_key,
     std::optional<unexportable_keys::UnexportableKeyId> key_id) {
-  if (!request || !key_id) {
+  if (!maybe_request || !key_id) {
     return;
   }
 
+  DbscRequest request(maybe_request.get());
+
   net::NetLogSource net_log_source_for_refresh = net::NetLogSource(
       net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
-  request->net_log().AddEventReferencingSource(
+  request.net_log().AddEventReferencingSource(
       net::NetLogEventType::DBSC_REFRESH_REQUEST, net_log_source_for_refresh);
 
   if (!base::FeatureList::IsEnabled(
@@ -1159,12 +1160,12 @@ void SessionServiceImpl::RefreshSessionInternal(
   auto callback = base::BindOnce(
       &SessionServiceImpl::OnRefreshRequestCompletion,
       weak_factory_.GetWeakPtr(), trigger,
-      request->device_bound_session_access_callback(), session_key);
+      request.device_bound_session_access_callback(), session_key);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           registration_param, *this, key_service_.get(), context_.get(),
-          request->isolation_info(), net_log_source_for_refresh,
-          request->initiator());
+          request.isolation_info(), net_log_source_for_refresh,
+          request.initiator());
   RegistrationFetcher* fetcher_raw = fetcher.get();
   registration_fetchers_.insert(std::move(fetcher));
   fetcher_raw->StartFetchWithExistingKey(registration_param, *key_id,
@@ -1260,7 +1261,7 @@ void SessionServiceImpl::RemoveFetcher(RegistrationFetcher* fetcher) {
 
 void SessionServiceImpl::MaybeStartProactiveRefresh(
     SessionService::OnAccessCallback per_request_callback,
-    URLRequest* request,
+    DbscRequest& request,
     const SessionKey& session_key,
     base::TimeDelta minimum_cookie_lifetime) {
   if (!base::FeatureList::IsEnabled(
@@ -1325,7 +1326,7 @@ void SessionServiceImpl::MaybeStartProactiveRefresh(
   NotifySessionAccess(per_request_callback, SessionAccess::AccessType::kUpdate,
                       session_key, *session);
   LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kAttempted);
-  RefreshSessionInternal(RefreshTrigger::kProactive, request->GetWeakPtr(),
+  RefreshSessionInternal(RefreshTrigger::kProactive, request.GetWeakPtr(),
                          session_key, *session->unexportable_key_id());
 }
 

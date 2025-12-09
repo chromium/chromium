@@ -95,19 +95,14 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void CloseConnectionOnDestruction() override;
   std::unique_ptr<SourceStream> SetUpSourceStream() override;
 
-  RequestPriority priority() const {
-    return priority_;
-  }
+  RequestPriority priority() const { return priority_; }
 
  private:
   // For CookieRequestScheme histogram enum.
   FRIEND_TEST_ALL_PREFIXES(URLRequestHttpJobTest,
                            CookieSchemeRequestSchemeHistogram);
 
-  enum CompletionCause {
-    ABORTED,
-    FINISHED
-  };
+  enum CompletionCause { ABORTED, FINISHED };
 
   // Used to indicate which kind of cookies are sent on which kind of requests,
   // for use in histograms. A (non)secure set cookie means that the cookie was
@@ -171,7 +166,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void RestartTransactionForRefresh(
       const device_bound_sessions::SessionService::DeferralParams&
           deferral_params,
-      device_bound_sessions::SessionService::RefreshResult result);
+      device_bound_sessions::RefreshResult result);
 #endif
   void RestartTransactionWithAuth(const AuthCredentials& credentials);
 

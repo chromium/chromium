@@ -27,6 +27,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/url_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "content/public/browser/site_instance.h"
@@ -81,10 +82,16 @@ void ProcessBoundSessionResponseHeaders(
   // response, ignore the session registration.
   base::flat_set<GURL> ignored_registration_endpoints;
   if (base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions)) {
+    // Per the spec, a response with a WebSocket scheme should be
+    // rewritten to HTTP(S). See https://crbug.com/379241469.
+    const GURL& url = response_adapter->GetUrl();
+    GURL normalized_url = url.SchemeIsWSOrWSS()
+                              ? net::ChangeWebSocketSchemeToHttpScheme(url)
+                              : url;
     std::vector<net::device_bound_sessions::RegistrationFetcherParam>
         standard_registrations =
             net::device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
-                response_adapter->GetUrl(), headers);
+                normalized_url, headers);
     for (const auto& standard_registration : standard_registrations) {
       ignored_registration_endpoints.insert(
           standard_registration.registration_endpoint());

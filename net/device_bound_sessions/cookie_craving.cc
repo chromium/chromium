@@ -195,8 +195,8 @@ base::expected<CookieCraving, SessionError> CookieCraving::Create(
   return cookie_craving;
 }
 
-// TODO(crbug.com/438792839): Much of this function is copied directly from CanonicalCookie.
-// Try to deduplicate it.
+// TODO(crbug.com/438792839): Much of this function is copied directly from
+// CanonicalCookie. Try to deduplicate it.
 bool CookieCraving::IsValid() const {
   if (ParsedCookie::ParseTokenString(Name()) != Name() ||
       !ParsedCookie::IsValidCookieName(Name())) {
@@ -405,18 +405,18 @@ std::optional<CookieCraving> CookieCraving::CreateFromProto(
 }
 
 bool CookieCraving::ShouldIncludeForRequest(
-    URLRequest* request,
+    DbscRequest& request,
     const FirstPartySetMetadata& first_party_set_metadata,
     const CookieOptions& options,
     const CookieAccessParams& params) const {
-  if (!IncludeForRequestURL(request->url(), options, params)
+  if (!IncludeForRequestURL(request.url(), options, params)
            .status.IsInclude()) {
     return false;
   }
 
   CookieInclusionStatus status;
   std::unique_ptr<CanonicalCookie> canonical_cookie =
-      CreateCanonicalCookieForRequest(request->url(), &status);
+      CreateCanonicalCookieForRequest(request.url(), &status);
 
   if (!canonical_cookie) {
     SCOPED_CRASH_KEY_STRING256("CookieCraving", "ShouldInclude",
@@ -432,12 +432,18 @@ bool CookieCraving::ShouldIncludeForRequest(
   CookieAccessResultList included_cravings;
   included_cravings.emplace_back(std::move(*canonical_cookie));
   CookieAccessResultList excluded_cravings;
-  return request->network_delegate()->AnnotateAndMoveUserBlockedCookies(
-      *request, first_party_set_metadata, included_cravings, excluded_cravings);
+  // The use of `unnormalized_request()` here is potentially unsafe since
+  // accessing the URL could drop the normalization of WebSocket schemes. But
+  // cookie inclusion logic has to handle this already when deciding
+  // whether to include cookies on the WebSocket handshake. That makes
+  // it safe in this very limited context to expose the `URLRequest`.
+  return request.network_delegate()->AnnotateAndMoveUserBlockedCookies(
+      *request.unnormalized_request(), first_party_set_metadata,
+      included_cravings, excluded_cravings);
 }
 
 bool CookieCraving::CanSetBoundCookie(
-    const URLRequest& request,
+    DbscRequest& request,
     const FirstPartySetMetadata& first_party_set_metadata,
     CookieOptions* options) const {
   // TODO(crbug.com/438783631): Refactor this.
@@ -455,9 +461,14 @@ bool CookieCraving::CanSetBoundCookie(
     return false;
   }
 
+  // The use of `unnormalized_request()` here is potentially unsafe since
+  // accessing the URL could drop the normalization of WebSocket schemes. But
+  // cookie inclusion logic has to handle this already when deciding
+  // whether to include cookies on the WebSocket handshake. That makes
+  // it safe in this very limited context to expose the `URLRequest`.
   if (!request.network_delegate()->CanSetCookie(
-          request, *canonical_cookie, options, first_party_set_metadata,
-          &status)) {
+          *request.unnormalized_request(), *canonical_cookie, options,
+          first_party_set_metadata, &status)) {
     return false;
   }
 

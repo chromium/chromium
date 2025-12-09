@@ -643,13 +643,14 @@ TEST_F(CookieCravingTest, ShouldIncludeCantCreateCanonicalCookie) {
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       GURL(kUrlString), IDLE, &delegate, kDummyAnnotation);
 
+  DbscRequest dbsc_request(request.get());
   // Confirm the valid craving is able to be included in the request.
   EXPECT_TRUE(cc_valid.ShouldIncludeForRequest(
-      request.get(), FirstPartySetMetadata(), options, params));
+      dbsc_request, FirstPartySetMetadata(), options, params));
   // Confirm that if somehow there were an invalid craving created, it would
   // just not be included in the request instead of causing a crash.
   EXPECT_FALSE(cc_invalid.ShouldIncludeForRequest(
-      request.get(), FirstPartySetMetadata(), options, params));
+      dbsc_request, FirstPartySetMetadata(), options, params));
 }
 
 }  // namespace net::device_bound_sessions

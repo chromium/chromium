@@ -21,7 +21,6 @@
 namespace net {
 class FirstPartySetMetadata;
 class IsolationInfo;
-class URLRequest;
 class URLRequestContext;
 class HttpRequestHeaders;
 }  // namespace net
@@ -33,25 +32,6 @@ namespace net::device_bound_sessions {
 class NET_EXPORT SessionService {
  public:
   using OnAccessCallback = base::RepeatingCallback<void(const SessionAccess&)>;
-
-  // Records the outcome of an attempt to refresh.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(DeviceBoundSessionRefreshResult)
-  enum class RefreshResult {
-    kRefreshed = 0,             // Refresh was successful.
-    kInitializedService = 1,    // Service is now initialized, refresh may still
-                                // be needed.
-    kUnreachable = 2,           // Refresh endpoint was unreachable.
-    kServerError = 3,           // Refresh endpoint served a transient error.
-    kRefreshQuotaExceeded = 4,  // Refresh quota exceeded. This is being
-                                // replaced with `kSigningQuotaExceeded`.
-    kFatalError = 5,            // Refresh failed and session was terminated. No
-                                // further refresh needed.
-    kSigningQuotaExceeded = 6,  // Signing quota exceeded.
-    kMaxValue = kSigningQuotaExceeded
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionRefreshResult)
   using RefreshCompleteCallback = base::OnceCallback<void(RefreshResult)>;
 
   // Indicates the reason for deferring. Exactly one of
@@ -129,7 +109,7 @@ class NET_EXPORT SessionService {
   // If sessions are skipped without deferring, they will be added to
   // the Secure-Session-Skipped header in `extra_headers`.
   virtual std::optional<DeferralParams> ShouldDefer(
-      URLRequest* request,
+      DbscRequest& request,
       HttpRequestHeaders* extra_headers,
       const FirstPartySetMetadata& first_party_set_metadata) = 0;
 
@@ -140,7 +120,7 @@ class NET_EXPORT SessionService {
   // has not already kicked off refresh, the session can be found, and the
   // associated unexportable key id is valid.
   // On completion, calls `callback`.
-  virtual void DeferRequestForRefresh(URLRequest* request,
+  virtual void DeferRequestForRefresh(DbscRequest& request,
                                       DeferralParams deferral,
                                       RefreshCompleteCallback callback) = 0;
 
@@ -148,7 +128,7 @@ class NET_EXPORT SessionService {
   // Secure-Session-Challenge header.
   virtual void SetChallengeForBoundSession(
       OnAccessCallback on_access_callback,
-      const URLRequest& request,
+      DbscRequest& request,
       const FirstPartySetMetadata& first_party_set_metadata,
       const SessionChallengeParam& param) = 0;
 
@@ -209,6 +189,13 @@ class NET_EXPORT SessionService {
   virtual bool SigningQuotaExceeded(const SchemefulSite& site) = 0;
   // Increments signing usage for this `site`.
   virtual void AddSigningOccurrence(const SchemefulSite& site) = 0;
+
+  // Helper function to handle the registration and challenge headers provided
+  // in `headers` on the response to `request`.
+  void HandleResponseHeaders(
+      DbscRequest& request,
+      HttpResponseHeaders* headers,
+      const FirstPartySetMetadata& first_party_set_metadata);
 
  protected:
   SessionService() = default;

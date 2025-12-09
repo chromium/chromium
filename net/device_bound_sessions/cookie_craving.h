@@ -12,13 +12,13 @@
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_base.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/device_bound_sessions/dbsc_request.h"
 #include "net/device_bound_sessions/session_error.h"
 
 namespace net {
-class URLRequest;
 class CanonicalCookie;
 class FirstPartySetMetadata;
-}
+}  // namespace net
 
 namespace net::device_bound_sessions {
 
@@ -123,16 +123,15 @@ class NET_EXPORT CookieCraving : public CookieBase {
   bool IsEqualForTesting(const CookieCraving& other) const;
 
   // May return an invalid instance.
-  static CookieCraving CreateUnsafeForTesting(
-      std::string name,
-      std::string domain,
-      std::string path,
-      base::Time creation,
-      bool secure,
-      bool httponly,
-      CookieSameSite same_site,
-      CookieSourceScheme source_scheme,
-      int source_port);
+  static CookieCraving CreateUnsafeForTesting(std::string name,
+                                              std::string domain,
+                                              std::string path,
+                                              base::Time creation,
+                                              bool secure,
+                                              bool httponly,
+                                              CookieSameSite same_site,
+                                              CookieSourceScheme source_scheme,
+                                              int source_port);
 
   // Returns a protobuf object. May only be called for
   // a valid CookieCraving object.
@@ -147,14 +146,14 @@ class NET_EXPORT CookieCraving : public CookieBase {
   // Whether the craving applies to the given `request`, with other
   // arguments providing context for the access.
   bool ShouldIncludeForRequest(
-      URLRequest* request,
+      DbscRequest& request,
       const FirstPartySetMetadata& first_party_set_metadata,
       const CookieOptions& options,
       const CookieAccessParams& params) const;
 
   // Whether the craving could be modified by `request`, with other
   // arguments providing context for the access.
-  bool CanSetBoundCookie(const URLRequest& request,
+  bool CanSetBoundCookie(DbscRequest& request,
                          const FirstPartySetMetadata& first_party_set_metadata,
                          CookieOptions* options) const;
 
