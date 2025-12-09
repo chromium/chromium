@@ -1360,7 +1360,6 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_interpolator_interpolator_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -1749,7 +1748,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1771,7 +1770,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1791,7 +1790,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1815,7 +1814,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_benchmark_benchmark_traceprocessor_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1832,7 +1831,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1854,7 +1853,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1869,7 +1868,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_animation_animation_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1885,7 +1884,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1908,7 +1907,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_animation_animation_core_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1924,7 +1923,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1945,7 +1944,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_foundation_foundation_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1961,7 +1960,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -1985,7 +1984,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_foundation_foundation_layout_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2001,7 +2000,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2028,7 +2027,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2055,7 +2054,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_material_material_ripple_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2071,7 +2070,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2089,7 +2088,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_runtime_runtime_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2100,7 +2099,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_runtime_runtime_annotation_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2116,7 +2115,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2127,7 +2126,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_runtime_runtime_retain_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2143,7 +2142,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2159,7 +2158,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_runtime_runtime_saveable_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2175,7 +2174,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2198,7 +2197,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2237,7 +2236,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_ui_ui_geometry_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2253,7 +2252,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2269,7 +2268,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_ui_ui_graphics_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2285,7 +2284,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2306,7 +2305,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_ui_ui_test_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2323,7 +2322,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2350,7 +2349,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_ui_ui_text_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2365,7 +2364,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2389,7 +2388,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_ui_ui_unit_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2404,7 +2403,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2424,7 +2423,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_ui_ui_util_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2439,7 +2438,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2462,7 +2461,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2480,7 +2479,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2500,7 +2499,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2515,7 +2514,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2535,7 +2534,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2549,7 +2548,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_datastore_datastore_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2565,7 +2564,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2580,7 +2579,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_datastore_datastore_core_okio_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2597,7 +2596,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2619,7 +2618,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2635,7 +2634,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_datastore_datastore_preferences_core_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2651,7 +2650,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2661,6 +2660,7 @@ if (!limit_android_deps) {
       ":androidx_datastore_datastore_core_okio_java",
       ":androidx_datastore_datastore_preferences_proto_java",
       "//third_party/android_deps:com_squareup_okio_okio_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_atomicfu_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -2675,7 +2675,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2692,7 +2692,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2710,7 +2710,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2732,7 +2732,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2753,7 +2753,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2776,7 +2776,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2798,7 +2798,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2813,7 +2813,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_graphics_graphics_shapes_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2829,7 +2829,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2850,7 +2850,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2871,7 +2871,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2901,7 +2901,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2922,7 +2922,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2941,7 +2941,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2961,7 +2961,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -2982,7 +2982,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3002,7 +3002,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_lifecycle_lifecycle_runtime_compose_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3018,7 +3018,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3040,7 +3040,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3061,7 +3061,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3083,7 +3083,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3091,6 +3091,7 @@ if (!limit_android_deps) {
     deps = [
       ":androidx_annotation_annotation_java",
       ":androidx_compose_runtime_runtime_java",
+      ":androidx_compose_runtime_runtime_saveable_java",
       ":androidx_compose_ui_ui_java",
       ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
@@ -3108,7 +3109,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3128,7 +3129,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3154,7 +3155,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3177,7 +3178,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3191,7 +3192,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_navigation_navigation_common_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3207,7 +3208,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3235,7 +3236,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3274,7 +3275,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3299,7 +3300,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_navigationevent_navigationevent_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3315,7 +3316,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3333,7 +3334,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_navigationevent_navigationevent_compose_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3349,7 +3350,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3366,7 +3367,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_paging_paging_common_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3381,7 +3382,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3403,7 +3404,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3421,7 +3422,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3441,7 +3442,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3462,7 +3463,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3487,7 +3488,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3501,7 +3502,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_room_room_common_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3518,7 +3519,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3532,7 +3533,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_savedstate_savedstate_compose_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3548,7 +3549,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3569,7 +3570,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3583,7 +3584,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_sqlite_sqlite_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3594,7 +3595,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_sqlite_sqlite_framework_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3610,7 +3611,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3629,7 +3630,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3648,7 +3649,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3668,7 +3669,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3679,7 +3680,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_test_uiautomator_uiautomator_shell_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3696,7 +3697,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3715,13 +3716,15 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
+      ":androidx_collection_collection_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -3734,7 +3737,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3752,7 +3755,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3773,7 +3776,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3791,7 +3794,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3811,7 +3814,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3826,7 +3829,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_window_window_core_java") {
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3841,7 +3844,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3859,7 +3862,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3880,7 +3883,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",
@@ -3895,7 +3898,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.
+    # //third_party/androidx/build.gradle.template
     visibility = [
       ":*",
       "//third_party/android_deps:*",

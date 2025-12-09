@@ -507,7 +507,7 @@
     {
         "name": "exifinterface",
         "group": "androidx.exifinterface",
-        "version": "1.4.1"
+        "version": "1.4.2"
     },
     {
         "name": "fragment",
@@ -967,22 +967,22 @@
     {
         "name": "sqlite",
         "group": "androidx.sqlite",
-        "version": "2.6.2"
+        "version": "2.7.0-SNAPSHOT"
     },
     {
         "name": "sqlite-android",
         "group": "androidx.sqlite",
-        "version": "2.6.2"
+        "version": "2.7.0-SNAPSHOT"
     },
     {
         "name": "sqlite-framework",
         "group": "androidx.sqlite",
-        "version": "2.6.2"
+        "version": "2.7.0-SNAPSHOT"
     },
     {
         "name": "sqlite-framework-android",
         "group": "androidx.sqlite",
-        "version": "2.6.2"
+        "version": "2.7.0-SNAPSHOT"
     },
     {
         "name": "startup-runtime",
@@ -992,7 +992,7 @@
     {
         "name": "swiperefreshlayout",
         "group": "androidx.swiperefreshlayout",
-        "version": "1.2.0-SNAPSHOT"
+        "version": "1.2.0"
     },
     {
         "name": "espresso-contrib",
@@ -1037,12 +1037,12 @@
     {
         "name": "uiautomator-shell",
         "group": "androidx.test.uiautomator",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "2.4.0-SNAPSHOT"
     },
     {
         "name": "uiautomator-shell-android",
         "group": "androidx.test.uiautomator",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "2.4.0-SNAPSHOT"
     },
     {
         "name": "annotation",
@@ -1387,7 +1387,7 @@
     {
         "name": "kotlin-stdlib",
         "group": "org.jetbrains.kotlin",
-        "version": "2.1.20"
+        "version": "2.2.20"
     },
     {
         "name": "kotlin-stdlib-jdk7",
@@ -1398,6 +1398,16 @@
         "name": "kotlin-stdlib-jdk8",
         "group": "org.jetbrains.kotlin",
         "version": "1.8.0"
+    },
+    {
+        "name": "atomicfu",
+        "group": "org.jetbrains.kotlinx",
+        "version": "0.28.0"
+    },
+    {
+        "name": "atomicfu-jvm",
+        "group": "org.jetbrains.kotlinx",
+        "version": "0.28.0"
     },
     {
         "name": "kotlinx-coroutines-android",

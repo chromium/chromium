@@ -1,7 +1,7 @@
 Name: SQLite Framework Integration
 Short Name: sqlite-framework-android
-URL: https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-framework-android/2.6.2/sqlite-framework-android-2.6.2.aar
-Version: 2.6.2
+URL: https://androidx.dev/snapshots/builds/14561852/artifacts/repository/androidx/sqlite/sqlite-framework-android/2.7.0-SNAPSHOT/sqlite-framework-android-2.7.0-20251209.213522-1.aar
+Version: 2.7.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 The implementation of SQLite library using the framework code.
 
-See also: https://developer.android.com/jetpack/androidx/releases/sqlite#2.6.2
+See also: https://developer.android.com/jetpack/androidx/releases/sqlite#2.7.0-SNAPSHOT
 
 
 Local Modifications:
