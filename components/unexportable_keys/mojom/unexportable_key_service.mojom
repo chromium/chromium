@@ -39,8 +39,8 @@ enum ServiceError {
 };
 
 // LINT.ThenChange(
-//     /components/unexportable_keys/service_error.h:ServiceError,
-//     /tools/metrics/histograms/metadata/net/enums.xml:UnexportableKeyServiceResult
+// /components/unexportable_keys/service_error.h:ServiceError,
+// /tools/metrics/histograms/metadata/net/enums.xml:UnexportableKeyServiceResult
 // )
 
 // The priority at which the task will run.
