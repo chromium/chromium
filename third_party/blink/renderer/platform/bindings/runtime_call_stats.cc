@@ -58,32 +58,27 @@ RuntimeCallTimer* RuntimeCallTimer::Stop() {
 }
 
 RuntimeCallStats::RuntimeCallStats(const base::TickClock* clock)
-    : clock_(clock) {
-  static const auto names = std::to_array<const char*>({
-#define BINDINGS_COUNTER_NAME(name) "Blink_Bindings_" #name,
-      BINDINGS_COUNTERS(BINDINGS_COUNTER_NAME)  //
+    : counters_{
+#define BINDINGS_COUNTER_NAME(name) RuntimeCallCounter("Blink_Bindings_" #name),
+          BINDINGS_COUNTERS(BINDINGS_COUNTER_NAME)
 #undef BINDINGS_COUNTER_NAME
-#define GC_COUNTER_NAME(name) "Blink_GC_" #name,
-      GC_COUNTERS(GC_COUNTER_NAME)  //
+#define GC_COUNTER_NAME(name) RuntimeCallCounter("Blink_GC_" #name),
+          GC_COUNTERS(GC_COUNTER_NAME)
 #undef GC_COUNTER_NAME
-#define PARSING_COUNTER_NAME(name) "Blink_Parsing_" #name,
-      PARSING_COUNTERS(PARSING_COUNTER_NAME)  //
+#define PARSING_COUNTER_NAME(name) RuntimeCallCounter("Blink_Parsing_" #name),
+          PARSING_COUNTERS(PARSING_COUNTER_NAME)
 #undef PARSING_COUNTER_NAME
-#define STYLE_COUNTER_NAME(name) "Blink_Style_" #name,
-      STYLE_COUNTERS(STYLE_COUNTER_NAME)  //
+#define STYLE_COUNTER_NAME(name) RuntimeCallCounter("Blink_Style_" #name),
+          STYLE_COUNTERS(STYLE_COUNTER_NAME)
 #undef STYLE_COUNTER_NAME
-#define LAYOUT_COUNTER_NAME(name) "Blink_Layout_" #name,
-      LAYOUT_COUNTERS(LAYOUT_COUNTER_NAME)  //
-#undef STYLE_COUNTER_NAME
-#define COUNTER_NAME(name) "Blink_" #name,
-      CALLBACK_COUNTERS(COUNTER_NAME)  //
-      EXTRA_COUNTERS(COUNTER_NAME)
+#define LAYOUT_COUNTER_NAME(name) RuntimeCallCounter("Blink_Layout_" #name),
+          LAYOUT_COUNTERS(LAYOUT_COUNTER_NAME)
+#undef LAYOUT_COUNTER_NAME
+#define COUNTER_NAME(name) RuntimeCallCounter("Blink_" #name),
+          CALLBACK_COUNTERS(COUNTER_NAME) EXTRA_COUNTERS(COUNTER_NAME)
 #undef COUNTER_NAME
-  });
-
-  for (int i = 0; i < number_of_counters_; i++) {
-    UNSAFE_TODO(counters_[i] = RuntimeCallCounter(names[i]));
-  }
+      },
+      clock_(clock) {
 }
 
 // static
@@ -94,8 +89,8 @@ RuntimeCallStats* RuntimeCallStats::From(v8::Isolate* isolate) {
 }
 
 void RuntimeCallStats::Reset() {
-  for (int i = 0; i < number_of_counters_; i++) {
-    UNSAFE_TODO(counters_[i].Reset());
+  for (auto& counter : counters_) {
+    counter.Reset();
   }
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
@@ -106,12 +101,10 @@ void RuntimeCallStats::Reset() {
 }
 
 void RuntimeCallStats::Dump(TracedValue& value) const {
-  for (int i = 0; i < number_of_counters_; i++) {
-    UNSAFE_TODO({
-      if (counters_[i].GetCount() > 0) {
-        counters_[i].Dump(value);
-      }
-    });
+  for (const auto& counter : counters_) {
+    if (counter.GetCount() > 0) {
+      counter.Dump(value);
+    }
   }
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
@@ -132,10 +125,9 @@ String RuntimeCallStats::ToString() const {
   builder.Append(
       "Name                                                    Count     Time "
       "(ms)\n\n");
-  for (int i = 0; i < number_of_counters_; i++) {
-    const RuntimeCallCounter* counter = UNSAFE_TODO(&counters_[i]);
-    builder.AppendFormat(row_format, counter->GetName(), counter->GetCount(),
-                         counter->GetTime().InMillisecondsF());
+  for (const auto& counter : counters_) {
+    builder.AppendFormat(row_format, counter.GetName(), counter.GetCount(),
+                         counter.GetTime().InMillisecondsF());
   }
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
