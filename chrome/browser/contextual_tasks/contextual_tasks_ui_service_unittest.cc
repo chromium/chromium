@@ -244,7 +244,7 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
                                           weak_factory.GetWeakPtr(), false);
 
   GURL expected_initial_url(
-      "https://www.google.com/search?udm=50&gsc=2&hl=en&cs=0&q=test+query");
+      "https://google.com/search?udm=50&q=test+query&gsc=2&hl=en&cs=0");
   EXPECT_EQ(service.GetInitialUrlForTask(task.GetTaskId()),
             expected_initial_url);
 }
