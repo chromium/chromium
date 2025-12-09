@@ -62,9 +62,9 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.listenerIds_ = [
       this.callbackRouter_.onWidgetShown.addListener(
           this.onWidgetShown_.bind(this)),
+      this.callbackRouter_.addContext.addListener(this.addContext_.bind(this)),
       this.callbackRouter_.onWidgetClosed.addListener(
           this.onWidgetClosed_.bind(this)),
-      this.callbackRouter_.addContext.addListener(this.addContext_.bind(this)),
     ];
 
     this.$.composebox.focusInput();

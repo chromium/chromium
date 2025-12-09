@@ -40,6 +40,19 @@ OmniboxPopupAimHandler::OmniboxPopupAimHandler(
 
 OmniboxPopupAimHandler::~OmniboxPopupAimHandler() = default;
 
+void OmniboxPopupAimHandler::RequestClose() {
+  omnibox_popup_ui_->embedder()->CloseUI();
+}
+
+void OmniboxPopupAimHandler::NavigateCurrentTab(const GURL& url) {
+  auto* browser_window_interface = webui::GetBrowserWindowInterface(
+      omnibox_popup_ui_->web_ui()->GetWebContents());
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_LINK, false);
+  browser_window_interface->OpenURL(params, base::NullCallback());
+}
+
 void OmniboxPopupAimHandler::OnShow(
     std::unique_ptr<SearchboxContextData::Context> context) {
   auto page_context = ToSearchContext(std::move(context));
@@ -53,16 +66,6 @@ void OmniboxPopupAimHandler::OnWidgetClosed() {
       &OmniboxPopupAimHandler::OnClosedCallback, base::Unretained(this)));
 }
 
-void OmniboxPopupAimHandler::OnClosedCallback(const std::string& input) {
-  WebUIContentsWrapper* wrapper =
-      static_cast<WebUIContentsWrapper*>(omnibox_popup_ui_->embedder().get());
-  OmniboxAimPopupWebUIContent* aim_popup_content =
-      static_cast<OmniboxAimPopupWebUIContent*>(wrapper->GetHost().get());
-  if (aim_popup_content) {
-    aim_popup_content->OnPageClosedWithInput(input);
-  }
-}
-
 void OmniboxPopupAimHandler::AddContext(
     std::unique_ptr<SearchboxContextData::Context> context) {
   auto search_context = ToSearchContext(std::move(context));
@@ -72,15 +75,12 @@ void OmniboxPopupAimHandler::AddContext(
   page_->AddContext(std::move(search_context));
 }
 
-void OmniboxPopupAimHandler::RequestClose() {
-  omnibox_popup_ui_->embedder()->CloseUI();
-}
-
-void OmniboxPopupAimHandler::NavigateCurrentTab(const GURL& url) {
-  auto* browser_window_interface = webui::GetBrowserWindowInterface(
-      omnibox_popup_ui_->web_ui()->GetWebContents());
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
-  browser_window_interface->OpenURL(params, base::NullCallback());
+void OmniboxPopupAimHandler::OnClosedCallback(const std::string& input) {
+  WebUIContentsWrapper* wrapper =
+      static_cast<WebUIContentsWrapper*>(omnibox_popup_ui_->embedder().get());
+  OmniboxAimPopupWebUIContent* aim_popup_content =
+      static_cast<OmniboxAimPopupWebUIContent*>(wrapper->GetHost().get());
+  if (aim_popup_content) {
+    aim_popup_content->OnPageClosedWithInput(input);
+  }
 }
