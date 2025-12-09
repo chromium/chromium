@@ -282,6 +282,11 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
 
   EXTENSION_FUNCTION_VALIDATE(GetRemovalMask(&removal_mask_));
 
+  if (IsRemovalDeprecated()) {
+    return RespondNow(
+        Error(extension_browsing_data_api_constants::kDeprecatedDataTypeError));
+  }
+
   const base::Value::List* origins =
       options.FindList(extension_browsing_data_api_constants::kOriginsKey);
   const base::Value::List* exclude_origins = options.FindList(
@@ -331,6 +336,10 @@ BrowsingDataRemoverFunction::~BrowsingDataRemoverFunction() = default;
 
 bool BrowsingDataRemoverFunction::IsPauseSyncAllowed() {
   return true;
+}
+
+bool BrowsingDataRemoverFunction::IsRemovalDeprecated() {
+  return false;
 }
 
 void BrowsingDataRemoverFunction::StartRemoving() {
@@ -565,6 +574,16 @@ bool BrowsingDataRemovePasswordsFunction::GetRemovalMask(
   LogUnsupportedDataTypeWarning(
       extension_browsing_data_api_constants::kPasswordsKeyDeprecated);
   return true;
+}
+
+bool BrowsingDataRemovePasswordsFunction::IsRemovalDeprecated() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kPasswordRemovalExtensionErrorKillSwitch)) {
+    return true;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  return false;
 }
 
 bool BrowsingDataRemoveServiceWorkersFunction::GetRemovalMask(

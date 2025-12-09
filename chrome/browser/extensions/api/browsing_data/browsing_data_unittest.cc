@@ -60,8 +60,11 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
  protected:
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID)
-    scoped_feature_list_.InitAndEnableFeature(
-        browsing_data::features::kDbdRevampDesktop);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{browsing_data::features::kDbdRevampDesktop,
+                              browsing_data::features::
+                                  kPasswordRemovalExtensionErrorKillSwitch},
+        /*disabled_features=*/{});
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     ExtensionServiceTestBase::SetUp();
@@ -671,4 +674,13 @@ TEST_F(BrowsingDataApiTest, RemoveWithFilterAndInvalidParameters) {
       base::StringPrintf(
           extension_browsing_data_api_constants::kInvalidOriginError, "foo"));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(BrowsingDataApiTest, RemoveDeprecatedPasswordsError) {
+  auto function = base::MakeRefCounted<BrowsingDataRemovePasswordsFunction>();
+  EXPECT_EQ(RunFunctionAndReturnError(
+                function.get(), std::string("[{\"since\": 1}]"), profile()),
+            extension_browsing_data_api_constants::kDeprecatedDataTypeError);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace extensions

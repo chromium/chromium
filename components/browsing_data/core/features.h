@@ -20,6 +20,10 @@ BASE_DECLARE_FEATURE(kBrowsingDataModel);
 // option from the dialog.
 BASE_DECLARE_FEATURE(kDbdRevampDesktop);
 
+// When enabled, calls to browsingData.removePasswords extension API would
+// result in an error response instead of a console warning.
+BASE_DECLARE_FEATURE(kPasswordRemovalExtensionErrorKillSwitch);
+
 // Enables the Browsing History Actor Integration M1 feature. This feature
 // introduces new ui and functionality related to the history integration in
 // Chrome.
