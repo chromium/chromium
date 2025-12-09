@@ -45,7 +45,8 @@
           "project": "chromium-m138"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/chromeos-arm-generic-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/chromeos-arm-generic-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
