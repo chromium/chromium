@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_changed_observer.h"
+#include "third_party/blink/renderer/core/page/focusgroup_controller_utils.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
@@ -740,6 +741,11 @@ class ScopedFocusNavigation {
   Element* NextFocusableElement();
   Element* PreviousFocusableElement();
 
+  // Returns true if the element is in a focusgroup segment but is not the
+  // entry element for that segment. Such elements should be skipped during
+  // sequential focus navigation.
+  bool IsNonEntryFocusgroupItem(const Element& element);
+
   void SetCurrentElement(const Element* element) { current_ = element; }
   void MoveToNext();
   void MoveToPrevious();
@@ -748,6 +754,16 @@ class ScopedFocusNavigation {
 
   const Element* current_;
   FocusNavigation navigation_;
+
+  // Only populated when focusgroup feature is enabled.
+  // Cache mapping the first focusgroup item in each segment to that segment's
+  // entry element, avoiding redundant calls to
+  // GetEntryElementForFocusgroupSegment. This cache does not persist across
+  // focus navigation calls.
+  // Key: First item in segment.
+  // Value: Entry element for that segment.
+  HeapHashMap<Member<const Element>, Member<const Element>>
+      focusgroup_segment_entry_cache_;
 };
 
 ScopedFocusNavigation::ScopedFocusNavigation(
@@ -756,6 +772,61 @@ ScopedFocusNavigation::ScopedFocusNavigation(
     FocusController::OwnerMap& owner_map)
     : current_(current),
       navigation_(FocusNavigation::Create(scoping_root_node, owner_map)) {}
+
+bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(
+          element.GetExecutionContext())) {
+    return false;
+  }
+
+  // Calling this on every element is expensive. TODO(janewman): We should keep
+  // track of when we enter/exit focusgroups during navigation, and only call
+  // this when we are inside a focusgroup.
+  const Element* focusgroup_owner = focusgroup::FindFocusgroupOwner(&element);
+
+  // GetFocusgroupOwnerOfItem additionally checks if the element is keyboard
+  // focusable, avoid this expensive check as IsNonEntryFocusgroupItem assumes
+  // the element is already keyboard focusable.
+  DCHECK_EQ(focusgroup_owner,
+            FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(&element));
+  if (!focusgroup_owner) {
+    // Not in a focusgroup.
+    return false;
+  }
+
+  // Find the first item in this element's segment to use as the cache key.
+  const Element* segment_first_item =
+      FocusgroupControllerUtils::FirstFocusgroupItemInSegment(element);
+  // An element in a focusgroup defines a segment, so this should never be null.
+  CHECK(segment_first_item);
+
+  // Check if we've already computed the entry element for this segment.
+  auto it = focusgroup_segment_entry_cache_.find(segment_first_item);
+  const Element* segment_entry = nullptr;
+
+  if (it != focusgroup_segment_entry_cache_.end()) {
+    // Cache hit - use the cached entry element.
+    segment_entry = it->value;
+  } else {
+    // Cache miss - compute and cache the entry element for this segment.
+    // TODO(janewman): Create a version of GetEntryElementForFocusgroupSegment
+    // that assumes(DCHECK) that the element is the first item in the segment,
+    // to avoid redundant work.
+    segment_entry =
+        FocusgroupControllerUtils::GetEntryElementForFocusgroupSegment(
+            *segment_first_item, *focusgroup_owner);
+    // By definition, a segment must have an entry element.
+    CHECK(segment_entry) << "Focusgroup with owner "
+                         << focusgroup_owner->ToString()
+                         << " has segment with first item "
+                         << segment_first_item->ToString()
+                         << " but no entry element.";
+    focusgroup_segment_entry_cache_.insert(segment_first_item, segment_entry);
+  }
+
+  // Return whether the current element is NOT the entry element.
+  return segment_entry != &element;
+}
 
 void ScopedFocusNavigation::MoveToNext() {
   DCHECK(CurrentElement());
@@ -1057,7 +1128,8 @@ Element* ScopedFocusNavigation::FindElementWithExactTabIndex(
                                : MoveToPrevious()) {
     Element* current = CurrentElement();
     if (ShouldVisit(*current) &&
-        ReadingFlowAdjustedTabIndex(*current) == tab_index) {
+        ReadingFlowAdjustedTabIndex(*current) == tab_index &&
+        !IsNonEntryFocusgroupItem(*current)) {
       return current;
     }
   }
@@ -1071,7 +1143,8 @@ Element* ScopedFocusNavigation::NextElementWithGreaterTabIndex(int tab_index) {
   for (; CurrentElement(); MoveToNext()) {
     Element* current = CurrentElement();
     int current_tab_index = ReadingFlowAdjustedTabIndex(*current);
-    if (ShouldVisit(*current) && current_tab_index > tab_index) {
+    if (ShouldVisit(*current) && current_tab_index > tab_index &&
+        !IsNonEntryFocusgroupItem(*current)) {
       if (!winner || current_tab_index < winning_tab_index) {
         winner = current;
         winning_tab_index = current_tab_index;
@@ -1091,7 +1164,8 @@ Element* ScopedFocusNavigation::PreviousElementWithLowerTabIndex(
     Element* current = CurrentElement();
     int current_tab_index = ReadingFlowAdjustedTabIndex(*current);
     if (ShouldVisit(*current) && current_tab_index < tab_index &&
-        current_tab_index > winning_tab_index) {
+        current_tab_index > winning_tab_index &&
+        !IsNonEntryFocusgroupItem(*current)) {
       winner = current;
       winning_tab_index = current_tab_index;
     }
@@ -1122,7 +1196,8 @@ Element* ScopedFocusNavigation::NextFocusableElement() {
       for (MoveToNext(); CurrentElement(); MoveToNext()) {
         current = CurrentElement();
         if (ShouldVisit(*current) &&
-            ReadingFlowAdjustedTabIndex(*current) >= 0) {
+            ReadingFlowAdjustedTabIndex(*current) >= 0 &&
+            !IsNonEntryFocusgroupItem(*current)) {
           return current;
         }
       }
@@ -1176,7 +1251,8 @@ Element* ScopedFocusNavigation::PreviousFocusableElement() {
   if (tab_index < 0) {
     for (; CurrentElement(); MoveToPrevious()) {
       current = CurrentElement();
-      if (ShouldVisit(*current) && ReadingFlowAdjustedTabIndex(*current) >= 0) {
+      if (ShouldVisit(*current) && ReadingFlowAdjustedTabIndex(*current) >= 0 &&
+          !IsNonEntryFocusgroupItem(*current)) {
         return current;
       }
     }
