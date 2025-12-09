@@ -185,11 +185,6 @@ const base::FeatureParam<std::string> kWebViewADPFSocManufacturerAllowlist{
 const base::FeatureParam<std::string> kWebViewADPFSocManufacturerBlocklist{
     &kWebViewEnableADPF, "webview_soc_manufacturer_blocklist", ""};
 
-// If enabled, Renderer Main is included in the set of threads reported to the
-// HWUI. This feature works only when WebViewEnableADPF is enabled, otherwise
-// this is a no-op.
-BASE_FEATURE(kWebViewEnableADPFRendererMain, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the GPU Main thread is included in the set of threads reported
 // to the HWUI. This feature works only when WebViewEnableADPF is enabled,
 // otherwise this is a no-op.

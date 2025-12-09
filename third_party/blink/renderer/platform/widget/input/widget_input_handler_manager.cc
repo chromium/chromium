@@ -221,12 +221,6 @@ class SynchronousCompositorProxyRegistry
         renderer_threads.push_back(
             viz::Thread{io_thread_id_, viz::Thread::Type::kIO});
       }
-      if (main_thread_id_ != base::kInvalidThreadId &&
-          base::FeatureList::IsEnabled(
-              ::features::kWebViewEnableADPFRendererMain)) {
-        renderer_threads.push_back(
-            viz::Thread{main_thread_id_, viz::Thread::Type::kMain});
-      }
       proxy_->SetThreads(renderer_threads);
     }
 

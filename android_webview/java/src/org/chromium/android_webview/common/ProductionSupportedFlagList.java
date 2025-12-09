@@ -174,9 +174,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 VizFeatures.WEBVIEW_ENABLE_ADPF_GPU_MAIN, "Include GPU Main into ADPF session"),
         Flag.baseFeature(
-                VizFeatures.WEBVIEW_ENABLE_ADPF_RENDERER_MAIN,
-                "Include Renderer Main into ADPF session"),
-        Flag.baseFeature(
                 VizFeatures.ALLOW_UNDAMAGED_NONROOT_RENDER_PASS_TO_SKIP,
                 "Enable optimization for skipping undamaged nonroot render passes."),
         Flag.baseFeature(
