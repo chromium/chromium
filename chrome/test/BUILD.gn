@@ -4062,7 +4062,6 @@ if (!is_android) {
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/startup",
-      "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs/alert:tab_alert",
@@ -5872,6 +5871,7 @@ if (!is_android) {
       ]
       deps += [
         "//chrome/browser/browser_switcher:browser_tests",
+        "//chrome/browser/ui/startup/default_browser_prompt",
         "//chrome/browser/ui/webui/signin:browser_tests",
       ]
     }

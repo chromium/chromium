@@ -144,7 +144,6 @@ source_set("impl") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/safety_hub",
-      "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/organization",
@@ -235,6 +234,10 @@ source_set("impl") {
     ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
+  }
+
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
@@ -289,7 +292,6 @@ if (!is_android) {
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/safety_hub:test_support",
-      "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/organization",
@@ -335,6 +337,10 @@ if (!is_android) {
         "//chrome/install_static:install_static_util",
         "//chrome/install_static/test:test_support",
       ]
+    }
+
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
     }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

@@ -191,7 +191,6 @@ source_set("impl") {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/extensions",
-      "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/startup/focus",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_group",
@@ -277,7 +276,10 @@ source_set("impl") {
       "first_run_service.cc",
       "web_app_info_recorder_utils.cc",
     ]
-    deps += [ "//chrome/browser/ui/web_applications" ]
+    deps += [
+      "//chrome/browser/ui/startup/default_browser_prompt",
+      "//chrome/browser/ui/web_applications",
+    ]
   }
 
   if (is_win) {

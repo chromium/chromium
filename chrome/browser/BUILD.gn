@@ -1703,10 +1703,6 @@ static_library("browser") {
     # gets componentized.
     "//chrome/browser/ui/profiles:impl",
 
-    # TODO(crbug.com/369883710): Remove this circular dependency when profiles/profile_manager.h
-    # gets componentized.
-    "//chrome/browser/ui/startup/default_browser_prompt:impl",
-
     # TODO(crbug.com/432061436): Remove this circular dependency when c/b/password_manager gets
     # componentized. Particularly, the following headers are included from //c/b/ui/webauthn::impl:
     # - chrome_webauthn_credentials_delegate_factory.h"
@@ -2615,10 +2611,6 @@ static_library("browser") {
     # TODO(crbug.com/430804948): Remove this dependency when profiles/profile_manager.h
     # gets componentized.
     "//chrome/browser/ui/profiles:impl",
-
-    # TODO(crbug.com/369883710): Remove this dependency when profiles/profile_manager.h
-    # gets componentized.
-    "//chrome/browser/ui/startup/default_browser_prompt:impl",
 
     # TODO(crbug.com/432061436): Remove this dependency when c/b/password_manager gets
     # componentized.
@@ -4768,6 +4760,10 @@ static_library("browser") {
         "//chrome/browser/shortcuts",
         "//chrome/browser/ui/download",
         "//chrome/browser/ui/download:impl",
+
+        # TODO(crbug.com/369883710): Remove this dependency when profiles/profile_manager.h
+        # gets componentized.
+        "//chrome/browser/ui/startup/default_browser_prompt:impl",
         "//chrome/browser/ui/webui/app_home",
         "//chrome/browser/ui/webui/app_home:impl",
         "//chrome/browser/ui/webui/signin:profile",
@@ -4793,6 +4789,10 @@ static_library("browser") {
         # //c/b/signin/identity_manager_factory.h.
         # Remove circular include entry when this directory gets modularized.
         "//chrome/browser/ui/download:impl",
+
+        # TODO(crbug.com/369883710): Remove this circular dependency when profiles/profile_manager.h
+        # gets componentized.
+        "//chrome/browser/ui/startup/default_browser_prompt:impl",
       ]
     }
 
