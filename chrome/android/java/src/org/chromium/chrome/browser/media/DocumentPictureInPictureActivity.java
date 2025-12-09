@@ -20,7 +20,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -40,6 +42,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     private WebContents mWebContents;
     private Tab mInitiatorTab;
     private @Nullable ThinWebView mThinWebView;
+    private @Nullable TabObserver mInitiatorTabObserver;
 
     @Override
     protected void onPreCreate() {
@@ -83,6 +86,29 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
         DocumentPictureInPictureActivityJni.get()
                 .onActivityStart(mInitiatorTab.getWebContents(), mWebContents);
+
+        mInitiatorTabObserver =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onClosingStateChanged(Tab tab, boolean closing) {
+                        if (closing) {
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onDestroyed(Tab tab) {
+                        if (tab.isClosing()) {
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onCrash(Tab tab) {
+                        finish();
+                    }
+                };
+        mInitiatorTab.addObserver(mInitiatorTabObserver);
     }
 
     @Override
@@ -178,6 +204,13 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             mWebContents.destroy();
             mWebContents = null;
         }
+
+        if (mInitiatorTabObserver != null && mInitiatorTab != null) {
+            mInitiatorTab.removeObserver(mInitiatorTabObserver);
+        }
+
+        mInitiatorTab = null;
+        mInitiatorTabObserver = null;
 
         super.onDestroy();
     }
