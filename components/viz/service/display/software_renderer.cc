@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/software_renderer.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -319,7 +320,7 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
     gfx::QuadF local_draw_region(*draw_region);
     local_draw_region -= quad->visible_rect.OffsetFromOrigin();
 
-    SkPoint clip_points[4];
+    std::array<SkPoint, 4> clip_points;
     QuadFToSkPoints(local_draw_region, clip_points);
 
     current_canvas_->clipPath(SkPath::Polygon(clip_points, true));

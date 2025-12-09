@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "third_party/skia/include/core/SkM44.h"
@@ -87,11 +88,11 @@ Size SkISizeToSize(const SkISize& size) {
   return Size(size.width(), size.height());
 }
 
-void QuadFToSkPoints(const QuadF& quad, SkPoint points[4]) {
+void QuadFToSkPoints(const QuadF& quad, base::span<SkPoint, 4> points) {
   points[0] = PointFToSkPoint(quad.p1());
-  UNSAFE_TODO(points[1]) = PointFToSkPoint(quad.p2());
-  UNSAFE_TODO(points[2]) = PointFToSkPoint(quad.p3());
-  UNSAFE_TODO(points[3]) = PointFToSkPoint(quad.p4());
+  points[1] = PointFToSkPoint(quad.p2());
+  points[2] = PointFToSkPoint(quad.p3());
+  points[3] = PointFToSkPoint(quad.p4());
 }
 
 SkMatrix AxisTransform2dToSkMatrix(const AxisTransform2d& transform) {

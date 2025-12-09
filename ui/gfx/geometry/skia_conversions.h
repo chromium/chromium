@@ -6,6 +6,7 @@
 #define UI_GFX_GEOMETRY_SKIA_CONVERSIONS_H_
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 
 class SkM44;
 class SkMatrix;
@@ -45,7 +46,7 @@ COMPONENT_EXPORT(GEOMETRY_SKIA) SizeF SkSizeToSizeF(const SkSize& size);
 COMPONENT_EXPORT(GEOMETRY_SKIA) Size SkISizeToSize(const SkISize& size);
 
 COMPONENT_EXPORT(GEOMETRY_SKIA)
-void QuadFToSkPoints(const QuadF& quad, SkPoint points[4]);
+void QuadFToSkPoints(const QuadF& quad, base::span<SkPoint, 4> points);
 
 COMPONENT_EXPORT(GEOMETRY_SKIA)
 SkMatrix AxisTransform2dToSkMatrix(const AxisTransform2d& transform);
