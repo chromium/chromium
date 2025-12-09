@@ -25,6 +25,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App) {
   RunTest("contextual_tasks/contextual_tasks_browsertest.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox) {
+  RunTest("contextual_tasks/composebox_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, PostMessageHandler) {
   RunTest("contextual_tasks/post_message_handler_test.js", "mocha.run();");
 }

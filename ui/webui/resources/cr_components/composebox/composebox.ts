@@ -962,7 +962,9 @@ export class ComposeboxElement extends I18nMixinLit
     // since the verbatim match is present.
     assert(
         (this.selectedMatchIndex_ >= 0 && this.result_) ||
-         this.contextFilesSize_ > 0);
+            this.contextFilesSize_ > 0,
+        'Cannot submit query with no autocomplete matches and no files in ' +
+            'context.');
 
     // If there is a match that is selected, open that match, else follow the
     // non-autocomplete submission flow. The non-autocomplete submission flow
