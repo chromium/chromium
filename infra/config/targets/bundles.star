@@ -3147,6 +3147,14 @@ targets.bundle(
     targets = [
         "fuchsia_sizes",
     ],
+    per_test_modifications = {
+        "fuchsia_sizes": targets.mixin(
+            args = [
+                "--sizes-path",
+                "tools/fuchsia/size_tests/fyi_sizes_smoketest.json",
+            ],
+        ),
+    },
 )
 
 targets.bundle(

@@ -1298,10 +1298,6 @@ targets.tests.isolated_script_test(
 
 targets.tests.isolated_script_test(
     name = "fuchsia_sizes",
-    args = [
-        "--sizes-path",
-        "tools/fuchsia/size_tests/fyi_sizes_smoketest.json",
-    ],
 )
 
 targets.tests.gtest_test(
