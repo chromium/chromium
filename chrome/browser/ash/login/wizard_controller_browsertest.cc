@@ -1647,16 +1647,8 @@ class WizardControllerProxyAuthOnSigninTest : public OobeBaseTest {
       net::test_server::EmbeddedTestServer::Type::TYPE_HTTP};
 };
 
-// TODO(crbug.com/1286218): Flakes on CrOS.
-// TODO(crbug.com/41486698): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ProxyAuthDialogOnSigninScreen \
-  DISABLED_ProxyAuthDialogOnSigninScreen
-#else
-#define MAYBE_ProxyAuthDialogOnSigninScreen ProxyAuthDialogOnSigninScreen
-#endif
 IN_PROC_BROWSER_TEST_F(WizardControllerProxyAuthOnSigninTest,
-                       MAYBE_ProxyAuthDialogOnSigninScreen) {
+                       ProxyAuthDialogOnSigninScreen) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   ASSERT_TRUE(base::test::RunUntil(
       []() { return HttpAuthDialog::GetAllDialogsForTest().size() == 1; }));
