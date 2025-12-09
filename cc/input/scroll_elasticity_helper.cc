@@ -220,7 +220,13 @@ void ScrollElasticityHelperImpl::ApplyStretchAmountsTo(
        active_elastic_overscroll_map) {
     const ScrollNode* scroll_node =
         target_scroll_tree.FindNodeFromElementId(element_id);
-    CHECK(scroll_node);
+    // A nullptr guard must be used for the `scroll_node` here - as there are
+    // cases when a `ScrollNode` on the `target_scroll_tree` does not exist on
+    // the `active_scroll_tree`. (e.g. When main commits to the pending tree,
+    // removing a `ScrollNode` - with a pre-existing active tree.)
+    if (!scroll_node) {
+      continue;
+    }
     if (!scroll_elasticity_utils::ShouldAllowOverscrollEffect(
             *scroll_node, target_scroll_tree, host_impl_)) {
       continue;
