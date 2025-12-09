@@ -337,7 +337,10 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
         // We only care about url bar wrapping state when compact variant is enabled. Guard against
         // entering compact mode when the variant is disabled by returning early.
         if (mMediator == null || !OmniboxFeatures.sCompactFusebox.getValue()) return;
-        mMediator.setUseCompactUi(!isWrapping);
+        mMediator.setUseCompactUi(
+                !isWrapping
+                        && mAutocompleteRequestTypeSupplier.get()
+                                == AutocompleteRequestType.SEARCH);
     }
 
     /**
