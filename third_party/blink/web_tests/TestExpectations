@@ -5813,11 +5813,6 @@ crbug.com/794338 media/video-rotation.html [ Failure Pass ]
 # MHT works only when loaded from local FS (file://..).
 crbug.com/778467 [ Fuchsia ] mhtml/mhtml_in_iframe.html [ Failure ]
 
-# These tests timeout when using Scenic ozone platform.
-
-# Sheriff 2018-03-02
-crbug.com/40565420 http/tests/devtools/oopif/oopif-elements-navigate-in.js [ Failure Pass ]
-
 # Sheriff 2018-03-05
 crbug.com/818650 [ Linux ] wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Crash Pass ]
 
