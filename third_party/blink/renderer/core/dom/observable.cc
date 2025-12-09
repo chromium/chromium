@@ -206,7 +206,8 @@ class OperatorReduceInternalObserver final : public ObservableInternalObserver {
         /*currentValue=*/value, /*index=*/idx_++);
     if (try_catch.HasCaught()) {
       abort_algorithm_handle_.Clear();
-      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      ScriptValue exception(script_state->GetIsolate(),
+                            TryRethrowScope::TakeException(try_catch));
       resolver_->Reject(exception);
       controller_->abort(script_state, exception);
       return;
@@ -291,7 +292,8 @@ class OperatorFindInternalObserver final : public ObservableInternalObserver {
         predicate_->Invoke(nullptr, value, idx_++);
     if (try_catch.HasCaught()) {
       abort_algorithm_handle_.Clear();
-      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      ScriptValue exception(script_state->GetIsolate(),
+                            TryRethrowScope::TakeException(try_catch));
       resolver_->Reject(exception);
       controller_->abort(script_state, exception);
       return;
@@ -371,7 +373,8 @@ class OperatorEveryInternalObserver final : public ObservableInternalObserver {
         predicate_->Invoke(nullptr, value, idx_++);
     if (try_catch.HasCaught()) {
       abort_algorithm_handle_.Clear();
-      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      ScriptValue exception(script_state->GetIsolate(),
+                            TryRethrowScope::TakeException(try_catch));
       resolver_->Reject(exception);
       controller_->abort(script_state, exception);
       return;
@@ -450,7 +453,8 @@ class OperatorSomeInternalObserver final : public ObservableInternalObserver {
         predicate_->Invoke(nullptr, value, idx_++);
     if (try_catch.HasCaught()) {
       abort_algorithm_handle_.Clear();
-      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      ScriptValue exception(script_state->GetIsolate(),
+                            TryRethrowScope::TakeException(try_catch));
       resolver_->Reject(exception);
       controller_->abort(script_state, exception);
       return;
@@ -625,7 +629,8 @@ class OperatorForEachInternalObserver final
     // this invocation relies on an attached/valid context.
     std::ignore = callback_->Invoke(nullptr, value, idx_++);
     if (try_catch.HasCaught()) {
-      ScriptValue exception(script_state->GetIsolate(), try_catch.Exception());
+      ScriptValue exception(script_state->GetIsolate(),
+                            TryRethrowScope::TakeException(try_catch));
       resolver_->Reject(exception);
       controller_->abort(script_state, exception);
     }
@@ -782,7 +787,8 @@ class OperatorCatchSubscribeDelegate final
       if (try_catch.HasCaught()) {
         outer_subscriber_->error(
             script_state_,
-            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+            ScriptValue(script_state_->GetIsolate(),
+                        TryRethrowScope::TakeException(try_catch)));
         return;
       }
 
@@ -792,12 +798,13 @@ class OperatorCatchSubscribeDelegate final
           Observable::from(script_state_, mapped_value.ToChecked(),
                            PassThroughException(script_state_->GetIsolate()));
       if (try_catch.HasCaught()) {
-        ApplyContextToException(script_state_, try_catch.Exception(),
+        v8::Local<v8::Value> exception =
+            TryRethrowScope::TakeException(try_catch);
+        ApplyContextToException(script_state_, exception,
                                 v8::ExceptionContext::kOperation, "Observable",
                                 "catch");
         outer_subscriber_->error(
-            script_state_,
-            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+            script_state_, ScriptValue(script_state_->GetIsolate(), exception));
         return;
       }
 
@@ -965,7 +972,7 @@ class OperatorInspectSubscribeDelegate final
       std::ignore = subscribe_callback_->Invoke(nullptr);
       if (try_catch.HasCaught()) {
         ScriptValue exception(script_state->GetIsolate(),
-                              try_catch.Exception());
+                              TryRethrowScope::TakeException(try_catch));
         subscriber->error(script_state, exception);
         return;
       }
@@ -1091,7 +1098,7 @@ class OperatorInspectSubscribeDelegate final
       std::ignore = next_callback_->Invoke(nullptr, value);
       if (try_catch.HasCaught()) {
         ScriptValue exception(script_state_->GetIsolate(),
-                              try_catch.Exception());
+                              TryRethrowScope::TakeException(try_catch));
         // See the documentation in `Error()` for what this does.
         ResetAbortAlgorithm();
         subscriber_->error(script_state_, exception);
@@ -1123,7 +1130,7 @@ class OperatorInspectSubscribeDelegate final
       std::ignore = error_callback_->Invoke(nullptr, error);
       if (try_catch.HasCaught()) {
         ScriptValue exception(script_state_->GetIsolate(),
-                              try_catch.Exception());
+                              TryRethrowScope::TakeException(try_catch));
         subscriber_->error(script_state_, exception);
       }
 
@@ -1147,7 +1154,7 @@ class OperatorInspectSubscribeDelegate final
       std::ignore = complete_callback_->Invoke(nullptr);
       if (try_catch.HasCaught()) {
         ScriptValue exception(script_state_->GetIsolate(),
-                              try_catch.Exception());
+                              TryRethrowScope::TakeException(try_catch));
         subscriber_->error(script_state_, exception);
       }
 
@@ -1269,7 +1276,8 @@ class OperatorSwitchMapSubscribeDelegate final
       if (try_catch.HasCaught()) {
         outer_subscriber_->error(
             script_state_,
-            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+            ScriptValue(script_state_->GetIsolate(),
+                        TryRethrowScope::TakeException(try_catch)));
         return;
       }
 
@@ -1279,12 +1287,13 @@ class OperatorSwitchMapSubscribeDelegate final
           Observable::from(script_state_, mapped_value.ToChecked(),
                            PassThroughException(script_state_->GetIsolate()));
       if (try_catch.HasCaught()) {
-        ApplyContextToException(script_state_, try_catch.Exception(),
+        v8::Local<v8::Value> exception =
+            TryRethrowScope::TakeException(try_catch);
+        ApplyContextToException(script_state_, exception,
                                 v8::ExceptionContext::kOperation, "Observable",
                                 "map");
         outer_subscriber_->error(
-            script_state_,
-            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+            script_state_, ScriptValue(script_state_->GetIsolate(), exception));
         return;
       }
 
@@ -1501,7 +1510,8 @@ class OperatorFlatMapSubscribeDelegate final
       if (try_catch.HasCaught()) {
         outer_subscriber_->error(
             script_state_,
-            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+            ScriptValue(script_state_->GetIsolate(),
+                        TryRethrowScope::TakeException(try_catch)));
         return;
       }
 
@@ -1511,12 +1521,13 @@ class OperatorFlatMapSubscribeDelegate final
           Observable::from(script_state_, mapped_value.ToChecked(),
                            PassThroughException(script_state_->GetIsolate()));
       if (try_catch.HasCaught()) {
-        ApplyContextToException(script_state_, try_catch.Exception(),
+        v8::Local<v8::Value> exception =
+            TryRethrowScope::TakeException(try_catch);
+        ApplyContextToException(script_state_, exception,
                                 v8::ExceptionContext::kOperation, "Observable",
                                 "flatMap");
         outer_subscriber_->error(
-            script_state_,
-            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+            script_state_, ScriptValue(script_state_->GetIsolate(), exception));
         return;
       }
 
@@ -1703,8 +1714,10 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       if (try_catch.HasCaught()) {
         // Don't ApplyContextToException(), because FromIterable() might return
         // a user-defined exception, which we shouldn't modify.
-        subscriber->error(script_state, ScriptValue(script_state->GetIsolate(),
-                                                    try_catch.Exception()));
+        subscriber->error(
+            script_state,
+            ScriptValue(script_state->GetIsolate(),
+                        TryRethrowScope::TakeException(try_catch)));
         return;
       }
 
@@ -1770,13 +1783,14 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         // Assert: |iteratorRecord|'s [[Done]] is true.
         CHECK(is_done_because_exception_was_thrown);
 
+        v8::Local<v8::Value> exception =
+            TryRethrowScope::TakeException(try_catch);
         // Set |nextPromise| to a promise rejected with |nextRecord|'s
         // [[Value]].
-        ApplyContextToException(script_state_, try_catch.Exception(),
+        ApplyContextToException(script_state_, exception,
                                 v8::ExceptionContext::kOperation, "Observable",
                                 "from");
-        next_promise =
-            ScriptPromise<IDLAny>::Reject(script_state, try_catch.Exception());
+        next_promise = ScriptPromise<IDLAny>::Reject(script_state, exception);
       } else {
         // "Otherwise, if |nextRecord| is normal completion, then set
         // |nextPromise| to a promise resolved with |nextRecord|'s [[Value]].
@@ -1909,7 +1923,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         // with |done|'s [[Value]] and abort these steps."
         if (try_catch.HasCaught()) {
           ScriptValue exception(script_state->GetIsolate(),
-                                try_catch.Exception());
+                                TryRethrowScope::TakeException(try_catch));
           delegate_->ClearAbortAlgorithm();
           subscriber_->error(script_state, exception);
           return;
@@ -1936,7 +1950,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
         // with |value|'s [[Value]] and abort these steps."
         if (try_catch.HasCaught()) {
           ScriptValue exception(script_state->GetIsolate(),
-                                try_catch.Exception());
+                                TryRethrowScope::TakeException(try_catch));
           delegate_->ClearAbortAlgorithm();
           subscriber_->error(script_state, exception);
           return;
@@ -2033,8 +2047,9 @@ class OperatorFromIterableSubscribeDelegate final
       if (try_catch.HasCaught()) {
         // Don't ApplyContextToException(), because FromIterable() might return
         // a user-defined exception, which we shouldn't modify.
-        subscriber->error(script_state,
-                          ScriptValue(isolate, try_catch.Exception()));
+        subscriber->error(
+            script_state,
+            ScriptValue(isolate, TryRethrowScope::TakeException(try_catch)));
         return;
       }
 
@@ -2086,8 +2101,9 @@ class OperatorFromIterableSubscribeDelegate final
         // Don't ApplyContextToException(), because Next() might return
         // a user-defined exception, which we shouldn't modify.
         ClearAbortAlgorithm();
-        subscriber->error(script_state,
-                          ScriptValue(isolate, try_catch.Exception()));
+        subscriber->error(
+            script_state,
+            ScriptValue(isolate, TryRethrowScope::TakeException(try_catch)));
         return;
       }
 
@@ -2327,7 +2343,8 @@ class OperatorFilterSubscribeDelegate final
       if (try_catch.HasCaught()) {
         subscriber_->error(
             script_state_,
-            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+            ScriptValue(script_state_->GetIsolate(),
+                        TryRethrowScope::TakeException(try_catch)));
         return;
       }
 
@@ -2412,7 +2429,8 @@ class OperatorMapSubscribeDelegate final
       if (try_catch.HasCaught()) {
         subscriber_->error(
             script_state_,
-            ScriptValue(script_state_->GetIsolate(), try_catch.Exception()));
+            ScriptValue(script_state_->GetIsolate(),
+                        TryRethrowScope::TakeException(try_catch)));
         return;
       }
 
@@ -2713,8 +2731,8 @@ void Observable::SubscribeInternal(
     //      the exception to it.
     if (weak_subscriber_->active()) {
       weak_subscriber_->error(
-          script_state,
-          ScriptValue(script_state->GetIsolate(), try_catch.Exception()));
+          script_state, ScriptValue(script_state->GetIsolate(),
+                                    TryRethrowScope::TakeException(try_catch)));
     } else {
       // 2. The `subscriber_callback_` immediately closed the subscription, and
       //    during this, an error was thrown (an exception-throwing `complete()`
@@ -2724,8 +2742,9 @@ void Observable::SubscribeInternal(
       if (!script_state->ContextIsValid()) {
         return;
       }
-      V8ScriptRunner::ReportException(script_state->GetIsolate(),
-                                      try_catch.Exception());
+      V8ScriptRunner::ReportException(
+          script_state->GetIsolate(),
+          TryRethrowScope::TakeException(try_catch));
     }
   }
 }
