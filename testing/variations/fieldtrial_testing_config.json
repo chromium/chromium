@@ -25492,6 +25492,22 @@
             ]
         }
     ],
+    "ThrottleMainFrameTo60HzMacV2": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThrottleMainFrameTo60Hz",
+                        "UrgentMainFrameForInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "TokenHandleRefactoring": [
         {
             "platforms": [
