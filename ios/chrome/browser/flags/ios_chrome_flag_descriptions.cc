@@ -1299,11 +1299,6 @@ const char kOmniboxUIMaxAutocompleteMatchesDescription[] =
     "Changes the maximum number of autocomplete matches displayed in the "
     "Omnibox UI.";
 
-const char kOmniboxZeroSuggestInMemoryCachingName[] =
-    "Omnibox Zero Prefix Suggestion in-memory caching";
-const char kOmniboxZeroSuggestInMemoryCachingDescription[] =
-    "Enables in-memory caching of zero prefix suggestions.";
-
 const char kOmniboxZeroSuggestPrefetchingOnSRPName[] =
     "Omnibox Zero Prefix Suggestion Prefetching on SRP";
 const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[] =

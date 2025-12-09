@@ -2459,10 +2459,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
-  // Disable in-memory ZPS caching.
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
-
   const std::string page_url = "https://google.com/search?q=chrome";
   const std::string response = R"(["", ["foo", "bar"]])";
 
@@ -2470,9 +2466,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
       ZeroSuggestCacheServiceFactory::GetForProfile(GetProfile());
   zero_suggest_cache_service->StoreZeroSuggestResponse(page_url, response);
   zero_suggest_cache_service->StoreZeroSuggestResponse("", response);
-
-  // Verify that the in-memory cache is initially empty.
-  EXPECT_TRUE(zero_suggest_cache_service->IsInMemoryCacheEmptyForTesting());
 
   // Verify that the pref-based cache is initially non-empty.
   PrefService* prefs = GetProfile()->GetPrefs();
@@ -2484,8 +2477,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
                                 content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                                 false);
 
-  // Expect the in-memory cache to remain empty.
-  EXPECT_TRUE(zero_suggest_cache_service->IsInMemoryCacheEmptyForTesting());
   // Expect the prefs to be cleared when cookies are removed.
   EXPECT_TRUE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
   EXPECT_TRUE(
@@ -2495,46 +2486,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestInMemoryCacheClear) {
-  // Enable in-memory ZPS caching.
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kZeroSuggestInMemoryCaching);
-
-  const std::string page_url = "https://google.com/search?q=chrome";
-  const std::string response = R"(["", ["foo", "bar"]])";
-
-  ZeroSuggestCacheService* zero_suggest_cache_service =
-      ZeroSuggestCacheServiceFactory::GetForProfile(GetProfile());
-  zero_suggest_cache_service->StoreZeroSuggestResponse(page_url, response);
-  zero_suggest_cache_service->StoreZeroSuggestResponse("", response);
-
-  // Verify that the in-memory cache is initially non-empty.
-  EXPECT_FALSE(zero_suggest_cache_service->IsInMemoryCacheEmptyForTesting());
-
-  // Verify that the pref-based cache is initially empty.
-  PrefService* prefs = GetProfile()->GetPrefs();
-  EXPECT_TRUE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
-  EXPECT_TRUE(
-      prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL).empty());
-
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-                                false);
-
-  // Expect the in-memory cache to be cleared when cookies are removed.
-  EXPECT_TRUE(zero_suggest_cache_service->IsInMemoryCacheEmptyForTesting());
-  // Expect the prefs to remain empty.
-  EXPECT_TRUE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
-  EXPECT_TRUE(
-      prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL).empty());
-
-  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_COOKIES, GetRemovalMask());
-  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-            GetOriginTypeMask());
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,

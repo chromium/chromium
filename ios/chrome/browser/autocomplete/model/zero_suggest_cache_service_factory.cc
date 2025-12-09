@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/autocomplete/model/zero_suggest_cache_service_factory.h"
 
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
@@ -34,8 +33,8 @@ std::unique_ptr<KeyedService>
 ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<ZeroSuggestCacheService>(
-      std::make_unique<AutocompleteSchemeClassifierImpl>(), profile->GetPrefs(),
-      OmniboxFieldTrial::kZeroSuggestCacheMaxSize.Get());
+      std::make_unique<AutocompleteSchemeClassifierImpl>(),
+      profile->GetPrefs());
 }
 
 }  // namespace ios

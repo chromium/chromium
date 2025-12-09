@@ -76,10 +76,6 @@ BASE_FEATURE(kHideSuggestionGroupHeaders,
 // remote zero-prefix suggestions are enabled.
 BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP, DISABLED);
 
-// If enabled, zero prefix suggestions will be stored using an in-memory caching
-// service, instead of using the existing prefs-based cache.
-BASE_FEATURE(kZeroSuggestInMemoryCaching, DISABLED);
-
 // Enables the use of a request debouncer to throttle the number of ZPS prefetch
 // requests initiated over a given period of time (to help minimize the
 // performance impact of ZPS prefetching on the remote Suggest service).

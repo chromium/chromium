@@ -590,13 +590,6 @@ const base::FeatureParam<bool> kZeroSuggestPrefetchDebounceFromLastRun(
     "ZeroSuggestPrefetchDebounceFromLastRun",
     true);
 
-// The maximum number of entries stored by the in-memory zero-suggest cache at
-// at any given time (LRU eviction policy is used to enforce this limit).
-const base::FeatureParam<int> kZeroSuggestCacheMaxSize(
-    &omnibox::kZeroSuggestInMemoryCaching,
-    "ZeroSuggestCacheMaxSize",
-    5);
-
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification) {
   switch (page_classification) {
