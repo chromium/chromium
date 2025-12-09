@@ -10657,6 +10657,11 @@
     "expiry_milestone": 146
   },
   {
+    "name": "web-app-migration-api",
+    "owners": [ "mek@chromium.org", "pwa-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "web-authentication-immediate-get",
     "owners": [
       "derinel@google.com",

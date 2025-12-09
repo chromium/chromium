@@ -4509,6 +4509,10 @@ inline constexpr char kWebAppInstallationApiDescription[] =
     "Enables the Web App Installation API which allows web apps to be "
     "installed programmatically using navigator.install().";
 
+inline constexpr char kWebAppMigrationApiName[] = "Web App Migration API";
+inline constexpr char kWebAppMigrationApiDescription[] =
+    "Enables the API for same-site web app migrations.";
+
 inline constexpr char kWebAppMigratePreinstalledChatName[] =
     "Migrate preinstalled Chat app";
 inline constexpr char kWebAppMigratePreinstalledChatDescription[] =

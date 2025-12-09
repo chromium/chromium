@@ -8110,6 +8110,7 @@ from previous Chrome versions.
   <int value="-2123684408"
       label="AutofillEnableFpanRiskBasedAuthentication:enabled"/>
   <int value="-2123630746" label="VisualSearchSuggestions:disabled"/>
+  <int value="-2123329258" label="WebAppMigrationApi:disabled"/>
   <int value="-2123097607" label="NtpModulesRedesigned:disabled"/>
   <int value="-2122786959" label="LockTopControlsOnLargeTablets:enabled"/>
   <int value="-2122206114"
@@ -12440,6 +12441,7 @@ from previous Chrome versions.
   <int value="-634116286"
       label="OmniboxUIExperimentUnboldSuggestionText:enabled"/>
   <int value="-633955136" label="ShowScrollableMVTOnNTPAndroid:disabled"/>
+  <int value="-633514774" label="WebAppMigrationApi:enabled"/>
   <int value="-633425040" label="ClipboardHistoryReorder:disabled"/>
   <int value="-632030508" label="NativeWindowNavButtons:disabled"/>
   <int value="-631740127" label="inert-visual-viewport"/>
