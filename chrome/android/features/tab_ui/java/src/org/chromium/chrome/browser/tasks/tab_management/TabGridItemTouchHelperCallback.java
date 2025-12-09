@@ -632,8 +632,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     }
 
     private void handleHoverForArchiveMessage(RecyclerView recyclerView) {
-        if (!ChromeFeatureList.sTabArchivalDragDropAndroid.isEnabled()) return;
-
         SimpleRecyclerViewAdapter.ViewHolder hoveredViewHolder =
                 (SimpleRecyclerViewAdapter.ViewHolder)
                         recyclerView.findViewHolderForAdapterPosition(mHoveredTabIndex);
