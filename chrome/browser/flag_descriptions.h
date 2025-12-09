@@ -4126,6 +4126,11 @@ inline constexpr char kSystemKeyboardLockDescription[] =
     "keyboard shortcuts and have the events routed directly to the website "
     "when in fullscreen mode.";
 
+inline constexpr char kTabArchivalDragDropAndroidName[] =
+    "Drag and Drop to Archive Tabs";
+inline constexpr char kTabArchivalDragDropAndroidDescription[] =
+    "Enables drag-and-drop tabs in the tab switcher to archive tabs.";
+
 inline constexpr char kTabFreezingUsesDiscardName[] =
     "Tab Freezing Uses Discard";
 inline constexpr char kTabFreezingUsesDiscardDescription[] =

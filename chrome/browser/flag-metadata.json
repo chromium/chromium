@@ -9789,6 +9789,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-archival-drag-drop-android",
+    "owners": ["mfiaz@google.com", "clank-tab-dev@google.com"],
+    "expiry_milestone": 143
+  },
+  {
     "name": "tab-capture-infobar-links",
     "owners": [ "tovep@chromium.org", "eladalon@chromium.org" ],
     "expiry_milestone": 150

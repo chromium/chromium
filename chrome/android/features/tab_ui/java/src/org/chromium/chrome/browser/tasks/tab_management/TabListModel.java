@@ -21,6 +21,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -448,9 +449,13 @@ public class TabListModel extends ModelList {
 
         PropertyModel model = get(index).model;
 
-        assert model.get(CARD_TYPE) == TAB
-                || (model.get(CARD_TYPE) == MESSAGE
-                        && model.get(MESSAGE_TYPE) == ARCHIVED_TABS_MESSAGE);
+        boolean isArchiveMessageCard =
+                model.get(CARD_TYPE) == MESSAGE && model.get(MESSAGE_TYPE) == ARCHIVED_TABS_MESSAGE;
+        if (isArchiveMessageCard && !ChromeFeatureList.sTabArchivalDragDropAndroid.isEnabled()) {
+            return null;
+        }
+
+        assert model.get(CARD_TYPE) == TAB || isArchiveMessageCard;
         return model;
     }
 }
