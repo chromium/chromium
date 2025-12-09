@@ -4,6 +4,7 @@
 
 import '/strings.m.js';
 
+import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
@@ -269,6 +270,8 @@ function renderFilterDialog(element: FilterBarElement) {
         return renderOutcomeFilterDialogContents(element);
       case 'date':
         return renderDateFilterDialogContents(element);
+      default:
+        assertNotReached();
     }
   })();
 

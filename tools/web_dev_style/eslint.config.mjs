@@ -223,6 +223,10 @@ export default [
     },
 
     rules: {
+      // https://google.github.io/styleguide/tsguide.html#switch-statements
+      'default-case': 'error',
+      'default-case-last': 'error',
+
       'no-unused-vars': 'off',
 
       '@typescript-eslint/no-unused-vars': [
