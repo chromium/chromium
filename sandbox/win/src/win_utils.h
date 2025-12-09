@@ -84,6 +84,11 @@ bool ContainsNulCharacter(std::wstring_view str);
 // pre-loaded to support the infrastructure underlying crypto::RandBytes.
 void WarmupRandomnessInfrastructure();
 
+// Filters an environment to only include those that have an entry in `to_keep`.
+std::wstring FilterEnvironment(
+    const wchar_t* env,
+    const base::span<const std::wstring_view> to_keep);
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_WIN_UTILS_H_

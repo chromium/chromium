@@ -207,4 +207,24 @@ void WarmupRandomnessInfrastructure() {
   CHECK(success);
 }
 
+std::wstring FilterEnvironment(
+    const wchar_t* env,
+    const base::span<const std::wstring_view> to_keep) {
+  std::wstring result;
+
+  std::wstring_view curr(env);
+  while (!curr.empty()) {
+    std::wstring_view key = curr.substr(0, curr.find(L'='));
+    if (std::find(to_keep.begin(), to_keep.end(), key) != to_keep.end()) {
+      result.append(curr).push_back('\0');
+    }
+    UNSAFE_BUFFERS(env += curr.size() + 1);
+    curr = env;
+  }
+
+  // Add the terminating NUL.
+  result.push_back('\0');
+  return result;
+}
+
 }  // namespace sandbox

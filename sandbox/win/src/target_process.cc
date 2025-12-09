@@ -44,24 +44,6 @@ namespace sandbox {
 
 namespace {
 
-// Parses a null-terminated input string of an environment block. The key is
-// placed into the given string, and the total length of the line, including
-// the terminating null, is returned.
-size_t ParseEnvLine(const wchar_t* input, std::wstring* key) {
-  // Skip to the equals or end of the string, this is the key.
-  size_t cur = 0;
-  while (input[cur] && input[cur] != '=') {
-    cur++;
-  }
-  *key = std::wstring(&input[0], cur);
-
-  // Now just skip to the end of the string.
-  while (input[cur]) {
-    cur++;
-  }
-  return cur + 1;
-}
-
 void CopyPolicyToTarget(base::span<const uint8_t> source, void* dest) {
   if (!source.size()) {
     return;
@@ -433,30 +415,6 @@ std::unique_ptr<TargetProcess> TargetProcess::MakeTargetProcessForTesting(
   target->sandbox_process_info_.Set(process_info);
   target->base_address_ = base_address;
   return target;
-}
-
-// static
-std::wstring TargetProcess::FilterEnvironment(
-    const wchar_t* env,
-    const base::span<const std::wstring_view> to_keep) {
-  std::wstring result;
-
-  // Iterate all of the environment strings.
-  const wchar_t* ptr = env;
-  while (*ptr) {
-    std::wstring key;
-    size_t line_length = ParseEnvLine(ptr, &key);
-
-    // Keep only values specified in the keep vector.
-    if (std::find(to_keep.begin(), to_keep.end(), key) != to_keep.end()) {
-      result.append(ptr, line_length);
-    }
-    ptr += line_length;
-  }
-
-  // Add the terminating NUL.
-  result.push_back('\0');
-  return result;
 }
 
 }  // namespace sandbox
