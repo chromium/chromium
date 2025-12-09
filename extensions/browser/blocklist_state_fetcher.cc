@@ -4,6 +4,9 @@
 
 #include "extensions/browser/blocklist_state_fetcher.h"
 
+#include <optional>
+#include <string>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/escape.h"
@@ -140,7 +143,7 @@ void BlocklistStateFetcher::SetSafeBrowsingConfig(
 
 void BlocklistStateFetcher::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   int response_code = 0;
@@ -148,13 +151,8 @@ void BlocklistStateFetcher::OnURLLoaderComplete(
     response_code = url_loader->ResponseInfo()->headers->response_code();
   }
 
-  std::string response_body_str;
-  if (response_body.get()) {
-    response_body_str = std::move(*response_body.get());
-  }
-
-  OnURLLoaderCompleteInternal(url_loader, response_body_str, response_code,
-                              url_loader->NetError());
+  OnURLLoaderCompleteInternal(url_loader, std::move(response_body).value_or(""),
+                              response_code, url_loader->NetError());
 }
 
 void BlocklistStateFetcher::OnURLLoaderCompleteInternal(

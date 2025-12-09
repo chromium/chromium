@@ -4,7 +4,9 @@
 
 #include "extensions/browser/content_verifier/content_hash.h"
 
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -212,7 +214,7 @@ void ContentHash::FetchVerifiedContents(ContentHash::FetchKey key,
 
 // static
 std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
-    std::unique_ptr<std::string> fetched_contents,
+    std::optional<std::string> fetched_contents,
     const FetchKey& key) {
   if (!fetched_contents)
     return nullptr;
@@ -255,7 +257,7 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
 void ContentHash::DidFetchVerifiedContents(
     GetVerifiedContentsCallback verified_contents_callback,
     FetchKey key,
-    std::unique_ptr<std::string> fetched_contents,
+    std::optional<std::string> fetched_contents,
     FetchErrorCode fetch_error) {
   size_t json_size = fetched_contents ? fetched_contents->size() : 0;
   std::unique_ptr<VerifiedContents> verified_contents =

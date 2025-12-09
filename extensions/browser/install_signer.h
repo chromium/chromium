@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_INSTALL_SIGNER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -97,7 +98,7 @@ class InstallSigner {
 
   // Called when `simple_loader_` has returned a result to parse the response,
   // and then call HandleSignatureResult with structured data.
-  void ParseFetchResponse(std::unique_ptr<std::string> response_body);
+  void ParseFetchResponse(std::optional<std::string> response_body);
 
   // Handles the result from a backend fetch.
   void HandleSignatureResult(const std::string& signature,

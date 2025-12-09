@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -38,10 +40,10 @@ ContentHashFetcher::ContentHashFetcher(ContentHash::FetchKey key)
       response_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 void ContentHashFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "URLFetchComplete for " << fetch_key_.extension_id
-          << " is_success:" << !!response_body << " "
+          << " is_success:" << response_body.has_value() << " "
           << fetch_key_.fetch_url.possibly_invalid_spec();
   DCHECK(hash_fetcher_callback_);
   DCHECK(simple_loader_);

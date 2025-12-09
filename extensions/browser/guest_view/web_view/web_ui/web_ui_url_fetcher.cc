@@ -34,7 +34,7 @@ void WebUIURLFetcher::Start() {
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
   if (!render_frame_host) {
-    std::move(callback_).Run(false, nullptr);
+    std::move(callback_).Run(false, std::string());
     return;
   }
 
@@ -72,20 +72,16 @@ void WebUIURLFetcher::Start() {
 }
 
 void WebUIURLFetcher::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   if (fetcher_->ResponseInfo() && fetcher_->ResponseInfo()->headers) {
     response_code = fetcher_->ResponseInfo()->headers->response_code();
   }
 
   fetcher_.reset();
-  std::unique_ptr<std::string> data;
-  if (response_body) {
-    data = std::move(response_body);
-  } else {
-    data = std::make_unique<std::string>();
-  }
-  std::move(callback_).Run(response_code == 200, std::move(data));
+
+  bool success = response_code == 200 && response_body.has_value();
+  std::move(callback_).Run(success, std::move(response_body).value_or(""));
 }
 
 }  // namespace extensions

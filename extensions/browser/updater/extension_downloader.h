@@ -292,7 +292,7 @@ class ExtensionDownloader {
 
   // Handles the result of a manifest fetch.
   void OnManifestLoadComplete(std::unique_ptr<network::SimpleURLLoader> loader,
-                              std::unique_ptr<std::string> response_body);
+                              std::optional<std::string> response_body);
 
   // Once a manifest is parsed, this starts fetches of any relevant crx files.
   // If |results| is null, it means something went wrong when parsing it.

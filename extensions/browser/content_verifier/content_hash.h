@@ -5,7 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_HASH_H_
 #define EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_HASH_H_
 
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -190,12 +192,12 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
                                     const IsCancelledCallback& is_cancelled,
                                     GetVerifiedContentsCallback callback);
   static std::unique_ptr<VerifiedContents> StoreAndRetrieveVerifiedContents(
-      std::unique_ptr<std::string> fetched_contents,
+      std::optional<std::string> fetched_contents,
       const FetchKey& key);
   static void DidFetchVerifiedContents(
       GetVerifiedContentsCallback callback,
       FetchKey key,
-      std::unique_ptr<std::string> fetched_contents,
+      std::optional<std::string> fetched_contents,
       FetchErrorCode fetch_error);
 
   // Step 2/2: computed_hashes.json.

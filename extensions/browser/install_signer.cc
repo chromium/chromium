@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/base64.h"
@@ -360,7 +362,7 @@ void InstallSigner::ReportErrorViaCallback() {
 }
 
 void InstallSigner::ParseFetchResponse(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!response_body || response_body->empty()) {
     ReportErrorViaCallback();
     return;

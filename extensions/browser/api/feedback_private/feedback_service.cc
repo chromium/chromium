@@ -37,6 +37,8 @@
 #include "net/base/network_change_notifier.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include <optional>
+
 #include "base/base64.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "components/account_id/account_id.h"
@@ -477,7 +479,7 @@ void FeedbackService::OnVariationsFetchHpkeURL(
     std::unique_ptr<network::SimpleURLLoader> loader,
     scoped_refptr<feedback::FeedbackData> feedback_data,
     base::RepeatingClosure barrier_closure,
-    std::unique_ptr<std::string> hpke_public_key) {
+    std::optional<std::string> hpke_public_key) {
   if (!loader) {
     LOG(ERROR) << "invalid loader";
     return VariationsFinished(false, barrier_closure);

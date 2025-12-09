@@ -160,13 +160,13 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
 void EmbedderUserScriptLoader::OnSingleEmbedderURLFetchComplete(
     extensions::UserScript::Content* content,
     bool success,
-    std::unique_ptr<std::string> data) {
+    std::string data) {
   if (success) {
     // Remove BOM from |data|.
-    if (base::StartsWith(*data, base::kUtf8ByteOrderMark)) {
-      data->erase(0, strlen(base::kUtf8ByteOrderMark));
+    if (base::StartsWith(data, base::kUtf8ByteOrderMark)) {
+      data.erase(0, strlen(base::kUtf8ByteOrderMark));
     }
-    content->set_content(std::move(*data));
+    content->set_content(std::move(data));
   }
 
   ++complete_fetchers_;

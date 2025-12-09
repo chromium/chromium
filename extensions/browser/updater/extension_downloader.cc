@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -702,7 +704,7 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
 
 void ExtensionDownloader::OnManifestLoadComplete(
     std::unique_ptr<network::SimpleURLLoader> loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const GURL url = loader->GetFinalURL();
   DCHECK(loader);
 

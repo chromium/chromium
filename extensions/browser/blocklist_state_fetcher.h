@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -44,7 +45,7 @@ class BlocklistStateFetcher {
 
  protected:
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   // Used for ease unit tests.
   void OnURLLoaderCompleteInternal(network::SimpleURLLoader* url_loader,

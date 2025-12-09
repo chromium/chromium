@@ -565,11 +565,10 @@ bool WebViewInternalExecuteCodeFunction::LoadFileForEmbedder(
 void WebViewInternalExecuteCodeFunction::DidLoadFileForEmbedder(
     const std::string& file,
     bool success,
-    std::unique_ptr<std::string> data) {
-  std::vector<std::unique_ptr<std::string>> data_list;
+    std::string data) {
+  std::vector<std::string> data_list;
   std::optional<std::string> error;
   if (success) {
-    DCHECK(data);
     data_list.push_back(std::move(data));
   } else {
     error = base::StringPrintf("Failed to load file '%s'.", file.c_str());

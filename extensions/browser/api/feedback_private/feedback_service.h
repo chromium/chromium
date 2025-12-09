@@ -19,6 +19,9 @@
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include <optional>
+#include <string>
+
 #include "chromeos/ash/components/dbus/debug_daemon/binary_log_files_reader.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -141,7 +144,7 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       std::unique_ptr<network::SimpleURLLoader> loader,
       scoped_refptr<feedback::FeedbackData> feedback_data,
       base::RepeatingClosure barrier_closure,
-      std::unique_ptr<std::string> body);
+      std::optional<std::string> body);
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

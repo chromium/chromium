@@ -45,12 +45,12 @@ struct InjectionTarget {
 // Details specifying the read file (either CSS or JS) for the script to be
 // injected.
 struct InjectedFileSource {
-  InjectedFileSource(std::string file_name, std::unique_ptr<std::string> data);
+  InjectedFileSource(std::string file_name, std::string data);
   InjectedFileSource(InjectedFileSource&&);
   ~InjectedFileSource();
 
   std::string file_name;
-  std::unique_ptr<std::string> data;
+  std::string data;
 };
 
 using ResourcesLoadedCallback =

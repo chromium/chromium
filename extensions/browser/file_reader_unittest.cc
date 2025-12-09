@@ -55,24 +55,13 @@ class Receiver {
 
   // Removes the pointer indirection from the read data for use with
   // comparators.
-  std::vector<std::string> GetStringData() const {
-    std::vector<std::string> string_data;
-    string_data.reserve(data_.size());
-    for (const auto& entry : data_) {
-      EXPECT_TRUE(entry);
-      string_data.push_back(*entry);
-    }
-    return string_data;
-  }
 
   const std::optional<std::string>& error() const { return error_; }
   bool succeeded() const { return !error_; }
-  const std::vector<std::unique_ptr<std::string>>& data() const {
-    return data_;
-  }
+  const std::vector<std::string>& data() const { return data_; }
 
  private:
-  void DidReadFile(std::vector<std::unique_ptr<std::string>> data,
+  void DidReadFile(std::vector<std::string> data,
                    std::optional<std::string> error) {
     error_ = std::move(error);
     data_ = std::move(data);
@@ -80,7 +69,7 @@ class Receiver {
   }
 
   std::optional<std::string> error_;
-  std::vector<std::unique_ptr<std::string>> data_;
+  std::vector<std::string> data_;
   scoped_refptr<FileReader> file_reader_;
   base::RunLoop run_loop_;
 };
@@ -108,8 +97,7 @@ void RunBasicTest(const std::vector<std::string>& filenames) {
   receiver.Run();
 
   EXPECT_TRUE(receiver.succeeded()) << *receiver.error();
-  EXPECT_THAT(receiver.GetStringData(),
-              ::testing::ElementsAreArray(expected_contents));
+  EXPECT_THAT(receiver.data(), ::testing::ElementsAreArray(expected_contents));
 }
 
 TEST_F(FileReaderTest, SmallFile) {

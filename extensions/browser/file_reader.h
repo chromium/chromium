@@ -23,7 +23,7 @@ class FileReader : public base::RefCountedThreadSafe<FileReader> {
   // Passes the result of loading the files in `data`, or reports the
   // encountered error in `error`. If there was an error, `data` will be empty.
   using DoneCallback =
-      base::OnceCallback<void(std::vector<std::unique_ptr<std::string>> data,
+      base::OnceCallback<void(std::vector<std::string> data,
                               std::optional<std::string> error)>;
 
   // Lets the caller accomplish tasks on the file data, after the file content
