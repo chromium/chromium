@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
+import static org.chromium.ui.test.util.DeviceRestriction.RESTRICTION_TYPE_NON_AUTO;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -45,6 +46,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -277,6 +279,7 @@ public class TouchToFillIntegrationTest {
 
     @Test
     @MediumTest
+    @Restriction({RESTRICTION_TYPE_NON_AUTO}) // Flaky test: https://crbug.com/465185902
     public void testClickingHybridButtonTriggersCallback() {
         runOnUiThreadBlocking(
                 () -> {
