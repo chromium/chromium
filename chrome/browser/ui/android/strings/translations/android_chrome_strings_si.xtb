@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" /> වෙතින් ග්‍රාහක නොවන ලදි. ඔබේ මීළඟ පැමිණීමේ දී නැවත ඔබෙන් අසනු ඇත.</translation>
 <translation id="1340839264183302272">සමූහය හැර යන්න</translation>
 <translation id="1342886103232377846">සමථයට පත් වූ මුරපද පරීක්ෂා කිරීමට, Google මුරපද කළමනාකරු වෙත යන්න</translation>
+<translation id="1343830902827845050">Chrome වෙත පුරනය වන්න</translation>
 <translation id="1344653310988386453">උද්දීපනයට සබැඳිය ඇතුළත් කරන්න</translation>
 <translation id="1347468774581902829">ක්‍රියාකාරකම කළමනා කරන්න</translation>
 <translation id="1355088659320425659">ඉතිහාසය සහ පටිති</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">ඩෙස්ක්ටොප් අඩවි පෙරනිමියෙන් ඉල්ලා ඇත</translation>
 <translation id="4162867837470729563">පූර්ණ උසකදී බෙදා ගැනීමේ විකල්ප ලැයිස්තුව.</translation>
 <translation id="4170011742729630528">සේවාව නොපවතී: නැවත උත්සාහ කරන්න.</translation>
+<translation id="4170577491341606575">ඔබේ දේවල් ලබා ගනිමින්\u2026</translation>
 <translation id="4177222230309051052">ඔබගේ සියලු පිටුසන් ලබා ගන්න</translation>
 <translation id="4177501066905053472">දැන්වීම් මාතෘකා</translation>
 <translation id="417865198503699526">සැකසීමක් සොයන්න</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">පද්ධති පෙරනිමිය</translation>
 <translation id="7117485132243600300">ඔබ අනුගමනය කරන අන්තර්ගතය සහ යෝජිත මාතෘකා සහ සෙවීම් කළමනාකරණය කරන්න</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> වසන්න</translation>
+<translation id="7121179479711575744">Chrome වෙත පුරනය වන්න</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 අඩවියක් සඳහා අවසර සමාලෝචනය කරන ලදි}one{අඩවි #ක් සඳහා අවසර සමාලෝචනය කරන ලදි}other{අඩවි #ක් සඳහා අවසර සමාලෝචනය කරන ලදි}}</translation>
 <translation id="7138678301420049075">වෙනත්</translation>
 <translation id="7140829094791862589">හස්තීය පිළිවෙලට සකසන්න</translation>

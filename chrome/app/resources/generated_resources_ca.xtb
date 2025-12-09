@@ -1902,6 +1902,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2287617382468007324">Adreça IPP d'impressió</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Per protegir les teves dades, s'han suprimit els permisos d'un lloc web que no has visitat recentment}other{Per protegir les teves dades, s'han suprimit els permisos de llocs web que no has visitat recentment}}</translation>
 <translation id="2287944065963043964">Pantalla d'inici de sessió</translation>
+<translation id="2289567621059034186">Pestanya nova a sota</translation>
 <translation id="2290615375132886363">Botons de navegació en mode de tauleta</translation>
 <translation id="2290703778620332549">Vols substituir el grup o crear-ne un de nou?</translation>
 <translation id="2291452790265535215">Prova de fer servir el tauler lateral per a les adreces d'interès, els recorreguts i més</translation>
@@ -2971,7 +2972,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3008142279736625920">Pastís de formatge</translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi avui per baixar una actualització. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}other{<ph name="MANAGER" /> requereix que et connectis a la Wi-Fi i que baixis una actualització abans del termini establert. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.}}</translation>
-<translation id="3008923556848076408">Gemini continuarà treballant en la teva tasca</translation>
 <translation id="3008926075262837186">Llegeix còmodament amb el mínim de distraccions</translation>
 <translation id="3009178788565917040">Sortida</translation>
 <translation id="3009352964623081324">Cerca+O i, després, S. Fes-ho servir per instal·lar, gestionar i personalitzar veus.</translation>
@@ -3242,6 +3242,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
         Pots gestionar la configuració d'aquesta targeta en qualsevol moment o veure més opcions a Personalitza Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Pestanya nova en 1 pestanya}other{Pestanya nova en # pestanyes}}</translation>
 <translation id="3207960819495026254">S'ha afegit a les adreces d'interès.</translation>
+<translation id="3208321278970793882">Aplicació</translation>
 <translation id="3208584281581115441">Comprova ara</translation>
 <translation id="3208703785962634733">No confirmat</translation>
 <translation id="3209703592917353472">A fi de funcionar de la manera prevista, un lloc web que visites pot desar informació sobre el que estàs fent: per exemple, per mantenir la teva sessió iniciada en un lloc web o desar articles al carretó. Sovint, els llocs web desen temporalment aquesta informació al teu dispositiu.</translation>
@@ -3264,6 +3265,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="322708765617468434">Sempre pots afegir una altra persona al dispositiu després de la configuració. Cada persona pot personalitzar la seva experiència i mantenir la privadesa de les dades.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
 <translation id="3227701057281907159">S'està aplicant el pedaç</translation>
+<translation id="3228962656492373217">Tanca les pestanyes de sota</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Suprimeix-la o substitueix-la per una extensió similar de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Suprimeix-les o substitueix-les per extensions similars de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
 <translation id="3229254977651514276">Comprova la data</translation>
 <translation id="3230539834943294477">Consulta els articles d'ajuda o cerca assistència per a dispositius</translation>
@@ -4999,6 +5001,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4404843640767531781">El teu pare o mare ha bloquejat <ph name="APP_NAME" />. Demana-li permís per utilitzar aquesta aplicació.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg i *.png</translation>
 <translation id="4405224443901389797">Mou a…</translation>
+<translation id="4405580203042711503">Pestanya nova a sota</translation>
 <translation id="4405781821077215583">Amplia o redueix els elements de la pantalla, inclòs el text</translation>
 <translation id="4406308048672435032">Pots desactivar aquesta pestanya o actualitzar per tornar a veure la llista completa</translation>
 <translation id="4406881185911439342">Posa el focus al grup</translation>
@@ -6622,6 +6625,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
 <translation id="554535686826424776">Cerca cupons</translation>
 <translation id="5546865291508181392">Cerca</translation>
+<translation id="5547868626772433490">Demana a Gemini</translation>
 <translation id="5548075230008247516">S'han desseleccionat tots els elements; s'ha sortit del mode de selecció.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" i 1 pestanya més}other{"<ph name="TAB_TITLE" />" i # pestanyes més}}</translation>
 <translation id="5548644592758170183">Mostra a l'esquerra</translation>
@@ -6715,6 +6719,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5609231933459083978">Sembla que l'aplicació no és vàlida.</translation>
 <translation id="5610867721023328944">Torna-ho a provar o selecciona un dels temes disponibles més avall.</translation>
 <translation id="5611398002774823980">Desa al compte</translation>
+<translation id="5611474372949142946">Tanca les pestanyes de sota</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Avís per a l'usuari </translation>
 <translation id="5614553682702429503">Vols desar la contrasenya?</translation>
@@ -9955,7 +9960,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="787268756490971083">Desactivat</translation>
 <translation id="7872758299142009420">Hi ha massa grups imbricats: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam per a Chromebook</translation>
-<translation id="7874257161694977650">Fons de pantalla de Chrome</translation>
 <translation id="7876027585589532670">No es pot editar la drecera</translation>
 <translation id="7876243839304621966">Suprimeix-ho tot</translation>
 <translation id="7877126887274043657">Corregeix el problema de &amp;sincronització</translation>

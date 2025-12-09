@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Се отпишавте од <ph name="SITE_NAME" />. Сајтот ќе ве праша дали сакате да се претплатите повторно следниот пат кога ќе го отворите.</translation>
 <translation id="1340839264183302272">Напуштете ја групата</translation>
 <translation id="1342886103232377846">За проверка за компромитирани лозинки, одете во Google Password Manager</translation>
+<translation id="1343830902827845050">Најавете се на Chrome</translation>
 <translation id="1344653310988386453">Вклучи линк до нагласената ставка</translation>
 <translation id="1347468774581902829">Управувајте со активноста</translation>
 <translation id="1355088659320425659">Картички и историја</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">Сајтовите за компјутер се бараат стандардно</translation>
 <translation id="4162867837470729563">Список со опции за споделување отворен на целосен екран.</translation>
 <translation id="4170011742729630528">Услугата не е достапна, обидете се повторно подоцна.</translation>
+<translation id="4170577491341606575">Се преземаат вашите работи…</translation>
 <translation id="4177222230309051052">Преземете ги сите ваши обележувачи</translation>
 <translation id="4177501066905053472">Теми на реклами</translation>
 <translation id="417865198503699526">Пребарајте поставка</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">Стандардно за системот</translation>
 <translation id="7117485132243600300">Управувајте со содржините што ги следите, како и предложените теми и пребарувања</translation>
 <translation id="7119984597597798764">Затвори <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Најавете се на Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Прегледани се дозволите за 1 сајт}one{Прегледани се дозволите за # сајт}other{Прегледани се дозволите за # сајта}}</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7140829094791862589">Подреди рачно</translation>

@@ -255,6 +255,7 @@
 <translation id="3716540481907974026">Верзија Chrome OS Flex-а</translation>
 <translation id="3718181793972440140">Овим ћете избрисати 1 ставку са овог уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome препоручује да га уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}one{Chrome препоручује да их уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}few{Chrome препоручује да их уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}other{Chrome препоручује да их уклоните. <ph name="BEGIN_LINK" />Сазнајте више о подржаним додацима<ph name="END_LINK" />}}</translation>
+<translation id="3729187154190517324">Продубите претрагу додавањем више картица, фајлова и алатки помоћу дугмета Додај картицу и друго.</translation>
 <translation id="3756724684201900923">Сазнајте више о инсталирању Chrome-а</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex није успео да синхронизује податке због грешке при пријављивању.</translation>
@@ -393,6 +394,7 @@
 <translation id="5334309298019785904">Chrome ОС не може да синхронизује податке јер Синхронизација није доступна за домен.</translation>
 <translation id="5334487786912937552">Chrome-у треба приступ меморијском простору да би преузимао фајлове</translation>
 <translation id="5337648990166757586">Опционално: Аутоматски шаљите Google-у дијагностику и податке о коришћењу да бисте нам помогли да побољшамо функције и учинак Chrome ОС-а.</translation>
+<translation id="5346389065299425353">Продубите претрагу додавањем више картица, фајлова и алатки</translation>
 <translation id="5353252989841766347">Извезите лозинке из Chrome-а</translation>
 <translation id="5368118228313795342">Додатни кôд: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Контролише и страницу која се приказује када покренете Chrome или претражујете из омнибокса.</translation>

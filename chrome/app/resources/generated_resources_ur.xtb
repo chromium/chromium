@@ -1909,6 +1909,7 @@
 <translation id="2287617382468007324">‏پرنٹنگ IPP پتہ</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{آپ حال ہی میں جس سائٹ پر نہیں گئے ہیں اس پر سے اجازتوں کو آپ کے ڈیٹا کے تحفظ کیلئے ہٹا دیا گیا}other{آپ حال ہی میں جن سائٹس پر نہیں گئے ہیں ان پر سے اجازتوں کو آپ کے ڈیٹا کے تحفظ کیلئے ہٹا دیا گیا}}</translation>
 <translation id="2287944065963043964">لاگ ان اسکرین</translation>
+<translation id="2289567621059034186">نیچے نیا ٹیب</translation>
 <translation id="2290615375132886363">ٹیبلیٹ کے نیویگیشن بٹنز</translation>
 <translation id="2290703778620332549">تبدیل کریں یا نیا گروپ تخلیق کریں؟</translation>
 <translation id="2291452790265535215">بُک مارکس، صارف کے تجربے وغیرہ کیلئے سائیڈ پینل استعمال کرنے کی کوشش کریں</translation>
@@ -2982,7 +2983,6 @@
 <translation id="3008142279736625920">چیز کیک</translation>
 <translation id="3008272652534848354">اجازتیں دوبارہ ترتیب دیں</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏<ph name="MANAGER" /> کا تقاضہ ہے کہ آج آپ Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}other{‏<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}}</translation>
-<translation id="3008923556848076408">‏‫Gemini آپ کے ٹاسک پر کام کرتا رہے گا</translation>
 <translation id="3008926075262837186">کم سے کم خلل انگیزیوں کے ساتھ آرام سے پڑھیں</translation>
 <translation id="3009178788565917040">آؤٹ پٹ</translation>
 <translation id="3009352964623081324">‏Search + O، پھر S۔ آوازوں کو انسٹال، ان کا نظم کرنے اور حسب ضرورت بنانے کے لیے استعمال کریں</translation>
@@ -3253,6 +3253,7 @@
         آپ کسی بھی وقت اس کارڈ سے ترتیبات کا نظم کر سکتے ہیں یا حسب ضرورت Chrome میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{‫1 ٹیب میں نیا ٹیب}other{‫# ٹیبز میں نیا ٹیب}}</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
+<translation id="3208321278970793882">ایپ</translation>
 <translation id="3208584281581115441">ابھی چیک کریں</translation>
 <translation id="3208703785962634733">غیر توثیق شدہ</translation>
 <translation id="3209703592917353472">آپ جو بھی سائٹ ملاحظہ کرتے ہیں، وہ اس بارے میں معلومات کو محفوظ کر سکتی ہے کہ آپ کیا کر رہے ہیں تاکہ وہ آپ کی توقع کے مطابق کام کرے — مثال کے طور پر، آپ کو کسی سائٹ میں سائن ان رکھنے یا آپ کے شاپنگ کارٹ میں آئٹمز کو محفوظ کرنے کیلئے۔ اکثر سائٹس اس معلومات کو آپ کے آلے پر عارضی طور پر محفوظ کرتی ہیں۔</translation>
@@ -3275,6 +3276,7 @@
 <translation id="322708765617468434">سیٹ اپ کے بعد آپ کبھی بھی کسی دوسرے شخص کو آلہ میں شامل کر سکتے ہیں۔ ہر فرد اپنے تجربہ کو ذاتی نوعیت کا بنا سکتا ہے اور ڈیٹا کو نجی رکھ سکتا ہے۔</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3227701057281907159">پیچ کیا جا رہا ہے</translation>
+<translation id="3228962656492373217">نیچے کے ٹیبز بند کریں</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{‏<ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> سے ملتے جلتے ایکسٹینشنز کے ساتھ اسے ہٹائیں یا تبدیل کریں؟}other{‏<ph name="BEGIN_LINK" />Chrome ویب اسٹور<ph name="END_LINK" /> سے ملتے جلتے ایکسٹینشنز کے ساتھ انہیں ہٹائیں یا تبدیل کریں}}</translation>
 <translation id="3229254977651514276">تاریخ چیک کریں</translation>
 <translation id="3230539834943294477">امدادی مضامین دیکھیں یا آلہ سپورٹ تلاش کریں</translation>
@@ -5016,6 +5018,7 @@
 <translation id="4404843640767531781"><ph name="APP_NAME" /> آپ کے والدین کے ذریعے مسدود ہے۔ اپنے والدین سے اس ایپ کا استعمال کرنے کی اجازت طلب کریں۔</translation>
 <translation id="4405117686468554883">‎*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">اس میں منتقل کریں…</translation>
+<translation id="4405580203042711503">نیچے نیا ٹیب</translation>
 <translation id="4405781821077215583">ٹیکسٹ سمیت، اپنی اسکرین پر موجود آئٹمز کو زیادہ چھوٹا یا زیادہ بڑا بنائیں</translation>
 <translation id="4406308048672435032">آپ اس ٹیب کو غیر فعال کر سکتے ہیں یا مکمل فہرست دوبارہ دیکھنے کے لیے ریفریش کر سکتے ہیں</translation>
 <translation id="4406881185911439342">فوکس گروپ</translation>
@@ -6641,6 +6644,7 @@
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{گروپ میں ٹیب شامل کریں}other{گروپ میں ٹیبز شامل کریں}}</translation>
 <translation id="554535686826424776">کوپنز تلاش کریں</translation>
 <translation id="5546865291508181392">تلاش کریں</translation>
+<translation id="5547868626772433490">‏‫Gemini سے پوچھیں</translation>
 <translation id="5548075230008247516">سبھی آئٹمز غیر منتخب ہو گئے، انتخاب موڈ سے باہر نکل گئے۔</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" اور 1 دوسرا ٹیب}other{"<ph name="TAB_TITLE" />" اور # دیگر ٹیبز}}</translation>
 <translation id="5548644592758170183">بائیں طرف دکھائیں</translation>
@@ -6734,6 +6738,7 @@
 <translation id="5609231933459083978">ایپلیکیشن غلط معلوم پڑتی ہے۔</translation>
 <translation id="5610867721023328944">دوبارہ کوشش کریں یا ذیل میں دستیاب تھیمز میں سے کسی ایک کو منتخب کریں۔</translation>
 <translation id="5611398002774823980">اکاؤنٹ میں محفوظ کریں</translation>
+<translation id="5611474372949142946">نیچے کے ٹیبز بند کریں</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />، <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">صارف نوٹس</translation>
 <translation id="5614553682702429503">پاس ورڈ کو محفوظ کریں؟</translation>
@@ -9983,7 +9988,6 @@
 <translation id="787268756490971083">آف</translation>
 <translation id="7872758299142009420">بہت سارے نیسٹ کردہ گروپس: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">‏Steam برائے Chromebook</translation>
-<translation id="7874257161694977650">‏Chrome کے پس منظر</translation>
 <translation id="7876027585589532670">شارٹ کٹ میں ترمیم نہیں ہو سکتی</translation>
 <translation id="7876243839304621966">سبھی ہٹائیں</translation>
 <translation id="7877126887274043657">&amp;مطابقت پذیری کا مسئلہ حل کریں</translation>

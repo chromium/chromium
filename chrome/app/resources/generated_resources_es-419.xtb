@@ -1899,6 +1899,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2287617382468007324">Dirección IPP de la impresión</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Para proteger tus datos, se quitaron los permisos de un sitio que no visitaste recientemente}other{Para proteger tus datos, se quitaron los permisos de los sitios que no visitaste recientemente}}</translation>
 <translation id="2287944065963043964">Pantalla de acceso</translation>
+<translation id="2289567621059034186">Nueva pestaña abajo</translation>
 <translation id="2290615375132886363">Botones de navegación en tablet</translation>
 <translation id="2290703778620332549">¿Quieres reemplazar el grupo o crear uno nuevo?</translation>
 <translation id="2291452790265535215">Usa el panel lateral para favoritos, recorridos y más</translation>
@@ -2968,7 +2969,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización hoy. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}other{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}}</translation>
-<translation id="3008923556848076408">Gemini seguirá trabajando en tu tarea</translation>
 <translation id="3008926075262837186">Lee cómodamente con distracciones mínimas</translation>
 <translation id="3009178788565917040">Salida</translation>
 <translation id="3009352964623081324">Tecla de búsqueda + O y, luego, S. Se usa para instalar, administrar y personalizar voces.</translation>
@@ -3241,6 +3241,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
         Puedes administrar la configuración desde esta tarjeta en cualquier momento o ver más opciones en Personalizar Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nueva pestaña en 1 pestaña}other{Nueva pestaña en # pestañas}}</translation>
 <translation id="3207960819495026254">Agregada a favoritos</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Verificar ahora</translation>
 <translation id="3208703785962634733">Sin confirmar</translation>
 <translation id="3209703592917353472">Un sitio que visitas puede guardar información sobre tu actividad para que funcione como esperabas (por ejemplo, para mantener el acceso a un sitio o guardar artículos en tu carrito de compras). A menudo, los sitios guardan esta información de forma temporal en tu dispositivo.</translation>
@@ -3263,6 +3264,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="322708765617468434">Después de la configuración, podrás agregar otra persona al dispositivo. Cada persona podrá personalizar su experiencia y proteger la privacidad de sus datos.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3227701057281907159">Aplicando parches</translation>
+<translation id="3228962656492373217">Cerrar las pestañas de abajo</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Quítala o reemplázala por extensiones similares de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Quítalas o reemplázalas por extensiones similares de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Revisa la fecha</translation>
 <translation id="3230539834943294477">Consulta artículos de ayuda o busca asistencia para el dispositivo</translation>
@@ -4999,6 +5001,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4404843640767531781">Tu padre o madre bloquearon <ph name="APP_NAME" />. Si quieres usar esa app, pídeles permiso.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
+<translation id="4405580203042711503">Nueva pestaña abajo</translation>
 <translation id="4405781821077215583">Aumenta o reduce el tamaño de los elementos que se muestran en la pantalla, incluido el texto</translation>
 <translation id="4406308048672435032">Puedes desactivar esta pestaña o actualizarla para volver a ver la lista completa</translation>
 <translation id="4406881185911439342">Enfocar el grupo</translation>
@@ -6623,6 +6626,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
 <translation id="554535686826424776">Buscar cupones</translation>
 <translation id="5546865291508181392">Buscar</translation>
+<translation id="5547868626772433490">Preguntarle a Gemini</translation>
 <translation id="5548075230008247516">Se anuló la selección de todos los elementos; se salió del modo de selección.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
 <translation id="5548644592758170183">Mostrar a la izquierda</translation>
@@ -6716,6 +6720,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5609231933459083978">Parece que la aplicación no es válida.</translation>
 <translation id="5610867721023328944">Vuelve a intentarlo o selecciona uno de los temas disponibles a continuación.</translation>
 <translation id="5611398002774823980">Guardar en la cuenta</translation>
+<translation id="5611474372949142946">Cerrar las pestañas de abajo</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Aviso de usuario</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
@@ -9958,7 +9963,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="787268756490971083">No</translation>
 <translation id="7872758299142009420">Hay demasiados grupos anidados: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam for Chromebook</translation>
-<translation id="7874257161694977650">Fondos de Chrome</translation>
 <translation id="7876027585589532670">No se puede editar el acceso directo.</translation>
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7877126887274043657">Solucionar un problema de &amp;sincronización</translation>

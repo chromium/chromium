@@ -1532,6 +1532,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Clique de precisão</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> falhou. Clique neste balão para recarregar a extensão.</translation>
+<translation id="2026367923222947564">Página inteira</translation>
 <translation id="2026377162111110983">Voz da área</translation>
 <translation id="2028449514182362831">As funcionalidades que precisam de sensores de movimentos não funcionam</translation>
 <translation id="2028479214883337535">Importados do MacOS</translation>
@@ -2973,7 +2974,6 @@ Quer pará-lo?</translation>
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi hoje para transferir uma atualização. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).}other{<ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi e transfira uma atualização antes do prazo. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).}}</translation>
-<translation id="3008923556848076408">O Gemini vai continuar a trabalhar na sua tarefa</translation>
 <translation id="3008926075262837186">Leia confortavelmente com o mínimo de distrações</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009352964623081324">Pesquisa + O e, em seguida, S. Utilize o atalho para instalar, gerir e personalizar vozes.</translation>
@@ -3246,6 +3246,7 @@ Quer pará-lo?</translation>
         Pode gerir as definições a partir deste cartão em qualquer altura ou ver mais opções em Personalizar o Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Novo separador em 1 separador}other{Novo separador em # separadores}}</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Rever agora</translation>
 <translation id="3208703785962634733">Não confirmado</translation>
 <translation id="3209703592917353472">Um site que visita pode guardar informações sobre o que está a fazer para que funcione conforme esperado, por exemplo, para manter a sua sessão iniciada num site ou guardar itens no seu carrinho de compras. Muitas vezes, os sites guardam estas informações temporariamente no seu dispositivo.</translation>
@@ -6630,6 +6631,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
 <translation id="554535686826424776">Encontrar cupões</translation>
 <translation id="5546865291508181392">Localizar</translation>
+<translation id="5547868626772433490">Pedir ao Gemini</translation>
 <translation id="5548075230008247516">Todos os itens foram desselecionados e saiu do modo de seleção.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e mais 1 separador}other{"<ph name="TAB_TITLE" />" e mais # separadores}}</translation>
 <translation id="5548644592758170183">Mostrar à esquerda</translation>
@@ -9422,6 +9424,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7502220299952823578">Adicionar à lista "manter sempre estes sites ativos"</translation>
 <translation id="7502528909759062987">Pausar transmissão do separador para <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">É possível deslocar e fazer zoom nos separadores partilhados</translation>
+<translation id="750314150962284310">Foco da linha</translation>
 <translation id="7503191893372251637">Tipo de certificado Netscape</translation>
 <translation id="7503259455663961898">Alterar</translation>
 <translation id="7503985202154027481">É mantido um registo da sua visita a este site na sua chave de segurança.</translation>
@@ -9967,7 +9970,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="787268756490971083">Desativado</translation>
 <translation id="7872758299142009420">Demasiados grupos aninhados: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam para o Chromebook</translation>
-<translation id="7874257161694977650">Fundos do Chrome</translation>
 <translation id="7876027585589532670">Não é possível editar o atalho.</translation>
 <translation id="7876243839304621966">Remover tudo</translation>
 <translation id="7877126887274043657">Corrigir problema de &amp;sincronização</translation>

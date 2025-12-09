@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Saišu priekšskatījumu parādīšana</translation>
 <translation id="452750746583162491">Pārskatīt sinhronizētos datus</translation>
 <translation id="4532845899244822526">Mapes izvēlēšanās</translation>
+<translation id="454217142158335225">Varat atkārtoti atvērt aizvērtos vienumus no nesen atvērto ciļņu vai ciļņu grupu sadaļām. Jūsu piespraustās cilnes netiks aizvērtas.</translation>
 <translation id="4547181496285029457">Atgriešanās uz cilni “Nesenās”</translation>
 <translation id="4552042254369397518">Notiek kopēšana…</translation>
 <translation id="4564893319561643483">Paslēpt moduli “<ph name="TITLE" />”</translation>
@@ -1841,6 +1842,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7887174313503389866">Izmantojiet svarīgāko konfidencialitātes un drošības vadīklu ceļvedi. Papildu opcijas skatiet atsevišķos iestatījumos.</translation>
 <translation id="7887198238286927132">Lai aizsargātu jūsu konfidencialitāti, Chrome neveiks šī lauka automātisko aizpildi.</translation>
 <translation id="7887552845761062935">Lai atvērtu papildu iespēju izvēlni, veiciet dubultskārienu un turiet</translation>
+<translation id="7888562068293422208">Vai aizvērt visas?</translation>
 <translation id="7889910613639381518">Ērta un droša piekļuve ar Google paroļu pārvaldnieka logrīku.</translation>
 <translation id="7899199123054742721">Atzīmēt visu kā nelasītu</translation>
 <translation id="7911190106180361398">Jūsu organizācija neatļauj jums sinhronizēt visu.</translation>

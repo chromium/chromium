@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Mostrar vistas previas das ligazóns</translation>
 <translation id="452750746583162491">Revisar os datos sincronizados</translation>
 <translation id="4532845899244822526">Selecciona cartafol</translation>
+<translation id="454217142158335225">Podes volver abrir os elementos pechados nas seccións de pestanas recentes ou grupos de pestanas. As pestanas fixadas non se pecharán.</translation>
 <translation id="4547181496285029457">Volver á pestana recente</translation>
 <translation id="4552042254369397518">Copiando…</translation>
 <translation id="4564893319561643483">Ocultar <ph name="TITLE" /></translation>
@@ -1841,6 +1842,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7887174313503389866">Realiza un percorrido guiado polos controis clave de privacidade e seguranza. Para obter máis opcións, vai á configuración individual.</translation>
 <translation id="7887198238286927132">Para protexer a túa privacidade, Chrome non autocompletará este campo.</translation>
 <translation id="7887552845761062935">Toca dúas veces e mantén premido o botón para obter máis opcións</translation>
+<translation id="7888562068293422208">Queres pechar todo?</translation>
 <translation id="7889910613639381518">Acceso seguro e sinxelo co widget do xestor de contrasinais de Google.</translation>
 <translation id="7899199123054742721">Marcar todo como non lido</translation>
 <translation id="7911190106180361398">A túa organización non che permite sincronizalo todo.</translation>

@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">A inscrição em <ph name="SITE_NAME" /> foi cancelada. Vamos perguntar novamente no próximo acesso.</translation>
 <translation id="1340839264183302272">Sair do grupo</translation>
 <translation id="1342886103232377846">Para verificar se há senhas comprometidas, acesse o Gerenciador de senhas do Google</translation>
+<translation id="1343830902827845050">Faça login no Chrome</translation>
 <translation id="1344653310988386453">Incluir link para o conteúdo destacado</translation>
 <translation id="1347468774581902829">Gerenciar atividade</translation>
 <translation id="1355088659320425659">Histórico e guias</translation>
@@ -718,6 +719,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="414128724510021958">Sites para computador solicitados por padrão</translation>
 <translation id="4162867837470729563">Lista de opções de compartilhamento no tamanho máximo.</translation>
 <translation id="4170011742729630528">O serviço não está disponível. Tente novamente mais tarde.</translation>
+<translation id="4170577491341606575">Buscando seus dados\u2026</translation>
 <translation id="4177222230309051052">Acesse todos os seus favoritos</translation>
 <translation id="4177501066905053472">Temas de anúncios</translation>
 <translation id="417865198503699526">Pesquise uma configuração</translation>
@@ -1458,6 +1460,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7115358764509798967">Padrão do sistema</translation>
 <translation id="7117485132243600300">Gerencie o conteúdo que você segue e as sugestões de temas e de pesquisas</translation>
 <translation id="7119984597597798764">Fechar <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Fazer login no Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permissões revisadas para 1 site}one{Permissões revisadas para # site}other{Permissões revisadas para # sites}}</translation>
 <translation id="7138678301420049075">Outro</translation>
 <translation id="7140829094791862589">Classificar por ordem manual</translation>

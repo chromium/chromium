@@ -1900,6 +1900,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2287617382468007324">Adresa IPP e printimit</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Për të mbrojtur të dhënat e tua, lejet u hoqën nga një sajt që nuk e ke vizituar së fundi}other{Për të mbrojtur të dhënat e tua, lejet u hoqën nga sajtet që nuk i ke vizituar së fundi}}</translation>
 <translation id="2287944065963043964">Ekrani i identifikimit</translation>
+<translation id="2289567621059034186">Skedë e re më poshtë</translation>
 <translation id="2290615375132886363">Butonat e navigimit të tabletit</translation>
 <translation id="2290703778620332549">Të zëvendësohet apo të krijohet një grup i ri?</translation>
 <translation id="2291452790265535215">Provo të përdorësh panelin anësor për faqeshënuesit, udhëtimet etj.</translation>
@@ -2969,7 +2970,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3008142279736625920">Qumështor</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi sot për të shkarkuar një përditësim. Ose shkarko nga një lidhje me matje (mund të zbatohen tarifat).}other{<ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi dhe të shkarkosh një përditësim para afatit. Ose shkarko nga një lidhje me matje (mund të zbatohen tarifat).}}</translation>
-<translation id="3008923556848076408">Gemini do të vazhdojë të punojë për detyrën tënde</translation>
 <translation id="3008926075262837186">Lexo në qetësi dhe me shpërqendrime minimale</translation>
 <translation id="3009178788565917040">Dalja</translation>
 <translation id="3009352964623081324">Tasti "Search" + O, më pas S. Përdore për të instaluar, menaxhuar dhe personalizuar zërat.</translation>
@@ -3242,6 +3242,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
         Mund t'i menaxhosh cilësimet nga kjo kartë në çdo kohë ose mund të shikosh më shumë opsione te "Personalizo Chrome".</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Skedë e re në 1 skedë}other{Skedë e re në # skeda}}</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
+<translation id="3208321278970793882">Aplikacioni</translation>
 <translation id="3208584281581115441">Kontrollo tani</translation>
 <translation id="3208703785962634733">I pakonfirmuar</translation>
 <translation id="3209703592917353472">Një sajt që viziton mund të ruajë informacione për gjërat që ti po bën që ai të mund të funksionojë siç pritet, p.sh. për të të mbajtur të identifikuar në një sajt ose për të ruajtur artikuj në karrocën e blerjeve. Shpesh sajtet i ruajnë këto informacione përkohësisht në pajisjen tënde.</translation>
@@ -3264,6 +3265,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="322708765617468434">Mund të shtosh gjithmonë një person tjetër te pajisja pas konfigurimit. Çdo person mund ta personalizojë përvojën e vet dhe t'i mbajë të dhënat private.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3227701057281907159">Po korrigjohet</translation>
+<translation id="3228962656492373217">Mbyll skedat më poshtë</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Hiqe ose zëvendësoje atë me shtesa të ngjashme nga <ph name="BEGIN_LINK" />Dyqani i uebit i Chrome<ph name="END_LINK" />.}other{Hiqi ose zëvendësoji ato me shtesa të ngjashme nga <ph name="BEGIN_LINK" />Dyqani i uebit i Chrome<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Kontrollo datën</translation>
 <translation id="3230539834943294477">Shiko artikujt e ndihmës ose gjej mbështetje për pajisjen</translation>
@@ -5000,6 +5002,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4404843640767531781"><ph name="APP_NAME" /> është bllokuar nga prindi yt. Kërko leje nga prindi që ta përdorësh këtë aplikacion.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Zhvendos te…</translation>
+<translation id="4405580203042711503">Skedë e re më poshtë</translation>
 <translation id="4405781821077215583">Bëji artikujt në ekran më të vegjël ose më të mëdhenj, duke përfshirë edhe tekstin</translation>
 <translation id="4406308048672435032">Mund ta bësh këtë skedë joaktive ose mund ta rifreskosh për të shikuar përsëri listën e plotë</translation>
 <translation id="4406881185911439342">Fokuso grupin</translation>
@@ -6622,6 +6625,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Shto një skedë te grupi}other{Shto skeda te grupi}}</translation>
 <translation id="554535686826424776">Gjej kuponë</translation>
 <translation id="5546865291508181392">Gjej</translation>
+<translation id="5547868626772433490">Pyet Gemini</translation>
 <translation id="5548075230008247516">Të gjithë artikujve u është anuluar zgjedhja, është dalë nga modaliteti i zgjedhjes.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" dhe 1 skedë tjetër}other{"<ph name="TAB_TITLE" />" dhe # skeda të tjera}}</translation>
 <translation id="5548644592758170183">Shfaqe në të majtë</translation>
@@ -6715,6 +6719,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5609231933459083978">Aplikacioni duket se është i pavlefshëm.</translation>
 <translation id="5610867721023328944">Provo përsëri ose zgjidh nga një prej temave që ofrohen më poshtë.</translation>
 <translation id="5611398002774823980">Ruaje te llogaria</translation>
+<translation id="5611474372949142946">Mbyll skedat më poshtë</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Njoftimi i përdoruesit</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
@@ -9956,7 +9961,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="787268756490971083">Joaktiv</translation>
 <translation id="7872758299142009420">Shumë grupe të ndërfutura: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam për Chromebook</translation>
-<translation id="7874257161694977650">Sfondet e Chrome</translation>
 <translation id="7876027585589532670">Shkurtorja nuk mund të modifikohet</translation>
 <translation id="7876243839304621966">Hiqi të gjitha</translation>
 <translation id="7877126887274043657">Rregullo &amp;problemin e sinkronizimit</translation>

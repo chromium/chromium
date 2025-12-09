@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Vietnes <ph name="SITE_NAME" /> abonements ir anulēts. Jums tiks vaicāts atkal, kad nākamreiz apmeklēsiet vietni.</translation>
 <translation id="1340839264183302272">Pamest grupu</translation>
 <translation id="1342886103232377846">Lai pārbaudītu, vai neviena parole nav uzlauzta, pārejiet uz Google paroļu pārvaldnieku.</translation>
+<translation id="1343830902827845050">Pierakstīšanās pārlūkā Chrome</translation>
 <translation id="1344653310988386453">Ietveriet saiti uz atzīmēto tekstu.</translation>
 <translation id="1347468774581902829">Pārvaldīt darbības</translation>
 <translation id="1355088659320425659">Vēsture un cilnes</translation>
@@ -718,6 +719,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="414128724510021958">Pēc noklusējuma pieprasītās vietnes datoriem</translation>
 <translation id="4162867837470729563">Kopīgošanas opciju saraksts ir atvērts pilna ekrāna augstumā.</translation>
 <translation id="4170011742729630528">Pakalpojums nav pieejams. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="4170577491341606575">Notiek jūsu satura iegūšana\u2026</translation>
 <translation id="4177222230309051052">Iegūstiet visas savas grāmatzīmes</translation>
 <translation id="4177501066905053472">Reklāmu tēmas</translation>
 <translation id="417865198503699526">Meklēt iestatījumu</translation>
@@ -1457,6 +1459,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7115358764509798967">Sistēmas noklusējums</translation>
 <translation id="7117485132243600300">Pārvaldiet saturu, kam sekojat, kā arī ieteiktās tēmas un meklēšanas vaicājumus.</translation>
 <translation id="7119984597597798764">Aizvērt: <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Pierakstīties pārlūkā Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Vienai vietnei ir pārskatītas atļaujas.}zero{# vietnēm ir pārskatītas atļaujas.}one{# vietnei ir pārskatītas atļaujas.}other{# vietnēm ir pārskatītas atļaujas.}}</translation>
 <translation id="7138678301420049075">Cits</translation>
 <translation id="7140829094791862589">Kārtot manuāli</translation>

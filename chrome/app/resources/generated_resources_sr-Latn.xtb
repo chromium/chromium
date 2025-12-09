@@ -1536,6 +1536,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">Precizni klik</translation>
 <translation id="2025632980034333559">Dodatak <ph name="APP_NAME" /> je otkazao. Kliknite na ovaj oblačić da biste ga ponovo učitali.</translation>
+<translation id="2026367923222947564">Cela stranica</translation>
 <translation id="2026377162111110983">Glas u prostoru</translation>
 <translation id="2028449514182362831">Funkcije kojima su potrebni senzori pokreta neće raditi</translation>
 <translation id="2028479214883337535">Uvezeno iz MacOS-a</translation>
@@ -2979,7 +2980,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3008142279736625920">Čizkejk</translation>
 <translation id="3008272652534848354">Resetuj dozvole</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> zahteva da se danas povežete na WiFi da biste preuzeli ažuriranje. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).}one{<ph name="MANAGER" /> zahteva da se povežete na WiFi da biste preuzeli ažuriranje pre nego što istekne rok. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).}few{<ph name="MANAGER" /> zahteva da se povežete na WiFi da biste preuzeli ažuriranje pre nego što istekne rok. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).}other{<ph name="MANAGER" /> zahteva da se povežete na WiFi da biste preuzeli ažuriranje pre nego što istekne rok. Ili preuzmite pomoću veze sa ograničenjem (možda se naplaćuju troškovi).}}</translation>
-<translation id="3008923556848076408">Gemini će nastaviti da radi na vašem zadatku</translation>
 <translation id="3008926075262837186">Čitajte udobno uz minimalno ometanja</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009352964623081324">Taster za pretragu + O, a zatim S. Koristite za instaliranje i prilagođavanje glasova i upravljanje njima.</translation>
@@ -3252,6 +3252,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
         U svakom trenutku možete da upravljate podešavanjima sa ove kartice ili da vidite još opcija u meniju Prilagodite Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova kartica u 1 kartici}one{Nova kartica u # kartici}few{Nova kartica u # kartice}other{Nova kartica u # kartica}}</translation>
 <translation id="3207960819495026254">Obeleženo</translation>
+<translation id="3208321278970793882">Aplikacija</translation>
 <translation id="3208584281581115441">Proveri</translation>
 <translation id="3208703785962634733">Nepotvrđeno</translation>
 <translation id="3209703592917353472">Sajt koji posećujete može da čuva informacije o tome šta radite kako bi radio na očekivani način – na primer, da biste ostali prijavljeni na sajt ili da biste sačuvali stavke u korpi za kupovinu. Sajtovi često privremeno čuvaju te informacije na uređaju.</translation>
@@ -6643,6 +6644,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Dodaj karticu u grupu}one{Dodaj kartice u grupu}few{Dodaj kartice u grupu}other{Dodaj kartice u grupu}}</translation>
 <translation id="554535686826424776">Pronađi kupone</translation>
 <translation id="5546865291508181392">Pronađi</translation>
+<translation id="5547868626772433490">Upitajte Gemini</translation>
 <translation id="5548075230008247516">Poništen je izbor svih stavki. Napustili se režim izbora.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ i još 1 kartica}one{„<ph name="TAB_TITLE" />“ i još # kartica}few{„<ph name="TAB_TITLE" />“ i još # kartice}other{„<ph name="TAB_TITLE" />“ i još # kartica}}</translation>
 <translation id="5548644592758170183">Prikaži sa leve strane</translation>
@@ -9446,6 +9448,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7502220299952823578">Dodaj na listu Uvek zadrži ove sajtove aktivnim</translation>
 <translation id="7502528909759062987">Pauzirajte karticu za prebacivanje na <ph name="DEVICE_NAME" /></translation>
 <translation id="7502804472671406749">Deljene kartice mogu da se skroluju i zumiraju</translation>
+<translation id="750314150962284310">Fokus na red</translation>
 <translation id="7503191893372251637">Tip Netscape sertifikata</translation>
 <translation id="7503259455663961898">Promeni to za mene</translation>
 <translation id="7503985202154027481">Poseta ovom sajtu će biti zabeležena na bezbednosnom ključu.</translation>
@@ -9992,7 +9995,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="787268756490971083">Isključeno</translation>
 <translation id="7872758299142009420">Previše ugneždenih grupa: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam za Chromebook</translation>
-<translation id="7874257161694977650">Chrome pozadine</translation>
 <translation id="7876027585589532670">Menjanje prečice nije uspelo</translation>
 <translation id="7876243839304621966">Ukloni sve</translation>
 <translation id="7877126887274043657">Reši problem sa sinhronizacijom</translation>

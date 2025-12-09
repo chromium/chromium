@@ -43,6 +43,7 @@
 <translation id="1497802159252041924">Instalacijska pogreška: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Ova je stranica zaštićena</translation>
 <translation id="1524282610922162960">Dijeljenje kartice Chromium</translation>
+<translation id="154404805518949443">Prijava na Chromium</translation>
 <translation id="1547469039832541117">Završava istaknut zadatak.</translation>
 <translation id="1553461853655228091">Chromium treba dopuštenje za pristup kameri radi izrade 3D karte vašeg okruženja</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Ovo proširenje više nije podržano. Chromium preporučuje da ga uklonite.}one{Ova proširenja više nisu podržana. Chromium preporučuje da ih uklonite.}few{Ova proširenja više nisu podržana. Chromium preporučuje da ih uklonite.}other{Ova proširenja više nisu podržana. Chromium preporučuje da ih uklonite.}}</translation>
@@ -230,6 +231,7 @@
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> već je prijavljen/a.  Da bi vaše pregledavanje ostalo odvojeno, prijavite se na Chromium na svojem profilu kao <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Da biste dijelili zaslon, u postavkama sustava dopustite snimanje zaslona za Chromium.</translation>
 <translation id="3597003331831379823">Pokretanje postavljanja s dodatnim ovlastima nije uspjelo. <ph name="METAINSTALLER_ERROR" />.</translation>
+<translation id="3600428265489994557">Prijava na Chromium</translation>
 <translation id="3639635944603682591">Podaci o pregledavanju za tu osobu izbrisat će se s ovog uređaja. Da biste vratili te podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Dostupno je novo ažuriranje za Chromium koje će se primijeniti nakon ponovnog pokretanja.}=1{Dostupno je novo ažuriranje za Chromium koje će se primijeniti nakon ponovnog pokretanja. Anonimni se prozor neće ponovno otvoriti.}one{Dostupno je novo ažuriranje za Chromium koje će se primijeniti nakon ponovnog pokretanja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Dostupno je novo ažuriranje za Chromium koje će se primijeniti nakon ponovnog pokretanja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Dostupno je novo ažuriranje za Chromium koje će se primijeniti nakon ponovnog pokretanja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="3651803019964686660">Da biste poslali broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se na Chromium na oba uređaja.</translation>

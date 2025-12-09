@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Prenumerationen på <ph name="SITE_NAME" /> har avslutats. Du blir tillfrågad igen nästa gång du besöker webbplatsen.</translation>
 <translation id="1340839264183302272">Lämna grupp</translation>
 <translation id="1342886103232377846">Öppna Google Lösenordshantering för att kontrollera om det finns utsatta lösenord</translation>
+<translation id="1343830902827845050">Logga in i Chrome</translation>
 <translation id="1344653310988386453">Ta med länk till markering</translation>
 <translation id="1347468774581902829">Hantera aktivitet</translation>
 <translation id="1355088659320425659">Historik och flikar</translation>
@@ -719,6 +720,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="414128724510021958">Webbplatser för dator begärs som standard</translation>
 <translation id="4162867837470729563">Lista över delningsalternativ har öppnats över hela skärmen.</translation>
 <translation id="4170011742729630528">Tjänsten är inte tillgänglig, försök igen senare.</translation>
+<translation id="4170577491341606575">Hämtar dina grejer \u2026</translation>
 <translation id="4177222230309051052">Få tillgång till alla dina bokmärken</translation>
 <translation id="4177501066905053472">Annonsämnen</translation>
 <translation id="417865198503699526">Sök efter en inställning</translation>
@@ -1458,6 +1460,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7115358764509798967">Systemets standardinställning</translation>
 <translation id="7117485132243600300">Hantera innehåll som du följer och föreslagna ämnen och sökningar</translation>
 <translation id="7119984597597798764">Stäng <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Logga in i Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Behörigheter har granskats för 1 webbplats}other{Behörigheter har granskats för # webbplatser}}</translation>
 <translation id="7138678301420049075">Övrigt</translation>
 <translation id="7140829094791862589">Sortera manuellt</translation>

@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Subskrypcja w witrynie <ph name="SITE_NAME" /> została anulowana. Zapytamy Cię ponownie podczas następnej wizyty.</translation>
 <translation id="1340839264183302272">Opuść grupę</translation>
 <translation id="1342886103232377846">Aby sprawdzić, czy jakieś hasła nie zostały przejęte, otwórz Menedżera haseł Google</translation>
+<translation id="1343830902827845050">Zaloguj się w Chrome</translation>
 <translation id="1344653310988386453">Dołącz link do podświetlenia</translation>
 <translation id="1347468774581902829">Zarządzaj aktywnością</translation>
 <translation id="1355088659320425659">Historia i karty</translation>
@@ -718,6 +719,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="414128724510021958">Domyślnie żądanie stron w wersji na komputery</translation>
 <translation id="4162867837470729563">Lista opcji udostępniania jest otwarta na całą wysokość.</translation>
 <translation id="4170011742729630528">Usługa jest niedostępna. Spróbuj ponownie później.</translation>
+<translation id="4170577491341606575">Pobieram Twoje rzeczy\u2026</translation>
 <translation id="4177222230309051052">Zobacz wszystkie swoje zakładki</translation>
 <translation id="4177501066905053472">Tematy reklam</translation>
 <translation id="417865198503699526">Wyszukaj ustawienie</translation>
@@ -1457,6 +1459,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7115358764509798967">Ustawienie domyślne systemu</translation>
 <translation id="7117485132243600300">Zarządzaj treściami, które obserwujesz, oraz sugerowanymi tematami i wyszukiwaniami</translation>
 <translation id="7119984597597798764">Zamknij: <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Zaloguj się w Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Sprawdzono uprawnienia 1 witryny}few{Sprawdzono uprawnienia # witryn}many{Sprawdzono uprawnienia # witryn}other{Sprawdzono uprawnienia # witryny}}</translation>
 <translation id="7138678301420049075">Inne</translation>
 <translation id="7140829094791862589">Sortuj ręcznie</translation>

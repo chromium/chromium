@@ -1903,6 +1903,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2287617382468007324">Adresse IPP d'impression</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Pour protéger vos données, les autorisations d'un site que vous n'avez pas consulté récemment ont été supprimées}one{Pour protéger vos données, les autorisations d'un site que vous n'avez pas consulté récemment ont été supprimées}other{Pour protéger vos données, les autorisations de sites que vous n'avez pas consultés récemment ont été supprimées}}</translation>
 <translation id="2287944065963043964">Écran de connexion</translation>
+<translation id="2289567621059034186">Nouvel onglet en dessous</translation>
 <translation id="2290615375132886363">Boutons de navigation en mode tablette</translation>
 <translation id="2290703778620332549">Remplacer ou créer un groupe ?</translation>
 <translation id="2291452790265535215">Essayez d'utiliser le panneau latéral pour accéder aux favoris, parcours, etc.</translation>
@@ -2972,7 +2973,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi aujourd'hui afin de télécharger une mise à jour. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}one{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}other{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).}}</translation>
-<translation id="3008923556848076408">Gemini continuera à travailler sur votre tâche</translation>
 <translation id="3008926075262837186">Lisez confortablement avec un minimum de distractions</translation>
 <translation id="3009178788565917040">Sortie</translation>
 <translation id="3009352964623081324">Utilisez la touche Recherche+O puis S pour installer, gérer et personnaliser les voix.</translation>
@@ -3243,6 +3243,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
         Vous pouvez gérer les paramètres de cette fiche à tout moment ou voir plus d'options dans "Personnaliser Chrome".</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nouvel onglet dans 1 onglet}one{Nouvel onglet dans # onglet}other{Nouvel onglet dans # onglets}}</translation>
 <translation id="3207960819495026254">Favori</translation>
+<translation id="3208321278970793882">Application</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
 <translation id="3208703785962634733">Non confirmé</translation>
 <translation id="3209703592917353472">Un site que vous consultez peut enregistrer des informations sur ce que vous êtes en train de faire afin de fonctionner comme prévu, par exemple pour vous permettre de rester connecté à ce site ou pour enregistrer des articles dans votre panier. Les sites enregistrent souvent ces informations temporairement sur votre appareil.</translation>
@@ -3265,6 +3266,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="322708765617468434">Vous pourrez toujours ajouter une autre personne à l'appareil après la configuration. Chaque personne pourra personnaliser son expérience et préserver la confidentialité de ses données.</translation>
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3227701057281907159">Application d'un fichier correctif…</translation>
+<translation id="3228962656492373217">Fermer les onglets en dessous</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Supprimez-la ou remplacez-la par des extensions similaires du <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}one{Supprimez-la ou remplacez-la par des extensions similaires du <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Supprimez-les ou remplacez-les par des extensions similaires du <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
 <translation id="3229254977651514276">Vérifiez la date</translation>
 <translation id="3230539834943294477">Consulter les articles d'aide ou obtenir de l'aide concernant les appareils</translation>
@@ -5001,6 +5003,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4404843640767531781">L'application <ph name="APP_NAME" /> est bloquée par un parent. Tu as besoin de leur autorisation pour l'utiliser.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Déplacer vers…</translation>
+<translation id="4405580203042711503">Nouvel onglet en dessous</translation>
 <translation id="4405781821077215583">Agrandissez ou réduisez la taille des éléments à l'écran, y compris le texte</translation>
 <translation id="4406308048672435032">Vous pouvez désactiver cet onglet ou actualiser pour afficher de nouveau la liste complète</translation>
 <translation id="4406881185911439342">Sélectionner le groupe</translation>
@@ -6623,6 +6626,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Ajouter l'onglet à un groupe}one{Ajouter l'onglet à un groupe}other{Ajouter les onglets à un groupe}}</translation>
 <translation id="554535686826424776">Trouver des bons de réduction</translation>
 <translation id="5546865291508181392">Rechercher</translation>
+<translation id="5547868626772433490">Demander à Gemini</translation>
 <translation id="5548075230008247516">Tous les éléments désélectionnés, mode de sélection fermé.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" et 1 autre onglet}one{"<ph name="TAB_TITLE" />" et # autre onglet}other{"<ph name="TAB_TITLE" />" et # autres onglets}}</translation>
 <translation id="5548644592758170183">Afficher à gauche</translation>
@@ -6716,6 +6720,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5609231933459083978">L'application ne semble pas valide.</translation>
 <translation id="5610867721023328944">Réessayez ou sélectionnez l'un des thèmes disponibles ci-dessous.</translation>
 <translation id="5611398002774823980">Enregistrer dans le compte</translation>
+<translation id="5611474372949142946">Fermer les onglets en dessous</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Avertissement utilisateur</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
@@ -9961,7 +9966,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="787268756490971083">Désactivé</translation>
 <translation id="7872758299142009420">Trop de groupes imbriqués : <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam pour Chromebook</translation>
-<translation id="7874257161694977650">Arrière-plans de Chrome</translation>
 <translation id="7876027585589532670">Impossible de modifier le raccourci</translation>
 <translation id="7876243839304621966">Tout supprimer</translation>
 <translation id="7877126887274043657">Résoudre le problème de &amp;synchronisation</translation>
@@ -10694,7 +10698,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8356409598322585307">Vous avez déjà enregistré cet appareil. Il n'est pas nécessaire de l'enregistrer à nouveau.</translation>
 <translation id="8357388086258943206">Erreur lors de l'installation de Linux</translation>
 <translation id="8358685469073206162">Restaurer les pages ?</translation>
-<translation id="835927394551949760">Poser des questions à Google</translation>
+<translation id="835927394551949760">Demander à Google</translation>
 <translation id="835951711479681002">Enregistrer dans votre compte Google</translation>
 <translation id="8360140320636871023">Personnaliser votre thème d'affichage</translation>
 <translation id="8360267485906769442">Bouton "Envoyer des commentaires"</translation>

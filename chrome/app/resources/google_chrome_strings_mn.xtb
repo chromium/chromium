@@ -251,6 +251,7 @@
 <translation id="3716540481907974026">ChromeOS Flex-н хувилбар</translation>
 <translation id="3718181793972440140">Энэ нь төхөөрөмжөөс 1 зүйл устгах болно. Өгөгдлөө дараа сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome танд үүнийг хасахыг зөвлөж байна. <ph name="BEGIN_LINK" />Дэмжигдсэн өргөтгөлийн талаар нэмэлт мэдээлэл авах<ph name="END_LINK" />}other{Chrome танд эдгээрийг хасахыг зөвлөж байна. <ph name="BEGIN_LINK" />Дэмжигдсэн өргөтгөлийн талаар нэмэлт мэдээлэл авах<ph name="END_LINK" />}}</translation>
+<translation id="3729187154190517324">"Таб болон бусад зүйл нэмэх" товчийг ашиглан олон таб, файл, хэрэгсэл нэмж хайлтаа гүнзгийрүүлээрэй.</translation>
 <translation id="3756724684201900923">Chrome-г суулгах талаар нэмэлт мэдээлэл авах</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Нэвтрэх алдааны улмаас ChromeOS Flex таны өгөгдлийг синк хийж чадсангүй.</translation>
@@ -387,6 +388,7 @@
 <translation id="5334309298019785904">Синк нь таны домэйнд боломжгүй тул ChromeOS таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="5334487786912937552">Файл татахын тулд Chrome-д хадгалах санд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="5337648990166757586">Заавал биш: Оношилгоо болон ашиглалтын өгөгдлийг Google-д автоматаар илгээснээр ChromeOS-н онцлогууд, гүйцэтгэлийг сайжруулахад тусална уу.</translation>
+<translation id="5346389065299425353">Олон таб, файл, хэрэгсэл нэмж хайлтаа гүнзгийрүүлээрэй</translation>
 <translation id="5353252989841766347">Нууц үгийг Chrome-с экспортлох</translation>
 <translation id="5368118228313795342">Нэмэлт код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Энэ нь мөн таныг Chrome эхлүүлэхэд ямар хуудаснуудыг харуулах эсвэл Omnibox-оос хайхыг хянадаг.</translation>

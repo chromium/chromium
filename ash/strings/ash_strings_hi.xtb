@@ -875,6 +875,7 @@
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="397726367135689299">बैटरी को चार्ज करने वाला सोर्स भरोसेमंद नहीं है.</translation>
 <translation id="3977512764614765090">बैटरी <ph name="PERCENTAGE" />% बाकी है और चार्ज हो रही है.</translation>
+<translation id="3978162107953847778">अपने ब्राउज़िंग इतिहास और Google Drive जैसी जगहों से लिंक जोड़ें. इमोजी, इमेज फ़ाइलें वगैरह भी जोड़ी जा सकती हैं. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">क्या आपको ऑडियो आउटपुट बदलना है?</translation>
 <translation id="3984536049089846927">अगला पेज</translation>
 <translation id="3986082989454912832">जवाब दें</translation>
@@ -1601,6 +1602,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: सक्रिय हो रहा है...</translation>
 <translation id="6274202259872570803">स्क्रीनकास्ट</translation>
+<translation id="6274422179279280249">लिंक, इमोजी वगैरह जोड़ें. आप चाहें, तो Google के एआई से कॉन्टेंट लिखने में मदद पाएं. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">पेज का स्रोत देखें</translation>
 <translation id="6285871695023807425">कैलेंडर में जोड़ें</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> काे माता-पिता की अनुमति से, बाद में जोड़ा जा सकता है.</translation>

@@ -1916,6 +1916,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2287617382468007324">IPP-vistfang prentara</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Heimildir voru fjarlægðar fyrir vefsvæði sem þú hefur ekki heimsótt nýlega til að vernda gögnin þín}one{Heimildir voru fjarlægðar fyrir vefsvæði sem þú hefur ekki heimsótt nýlega til að vernda gögnin þín}other{Heimildir voru fjarlægðar fyrir vefsvæði sem þú hefur ekki heimsótt nýlega til að vernda gögnin þín}}</translation>
 <translation id="2287944065963043964">Innskráningarskjár</translation>
+<translation id="2289567621059034186">Nýr flipi hér að neðan</translation>
 <translation id="2290615375132886363">Flettihnappar spjaldtölvu</translation>
 <translation id="2290703778620332549">Skipta út eða búa til nýjan hóp?</translation>
 <translation id="2291452790265535215">Prófaðu að nota hliðarsvæðið fyrir bókamerki, ferli og fleira</translation>
@@ -2985,7 +2986,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3008142279736625920">Ostakaka</translation>
 <translation id="3008272652534848354">Endurstilla heimildir</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi í dag til að sækja uppfærslu. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}one{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi og sækir uppfærslu áður en fresturinn er liðinn. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}other{<ph name="MANAGER" /> krefst þess að þú tengist Wi-Fi og sækir uppfærslu áður en fresturinn er liðinn. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).}}</translation>
-<translation id="3008923556848076408">Gemini mun halda áfram að vinna í verkefninu</translation>
 <translation id="3008926075262837186">Lestu á þægilegan hátt með lágmarkstruflunum</translation>
 <translation id="3009178788565917040">Úttak</translation>
 <translation id="3009352964623081324">Leita + O og svo S. Notað til að setja upp, stjórna og sérstilla raddir.</translation>
@@ -3258,6 +3258,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
         Þú getur stjórnað stillingum á spjaldinu hvenær sem er eða skoðað fleiri valkosti í „Sérsníða Chrome“.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nýr flipi á 1 flipa}one{Nýr flipi á # flipa}other{Nýr flipi á # flipum}}</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
+<translation id="3208321278970793882">Forrit</translation>
 <translation id="3208584281581115441">Athuga núna</translation>
 <translation id="3208703785962634733">Óstaðfest</translation>
 <translation id="3209703592917353472">Vefsvæði sem þú skoðar getur vistað upplýsingar um það sem þú ert að gera svo það virki sem skyldi — svo sem til að viðhalda innskráningu þinni á vefsvæði eða til að vista vörur í innkaupakörfunni þinni. Oft vista vefsvæði þessar upplýsingar í tækinu tímabundið.</translation>
@@ -3280,6 +3281,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="322708765617468434">Þú getur alltaf bætt öðrum einstakling við tækið eftir uppsetningu. Hver einstaklingur getur sérsniðið upplifun sína og haldið gögnunum sínum lokuðum.</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
 <translation id="3227701057281907159">Plástrar</translation>
+<translation id="3228962656492373217">Loka flipum hér að neðan</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Fjarlægðu hana eða skiptu henni út með svipuðum viðbótum úr <ph name="BEGIN_LINK" />vefverslun Chrome<ph name="END_LINK" />.}one{Fjarlægðu þær eða skiptu þeim út með svipuðum viðbótum úr <ph name="BEGIN_LINK" />vefverslun Chrome<ph name="END_LINK" />.}other{Fjarlægðu þær eða skiptu þeim út með svipuðum viðbótum úr <ph name="BEGIN_LINK" />vefverslun Chrome<ph name="END_LINK" />.}}</translation>
 <translation id="3229254977651514276">Athugaðu dagsetninguna</translation>
 <translation id="3230539834943294477">Skoða hjálpargreinar eða finna stuðning við tæki</translation>
@@ -5016,6 +5018,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4404843640767531781">Foreldri þitt hefur sett <ph name="APP_NAME" /> á bannlista. Biddu foreldri þitt um leyfi til að nota þetta forrit.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Færa í…</translation>
+<translation id="4405580203042711503">Nýr flipi hér að neðan</translation>
 <translation id="4405781821077215583">Minnkaðu eða stækkaðu atriði á skjánum, þar á meðal texta</translation>
 <translation id="4406308048672435032">Þú getur gert þennan flipa óvirkan eða endurnýjað til að sjá heildarlistann á nýjan leik</translation>
 <translation id="4406881185911439342">Setja fókus á hóp</translation>
@@ -6640,6 +6643,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Bæta flipa við hóp}one{Bæta flipum við hóp}other{Bæta flipum við hóp}}</translation>
 <translation id="554535686826424776">Finndu afsláttarmiða</translation>
 <translation id="5546865291508181392">Finna</translation>
+<translation id="5547868626772433490">Spyrja Gemini</translation>
 <translation id="5548075230008247516">Val allra atriða afturkallað. Valstillingu lokað.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ og 1 flipi til viðbótar}one{„<ph name="TAB_TITLE" />“ og # flipi til viðbótar}other{„<ph name="TAB_TITLE" />“ og # flipar til viðbótar}}</translation>
 <translation id="5548644592758170183">Sýna til vinstri</translation>
@@ -6733,6 +6737,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5609231933459083978">Forritið virðist vera ógilt.</translation>
 <translation id="5610867721023328944">Reyndu aftur eða veldu úr tiltækum þemum hér fyrir neðan.</translation>
 <translation id="5611398002774823980">Vista á reikningi</translation>
+<translation id="5611474372949142946">Loka flipum hér að neðan</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notandatilkynning</translation>
 <translation id="5614553682702429503">Vista aðgangsorð?</translation>
@@ -9976,7 +9981,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="787268756490971083">Slökkt</translation>
 <translation id="7872758299142009420">Of margir faldaðir hópar: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam fyrir Chromebook</translation>
-<translation id="7874257161694977650">Bakgrunnar Chrome</translation>
 <translation id="7876027585589532670">Ekki er hægt að breyta flýtileið</translation>
 <translation id="7876243839304621966">Fjarlægja allt</translation>
 <translation id="7877126887274043657">Lagfæra &amp;samstillingarvandamál</translation>

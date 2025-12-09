@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Afficher les aperçus des liens</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
+<translation id="454217142158335225">Vous pouvez rouvrir les éléments fermés depuis les sections "Onglets récents" ou "Groupes d'onglets". Vos onglets épinglés ne seront pas fermés.</translation>
 <translation id="4547181496285029457">Revenir au dernier onglet</translation>
 <translation id="4552042254369397518">Copie…</translation>
 <translation id="4564893319561643483">Masquer "<ph name="TITLE" />"</translation>
@@ -1841,6 +1842,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7887174313503389866">Visite guidée des paramètres clés de confidentialité et de sécurité. Accédez à chaque paramètre pour obtenir plus d'options.</translation>
 <translation id="7887198238286927132">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement de champ.</translation>
 <translation id="7887552845761062935">Appuyez deux fois et maintenez la pression pour voir d'autres options</translation>
+<translation id="7888562068293422208">Tout fermer ?</translation>
 <translation id="7889910613639381518">Un accès simple et sécurisé avec le widget Gestionnaire de mots de passe de Google.</translation>
 <translation id="7899199123054742721">Tout marquer comme non lu</translation>
 <translation id="7911190106180361398">Votre organisation ne vous permet pas de tout synchroniser.</translation>

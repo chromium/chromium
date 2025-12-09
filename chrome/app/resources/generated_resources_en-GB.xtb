@@ -1915,6 +1915,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2287617382468007324">Printing IPP Address</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{To protect your data, permissions were removed from a site that you haven't visited recently}other{To protect your data, permissions were removed from sites that you haven't visited recently}}</translation>
 <translation id="2287944065963043964">Login screen</translation>
+<translation id="2289567621059034186">New tab below</translation>
 <translation id="2290615375132886363">Tablet navigation buttons</translation>
 <translation id="2290703778620332549">Replace or create new group?</translation>
 <translation id="2291452790265535215">Try using the side panel for bookmarks, journeys and more</translation>
@@ -2984,7 +2985,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}</translation>
-<translation id="3008923556848076408">Gemini will keep working on your task</translation>
 <translation id="3008926075262837186">Read comfortably with minimal distractions</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009352964623081324">Search + O, then S. Use to install, manage and customise voices.</translation>
@@ -3257,6 +3257,7 @@ You can manage this account’s settings by installing the Family Link app on yo
         You can manage settings from this card at any time or see more options in Customise Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{New tab in 1 tab}other{New tab in # tabs}}</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3208703785962634733">Unconfirmed</translation>
 <translation id="3209703592917353472">A site you visit can save info about what you're doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping basket. Often sites save this info temporarily on your device.</translation>
@@ -3279,6 +3280,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="322708765617468434">You can always add another person to the device after setup. Each person can personalise their experience and keep data private.</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3227701057281907159">Patching</translation>
+<translation id="3228962656492373217">Close tabs below</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Remove or replace it with similar extensions from the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Remove or replace them with similar extensions from the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Check the date</translation>
 <translation id="3230539834943294477">View help articles or find device support</translation>
@@ -5015,6 +5017,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4404843640767531781"><ph name="APP_NAME" /> is blocked by your parent. Ask your parent for permission to use this app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Move to…</translation>
+<translation id="4405580203042711503">New tab below</translation>
 <translation id="4405781821077215583">Make items on your screen, including text, smaller or larger</translation>
 <translation id="4406308048672435032">You can make this tab inactive or refresh to see the full list again</translation>
 <translation id="4406881185911439342">Focus group</translation>
@@ -6639,6 +6642,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
 <translation id="554535686826424776">Find coupons</translation>
 <translation id="5546865291508181392">Find</translation>
+<translation id="5547868626772433490">Ask Gemini</translation>
 <translation id="5548075230008247516">All items unselected, selection mode exited.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" and 1 other tab}other{"<ph name="TAB_TITLE" />" and # other tabs}}</translation>
 <translation id="5548644592758170183">Show on left</translation>
@@ -6732,6 +6736,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
 <translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
+<translation id="5611474372949142946">Close tabs below</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">User Notice</translation>
 <translation id="5614553682702429503">Save password?</translation>
@@ -9974,7 +9979,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="787268756490971083">Off</translation>
 <translation id="7872758299142009420">Too many nested groups: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam for Chromebook</translation>
-<translation id="7874257161694977650">Chrome backgrounds</translation>
 <translation id="7876027585589532670">Can't edit shortcut</translation>
 <translation id="7876243839304621966">Remove all</translation>
 <translation id="7877126887274043657">Fix &amp;Sync Issue</translation>

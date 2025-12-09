@@ -874,6 +874,7 @@
 <translation id="397105322502079400">Изчислява се...</translation>
 <translation id="397726367135689299">Зареждането на батерията може да не е надеждно.</translation>
 <translation id="3977512764614765090">Батерията е на <ph name="PERCENTAGE" />% и се зарежда.</translation>
+<translation id="3978162107953847778">Вмъквайте връзки от различни места, като например историята си на сърфиране и Google Диск. Можете също да вмъквате емоджита, графични файлове и др. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Да се превключи ли аудиоизходът?</translation>
 <translation id="3984536049089846927">Следваща страница</translation>
 <translation id="3986082989454912832">Отговор</translation>
@@ -1600,6 +1601,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: Активира се...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6274422179279280249">Вмъквайте връзки, емоджита и др. Можете също да получите помощ при писане от AI на Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Преглед на изходния код на страницата</translation>
 <translation id="6285871695023807425">Добавяне към Календар</translation>
 <translation id="6288235558961782912">Имейл адресът <ph name="USER_EMAIL_ADDRESS" /> може да бъде добавен отново по-късно с разрешение от родител.</translation>

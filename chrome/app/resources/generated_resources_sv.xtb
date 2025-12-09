@@ -1915,6 +1915,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2287617382468007324">IPP-adress för utskrift</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{För att skydda din data har behörigheter tagits bort från en webbplats som du inte har besökt nyligen}other{För att skydda din data har behörigheter tagits bort från webbplatser som du inte har besökt nyligen}}</translation>
 <translation id="2287944065963043964">Inloggningsskärm</translation>
+<translation id="2289567621059034186">Ny flik nedan</translation>
 <translation id="2290615375132886363">Navigeringsknappar för surfplatteläge</translation>
 <translation id="2290703778620332549">Vill du ersätta eller skapa en ny grupp?</translation>
 <translation id="2291452790265535215">Testa att använda sidopanelen för bokmärken, resor och mycket annat</translation>
@@ -2984,7 +2985,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Återställ behörigheter</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering i dag. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}other{<ph name="MANAGER" /> kräver att du ansluter till wifi laddar ned en uppdatering före deadline. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}}</translation>
-<translation id="3008923556848076408">Gemini fortsätter att arbeta med din uppgift</translation>
 <translation id="3008926075262837186">Läs bekvämt med minimala störningsmoment</translation>
 <translation id="3009178788565917040">Utgång</translation>
 <translation id="3009352964623081324">Sök + O, sedan S. Använd till att installera, hantera och anpassa röster.</translation>
@@ -3257,6 +3257,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
         Du kan hantera inställningarna från det här kortet när som helst eller visa fler alternativ i Anpassa Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Ny flik i 1 flik}other{Ny flik i # flikar}}</translation>
 <translation id="3207960819495026254">Bokmärkt</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3208703785962634733">Obekräftade</translation>
 <translation id="3209703592917353472">En webbplats som du besöker kan spara information om vad du gör så att den fungerar som förväntat. Det kan till exempel vara att hålla dig inloggad på en webbplats eller spara varor i kundvagnen. Webbplatser sparar ofta den här informationen tillfälligt på enheten.</translation>
@@ -3279,6 +3280,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="322708765617468434">Du kan alltid lägga till någon annan på enheten efter konfigureringen. Var och en kan anpassa sin upplevelse och hålla sin data privat.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3227701057281907159">Programkorrigering</translation>
+<translation id="3228962656492373217">Stäng flikarna nedan</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Ta bort eller ersätt det med liknande tillägg från <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Ta bort eller ersätt dem med liknande tillägg från <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Kontrollera datumet</translation>
 <translation id="3230539834943294477">Visa hjälpartiklar eller hitta enhetssupport</translation>
@@ -5015,6 +5017,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4404843640767531781"><ph name="APP_NAME" /> blockeras av en förälder. Be en förälder om behörighet att använda den här appen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Flytta till …</translation>
+<translation id="4405580203042711503">Ny flik nedan</translation>
 <translation id="4405781821077215583">Gör objekt på skärmen, bland annat text, mindre eller större</translation>
 <translation id="4406308048672435032">Du kan inaktivera den här fliken eller uppdatera för att se hela listan igen</translation>
 <translation id="4406881185911439342">Grupp i fokus</translation>
@@ -6639,6 +6642,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
 <translation id="554535686826424776">Hitta kuponger</translation>
 <translation id="5546865291508181392">Sök</translation>
+<translation id="5547868626772433490">Fråga Gemini</translation>
 <translation id="5548075230008247516">Alla objekt har avmarkerats. Markeringsläget har stängts.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{<ph name="TAB_TITLE" />}=1{<ph name="TAB_TITLE" /> och 1 flik till}other{<ph name="TAB_TITLE" /> och # flikar till}}</translation>
 <translation id="5548644592758170183">Visa till vänster</translation>
@@ -6732,6 +6736,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5609231933459083978">Appen ser ut att vara ogiltig.</translation>
 <translation id="5610867721023328944">Försök igen eller välj något av de tillgängliga temana nedan.</translation>
 <translation id="5611398002774823980">Spara i kontot</translation>
+<translation id="5611474372949142946">Stäng flikarna nedan</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Meddelande till användaren</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
@@ -9974,7 +9979,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="787268756490971083">Av</translation>
 <translation id="7872758299142009420">För många kapslade grupper: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam för Chromebook</translation>
-<translation id="7874257161694977650">Chrome-bakgrunder</translation>
 <translation id="7876027585589532670">Det gick inte att redigera genvägen</translation>
 <translation id="7876243839304621966">Ta bort alla</translation>
 <translation id="7877126887274043657">Åtgärda &amp;synkroniseringsproblem</translation>

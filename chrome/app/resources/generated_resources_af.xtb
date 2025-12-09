@@ -1915,6 +1915,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2287617382468007324">IPP-adres van drukker</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Om jou data te beskerm, is toestemmings verwyder van ’n werf wat jy nie onlangs besoek het nie}other{Om jou data te beskerm, is toestemmings verwyder van werwe wat jy nie onlangs besoek het nie}}</translation>
 <translation id="2287944065963043964">Aanmeldskerm</translation>
+<translation id="2289567621059034186">Nuwe oortjie hier onder</translation>
 <translation id="2290615375132886363">Tablet-navigasieknoppies</translation>
 <translation id="2290703778620332549">Vervang of skep nuwe groep?</translation>
 <translation id="2291452790265535215">Probeer om die kantpaneel vir boekmerke, reise en meer te gebruik</translation>
@@ -2984,7 +2985,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3008142279736625920">Kaaskoek</translation>
 <translation id="3008272652534848354">Stel toestemmings terug</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy vandag aan wi-fi koppel om 'n opdatering af te laai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}other{<ph name="MANAGER" /> vereis dat jy voor die sperdatum aan wi-fi koppel en 'n opdatering aflaai. Of laai oor 'n beperkte verbinding af (heffings kan geld).}}</translation>
-<translation id="3008923556848076408">Gemini sal aanhou om aan jou taak te werk</translation>
 <translation id="3008926075262837186">Lees gemaklik met minimale afleidings</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
 <translation id="3009352964623081324">Soek + O, dan S. Gebruik om stemme te installeer, te bestuur en te pasmaak.</translation>
@@ -3257,6 +3257,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
         Jy kan enige tyd instellings vanaf hierdie kaart bestuur of meer opsies in Pasmaak Chrome sien.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nuwe oortjie in 1 oortjie}other{Nuwe oortjie in # oortjies}}</translation>
 <translation id="3207960819495026254">Geboekmerk</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Kontroleer nou</translation>
 <translation id="3208703785962634733">Onbevestigde</translation>
 <translation id="3209703592917353472">’n Werf wat jy besoek, kan inligting stoor oor wat jy besig is om te doen sodat dit kan werk soos verwag – byvoorbeeld, om jou by ’n werf aangemeld te hou of items in jou inkopiemandjie te stoor. Werwe stoor hierdie inligting dikwels tydelik op jou toestel.</translation>
@@ -3279,6 +3280,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="322708765617468434">Jy kan altyd ’n ander persoon ná opstelling by die toestel voeg. Elke persoon kan hul ondervinding personaliseer en data privaat hou.</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3227701057281907159">Besig om reg te stel</translation>
+<translation id="3228962656492373217">Maak oortjies hier onder toe</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Verwyder of vervang dit met soortgelyke uitbreidings van die <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> af.}other{Verwyder of vervang dit met soortgelyke uitbreidings van die <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> af}}</translation>
 <translation id="3229254977651514276">Gaan die datum na</translation>
 <translation id="3230539834943294477">Bekyk hulpartikels of vind toestelsteun</translation>
@@ -5015,6 +5017,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4404843640767531781">Jou ouer blokkeer <ph name="APP_NAME" />. Vra jou ouer vir toestemming om hierdie app te gebruik.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Skuif na …</translation>
+<translation id="4405580203042711503">Nuwe oortjie hier onder</translation>
 <translation id="4405781821077215583">Maak items op jou skerm, insluitend teks, kleiner of groter</translation>
 <translation id="4406308048672435032">Jy kan hierdie oortjie onaktief maak of herlaai om die volledige lys weer te sien</translation>
 <translation id="4406881185911439342">Fokus groep</translation>
@@ -6639,6 +6642,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Voeg oortjie by groep}other{Voeg oortjies by groep}}</translation>
 <translation id="554535686826424776">Soek koepons</translation>
 <translation id="5546865291508181392">Vind</translation>
+<translation id="5547868626772433490">Vra Gemini</translation>
 <translation id="5548075230008247516">Alle items is ontkies; kiesmodus is verlaat.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" en 1 ander oortjie}other{"<ph name="TAB_TITLE" />" en # ander oortjies}}</translation>
 <translation id="5548644592758170183">Wys aan linkerkant</translation>
@@ -6732,6 +6736,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5609231933459083978">Dit lyk of die app ongeldig is.</translation>
 <translation id="5610867721023328944">Probeer weer of kies uit een van die beskikbare temas hieronder.</translation>
 <translation id="5611398002774823980">Stoor in rekening</translation>
+<translation id="5611474372949142946">Maak oortjies hier onder toe</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Gebruikerkennisgewing</translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
@@ -9974,7 +9979,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="787268756490971083">Af</translation>
 <translation id="7872758299142009420">Te veel geneste groepe: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam vir Chromebook</translation>
-<translation id="7874257161694977650">Chrome-agtergronde</translation>
 <translation id="7876027585589532670">Kan nie kortpad wysig nie</translation>
 <translation id="7876243839304621966">Verwyder alles</translation>
 <translation id="7877126887274043657">Stel &amp;sinkroniseringkwessie reg</translation>

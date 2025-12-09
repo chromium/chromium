@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">已退订 <ph name="SITE_NAME" />。当您下次访问时，系统会再次询问您。</translation>
 <translation id="1340839264183302272">退出分组</translation>
 <translation id="1342886103232377846">若要检查是否存在已泄露的密码，请前往 Google 密码管理工具</translation>
+<translation id="1343830902827845050">登录 Chrome</translation>
 <translation id="1344653310988386453">包含指向突出显示的内容的链接</translation>
 <translation id="1347468774581902829">管理我的活动记录</translation>
 <translation id="1355088659320425659">历史记录和标签页</translation>
@@ -445,7 +446,7 @@
 <translation id="2904414404539560095">要与之分享标签页的设备的列表已全屏打开。</translation>
 <translation id="2908243544703713905">有未读内容</translation>
 <translation id="2909615210195135082">Google 通知平台</translation>
-<translation id="2912345083818861431">需要使用解锁凭据才能查看打开的无痕式标签页</translation>
+<translation id="2912345083818861431">需要使用解锁凭证才能查看打开的无痕式标签页</translation>
 <translation id="2918484639460781603">前往“设置”</translation>
 <translation id="2920713489113095380"><ph name="TAB_TITLE" />，已设为静音的标签页</translation>
 <translation id="2923908459366352541">名称无效</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">默认请求桌面版网站</translation>
 <translation id="4162867837470729563">分享选项列表已全屏打开。</translation>
 <translation id="4170011742729630528">此服务目前无法使用，请稍后再试。</translation>
+<translation id="4170577491341606575">正在获取您的数据\u2026</translation>
 <translation id="4177222230309051052">获取您的所有书签</translation>
 <translation id="4177501066905053472">广告主题</translation>
 <translation id="417865198503699526">搜索某项设置</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">系统默认设置</translation>
 <translation id="7117485132243600300">管理您关注的内容以及建议的主题和搜索查询</translation>
 <translation id="7119984597597798764">关闭“<ph name="INSTANCE_TITLE" />”</translation>
+<translation id="7121179479711575744">登录 Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{已审核 1 个网站的权限}other{已审核 # 个网站的权限}}</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7140829094791862589">按手动顺序排序</translation>

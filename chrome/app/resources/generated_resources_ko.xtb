@@ -2987,7 +2987,6 @@
 <translation id="3008142279736625920">치즈 케이크</translation>
 <translation id="3008272652534848354">권한 재설정</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}other{<ph name="MANAGER" />에서 기한 전에 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}}</translation>
-<translation id="3008923556848076408">Gemini가 작업을 계속 진행합니다.</translation>
 <translation id="3008926075262837186">방해 요소가 최소화된 상태에서 편안하게 읽으세요.</translation>
 <translation id="3009178788565917040">출력</translation>
 <translation id="3009352964623081324">검색 + O를 누른 후 S. 음성을 설치, 관리, 맞춤설정할 수 있습니다.</translation>
@@ -3260,6 +3259,7 @@
         언제든지 이 카드의 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{탭 1개에 새 탭}other{탭 #개에 새 탭}}</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
+<translation id="3208321278970793882">앱</translation>
 <translation id="3208584281581115441">지금 확인</translation>
 <translation id="3208703785962634733">미확인</translation>
 <translation id="3209703592917353472">내가 방문하는 사이트에서 나의 로그인 상태를 유지하거나 장바구니에 담아 둔 항목을 저장하는 등 사이트의 정상적인 작동을 위하여 내 활동 정보를 저장할 수 있습니다. 사이트에서는 이 정보를 주로 기기에 임시 저장합니다.</translation>
@@ -6643,6 +6643,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
 <translation id="554535686826424776">쿠폰 찾기</translation>
 <translation id="5546865291508181392">찾기</translation>
+<translation id="5547868626772433490">Gemini에게 물어보기</translation>
 <translation id="5548075230008247516">모든 항목이 선택 해제되었으며 선택 모드가 종료되었습니다.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{‘<ph name="TAB_TITLE" />’}=1{‘<ph name="TAB_TITLE" />’ 외 탭 1개}other{‘<ph name="TAB_TITLE" />’ 외 탭 #개}}</translation>
 <translation id="5548644592758170183">왼쪽에 표시</translation>
@@ -9979,7 +9980,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="787268756490971083">사용 안함</translation>
 <translation id="7872758299142009420">중첩된 그룹이 너무 많음: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam for Chromebook</translation>
-<translation id="7874257161694977650">Chrome 배경</translation>
 <translation id="7876027585589532670">바로가기를 수정할 수 없음</translation>
 <translation id="7876243839304621966">모두 삭제</translation>
 <translation id="7877126887274043657">동기화 문제 해결(&amp;S)</translation>

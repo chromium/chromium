@@ -80,6 +80,7 @@
 <translation id="1843347690926158494">Google Lens की मदद से इस टैब को खोजें</translation>
 <translation id="1849248141818021764">एन्क्रिप्ट (सुरक्षित) किए गए आपके डेटा को सिर्फ़ वह व्यक्ति देख सकता है जिसके पास आपका लंबा पासवर्ड मौजूद है. Google को लंबा पासवर्ड नहीं भेजा जाता और न ही वह इसे सेव करता है. अगर आपको अपना लंबा पासवर्ड याद नहीं है या आपको यह सेटिंग बदलनी है, तो आपको <ph name="BEGIN_LINK" />अपने खाते में मौजूद Chrome का डेटा मिटाना होगा<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome को इस साइट के लिए आपका कैमरा एक्सेस करने की अनुमति चाहिए</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> का इस्तेमाल करने के लिए, अपने Google खाते से Chrome में साइन इन करें</translation>
 <translation id="1873233029667955273">Google Chrome आपका डिफ़ॉल्ट ब्राउज़र नहीं है</translation>
 <translation id="1874309113135274312">Google Chrome बीटा (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
@@ -170,6 +171,7 @@
 <translation id="286025080868315611">जानें कि Chrome कुछ फ़ाइलों को डाउनलोड होने से क्यों रोकता है</translation>
 <translation id="2861074815332034794">Chrome को अपडेट किया जा रहा है (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">आप Chrome में प्रवेश हैं.</translation>
+<translation id="2875053229394024379">अपने Google खाते से Chrome में साइन इन करने पर, Gemini के साथ अपनी Chrome प्रोफ़ाइल का इस्तेमाल किया जा सकता है. <ph name="BEGIN_LINK" />Chrome में साइन इन करने का तरीका जानें<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome आपके डेटा को निजी कैसे रखता है<ph name="END_LINK" />, इसके बारे में ज़्यादा जानें</translation>
 <translation id="2885378588091291677">काम का मैनेजर</translation>
 <translation id="2888126860611144412">Chrome के बारे में</translation>
@@ -219,6 +221,7 @@
 <translation id="3352986031709923790">खोज वाली जगह में सबसे ऊपर का दायां कोना: दाईं ओर से <ph name="RIGHT" />%, सबसे ऊपर से <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome सहायक</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome अभी फिर से लॉन्च होगा}=1{Chrome 1 सेकंड में फिर से लॉन्च होगा}one{Chrome # सेकंड में फिर से लॉन्च होगा}other{Chrome # सेकंड में फिर से लॉन्च होगा}}</translation>
+<translation id="3380249972812870825">Chrome में Gemini खोलने के लिए, <ph name="GLOBAL_HOTKEY" /> दबाएं</translation>
 <translation id="3396977131400919238">स्थापित करने के दौरान ऑपरेटिंग सिस्टम में गड़बड़ी आई. कृपया Google Chrome फिर से डाउनलोड करें.</translation>
 <translation id="3428747202529429621">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है</translation>
 <translation id="3434246496373299699">आप जब अपने Google खाते से साइन इन करते हैं, तब Chrome आपके पासवर्ड की जांच कर सकता है</translation>
@@ -248,6 +251,7 @@
 <translation id="3716540481907974026">ChromeOS Flex का वर्शन</translation>
 <translation id="3718181793972440140">ऐसा करने से इस डिवाइस से 1 आइटम मिट जाएगा. बाद में अपना डेटा पाने के लिए, Chrome में <ph name="USER_EMAIL" /> के रूप में साइन इन करें.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome का सुझाव है कि आप यह एक्सटेंशन हटा दें. <ph name="BEGIN_LINK" />Chrome पर इस्तेमाल किए जा सकने वाले एक्सटेंशन के बारे में ज़्यादा जानें<ph name="END_LINK" />}one{Chrome का सुझाव है कि आप यह एक्सटेंशन हटा दें. <ph name="BEGIN_LINK" />Chrome पर इस्तेमाल किए जा सकने वाले एक्सटेंशन के बारे में ज़्यादा जानें<ph name="END_LINK" />}other{Chrome का सुझाव है कि आप ये एक्सटेंशन हटा दें. <ph name="BEGIN_LINK" />Chrome पर इस्तेमाल किए जा सकने वाले एक्सटेंशन के बारे में ज़्यादा जानें<ph name="END_LINK" />}}</translation>
+<translation id="3729187154190517324">"टैब वगैरह जोड़ें" बटन का इस्तेमाल करके, एक से ज़्यादा टैब, फ़ाइलें, और टूल जोड़ें. इससे आपको अपनी खोज को बेहतर बनाने में मदद मिलेगी.</translation>
 <translation id="3756724684201900923">Chrome इंस्टॉल करने के बारे में ज़्यादा जानें</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex आपके डेटा को सिंक नहीं कर सका, क्योंकि साइन इन करने के दौरान कोई गड़बड़ी हुई है.</translation>
@@ -346,6 +350,7 @@
 <translation id="4891791193823137474">Google Chrome को पृष्ठभूमि में चलने दें</translation>
 <translation id="4895437082222824641">नए Chrome &amp;टैब में लिंक खोलें</translation>
 <translation id="4918844574251943176">इमेज को कॉपी किया गया</translation>
+<translation id="4926882258455737990">Chrome में Gemini के साथ कोई दूसरा Google खाता इस्तेमाल करने के लिए, <ph name="BEGIN_LINK" />नई प्रोफ़ाइल बनाएं<ph name="END_LINK" />. इसके बाद, उस खाते से साइन करें जिसका इस्तेमाल करना है</translation>
 <translation id="492720062778050435">Chrome आपको इस एक्सटेंशन की जांच करने का सुझाव देता है</translation>
 <translation id="4946912144186040233">Chrome, फ़ॉर्म को बेहतर तरीके से समझता है और आपके लिए, फ़ॉर्म में तुरंत और ऑटोमैटिक तरीके से जानकारी भर सकता है. यह सेटिंग बंद है.</translation>
 <translation id="4953650215774548573">Google Chrome को अपने डिफ़ॉल्ट ब्राउज़र के रूप में सेट करना</translation>
@@ -371,6 +376,7 @@
 कुछ विशेषताएं अनुपलब्‍ध हो सकती हैं. कृपया कोई भिन्‍न प्रोफ़ाइल निर्देशिका बताएं या Chrome के किसी नए वर्शन का उपयोग करें.</translation>
 <translation id="5174969993834422967">आपने ज़्यादातर मामलों में, सूचनाओंं को ब्लॉक किया है. इस साइट से सूचनाएं पाने के लिए, आपको अपने लोकेशन बार के दाएं कोने में मौजूद सूचना के आइकॉन पर क्लिक करना होगा.</translation>
 <translation id="5174983315706567306">डिस्क में ज़रूरत के मुताबिक स्टोरेज नहीं बचा है.</translation>
+<translation id="5179933070463113976">Chrome में Gemini का इस्तेमाल करने के लिए, आपको अपने Google खाते से Chrome में साइन इन करना होगा</translation>
 <translation id="5190467473654176081">Chrome को अपनी पसंद के मुताबिक बनाकर इसे नया लुक दें</translation>
 <translation id="5201744974236816379">Chrome अपडेट</translation>
 <translation id="521447420733633466">अगर आप कोई डिवाइस शेयर करते हैं, तो आपके दोस्त और परिवार के लोग अलग-अलग ब्राउज़ कर सकते हैं. साथ ही, Chrome को अपने हिसाब से सेट कर सकते हैं</translation>
@@ -383,6 +389,7 @@
 <translation id="5334309298019785904">ChromeOS आपके डेटा को सिंक नहीं कर सका, क्योंकि आपके डोमेन पर सिंक करने की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="5334487786912937552">फ़ाइलें डाउनलोड करने के लिए, Chrome को डिवाइस का स्टोरेज ऐक्सेस करने की अनुमति चाहिए</translation>
 <translation id="5337648990166757586">आप चाहें, तो ChromeOS को यह अनुमति दें कि वह गड़बड़ी की जानकारी और इस्तेमाल से जुड़ा डेटा Google को अपने-आप भेज सके. आपके ऐसा करने से, ChromeOS की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद मिलेगी.</translation>
+<translation id="5346389065299425353">एक से ज़्यादा टैब, फ़ाइलें, और टूल जोड़कर अपनी खोज को बेहतर बनाएं</translation>
 <translation id="5353252989841766347">Chrome से पासवर्ड निर्यात करें</translation>
 <translation id="5368118228313795342">अतिरिक्त कोड: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">इससे यह भी नियंत्रित होता है कि जब आप Chrome को चालू करते हैं या ऑम्निबॉक्स से खोजते हैं तब कौन सा पेज दिखाया जाए.</translation>
@@ -391,6 +398,7 @@
 <translation id="5430073640787465221">आपकी पसंदीदा फ़ाइल खराब या अमान्‍य है.
 
 Google Chrome आपकी सेटिंग बहाल नहीं कर सकता.</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> के साथ इस्तेमाल करने के लिए, कोई Chrome प्रोफ़ाइल चुनें</translation>
 <translation id="5468572406162360320">इन सुविधाओं को बेहतर बनाने में मदद करने के लिए, Chrome उनके साथ होने वाले आपके इंटरैक्शन Google को भेजता है. इस डेटा को समीक्षा करने वाले व्यक्ति पढ़ सकते हैं, प्रोसेस कर सकते हैं, और इसकी व्याख्या कर सकते हैं.</translation>
 <translation id="5510398294750420479">फ़ोन पर Chrome डाउनलोड करें, ताकि आप कभी भी, कहीं भी अपना डेटा सुरक्षित रख सकें</translation>
 <translation id="5524890928877629608">खोज वाली जगह में सबसे ऊपर का बायां कोना: बाईं ओर से <ph name="LEFT" />%, सबसे ऊपर से <ph name="TOP" />%</translation>

@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">S'ha cancel·lat la subscripció a <ph name="SITE_NAME" />. Se't tornarà a preguntar a la propera visita.</translation>
 <translation id="1340839264183302272">Surt del grup</translation>
 <translation id="1342886103232377846">Per comprovar si hi ha contrasenyes en perill, ves al gestor de contrasenyes de Google</translation>
+<translation id="1343830902827845050">Inicia la sessió a Chrome</translation>
 <translation id="1344653310988386453">Inclou un enllaç al text marcat</translation>
 <translation id="1347468774581902829">Gestiona l'activitat</translation>
 <translation id="1355088659320425659">Historial i pestanyes</translation>
@@ -718,6 +719,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="414128724510021958">Llocs web per a ordinadors sol·licitats de manera predeterminada</translation>
 <translation id="4162867837470729563">Llista d'opcions de compartició a alçada completa.</translation>
 <translation id="4170011742729630528">El servei no està disponible. Torneu-ho a provar més tard.</translation>
+<translation id="4170577491341606575">S'estan obtenint les teves coses\u2026</translation>
 <translation id="4177222230309051052">Obtén totes les teves adreces d'interès</translation>
 <translation id="4177501066905053472">Temes d'anunci</translation>
 <translation id="417865198503699526">Cerca una opció de configuració</translation>
@@ -1457,6 +1459,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7115358764509798967">Valor predeterminat del sistema</translation>
 <translation id="7117485132243600300">Gestiona el contingut que segueixes i els temes i les cerques suggerits</translation>
 <translation id="7119984597597798764">Tanca <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Inicia la sessió a Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{S'han revisat els permisos per a 1 lloc web}other{S'han revisat els permisos per a # llocs web}}</translation>
 <translation id="7138678301420049075">Altres</translation>
 <translation id="7140829094791862589">Ordena manualment</translation>

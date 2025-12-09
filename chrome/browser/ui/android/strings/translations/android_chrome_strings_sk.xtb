@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Odber webu <ph name="SITE_NAME" /> bol zrušený. Táto výzva sa znova zobrazí pri ďalšej návšteve.</translation>
 <translation id="1340839264183302272">Opustiť skupinu</translation>
 <translation id="1342886103232377846">Ak chcete skontrolovať odhalené heslá, prejdite do Správcu hesiel Google</translation>
+<translation id="1343830902827845050">Prihláste sa do Chromu</translation>
 <translation id="1344653310988386453">Zahrnúť odkaz na zvýraznenie</translation>
 <translation id="1347468774581902829">Spravovať aktivitu</translation>
 <translation id="1355088659320425659">História a karty</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">V predvolenom nastavení sú požadované weby pre počítače</translation>
 <translation id="4162867837470729563">Zoznam možností zdieľania je otvorený na celú výšku.</translation>
 <translation id="4170011742729630528">Služba nie je k dispozícii. Skúste to neskôr.</translation>
+<translation id="4170577491341606575">Váš obsah sa načítava\u2026</translation>
 <translation id="4177222230309051052">Získajte všetky svoje záložky</translation>
 <translation id="4177501066905053472">Témy reklám</translation>
 <translation id="417865198503699526">Vyhľadajte požadované nastavenie</translation>
@@ -1457,6 +1459,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7115358764509798967">Predvolené systémom</translation>
 <translation id="7117485132243600300">Spravujte sledovaný obsah a navrhované témy aj vyhľadávania</translation>
 <translation id="7119984597597798764">Zavrieť <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Prihlásiť sa do Chromu</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Boli skontrolované povolenia pre 1 web}few{Boli skontrolované povolenia pre # weby}many{Permissions reviewed for # sites}other{Boli skontrolované povolenia pre # webov}}</translation>
 <translation id="7138678301420049075">Ostatné</translation>
 <translation id="7140829094791862589">Zoradiť manuálne</translation>

@@ -1916,6 +1916,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2287617382468007324">Como imprimir o endereço IPP</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Para proteger seus dados, as permissões de um site que você não acessou recentemente foram removidas}one{Para proteger seus dados, as permissões de um site que você não acessou recentemente foram removidas}other{Para proteger seus dados, as permissões de sites que você não acessou recentemente foram removidas}}</translation>
 <translation id="2287944065963043964">Tela de login</translation>
+<translation id="2289567621059034186">Nova guia abaixo</translation>
 <translation id="2290615375132886363">Botões de navegação do tablet</translation>
 <translation id="2290703778620332549">Substituir ou criar um novo grupo?</translation>
 <translation id="2291452790265535215">Tente usar o painel lateral para acessar favoritos, jornadas e muito mais</translation>
@@ -2984,7 +2985,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> precisa que você se conecte hoje ao Wi-Fi para baixar uma atualização. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).}one{<ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi e faça o download de uma atualização antes do fim do prazo. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).}other{<ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi e faça o download de uma atualização antes do fim do prazo. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).}}</translation>
-<translation id="3008923556848076408">O Gemini vai continuar trabalhando na sua tarefa</translation>
 <translation id="3008926075262837186">Leia com conforto e sem distrações</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009352964623081324">Pesquisa + O e depois S. Use para instalar, gerenciar e personalizar vozes.</translation>
@@ -3257,6 +3257,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
         Você pode gerenciar as configurações deste card a qualquer momento ou conferir mais opções em "Personalizar o Chrome".</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova guia em 1 guia}one{Nova guia em # guia}other{Nova guia em # guias}}</translation>
 <translation id="3207960819495026254">Adicionado aos favoritos</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Confirmar agora</translation>
 <translation id="3208703785962634733">Não confirmado</translation>
 <translation id="3209703592917353472">Os sites que você visita podem salvar informações sobre o que você está fazendo para funcionar conforme o esperado. Por exemplo, para manter sua conta conectada a eles ou salvar itens no seu carrinho de compras. Geralmente, os sites salvam essas informações temporariamente no dispositivo.</translation>
@@ -3279,6 +3280,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="322708765617468434">É possível adicionar mais alguém ao dispositivo após a configuração. Cada pessoa pode personalizar a própria experiência e manter os dados privados.</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3227701057281907159">Aplicando patch</translation>
+<translation id="3228962656492373217">Fechar guias abaixo</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}one{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}other{Remova ou substitua por extensões semelhantes da <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Confira a data</translation>
 <translation id="3230539834943294477">Encontar artigos de ajuda ou suporte para dispositivos</translation>
@@ -5016,6 +5018,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4404843640767531781">O app <ph name="APP_NAME" /> foi bloqueado pelo seu familiar responsável. É necessário pedir permissão para usá-lo.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover para…</translation>
+<translation id="4405580203042711503">Nova guia abaixo</translation>
 <translation id="4405781821077215583">Aumente ou diminua os itens na tela, incluindo o texto</translation>
 <translation id="4406308048672435032">Você pode deixar essa guia inativa ou atualizar a página para ver a lista completa de novo</translation>
 <translation id="4406881185911439342">Focar grupo</translation>
@@ -6640,6 +6643,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
 <translation id="554535686826424776">Encontrar cupons</translation>
 <translation id="5546865291508181392">Buscar</translation>
+<translation id="5547868626772433490">Peça ao Gemini</translation>
 <translation id="5548075230008247516">Todos os itens foram desmarcados e o modo de seleção foi fechado.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e mais 1 guia}one{"<ph name="TAB_TITLE" />" e mais # guia}other{"<ph name="TAB_TITLE" />" e mais # guias}}</translation>
 <translation id="5548644592758170183">Mostrar à esquerda</translation>
@@ -6733,6 +6737,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5609231933459083978">Este aplicativo parece ser inválido.</translation>
 <translation id="5610867721023328944">Tente de novo ou selecione um dos temas disponíveis abaixo.</translation>
 <translation id="5611398002774823980">Salvar na conta</translation>
+<translation id="5611474372949142946">Fechar guias abaixo</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Aviso para o usuário</translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
@@ -9978,7 +9983,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="787268756490971083">Desativado</translation>
 <translation id="7872758299142009420">Excesso de grupos aninhados: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam para Chromebook</translation>
-<translation id="7874257161694977650">Planos de fundo do Chrome</translation>
 <translation id="7876027585589532670">Não é possível editar o atalho</translation>
 <translation id="7876243839304621966">Remover tudo</translation>
 <translation id="7877126887274043657">Corrigir problema de &amp;sincronização</translation>

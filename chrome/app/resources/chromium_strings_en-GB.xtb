@@ -45,6 +45,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1497802159252041924">Install error: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">This page is protected</translation>
 <translation id="1524282610922162960">Share a Chromium tab</translation>
+<translation id="154404805518949443">Sign in to Chromium</translation>
 <translation id="1547469039832541117">Ends the highlighted task.</translation>
 <translation id="1553461853655228091">Chromium needs permission to access your camera to create a 3D map of your surroundings</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{This extension is no longer supported. Chromium recommends that you remove it.}other{These extensions are no longer supported. Chromium recommends that you remove them.}}</translation>
@@ -232,6 +233,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> is already signed in.  To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">To share your screen, allow screen recording for Chromium in System Settings.</translation>
 <translation id="3597003331831379823">Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Sign in to Chromium</translation>
 <translation id="3639635944603682591">This person's browsing data will be deleted from this device. To recover the data, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{A new update for Chromium is available and will be applied as soon as you relaunch.}=1{A new update for Chromium is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chromium is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3651803019964686660">To send a number from <ph name="ORIGIN" /> to your Android phone, sign in to Chromium on both devices.</translation>

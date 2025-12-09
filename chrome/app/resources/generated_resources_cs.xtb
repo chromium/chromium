@@ -1904,6 +1904,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2287617382468007324">Tisk adresy IPP</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Z důvodu ochrany vašich dat byla odebrána oprávnění webu, který jste v poslední době nenavštívili}few{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste v poslední době nenavštívili}many{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste v poslední době nenavštívili}other{Z důvodu ochrany vašich dat byla odebrána oprávnění webům, které jste v poslední době nenavštívili}}</translation>
 <translation id="2287944065963043964">Přihlašovací obrazovka</translation>
+<translation id="2289567621059034186">Nová karta níže</translation>
 <translation id="2290615375132886363">Navigační tlačítka tabletu</translation>
 <translation id="2290703778620332549">Nahradit nebo vytvořit novou skupinu?</translation>
 <translation id="2291452790265535215">Zkuste používat záložky, cesty apod. na bočním panelu</translation>
@@ -2973,7 +2974,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Organizace <ph name="MANAGER" /> vyžaduje, abyste se dnes za účelem stažení aktualizace připojili k síti Wi-Fi. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).}few{Organizace <ph name="MANAGER" /> vyžaduje, abyste se do stanoveného termínu za účelem stažení aktualizace připojili k síti Wi-Fi. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).}many{Organizace <ph name="MANAGER" /> vyžaduje, abyste se do stanoveného termínu za účelem stažení aktualizace připojili k síti Wi-Fi. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).}other{Organizace <ph name="MANAGER" /> vyžaduje, abyste se do stanoveného termínu za účelem stažení aktualizace připojili k síti Wi-Fi. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).}}</translation>
-<translation id="3008923556848076408">Gemini bude na úkolu dál pracovat.</translation>
 <translation id="3008926075262837186">Čtěte pohodlně s minimem rušivých prvků</translation>
 <translation id="3009178788565917040">Výstup</translation>
 <translation id="3009352964623081324">Vyhledávací tlačítko + O, poté S. Slouží k instalaci, správě a přizpůsobení hlasů.</translation>
@@ -3244,6 +3244,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
         Nastavení můžete z této karty kdykoliv změnit nebo si projít další možnosti v sekci Přizpůsobit Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nová karta ve skupině 1 karty}few{Nová karta ve skupině # karet}many{Nová karta ve skupině # karty}other{Nová karta ve skupině # karet}}</translation>
 <translation id="3207960819495026254">Přidáno do záložek</translation>
+<translation id="3208321278970793882">Aplikace</translation>
 <translation id="3208584281581115441">Zkontrolovat</translation>
 <translation id="3208703785962634733">Nepotvrzeno</translation>
 <translation id="3209703592917353472">Web, který navštívíte, může ukládat informace o tom, co děláte, aby fungoval podle očekávání – například abyste zůstali přihlášeni nebo v košíku zůstaly přidané položky. Weby tato data často ukládají dočasně na vašem zařízení.</translation>
@@ -3266,6 +3267,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="322708765617468434">Po nastavení můžete do zařízení vždy přidat další osobu. Každý uživatel si může své prostředí přizpůsobit a chránit soukromí svých dat.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3227701057281907159">Opravování</translation>
+<translation id="3228962656492373217">Zavřít karty níže</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Odstraňte ho nebo ho nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />.}few{Odstraňte je nebo je nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />}many{Odstraňte je nebo je nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />}other{Odstraňte je nebo je nahraďte podobnými rozšířeními z <ph name="BEGIN_LINK" />Internetového obchodu Chrome<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Zkontrolujte datum</translation>
 <translation id="3230539834943294477">Přečtěte si články nápovědy nebo vyhledejte podporu k zařízení</translation>
@@ -5001,6 +5003,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4404843640767531781">Tvůj rodič aplikaci <ph name="APP_NAME" /> zablokoval. Pokud ji chceš používat, požádej rodiče o oprávnění.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Přesunout do…</translation>
+<translation id="4405580203042711503">Nová karta níže</translation>
 <translation id="4405781821077215583">Zmenšit nebo zvětšit položky na obrazovce (včetně textu)</translation>
 <translation id="4406308048672435032">Tuto kartu můžete deaktivovat, nebo obnovit, aby se vám opět zobrazil úplný seznam</translation>
 <translation id="4406881185911439342">Vybrat skupinu</translation>
@@ -6623,6 +6626,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Přidat kartu do skupiny}few{Přidat karty do skupiny}many{Přidat karty do skupiny}other{Přidat karty do skupiny}}</translation>
 <translation id="554535686826424776">Najít kupony</translation>
 <translation id="5546865291508181392">Najít</translation>
+<translation id="5547868626772433490">Zeptat se Gemini</translation>
 <translation id="5548075230008247516">Výběr všech položek byl zrušen. Režim výběru byl ukončen.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a 1 další karta}few{„<ph name="TAB_TITLE" />“ a # další karty}many{„<ph name="TAB_TITLE" />“ a # další karty}other{„<ph name="TAB_TITLE" />“ a # dalších karet}}</translation>
 <translation id="5548644592758170183">Zobrazit vlevo</translation>
@@ -6716,6 +6720,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5609231933459083978">Aplikace je pravděpodobně neplatná.</translation>
 <translation id="5610867721023328944">Zkuste to znovu nebo vyberte některý z níže uvedených dostupných motivů.</translation>
 <translation id="5611398002774823980">Uložit do účtu</translation>
+<translation id="5611474372949142946">Zavřít karty níže</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Sdělení pro uživatele</translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
@@ -9958,7 +9963,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="787268756490971083">Vypnuto</translation>
 <translation id="7872758299142009420">Příliš mnoho vnořených skupin: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam pro Chromebook</translation>
-<translation id="7874257161694977650">Pozadí prohlížeče Chrome</translation>
 <translation id="7876027585589532670">Zkratku nelze upravit</translation>
 <translation id="7876243839304621966">Odstranit vše</translation>
 <translation id="7877126887274043657">Vyřešte problém se &amp;synchronizací</translation>

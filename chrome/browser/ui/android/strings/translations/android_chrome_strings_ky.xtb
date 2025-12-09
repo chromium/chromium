@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" /> подкастына жазылуу токтотулду. Кийинки жолу баш бакканыңызда сизден кайра суралат.</translation>
 <translation id="1340839264183302272">Топтон чыгуу</translation>
 <translation id="1342886103232377846">Уурдалган сырсөздөрдү көрүү үчүн Сырсөздөрдү башкаргычка өтүңүз</translation>
+<translation id="1343830902827845050">Chrome'го кириңиз</translation>
 <translation id="1344653310988386453">Бөлүнүп көрсөтүлгөн нерсеге шилтемени камтуу</translation>
 <translation id="1347468774581902829">Аракеттерди тескөө</translation>
 <translation id="1355088659320425659">Таржымал жана өтмөктөр</translation>
@@ -718,6 +719,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="414128724510021958">Демейки шартта суралган компьютердик версиялар</translation>
 <translation id="4162867837470729563">Бөлүшүү параметрлеринин тизмеси толук экранда ачылды.</translation>
 <translation id="4170011742729630528">Бул кызмат учурда иштебейт, бир аздан кийин аракет кылып көрүңүз.</translation>
+<translation id="4170577491341606575">Нерселериңиз алынууда\u2026</translation>
 <translation id="4177222230309051052">Бардык кыстамаларды алыңыз</translation>
 <translation id="4177501066905053472">Жарнамалардын темалары</translation>
 <translation id="417865198503699526">Параметр издеңиз</translation>
@@ -1457,6 +1459,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7115358764509798967">Тутумдун демейки параметрлери</translation>
 <translation id="7117485132243600300">Катталган контентти жана сунушталган темалар менен издөөнү тескөө</translation>
 <translation id="7119984597597798764">Жабуу: <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Chrome'го кирүү</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 сайт үчүн уруксаттар өчүрүлдү}other{# сайт үчүн уруксаттар өчүрүлдү}}</translation>
 <translation id="7138678301420049075">Башка</translation>
 <translation id="7140829094791862589">Кол менен иреттөө</translation>

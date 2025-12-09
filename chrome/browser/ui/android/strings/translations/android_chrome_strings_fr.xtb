@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Désabonnement effectué pour <ph name="SITE_NAME" />. La question vous sera de nouveau posée à votre prochaine visite.</translation>
 <translation id="1340839264183302272">Quitter le groupe</translation>
 <translation id="1342886103232377846">Pour vérifier les mots de passe compromis, accédez au Gestionnaire de mots de passe de Google</translation>
+<translation id="1343830902827845050">Connectez-vous à Chrome</translation>
 <translation id="1344653310988386453">Inclure le lien vers le texte en surbrillance</translation>
 <translation id="1347468774581902829">Gérer l'activité</translation>
 <translation id="1355088659320425659">Historique et onglets</translation>
@@ -718,6 +719,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="414128724510021958">Versions pour ordinateur demandées par défaut</translation>
 <translation id="4162867837470729563">Liste des options de partage ouverte à pleine hauteur.</translation>
 <translation id="4170011742729630528">Service indisponible. Veuillez réessayer plus tard.</translation>
+<translation id="4170577491341606575">Chargement de vos données\u2026</translation>
 <translation id="4177222230309051052">Récupérer tous vos favoris</translation>
 <translation id="4177501066905053472">Thèmes des annonces</translation>
 <translation id="417865198503699526">Recherchez un paramètre</translation>
@@ -1457,6 +1459,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7115358764509798967">Paramètre système par défaut</translation>
 <translation id="7117485132243600300">Gérez les contenus que vous suivez, ainsi que les thèmes et recherches suggérés</translation>
 <translation id="7119984597597798764">Fermer <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Se connecter à Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorisations examinées pour 1 site}one{Autorisations examinées pour # site}other{Autorisations examinées pour # sites}}</translation>
 <translation id="7138678301420049075">Autre</translation>
 <translation id="7140829094791862589">Trier par ordre manuel</translation>

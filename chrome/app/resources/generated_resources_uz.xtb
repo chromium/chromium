@@ -1904,6 +1904,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2287617382468007324">IPP manzilini chop etish</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Xavfsizlik yuzasidan yaqinda ochilmagan saytdan ruxsatlar olib tashlandi}other{Xavfsizlik yuzasidan yaqinda ochilmagan saytlardan ruxsatlar olib tashlandi}}</translation>
 <translation id="2287944065963043964">Kirish ekrani</translation>
+<translation id="2289567621059034186">Quyida yangi varaq ochish</translation>
 <translation id="2290615375132886363">Planshet rejimida navigatsiya tugmalari</translation>
 <translation id="2290703778620332549">Almashtirilsinmi yoki yangi guruh yaratilsinmi?</translation>
 <translation id="2291452790265535215">Bukmarklar, sayohatlar va boshqalar uchun yon paneldan foydalaning</translation>
@@ -2973,7 +2974,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3008142279736625920">Chizkeyk</translation>
 <translation id="3008272652534848354">Ruxsatlarni qasliga qaytarish</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> domeni bugunoq Wi-Fi tarmoqqa ulanib, yangilanishni yuklab olishni talab qilmoqda. Yoki trafik hisoblanadigan ulanishdan foydalanib yuklab olish mumkin.}other{<ph name="MANAGER" /> Wi-Fi tarmoqqa ulanib, yangilanishni oxirgi muddatdan oldin yuklab olishni talab qilmoqda. Yoki trafik hisoblanadigan ulanishdan foydalanib yuklab olish mumkin.}}</translation>
-<translation id="3008923556848076408">Gemini vazifangizda ishlashda davom etadi</translation>
 <translation id="3008926075262837186">Minimal chalgʻish bilan qulay oʻqish</translation>
 <translation id="3009178788565917040">Chiqarish</translation>
 <translation id="3009352964623081324">Search + O, keyin S. Ovozlarni oʻrnatish, boshqarish va moslash uchun ishlatiladi.</translation>
@@ -3244,6 +3244,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
         Chromeni moslash sahifasi orqali istalgan vaqt bu bildirgi sozlamalarini boshqarish yoki qoʻshimcha parametrlarni koʻrish mumkin.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{1 varaqda yangi varaq}other{# varaqda yangi varaq}}</translation>
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
+<translation id="3208321278970793882">Ilova</translation>
 <translation id="3208584281581115441">Hozir tekshirish</translation>
 <translation id="3208703785962634733">Tasdiqlanmagan</translation>
 <translation id="3209703592917353472">Ochilgan saytlar sizni hisobda qoldirish yoki mahsulotlarni xarid savatida saqlash uchun saytdagi harakatlaringiz haqidagi maʼlumotlarni saqlashi mumkin. Odatda bu maʼlumotlar qurilmangizda vaqtincha saqlanadi.</translation>
@@ -3266,6 +3267,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="322708765617468434">Sozlashdan keyin boshqa odamni qurilmaga qoʻshishingiz mumkin. Har bir odamning tajribasi alohida moslashtiriladi va ularning maʼlumotlari xavfsiz saqlanadi.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3227701057281907159">Tuzatma kiritilmoqda</translation>
+<translation id="3228962656492373217">Quyidagi varaqlarni yopish</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Uni olib tashlang yoki <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> orqali unga oʻxshash kengaytmalar bilan almashtiring.}other{Ularni olib tashlang yoki <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /> orqali unga oʻxshash kengaytmalar bilan almashtiring.}}</translation>
 <translation id="3229254977651514276">Sanani tekshiring</translation>
 <translation id="3230539834943294477">Yordam maqolalarini ochish yoki qurilma yuzasidan yordam topish</translation>
@@ -5002,6 +5004,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4404843640767531781"><ph name="APP_NAME" /> ota-onangiz tomonidan bloklangan. Bu ilovadan foydalanish uchun ota-onangizdan ruxsat oling.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Boshqa joyga olish…</translation>
+<translation id="4405580203042711503">Quyida yangi varaq ochish</translation>
 <translation id="4405781821077215583">Ekrandagi matn kabi elementlarni kichiklashtirish yoki kattalashtirish</translation>
 <translation id="4406308048672435032">Toʻliq roʻyxatni qayta koʻrish uchun bu varaqni nofaol qiling yoki yangilang</translation>
 <translation id="4406881185911439342">Guruhni fokuslash</translation>
@@ -6625,6 +6628,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Varaqni guruhga kiritish}other{Varaqlarni guruhga kiritish}}</translation>
 <translation id="554535686826424776">Kuponlarni topish</translation>
 <translation id="5546865291508181392">Qidirish</translation>
+<translation id="5547868626772433490">Geminidan soʻrash</translation>
 <translation id="5548075230008247516">Barchasi belgilanmagan, tanlash rejimi oʻchiq.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />” va yana 1 ta varaq}other{“<ph name="TAB_TITLE" />” va yana # ta varaq}}</translation>
 <translation id="5548644592758170183">Chapda chiqarish</translation>
@@ -6718,6 +6722,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5609231933459083978">Ilova nomi noto‘g‘ri kiritilganga o‘xshaydi.</translation>
 <translation id="5610867721023328944">Qayta urining yoki quyidagi mavzulardan birini tanlang.</translation>
 <translation id="5611398002774823980">Hisobda saqlash</translation>
+<translation id="5611474372949142946">Quyidagi varaqlarni yopish</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Foydalanuvchiga eslatma</translation>
 <translation id="5614553682702429503">Parol saqlansinmi?</translation>
@@ -9959,7 +9964,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="787268756490971083">Oʻchiq</translation>
 <translation id="7872758299142009420">Davriy guruhlar soni oshib ketdi: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Chromebook uchun Steam</translation>
-<translation id="7874257161694977650">Chrome fon rasmlari</translation>
 <translation id="7876027585589532670">Yorliq tahrirlanmadi</translation>
 <translation id="7876243839304621966">Hammasini olib tashlash</translation>
 <translation id="7877126887274043657">&amp;Sinxronlash xatosini tuzating</translation>

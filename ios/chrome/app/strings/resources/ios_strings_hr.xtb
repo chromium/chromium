@@ -256,7 +256,7 @@
 <translation id="1941314575388338491">Dodirnite dvaput da biste kopirali.</translation>
 <translation id="1943478190258551035">Izbornik → Postavke</translation>
 <translation id="1952728750904661634">Prijavite se upravljanim računom</translation>
-<translation id="1955773397805078763">Dodavanje načina plaćanja</translation>
+<translation id="1955773397805078763">Dodajte način plaćanja</translation>
 <translation id="1956138802718275401">Pristup zaporkama s početnog zaslona</translation>
 <translation id="1959441496380398824">Dodirnite i zadržite datum.</translation>
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> s vama dijeli zaporku za web-lokaciju <ph name="WEBSITE" /></translation>
@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Prikaz pregleda veza</translation>
 <translation id="452750746583162491">Pregledajte svoje sinkronizirane podatke</translation>
 <translation id="4532845899244822526">Odabir mape</translation>
+<translation id="454217142158335225">Zatvorene stavke možete ponovo otvoriti u odjeljcima nedavnih kartica ili grupa kartica. Prikvačene kartice neće se zatvoriti.</translation>
 <translation id="4547181496285029457">Natrag na karticu Nedavno</translation>
 <translation id="4552042254369397518">Kopiranje…</translation>
 <translation id="4564893319561643483">Sakrij <ph name="TITLE" /></translation>
@@ -1841,6 +1842,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7887174313503389866">Krenite u vođeni obilazak ključnih kontrola privatnosti i sigurnosti. Za više opcija pogledajte pojedinačne postavke.</translation>
 <translation id="7887198238286927132">Da bi zaštitio vašu privatnost, Chrome neće automatski popuniti ovo polje.</translation>
 <translation id="7887552845761062935">Dodirnite dvaput i zadržite da biste otvorili više opcija</translation>
+<translation id="7888562068293422208">Želite li zatvoriti sve?</translation>
 <translation id="7889910613639381518">Jednostavan i siguran pristup uz widget Google upravitelja zaporki.</translation>
 <translation id="7899199123054742721">Označi sve kao nepročitano</translation>
 <translation id="7911190106180361398">Vaša organizacija ne dopušta da sinkronizirate sve.</translation>

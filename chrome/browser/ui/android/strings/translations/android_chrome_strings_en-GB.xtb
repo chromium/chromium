@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Unsubscribed from <ph name="SITE_NAME" />. You'll be asked again on your next visit.</translation>
 <translation id="1340839264183302272">Leave group</translation>
 <translation id="1342886103232377846">To check for compromised passwords, go to Google Password Manager</translation>
+<translation id="1343830902827845050">Sign in to Chrome</translation>
 <translation id="1344653310988386453">Include link to highlight</translation>
 <translation id="1347468774581902829">Manage activity</translation>
 <translation id="1355088659320425659">History and tabs</translation>
@@ -718,6 +719,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="414128724510021958">Desktop sites requested by default</translation>
 <translation id="4162867837470729563">List of sharing options at full height.</translation>
 <translation id="4170011742729630528">The service is not available; try again later.</translation>
+<translation id="4170577491341606575">Getting your stuff\u2026</translation>
 <translation id="4177222230309051052">Get all your bookmarks</translation>
 <translation id="4177501066905053472">Ad topics</translation>
 <translation id="417865198503699526">Search for a setting</translation>
@@ -1457,6 +1459,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7115358764509798967">System default</translation>
 <translation id="7117485132243600300">Manage content that you follow and suggested topics and searches</translation>
 <translation id="7119984597597798764">Close <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Sign in to Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permissions reviewed for 1 site}other{Permissions reviewed for # sites}}</translation>
 <translation id="7138678301420049075">Other</translation>
 <translation id="7140829094791862589">Sort by manual order</translation>

@@ -1902,6 +1902,7 @@
 <translation id="2287617382468007324">列印 IPP 位址</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{為保護你的資料，系統已移除近期未造訪網站的權限}other{為保護你的資料，系統已移除近期未造訪網站的權限}}</translation>
 <translation id="2287944065963043964">登入畫面</translation>
+<translation id="2289567621059034186">在下方新增分頁</translation>
 <translation id="2290615375132886363">平板電腦瀏覽按鈕</translation>
 <translation id="2290703778620332549">要取代或建立新群組？</translation>
 <translation id="2291452790265535215">試著在側邊面板上使用書籤、瀏覽歷程和其他功能</translation>
@@ -2971,7 +2972,6 @@
 <translation id="3008142279736625920">乳酪蛋糕</translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}other{<ph name="MANAGER" /> 要求你在期限內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。}}</translation>
-<translation id="3008923556848076408">Gemini 會繼續處理你的工作</translation>
 <translation id="3008926075262837186">盡量減少干擾，閱讀網頁真舒適</translation>
 <translation id="3009178788565917040">輸出</translation>
 <translation id="3009352964623081324">搜尋鍵 + O 鍵，然後按下 S 鍵，用途是安裝、管理及自訂語音。</translation>
@@ -3241,6 +3241,7 @@
         你隨時可以透過這張資訊卡管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{在 1 個分頁的群組新增分頁}other{在 # 個分頁的群組新增分頁}}</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
+<translation id="3208321278970793882">應用程式</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3208703785962634733">尚未確認的</translation>
 <translation id="3209703592917353472">你造訪的網站可儲存使用者的活動資訊，協助正常運作，例如在網站上保持登入狀態或儲存購物車內的項目。網站通常會暫時在裝置上儲存這項資訊。</translation>
@@ -3263,6 +3264,7 @@
 <translation id="322708765617468434">設定完成後，你隨時可以在裝置中新增其他使用者。每位使用者都可以建立個人專屬的體驗，並維護資料的私密性。</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3227701057281907159">正在套用修補檔案</translation>
+<translation id="3228962656492373217">關閉下方分頁</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{請移除這項擴充功能，或前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找可替代的類似擴充功能。}other{請移除這些擴充功能，或前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找可替代的類似擴充功能。}}</translation>
 <translation id="3229254977651514276">檢查日期</translation>
 <translation id="3230539834943294477">查看說明文章或尋找裝置支援</translation>
@@ -4998,6 +5000,7 @@
 <translation id="4404843640767531781">貴家長已封鎖「<ph name="APP_NAME" />」。如要使用這個應用程式，請要求家長授予權限。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移至…</translation>
+<translation id="4405580203042711503">在下方新增分頁</translation>
 <translation id="4405781821077215583">縮小或放大畫面上的項目，包括文字在內</translation>
 <translation id="4406308048672435032">你可以將這個分頁設為閒置，或重新整理以便再次查看完整清單</translation>
 <translation id="4406881185911439342">將焦點移至群組</translation>
@@ -6617,6 +6620,7 @@
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
 <translation id="554535686826424776">尋找優待券</translation>
 <translation id="5546865291508181392">尋找</translation>
+<translation id="5547868626772433490">問問 Gemini</translation>
 <translation id="5548075230008247516">已取消選取所有項目，並結束選取模式。</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」和另外 1 個分頁}other{「<ph name="TAB_TITLE" />」和另外 # 個分頁}}</translation>
 <translation id="5548644592758170183">顯示在左側</translation>
@@ -6710,6 +6714,7 @@
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
 <translation id="5610867721023328944">請再試一次，或選取下方其中一個可用的主題。</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
+<translation id="5611474372949142946">關閉下方分頁</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />，<ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">使用者通知</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
@@ -9947,7 +9952,6 @@
 <translation id="787268756490971083">關閉</translation>
 <translation id="7872758299142009420">巢狀群組過多：<ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam for Chromebook</translation>
-<translation id="7874257161694977650">Chrome 背景</translation>
 <translation id="7876027585589532670">無法編輯捷徑</translation>
 <translation id="7876243839304621966">全部移除</translation>
 <translation id="7877126887274043657">修正同步功能問題(&amp;S)</translation>

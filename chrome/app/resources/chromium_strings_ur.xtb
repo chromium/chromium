@@ -44,6 +44,7 @@
 <translation id="1497802159252041924">انسٹال کی خرابی: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">یہ صفحہ محفوظ ہے</translation>
 <translation id="1524282610922162960">‏ایک Chromium ٹیب کا اشتراک کریں</translation>
+<translation id="154404805518949443">‏‫Chromium میں سائن ان کریں</translation>
 <translation id="1547469039832541117">نمایاں کردہ ٹاسک کو بند کرتا ہے۔</translation>
 <translation id="1553461853655228091">‏پنے اطراف کا 3D نقشہ تخلیق کرنے کی خاطر Chromium کو آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{‏یہ ایکسٹینشن اب مزید تعاون یافتہ نہیں ہے۔ ‫Chromium تجویز کرتا ہے کہ آپ اسے ہٹا دیں}other{‏یہ ایکسٹینشنز اب مزید تعاون یافتہ نہیں ہیں۔ ‫Chromium تجویز کرتا ہے کہ آپ انہیں ہٹا دیں۔}}</translation>
@@ -231,6 +232,7 @@
 <translation id="3530103706039034513">‏<ph name="EXISTING_USER" /> پہلے سے ہی سائن ان ہے۔  اپنی براؤزنگ کو الگ رکھنے کے لیے، اپنی پروفائل میں Chromium میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان کریں۔</translation>
 <translation id="3561853857681580870">‏اپنی اسکرین کا اشتراک کرنے کیلئے، سسٹم کی ترتیبات میں Chromium کیلئے اسکرین ریکارڈنگ کی اجازت دیں۔</translation>
 <translation id="3597003331831379823">زیادہ مراعات کے ساتھ سیٹ اپ کو چلانے میں ناکام۔ <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">‏‫Chromium میں سائن ان کریں</translation>
 <translation id="3639635944603682591">‏اس شخص کا براؤزنگ ڈیٹا اس آلے سے حذف کر دیا جائے گا۔ ڈیٹا بحال کرنے کیلئے، Chromium میں بطور <ph name="USER_EMAIL" /> سائن ان کریں۔</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{‏Chromium کیلئے ایک نیا اپ ڈیٹ دستیاب ہے اور جیسے ہی آپ اسے بند کر کے دوبارہ چلائیں گے اسے لاگو کر دیا جائے گا۔}=1{‏Chromium کیلئے ایک نیا اپ ڈیٹ دستیاب ہے اور جیسے ہی آپ اسے بند کر کے دوبارہ چلائیں گے اسے لاگو کر دیا جائے گا۔ آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{‏Chromium کیلئے ایک نیا اپ ڈیٹ دستیاب ہے اور جیسے ہی آپ اسے بند کر کے دوبارہ چلائیں گے اسے لاگو کر دیا جائے گا۔ آپ کی # پوشیدگی ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
 <translation id="3651803019964686660">‏<ph name="ORIGIN" /> سے اپنے Android فون پر نمبر بھیجنے کے لئے دونوں آلات پر Chromium میں سائن ان کریں۔</translation>

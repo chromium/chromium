@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">اشتراک «<ph name="SITE_NAME" />» لغو شد. در بازدید بعدی دوباره از شما سؤال خواهد شد.</translation>
 <translation id="1340839264183302272">ترک گروه</translation>
 <translation id="1342886103232377846">‏برای بررسی گذرواژه‌های لورفته، به «مدیر گذرواژه Google» بروید</translation>
+<translation id="1343830902827845050">‏ورود به سیستم Chrome</translation>
 <translation id="1344653310988386453">اضافه کردن پیوند به مورد برجسته‌شده</translation>
 <translation id="1347468774581902829">مدیریت فعالیت‌ها</translation>
 <translation id="1355088659320425659">سابقه و زبانه‌ها</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">به‌طور پیش‌فرض سایت‌های ویژه رایانه درخواست می‌شود</translation>
 <translation id="4162867837470729563">فهرست گزینه‌های هم‌رسانی به‌صورت کامل باز شده است.</translation>
 <translation id="4170011742729630528">این سرویس در دسترس نیست؛ بعداً دوباره امتحان کنید.</translation>
+<translation id="4170577491341606575">‏درحال دریافت چیزهای شما\u2026</translation>
 <translation id="4177222230309051052">دریافت همه نشانک‌ها</translation>
 <translation id="4177501066905053472">موضوع‌های آگهی</translation>
 <translation id="417865198503699526">تنظیمی را جستجو کنید</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">پیش‌فرض سیستم</translation>
 <translation id="7117485132243600300">محتوایی که دنبال می‌کنید و جستجوها و موضوع‌های پیشنهادی را مدیریت کنید</translation>
 <translation id="7119984597597798764">بستن <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">‏ورود به سیستم Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{اجازه‌های ۱ سایت بررسی شد}one{اجازه‌های # سایت بررسی شد}other{اجازه‌های # سایت بررسی شد}}</translation>
 <translation id="7138678301420049075">غیره</translation>
 <translation id="7140829094791862589">براساس ترتیب دستی</translation>

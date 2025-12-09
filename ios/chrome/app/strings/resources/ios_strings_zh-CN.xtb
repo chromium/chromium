@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">显示链接预览</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4532845899244822526">选择文件夹</translation>
+<translation id="454217142158335225">您可以从最近打开的标签页或标签页分组部分重新打开已关闭的项。固定标签页不会关闭。</translation>
 <translation id="4547181496285029457">返回到最近打开的标签页</translation>
 <translation id="4552042254369397518">正在复制…</translation>
 <translation id="4564893319561643483">隐藏“<ph name="TITLE" />”</translation>
@@ -1366,7 +1367,7 @@
 <translation id="6160780110287872296">下载文件？</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6168647875670665004">文章推荐</translation>
-<translation id="6169031022444660352">如要删除所有已保存的凭据，您必须先在设备上设置密码。</translation>
+<translation id="6169031022444660352">如要删除所有已保存的凭证，您必须先在设备上设置密码。</translation>
 <translation id="6172428250974276014">是，将数据分开（推荐）</translation>
 <translation id="6173499589275053515">密码已保存到您的 Google 账号 <ph name="EMAIL" /> 中</translation>
 <translation id="6181969657494915430">搜索屏幕内容</translation>
@@ -1841,6 +1842,7 @@
 <translation id="7887174313503389866">观看导览，了解重要的隐私控制设置和安全控件。如需查看更多选项，请转到各项设置。</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>
 <translation id="7887552845761062935">点按两次并按住即可显示更多选项</translation>
+<translation id="7888562068293422208">全部关闭？</translation>
 <translation id="7889910613639381518">使用“Google 密码管理工具”小组件查询密码，方便又安全。</translation>
 <translation id="7899199123054742721">全部标为未读</translation>
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>

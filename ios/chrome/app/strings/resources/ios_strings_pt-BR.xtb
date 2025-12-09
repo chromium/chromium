@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Mostrar prévias de links</translation>
 <translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
+<translation id="454217142158335225">Você pode reabrir itens fechados nas seções de guias recentes ou de grupos de guias. As guias fixadas não serão fechadas.</translation>
 <translation id="4547181496285029457">Voltar à guia recente</translation>
 <translation id="4552042254369397518">Copiando…</translation>
 <translation id="4564893319561643483">Ocultar "<ph name="TITLE" />"</translation>
@@ -1841,6 +1842,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7887174313503389866">Faça um tour guiado sobre os principais controles de privacidade e segurança. Para acessar mais opções, acesse as configurações individuais.</translation>
 <translation id="7887198238286927132">Para proteger sua privacidade, o Chrome não preencherá esse campo automaticamente.</translation>
 <translation id="7887552845761062935">Toque duas vezes e mantenha para abrir mais opções</translation>
+<translation id="7888562068293422208">Fechar tudo?</translation>
 <translation id="7889910613639381518">Acesso fácil e seguro com o widget do Gerenciador de senhas do Google.</translation>
 <translation id="7899199123054742721">Marcar tudo como não lido</translation>
 <translation id="7911190106180361398">Sua organização não permite que você sincronize tudo.</translation>

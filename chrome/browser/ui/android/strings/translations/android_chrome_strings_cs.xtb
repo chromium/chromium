@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Odběr oznámení z webu <ph name="SITE_NAME" /> byl zrušen.‏ Při příští návštěvě se vám znovu zobrazí dotaz.</translation>
 <translation id="1340839264183302272">Opustit skupinu</translation>
 <translation id="1342886103232377846">Pokud chcete zkontrolovat, zda nedošlo k prolomení hesel, přejděte do Správce hesel Google</translation>
+<translation id="1343830902827845050">Přihlášení do Chromu</translation>
 <translation id="1344653310988386453">Zahrnout odkaz na zvýraznění</translation>
 <translation id="1347468774581902829">Spravovat aktivitu</translation>
 <translation id="1355088659320425659">Historie a karty</translation>
@@ -718,6 +719,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="414128724510021958">Ve výchozím nastavení jsou požadovány weby pro počítače</translation>
 <translation id="4162867837470729563">Seznam možností sdílení je otevřený na celou výšku.</translation>
 <translation id="4170011742729630528">Služba není k dispozici, zkuste to později.</translation>
+<translation id="4170577491341606575">Načítání vašich věcí\u2026</translation>
 <translation id="4177222230309051052">Získejte všechny své záložky</translation>
 <translation id="4177501066905053472">Témata reklam</translation>
 <translation id="417865198503699526">Vyhledat nastavení</translation>
@@ -1457,6 +1459,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7115358764509798967">Výchozí nastavení systému</translation>
 <translation id="7117485132243600300">Spravujte obsah, který sledujete, a navrhovaná témata a vyhledávání</translation>
 <translation id="7119984597597798764">Zavřít <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Přihlásit se do Chromu</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Byla zkontrolována oprávnění 1 webu}few{Byla zkontrolována oprávnění # webů}many{Byla zkontrolována oprávnění # webu}other{Byla zkontrolována oprávnění # webů}}</translation>
 <translation id="7138678301420049075">Ostatní</translation>
 <translation id="7140829094791862589">Seřadit ručně</translation>

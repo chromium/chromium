@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Afficher les aperçus des liens</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
+<translation id="454217142158335225">Vous pouvez rouvrir les éléments fermés à partir des sections Onglets récents ou Groupes d'onglets. Vos onglets épinglés ne seront pas fermés.</translation>
 <translation id="4547181496285029457">Revenir au dernier onglet</translation>
 <translation id="4552042254369397518">Copie en cours…</translation>
 <translation id="4564893319561643483">Masquez « <ph name="TITLE" /> »</translation>
@@ -1841,6 +1842,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7887174313503389866">Suivez une visite guidée des principaux paramètres de confidentialité et de sécurité. Pour plus d'options, accédez aux paramètres individuels.</translation>
 <translation id="7887198238286927132">Afin de protéger votre confidentialité, Chrome ne remplira pas automatiquement ce champ.</translation>
 <translation id="7887552845761062935">Touchez deux fois et maintenez le doigt pour ouvrir plus d'options</translation>
+<translation id="7888562068293422208">Tout fermer?</translation>
 <translation id="7889910613639381518">Accès facile et sécurisé avec le widget Gestionnaire de mots de passe Google.</translation>
 <translation id="7899199123054742721">Tout marquer comme non lu</translation>
 <translation id="7911190106180361398">Votre organisation ne vous autorise pas à tout synchroniser.</translation>

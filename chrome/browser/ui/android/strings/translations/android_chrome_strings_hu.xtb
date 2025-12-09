@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Leiratkozott innen: <ph name="SITE_NAME" /> A rendszer következő látogatásakor ismét rákérdez.</translation>
 <translation id="1340839264183302272">Kilépés a csoportból</translation>
 <translation id="1342886103232377846">Az illetéktelen kézbe került jelszavak előfordulásának ellenőrzéséhez nyissa meg a Google Jelszókezelőt</translation>
+<translation id="1343830902827845050">Bejelentkezés a Chrome-ba</translation>
 <translation id="1344653310988386453">A kiemelt szöveghez vezető linkkel együtt</translation>
 <translation id="1347468774581902829">Tevékenységek kezelése</translation>
 <translation id="1355088659320425659">Előzmények és lapok</translation>
@@ -718,6 +719,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="414128724510021958">Asztali webhelyek kérve alapértelmezés szerint</translation>
 <translation id="4162867837470729563">A megosztási lehetőségek listája teljes magasságban van megnyitva.</translation>
 <translation id="4170011742729630528">A szolgáltatás nem érhető el, próbálja újra később.</translation>
+<translation id="4170577491341606575">Adatok lekérése…</translation>
 <translation id="4177222230309051052">Az összes könyvjelző megtekintése</translation>
 <translation id="4177501066905053472">Hirdetéstémák</translation>
 <translation id="417865198503699526">Keresse meg a kívánt beállítást</translation>
@@ -1457,6 +1459,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7115358764509798967">Rendszerbeállítás</translation>
 <translation id="7117485132243600300">A követett tartalmak, javasolt témák és keresések kezelése</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> bezárása</translation>
+<translation id="7121179479711575744">Bejelentkezés a Chrome-ba</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 webhely engedélyei felülvizsgálva}other{# webhely engedélyei felülvizsgálva}}</translation>
 <translation id="7138678301420049075">Egyéb</translation>
 <translation id="7140829094791862589">Manuális rendezés</translation>

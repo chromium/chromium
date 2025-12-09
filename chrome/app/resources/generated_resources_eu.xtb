@@ -1902,6 +1902,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2287617382468007324">Inprimatzeko IPP helbidea</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Zure datuak babesteko, baimenak kendu zaizkio azkenaldian bisitatu ez duzun webgune bati}other{Zure datuak babesteko, baimenak kendu zaizkie azkenaldian bisitatu ez dituzun webgune batzuei}}</translation>
 <translation id="2287944065963043964">Saioa hasteko pantaila</translation>
+<translation id="2289567621059034186">Fitxa berria behean</translation>
 <translation id="2290615375132886363">Tabletaren nabigazio-botoiak</translation>
 <translation id="2290703778620332549">Ordeztu edo beste talde bat sortu nahi duzu?</translation>
 <translation id="2291452790265535215">Erabili alboko panela laster-markak, bilaketa-ibilbideak eta beste gordetzeko</translation>
@@ -2971,7 +2972,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3008142279736625920">Gazta-tarta</translation>
 <translation id="3008272652534848354">Berrezarri baimenak</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Gaur wifi-sare batera konektatzeko eta eguneratze bat deskargatzeko eskatzen du <ph name="MANAGER" /> domeinuak. Bestela, deskarga ezazu neurtutako konexio batetik (baliteke zerbait ordaindu behar izatea).}other{Epemuga baino lehen wifi-sare batera konektatzeko eta eguneratze bat deskargatzeko eskatzen du <ph name="MANAGER" /> domeinuak. Bestela, deskargatu eguneratzea neurtutako konexio batetik (baliteke zerbait ordaindu behar izatea).}}</translation>
-<translation id="3008923556848076408">Gemini-k zure zereginean lan egiten jarraituko du</translation>
 <translation id="3008926075262837186">Irakurri eroso distrakzio gutxiagorekin</translation>
 <translation id="3009178788565917040">Irteera</translation>
 <translation id="3009352964623081324">Bilatu + O; gero, S. Erabili ahotsak instalatu, kudeatu eta pertsonalizatzeko.</translation>
@@ -3242,6 +3242,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
         Ezarpenak kudeatzeko, erabili txartel hau edo ikusi aukera gehiago Pertsonalizatu Chrome atalean.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Fitxa berria fitxa batean}other{Fitxa berria # fitxatan}}</translation>
 <translation id="3207960819495026254">Laster-marka gisa gordea</translation>
+<translation id="3208321278970793882">Aplikazioa</translation>
 <translation id="3208584281581115441">Egiaztatu</translation>
 <translation id="3208703785962634733">Berretsi gabe</translation>
 <translation id="3209703592917353472">Bisitatzen dituzun webguneek egiten ari zarenari buruzko informazioa gordetzen dute batzuetan, espero duzun moduan funtzionatu ahal izateko; adibidez, zure saioa hasita mantentzeko edo erosketa-saskian produktuak gordetzeko. Askotan, webguneek gailuan gordetzen dute informazio hori aldi baterako.</translation>
@@ -3264,6 +3265,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="322708765617468434">Konfigurazioa amaitu ondoren ere, beste pertsona bat gehi dezakezu gailuan. Bakoitzak bere erabilera pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
 <translation id="3227701057281907159">Adabakiak ezartzen</translation>
+<translation id="3228962656492373217">Itxi beheko fitxak</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Ken ezazu edo ordez ezazu <ph name="BEGIN_LINK" />Chrome Web Store-ko<ph name="END_LINK" /> antzeko luzapenekin}other{Ken itzazu edo ordez itzazu <ph name="BEGIN_LINK" />Chrome Web Store-ko<ph name="END_LINK" /> antzeko luzapenekin}}</translation>
 <translation id="3229254977651514276">Egiaztatu data</translation>
 <translation id="3230539834943294477">Irakurri laguntza-artikuluak edo bilatu gailuari buruzko laguntza</translation>
@@ -5000,6 +5002,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4404843640767531781">Guraso batek <ph name="APP_NAME" /> blokeatu du. Eska iezaiozu baimena aplikazioa erabiltzeko.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Eraman hona…</translation>
+<translation id="4405580203042711503">Fitxa berria behean</translation>
 <translation id="4405781821077215583">Handitu edo txikitu pantailako elementuak, testua barne</translation>
 <translation id="4406308048672435032">Fitxa hau inaktibo ezar dezakezu. Bestela, freskatu, zerrenda osoa berriro ikusteko.</translation>
 <translation id="4406881185911439342">Fokuratu taldea</translation>
@@ -6622,6 +6625,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Gehitu fitxa taldean}other{Gehitu fitxak taldean}}</translation>
 <translation id="554535686826424776">Bilatu kupoiak</translation>
 <translation id="5546865291508181392">Aurkitu</translation>
+<translation id="5547868626772433490">Galdetu Gemini-ri</translation>
 <translation id="5548075230008247516">Elementu guztiak desautatu dira, eta hautapen modutik irten zara.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" eta beste fitxa bat}other{"<ph name="TAB_TITLE" />" eta beste # fitxa}}</translation>
 <translation id="5548644592758170183">Erakutsi ezkerrean</translation>
@@ -6715,6 +6719,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5609231933459083978">Dirudienez, aplikazioak ez du balio.</translation>
 <translation id="5610867721023328944">Saiatu berriro edo hautatu erabilgarri dauden gaietako bat behean.</translation>
 <translation id="5611398002774823980">Gorde kontuan</translation>
+<translation id="5611474372949142946">Itxi beheko fitxak</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Erabiltzaileentzako oharra</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
@@ -9952,7 +9957,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="787268756490971083">Desaktibatuta</translation>
 <translation id="7872758299142009420">Habiaratutako talde gehiegi daude: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Chromebook-erako Steam</translation>
-<translation id="7874257161694977650">Chrome atzeko-planoak</translation>
 <translation id="7876027585589532670">Ezin da editatu lasterbidea</translation>
 <translation id="7876243839304621966">Kendu guztiak</translation>
 <translation id="7877126887274043657">Konpondu sinkronizazio-arazoa</translation>

@@ -875,6 +875,7 @@
 <translation id="397105322502079400">గణిస్తోంది...</translation>
 <translation id="397726367135689299">బ్యాటరీ ఛార్జింగ్ అస్థిరంగా ఉండవచ్చు.</translation>
 <translation id="3977512764614765090">బ్యాటరీ <ph name="PERCENTAGE" />% ఉంది. ఛార్జ్ అవుతోంది.</translation>
+<translation id="3978162107953847778">మీ బ్రౌజింగ్ హిస్టరీ, Google Drive వంటి వాటి నుండి లింక్‌లను ఇన్సర్ట్ చేయండి. ఎమోజీలు, ఇమేజ్ ఫైల్స్, మొదలైనవి కూడా మీరు ఇన్సర్ట్ చేయవచ్చు. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">ఆడియో అవుట్‌పుట్‌ను మార్చాలా?</translation>
 <translation id="3984536049089846927">తర్వాతి పేజీ</translation>
 <translation id="3986082989454912832">సమాధానం ఇవ్వండి</translation>
@@ -1601,6 +1602,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: సక్రియం చేస్తోంది...</translation>
 <translation id="6274202259872570803">స్క్రీన్‌కాస్ట్</translation>
+<translation id="6274422179279280249">లింక్‌లను, ఎమోజీలను, ఇంకా మరిన్నింటిని ఇన్‌సర్ట్ చేయండి. Googleకు చెందిన AI టెక్నాలజీలతో మీరు రాయడంలో కూడా సహాయాన్ని పొందవచ్చు. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">పేజీ సోర్స్ కోడ్‌ను చూడండి</translation>
 <translation id="6285871695023807425">క్యాలెండర్‌కు జోడించండి</translation>
 <translation id="6288235558961782912">మీ తల్లి/తండ్రి అనుమతితో <ph name="USER_EMAIL_ADDRESS" />ను తిరిగి యాడ్ చేయవచ్చు.</translation>

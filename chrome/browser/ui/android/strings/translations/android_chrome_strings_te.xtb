@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" /> నుండి సబ్‌స్క్రిప్షన్ తీసివేయబడింది. మీరు తర్వాతిసారి సందర్శించినప్పుడు సిస్టమ్ మిమ్మల్ని మళ్లీ అడుగుతుంది.</translation>
 <translation id="1340839264183302272">గ్రూప్ నుండి నిష్క్రమించండి</translation>
 <translation id="1342886103232377846">చోరీకి గురైన పాస్‌వర్డ్‌ల కోసం చెక్ చేయడానికి, Google Password Managerకు వెళ్లండి</translation>
+<translation id="1343830902827845050">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="1344653310988386453">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్‌ను చేర్చండి</translation>
 <translation id="1347468774581902829">యాక్టివిటీని మేనేజ్ చేయండి</translation>
 <translation id="1355088659320425659">హిస్టరీ, ట్యాబ్‌లు</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">డెస్క్‌టాప్ సైట్‌లు ఆటోమేటిక్‌గా రిక్వెస్ట్ చేయబడ్డాయి</translation>
 <translation id="4162867837470729563">షేరింగ్ ఆప్షన్‌ల లిస్ట్ స్క్రీన్ పూర్తిగా తెరవబడింది.</translation>
 <translation id="4170011742729630528">సేవ అందుబాటులో లేదు; తర్వాత మళ్లీ ట్రై చేయండి.</translation>
+<translation id="4170577491341606575">మీ డేటాను పొందుతోంది\u2026</translation>
 <translation id="4177222230309051052">మీ బుక్‌మార్క్‌లు అన్నిటినీ పొందండి</translation>
 <translation id="4177501066905053472">యాడ్ టాపిక్‌లు</translation>
 <translation id="417865198503699526">సెట్టింగ్ కోసం సెర్చ్ చేయండి</translation>
@@ -1455,6 +1457,7 @@
 <translation id="7115358764509798967">సిస్టమ్ ఆటోమేటిక్ సెట్టింగ్</translation>
 <translation id="7117485132243600300">మీరు ఫాలో అయ్యే కంటెంట్‌ను, సూచించిన టాపిక్‌లను, సెర్చ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />‌ను మూసివేయండి</translation>
+<translation id="7121179479711575744">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 సైట్ కోసం అనుమతులు రివ్యూ చేయబడ్డాయి}other{# సైట్‌ల కోసం అనుమతులు రివ్యూ చేయబడ్డాయి}}</translation>
 <translation id="7138678301420049075">ఇతరం</translation>
 <translation id="7140829094791862589">మాన్యువల్ ఆర్డర్‌లో క్రమపద్ధతిలో అమర్చండి</translation>

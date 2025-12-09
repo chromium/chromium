@@ -2987,7 +2987,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi i dag for at downloade en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}one{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}other{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}}</translation>
-<translation id="3008923556848076408">Gemini fortsætter med at arbejde på din opgave</translation>
 <translation id="3008926075262837186">Læs komfortabelt med minimale forstyrrelser</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009352964623081324">Søgetasten+O efterfulgt af S. Brug til at installere, administrere og tilpasse stemmer.</translation>
@@ -3260,6 +3259,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
         Du kan til enhver tid administrere indstillinger fra dette kort eller se flere valgmuligheder i Tilpas Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Ny fane på 1 fane}one{Ny fane på # fane}other{Ny fane på # faner}}</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
 <translation id="3208703785962634733">Ikke bekræftet</translation>
 <translation id="3209703592917353472">Et website, du besøger, kan gemme oplysninger om, hvad du foretager dig, så det kan fungere optimalt – f.eks. så du kan forblive logget ind på et website eller gemme varer i din indkøbskurv. Websites gemmer ofte disse oplysninger midlertidigt på din enhed.</translation>
@@ -5347,7 +5347,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4635072447747973225">Afinstaller Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> er ikke tilgængelig for gæstebrugere</translation>
 <translation id="4636187126182557415">Systempræferencer</translation>
-<translation id="4636930964841734540">Oplysninger</translation>
+<translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Flere handlinger, <ph name="EMAIL" /></translation>
 <translation id="4637189644956543313">Brug kamera igen</translation>
 <translation id="4637252186848840278">{COUNT,plural, =1{Tekstuddrag}one{# tekstuddrag}other{# tekstuddrag}}</translation>
@@ -6644,6 +6644,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="554535686826424776">Find kuponer</translation>
 <translation id="5546865291508181392">Find</translation>
+<translation id="5547868626772433490">Spørg Gemini</translation>
 <translation id="5548075230008247516">Markeringen af alle elementer er fjernet, og markeringstilstanden er afsluttet.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" og 1 anden fane}one{"<ph name="TAB_TITLE" />" og # anden fane}other{"<ph name="TAB_TITLE" />" og # andre faner}}</translation>
 <translation id="5548644592758170183">Vis i venstre side</translation>
@@ -9982,7 +9983,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="787268756490971083">Fra</translation>
 <translation id="7872758299142009420">Der er for mange indlejrede grupper: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam til Chromebook</translation>
-<translation id="7874257161694977650">Chrome-baggrunde</translation>
 <translation id="7876027585589532670">Genvejen kan ikke redigeres</translation>
 <translation id="7876243839304621966">Fjern alt</translation>
 <translation id="7877126887274043657">Løs &amp;synkroniseringsproblem</translation>

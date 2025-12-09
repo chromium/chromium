@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Mostrar vistas previas de enlaces</translation>
 <translation id="452750746583162491">Revisar los datos sincronizados</translation>
 <translation id="4532845899244822526">Seleccionar carpeta</translation>
+<translation id="454217142158335225">Puedes volver a abrir elementos cerrados desde las secciones de pestañas recientes o grupos de pestañas. Tus pestañas fijas no se cerrarán.</translation>
 <translation id="4547181496285029457">Volver a la pestaña reciente</translation>
 <translation id="4552042254369397518">Copiando…</translation>
 <translation id="4564893319561643483">Ocultar "<ph name="TITLE" />"</translation>
@@ -1841,6 +1842,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7887174313503389866">Haz una visita guiada de los controles principales de privacidad y seguridad. Para acceder a más opciones, ve a ajustes específicos.</translation>
 <translation id="7887198238286927132">Para proteger tu privacidad, Chrome no autocompletará este campo.</translation>
 <translation id="7887552845761062935">Toca dos veces y mantén pulsado para abrir más opciones</translation>
+<translation id="7888562068293422208">¿Cerrar todo?</translation>
 <translation id="7889910613639381518">Acceso fácil y seguro con el widget del Gestor de contraseñas de Google.</translation>
 <translation id="7899199123054742721">Marcar todo como no leído</translation>
 <translation id="7911190106180361398">Tu organización no te permite sincronizar todo.</translation>

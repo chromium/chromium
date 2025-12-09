@@ -254,6 +254,7 @@
 <translation id="3716540481907974026">ChromeOS Flexનું વર્ઝન</translation>
 <translation id="3718181793972440140">આ, 1 આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome તેને કાઢી નાખવાનો સુઝાવ તમને આપે છે. <ph name="BEGIN_LINK" />સપોર્ટેડ એક્સ્ટેન્શન વિશે વધુ જાણો<ph name="END_LINK" />}one{Chrome તેમને કાઢી નાખવાનો સુઝાવ તમને આપે છે. <ph name="BEGIN_LINK" />સપોર્ટેડ એક્સ્ટેન્શન વિશે વધુ જાણો<ph name="END_LINK" />}other{Chrome તેમને કાઢી નાખવાનો સુઝાવ તમને આપે છે. <ph name="BEGIN_LINK" />સપોર્ટેડ એક્સ્ટેન્શન વિશે વધુ જાણો<ph name="END_LINK" />}}</translation>
+<translation id="3729187154190517324">"ટૅબ અને વધુ ઉમેરો" બટનનો ઉપયોગ કરીને એકથી વધુ ટૅબ, ફાઇલો અને ટૂલ ઉમેરીને તમારી શોધને વધુ ઊંડી બનાવો.</translation>
 <translation id="3756724684201900923">Chrome ઇન્સ્ટૉલ કરવા વિશે વધુ જાણો</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">સાઇન ઇન કરવામાં ભૂલ આવવાને કારણે, ChromeOS Flex તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
@@ -392,6 +393,7 @@
 <translation id="5334309298019785904">તમારા ડોમેન પર સિંક કરવાની સુવિધા ઉપલબ્ધ ન હોવાને કારણે ChromeOS તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="5334487786912937552">ફાઇલો ડાઉનલોડ કરવા માટે, Chromeને સ્ટોરેજના ઍક્સેસની પરવાનગીની જરૂર છે</translation>
 <translation id="5337648990166757586">વૈકલ્પિક: Googleને ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને ChromeOSની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો.</translation>
+<translation id="5346389065299425353">એકથી વધુ ટૅબ, ફાઇલો અને ટૂલ ઉમેરીને તમારી શોધને વધુ ઊંડી બનાવો</translation>
 <translation id="5353252989841766347">Chrome માંથી પાસવર્ડ્સનો નિકાસ કરો</translation>
 <translation id="5368118228313795342">વધારાનો કોડ: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">જ્યારે તમે Chrome શરૂ કરો અથવા ઑમ્નિબૉક્સ પરથી શોધ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>

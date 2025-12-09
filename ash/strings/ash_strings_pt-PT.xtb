@@ -874,6 +874,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="397726367135689299">O carregamento da bateria pode ser instável.</translation>
 <translation id="3977512764614765090">A bateria está <ph name="PERCENTAGE" />% cheia e a carregar.</translation>
+<translation id="3978162107953847778">Insira links a partir de locais como o histórico de navegação e o Google Drive. Também pode inserir emojis, ficheiros de imagem e muito mais. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Mudar de saída de áudio?</translation>
 <translation id="3984536049089846927">Página seguinte</translation>
 <translation id="3986082989454912832">Atender</translation>
@@ -1600,6 +1601,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: a ativar...</translation>
 <translation id="6274202259872570803">Gravação de ecrã</translation>
+<translation id="6274422179279280249">Insira links, emojis e muito mais. Também pode obter ajuda para escrever com a IA da Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Ver código-fonte da página</translation>
 <translation id="6285871695023807425">Adicionar ao Calendário</translation>
 <translation id="6288235558961782912">É possível adicionar <ph name="USER_EMAIL_ADDRESS" /> novamente mais tarde com a autorização dos pais.</translation>

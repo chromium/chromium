@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" />ରୁ ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି। ଆପଣଙ୍କ ପରବର୍ତ୍ତୀ ଭିଜିଟରେ ଆପଣଙ୍କୁ ପୁଣି ପଚରାଯିବ।</translation>
 <translation id="1340839264183302272">ଗୋଷ୍ଠୀ ଛାଡ଼ନ୍ତୁ</translation>
 <translation id="1342886103232377846">ଚୋରି ହୋଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିବାକୁ Google Password Managerକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="1343830902827845050">Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="1344653310988386453">ହାଇଲାଇଟ୍ କରାଯାଇଥିବା ଟେକ୍ସଟର ଲିଙ୍କକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="1347468774581902829">କାର୍ଯ୍ୟକଳାପ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1355088659320425659">ଇତିହାସ ଏବଂ ଟାବଗୁଡ଼ିକ</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">ଡେସ୍କଟପ ସାଇଟଗୁଡ଼ିକ ଡିଫଲ୍ଟ ଭାବରେ ଅନୁରୋଧ କରାଯାଇଛି</translation>
 <translation id="4162867837470729563">ସେୟାରିଂ ବିକଳ୍ପଗୁଡ଼ିକର ତାଲିକା ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲିଛି।</translation>
 <translation id="4170011742729630528">ସେବା ଉପଲବ୍ଧ ନାହିଁ; ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4170577491341606575">ଆପଣଙ୍କ ଷ୍ଟଫ ପ୍ରାପ୍ତ କରାଯାଉଛି\u2026</translation>
 <translation id="4177222230309051052">ଆପଣଙ୍କର ସମସ୍ତ ବୁକମାର୍କ ପାଆନ୍ତୁ</translation>
 <translation id="4177501066905053472">ବିଜ୍ଞାପନ ବିଷୟ</translation>
 <translation id="417865198503699526">ଏକ ସେଟିଂ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">ସିଷ୍ଟମ ଡିଫଲ୍ଟ</translation>
 <translation id="7117485132243600300">ଆପଣ ଫଲୋ କରୁଥିବା ବିଷୟବସ୍ତୁ ଏବଂ ପ୍ରସ୍ତାବିତ ବିଷୟ ଓ ସର୍ଚ୍ଚଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />କୁ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="7121179479711575744">Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}other{# ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}}</translation>
 <translation id="7138678301420049075">ଅନ୍ୟ</translation>
 <translation id="7140829094791862589">ମାନୁଆଲ ଅର୍ଡରରେ ସର୍ଟ କର</translation>

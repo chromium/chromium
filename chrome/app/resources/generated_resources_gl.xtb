@@ -1901,6 +1901,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2287617382468007324">Enderezo IPP de impresora</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Para protexer os teus datos, quitáronse os permisos dun sitio que levas un tempo sen visitar}other{Para protexer os teus datos, quitáronse os permisos dos sitios que levas un tempo sen visitar}}</translation>
 <translation id="2287944065963043964">Pantalla de inicio de sesión</translation>
+<translation id="2289567621059034186">Nova pestana abaixo</translation>
 <translation id="2290615375132886363">Botóns de navegación da tableta</translation>
 <translation id="2290703778620332549">Queres substituír o grupo ou crear un novo?</translation>
 <translation id="2291452790265535215">Proba a usar o panel lateral para os marcadores e os percorridos, entre outras cousas</translation>
@@ -2970,7 +2971,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3008142279736625920">Torta de queixo</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que te conectes hoxe á wifi para descargar unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}other{<ph name="MANAGER" /> require que te conectes á wifi e descargues unha actualización antes de que acabe o prazo. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}}</translation>
-<translation id="3008923556848076408">Gemini seguirá traballando na túa tarefa</translation>
 <translation id="3008926075262837186">Le comodamente con poucas distraccións</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009352964623081324">Buscar + O e despois S. Utilízao para instalar, xestionar e personalizar as voces.</translation>
@@ -3243,6 +3243,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
         Podes xestionar a configuración desta tarxeta cando queiras ou ver máis opcións en Personalizar Chrome</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova pestana en 1 pestana}other{Nova pestana en # pestanas}}</translation>
 <translation id="3207960819495026254">Engadida a marcadores</translation>
+<translation id="3208321278970793882">Aplicación</translation>
 <translation id="3208584281581115441">Comprobar agora</translation>
 <translation id="3208703785962634733">Sen confirmar</translation>
 <translation id="3209703592917353472">Os sitios que visitas poden gardar información sobre o que fas para poder funcionar segundo o esperado (por exemplo, para manter a túa sesión iniciada ou gardar artigos que teñas no carro da compra). Os sitios adoitan almacenar esta información no teu dispositivo de forma temporal.</translation>
@@ -3265,6 +3266,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="322708765617468434">Despois da configuración, podes engadir máis persoas sempre que queiras. Cada unha delas pode personalizar a súa experiencia e protexer a privacidade dos seus datos.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3227701057281907159">Aplicando parche</translation>
+<translation id="3228962656492373217">Pechar pestanas de abaixo</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Quítaa ou substitúea por outra similar de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}other{Quítaas ou substitúeas por outras similares de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
 <translation id="3229254977651514276">Comproba a data</translation>
 <translation id="3230539834943294477">Consulta artigos de axuda ou busca asistencia para dispositivos</translation>
@@ -5004,6 +5006,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4404843640767531781">O teu pai ou nai bloqueou <ph name="APP_NAME" />. Pídelle permiso para utilizar esta aplicación.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg e *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
+<translation id="4405580203042711503">Nova pestana abaixo</translation>
 <translation id="4405781821077215583">Reduce ou amplía os elementos da pantalla, como o texto</translation>
 <translation id="4406308048672435032">Podes desactivar esta pestana ou actualizar a páxina para ver a lista completa de novo</translation>
 <translation id="4406881185911439342">Enfocar grupo</translation>
@@ -6628,6 +6631,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
 <translation id="554535686826424776">Buscar cupóns</translation>
 <translation id="5546865291508181392">Buscar</translation>
+<translation id="5547868626772433490">Preguntar a Gemini</translation>
 <translation id="5548075230008247516">Anulouse a selección de todos os elementos. Saíuse do modo de selección.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 pestana máis}other{"<ph name="TAB_TITLE" />" e # pestanas máis}}</translation>
 <translation id="5548644592758170183">Mostrar na parte esquerda</translation>
@@ -6721,6 +6725,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5609231933459083978">Parece que a aplicación non é válida.</translation>
 <translation id="5610867721023328944">Téntao de novo ou selecciona máis abaixo un dos temas dispoñibles.</translation>
 <translation id="5611398002774823980">Gardar na conta</translation>
+<translation id="5611474372949142946">Pechar pestanas de abaixo</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Aviso do usuario</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
@@ -9959,7 +9964,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="787268756490971083">Non</translation>
 <translation id="7872758299142009420">Hai demasiados grupos aniñados: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam para Chromebook</translation>
-<translation id="7874257161694977650">Fondos de Chrome</translation>
 <translation id="7876027585589532670">Non se puido editar o atallo</translation>
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7877126887274043657">Solucionar problema de &amp;sincronización</translation>

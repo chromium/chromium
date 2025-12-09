@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Cancelaches a subscrición a <ph name="SITE_NAME" />. Preguntaráseche de novo cando volvas visitar o sitio.</translation>
 <translation id="1340839264183302272">Saír do grupo</translation>
 <translation id="1342886103232377846">Para comprobar os contrasinais vulnerados, vai ao xestor de contrasinais de Google</translation>
+<translation id="1343830902827845050">Inicia sesión en Chrome</translation>
 <translation id="1344653310988386453">Inclúe unha ligazón ao texto destacado</translation>
 <translation id="1347468774581902829">Xestionar actividade</translation>
 <translation id="1355088659320425659">Historial e pestanas</translation>
@@ -718,6 +719,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="414128724510021958">Os sitios para ordenadores solicítanse de forma predeterminada</translation>
 <translation id="4162867837470729563">A lista de opcións para compartir está aberta a pantalla completa.</translation>
 <translation id="4170011742729630528">O servizo non está dispoñible. Téntao de novo máis tarde.</translation>
+<translation id="4170577491341606575">Cargando o teu contido\u2026</translation>
 <translation id="4177222230309051052">Obtén todos os teus marcadores</translation>
 <translation id="4177501066905053472">Temas dos anuncios</translation>
 <translation id="417865198503699526">Busca unha opción de configuración</translation>
@@ -1457,6 +1459,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7115358764509798967">Opción predeterminada do sistema</translation>
 <translation id="7117485132243600300">Xestiona o contido que segues e as buscas e os temas suxeridos</translation>
 <translation id="7119984597597798764">Pechar <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Iniciar sesión en Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Revisáronse os permisos de 1 sitio}other{Revisáronse os permisos de # sitios}}</translation>
 <translation id="7138678301420049075">Outros</translation>
 <translation id="7140829094791862589">Ordenar manualmente</translation>

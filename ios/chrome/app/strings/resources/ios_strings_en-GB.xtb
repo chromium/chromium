@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Show link previews</translation>
 <translation id="452750746583162491">Review your synced data</translation>
 <translation id="4532845899244822526">Choose folder</translation>
+<translation id="454217142158335225">You can reopen closed items from the recent tabs or tab groups sections. Your pinned tabs won't be closed.</translation>
 <translation id="4547181496285029457">Return to recent tab</translation>
 <translation id="4552042254369397518">Copying…</translation>
 <translation id="4564893319561643483">Hide '<ph name="TITLE" />'</translation>
@@ -1841,6 +1842,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7887174313503389866">Take a guided tour of key privacy and security controls. For more options, go to individual settings.</translation>
 <translation id="7887198238286927132">To protect your privacy, Chrome will not auto-fill this field.</translation>
 <translation id="7887552845761062935">Double-tap and hold to open more options</translation>
+<translation id="7888562068293422208">Close all?</translation>
 <translation id="7889910613639381518">Easy and secure access with the Google Password Manager widget.</translation>
 <translation id="7899199123054742721">Mark all unread</translation>
 <translation id="7911190106180361398">Your organisation doesn't allow for you to sync everything.</translation>

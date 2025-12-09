@@ -2981,7 +2981,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3008142279736625920">Чийзкейк</translation>
 <translation id="3008272652534848354">Нулиране на разрешенията</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> изисква да се свържете с Wi-Fi днес и да изтеглите актуализация. За целта можете да използвате и връзка с отчитане (възможно е да ви бъдат начислени такси).}other{<ph name="MANAGER" /> изисква да се свържете с Wi-Fi и да изтеглите актуализация преди крайния срок. За целта можете да използвате и връзка с отчитане (възможно е да ви бъдат начислени такси).}}</translation>
-<translation id="3008923556848076408">Gemini ще продължи да работи по задачата ви</translation>
 <translation id="3008926075262837186">Четете удобно с минимални разсейвания</translation>
 <translation id="3009178788565917040">Изход</translation>
 <translation id="3009352964623081324">Клавиш „търсене“ + O, след това S. Използвайте за инсталиране, управление и персонализиране на гласове.</translation>
@@ -3254,6 +3253,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
         Можете да управлявате настройките от тази карта по всяко време или да видите още опции в „Персонализиране на Chrome“.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Нов раздел в 1 раздел}other{Нов раздел в # раздела}}</translation>
 <translation id="3207960819495026254">С отметка</translation>
+<translation id="3208321278970793882">Приложение</translation>
 <translation id="3208584281581115441">Проверка сега</translation>
 <translation id="3208703785962634733">Непотвърдено</translation>
 <translation id="3209703592917353472">Сайтовете, които посещавате, могат да запазват информация за нещата, които правите, така че да работят по очаквания начин – например за да не излизате от профила си в даден сайт или за запазване на артикулите в пазарската ви кошница. Сайтовете често запазват тази информация временно на устройството ви.</translation>
@@ -6639,6 +6639,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Добавяне на раздела към група}other{Добавяне на разделите към група}}</translation>
 <translation id="554535686826424776">Намиране на талони</translation>
 <translation id="5546865291508181392">Търсене</translation>
+<translation id="5547868626772433490">Попитайте Gemini</translation>
 <translation id="5548075230008247516">Изборът бе премахнат от всички елементи. Излязохте от режима за избиране.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и още 1 раздел}other{„<ph name="TAB_TITLE" />“ и още # раздела}}</translation>
 <translation id="5548644592758170183">Показване вляво</translation>
@@ -9976,7 +9977,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="787268756490971083">Изключено</translation>
 <translation id="7872758299142009420">Твърде много вложени групи: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam for Chromebook</translation>
-<translation id="7874257161694977650">Фонове за Chrome</translation>
 <translation id="7876027585589532670">Прекият път не бе редактиран</translation>
 <translation id="7876243839304621966">Премахване на всички</translation>
 <translation id="7877126887274043657">Отстраняване на проблема със &amp;синхронизирането</translation>

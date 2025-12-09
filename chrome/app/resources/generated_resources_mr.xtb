@@ -1915,6 +1915,7 @@
 <translation id="2287617382468007324">प्रिंटिंग IPP ॲड्रेस</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{तुमच्या डेटाचे संरक्षण करण्यासाठी, तुम्ही अलीकडे भेट न दिलेल्या साइटवरून परवानग्या काढून टाकण्यात आल्या आहेत}other{तुमच्या डेटाचे संरक्षण करण्यासाठी, तुम्ही अलीकडे भेट न दिलेल्या साइटवरून परवानग्या काढून टाकण्यात आल्या आहेत}}</translation>
 <translation id="2287944065963043964">लॉगिन स्क्रीन</translation>
+<translation id="2289567621059034186">खाली नवीन टॅब उघडा</translation>
 <translation id="2290615375132886363">टॅबलेट नेव्हिगेशन बटणे</translation>
 <translation id="2290703778620332549">सद्य गट बदलायचा आहे की नवीन गट तयार करायचा आहे?</translation>
 <translation id="2291452790265535215">बुकमार्क, प्रवास आणि आणखी बऱ्याच गोष्टींसाठी साइड पॅनल वापरून पहा</translation>
@@ -2984,7 +2985,6 @@
 <translation id="3008142279736625920">चीझकेक</translation>
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही अपडेट डाउनलोड करण्यासाठी आजच वाय-फायशी कनेक्ट करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}other{<ph name="MANAGER" /> नुसार, तुम्ही डेडलाइनपूर्वी वाय-फाय शी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}}</translation>
-<translation id="3008923556848076408">Gemini तुमच्या टास्कवर काम करत राहील</translation>
 <translation id="3008926075262837186">कमी व्यत्ययांसह आरामात वाचा</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
 <translation id="3009352964623081324">Search + O, त्यानंतर S. इंस्टॉल करण्यासाठी, व्यवस्थापित करण्यासाठी आणि व्हॉइस कस्टमाइझ करण्यासाठी वापरा.</translation>
@@ -3257,6 +3257,7 @@
         तुम्ही या कार्डवरून सेटिंग्ज कधीही व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पहा.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{१ टॅबमधील नवीन टॅब}other{# टॅबमधील नवीन टॅब}}</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
+<translation id="3208321278970793882">ॲप</translation>
 <translation id="3208584281581115441">आता तपासा</translation>
 <translation id="3208703785962634733">पुष्टी न झालेले</translation>
 <translation id="3209703592917353472">तुम्ही भेट दिलेली साइट ही तुम्ही काय करत आहात याबद्दलची माहिती सेव्ह करू शकते, जेणेकरून ती अपेक्षेप्रमाणे काम करेल — उदाहरणार्थ, तुम्हाला साइटवर साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम सेव्ह करण्यासाठी. साइट या बरेचदा तुमच्या डिव्हाइसवर ही माहिती तात्पुरती सेव्ह करतात.</translation>
@@ -3279,6 +3280,7 @@
 <translation id="322708765617468434">सेटअप केल्यानंतर तुम्ही नेहमी दुसऱ्या व्यक्तीला डिव्हाइसमध्ये जोडू शकता. प्रत्येक व्यक्ती स्वतःचा अनुभव पर्सनलाइझ करू शकते आणि डेटा खाजगी ठेवू शकते.</translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
 <translation id="3227701057281907159">पॅच करत आहे</translation>
+<translation id="3228962656492373217">खालील टॅब बंद करा</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{<ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> वरील सारख्या एक्स्टेंशनसह ते काढून टाका किंवा बदला.}other{<ph name="BEGIN_LINK" />Chrome वेब स्टोअर<ph name="END_LINK" /> वरील सारख्या एक्स्टेंशनसह ती काढून टाका किंवा बदला}}</translation>
 <translation id="3229254977651514276">तारीख तपासा</translation>
 <translation id="3230539834943294477">मदतपर लेख पहा किंवा डिव्हाइस सपोर्ट शोधा</translation>
@@ -5013,6 +5015,7 @@
 <translation id="4404843640767531781">तुमच्या पालकाने <ph name="APP_NAME" /> ब्लॉक केले आहे. तुमच्या पालकाकडे हे अ‍ॅप वापरण्याची परवानगी मागा.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">यामध्ये हलवा…</translation>
+<translation id="4405580203042711503">खाली नवीन टॅब उघडा</translation>
 <translation id="4405781821077215583">मजकुराच्या समावेशासह तुमच्या स्क्रीनवरील आयटम आणखी लहान किंवा मोठे करा</translation>
 <translation id="4406308048672435032">संपूर्ण सूची पुन्हा पाहण्यासाठी तुम्ही हा टॅब इनॅक्टिव्ह किंवा रिफ्रेश करू शकता</translation>
 <translation id="4406881185911439342">फोकस गट</translation>
@@ -6637,6 +6640,7 @@
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{गटामध्ये टॅब जोडा}other{गटामध्ये टॅब जोडा}}</translation>
 <translation id="554535686826424776">कूपन शोधा</translation>
 <translation id="5546865291508181392">शोधा</translation>
+<translation id="5547868626772433490">Gemini ला विचारा</translation>
 <translation id="5548075230008247516">सर्व आयटमची निवड रद्द केली, निवड मोडमधून बाहेर पडलो.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" आणि इतर एक टॅब}other{"<ph name="TAB_TITLE" />" आणि इतर # टॅब}}</translation>
 <translation id="5548644592758170183">डावीकडे दाखवा</translation>
@@ -6730,6 +6734,7 @@
 <translation id="5609231933459083978">ॲप्लिकेशन चुकीचे असल्याचे दिसते.</translation>
 <translation id="5610867721023328944">पुन्हा प्रयत्न करा किंवा खालील उपलब्ध थीमपैकी एक निवडा.</translation>
 <translation id="5611398002774823980">खात्यामध्ये सेव्ह करा</translation>
+<translation id="5611474372949142946">खालील टॅब बंद करा</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">वापरकर्ता सूचना</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
@@ -9975,7 +9980,6 @@ I feel - विटांची इमारत</translation>
 <translation id="787268756490971083">बंद</translation>
 <translation id="7872758299142009420">नेस्ट केलेले खूप जास्त गट आहेत: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam for Chromebook</translation>
-<translation id="7874257161694977650">Chrome बॅकग्राउंड</translation>
 <translation id="7876027585589532670">शॉर्टकट संपादित करू शकत नाही</translation>
 <translation id="7876243839304621966">सर्व काढून टाका</translation>
 <translation id="7877126887274043657">सिंकसंबंधित &amp;समस्येचे निराकरण करा</translation>

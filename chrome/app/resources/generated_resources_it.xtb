@@ -2972,7 +2972,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3008142279736625920">Cheesecake</translation>
 <translation id="3008272652534848354">Reimposta le autorizzazioni</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento oggi stesso. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}other{<ph name="MANAGER" /> richiede la connessione a una rete Wi-Fi per scaricare un aggiornamento prima della scadenza. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).}}</translation>
-<translation id="3008923556848076408">Gemini continuerà a lavorare sulla tua attività</translation>
 <translation id="3008926075262837186">Leggi comodamente con distrazioni minime</translation>
 <translation id="3009178788565917040">Uscita</translation>
 <translation id="3009352964623081324">Tasto per la ricerca + O, poi S. Usa questa scorciatoia per installare, gestire e personalizzare voci.</translation>
@@ -3245,6 +3244,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
         Puoi gestire le impostazioni di questa scheda in qualsiasi momento o visualizzare altre opzioni in Personalizza Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nuova scheda in 1 scheda}other{Nuova scheda in # schede}}</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
+<translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
 <translation id="3208703785962634733">Non confermato</translation>
 <translation id="3209703592917353472">Un sito che visiti può salvare informazioni su ciò che stai facendo affinché possa funzionare come previsto, ad esempio per mantenere l'accesso al sito o salvare gli articoli nel tuo carrello degli acquisti. Spesso i siti salvano temporaneamente queste informazioni sul dispositivo</translation>
@@ -6628,6 +6628,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Aggiungi scheda a gruppo}other{Aggiungi schede a gruppo}}</translation>
 <translation id="554535686826424776">Trova coupon</translation>
 <translation id="5546865291508181392">Trova</translation>
+<translation id="5547868626772433490">Chiedi a Gemini</translation>
 <translation id="5548075230008247516">Tutti gli elementi deselezionati, modalità di selezione disattivata.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 altra scheda}other{"<ph name="TAB_TITLE" />" e altre # schede}}</translation>
 <translation id="5548644592758170183">Mostra a sinistra</translation>
@@ -9961,7 +9962,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="787268756490971083">Off</translation>
 <translation id="7872758299142009420">Troppi gruppi nidificati: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam per Chromebook</translation>
-<translation id="7874257161694977650">Sfondi di Chrome</translation>
 <translation id="7876027585589532670">Impossibile modificare la scorciatoia</translation>
 <translation id="7876243839304621966">Rimuovi tutto</translation>
 <translation id="7877126887274043657">Correggi il &amp;problema di sincronizzazione</translation>

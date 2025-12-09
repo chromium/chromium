@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Obuna bekor qilindi: <ph name="SITE_NAME" />. Keyingi tashrifda qaytadan soʻraladi.</translation>
 <translation id="1340839264183302272">Guruhni tark etish</translation>
 <translation id="1342886103232377846">Oshkor etilgan parollarni tekshirish uchun Google Parollar Menejerini oching</translation>
+<translation id="1343830902827845050">Chrome hisobiga kirish</translation>
 <translation id="1344653310988386453">Tanlangan matnga havola kiriting</translation>
 <translation id="1347468774581902829">Tarixni boshqarish</translation>
 <translation id="1355088659320425659">Tarix va varaqlar</translation>
@@ -718,6 +719,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="414128724510021958">Standart holatda saytlarning kompyuter versiyasi talab etiladi</translation>
 <translation id="4162867837470729563">Ruxsat parametrlari roʻyxatini toʻliq hajmda ochilgan.</translation>
 <translation id="4170011742729630528">Xizmat ish faoliyatida emas. Keyinroq qaytadan urinib ko‘ring.</translation>
+<translation id="4170577491341606575">Maʼlumotlar olinmoqda\u2026</translation>
 <translation id="4177222230309051052">Barcha xatchoʻplarni oling</translation>
 <translation id="4177501066905053472">Reklamadagi mavzular</translation>
 <translation id="417865198503699526">Sozlamani qidirish</translation>
@@ -1457,6 +1459,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7115358764509798967">Tizim standarti</translation>
 <translation id="7117485132243600300">Kuzatuvdagi kontent, tavsiya etilgan mavzu va qidiruvlarni boshqarish</translation>
 <translation id="7119984597597798764">Yopish: <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Chrome hisobiga kirish</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ta sayt uchun ruxsatlar tekshirilgan}other{# ta sayt uchun ruxsatlar tekshirilgan}}</translation>
 <translation id="7138678301420049075">Boshqa</translation>
 <translation id="7140829094791862589">Qoʻlda saralash</translation>

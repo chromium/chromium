@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Linkelőnézetek megjelenítése</translation>
 <translation id="452750746583162491">A szinkronizált adatok áttekintése</translation>
 <translation id="4532845899244822526">Mappa kiválasztása</translation>
+<translation id="454217142158335225">A bezárt elemeket a Nemrég megnyitott lapok vagy a Lapcsoportok szakaszban nyithatja meg újra. A rögzített lapok nem lesznek bezárva.</translation>
 <translation id="4547181496285029457">Vissza a legutóbbi lapra</translation>
 <translation id="4552042254369397518">Másolás…</translation>
 <translation id="4564893319561643483">A(z) „<ph name="TITLE" />” elrejtése</translation>
@@ -1841,6 +1842,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7887174313503389866">Tekintse meg a legfontosabb adatvédelmi és biztonsági beállítások bemutatóját. További lehetőségekért lépjen az egyes beállításokhoz.</translation>
 <translation id="7887198238286927132">Adatai védelme érdekében a Chrome nem tölti ki automatikusan ezt a mezőt.</translation>
 <translation id="7887552845761062935">Koppintson duplán, és tartsa nyomva a képernyőt a további lehetőségek megjelenítéséhez</translation>
+<translation id="7888562068293422208">Bezárja mind?</translation>
 <translation id="7889910613639381518">Egyszerű és biztonságos hozzáférés a Google Jelszókezelő modullal.</translation>
 <translation id="7899199123054742721">Az összes megjelölése olvasatlanként</translation>
 <translation id="7911190106180361398">Szervezete nem engedélyezi mindennek a szinkronizálását.</translation>

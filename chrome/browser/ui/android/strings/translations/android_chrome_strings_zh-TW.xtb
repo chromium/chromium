@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">已取消訂閱「<ph name="SITE_NAME" />」。系統會在你下次造訪時再次詢問。</translation>
 <translation id="1340839264183302272">退出群組</translation>
 <translation id="1342886103232377846">如要檢查密碼是否外洩，請前往 Google 密碼管理工具</translation>
+<translation id="1343830902827845050">登入 Chrome</translation>
 <translation id="1344653310988386453">加入醒目顯示文字的連結</translation>
 <translation id="1347468774581902829">管理活動</translation>
 <translation id="1355088659320425659">歷史記錄和分頁</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">預設設定要求顯示電腦版網站</translation>
 <translation id="4162867837470729563">分享選項清單已開啟，顯示於整個畫面。</translation>
 <translation id="4170011742729630528">服務無法使用，請稍後再試。</translation>
+<translation id="4170577491341606575">正在擷取你的資料\u2026</translation>
 <translation id="4177222230309051052">取得所有書籤</translation>
 <translation id="4177501066905053472">廣告主題</translation>
 <translation id="417865198503699526">搜尋設定</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">系統預設</translation>
 <translation id="7117485132243600300">管理追蹤的內容，以及建議的主題和搜尋項目</translation>
 <translation id="7119984597597798764">關閉<ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">登入 Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{已檢查 1 個網站的權限}other{已檢查 # 個網站的權限}}</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7140829094791862589">依手動順序排序</translation>

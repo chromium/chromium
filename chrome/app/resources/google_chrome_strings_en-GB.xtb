@@ -35,6 +35,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1330562121671411446">Detect language</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS Flex terms.</translation>
 <translation id="1341711321000856656">You can switch to see passwords from another Chrome profile</translation>
+<translation id="1343830902827845050">Sign in to Chrome</translation>
 <translation id="1356661055722410047">New! You can translate both text and images on your screen</translation>
 <translation id="1363996462118479832">Chrome OS could not sync your data due to an error signing in.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -251,6 +252,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3716540481907974026">Chrome OS Flex version</translation>
 <translation id="3718181793972440140">This will delete 1 item from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}other{Chrome recommends that you remove them. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}}</translation>
+<translation id="3729187154190517324">Deepen your search by adding multiple tabs, files and tools using the 'Add a tab and more' button.</translation>
 <translation id="3756724684201900923">Learn more about installing Chrome</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
@@ -387,6 +389,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="5334487786912937552">Chrome needs storage access permission to download files</translation>
 <translation id="5337648990166757586">Optional: Help improve Chrome OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
+<translation id="5346389065299425353">Deepen your search by adding multiple tabs, files and tools</translation>
 <translation id="5353252989841766347">Export Passwords From Chrome</translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">It also controls what page is shown when you start Chrome or search from the Omnibox.</translation>
@@ -564,6 +567,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7098166902387133879">Google Chrome is using your microphone.</translation>
 <translation id="7099479769133613710">Relaunch to update &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
+<translation id="7121179479711575744">Sign in to Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{A new update for Chrome is available and will be applied as soon as you relaunch.}=1{A new update for Chrome is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chrome is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="7155997830309522122">If so, please edit your saved password in Chrome so that it matches your new password.</translation>
 <translation id="7161904924553537242">Welcome to Google Chrome</translation>

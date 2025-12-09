@@ -2993,7 +2993,6 @@
 <translation id="3008142279736625920">עוגת גבינה</translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏לפי הדרישה של <ph name="MANAGER" />, עליך להתחבר היום לרשת Wi-Fi כדי להוריד עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}one{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}two{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}other{‏לפי דרישת <ph name="MANAGER" />, עליך להתחבר ל-Wi-Fi ולהוריד עדכון לפני המועד האחרון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).}}</translation>
-<translation id="3008923556848076408">‏‫Gemini ימשיך לעבוד על המשימה</translation>
 <translation id="3008926075262837186">רוצה לקרוא בנוחות עם מינימום הסחות דעת?</translation>
 <translation id="3009178788565917040">פלט</translation>
 <translation id="3009352964623081324">‏מקש החיפוש + O, ואז S. אפשר להשתמש במקשי הקיצור האלה לצורך התקנה, ניהול והתאמה אישית של קולות.</translation>
@@ -3266,6 +3265,7 @@
         תמיד אפשר לנהל את ההגדרות בכרטיס הזה, או לראות עוד אפשרויות ב'התאמה אישית של Chrome'.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{כרטיסייה חדשה בכרטיסייה אחת}one{כרטיסייה חדשה ב-# כרטיסיות}two{כרטיסייה חדשה ב-# כרטיסיות}other{כרטיסייה חדשה ב-# כרטיסיות}}</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
+<translation id="3208321278970793882">אפליקציה</translation>
 <translation id="3208584281581115441">לבדיקה</translation>
 <translation id="3208703785962634733">לא מאושר</translation>
 <translation id="3209703592917353472">אתר שמבקרים בו יכול לשמור מידע על הפעולות שמבצעים בו כדי לפעול כצפוי. למשל, כדי להשאיר את החשבון מחובר לאתר או לשמור פריטים בעגלת הקניות. לרוב, אתרים שומרים את המידע הזה במכשיר באופן זמני.</translation>
@@ -6660,6 +6660,7 @@
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
 <translation id="554535686826424776">חיפוש שוברים</translation>
 <translation id="5546865291508181392">חיפוש</translation>
+<translation id="5547868626772433490">‏יש לך שאלה ל-Gemini?</translation>
 <translation id="5548075230008247516">בוטלה הבחירה בכל הפריטים. יצאת ממצב הבחירה.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ועוד כרטיסייה אחת}one{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}two{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}other{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}}</translation>
 <translation id="5548644592758170183">הצגה בצד שמאל</translation>
@@ -10008,7 +10009,6 @@
 <translation id="787268756490971083">כבוי</translation>
 <translation id="7872758299142009420">יותר מדי קבוצות מקוננות: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">‏Steam ל-Chromebook</translation>
-<translation id="7874257161694977650">‏רקעים של Chrome</translation>
 <translation id="7876027585589532670">לא ניתן לערוך את קיצור הדרך</translation>
 <translation id="7876243839304621966">הסרת הכול</translation>
 <translation id="7877126887274043657">תיקון &amp;הבעיה בסנכרון</translation>

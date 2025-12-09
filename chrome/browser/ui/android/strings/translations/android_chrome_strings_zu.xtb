@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Uzikhiphile ohlwini lwe-<ph name="SITE_NAME" />. Uzobuzwa futhi ekuvakasheni kwakho okulandelayo.</translation>
 <translation id="1340839264183302272">Shiya iqembu</translation>
 <translation id="1342886103232377846">Ukuze uhlole amaphasiwedi onakalisiwe, iya Kumphathi Wephasiwedi Ye-Google</translation>
+<translation id="1343830902827845050">Ngena ngemvume kuChrome</translation>
 <translation id="1344653310988386453">Faka phakathi isixhumanisi kokokugqamisa</translation>
 <translation id="1347468774581902829">Lawula umsebenzi</translation>
 <translation id="1355088659320425659">Umlando namathebhu</translation>
@@ -718,6 +719,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="414128724510021958">Amasayithi edeskithophu acelwe ngokuzenzakalelayo</translation>
 <translation id="4162867837470729563">Uhlu lwezinketho zokwabelana ekuphakameni okugcwele.</translation>
 <translation id="4170011742729630528">Isevisi ayitholakali; zama futhi emuva kwesikhathi.</translation>
+<translation id="4170577491341606575">Ilanda izinto zakho\u2026</translation>
 <translation id="4177222230309051052">Thola wonke amabhukhimakhi akho</translation>
 <translation id="4177501066905053472">Izihloko zesikhangiso</translation>
 <translation id="417865198503699526">Sesha isethingi</translation>
@@ -1457,6 +1459,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="7115358764509798967">Okuzenzakalelayo kwesistimu</translation>
 <translation id="7117485132243600300">Lawula ikhontenti oyilandelayo nezihloko eziphakanyisiwe kanye nosesho</translation>
 <translation id="7119984597597798764">Vala <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Ngena ngemvume kuChrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Izimvume ezibuyekeziwe zesayithi e-1}one{Izimvume ezibuyekeziwe zamasayithi angu-#}other{Izimvume ezibuyekeziwe zamasayithi angu-#}}</translation>
 <translation id="7138678301420049075">Okunye</translation>
 <translation id="7140829094791862589">Sotha nge-oda yokuzenzela</translation>

@@ -1904,6 +1904,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2287617382468007324">Drukāšanas IPP adrese</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Lai aizsargātu jūsu datus, tika noņemtas atļaujas no vietnes, ko pēdējā laikā neesat apmeklējis.}zero{Lai aizsargātu jūsu datus, tika noņemtas atļaujas no vietnēm, ko pēdējā laikā neesat apmeklējis.}one{Lai aizsargātu jūsu datus, tika noņemtas atļaujas no vietnēm, ko pēdējā laikā neesat apmeklējis.}other{Lai aizsargātu jūsu datus, tika noņemtas atļaujas no vietnēm, ko pēdējā laikā neesat apmeklējis.}}</translation>
 <translation id="2287944065963043964">Pierakstīšanās ekrāns</translation>
+<translation id="2289567621059034186">Jauna cilne apakšā</translation>
 <translation id="2290615375132886363">Planšetdatora režīma navigācijas pogas</translation>
 <translation id="2290703778620332549">Vai aizstāt vai izveidot jaunu grupu?</translation>
 <translation id="2291452790265535215">Varat izmantot sānu paneli grāmatzīmēm, ceļiem un citām iespējām.</translation>
@@ -2973,7 +2974,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3008142279736625920">Siera kūka</translation>
 <translation id="3008272652534848354">Atiestatīt atļaujas</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> pieprasa, lai jūs šodien izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}zero{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}one{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}other{<ph name="MANAGER" /> pieprasa izveidot savienojumu ar Wi-Fi tīklu un lejupielādēt atjauninājumu pirms noteiktā termiņa beigām. Varat arī veikt lejupielādi, izmantojot maksas savienojumu.}}</translation>
-<translation id="3008923556848076408">Gemini turpinās darbu ar jūsu uzdevumu</translation>
 <translation id="3008926075262837186">Ērti lasiet ar minimāliem traucējumiem</translation>
 <translation id="3009178788565917040">Izvade</translation>
 <translation id="3009352964623081324">Search+O, pēc tam S. Izmantojiet, lai instalētu, pārvaldītu un pielāgotu balsis.</translation>
@@ -3244,6 +3244,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
         Jebkurā brīdī varat pārvaldīt šīs kartītes iestatījumus vai skatīt citas opcijas sadaļā Pielāgot pārlūkprogrammu Chrome.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Jauna cilne 1 cilnē}zero{Jauna cilne # cilnēs}one{Jauna cilne # cilnē}other{Jauna cilne # cilnēs}}</translation>
 <translation id="3207960819495026254">Atzīmēts kā grāmatzīme</translation>
+<translation id="3208321278970793882">Lietotne</translation>
 <translation id="3208584281581115441">Pārbaudīt tūlīt</translation>
 <translation id="3208703785962634733">Neapstiprināts</translation>
 <translation id="3209703592917353472">Apmeklētā vietne var saglabāt informāciju par jūsu veiktajām darbībām, lai nodrošinātu pienācīgu tās darbību, piemēram, pierakstīšanos vietnē vai iepirkumu grozā ievietoto preču saglabāšanu. Bieži vien vietnes šo informāciju jūsu ierīcē saglabā īslaicīgi.</translation>
@@ -3266,6 +3267,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="322708765617468434">Pēc iestatīšanas varēsiet jebkurā brīdī ierīcē pievienot citu personu. Katra persona var personalizēt savu pieredzi, un katras personas dati ir konfidenciāli.</translation>
 <translation id="3227137524299004712">Mikrofons</translation>
 <translation id="3227701057281907159">Notiek ielāpa lietošana…</translation>
+<translation id="3228962656492373217">Aizvērt apakšā esošās cilnes</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Noņemiet paplašinājumu vai aizstājiet to ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}zero{Noņemiet paplašinājumus vai aizstājiet tos ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}one{Noņemiet paplašinājumus vai aizstājiet tos ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Noņemiet paplašinājumus vai aizstājiet tos ar līdzīgiem paplašinājumiem no <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}}</translation>
 <translation id="3229254977651514276">Pārbaudiet datumu</translation>
 <translation id="3230539834943294477">Varat skatīt palīdzības rakstus vai atrast ierīces atbalsta informāciju</translation>
@@ -5002,6 +5004,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4404843640767531781">Lietotni <ph name="APP_NAME" /> bloķēja kāds no jūsu vecākiem. Lai izmantotu šo lietotni, lūdziet vecākiem piešķirt atļauju.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Pārvietot uz…</translation>
+<translation id="4405580203042711503">Jauna cilne apakšā</translation>
 <translation id="4405781821077215583">Samaziniet vai palieliniet ekrānā redzamos vienumus, tostarp tekstu.</translation>
 <translation id="4406308048672435032">Varat padarīt šo cilni neaktīvu vai atsvaidzināt, lai atkal skatītu visu sarakstu</translation>
 <translation id="4406881185911439342">Izcelt grupu</translation>
@@ -6625,6 +6628,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Pievienot cilni grupai}zero{Pievienot cilnes grupai}one{Pievienot cilnes grupai}other{Pievienot cilnes grupai}}</translation>
 <translation id="554535686826424776">Atrast kuponus</translation>
 <translation id="5546865291508181392">Atrast</translation>
+<translation id="5547868626772433490">Jautāt Gemini</translation>
 <translation id="5548075230008247516">Noņemta visu vienumu atlase. Atlases režīms izslēgts.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />” un vēl 1 cilne}zero{“<ph name="TAB_TITLE" />” un vēl # cilnes}one{“<ph name="TAB_TITLE" />” un vēl # cilne}other{“<ph name="TAB_TITLE" />” un vēl # cilnes}}</translation>
 <translation id="5548644592758170183">Rādīt kreisajā pusē</translation>
@@ -6718,6 +6722,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5609231933459083978">Šķiet, ka lietojumprogramma nav derīga.</translation>
 <translation id="5610867721023328944">Mēģiniet vēlreiz vai atlasiet kādu no tālāk pieejamajiem motīviem.</translation>
 <translation id="5611398002774823980">Saglabāt kontā</translation>
+<translation id="5611474372949142946">Aizvērt apakšā esošās cilnes</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Paziņojums lietotājam</translation>
 <translation id="5614553682702429503">Vai saglabāt paroli?</translation>
@@ -9961,7 +9966,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="787268756490971083">Izslēgts</translation>
 <translation id="7872758299142009420">Pārāk daudz ligzdotu grupu: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam Chromebook datoriem</translation>
-<translation id="7874257161694977650">Chrome fona attēli</translation>
 <translation id="7876027585589532670">Nevar rediģēt saīsni</translation>
 <translation id="7876243839304621966">Noņemt visu</translation>
 <translation id="7877126887274043657">Novērst &amp;sinhronizācijas problēmu</translation>

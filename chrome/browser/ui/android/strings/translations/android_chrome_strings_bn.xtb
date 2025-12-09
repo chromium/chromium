@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" /> থেকে আনসাবস্ক্রাইব করা হয়েছে। আপনার পরবর্তী ভিজিটে আপনাকে আবার জিজ্ঞাসা করা হবে।</translation>
 <translation id="1340839264183302272">গ্রুপ থেকে বেরিয়ে আসুন</translation>
 <translation id="1342886103232377846">চুরি হয়ে যাওয়া পাসওয়ার্ড চেক করতে, Google Password Manager-এ যান</translation>
+<translation id="1343830902827845050">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="1344653310988386453">হাইলাইট করা টেক্সটের লিঙ্ক যোগ করুন</translation>
 <translation id="1347468774581902829">অ্যাক্টিভিটি ম্যানেজ করুন</translation>
 <translation id="1355088659320425659">ইতিহাস ও ট্যাব</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">সাধারণত ডেস্কটপ সাইটগুলি অনুরোধ করা হয়েছে</translation>
 <translation id="4162867837470729563">শেয়ার করার বিকল্পের তালিকা স্ক্রিন জুড়ে আছে।</translation>
 <translation id="4170011742729630528">পরিষেবাটি উপলব্ধ নেই, পরে আবার চেষ্টা করুন৷</translation>
+<translation id="4170577491341606575">আপনার সাইন-ইন করার প্রসেস চলছে\u2026</translation>
 <translation id="4177222230309051052">আপনার সমস্ত বুকমার্ক পান</translation>
 <translation id="4177501066905053472">বিজ্ঞাপনের বিষয়</translation>
 <translation id="417865198503699526">সেটিং খুঁজুন</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">সিস্টেম ডিফল্ট</translation>
 <translation id="7117485132243600300">আপনার অনুসরণ করা কন্টেন্টের সাথে সাজেস্ট করা বিষয় এবং সার্চ ম্যানেজ করুন</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> বন্ধ করুন</translation>
+<translation id="7121179479711575744">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{১টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}one{#টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}other{#টি সাইটের জন্য অনুমতি পর্যালোচনা করা হয়েছে}}</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
 <translation id="7140829094791862589">ম্যানুয়াল অর্ডার অনুযায়ী সাজান</translation>

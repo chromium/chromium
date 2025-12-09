@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Uitgeteken van <ph name="SITE_NAME" />. Jy sal weer gevra word wanneer jy dit weer besoek.</translation>
 <translation id="1340839264183302272">Verlaat groep</translation>
 <translation id="1342886103232377846">Gaan na Google Wagwoordbestuurder om gekompromitteerde wagwoorde na te gaan</translation>
+<translation id="1343830902827845050">Meld aan by Chrome</translation>
 <translation id="1344653310988386453">Sluit skakel na hoogtepunt in</translation>
 <translation id="1347468774581902829">Bestuur aktiwiteit</translation>
 <translation id="1355088659320425659">Geskiedenis en oortjies</translation>
@@ -718,6 +719,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="414128724510021958">Rekenaarwerwe wat by verstek versoek is</translation>
 <translation id="4162867837470729563">Lys deelopsies teen volle hoogte.</translation>
 <translation id="4170011742729630528">Die diens is nie beskikbaar nie, probeer later weer.</translation>
+<translation id="4170577491341606575">Kry tans jou goed \u2026</translation>
 <translation id="4177222230309051052">Kry al jou boekmerke</translation>
 <translation id="4177501066905053472">Advertensie-onderwerpe</translation>
 <translation id="417865198503699526">Soek na ’n instelling</translation>
@@ -1457,6 +1459,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7115358764509798967">Stelselverstek</translation>
 <translation id="7117485132243600300">Bestuur inhoud wat jy volg en voorgestelde onderwerpe en soektogte</translation>
 <translation id="7119984597597798764">Maak <ph name="INSTANCE_TITLE" /> toe</translation>
+<translation id="7121179479711575744">Meld aan by Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Toestemmings is vir 1 werf gekontroleer}other{Toestemmings is vir # werwe gekontroleer}}</translation>
 <translation id="7138678301420049075">Ander</translation>
 <translation id="7140829094791862589">Sorteer orde handmatig</translation>

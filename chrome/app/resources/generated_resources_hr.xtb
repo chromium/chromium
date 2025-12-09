@@ -1905,6 +1905,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2287617382468007324">Ispis IPP adrese</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokaciju koju niste posjećivali u posljednje vrijeme}one{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokacije koje niste posjećivali u posljednje vrijeme}few{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokacije koje niste posjećivali u posljednje vrijeme}other{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokacije koje niste posjećivali u posljednje vrijeme}}</translation>
 <translation id="2287944065963043964">Zaslon za prijavu</translation>
+<translation id="2289567621059034186">Nova kartica u nastavku</translation>
 <translation id="2290615375132886363">Gumbi za kretanje na tabletu</translation>
 <translation id="2290703778620332549">Želite li zamijeniti grupu ili izraditi novu?</translation>
 <translation id="2291452790265535215">Isprobajte bočnu ploču za oznake, putovanja i ostalo</translation>
@@ -2974,7 +2975,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3008142279736625920">Torta od sira</translation>
 <translation id="3008272652534848354">Poništi dopuštenja</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> traži da se danas povežete s Wi-Fijem da biste preuzeli ažuriranje. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}one{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}few{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}other{<ph name="MANAGER" /> traži da se povežete s Wi-Fijem i preuzmete ažuriranje prije roka. Možete ga preuzeti i putem veze s ograničenim prometom (moguća je naplata naknada).}}</translation>
-<translation id="3008923556848076408">Gemini će nastaviti raditi na vašem zadatku</translation>
 <translation id="3008926075262837186">Čitajte u miru uz minimalna ometanja</translation>
 <translation id="3009178788565917040">Izlaz</translation>
 <translation id="3009352964623081324">Pretraživanje + O, a zatim S. Koristite za instaliranje, upravljanje i prilagođavanje glasova.</translation>
@@ -3246,6 +3246,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
         Postavkama uvijek možete upravljati na ovoj kartici, a više opcija možete vidjeti u odjeljku Prilagodba Chromea.</translation>
 <translation id="3207909572959773060">{NUM_TABS,plural, =1{Nova kartica na jednoj kartici}one{Nova kartica na # kartici}few{Nova kartica na # kartice}other{Nova kartica na # kartica}}</translation>
 <translation id="3207960819495026254">Označeno</translation>
+<translation id="3208321278970793882">Aplikacija</translation>
 <translation id="3208584281581115441">Provjeri sad</translation>
 <translation id="3208703785962634733">Nepotvrđeno</translation>
 <translation id="3209703592917353472">Web-lokacija koju posjećujete može spremiti podatke o tome što radite kako bi funkcionirala kako treba, na primjer kako biste ostali prijavljeni na web-lokaciju ili spremili artikle u košaricu. Web-lokacije često spremaju te podatke na vaš uređaj privremeno.</translation>
@@ -3268,6 +3269,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="322708765617468434">Nakon postavljanja uvijek možete dodati drugu osobu na uređaj. Svaka osoba može prilagoditi svoje iskustvo i zadržati privatnost svojih podataka.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3227701057281907159">Primjena zakrpe</translation>
+<translation id="3228962656492373217">Zatvori kartice u nastavku</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Uklonite ga ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />.}one{Uklonite ih ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />}few{Uklonite ih ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />}other{Uklonite ih ili zamijenite sličnim proširenjima iz <ph name="BEGIN_LINK" />Chrome web-trgovine<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Provjerite datum</translation>
 <translation id="3230539834943294477">Pogledajte članke pomoći ili pronađite podršku za uređaj</translation>
@@ -5004,6 +5006,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4404843640767531781">Tvoj roditelj blokirao je aplikaciju <ph name="APP_NAME" />. Ako želiš koristiti tu aplikaciju, traži dopuštenje od roditelja.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Premjesti u…</translation>
+<translation id="4405580203042711503">Nova kartica u nastavku</translation>
 <translation id="4405781821077215583">Stavke na zaslonu, uključujući tekst, možete povećati ili smanjiti</translation>
 <translation id="4406308048672435032">Karticu možete deaktivirati ili je osvježiti da biste ponovno vidjeli cijeli popis</translation>
 <translation id="4406881185911439342">Stavi fokus na grupu</translation>
@@ -6626,6 +6629,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Dodaj karticu grupi}one{Dodaj kartice grupi}few{Dodaj kartice grupi}other{Dodaj kartice grupi}}</translation>
 <translation id="554535686826424776">Pronađi kupone</translation>
 <translation id="5546865291508181392">Traži</translation>
+<translation id="5547868626772433490">Pitajte Gemini</translation>
 <translation id="5548075230008247516">Poništen je odabir svih stavki i zatvoren je način odabira.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />"}=1{„<ph name="TAB_TITLE" />" i još jedna kartica}one{„<ph name="TAB_TITLE" />" i još # kartica}few{„<ph name="TAB_TITLE" />" i još # kartice}other{„<ph name="TAB_TITLE" />" i još # kartica}}</translation>
 <translation id="5548644592758170183">Prikaži s lijeve strane</translation>
@@ -6719,6 +6723,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5609231933459083978">Čini se da je ova aplikacija nevažeća.</translation>
 <translation id="5610867721023328944">Pokušajte ponovo ili odaberite jednu od dostupnih tema u nastavku.</translation>
 <translation id="5611398002774823980">Spremi na račun</translation>
+<translation id="5611474372949142946">Zatvori kartice u nastavku</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Korisnička obavijest</translation>
 <translation id="5614553682702429503">Želite li spremiti zaporku?</translation>
@@ -9962,7 +9967,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="787268756490971083">Isključeno</translation>
 <translation id="7872758299142009420">Previše ugniježđenih grupa: <ph name="ERROR_LINE" /></translation>
 <translation id="7873386145597434863">Steam za Chromebook</translation>
-<translation id="7874257161694977650">Pozadine za Chrome</translation>
 <translation id="7876027585589532670">Uređivanje prečaca nije moguće</translation>
 <translation id="7876243839304621966">Ukloni sve</translation>
 <translation id="7877126887274043657">Ispravite poteškoće sa &amp;sinkronizacijom</translation>

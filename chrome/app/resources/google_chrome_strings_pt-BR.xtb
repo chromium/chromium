@@ -33,6 +33,7 @@
 <translation id="1330562121671411446">Detectar idioma</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Mude para outro perfil do Chrome para conferir as senhas dele</translation>
+<translation id="1343830902827845050">Faça login no Chrome</translation>
 <translation id="1356661055722410047">Novidade! Agora é possível traduzir textos e imagens na tela.</translation>
 <translation id="1363996462118479832">O ChromeOS não pôde sincronizar seus dados devido a um erro durante o login.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -247,6 +248,7 @@
 <translation id="3716540481907974026">Versão do ChromeOS Flex</translation>
 <translation id="3718181793972440140">Essa ação excluirá 1 item desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{O Chrome recomenda a remoção dela. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões compatíveis<ph name="END_LINK" />}one{O Chrome recomenda a remoção dela. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões compatíveis<ph name="END_LINK" />}other{O Chrome recomenda a remoção delas. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões compatíveis<ph name="END_LINK" />}}</translation>
+<translation id="3729187154190517324">Pressione o botão "Adicione uma guia e muito mais" e aprofunde sua pesquisa adicionando várias guias, arquivos e ferramentas.</translation>
 <translation id="3756724684201900923">Saiba como instalar o Chrome</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">O ChromeOS Flex não pôde sincronizar seus dados devido a um erro ao fazer login.</translation>
@@ -381,6 +383,7 @@
 <translation id="5334309298019785904">O ChromeOS não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
 <translation id="5334487786912937552">O Chrome precisa de acesso ao armazenamento para baixar arquivos</translation>
 <translation id="5337648990166757586">Opcional: ajude a melhorar os recursos e o desempenho do ChromeOS enviando automaticamente dados de uso e diagnóstico ao Google.</translation>
+<translation id="5346389065299425353">Aprofunde sua pesquisa adicionando várias guias, arquivos e ferramentas</translation>
 <translation id="5353252989841766347">Exportar senhas do Chrome</translation>
 <translation id="5368118228313795342">Código extra: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Controla também qual página deve ser exibida quando você inicia o Chrome ou faz uma pesquisa na Omnibox.</translation>
@@ -556,6 +559,7 @@
 <translation id="7098166902387133879">O Google Chrome está usando seu microfone.</translation>
 <translation id="7099479769133613710">Reinicializar para atualizar o &amp;ChromeOS</translation>
 <translation id="7106741999175697885">Gerenciador de tarefas - Google Chrome</translation>
+<translation id="7121179479711575744">Fazer login no Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo.}=1{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Sua janela anônima não será aberta novamente.}one{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Sua janela anônima não será aberta novamente.}other{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="7155997830309522122">Se tiver mudado, edite a senha salva no Chrome para que ela seja igual à nova senha.</translation>
 <translation id="7161904924553537242">Que bom te ver no Google Chrome!</translation>

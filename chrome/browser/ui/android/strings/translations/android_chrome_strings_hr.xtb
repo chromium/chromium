@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Otkazana je pretplata na web-lokaciju <ph name="SITE_NAME" />. Pri sljedećem posjetu upit će se prikazati ponovo.</translation>
 <translation id="1340839264183302272">Napusti grupu</translation>
 <translation id="1342886103232377846">Da biste provjerili jesu li zaporke ugrožene, otvorite Google upravitelj zaporki</translation>
+<translation id="1343830902827845050">Prijava u Chrome</translation>
 <translation id="1344653310988386453">Uključi vezu na istaknuti tekst</translation>
 <translation id="1347468774581902829">Upravljaj aktivnostima</translation>
 <translation id="1355088659320425659">Povijest i kartice</translation>
@@ -718,6 +719,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="414128724510021958">Web-lokacije za stolna računala zatražene prema zadanim postavkama</translation>
 <translation id="4162867837470729563">Popis opcija za dijeljenje u punoj visini.</translation>
 <translation id="4170011742729630528">Usluga nije dostupna, pokušajte ponovo kasnije.</translation>
+<translation id="4170577491341606575">Dohvaćanje vaših podataka\u2026</translation>
 <translation id="4177222230309051052">Pristup svim vašim oznakama</translation>
 <translation id="4177501066905053472">Teme oglasa</translation>
 <translation id="417865198503699526">Pretražite postavku</translation>
@@ -1457,6 +1459,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7115358764509798967">Zadane postavke sustava</translation>
 <translation id="7117485132243600300">Upravljajte sadržajem koji pratite i predloženim temama i pretraživanjima</translation>
 <translation id="7119984597597798764">Zatvori <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Prijava u Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Pregledana su dopuštenja za jednu web-lokaciju}one{Pregledana su dopuštenja za # web-lokaciju}few{Pregledana su dopuštenja za # web-lokacije}other{Pregledana su dopuštenja za # web-lokacija}}</translation>
 <translation id="7138678301420049075">Ostalo</translation>
 <translation id="7140829094791862589">Ručno sortiranje</translation>

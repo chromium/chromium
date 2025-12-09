@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" /> मधून सदस्यत्व रद्द केले. तुमच्या पुढील भेटीच्या वेळी तुम्हाला पुन्हा विचारले जाईल.</translation>
 <translation id="1340839264183302272">गट सोडा</translation>
 <translation id="1342886103232377846">धोक्यात असलेले पासवर्ड तपासण्यासाठी, Google Password Manager वर जा</translation>
+<translation id="1343830902827845050">Chrome मध्ये साइन इन करा</translation>
 <translation id="1344653310988386453">हायलाइट करण्यासाठी लिंकचा समावेश करा</translation>
 <translation id="1347468774581902829">अ‍ॅक्टिव्हिटी व्यवस्थापित करा</translation>
 <translation id="1355088659320425659">इतिहास आणि टॅब</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">बाय डीफॉल्ट डेस्कटॉप साइटची विनंती केली आहे</translation>
 <translation id="4162867837470729563">पूर्ण उघडलेली शेअरिंग पर्यायांची सूची.</translation>
 <translation id="4170011742729630528">सेवा उपलब्ध नाही; नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="4170577491341606575">तुमचा आशय मिळवत आहे\u2026</translation>
 <translation id="4177222230309051052">तुमचे सर्व बुकमार्क मिळवा</translation>
 <translation id="4177501066905053472">जाहिरातीचे विषय</translation>
 <translation id="417865198503699526">सेटिंग शोधा</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">सिस्टीम डीफॉल्ट</translation>
 <translation id="7117485132243600300">तुम्ही फॉलो करत असलेला आशय आणि सुचवलेले विषय व शोध व्यवस्थापित करा</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> बंद करा</translation>
+<translation id="7121179479711575744">Chrome मध्ये साइन इन करा</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{१ साइटसाठी परवानग्यांचे पुनरावलोकन केले}other{# साइटसाठी परवानग्यांचे पुनरावलोकन केले}}</translation>
 <translation id="7138678301420049075">इतर</translation>
 <translation id="7140829094791862589">मॅन्युअल क्रमानुसार लावा</translation>

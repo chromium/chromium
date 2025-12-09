@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Mostra les previsualitzacions dels enllaços</translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
 <translation id="4532845899244822526">Tria la carpeta</translation>
+<translation id="454217142158335225">Pots tornar a obrir els elements tancats des de les seccions de pestanyes o grups de pestanyes recents. Les pestanyes fixades no es tancaran.</translation>
 <translation id="4547181496285029457">Torna a la pestanya recent</translation>
 <translation id="4552042254369397518">S'està copiant…</translation>
 <translation id="4564893319561643483">Amaga "<ph name="TITLE" />"</translation>
@@ -1841,6 +1842,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7887174313503389866">Fes una visita guiada pels controls principals de privadesa i seguretat. Per veure més possibilitats, ves a cada opció de configuració.</translation>
 <translation id="7887198238286927132">Amb la finalitat de protegir la teva privadesa, Chrome no emplenarà aquest camp automàticament.</translation>
 <translation id="7887552845761062935">Fes doble toc i mantén premut per obrir més opcions</translation>
+<translation id="7888562068293422208">Tancar-ho tot?</translation>
 <translation id="7889910613639381518">Accés fàcil i segur amb el widget del gestor de contrasenyes de Google.</translation>
 <translation id="7899199123054742721">Marca-ho tot com a no llegit</translation>
 <translation id="7911190106180361398">La teva organització no et permet sincronitzar-ho tot.</translation>
