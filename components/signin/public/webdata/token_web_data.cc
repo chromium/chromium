@@ -75,7 +75,7 @@ class TokenWebDataBackend
     ASSIGN_OR_RETURN(
         absl::flat_hash_set<std::vector<uint8_t>> keys,
         TokenServiceTable::FromWebDatabase(db)->GetAllWrappedBindingKeys(),
-        [] -> std::unique_ptr<WDTypedResult> { return nullptr; });
+        [] { return nullptr; });
 
     return std::make_unique<
         WDResult<absl::flat_hash_set<std::vector<uint8_t>>>>(
