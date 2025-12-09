@@ -44,6 +44,11 @@ void FieldTrialsProvider::UpdateAppliedSeedHasActiveLimitedLayer(
   g_seed_has_active_limited_layer = has_limited_layer;
 }
 
+// static
+void FieldTrialsProvider::ClearSeedHasActiveLimitedLayerForTesting() {
+  g_seed_has_active_limited_layer = std::nullopt;
+}
+
 void FieldTrialsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
   // ProvideSystemProfileMetricsWithLogCreationTime() should be called instead.
