@@ -30,7 +30,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.autofill.AutofillManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
-import android.view.inputmethod.InputMethodManager;
 import android.view.textclassifier.TextClassifier;
 import android.widget.TextView;
 
@@ -42,14 +41,12 @@ import androidx.core.text.TextDirectionHeuristicsCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
-import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
@@ -224,7 +221,7 @@ public class UrlBar extends AutocompleteEditText {
         if (OmniboxFeatures.sUrlBarWithoutLigatures.isEnabled()) {
             // Explanation of Settings applied below:
             // - liga=0 - disable conventional, standard ligatures (fi -> ﬀ ,fi -> ﬁ, ...)
-            // - clig=0 - disable contextual ligatures (st->ﬆ, ft-> ﬅ, ...)
+            // - clig=0 - disable contextual ligatures (st->ﬆ, ft -> ﬅ, ...)
             // - calt=0 - disable contextual alternates (th, oo, tt, ...) - glyphs that may
             //            look differently at the beginning / middle / end of a word
             // - dlig=0 - disable decorative ligatures (sp, Th, ...)
@@ -516,35 +513,6 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // TODO(b:384508488): REMOVE once no longer needed.
-        // Attempt to identify view being served. Hacky and bad, but possibly the only
-        // way for us to determine which view announces itself as focused.
-        if (mFocused) {
-            var imm =
-                    (InputMethodManager)
-                            getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm.isActive() && !imm.isActive(this)) {
-                Log.e("b:384508488", "IMM appears to be handling a different view");
-                if (VersionInfo.isCanaryBuild() || VersionInfo.isLocalBuild()) {
-                    var activity = ContextUtils.activityFromContext(getContext());
-                    var focusedView = activity == null ? null : activity.getCurrentFocus();
-                    if (focusedView != this) {
-                        Log.e(
-                                "b:384508488",
-                                "Activity reports a different focused view: " + focusedView);
-                    } else {
-                        Log.e(
-                                "b:384508488",
-                                "UrlBar is focused, but IME handles a different, unknown view");
-                    }
-
-                    assert false
-                            : "b:384508488: UrlBar is focused, but IME is handling a different"
-                                    + " view. Please collect logcat and attach it to the bug.";
-                }
-            }
-        }
-
         if (event.getActionMasked() == MotionEvent.ACTION_UP) {
             performClick();
         }
