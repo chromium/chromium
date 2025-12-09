@@ -117,6 +117,19 @@ id<GREYMatcher> EditDoneButton() {
   return grey_accessibilityID(kSettingsToolbarEditDoneButtonId);
 }
 
+id<GREYMatcher> ToolbarSelectButton() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_SETTINGS_TOOLBAR_SELECT),
+                    grey_userInteractionEnabled(), nil);
+}
+
+id<GREYMatcher> ToolbarEditDoneButton() {
+  return grey_allOf(
+      EditDoneButton(),
+      grey_not(grey_ancestor(grey_kindOfClass([UINavigationBar class]))),
+      grey_userInteractionEnabled(), nil);
+}
+
 id<GREYMatcher> EditPasswordConfirmationButton() {
   return chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
       IDS_IOS_CONFIRM_PASSWORD_EDIT);
@@ -272,6 +285,11 @@ void OpenPasswordManager() {
 
 void TapNavigationBarEditButton() {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+}
+
+void TapToolbarSelectButton() {
+  [[EarlGrey selectElementWithMatcher:ToolbarSelectButton()]
       performAction:grey_tap()];
 }
 

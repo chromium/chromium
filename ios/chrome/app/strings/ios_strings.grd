@@ -6613,6 +6613,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SETTINGS_TOOLBAR_DELETE" desc="Label of the button displayed on the bottom toolbar of the settings' collections when they are in edit mode. Pressing this button deletes the currently selected items.">
         Delete
       </message>
+      <message name="IDS_IOS_SETTINGS_TOOLBAR_SELECT" desc="Label of the button on the bottom toolbar of the settings' collections to activate editing mode for a user to select multiple items.">
+        Select
+      </message>
       <message name="IDS_IOS_SETTINGS_TOOLBAR_SETTINGS_SUBMENU" desc="Button text in a toolbar that will take the user to a submenu with settings related to the currently-displayed content.">
         Settings
       </message>

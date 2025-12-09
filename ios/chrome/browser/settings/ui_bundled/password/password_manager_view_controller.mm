@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_settings_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller+toolbar_settings.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
@@ -308,6 +309,16 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   // Whether the VC is currently reloading data. Used to avoid modifying the
   // content while it is reloading.
   BOOL _isReloadingData;
+  // The button to close the password manager.
+  UIBarButtonItem* _closeButton;
+  // The button for the navigation bar to finish editing passwords.
+  UIBarButtonItem* _doneEditingButtonForNavigationBar;
+  // The button for the toolbar to finish editing passwords. When the search bar
+  // is active, the navigation bar is hidden. That is when this button is needed
+  // on the bottom toolbar.
+  UIBarButtonItem* _doneEditingButtonForToolbar;
+  // The button to start editing passwords.
+  UIBarButtonItem* _selectButton;
 }
 
 @synthesize manageAccountLinkItem = _manageAccountLinkItem;
@@ -646,8 +657,40 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)updateUIForEditState {
-  [super updateUIForEditState];
+  [self.navigationController setToolbarHidden:self.shouldHideToolbar
+                                     animated:YES];
+
+  self.navigationItem.rightBarButtonItem =
+      self.tableView.editing ? self.doneEditingButtonForNavigationBar
+                             : self.closeButton;
   [self updatedToolbarForEditState];
+}
+
+// Updates the toolbar based on the current edit state.
+- (void)updatedToolbarForEditState {
+  UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                           target:nil
+                           action:nil];
+
+  UIBarButtonItem* leadingButton = flexibleSpace;
+  UIBarButtonItem* trailingButton = flexibleSpace;
+  UIBarButtonItem* middleButton = flexibleSpace;
+  BOOL isEditing = self.tableView.editing;
+
+  if (_tableIsInSearchMode) {
+    trailingButton =
+        isEditing ? self.doneEditingButtonForToolbar : self.selectButton;
+    leadingButton =
+        isEditing ? self.deleteButton : self.settingsButtonInToolbar;
+  } else {
+    trailingButton = isEditing ? flexibleSpace : self.addOrSelectButton;
+    middleButton = isEditing ? self.deleteButton : flexibleSpace;
+    leadingButton = isEditing ? flexibleSpace : self.settingsButtonInToolbar;
+  }
+
+  [self setToolbarItems:@[ leadingButton, middleButton, trailingButton ]
+               animated:YES];
 }
 
 - (void)editButtonPressed {
@@ -655,23 +698,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   // because parent method -editButtonPressed is calling setEditing to change
   // the state).
   self.shouldEnableSearchBar = self.tableView.editing;
+  self.deleteButton.enabled = NO;
   [super editButtonPressed];
-}
-
-- (UIBarButtonItem*)customLeftToolbarButton {
-  return self.tableView.isEditing ? nil : self.settingsButtonInToolbar;
-}
-
-- (UIBarButtonItem*)customRightToolbarButton {
-  if (!self.tableView.isEditing) {
-    // Display Add button on the right side of the toolbar when the empty state
-    // is displayed. The Settings button will be on the left. When the tableView
-    // is not empty, the Add button is displayed in a row.
-    if ([self shouldShowEmptyStateView]) {
-      return self.addButtonInToolbar;
-    }
-  }
-  return nil;
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -2078,6 +2106,68 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     [self.tableView endUpdates];
     [UIView setAnimationsEnabled:YES];
   }
+}
+
+// Returns the button that closes the password manager.
+- (UIBarButtonItem*)closeButton {
+  if (!_closeButton) {
+    _closeButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                             target:self
+                             action:@selector(closePasswordManager)];
+    _closeButton.accessibilityIdentifier = kSettingsDoneButtonId;
+  }
+  return _closeButton;
+}
+
+// Returns the button that starts editing passwords.
+- (UIBarButtonItem*)selectButton {
+  if (!_selectButton) {
+    _selectButton = [[UIBarButtonItem alloc]
+        initWithTitle:l10n_util::GetNSString(IDS_IOS_SETTINGS_TOOLBAR_SELECT)
+                style:UIBarButtonItemStylePlain
+               target:self
+               action:@selector(editButtonPressed)];
+    _selectButton.accessibilityIdentifier = kSettingsToolbarEditButtonId;
+  }
+  return _selectButton;
+}
+
+// Returns the button for the navigation bar that finishes editing passwords.
+- (UIBarButtonItem*)doneEditingButtonForNavigationBar {
+  if (!_doneEditingButtonForNavigationBar) {
+    _doneEditingButtonForNavigationBar = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                             target:self
+                             action:@selector(editButtonPressed)];
+    _doneEditingButtonForNavigationBar.accessibilityIdentifier =
+        kSettingsToolbarEditDoneButtonId;
+  }
+  return _doneEditingButtonForNavigationBar;
+}
+
+// Returns the button for the toolbar that finishes editing passwords.
+- (UIBarButtonItem*)doneEditingButtonForToolbar {
+  if (!_doneEditingButtonForToolbar) {
+    _doneEditingButtonForToolbar =
+        [self createEditModeDoneButtonForToolbar:YES];
+  }
+  return _doneEditingButtonForToolbar;
+}
+
+// Returns either the "Add" button or the "Select" button based on the current
+// state.
+- (UIBarButtonItem*)addOrSelectButton {
+  return [self shouldShowEmptyStateView] ? [self addButtonInToolbar]
+                                         : [self selectButton];
+}
+
+// Closes the password manager.
+- (void)closePasswordManager {
+  SettingsNavigationController* navigationController =
+      base::apple::ObjCCast<SettingsNavigationController>(
+          self.navigationController);
+  [navigationController closeSettings];
 }
 
 #pragma mark - UITableViewDelegate
