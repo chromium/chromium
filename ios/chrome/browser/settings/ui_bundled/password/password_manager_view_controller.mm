@@ -1054,9 +1054,15 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   // Reload items in sections.
   if (sectionsToUpdate.count > 0) {
     [self filterItems:self.searchTerm];
-    [self.tableView reloadSections:sectionsToUpdate
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-    [self scrollToLastUpdatedItem];
+    __weak __typeof(self) weakSelf = self;
+    [self.tableView
+        performBatchUpdates:^{
+          [weakSelf.tableView reloadSections:sectionsToUpdate
+                            withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+        completion:^(BOOL) {
+          [weakSelf scrollToLastUpdatedItem];
+        }];
   } else if (_affiliatedGroups.empty() && _blockedSites.empty()) {
     [self setEditing:NO animated:YES];
   }
