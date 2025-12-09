@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObserver;
+import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -50,6 +52,7 @@ public class TabStateStore implements TabPersistentStore {
     private final TabCreatorManager mTabCreatorManager;
     private final TabModelSelector mTabModelSelector;
     private final String mWindowTag;
+    private final TabPersistencePolicy mTabPersistencePolicy;
     private final TabStateAttributes.Observer mAttributesObserver =
             this::onTabStateDirtinessChanged;
     private final ObserverList<TabPersistentStoreObserver> mObservers = new ObserverList<>();
@@ -87,6 +90,7 @@ public class TabStateStore implements TabPersistentStore {
 
     private @Nullable TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private @Nullable CombinedTabRestorer mCombinedTabRestorer;
+    private @Nullable CombinedTabRestorer mMergeCombinedTabRestorer;
     private @Nullable Runnable mInitRestoreOrchestratorForIncognito;
     private @Nullable StorageCollectionSynchronizer mIncognitoSynchronizer;
     private @Nullable StorageCollectionSynchronizer mRegularSynchronizer;
@@ -212,11 +216,13 @@ public class TabStateStore implements TabPersistentStore {
             TabStateStorageService tabStateStorageService,
             TabModelSelector tabModelSelector,
             String windowTag,
-            TabCreatorManager tabCreatorManager) {
+            TabCreatorManager tabCreatorManager,
+            TabPersistencePolicy tabPersistencePolicy) {
         mTabStateStorageService = tabStateStorageService;
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
         mTabCreatorManager = tabCreatorManager;
+        mTabPersistencePolicy = tabPersistencePolicy;
 
         tabModelSelector.getModel(false).addObserver(mTabModelObserver);
         TabModel incognitoModel = tabModelSelector.getModel(true);
@@ -262,7 +268,10 @@ public class TabStateStore implements TabPersistentStore {
         assert mCombinedTabRestorer == null;
         mCombinedTabRestorer =
                 new CombinedTabRestorer(
-                        !ignoreIncognitoFiles, mCombinedTabRestorerDelegate, mTabCreatorManager);
+                        !ignoreIncognitoFiles,
+                        mCombinedTabRestorerDelegate,
+                        mTabCreatorManager,
+                        /* logRestoreDuration= */ true);
 
         boolean[] restoreOrder =
                 mTabModelSelector.isIncognitoSelected()
@@ -277,11 +286,57 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void mergeState() {
-        // This is only invoked for SDK versions less than API 31. Currently this is not supported.
-        // TODO(https://crbug.com/463956290): Decide whether to support this behavior or limit the
-        // new system to API 31+. This could be accomplished with a separate queue of
-        // CombinedTabRestorers for merging.
-        assert false;
+        if (mCombinedTabRestorer != null) {
+            Log.e(TAG, "mergeState aborted as initial restore is in progress.");
+            return;
+        } else if (mMergeCombinedTabRestorer != null || mTabPersistencePolicy.isMergeInProgress()) {
+            Log.e(TAG, "mergeState aborted as merge restore is in progress.");
+            return;
+        }
+        mTabPersistencePolicy.setMergeInProgress(true);
+
+        String windowTagToMerge = mTabPersistencePolicy.getWindowTagToBeMerged();
+        assert windowTagToMerge != null : "Window tag must be non-null if merge is enabled.";
+
+        assert mMergeCombinedTabRestorer == null;
+        CombinedTabRestorerDelegate delegate =
+                new CombinedTabRestorerDelegate() {
+                    @Override
+                    public void onLoadFinished(int loadedTabCount) {
+                        mTabStateStorageService.clearWindow(windowTagToMerge);
+                    }
+
+                    @Override
+                    public void onRestoreFinished() {
+                        mTabPersistencePolicy.setMergeInProgress(false);
+                        mMergeCombinedTabRestorer = null;
+                    }
+                };
+
+        // TODO(crbug.com/463956290): Confirm the key for incognito tabs is valid.
+        mMergeCombinedTabRestorer =
+                new CombinedTabRestorer(
+                        /* restoreIncognitoTabs= */ true,
+                        delegate,
+                        mTabCreatorManager,
+                        /* logRestoreDuration= */ false);
+
+        for (boolean incognito : new boolean[] {false, true}) {
+            final boolean incognitoFinal = incognito;
+            mTabStateStorageService.loadAllData(
+                    windowTagToMerge,
+                    incognitoFinal,
+                    data -> {
+                        if (mIsDestroyed) {
+                            data.destroy();
+                            return;
+                        }
+                        assumeNonNull(mMergeCombinedTabRestorer);
+                        mMergeCombinedTabRestorer.onDataLoaded(data, incognitoFinal);
+                    });
+        }
+        mMergeCombinedTabRestorer.start(
+                mTabModelSelector.isIncognitoSelected(), /* restoreActiveTabImmediately= */ false);
     }
 
     @Override
@@ -331,6 +386,13 @@ public class TabStateStore implements TabPersistentStore {
         if (mCombinedTabRestorer != null) {
             mCombinedTabRestorer.cancel();
             mCombinedTabRestorer = null;
+        }
+
+        if (mMergeCombinedTabRestorer != null) {
+            mMergeCombinedTabRestorer.cancel();
+            mMergeCombinedTabRestorer = null;
+            // Reset if an ongoing merge gets cancelled.
+            mTabPersistencePolicy.setMergeInProgress(false);
         }
 
         mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
@@ -456,10 +518,8 @@ public class TabStateStore implements TabPersistentStore {
             }
         }
 
-        // TODO(ckitagawa): Change back to assert if the `mIsDestroyed` check is sufficient.
-        if (mCombinedTabRestorer != null) {
-            mCombinedTabRestorer.onDataLoaded(data, incognito);
-        }
+        assumeNonNull(mCombinedTabRestorer);
+        mCombinedTabRestorer.onDataLoaded(data, incognito);
     }
 
     /** Called after both the regular and incognito data has been loaded. */

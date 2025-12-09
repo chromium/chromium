@@ -310,7 +310,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             TabStateStorageServiceFactory.getForProfile(profile),
                             mTabModelSelector,
                             mWindowTag,
-                            shadowTabCreatorManager);
+                            shadowTabCreatorManager,
+                            mTabPersistencePolicy);
 
             SupplierUtils.waitForAll(
                     this::onBothStateLoaded,

@@ -40,6 +40,11 @@ public interface TabPersistencePolicy {
     @Nullable
     String getMetadataFileNameToBeMerged();
 
+    /** Returns the window tag of the metadata file that is to be merged. */
+    default @Nullable String getWindowTagToBeMerged() {
+        return null;
+    }
+
     /**
      * Performs any necessary initialization required before accessing the tab information. This can
      * include cleanups or migrations that must occur before the tab state information can be read

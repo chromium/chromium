@@ -402,7 +402,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                 new TabbedModeTabPersistencePolicy(
                         TabMetadataFileManager.getMetadataFileName(
                                 ARCHIVED_TAB_SELECTOR_UNIQUE_TAG),
-                        /* otherMetadataFileName= */ null,
+                        /* otherWindowTag= */ null,
                         /* mergeTabsOnStartup= */ false,
                         /* tabMergingEnabled= */ false) {
 

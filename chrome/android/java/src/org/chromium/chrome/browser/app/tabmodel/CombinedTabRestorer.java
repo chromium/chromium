@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
  */
 @NullMarked
 class CombinedTabRestorer {
+    private static final long INVALID_TIME = -1;
+
     /** Delegate for the {@link CombinedTabRestorer}. */
     public interface CombinedTabRestorerDelegate {
         /**
@@ -30,26 +32,26 @@ class CombinedTabRestorer {
          *
          * @param loadedTabCount The number of tabs that were loaded.
          */
-        void onLoadFinished(int loadedTabCount);
+        default void onLoadFinished(int loadedTabCount) {}
 
         /** Called once both the regular and incognito tab restorer have been cancelled. */
-        void onCancelled();
+        default void onCancelled() {}
 
         /** Called once both the regular and incognito tab restorer have been finished. */
-        void onRestoreFinished();
+        default void onRestoreFinished() {}
 
         /**
          * Called when the details of a tab have been read {@see
          * TabPersistentStoreObserver#onDetailsRead}.
          */
-        void onDetailsRead(
+        default void onDetailsRead(
                 int index,
                 @TabId int tabId,
                 String url,
                 boolean isStandardActiveIndex,
                 boolean isIncognitoActiveIndex,
                 boolean isIncognito,
-                boolean fromMerge);
+                boolean fromMerge) {}
     }
 
     private final TabRestorerDelegate mDelegate;
@@ -120,9 +122,11 @@ class CombinedTabRestorer {
             state.setLoadFinished();
 
             if (mRegularState.isLoadFinished() && mIncognitoState.isLoadFinished()) {
+                if (mLoadStartTime != INVALID_TIME) {
                 long duration = SystemClock.elapsedRealtime() - mLoadStartTime;
                 RecordHistogram.recordTimesHistogram(
                         "Tabs.TabStateStore.LoadAllTabsDuration", duration);
+                }
                 mOrchestratorDelegate.onLoadFinished(mRestoredTabCount);
             }
         }
@@ -196,11 +200,13 @@ class CombinedTabRestorer {
      * @param restoreIncognitoTabs Whether to restore incognito tabs.
      * @param delegate The delegate to be notified of events from the tab restorers.
      * @param tabCreatorManager The tab creator manager to create the tabs.
+     * @param logRestoreDuration Whether to log the restore duration.
      */
     CombinedTabRestorer(
             boolean restoreIncognitoTabs,
             CombinedTabRestorerDelegate delegate,
-            TabCreatorManager tabCreatorManager) {
+            TabCreatorManager tabCreatorManager,
+            boolean logRestoreDuration) {
         mDelegate = new TabRestorerDelegateImpl(delegate, restoreIncognitoTabs);
         mRegularTabRestorer =
                 new TabRestorer(
@@ -214,7 +220,7 @@ class CombinedTabRestorer {
                                 mDelegate,
                                 tabCreatorManager.getTabCreator(/* incognito= */ true))
                         : null;
-        mLoadStartTime = SystemClock.elapsedRealtime();
+        mLoadStartTime = logRestoreDuration ? SystemClock.elapsedRealtime() : INVALID_TIME;
     }
 
     /**

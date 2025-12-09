@@ -84,7 +84,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     private static @Nullable AsyncTask<Void> sCleanupTask;
 
     private final String mMetadataFileName;
-    private final @Nullable String mOtherMetadataFileName;
+    private final @Nullable String mOtherWindowTag;
     private final boolean mMergeTabsOnStartup;
     private final int mMaxSelectors;
 
@@ -95,9 +95,9 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
      * Constructs a persistence policy that handles the Tabbed mode specific logic.
      *
      * @param metadataFileName The state file name to pull and save state to.
-     * @param otherMetadataFileName The state file name to use for merging. Must be non-null if
-     *     either {@code mergeTabsOnStartup} or {@code tabMergingEnabled} are true and is ignored if
-     *     both are false.
+     * @param otherWindowTag The window tag to use for merging. Must be non-null if either {@code
+     *     mergeTabsOnStartup} or {@code tabMergingEnabled} are true and is ignored if both are
+     *     false.
      * @param mergeTabsOnStartup Whether this policy should handle merging tabs from all available
      *     tabbed mode files at startup.
      * @param tabMergingEnabled Whether tab merging operation should be done for multi-window/
@@ -105,16 +105,16 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
      */
     public TabbedModeTabPersistencePolicy(
             String metadataFileName,
-            @Nullable String otherMetadataFileName,
+            @Nullable String otherWindowTag,
             boolean mergeTabsOnStartup,
             boolean tabMergingEnabled) {
         mMetadataFileName = metadataFileName;
         if (mergeTabsOnStartup || tabMergingEnabled) {
-            assert otherMetadataFileName != null
+            assert otherWindowTag != null
                     : "otherMetadataFileName must be non-null if tab merging is enabled.";
-            mOtherMetadataFileName = otherMetadataFileName;
+            mOtherWindowTag = otherWindowTag;
         } else {
-            mOtherMetadataFileName = null;
+            mOtherWindowTag = null;
         }
         mMergeTabsOnStartup = mergeTabsOnStartup;
         mMaxSelectors = TabWindowManager.MAX_SELECTORS;
@@ -134,7 +134,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             int selectorIndex, boolean mergeTabsOnStartup, boolean tabMergingEnabled) {
         this(
                 getMetadataFileNameForIndex(selectorIndex),
-                getMetadataFileNameForIndex(selectorIndex == 0 ? 1 : 0),
+                Integer.toString(selectorIndex == 0 ? 1 : 0),
                 mergeTabsOnStartup,
                 tabMergingEnabled);
     }
@@ -156,7 +156,13 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
     @Override
     public @Nullable String getMetadataFileNameToBeMerged() {
-        return mOtherMetadataFileName;
+        if (mOtherWindowTag == null) return null;
+        return TabMetadataFileManager.getMetadataFileName(mOtherWindowTag);
+    }
+
+    @Override
+    public @Nullable String getWindowTagToBeMerged() {
+        return mOtherWindowTag;
     }
 
     /**
