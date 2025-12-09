@@ -48,11 +48,11 @@ void GlobalBrowserCollection::OnBrowserCreated(
 }
 
 void GlobalBrowserCollection::OnBrowserClosed(BrowserWindowInterface* browser) {
+  std::erase(browsers_activation_order_, browser);
+  std::erase(browsers_creation_order_, browser);
   for (BrowserCollectionObserver& observer : observers()) {
     observer.OnBrowserClosed(browser);
   }
-  std::erase(browsers_activation_order_, browser);
-  std::erase(browsers_creation_order_, browser);
 }
 
 void GlobalBrowserCollection::OnBrowserActivated(
