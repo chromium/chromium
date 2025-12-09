@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/media/glic_media_context.h"
 #include "chrome/browser/glic/media/glic_media_page_cache.h"
 #include "chrome/browser/glic/media/media_transcript_provider_impl.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/caption_controller_base.h"
 #include "components/live_caption/caption_util.h"
@@ -52,6 +53,20 @@ class GlicMediaPeerConnectionObserver
         context->OnPeerConnectionAdded();
       }
     });
+
+    // Also attribute this to its opener WebContents if this is a document PiP
+    // window.
+    if (auto* pip_window_manager =
+            PictureInPictureWindowManager::GetInstance()) {
+      auto* opener_wc = pip_window_manager->GetWebContents();
+      if (opener_wc) {
+        if (auto* context =
+                glic::GlicMediaContext::GetOrCreateForCurrentDocument(
+                    opener_wc->GetPrimaryMainFrame())) {
+          context->OnPeerConnectionAdded();
+        }
+      }
+    }
   }
 
   void OnPeerConnectionRemoved(
@@ -74,6 +89,20 @@ class GlicMediaPeerConnectionObserver
         context->OnPeerConnectionRemoved();
       }
     });
+
+    // Also attribute this to its opener WebContents if this is a document PiP
+    // window.
+    if (auto* pip_window_manager =
+            PictureInPictureWindowManager::GetInstance()) {
+      auto* opener_wc = pip_window_manager->GetWebContents();
+      if (opener_wc) {
+        if (auto* context =
+                glic::GlicMediaContext::GetOrCreateForCurrentDocument(
+                    opener_wc->GetPrimaryMainFrame())) {
+          context->OnPeerConnectionRemoved();
+        }
+      }
+    }
   }
 };
 

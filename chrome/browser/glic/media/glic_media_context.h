@@ -36,6 +36,8 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
 
   void OnPeerConnectionAdded();
   void OnPeerConnectionRemoved();
+  void OnPipPeerConnectionAdded();
+  void OnPipPeerConnectionRemoved();
 
   bool is_excluded_from_transcript_for_testing() {
     return IsExcludedFromTranscript();

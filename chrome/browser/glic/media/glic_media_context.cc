@@ -42,11 +42,14 @@ GlicMediaContext::~GlicMediaContext() {
 }
 
 bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
+  // Do not turn off transcription here, since there's no way to re-enable it
+  // later when IsExcludedFromTranscript() changes.
+  if (IsExcludedFromTranscript()) {
+    return true;
+  }
+
   Transcript* transcript = GetOrCreateTranscript();
   if (!transcript) {
-    // Do not turn off transcription here, since there's no way to re-enable it
-    // later.  For example, if `IsExcludedByTranscript()` changes, then we'd be
-    // stuck without transcription.
     return true;
   }
 

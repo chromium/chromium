@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/glic/media/glic_media_context.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/live_caption/live_caption_controller.h"
@@ -284,6 +285,30 @@ TEST_F(GlicMediaIntegrationTest, PeerConnectionExcludesAllSubframes) {
   // Verify both frames are no longer excluded.
   EXPECT_FALSE(main_context->is_excluded_from_transcript_for_testing());
   EXPECT_FALSE(subframe_context->is_excluded_from_transcript_for_testing());
+}
+
+TEST_F(GlicMediaIntegrationTest,
+       PeerConnectionInDocumentPiPPreventsTranscription) {
+  auto* integration = GetIntegration();
+  auto* main_context = GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
+
+  // Create a document pip window.
+  std::unique_ptr<content::WebContents> pip_web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          web_contents()->GetBrowserContext(), nullptr);
+  auto* pip_window_manager = PictureInPictureWindowManager::GetInstance();
+  pip_window_manager->EnterDocumentPictureInPicture(web_contents(),
+                                                    pip_web_contents.get());
+
+  // Add a peer connection to the pip window.
+  integration->OnPeerConnectionAddedForTesting(
+      pip_web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(main_context->is_excluded_from_transcript_for_testing());
+
+  // Remove the peer connection.
+  integration->OnPeerConnectionRemovedForTesting(
+      pip_web_contents->GetPrimaryMainFrame());
+  EXPECT_FALSE(main_context->is_excluded_from_transcript_for_testing());
 }
 
 TEST_F(GlicMediaIntegrationTest, ExcludedOriginsStopTranscription) {

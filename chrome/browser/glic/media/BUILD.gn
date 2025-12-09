@@ -23,6 +23,7 @@ source_set("media") {
     "//base",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
     "//components/live_caption",
     "//components/live_caption:constants",
