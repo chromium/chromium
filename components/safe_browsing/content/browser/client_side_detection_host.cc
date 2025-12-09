@@ -1024,13 +1024,15 @@ void ClientSideDetectionHost::OnBeforeFocusOnFormField(
 
   credit_card_form::FieldDetectionHeuristic field_heuristic =
       credit_card_form::kNoDetectionHeuristic;
-  bool has_local_heuristic =
-      !manager
-           .GetHeuristicPredictionForForm(autofill::GetActiveHeuristicSource(),
-                                          form_id, {field_id})
-           .empty();
+  bool has_local_heuristic = !manager
+                                  .GetHeuristicPredictionForForm(
+                                      autofill::GetActiveHeuristicSource(),
+                                      form_id, base::span_from_ref(field_id))
+                                  .empty();
   bool has_server_heuristic =
-      !manager.GetServerPredictionsForForm(form_id, {field_id}).empty();
+      !manager
+           .GetServerPredictionsForForm(form_id, base::span_from_ref(field_id))
+           .empty();
   if (has_server_heuristic) {
     field_heuristic = credit_card_form::kAutofillServer;
   } else if (has_local_heuristic) {

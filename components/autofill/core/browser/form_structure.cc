@@ -956,7 +956,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
 
 base::flat_map<FieldGlobalId, AutofillServerPrediction>
 FormStructure::GetServerPredictions(
-    const std::vector<FieldGlobalId>& field_ids) const {
+    base::span<const FieldGlobalId> field_ids) const {
   auto predictions = base::MakeFlatMap<FieldGlobalId, AutofillServerPrediction>(
       field_ids, {}, [](const FieldGlobalId& id) {
         return std::make_pair(id, AutofillServerPrediction());
@@ -972,7 +972,7 @@ FormStructure::GetServerPredictions(
 
 base::flat_map<FieldGlobalId, FieldType> FormStructure::GetHeuristicPredictions(
     HeuristicSource source,
-    const std::vector<FieldGlobalId>& field_ids) const {
+    base::span<const FieldGlobalId> field_ids) const {
   auto predictions = base::MakeFlatMap<FieldGlobalId, FieldType>(
       field_ids, {}, [](const FieldGlobalId& id) {
         return std::make_pair(id, NO_SERVER_DATA);

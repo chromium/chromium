@@ -547,7 +547,7 @@ void AutofillManager::ReparseKnownForms() {
 base::flat_map<FieldGlobalId, AutofillServerPrediction>
 AutofillManager::GetServerPredictionsForForm(
     FormGlobalId form_id,
-    const std::vector<FieldGlobalId>& field_ids) const {
+    base::span<const FieldGlobalId> field_ids) const {
   FormStructure* cached_form = FindCachedFormById(form_id);
   if (!cached_form) {
     return {};
@@ -559,7 +559,7 @@ base::flat_map<FieldGlobalId, FieldType>
 AutofillManager::GetHeuristicPredictionForForm(
     HeuristicSource source,
     FormGlobalId form_id,
-    const std::vector<FieldGlobalId>& field_ids) const {
+    base::span<const FieldGlobalId> field_ids) const {
   const FormStructure* const cached_form = FindCachedFormById(form_id);
   if (!cached_form) {
     return {};

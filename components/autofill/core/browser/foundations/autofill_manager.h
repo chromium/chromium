@@ -331,9 +331,8 @@ class AutofillManager
   // `form_id`, returns an empty map. If the form does not contain data about
   // fields with `field_ids`, NO_SERVER_DATA type is returned for them.
   base::flat_map<FieldGlobalId, AutofillServerPrediction>
-  GetServerPredictionsForForm(
-      FormGlobalId form_id,
-      const std::vector<FieldGlobalId>& field_ids) const;
+  GetServerPredictionsForForm(FormGlobalId form_id,
+                              base::span<const FieldGlobalId> field_ids) const;
 
   // Returns predictions from a heuristic source for fields identified by
   // `field_ids` in a form identified by `form_id`. Returns an empty map if the
@@ -341,7 +340,7 @@ class AutofillManager
   base::flat_map<FieldGlobalId, FieldType> GetHeuristicPredictionForForm(
       HeuristicSource source,
       FormGlobalId form_id,
-      const std::vector<FieldGlobalId>& field_ids) const;
+      base::span<const FieldGlobalId> field_ids) const;
 
   // Returns the `CreditCardAccessManager` associated with `this`. Null only
   // for Android (i.e., platform) Autofill.

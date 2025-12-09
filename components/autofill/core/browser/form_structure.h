@@ -297,11 +297,11 @@ class FormStructure {
   };
 
   base::flat_map<FieldGlobalId, AutofillServerPrediction> GetServerPredictions(
-      const std::vector<FieldGlobalId>& field_ids) const;
+      base::span<const FieldGlobalId> field_ids) const;
 
   base::flat_map<FieldGlobalId, FieldType> GetHeuristicPredictions(
       HeuristicSource source,
-      const std::vector<FieldGlobalId>& field_ids) const;
+      base::span<const FieldGlobalId> field_ids) const;
 
  private:
   friend class FormStructureTestApi;
