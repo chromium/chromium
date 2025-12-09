@@ -78,7 +78,8 @@ AccountsCookieMutatorImpl::SetAccountsInCookieForPartition(
   return std::make_unique<MultiloginHelperWrapper>(
       std::make_unique<OAuthMultiloginHelper>(
           signin_client_, partition_delegate, token_service_, parameters.mode,
-          accounts, /*external_cc_result=*/std::string(), source,
+          parameters.wait_on_connectivity, accounts,
+          /*external_cc_result=*/std::string(), source,
           std::move(set_accounts_in_cookies_completed_callback)));
 }
 

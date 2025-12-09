@@ -277,13 +277,16 @@ void GlicCookieSynchronizer::BeginCookieSync() {
     CompleteAuth(false);
     return;
   }
+  signin::MultiloginParameters parameters = {
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      {primary_account_id}};
+  if (base::FeatureList::IsEnabled(features::kGlicIgnoreOfflineState)) {
+    parameters.wait_on_connectivity = false;
+  }
   cookie_loader_ =
       identity_manager_->GetAccountsCookieMutator()
           ->SetAccountsInCookieForPartition(
-              this,
-              {gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
-               {primary_account_id}},
-              gaia::GaiaSource::kChromeGlic,
+              this, parameters, gaia::GaiaSource::kChromeGlic,
               base::BindOnce(&GlicCookieSynchronizer::OnAuthFinished,
                              GetWeakPtr()));
 }

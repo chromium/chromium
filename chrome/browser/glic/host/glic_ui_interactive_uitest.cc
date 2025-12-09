@@ -383,8 +383,11 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
 class GlicUiDisconnectedUiTest : public GlicUiInteractiveUiTestBase {
  public:
   GlicUiDisconnectedUiTest()
-      : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/false)) {}
+      : GlicUiInteractiveUiTestBase(TestParams(/*connected=*/false)) {
+    feature_list_.InitAndDisableFeature(features::kGlicIgnoreOfflineState);
+  }
   ~GlicUiDisconnectedUiTest() override = default;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicUiDisconnectedUiTest, DisconnectedPanelShown) {
