@@ -6882,9 +6882,10 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
     // The test contexts have gpu raster disabled by default.
-    gpu::Capabilities worker_caps =
-        worker_provider->UnboundTestRasterInterface()->capabilities();
-    EXPECT_FALSE(worker_caps.gpu_rasterization);
+    const auto& gpu_feature_info = worker_provider->UnboundGpuFeatureInfo();
+    EXPECT_NE(gpu_feature_info
+                  .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION],
+              gpu::kGpuFeatureStatusEnabled);
   }
 
   void SetupTree() override {

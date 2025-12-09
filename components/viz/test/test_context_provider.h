@@ -87,6 +87,9 @@ class TestContextProvider
   // state on the test interface before binding.
   TestGLES2Interface* UnboundTestContextGL() { return context_gl_.get(); }
   TestRasterInterface* UnboundTestRasterInterface();
+  const gpu::GpuFeatureInfo& UnboundGpuFeatureInfo() const {
+    return gpu_feature_info_;
+  }
 
   TestContextSupport* support() { return support_.get(); }
 
