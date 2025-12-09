@@ -557,6 +557,15 @@ void RenderWidgetHostViewMac::WasOccluded() {
 
   host()->WasHidden();
   browser_compositor_->SetRenderWidgetHostIsHidden(true);
+
+  // Headless mode forces focus change propagation inside Focus(), since there
+  // is no NSWindow to deliver the normal focus change notifications. As a
+  // result, when view is hidden, we must explicitly clear its focus state to
+  // keep focus behavior consistent and avoid leaving the view marked as focused
+  // wrongly.
+  if (IsHeadless() && HasFocus()) {
+    OnFirstResponderChanged(/*is_first_responder=*/false);
+  }
 }
 
 void RenderWidgetHostViewMac::SetSize(const gfx::Size& size) {
