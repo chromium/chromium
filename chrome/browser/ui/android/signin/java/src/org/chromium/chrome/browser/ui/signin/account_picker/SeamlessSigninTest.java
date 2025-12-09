@@ -105,6 +105,7 @@ public class SeamlessSigninTest {
     public void setUp() {
         mActivityTestRule.startOnBlankPage();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mIdentityManager.addOrUpdateExtendedAccountInfo(TestAccounts.ACCOUNT1);
         mAutoTestRule.setIsAutomotive(false);
 
         doCallback(
@@ -163,7 +164,7 @@ public class SeamlessSigninTest {
                         "Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
         mIsAccountManaged = false;
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         // Sign-in should be triggered immediately. Initial UI state never initializes the view nor
         // shows the bottom sheet.
@@ -185,7 +186,7 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
                         .build();
         mIsAccountManaged = true;
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         waitForManagementNoticeSheet();
         clickContinueButtonManagementNotice();
@@ -198,7 +199,7 @@ public class SeamlessSigninTest {
     @MediumTest
     public void testManagedAccountSuccessfulSignIn_showsLoadingSpinner() {
         mIsAccountManaged = true;
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         waitForManagementNoticeSheet();
         emulateLongSignin();
@@ -222,7 +223,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         mIsAccountManaged = true;
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         waitForManagementNoticeSheet();
         Espresso.pressBack();
@@ -246,7 +247,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         mIsAccountManaged = true;
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         waitForManagementNoticeSheet();
         clickCancelButtonManagementNotice();
@@ -270,7 +271,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         mIsAccountManaged = true;
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForManagementNoticeSheet();
 
         onViewWaiting(withId(R.id.account_picker_state_confirm_management)).perform(swipeDown());
@@ -288,7 +289,7 @@ public class SeamlessSigninTest {
                         "Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
         mAutoTestRule.setIsAutomotive(true);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
@@ -311,7 +312,7 @@ public class SeamlessSigninTest {
                         .build();
         mIsAccountManaged = true;
         mAutoTestRule.setIsAutomotive(true);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
         waitForManagementNoticeSheet();
@@ -326,7 +327,7 @@ public class SeamlessSigninTest {
     public void testAutomativeDevice_signInManagedAccount_showsLoadingSpinner() {
         mIsAccountManaged = true;
         mAutoTestRule.setIsAutomotive(true);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
         waitForManagementNoticeSheet();
@@ -348,7 +349,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         InOrder calledInOrder = inOrder(mAccountPickerDelegateMock, mSigninManagerMock);
         calledInOrder.verify(mAccountPickerDelegateMock).onSignoutBeforeSignin();
@@ -357,7 +358,6 @@ public class SeamlessSigninTest {
         accountConsistencyHistogram.assertExpected();
     }
 
-    /** TODO(crbug.com/435381574): Add coverage for removing account during initialization */
     @Test
     @MediumTest
     public void testFailedSignInDefaultAccount_errorScreenShown() {
@@ -372,7 +372,7 @@ public class SeamlessSigninTest {
                         .build();
         mIsNextSigninSuccessful.set(false);
 
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         waitForErrorSheet();
         verifySigninAborted();
@@ -393,7 +393,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForErrorSheet();
 
         Espresso.pressBack();
@@ -417,7 +417,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForErrorSheet();
 
         onViewWaiting(withId(R.id.account_picker_state_general_error)).perform(swipeDown());
@@ -443,7 +443,7 @@ public class SeamlessSigninTest {
                         .build();
         mIsAccountManaged = true;
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForManagementNoticeSheet();
 
         clickContinueButtonManagementNotice();
@@ -470,7 +470,7 @@ public class SeamlessSigninTest {
                         .build();
         mIsAccountManaged = true;
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForManagementNoticeSheet();
         clickContinueButtonManagementNotice();
         waitForErrorSheet();
@@ -496,7 +496,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         emulateLongSignin();
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         // Remove the account while signin() is executing.
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
@@ -521,7 +521,7 @@ public class SeamlessSigninTest {
                                 2)
                         .build();
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForErrorSheet();
 
         // Remove the account while the error sheet is shown.
@@ -546,7 +546,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         mIsAccountManaged = true;
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForManagementNoticeSheet();
 
         // Remove the account while the management notice sheet is shown.
@@ -568,7 +568,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         mAutoTestRule.setIsAutomotive(true);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
 
         // Remove the account before user completes the device lock.
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
@@ -583,7 +583,7 @@ public class SeamlessSigninTest {
     @MediumTest
     public void testTryAgainButton_withDefaultAccount_spinnerShown() {
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForErrorSheet();
 
         // Clicking on the |Try again| button should show spinner
@@ -609,7 +609,7 @@ public class SeamlessSigninTest {
                                 "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
                         .build();
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForErrorSheet();
 
         // Clicking on the |Try again| button should perform the sign-in
@@ -626,7 +626,7 @@ public class SeamlessSigninTest {
     public void testTryAgainButton_withManagedAccount_spinnerShown() {
         mIsAccountManaged = true;
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForManagementNoticeSheet();
         clickContinueButtonManagementNotice();
         waitForErrorSheet();
@@ -657,7 +657,7 @@ public class SeamlessSigninTest {
                         .build();
         mIsAccountManaged = true;
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForManagementNoticeSheet();
         clickContinueButtonManagementNotice();
         waitForErrorSheet();
@@ -675,7 +675,7 @@ public class SeamlessSigninTest {
     @MediumTest
     public void testBottomErrorSheetDismissalTriggersDestruction() {
         mIsNextSigninSuccessful.set(false);
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         waitForErrorSheet();
 
         // No dismissal metrics should be logged for programmatic (non-user-initiated) dismissals.
@@ -694,7 +694,7 @@ public class SeamlessSigninTest {
     @Test
     @MediumTest
     public void testDismissalWithoutVisibleBottomSheetTriggersDestruction() {
-        createCoordinator();
+        createCoordinatorAndLaunchSigninFlow();
         assertBottomSheetNeverShown();
 
         // In the successful scenario where the bottom sheet is never shown, calling dismiss
@@ -710,7 +710,7 @@ public class SeamlessSigninTest {
         assertFalse(mBottomSheetController.isSheetOpen());
     }
 
-    private void createCoordinator() {
+    private void createCoordinatorAndLaunchSigninFlow() {
         mDeviceLockActivityLauncher = new SigninTestUtil.CustomDeviceLockActivityLauncher();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -728,6 +728,7 @@ public class SeamlessSigninTest {
                                     mDeviceLockActivityLauncher,
                                     SigninAccessPoint.BOOKMARK_MANAGER,
                                     TestAccounts.ACCOUNT1.getId());
+                    mCoordinator.launchSigninFlow();
                 });
     }
 

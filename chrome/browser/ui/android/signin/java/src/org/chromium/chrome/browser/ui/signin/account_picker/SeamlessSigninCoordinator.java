@@ -93,7 +93,10 @@ public class SeamlessSigninCoordinator {
                         deviceLockActivityLauncher,
                         signinAccessPoint,
                         selectedAccountId);
+    }
 
+    @MainThread
+    public void launchSigninFlow() {
         mAccountPickerBottomSheetMediator.launchDeviceLockIfNeededAndSignIn();
     }
 

@@ -190,8 +190,6 @@ public class AccountPickerBottomSheetMediator
         mDismissalLogger = new AccountPickerDismissalLogger(mSigninAccessPoint, mIsWebSignin);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
-        List<AccountInfo> accounts =
-                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
 
         switch (launchMode) {
             case AccountPickerLaunchMode.CHOOSE_ACCOUNT:
@@ -204,7 +202,7 @@ public class AccountPickerBottomSheetMediator
                                 this::onAccountPickerDismissClicked,
                                 this::onConfirmManagementCancelClicked,
                                 accountPickerBottomSheetStrings);
-                initializeAccountPickerAccountAndModel(accounts, accountId);
+                initializeAccountPickerAccountAndModel(accountId);
                 break;
             case AccountPickerLaunchMode.SEAMLESS_SIGNIN:
                 assert requestDisplayBottomSheet != null
@@ -216,15 +214,9 @@ public class AccountPickerBottomSheetMediator
                                 this::onContinueAsClicked,
                                 this::onConfirmManagementCancelClicked,
                                 accountPickerBottomSheetStrings);
-                if (accounts.isEmpty()) {
-                    // TODO(crbug.com/437038737): Handle missing account during seamless sign-in
-                    // initialization.
-                    throw new UnsupportedOperationException(
-                            "Account being unavailable during initialization is not supported.");
-                }
                 mDefaultAccount =
                         assertNonNull(
-                                AccountUtils.findAccountByGaiaId(accounts, accountId.getId()));
+                                identityManager.findExtendedAccountInfoByAccountId(accountId));
                 setSelectedAccount(mDefaultAccount);
                 break;
             default:
@@ -422,8 +414,9 @@ public class AccountPickerBottomSheetMediator
         return hasExpandedAccountList || isOnConfirmManagement || isOnErrorScreen;
     }
 
-    private void initializeAccountPickerAccountAndModel(
-            List<AccountInfo> accounts, @Nullable CoreAccountId accountId) {
+    private void initializeAccountPickerAccountAndModel(@Nullable CoreAccountId accountId) {
+        List<AccountInfo> accounts =
+                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts());
         if (accounts.isEmpty()) {
             // If all accounts disappeared, no matter if the account list initial state, we will go
             // to the zero account screen.

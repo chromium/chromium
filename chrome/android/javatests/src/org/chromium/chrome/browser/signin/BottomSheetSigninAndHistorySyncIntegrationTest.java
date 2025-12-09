@@ -747,6 +747,39 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 .check(matches(isDisplayed()));
     }
 
+    @Test
+    @MediumTest
+    public void testSeamlessSignin() {
+        HistogramWatcher signinHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Signin.SignIn.Started", mSigninAccessPoint)
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Other.SigninCompleted")
+                        .build();
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        AccountPickerBottomSheetStrings bottomSheetStrings =
+                new AccountPickerBottomSheetStrings.Builder("Title").build();
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.SEAMLESS_SIGNIN,
+                                HistorySyncConfig.OptInMode.NONE,
+                                "Title",
+                                "Subtitle")
+                        .useSeamlessWithAccountSignin(TestAccounts.ACCOUNT1.getId())
+                        .build();
+        Intent intent =
+                SigninAndHistorySyncActivity.createIntent(
+                        ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
+        mActivityTestRule.launchActivity(intent);
+        mActivity = mActivityTestRule.getActivity();
+
+        // Verify account is signed in and activity is finished.
+        mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT1);
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        signinHistogramWatcher.assertExpected();
+    }
+
     private void launchActivity(
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,

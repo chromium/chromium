@@ -180,6 +180,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                             mDeviceLockActivityLauncher,
                             mSigninAccessPoint,
                             assertNonNull(mSelectedCoreAccountId));
+            mSeamlessSigninCoordinator.launchSigninFlow();
         } else {
             mAccountPickerBottomSheetCoordinator =
                     new AccountPickerBottomSheetCoordinator(
