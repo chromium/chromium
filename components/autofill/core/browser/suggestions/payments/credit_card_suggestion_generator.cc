@@ -222,7 +222,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
   std::vector<Suggestion> suggestions;
 
   credit_card_form_event_logger_->set_signin_state_for_metrics(
-      signin_state_for_metrics_.get());
+      signin_state_for_metrics_);
   CreditCardSuggestionSummary summary;
 
   bool is_virtual_card_standalone_cvc_field = false;

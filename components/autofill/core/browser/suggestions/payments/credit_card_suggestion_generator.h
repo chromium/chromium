@@ -269,7 +269,7 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   raw_ref<autofill_metrics::CreditCardFormEventLogger>
       credit_card_form_event_logger_;
 
-  raw_ref<AutofillMetrics::PaymentsSigninState> signin_state_for_metrics_;
+  AutofillMetrics::PaymentsSigninState signin_state_for_metrics_;
 
   raw_ref<const std::vector<std::string>> four_digit_combinations_in_dom_;
 
