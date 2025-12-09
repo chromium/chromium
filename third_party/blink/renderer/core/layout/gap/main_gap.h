@@ -29,6 +29,17 @@ class CORE_EXPORT MainGap {
           SpannerMainGapType spanner_main_gap_type = SpannerMainGapType::kNone)
       : gap_offset_(offset), spanner_main_gap_type_(spanner_main_gap_type) {}
 
+  // This copy-esque constructor allows creating a new MainGap instance based on
+  // an existing one, while replacing the gap offset. This is useful for
+  // fragmentation where most states remain the same, but the gap offset may
+  // differ between fragments.
+  MainGap(const MainGap& other, LayoutUnit new_offset)
+      : gap_offset_(new_offset),
+        range_of_cross_gaps_before_(other.range_of_cross_gaps_before_),
+        range_of_cross_gaps_after_(other.range_of_cross_gaps_after_),
+        gap_segment_state_ranges_(other.gap_segment_state_ranges_),
+        spanner_main_gap_type_(other.spanner_main_gap_type_) {}
+
   void SetGapOffset(LayoutUnit offset) { gap_offset_ = offset; }
   LayoutUnit GetGapOffset() const { return gap_offset_; }
 

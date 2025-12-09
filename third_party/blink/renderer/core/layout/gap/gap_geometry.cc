@@ -556,6 +556,20 @@ BlockedStatus GapGeometry::GetIntersectionBlockedStatus(
   return status;
 }
 
+void GapGeometry::AdjustCrossGapsRangesForFragmentation(
+    wtf_size_t last_track_in_previous_fragment,
+    wtf_size_t first_track_in_next_fragment,
+    Vector<wtf_size_t>& column_gaps_segment_ranges_start_indices) {
+  for (wtf_size_t i = 0; i < cross_gaps_.size(); ++i) {
+    CrossGap& cross_gap = cross_gaps_[i];
+    if (cross_gap.HasGapSegmentStateRanges()) {
+      cross_gap.AdjustGapSegmentStateRangesForFragmentation(
+          last_track_in_previous_fragment, first_track_in_next_fragment,
+          column_gaps_segment_ranges_start_indices[i]);
+    }
+  }
+}
+
 bool GapGeometry::MulticolCrossGapIntersectionsEndAtSpanner(
     wtf_size_t intersection_index,
     const Vector<LayoutUnit>& intersections) const {

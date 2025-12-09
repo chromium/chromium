@@ -39,6 +39,7 @@ struct GridBreakTokenData final : BreakTokenAlgorithmData {
       const HeapVector<Member<LayoutBox>>& oof_children,
       const GapGeometry* full_gap_geometry,
       Vector<wtf_size_t>& track_idx_to_set_idx,
+      Vector<wtf_size_t>& column_gaps_segment_ranges_start_indices,
       LayoutUnit cumulative_gap_offset_adjustment,
       wtf_size_t first_unprocessed_row_gap_idx)
       : BreakTokenAlgorithmData(kGridData),
@@ -52,6 +53,8 @@ struct GridBreakTokenData final : BreakTokenAlgorithmData {
         oof_children(oof_children),
         full_gap_geometry(full_gap_geometry),
         track_idx_to_set_idx(track_idx_to_set_idx),
+        column_gaps_segment_ranges_start_indices(
+            column_gaps_segment_ranges_start_indices),
         cumulative_gap_offset_adjustment(cumulative_gap_offset_adjustment),
         first_unprocessed_row_gap_idx(first_unprocessed_row_gap_idx) {}
 
@@ -88,6 +91,15 @@ struct GridBreakTokenData final : BreakTokenAlgorithmData {
   // gap index, and the value at that index is the corresponding set index. It
   // is used to determine the appropriate row offset adjustments for each track.
   Vector<wtf_size_t> track_idx_to_set_idx;
+
+  // Stores the indices for the first range of column gaps segment ranges that
+  // should be processed within the current fragmentainer. Each column gap has
+  // different segment ranges, hence the need for a Vector to represent each
+  // column gap. This is used to make the column gap segment ranges fragment
+  // relative. By storing these indices in the break token data, we can begin
+  // from the current range in the fragment instead of searching through all the
+  // segment ranges to locate the current one in a specific fragment.
+  Vector<wtf_size_t> column_gaps_segment_ranges_start_indices;
 
   // Cumulative offset that tracks how much row gap offsets have been adjusted
   // across fragments as a result of gap suppression. Decreases as further

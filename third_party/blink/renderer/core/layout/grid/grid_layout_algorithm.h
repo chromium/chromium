@@ -215,6 +215,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       const Vector<EBreakBetween>& row_break_between,
       const GapGeometry* full_gap_geometry,
       const Vector<wtf_size_t>* track_idx_to_set_idx,
+      Vector<wtf_size_t>* column_gaps_segment_ranges_start_indices,
       Vector<GridItemPlacementData>* grid_item_placement_data,
       Vector<LayoutUnit>* row_offset_adjustments,
       LayoutUnit* intrinsic_block_size,

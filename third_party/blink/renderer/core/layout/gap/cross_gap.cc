@@ -103,4 +103,45 @@ void CrossGap::UpdateCrossGapRangeEdgeState(
   }
 }
 
+void CrossGap::AdjustGapSegmentStateRangesForFragmentation(
+    wtf_size_t last_track_in_previous_fragment,
+    wtf_size_t first_track_in_next_fragment,
+    wtf_size_t& range_start_idx) {
+  CHECK(HasGapSegmentStateRanges());
+  GapSegmentStateRanges adjusted_ranges;
+
+  const auto& ranges = gap_segment_state_ranges_.value();
+  for (; range_start_idx < ranges.size(); ++range_start_idx) {
+    // If the start of the range is greater than the first unprocessed track, it
+    // means all subsequent ranges will also be beyond the current fragment, so
+    // we can break out of the loop.
+    if (ranges[range_start_idx].start > first_track_in_next_fragment) {
+      break;
+    }
+
+    // Adjust ranges relative to `last_track_in_previous_fragment` to keep
+    // indices fragment-relative. A range may begin before the current fragment
+    // and still overlap into the current fragment. In that case we clamp the
+    // fragment-relative start to 0 and carry the overlap forward.
+    wtf_size_t adjusted_start =
+        ranges[range_start_idx].start > last_track_in_previous_fragment
+            ? ranges[range_start_idx].start - last_track_in_previous_fragment
+            : 0;
+    CHECK_GT(ranges[range_start_idx].end, last_track_in_previous_fragment);
+    wtf_size_t adjusted_end =
+        ranges[range_start_idx].end - last_track_in_previous_fragment;
+    adjusted_ranges.emplace_back(GapSegmentStateRange{
+        adjusted_start, adjusted_end, ranges[range_start_idx].state});
+  }
+
+  // If the last included range extends beyond the
+  // `first_track_in_next_fragment`, we need to re-visit that same range in
+  // subsequent fragmentainers, so set `range_start_idx` to the prior index.
+  if (!adjusted_ranges.empty() && range_start_idx > 0 &&
+      ranges[range_start_idx - 1].end > first_track_in_next_fragment) {
+    --range_start_idx;
+  }
+  gap_segment_state_ranges_ = adjusted_ranges;
+}
+
 }  // namespace blink

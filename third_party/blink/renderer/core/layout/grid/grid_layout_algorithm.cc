@@ -118,6 +118,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   // is applied, if applicable.
   const GapGeometry* full_gap_geometry = nullptr;
   Vector<wtf_size_t> track_idx_to_set_idx;
+  Vector<wtf_size_t> column_gaps_segment_ranges_start_indices;
   LayoutUnit cumulative_gap_offset_adjustment = LayoutUnit();
   wtf_size_t first_unprocessed_row_gap_idx = 0;
 
@@ -136,12 +137,23 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
       oof_children = grid_data->oof_children;
       full_gap_geometry = grid_data->full_gap_geometry;
       track_idx_to_set_idx = grid_data->track_idx_to_set_idx;
+      column_gaps_segment_ranges_start_indices =
+          grid_data->column_gaps_segment_ranges_start_indices;
       cumulative_gap_offset_adjustment =
           grid_data->cumulative_gap_offset_adjustment;
       first_unprocessed_row_gap_idx = grid_data->first_unprocessed_row_gap_idx;
     } else {
       row_offset_adjustments =
           Vector<LayoutUnit>(layout_data.Rows().GetSetCount() + 1);
+      // `EndLineOfImplicitGrid()` is equivalent to the total track count.
+      // TODO(samomekarajr): Add this and number of gaps to the
+      // `GridTrackCollection` API.
+      const wtf_size_t total_column_track_count =
+          layout_data.Columns().EndLineOfImplicitGrid();
+      if (total_column_track_count > 1) {
+        column_gaps_segment_ranges_start_indices =
+            Vector<wtf_size_t>(total_column_track_count - 1, 0);
+      }
       PlaceGridItems(grid_items, layout_subtree, &row_break_between,
                      &grid_items_placement_data, &full_gap_geometry,
                      &track_idx_to_set_idx);
@@ -149,10 +161,10 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
 
     PlaceGridItemsForFragmentation(
         grid_items, layout_subtree, row_break_between, full_gap_geometry,
-        &track_idx_to_set_idx, &grid_items_placement_data,
-        &row_offset_adjustments, &intrinsic_block_size,
-        &offset_in_stitched_container, &cumulative_gap_offset_adjustment,
-        &first_unprocessed_row_gap_idx);
+        &track_idx_to_set_idx, &column_gaps_segment_ranges_start_indices,
+        &grid_items_placement_data, &row_offset_adjustments,
+        &intrinsic_block_size, &offset_in_stitched_container,
+        &cumulative_gap_offset_adjustment, &first_unprocessed_row_gap_idx);
   } else {
     PlaceGridItems(grid_items, layout_subtree, &row_break_between);
   }
@@ -247,8 +259,8 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
             intrinsic_block_size, offset_in_stitched_container,
             grid_items_placement_data, row_offset_adjustments,
             row_break_between, oof_children, full_gap_geometry,
-            track_idx_to_set_idx, cumulative_gap_offset_adjustment,
-            first_unprocessed_row_gap_idx));
+            track_idx_to_set_idx, column_gaps_segment_ranges_start_indices,
+            cumulative_gap_offset_adjustment, first_unprocessed_row_gap_idx));
   }
 
   container_builder_.HandleOofsAndSpecialDescendants();
@@ -2364,6 +2376,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     const Vector<EBreakBetween>& row_break_between,
     const GapGeometry* full_gap_geometry,
     const Vector<wtf_size_t>* track_idx_to_set_idx,
+    Vector<wtf_size_t>* column_gaps_segment_ranges_start_indices,
     Vector<GridItemPlacementData>* grid_items_placement_data,
     Vector<LayoutUnit>* row_offset_adjustments,
     LayoutUnit* intrinsic_block_size,
@@ -2831,6 +2844,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     };
 
     wtf_size_t current_processed_gap_set_idx = kNotFound;
+    const wtf_size_t initial_unprocessed_row_gap_idx =
+        *first_unprocessed_row_gap_idx;
     for (wtf_size_t gap_index = *first_unprocessed_row_gap_idx;
          gap_index < main_gaps.size(); ++gap_index) {
       LayoutUnit row_gap_midpoint = main_gaps[gap_index].GetGapOffset() +
@@ -2857,7 +2872,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         break;
       }
 
-      fragment_main_gaps.push_back(MainGap(row_gap_midpoint));
+      fragment_main_gaps.push_back(
+          MainGap(main_gaps[gap_index], row_gap_midpoint));
       *first_unprocessed_row_gap_idx = gap_index + 1;
     }
 
@@ -2895,6 +2911,9 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           *full_gap_geometry, std::move(fragment_main_gaps),
           fragment_block_start, fragment_block_end);
 
+      fragment_gap_geometry->AdjustCrossGapsRangesForFragmentation(
+          initial_unprocessed_row_gap_idx, *first_unprocessed_row_gap_idx,
+          *column_gaps_segment_ranges_start_indices);
       container_builder_.SetGapGeometry(fragment_gap_geometry);
     }
   };

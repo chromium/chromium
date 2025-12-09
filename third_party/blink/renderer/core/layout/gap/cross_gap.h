@@ -111,6 +111,22 @@ class CORE_EXPORT CrossGap {
       wtf_size_t end_index,
       CrossGap::EdgeIntersectionState new_state);
 
+  // Updates `gap_segment_state_ranges_` to reflect fragmentation up to
+  // `last_track_in_previous_fragment`. During fragmentation, main gaps shift
+  // and become relative to the current fragment. This function modifies the
+  // ranges to ensure they accurately represent gap segments for the current
+  // fragment. `range_start_idx` is the index of the first gap segment state
+  // range that should be considered for the current fragment. It is updated to
+  // be the first range to be considered in subsequent fragments after adjusting
+  // all ranges in current fragment. `first_track_in_next_fragment` is the index
+  // of the first track in the next fragment that has not been fully processed
+  // yet. `last_track_in_previous_fragment` is the index of the last track that
+  // has been fully processed in the previous fragment.
+  void AdjustGapSegmentStateRangesForFragmentation(
+      wtf_size_t last_track_in_previous_fragment,
+      wtf_size_t first_track_in_next_fragment,
+      wtf_size_t& range_start_idx);
+
  private:
   LogicalOffset gap_logical_offset_;
 

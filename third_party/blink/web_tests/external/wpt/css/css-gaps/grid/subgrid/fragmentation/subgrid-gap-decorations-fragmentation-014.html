@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <title>
   Gap Decorations are shown in a grid that's fragmented. Suppressed row gaps do not
-  have decorations. Test scenario with two nested subgrids and a row gap is suppressed.
+  have decorations. Test scenario where the subgrid is empty and *rule-break is
+  spanning-item.
 </title>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
-<link rel="match" href="subgrid-gap-decorations-fragmentation-012-ref.html">
+<link rel="match" href="subgrid-gap-decorations-fragmentation-014-ref.html">
 <link rel="author" title="Sam Davis Omekara Jr." href="mailto:samomekarajr@microsoft.com">
 <style>
   body {
@@ -15,7 +16,7 @@
     columns: 2;
     column-fill: auto;
     width: 280px;
-    height: 50px;
+    height: 80px;
     background: yellow;
     column-gap: 0px;
   }
@@ -28,8 +29,9 @@
     height: 140px;
     column-rule: skyblue solid 10px;
     row-rule: cornflowerblue solid 10px;
-    column-rule-break: none;
-    row-rule-break: none;
+    column-rule-break: spanning-item;
+    row-rule-break: spanning-item;
+    row-rule-inset: 0px;
   }
   .subgrid {
     display: grid;
@@ -40,17 +42,6 @@
     grid-row: 2 / -2;
     column-rule: white solid 10px;
     row-rule: blue solid 10px;
-    column-rule-break: none;
-    row-rule-break: none;
-  }
-  .inner-subgrid {
-    display: grid;
-    grid-template-columns: subgrid;
-    grid-template-rows: subgrid;
-    grid-column: 2 / -1;
-    grid-row: 2/ -1;
-    column-rule: red solid 10px;
-    row-rule: blue solid 10px;
   }
   .item {
     background: purple;
@@ -58,13 +49,6 @@
 </style>
 <div class="multicol">
   <div class="grid-container">
-    <div class="subgrid">
-     <div class="inner-subgrid">
-       <div class="item"></div>
-       <div class="item"></div>
-       <div class="item"></div>
-       <div class="item"></div>
-      </div>
-    </div>
+    <div class="subgrid"></div>
   </div>
 </div>
