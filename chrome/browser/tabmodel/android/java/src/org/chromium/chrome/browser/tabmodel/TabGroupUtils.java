@@ -305,21 +305,6 @@ public class TabGroupUtils {
             return;
         }
 
-        // TODO(crbug.com/413724490): Replace the ungroup operation with a {@link
-        // TabGroupModelFilter}-based solution.
-        //
-        // Right now, it is only possible to move tabs in 2 ways:
-        // - Moving 1 tab within a group to another via the ctx menu 'Move to group' option
-        // - Selecting a whole group via the Tab List Editor
-        // In the first case, we want to ungroup, since the tab group card needs to be updated.
-        // In the second case, we do not want to since the card disappears. This means the
-        // 'undo' option will fully be able to undo this action.
-        if (tabs.size() == 1) {
-            tabGroupModelFilter
-                    .getTabUngrouper()
-                    .ungroupTabs(tabs, /* trailing= */ false, /* allowDialog= */ false);
-        }
-
         tabGroupModelFilter.mergeListOfTabsToGroup(
                 tabs, destTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         if (tabMovedCallback != null) {
