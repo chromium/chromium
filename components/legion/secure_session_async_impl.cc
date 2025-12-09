@@ -105,13 +105,23 @@ void SecureSessionAsyncImpl::GetHandshakeMessage(
 
 void SecureSessionAsyncImpl::ProcessHandshakeResponse(
     const oak::session::v1::HandshakeResponse& response,
-    SecureSession::ProcessHandshakeResponseOnceCallback callback) {
+    ProcessHandshakeResponseOnceCallback original_callback) {
   auto handshake_msg = ConvertToHandshakeMessage(response);
 
   if (!handshake_msg.has_value()) {
-    std::move(callback).Run(false);
+    std::move(original_callback).Run(false);
     return;
   }
+
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(original_callback), false);
+
+  auto callback = base::BindOnce(
+      [](ProcessHandshakeResponseOnceCallback callback,
+         bool handshake_verified) {
+        std::move(callback).Run(handshake_verified);
+      },
+      std::move(wrapped_callback));
 
   service_->CompleteHandshake(std::move(handshake_msg.value()),
                               std::move(callback));

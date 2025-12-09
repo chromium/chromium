@@ -81,6 +81,25 @@ class SecureSessionAsyncImplTest : public ::testing::Test {
   std::unique_ptr<SecureSessionAsyncImpl> secure_session_;
 };
 
+TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseDisconnect) {
+  base::test::TestFuture<bool> future;
+
+  // `HandshakeResponse` should be valid, otherwise inner Mojo service
+  // will not be called.
+  oak::session::v1::HandshakeResponse response;
+  {
+    auto* server_noise_msg = response.mutable_noise_handshake_message();
+    uint8_t server_e_pub_bytes[kP256X962Length] = {0};  // Test key
+    server_noise_msg->set_ephemeral_public_key(server_e_pub_bytes,
+                                               sizeof(server_e_pub_bytes));
+    server_noise_msg->set_ciphertext("corrupted ciphertext");
+  }
+
+  secure_session_->ProcessHandshakeResponse(response, future.GetCallback());
+  fake_oak_session_service_.reset();
+  EXPECT_FALSE(future.Get());
+}
+
 TEST_F(SecureSessionAsyncImplTest, EncryptDisconnect) {
   base::test::TestFuture<std::optional<oak::session::v1::EncryptedMessage>>
       future;
