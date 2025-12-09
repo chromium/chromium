@@ -4,34 +4,6 @@
 
 #include "ui/gfx/ipc/buffer_types/gfx_param_traits.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
-#include <string>
-
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
-
-namespace IPC {
-
-void ParamTraits<gfx::BufferUsageAndFormat>::Write(
-    base::Pickle* m,
-    const gfx::BufferUsageAndFormat& p) {
-  WriteParam(m, p.usage);
-  WriteParam(m, p.format);
-}
-
-bool ParamTraits<gfx::BufferUsageAndFormat>::Read(
-    const base::Pickle* m,
-    base::PickleIterator* iter,
-    gfx::BufferUsageAndFormat* r) {
-  if (!ReadParam(m, iter, &r->usage) || !ReadParam(m, iter, &r->format))
-    return false;
-  return true;
-}
-
-}  // namespace IPC
-
 // Generate param traits write methods.
 #include "ipc/param_traits_write_macros.h"
 namespace IPC {

@@ -10,17 +10,4 @@
 #include "ui/gfx/ipc/buffer_types/gfx_ipc_export.h"
 #include "ui/gfx/ipc/buffer_types/gfx_param_traits_macros.h"
 
-namespace IPC {
-
-template <>
-struct GFX_IPC_BUFFER_TYPES_EXPORT ParamTraits<gfx::BufferUsageAndFormat> {
-  typedef gfx::BufferUsageAndFormat param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-};
-
-}  // namespace IPC
-
 #endif  // UI_GFX_IPC_BUFFER_TYPES_GFX_PARAM_TRAITS_H_
