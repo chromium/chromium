@@ -256,6 +256,11 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
             constraintEqualToAnchor:self.trailingAnchor];
     textInputToContainerTrailing.priority = UILayoutPriorityRequired - 1;
 
+    CGFloat clearTrailingOffset =
+        _presentationContext == OmniboxPresentationContext::kComposebox
+            ? 0
+            : kTextInputViewClearButtonTrailingOffset;
+
     [NSLayoutConstraint activateConstraints:@[
       [_leadingImageView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
@@ -268,7 +273,7 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
           constraintEqualToAnchor:referenceCenterYAnchor],
       [self.clearButton.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor
-                         constant:-kTextInputViewClearButtonTrailingOffset],
+                         constant:-clearTrailingOffset],
       textInputToContainerTrailing
     ]];
 
