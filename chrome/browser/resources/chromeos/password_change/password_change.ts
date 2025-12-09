@@ -11,11 +11,11 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {PasswordChangeAuthenticator} from '//password-change/gaia_auth_host/password_change_authenticator.js';
+import type {LoadParams, PasswordChangeEventData} from '//password-change/gaia_auth_host/password_change_authenticator.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {PasswordChangeAuthenticator, PasswordChangeEventData} from '../../gaia_auth_host/password_change_authenticator.js';
 
 import {getTemplate} from './password_change.html.js';
 
@@ -27,7 +27,6 @@ import {getTemplate} from './password_change.html.js';
 const PasswordChangeElementBase =
     mixinBehaviors([I18nBehavior], PolymerElement);
 
-/** @polymer */
 export class PasswordChangeElement extends PasswordChangeElementBase {
   static get is() {
     return 'password-change';
@@ -37,27 +36,14 @@ export class PasswordChangeElement extends PasswordChangeElementBase {
     return getTemplate();
   }
 
-  constructor() {
-    super();
+  private authenticator_: PasswordChangeAuthenticator|null = null;
 
-    /**
-     * The UI component that hosts IdP pages.
-     * @type {PasswordChangeAuthenticator|undefined}
-     */
-    this.authenticator_ = undefined;
-  }
-
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     const signinFrame = this.getSigninFrame_();
     this.authenticator_ = new PasswordChangeAuthenticator(signinFrame);
-    this.authenticator_.addEventListener('authCompleted', (event) => {
-      this.onAuthCompleted_(
-          /**
-           * @type {!CustomEvent<!PasswordChangeEventData>}
-           */
-          (event));
+    this.authenticator_.addEventListener('authCompleted', e => {
+      this.onAuthCompleted_(e as CustomEvent<PasswordChangeEventData>);
     });
 
     chrome.send('initialize');
@@ -65,37 +51,29 @@ export class PasswordChangeElement extends PasswordChangeElementBase {
 
   /**
    * Loads auth extension.
-   * @param {Object} data Parameters for auth extension.
+   * @param data Parameters for auth extension.
    */
-  loadAuthenticator(data) {
+  loadAuthenticator(data: LoadParams) {
+    assert(this.authenticator_);
     this.authenticator_.load(data);
   }
 
-  /**
-   * @return {!WebView|string}
-   * @private
-   */
-  getSigninFrame_() {
+  private getSigninFrame_(): HTMLElement {
     // Note: Can't use |this.$|, since it returns cached references to elements
     // originally present in DOM, while the signin-frame is dynamically
     // recreated (see Authenticator.setWebviewPartition()).
     const signinFrame =
-        /** @type {!WebView} */ (this.shadowRoot.getElementById('signinFrame'));
+        this.shadowRoot!.querySelector<HTMLElement>('#signinFrame');
     assert(signinFrame);
     return signinFrame;
   }
 
-  /**
-   * @param {!CustomEvent<!PasswordChangeEventData>} e
-   * @private
-   * */
-  onAuthCompleted_(e) {
+  private onAuthCompleted_(e: CustomEvent<PasswordChangeEventData>) {
     chrome.send(
         'changePassword', [e.detail.old_passwords, e.detail.new_passwords]);
   }
 
-  /** @private */
-  onCloseTap_() {
+  private onCloseTap_() {
     chrome.send('dialogClose');
   }
 }

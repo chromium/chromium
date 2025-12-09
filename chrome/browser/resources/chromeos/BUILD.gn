@@ -90,7 +90,6 @@ group("closure_compile") {
     "account_manager/components:closure_compile",
     "emulator:closure_compile",
     "multidevice_internals:closure_compile",
-    "password_change:closure_compile",
     "smb_shares:closure_compile",
     "sys_internals:closure_compile",
   ]

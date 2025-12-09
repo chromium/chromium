@@ -16,6 +16,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '/strings.m.js';
 
+import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
@@ -27,15 +28,9 @@ const ONE_SECOND_IN_MS = 1000;
 const ONE_MINUTE_IN_MS = ONE_SECOND_IN_MS * 60;
 const ONE_HOUR_IN_MS = ONE_MINUTE_IN_MS * 60;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const UrgentPasswordExpiryNotificationElementBase =
     mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-/** @polymer */
 class UrgentPasswordExpiryNotificationElement extends
     UrgentPasswordExpiryNotificationElementBase {
   static get is() {
@@ -48,34 +43,21 @@ class UrgentPasswordExpiryNotificationElement extends
 
   static get properties() {
     return {
-      /** @private {string} */
       title_: {
         type: String,
         value: '',
       },
-
     };
   }
 
-  constructor() {
-    super();
+  private title_: string;
+  private expirationTimeMs_: number = 0;
+  private countDownIntervalId_: number|null = null;
+  private countDownIntervalMs_: number|null = null;
 
-    /** @type {?Date} */
-    this.expirationTime_ = null;
-
-    /** @type {?number} */
-    this.countDownIntervalId_ = null;
-
-    /** @type {?number} */
-    this.countDownIntervalMs_ = null;
-  }
-
-
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
-    this.$.dialog.showModal();
     if (loadTimeData.valueExists('initialTitle')) {
       this.title_ = loadTimeData.getString('initialTitle');
     }
@@ -86,19 +68,18 @@ class UrgentPasswordExpiryNotificationElement extends
       if (isNaN(expirationTimeMs)) {
         console.error('Bad expiration time: ' + expirationTimeStr);
       } else {
-        this.expirationTime_ = new Date(expirationTimeMs);
+        this.expirationTimeMs_ = expirationTimeMs;
         this.ensureCountDownCalledOftenEnough_();
       }
     }
   }
 
-  /** @private */
-  ensureCountDownCalledOftenEnough_() {
+  private ensureCountDownCalledOftenEnough_() {
     const nowMs = Date.now();
-    if (nowMs > this.expirationTime_) {
+    if (nowMs > this.expirationTimeMs_) {
       // Already expired - no need to keep updating UI.
       this.stopCountDownCalls_();
-    } else if (nowMs >= (this.expirationTime_ - 2 * ONE_HOUR_IN_MS)) {
+    } else if (nowMs >= (this.expirationTimeMs_ - 2 * ONE_HOUR_IN_MS)) {
       // Expires in the next two hours - update UI every minute.
       this.ensureCountDownCalledWithInterval_(ONE_MINUTE_IN_MS);
     } else {
@@ -107,8 +88,7 @@ class UrgentPasswordExpiryNotificationElement extends
     }
   }
 
-  /** @private */
-  ensureCountDownCalledWithInterval_(intervalMs) {
+  private ensureCountDownCalledWithInterval_(intervalMs: number) {
     if (this.countDownIntervalMs_ === intervalMs) {
       return;
     }
@@ -118,8 +98,7 @@ class UrgentPasswordExpiryNotificationElement extends
     this.countDownIntervalMs_ = intervalMs;
   }
 
-  /** @private */
-  stopCountDownCalls_() {
+  private stopCountDownCalls_() {
     if (!this.countDownIntervalId_) {
       return;
     }
@@ -128,17 +107,15 @@ class UrgentPasswordExpiryNotificationElement extends
     this.countDownIntervalMs_ = null;
   }
 
-  /** @private */
-  countDown_() {
+  private countDown_() {
     this.ensureCountDownCalledOftenEnough_();
-    const msUntilExpiry = this.expirationTime_ - Date.now();
-    cr.sendWithPromise('getTitleText', msUntilExpiry).then((title) => {
+    const msUntilExpiry = this.expirationTimeMs_ - Date.now();
+    sendWithPromise('getTitleText', msUntilExpiry).then((title) => {
       this.title_ = title;
     });
   }
 
-  /** @private */
-  onButtonTap_() {
+  private onButtonTap_() {
     chrome.send('continue');
   }
 }

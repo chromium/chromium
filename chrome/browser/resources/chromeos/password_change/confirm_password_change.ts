@@ -12,47 +12,40 @@
  * the main confirm dialog is shown.
  */
 
-import 'chrome://confirm-password-change/strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './confirm_password_change.html.js';
 
-/** @enum{number} */
-const ValidationErrorType = {
-  NO_ERROR: 0,
-  MISSING_OLD_PASSWORD: 1,
-  MISSING_NEW_PASSWORD: 2,
-  MISSING_CONFIRM_NEW_PASSWORD: 3,
-  PASSWORDS_DO_NOT_MATCH: 4,
-  INCORRECT_OLD_PASSWORD: 5,
-};
+enum ValidationErrorType {
+  NO_ERROR = 0,
+  MISSING_OLD_PASSWORD = 1,
+  MISSING_NEW_PASSWORD = 2,
+  MISSING_CONFIRM_NEW_PASSWORD = 3,
+  PASSWORDS_DO_NOT_MATCH = 4,
+  INCORRECT_OLD_PASSWORD = 5,
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const ConfirmPasswordChangeElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    I18nMixin(WebUiListenerMixin(PolymerElement));
 
-/**
- * @typedef {{
- *   dialog: CrDialogElement,
- * }}
- */
-ConfirmPasswordChangeElementBase.$;
+interface ConfirmPasswordChangeElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
 class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
   static get is() {
     return 'confirm-password-change';
@@ -64,43 +57,29 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
 
   static get properties() {
     return {
-      /** @private {boolean} */
       showSpinner_:
           {type: Boolean, value: true, observer: 'onShowSpinnerChanged_'},
 
-      /** @private {boolean} */
       showOldPasswordPrompt_: {type: Boolean, value: true},
-
-      /** @private {string} */
       oldPassword_: {type: String, value: ''},
-
-      /** @private {boolean} */
       showNewPasswordPrompt_: {type: Boolean, value: true},
-
-      /** @private {string} */
       newPassword_: {type: String, value: ''},
-
-      /** @private {string} */
       confirmNewPassword_: {type: String, value: ''},
 
-      /** @private {!ValidationErrorType} */
       currentValidationError_: {
         type: Number,
         value: ValidationErrorType.NO_ERROR,
         observer: 'onErrorChanged_',
       },
 
-      /** @private {string} */
       promptString_: {
         type: String,
         computed:
             'getPromptString_(showOldPasswordPrompt_, showNewPasswordPrompt_)',
       },
 
-      /** @private {string} */
       errorString_:
           {type: String, computed: 'getErrorString_(currentValidationError_)'},
-
     };
   }
 
@@ -111,20 +90,27 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
     ];
   }
 
+  private showSpinner_: boolean;
+  private showOldPasswordPrompt_: boolean;
+  private oldPassword_: string;
+  private showNewPasswordPrompt_: boolean;
+  private newPassword_: string;
+  private confirmNewPassword_: string;
+  private currentValidationError_: ValidationErrorType;
+  private promptString_: string;
+  private errorString_: string;
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUIListener('incorrect-old-password', () => {
+    this.addWebUiListener('incorrect-old-password', () => {
       this.onIncorrectOldPassword_();
     });
 
     this.getInitialState_();
   }
 
-  /** @private */
-  getInitialState_() {
+  private getInitialState_() {
     sendWithPromise('getInitialState').then((result) => {
       this.showOldPasswordPrompt_ = result.showOldPasswordPrompt;
       this.showNewPasswordPrompt_ = result.showNewPasswordPrompt;
@@ -133,8 +119,7 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
   }
 
 
-  /** @private */
-  onShowSpinnerChanged_() {
+  private onShowSpinnerChanged_() {
     // Dialog is on top, spinner is underneath, so showing dialog hides spinner.
     if (this.showSpinner_) {
       this.$.dialog.close();
@@ -143,8 +128,7 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
     }
   }
 
-  /** @private */
-  onShowPromptChanged_() {
+  private onShowPromptChanged_() {
     const suffix = (this.showOldPasswordPrompt_ ? 'Old' : '') +
         (this.showNewPasswordPrompt_ ? 'New' : '');
     const width = loadTimeData.getInteger('width' + suffix);
@@ -153,15 +137,13 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
     window.resizeTo(width, height);
   }
 
-  /** @private */
-  onErrorChanged_() {
+  private onErrorChanged_() {
     if (this.currentValidationError_ !== ValidationErrorType.NO_ERROR) {
       this.showSpinner_ = false;
     }
   }
 
-  /** @private */
-  onSaveTap_() {
+  private onSaveTap_() {
     this.currentValidationError_ = this.findFirstError_();
     if (this.currentValidationError_ === ValidationErrorType.NO_ERROR) {
       chrome.send('changePassword', [this.oldPassword_, this.newPassword_]);
@@ -169,8 +151,7 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
     }
   }
 
-  /** @private */
-  onIncorrectOldPassword_() {
+  private onIncorrectOldPassword_() {
     if (this.showOldPasswordPrompt_) {
       // User manually typed in the incorrect old password. Show the user an
       // incorrect password error and hide the spinner so they can try again.
@@ -184,11 +165,7 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
     }
   }
 
-  /**
-   * @return {!ValidationErrorType}
-   * @private
-   */
-  findFirstError_() {
+  private findFirstError_(): ValidationErrorType {
     if (this.showOldPasswordPrompt_) {
       if (!this.oldPassword_) {
         return ValidationErrorType.MISSING_OLD_PASSWORD;
@@ -208,40 +185,24 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
     return ValidationErrorType.NO_ERROR;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  invalidOldPassword_() {
+  private invalidOldPassword_(): boolean {
     const err = this.currentValidationError_;
     return err === ValidationErrorType.MISSING_OLD_PASSWORD ||
         err === ValidationErrorType.INCORRECT_OLD_PASSWORD;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  invalidNewPassword_() {
+  private invalidNewPassword_(): boolean {
     return this.currentValidationError_ ===
         ValidationErrorType.MISSING_NEW_PASSWORD;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  invalidConfirmNewPassword_() {
+  private invalidConfirmNewPassword_(): boolean {
     const err = this.currentValidationError_;
     return err === ValidationErrorType.MISSING_CONFIRM_NEW_PASSWORD ||
         err === ValidationErrorType.PASSWORDS_DO_NOT_MATCH;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPromptString_() {
+  private getPromptString_(): string {
     if (this.showOldPasswordPrompt_ && this.showNewPasswordPrompt_) {
       return this.i18n('bothPasswordsPrompt');
     }
@@ -254,11 +215,7 @@ class ConfirmPasswordChangeElement extends ConfirmPasswordChangeElementBase {
     return '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getErrorString_() {
+  private getErrorString_(): string {
     switch (this.currentValidationError_) {
       case ValidationErrorType.INCORRECT_OLD_PASSWORD:
         return this.i18n('incorrectPassword');
