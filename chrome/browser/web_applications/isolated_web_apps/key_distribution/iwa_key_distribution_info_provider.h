@@ -41,6 +41,8 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
       base::flat_map<std::string, IwaRuntimeDataProvider::KeyRotationInfo>;
   using ManagedAllowlist = base::flat_set<std::string>;
   using Blocklist = base::flat_set<std::string>;
+  using UserInstallAllowlist =
+      base::flat_map<std::string, UserInstallAllowlistItemData>;
   using SpecialAppPermissions =
       base::flat_map<std::string, SpecialAppPermissionsInfo>;
 
@@ -76,6 +78,8 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
 
   // ChromeIwaRuntimeDataProvider:
   const SpecialAppPermissionsInfo* GetSpecialAppPermissionsInfo(
+      const std::string& web_bundle_id) const override;
+  const UserInstallAllowlistItemData* GetUserInstallAllowlistData(
       const std::string& web_bundle_id) const override;
   std::vector<std::string> GetSkipMultiCaptureNotificationBundleIds()
       const override;
@@ -122,7 +126,8 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
     Data(KeyRotations key_rotations,
          SpecialAppPermissions special_app_permissions,
          ManagedAllowlist managed_allowlist,
-         Blocklist blocklist);
+         Blocklist blocklist,
+         UserInstallAllowlist user_install_allowlist);
     ~Data();
     Data(const Data&);
 
@@ -130,6 +135,7 @@ class IwaKeyDistributionInfoProvider : public ChromeIwaRuntimeDataProvider {
     SpecialAppPermissions special_app_permissions;
     ManagedAllowlist managed_allowlist;
     Blocklist blocklist;
+    UserInstallAllowlist user_install_allowlist;
   };
 
   struct Component {

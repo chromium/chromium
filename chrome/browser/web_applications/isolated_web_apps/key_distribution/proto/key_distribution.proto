@@ -49,6 +49,11 @@ message IwaAccessControl {
   // Types introduced for the future extensibility.
   message ManagedAllowlistItemData {}
   message BlocklistItemData {}
+  message UserInstallAllowlistItemData {
+    // This information is needed to present the enterprise
+    // name in the install wizard.
+    string enterprise_name = 1;
+  }
 
   // Keys represent web bundle ids of allowed apps.
   // Only allowed apps can be installed and updated.
@@ -56,4 +61,8 @@ message IwaAccessControl {
 
   // Keys represent web bundle ids of blocked apps.
   map<string, BlocklistItemData> blocklist = 2;
+
+  // Keys represent web bundle ids of apps allowed for manual installation.
+  // Only allowed apps can be installed and updated.
+  map<string, UserInstallAllowlistItemData> user_install_allowlist = 3;
 }

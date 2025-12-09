@@ -120,6 +120,12 @@ FakeIwaRuntimeDataProvider::GetKeyRotationInfo(
   return base::FindOrNull(key_rotations_, web_bundle_id);
 }
 
+const ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData*
+FakeIwaRuntimeDataProvider::GetUserInstallAllowlistData(
+    const std::string& web_bundle_id) const {
+  return base::FindOrNull(user_install_allowlist_, web_bundle_id);
+}
+
 bool FakeIwaRuntimeDataProvider::IsManagedInstallPermitted(
     std::string_view web_bundle_id) const {
   return base::Contains(managed_allowlist_, web_bundle_id,

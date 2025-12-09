@@ -24,6 +24,16 @@ class ChromeIwaRuntimeDataProvider : public IwaRuntimeDataProvider {
     bool skip_capture_started_notification;
   };
 
+  struct UserInstallAllowlistItemData {
+    explicit UserInstallAllowlistItemData(const std::string& enterprise_name);
+    ~UserInstallAllowlistItemData();
+    UserInstallAllowlistItemData(const UserInstallAllowlistItemData&);
+
+    base::Value AsDebugValue() const;
+
+    std::string enterprise_name;
+  };
+
   static ChromeIwaRuntimeDataProvider& GetInstance();
 
   // Note that these methods do not take ownership of `instance`; the lifetime
@@ -43,6 +53,9 @@ class ChromeIwaRuntimeDataProvider : public IwaRuntimeDataProvider {
       const std::string& web_bundle_id) const = 0;
   virtual std::vector<std::string> GetSkipMultiCaptureNotificationBundleIds()
       const = 0;
+
+  virtual const UserInstallAllowlistItemData* GetUserInstallAllowlistData(
+      const std::string& web_bundle_id) const = 0;
 
   virtual void WriteDebugMetadata(base::Value::Dict& log) const = 0;
 };

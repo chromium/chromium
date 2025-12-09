@@ -218,6 +218,14 @@ IwaKeyDistributionInfoProvider::GetSpecialAppPermissionsInfo(
   return nullptr;
 }
 
+const ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData*
+IwaKeyDistributionInfoProvider::GetUserInstallAllowlistData(
+    const std::string& web_bundle_id) const {
+  return component_ ? base::FindOrNull(component_->data.user_install_allowlist,
+                                       web_bundle_id)
+                    : nullptr;
+}
+
 std::vector<std::string>
 IwaKeyDistributionInfoProvider::GetSkipMultiCaptureNotificationBundleIds()
     const {
@@ -315,6 +323,7 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
 
   IwaKeyDistributionInfoProvider::ManagedAllowlist managed_allowlist;
   IwaKeyDistributionInfoProvider::Blocklist blocklist;
+  IwaKeyDistributionInfoProvider::UserInstallAllowlist user_install_allowlist;
   if (key_distribution.has_iwa_access_control()) {
     managed_allowlist = base::MakeFlatSet<std::string>(
         key_distribution.iwa_access_control().managed_allowlist(), /*comp=*/{},
@@ -322,10 +331,23 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
     blocklist = base::MakeFlatSet<std::string>(
         key_distribution.iwa_access_control().blocklist(), /*comp=*/{},
         /*proj=*/[](const auto& pair) { return pair.first; });
+    user_install_allowlist = base::MakeFlatMap<
+        std::string,
+        ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData>(
+        key_distribution.iwa_access_control().user_install_allowlist(),
+        /*comp=*/{},
+        /*proj=*/[](const auto& entry) {
+          const auto& [web_bundle_id, data] = entry;
+          return std::make_pair(
+              web_bundle_id,
+              ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+                  data.has_enterprise_name() ? data.enterprise_name() : ""));
+        });
   }
 
   return Data(std::move(key_rotations), std::move(special_app_permissions),
-              std::move(managed_allowlist), std::move(blocklist));
+              std::move(managed_allowlist), std::move(blocklist),
+              std::move(user_install_allowlist));
 }
 
 void IwaKeyDistributionInfoProvider::RotateKeyForDevMode(
@@ -495,11 +517,13 @@ IwaKeyDistributionInfoProvider::Data::Data(
     KeyRotations key_rotations,
     SpecialAppPermissions special_app_permissions,
     ManagedAllowlist managed_allowlist,
-    Blocklist blocklist)
+    Blocklist blocklist,
+    UserInstallAllowlist user_install_allowlist)
     : key_rotations(std::move(key_rotations)),
       special_app_permissions(std::move(special_app_permissions)),
       managed_allowlist(std::move(managed_allowlist)),
-      blocklist(std::move(blocklist)) {}
+      blocklist(std::move(blocklist)),
+      user_install_allowlist(std::move(user_install_allowlist)) {}
 IwaKeyDistributionInfoProvider::Data::~Data() = default;
 IwaKeyDistributionInfoProvider::Data::Data(const Data&) = default;
 

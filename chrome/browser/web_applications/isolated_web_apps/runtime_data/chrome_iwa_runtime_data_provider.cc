@@ -19,6 +19,23 @@ ChromeIwaRuntimeDataProvider::SpecialAppPermissionsInfo::AsDebugValue() const {
       "skip_capture_started_notification", skip_capture_started_notification));
 }
 
+ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::
+    UserInstallAllowlistItemData(const std::string& enterprise_name)
+    : enterprise_name(enterprise_name) {}
+
+ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::
+    ~UserInstallAllowlistItemData() = default;
+
+ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::
+    UserInstallAllowlistItemData(const UserInstallAllowlistItemData&) = default;
+
+base::Value
+ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::AsDebugValue()
+    const {
+  return base::Value(
+      base::Value::Dict().Set("enterprise_name", enterprise_name));
+}
+
 // static
 ChromeIwaRuntimeDataProvider& ChromeIwaRuntimeDataProvider::GetInstance() {
   CHECK(g_instance)

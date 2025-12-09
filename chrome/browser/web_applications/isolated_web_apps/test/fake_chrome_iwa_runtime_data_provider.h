@@ -45,6 +45,8 @@ class FakeIwaRuntimeDataProvider : public FakeIwaRuntimeDataProviderBase {
   using KeyRotations = base::flat_map<std::string, KeyRotationInfo>;
   using SpecialPermissions =
       base::flat_map<std::string, SpecialAppPermissionsInfo>;
+  using UserInstallAllowlist =
+      base::flat_map<std::string, UserInstallAllowlistItemData>;
 
   class ScopedIwaRuntimeDataUpdate {
    public:
@@ -92,6 +94,8 @@ class FakeIwaRuntimeDataProvider : public FakeIwaRuntimeDataProviderBase {
 
   const KeyRotationInfo* GetKeyRotationInfo(
       const std::string& web_bundle_id) const override;
+  const UserInstallAllowlistItemData* GetUserInstallAllowlistData(
+      const std::string& web_bundle_id) const override;
   bool IsManagedInstallPermitted(std::string_view web_bundle_id) const override;
   bool IsManagedUpdatePermitted(std::string_view web_bundle_id) const override;
   bool IsBundleBlocklisted(std::string_view web_bundle_id) const override;
@@ -113,6 +117,7 @@ class FakeIwaRuntimeDataProvider : public FakeIwaRuntimeDataProviderBase {
   Blocklist blocklist_;
   KeyRotations key_rotations_;
   SpecialPermissions special_permissions_;
+  UserInstallAllowlist user_install_allowlist_;
 };
 
 class FakeIwaRuntimeDataProviderInitializer
