@@ -17,6 +17,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "crypto/keypair.h"
+#include "crypto/sha2.h"
 #include "url/origin.h"
 
 namespace content::webid {
@@ -276,6 +277,14 @@ void EmailVerificationRequest::OnTokenRequestComplete(
   sdjwt::Payload payload;
   payload.aud = render_frame_host_->GetLastCommittedOrigin().Serialize();
   payload.nonce = nonce;
+  payload.iat = base::Time::Now();
+
+  std::string sd_jwt_sha256 =
+      crypto::SHA256HashString(result.token->GetString());
+  std::string sd_hash;
+  base::Base64UrlEncode(sd_jwt_sha256,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &sd_hash);
+  payload.sd_hash = sdjwt::Base64String(sd_hash);
 
   sdjwt::Jwt kb_jwt;
   kb_jwt.header = *header.ToJson();

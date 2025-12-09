@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_renderer_host.h"
+#include "crypto/sha2.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -174,8 +175,10 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 
   base::test::TestFuture<std::optional<std::string>> future;
   std::string nonce = kNonce;
+  base::Time before = base::Time::Now();
   email_verification_request_.Send(kEmail, nonce, future.GetCallback());
   std::optional<std::string> token = future.Get();
+  base::Time after = base::Time::Now();
   ASSERT_TRUE(token.has_value());
 
   auto sd_jwt_kb = sdjwt::SdJwtKb::Parse(*token);
@@ -190,6 +193,21 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   ASSERT_TRUE(kb_payload);
   ASSERT_EQ(kb_payload->aud, main_rfh()->GetLastCommittedOrigin().Serialize());
   ASSERT_EQ(kb_payload->nonce, kNonce);
+  ASSERT_TRUE(kb_payload->iat);
+  base::Time iat_time = kb_payload->iat.value();
+  // The `iat` is seconds since the epoch, so there is a loss of precision.
+  // We check that `iat` is between `before` and `after`, allowing for a
+  // tolerance of 1 second for the loss of precision.
+  EXPECT_GE(iat_time, before - base::Seconds(1));
+  EXPECT_LE(iat_time, after + base::Seconds(1));
+
+  std::string sd_jwt_sha256 =
+      crypto::SHA256HashString(sd_jwt_kb->sd_jwt.Serialize());
+  std::string sd_hash_expected;
+  base::Base64UrlEncode(sd_jwt_sha256,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &sd_hash_expected);
+  ASSERT_EQ(kb_payload->sd_hash.value(), sd_hash_expected);
 }
 
 TEST(EmailVerificationRequestStaticTest, ValidEmail) {
