@@ -8,7 +8,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
-  TestRunner.addResult(`Tests framework blackboxing feature with sourcemaps.\n`);
+  TestRunner.addResult(`Tests framework ignore listing feature with sourcemaps.\n`);
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../debugger/resources/framework-with-sourcemap.js');
   await TestRunner.evaluateInPagePromise(`
@@ -24,28 +24,25 @@ import * as Common from 'devtools/core/common/common.js';
       }
   `);
 
-  TestRunner.addSniffer(Bindings.BlackboxManager.prototype, '_patternChangeFinishedForTests', step1);
   var frameworkRegexString = '/framework\\.js$';
   Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
+  SourcesTestRunner.startDebuggerTest(step1, true);
+
   function step1() {
-    SourcesTestRunner.startDebuggerTest(step2, true);
+    SourcesTestRunner.runTestFunctionAndWaitUntilPaused(step2);
   }
 
   function step2() {
-    SourcesTestRunner.runTestFunctionAndWaitUntilPaused(step3);
-  }
-
-  function step3() {
     var actions = [
       'Print',                          // "debugger" in testFunction()
       'StepInto', 'StepInto', 'Print',  // entered callback(i)
       'StepOut', 'Print'
     ];
-    SourcesTestRunner.waitUntilPausedAndPerformSteppingActions(actions, step4);
+    SourcesTestRunner.waitUntilPausedAndPerformSteppingActions(actions, step3);
   }
 
-  function step4() {
+  function step3() {
     SourcesTestRunner.completeDebuggerTest();
   }
 })();
