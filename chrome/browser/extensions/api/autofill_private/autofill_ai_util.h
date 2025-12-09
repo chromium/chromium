@@ -16,19 +16,6 @@ class EntityInstance;
 
 namespace extensions::autofill_ai_util {
 
-// Returns the i18n string representation of "Add <entity type>". For example,
-// for a passport for "en-US", this function should return "Add passport".
-std::string GetAddEntityTypeStringForI18n(autofill::EntityType entity_type);
-
-// Returns the i18n string representation of "Edit <entity type>". For example,
-// for a passport for "en-US", this function should return "Edit passport".
-std::string GetEditEntityTypeStringForI18n(autofill::EntityType entity_type);
-
-// Returns the i18n string representation of "Delete <entity type>". For
-// example, for a passport for "en-US", this function should return "Delete
-// passport".
-std::string GetDeleteEntityTypeStringForI18n(autofill::EntityType entity_type);
-
 // Converts an `autofill::AttributeType::DataType` enum entry to an
 // `api::autofill_private::AttributeTypeDataType` enum entry.
 api::autofill_private::AttributeTypeDataType
