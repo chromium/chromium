@@ -211,8 +211,13 @@ void UserLevelMemoryPressureSignalGenerator::OnTimerFired(TimerBase*) {
   // signal.
   CHECK(!last_critical_generated_.has_value() ||
         now - last_critical_generated_.value() >= minimum_interval_);
-  // No expired requests.
-  CHECK_LE(now - last_requested_.value(), minimum_interval_);
+
+  // There shouldn't be any expired requests, but sometimes the task runs later
+  // than scheduled.
+  if (now - last_requested_.value() > minimum_interval_) {
+    last_requested_ = std::nullopt;
+    return;
+  }
 
   Generate(base::MEMORY_PRESSURE_LEVEL_CRITICAL, now);
 }
