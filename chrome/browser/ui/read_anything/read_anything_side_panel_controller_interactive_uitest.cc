@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
@@ -80,6 +81,30 @@ class ReadAnythingSidePanelControllerTest
     return std::optional<ReadAnythingOpenTrigger>();
   }
 
+  void OnEntryShown(SidePanelEntry* entry) {
+    if (IsImmersiveEnabled()) {
+      std::optional<ReadAnythingOpenTrigger> read_anything_trigger;
+      if (entry->last_open_trigger().has_value()) {
+        read_anything_trigger =
+            read_anything::SidePanelToReadAnythingOpenTrigger(
+                entry->last_open_trigger().value());
+      }
+      ReadAnythingController::From(browser()->GetActiveTabInterface())
+          ->OnEntryShown(read_anything_trigger);
+    } else {
+      side_panel_controller()->OnEntryShown(entry);
+    }
+  }
+
+  void OnEntryHidden(SidePanelEntry* entry) {
+    if (IsImmersiveEnabled()) {
+      ReadAnythingController::From(browser()->GetActiveTabInterface())
+          ->OnEntryHidden();
+    } else {
+      side_panel_controller()->OnEntryHidden(entry);
+    }
+  }
+
  protected:
   bool IsImmersiveEnabled() const { return GetParam(); }
   MockReadAnythingLifecycleObserver read_anything_observer_;
@@ -117,7 +142,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
               Activate(true, std::optional<ReadAnythingOpenTrigger>(
                                  ReadAnythingOpenTrigger::kOmniboxChip)))
       .Times(1);
-  side_panel_controller()->OnEntryShown(entry);
+  OnEntryShown(entry);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
@@ -132,7 +157,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
 
   EXPECT_CALL(read_anything_observer_, Activate(false, empty_trigger()))
       .Times(1);
-  side_panel_controller()->OnEntryHidden(entry);
+  OnEntryHidden(entry);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,

@@ -10,9 +10,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -92,7 +94,8 @@ class ReadAnythingController : public TabStripModelObserver {
     kInImmersiveOverlay,
   };
 
-  explicit ReadAnythingController(tabs::TabInterface* tab);
+  ReadAnythingController(tabs::TabInterface* tab,
+                         SidePanelRegistry* side_panel_registry);
 
   DECLARE_USER_DATA(ReadAnythingController);
   static ReadAnythingController* From(tabs::TabInterface* tab);
@@ -183,6 +186,9 @@ class ReadAnythingController : public TabStripModelObserver {
 
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
       web_ui_wrapper_;
+
+  std::unique_ptr<ReadAnythingSidePanelController>
+      read_anything_side_panel_controller_;
 
   // Keeps track of whether the tab is active.
   // TODO(crbug.com/463732840): Detemrine if this variable is needed once the

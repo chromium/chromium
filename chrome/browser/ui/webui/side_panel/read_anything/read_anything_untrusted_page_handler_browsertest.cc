@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
@@ -317,14 +318,20 @@ class ReadAnythingUntrustedPageHandlerTest
             SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   }
 
+  content::WebContents* GetReadAnythingWebContents() {
+    tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+    if (IsImmersiveEnabled()) {
+      return ReadAnythingController::From(tab)->tab()->GetContents();
+    } else {
+      return tab->GetTabFeatures()
+          ->read_anything_side_panel_controller()
+          ->tab()
+          ->GetContents();
+    }
+  }
+
   ChromeTranslateClient* GetChromeTranslateClient() {
-    return ChromeTranslateClient::FromWebContents(
-        browser()
-            ->GetActiveTabInterface()
-            ->GetTabFeatures()
-            ->read_anything_side_panel_controller()
-            ->tab()
-            ->GetContents());
+    return ChromeTranslateClient::FromWebContents(GetReadAnythingWebContents());
   }
 
   void SetTranslateSourceLanguage(const std::string& language) {
@@ -334,15 +341,7 @@ class ReadAnythingUntrustedPageHandlerTest
         ->SetSourceLanguage(language);
   }
 
-  bool HasAudio() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->read_anything_side_panel_controller()
-        ->tab()
-        ->GetContents()
-        ->IsCurrentlyAudible();
-  }
+  bool HasAudio() { return GetReadAnythingWebContents()->IsCurrentlyAudible(); }
 
   void OnLineSpaceChange(read_anything::mojom::LineSpacing line_spacing) {
     handler_->OnLineSpaceChange(line_spacing);
@@ -387,15 +386,40 @@ class ReadAnythingUntrustedPageHandlerTest
 
   void OnTabWillDetach() { handler_->OnTabWillDetach(); }
 
+  void OnEntryShown(SidePanelEntry* entry) {
+    if (IsImmersiveEnabled()) {
+      std::optional<ReadAnythingOpenTrigger> read_anything_trigger;
+      if (entry->last_open_trigger().has_value()) {
+        read_anything_trigger =
+            read_anything::SidePanelToReadAnythingOpenTrigger(
+                entry->last_open_trigger().value());
+      }
+      ReadAnythingController::From(browser()->GetActiveTabInterface())
+          ->OnEntryShown(read_anything_trigger);
+    } else {
+      side_panel_controller()->OnEntryShown(entry);
+    }
+  }
+
+  void OnEntryHidden(SidePanelEntry* entry) {
+    if (IsImmersiveEnabled()) {
+      ReadAnythingController::From(browser()->GetActiveTabInterface())
+          ->OnEntryHidden();
+    } else {
+      side_panel_controller()->OnEntryHidden(entry);
+    }
+  }
+
   void Activate(bool active, SidePanelOpenTrigger* trigger = nullptr) {
     SidePanelEntry* entry = read_anything_entry();
     if (trigger) {
       entry->set_last_open_trigger(*trigger);
     }
+
     if (active) {
-      side_panel_controller()->OnEntryShown(entry);
+      OnEntryShown(entry);
     } else {
-      side_panel_controller()->OnEntryHidden(entry);
+      OnEntryHidden(entry);
     }
   }
 
@@ -1501,22 +1525,44 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
                        Activate_OnDeactivateTab_NotifiesPage) {
   handler_ = CreateHandler();
   ASSERT_TRUE(embedded_test_server()->Start());
-  // Store the controller since it is per-tab, and a new tab will be activated
-  // below.
-  auto* original_controller = side_panel_controller();
 
-  // Open a new tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  if (IsImmersiveEnabled()) {
+    // Store the controller since it is per-tab, and a new tab will be activated
+    // below.
+    auto* original_controller =
+        ReadAnythingController::From(browser()->GetActiveTabInterface());
 
-  // Indicate the original tab is now hidden.
-  original_controller->OnEntryHidden(read_anything_entry());
+    // Open a new tab.
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  ASSERT_FALSE(original_controller->tab()->IsActivated());
-  ASSERT_NE(original_controller, side_panel_controller());
-  EXPECT_CALL(page_, OnReadingModeHidden(false)).Times(1);
+    // Indicate the original tab is now hidden.
+    original_controller->OnEntryHidden();
+
+    ASSERT_FALSE(original_controller->tab()->IsActivated());
+    ASSERT_NE(original_controller,
+              ReadAnythingController::From(browser()->GetActiveTabInterface()));
+    EXPECT_CALL(page_, OnReadingModeHidden(false)).Times(1);
+  } else {
+    // Store the controller since it is per-tab, and a new tab will be activated
+    // below.
+    auto* original_controller = side_panel_controller();
+
+    // Open a new tab.
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(embedded_test_server()->GetURL("/simple.html")),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+    // Indicate the original tab is now hidden.
+    original_controller->OnEntryHidden(read_anything_entry());
+
+    ASSERT_FALSE(original_controller->tab()->IsActivated());
+    ASSERT_NE(original_controller, side_panel_controller());
+    EXPECT_CALL(page_, OnReadingModeHidden(false)).Times(1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,

@@ -398,14 +398,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   // any potential consumers, like the side panel controller.
   if (features::IsImmersiveReadAnythingEnabled()) {
     read_anything_controller_ =
-        GetUserDataFactory().CreateInstance<ReadAnythingController>(tab, &tab);
+        GetUserDataFactory().CreateInstance<ReadAnythingController>(
+            tab, &tab, side_panel_registry_.get());
+  } else {
+    // TODO(crbug.com/447418049): This will be removed in the future when
+    // ownership of this controller is migrated to ReadAnythingController.
+    read_anything_side_panel_controller_ =
+        std::make_unique<ReadAnythingSidePanelController>(
+            &tab, side_panel_registry_.get());
   }
-
-  // TODO(crbug.com/447418049): This will be removed in the future when
-  // ownership of this controller is migrated to ReadAnythingController.
-  read_anything_side_panel_controller_ =
-      std::make_unique<ReadAnythingSidePanelController>(
-          &tab, side_panel_registry_.get());
 
   // Create the HttpAuthCacheStatus to start observing resource load
   // completions.
@@ -513,14 +514,22 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
 
-  // This method is transiently used to reset features that do not handle tab
-  // discarding themselves.
-  read_anything_side_panel_controller_->ResetForTabDiscard();
-  read_anything_side_panel_controller_.reset();
-  read_anything_side_panel_controller_ =
-      std::make_unique<ReadAnythingSidePanelController>(
-          tab, side_panel_registry_.get());
-
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    // TODO(crbug.com/467301642): Handle having the ReadAnythingController
+    // discard internally, rather than having TabFeatures recreate it.
+    read_anything_controller_.reset();
+    read_anything_controller_ =
+        GetUserDataFactory().CreateInstance<ReadAnythingController>(
+            *tab, tab, side_panel_registry_.get());
+  } else {
+    // This method is transiently used to reset features that do not handle tab
+    // discarding themselves.
+    read_anything_side_panel_controller_->ResetForTabDiscard();
+    read_anything_side_panel_controller_.reset();
+    read_anything_side_panel_controller_ =
+        std::make_unique<ReadAnythingSidePanelController>(
+            tab, side_panel_registry_.get());
+  }
   // Deregister side-panel entries that are web-contents scoped rather than tab
   // scoped.
   side_panel_registry_->Deregister(

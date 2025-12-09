@@ -61,9 +61,15 @@ ReadAnythingController* ReadAnythingController::From(tabs::TabInterface* tab) {
   return Get(tab->GetUnownedUserDataHost());
 }
 
-ReadAnythingController::ReadAnythingController(tabs::TabInterface* tab)
+ReadAnythingController::ReadAnythingController(
+    tabs::TabInterface* tab,
+    SidePanelRegistry* side_panel_registry)
     : tab_(tab),
-      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
+      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this),
+      read_anything_side_panel_controller_(
+          std::make_unique<ReadAnythingSidePanelController>(
+              tab,
+              side_panel_registry)) {
   // This controller should only be instantiated if
   // IsImmersiveReadAnythingEnabled is enabled
   CHECK(features::IsImmersiveReadAnythingEnabled());
@@ -92,6 +98,10 @@ ReadAnythingController::~ReadAnythingController() {
       tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
     tab_->GetBrowserWindowInterface()->GetTabStripModel()->RemoveObserver(this);
   }
+
+  // This method is transiently used to reset features that do not handle tab
+  // discarding themselves.
+  read_anything_side_panel_controller_->ResetForTabDiscard();
 
   if (ra_web_ui_observer_ && ra_web_ui_observer_->web_contents()) {
     ra_web_ui_observer_->web_contents()->RemoveUserData(
