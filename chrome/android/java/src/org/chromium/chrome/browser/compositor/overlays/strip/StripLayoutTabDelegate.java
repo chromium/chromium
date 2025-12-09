@@ -11,7 +11,6 @@ import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -127,9 +126,7 @@ public class StripLayoutTabDelegate {
 
         // A dying tab that is not selected should not show its close button.
         // TODO(crbug.com/419843587): Await UX direction for close button appearance
-        if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled()
-                && tab.isDying()
-                && !tab.getIsSelected()) {
+        if (tab.isDying() && !tab.getIsSelected()) {
             canShow = false;
             tab.setCanShowCloseButton(canShow, false);
         } else {

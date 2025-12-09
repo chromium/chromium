@@ -12445,13 +12445,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPreinstalledWebAppAlwaysMigrateCalculator)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"tablet-tab-strip-animation",
-     flag_descriptions::kTabletTabStripAnimationName,
-     flag_descriptions::kTabletTabStripAnimationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabletTabStripAnimation)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"enable-secure-payment-confirmation-ux-refresh",
      flag_descriptions::kSecurePaymentConfirmationUxRefreshName,
      flag_descriptions::kSecurePaymentConfirmationUxRefreshDescription,

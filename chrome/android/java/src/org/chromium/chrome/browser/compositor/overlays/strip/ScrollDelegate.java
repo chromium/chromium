@@ -12,7 +12,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDragHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -202,15 +201,7 @@ public class ScrollDelegate {
             if (view instanceof final StripLayoutTab tab) {
                 if (tab.isClosed()) continue;
 
-                // Need to use real width (which gets animated to effectively 0) to smoothly scroll
-                // when (collapsing) or (using updated animations) near the end of a full tab strip.
-                boolean useRealWidth =
-                        tab.isCollapsed()
-                                || ChromeFeatureList.sTabletTabStripAnimation.isEnabled()
-                                || tab.getIsPinned();
-                float tabWidth = useRealWidth ? tab.getWidth() : cachedTabWidth;
-
-                totalViewWidth += (tabWidth - tabOverlapWidth);
+                totalViewWidth += (tab.getWidth() - tabOverlapWidth);
             } else if (view instanceof StripLayoutGroupTitle groupTitle) {
                 totalViewWidth += (groupTitle.getWidth() - groupTitleOverlapWidth);
             }

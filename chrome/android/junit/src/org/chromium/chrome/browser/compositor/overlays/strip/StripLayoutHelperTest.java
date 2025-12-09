@@ -6012,11 +6012,6 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.handleCloseButtonClick(
                 tabs[9], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
 
-        // Assert: One set of animations started.
-        assertFalse(
-                "MultiStepAnimations should not have started.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
         // Act: Fake the tab closure and end the animation, so the tab is removed from the model.
         Tab closingTab = mModel.getTabAt(9);
         mStripLayoutHelper.finishAnimations();

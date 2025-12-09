@@ -576,7 +576,6 @@ public class StripLayoutHelper
     private final Context mContext;
 
     // Animation states. True while the relevant animations are running, and false otherwise.
-    private boolean mMultiStepTabCloseAnimRunning;
     private boolean mTabResizeAnimRunning;
 
     // TabModel info available before the tab state is actually initialized. Determined from frozen
@@ -1849,7 +1848,7 @@ public class StripLayoutHelper
 
     private void runTabAddedAnimator(
             List<Animator> animationList, StripLayoutTab tab, boolean fromTabCreation) {
-        if (!ChromeFeatureList.sTabletTabStripAnimation.isEnabled() || !fromTabCreation) {
+        if (!fromTabCreation) {
             animationList.add(
                     CompositorAnimator.ofFloatProperty(
                             mUpdateHost.getAnimationHandler(),
@@ -2093,14 +2092,12 @@ public class StripLayoutHelper
             }
             boolean currContainerHidden = StripLayoutTabDelegate.isTabHidden(currTab);
 
-            boolean hideDividerForDyingTab =
-                    ChromeFeatureList.sTabletTabStripAnimation.isEnabled() && currTab.isDying();
             // 2. Set start divider visibility.
             if (i > 0 && viewsOnStrip[i - 1] instanceof StripLayoutTab prevTab) {
                 boolean prevContainerHidden = StripLayoutTabDelegate.isTabHidden(prevTab);
                 boolean prevTabHasMargin = prevTab.getTrailingMargin() > 0;
                 boolean startDividerVisible =
-                        !hideDividerForDyingTab
+                        !currTab.isDying()
                                 && currContainerHidden
                                 && (prevContainerHidden || prevTabHasMargin);
                 currTab.setStartDividerVisible(startDividerVisible);
@@ -2116,7 +2113,7 @@ public class StripLayoutHelper
                 boolean endDividerVisible =
                         (isLastTab || viewsOnStrip[i + 1] instanceof StripLayoutGroupTitle)
                                 && currContainerHidden
-                                && !hideDividerForDyingTab;
+                                && !currTab.isDying();
                 currTab.setEndDividerVisible(endDividerVisible);
             }
         }
@@ -2939,40 +2936,21 @@ public class StripLayoutHelper
      */
     @VisibleForTesting
     void handleCloseTab(StripLayoutTab tab, boolean allowUndo) {
-        mMultiStepTabCloseAnimRunning = false;
         finishAnimationsAndCloseDyingTabs(allowUndo);
-
-        // When a tab is closed #resizeStripOnTabClose will run animations for the new tab offset
-        // and tab x offsets. When there is only 1 tab remaining, we do not need to run those
-        // animations, so #computeAndUpdateTabWidth() is used instead.
-        boolean runImprovedTabAnimations = mStripTabs.length > 1;
 
         // 1. Set the dying state of the tab.
         tab.setIsDying(true);
 
         // 2. Start the tab closing animator with a listener to resize/move tabs after the closure.
-        // If closing the end-most tab, set an offset to prevent the tab from "jumping" to align
-        // with the new end-most tab. This will be cleared when the resize is animated.
-        if (!ChromeFeatureList.sTabletTabStripAnimation.isEnabled()
-                && isEndMostTab(tab.getTabId())) {
-            mNewTabButton.setOffsetX(
-                    MathUtils.flipSignIf(
-                            getEffectiveTabWidth(/* isPinned= */ false),
-                            LocalizationUtils.isLayoutRtl()));
-        }
         AnimatorListener listener =
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // Removes all dying tabs from TabModel.
                         finishAnimationsAndCloseDyingTabs(allowUndo);
-
-                        if (!ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) {
-                            resizeStripOnTabClose(runImprovedTabAnimations);
-                        }
                     }
                 };
-        runTabRemovalAnimation(tab, listener);
+        runTabRemovalAnimation(listener);
 
         // 3. If we're closing the selected tab, attempt to select the next expanded tab now. If
         // none exists, we'll default to the normal auto-selection behavior (i.e. selecting the
@@ -2981,16 +2959,6 @@ public class StripLayoutHelper
             int nextIndex = getNextIndexAfterClose(Collections.singleton(tab));
             if (nextIndex != TabModel.INVALID_TAB_INDEX) TabModelUtils.setIndex(mModel, nextIndex);
         }
-    }
-
-    private Animator getLegacyTabClosedAnimator(StripLayoutTab tab) {
-        return CompositorAnimator.ofFloatProperty(
-                mUpdateHost.getAnimationHandler(),
-                tab,
-                StripLayoutTab.Y_OFFSET,
-                tab.getOffsetY(),
-                tab.getHeight(),
-                ANIM_TAB_CLOSED_MS);
     }
 
     private Animator getViewWidthAnimator(StripLayoutView view, float targetWidth, int duration) {
@@ -3003,36 +2971,15 @@ public class StripLayoutHelper
                 duration);
     }
 
-    private List<Animator> getTabClosingAnimators(Collection<StripLayoutTab> tabs) {
-        if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) {
-            // computeAndUpdateTabWidth handles animating a tab closing.
-            List<Animator> tabClosingAnimators =
-                    computeAndUpdateTabWidth(/* animate= */ true, /* deferAnimations= */ true);
-            if (tabClosingAnimators != null) return tabClosingAnimators;
-            return new ArrayList<>();
-        } else {
-            mMultiStepTabCloseAnimRunning = true;
-            List<Animator> tabClosingAnimators = new ArrayList<>();
-            for (StripLayoutTab tab : tabs) {
-                tabClosingAnimators.add(getLegacyTabClosedAnimator(tab));
-            }
-            return tabClosingAnimators;
-        }
+    private List<Animator> getTabClosingAnimators() {
+        // Dying tabs are animated to an effective width of 0 in the resize flow.
+        List<Animator> tabClosingAnimators =
+                computeAndUpdateTabWidth(/* animate= */ true, /* deferAnimations= */ true);
+        return tabClosingAnimators == null ? new ArrayList<>() : tabClosingAnimators;
     }
 
-    private void runTabRemovalAnimation(StripLayoutTab tab, AnimatorListener listener) {
-        startAnimations(getTabClosingAnimators(Collections.singletonList(tab)), listener);
-    }
-
-    private void resizeStripOnTabClose(boolean runImprovedTabAnimations) {
-        if (runImprovedTabAnimations) {
-            resizeStripOnTabClose();
-        } else {
-            mNewTabButton.setOffsetX(/* offsetX= */ 0.f);
-            mMultiStepTabCloseAnimRunning = false;
-            // Resize the tabs appropriately.
-            computeAndUpdateTabWidth(/* animate= */ true, /* deferAnimations= */ false);
-        }
+    private void runTabRemovalAnimation(AnimatorListener listener) {
+        startAnimations(getTabClosingAnimators(), listener);
     }
 
     private void resizeStripOnTabClose() {
@@ -3083,14 +3030,7 @@ public class StripLayoutHelper
         }
 
         // 5. Add animation completion listener and start animations.
-        startAnimations(
-                tabStripAnimators,
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mMultiStepTabCloseAnimRunning = false;
-                    }
-                });
+        startAnimations(tabStripAnimators);
     }
 
     /**
@@ -3715,13 +3655,10 @@ public class StripLayoutHelper
         for (StripLayoutView view : mClosingGroupTitles) view.setIsDying(true);
 
         // Create animators.
-        List<Animator> animationList = getTabClosingAnimators(mClosingTabs);
-        if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) {
-            for (StripLayoutGroupTitle groupTitle : mClosingGroupTitles) {
-                animationList.add(
-                        getViewWidthAnimator(
-                                groupTitle, mGroupTitleOverlapWidth, ANIM_TAB_CLOSED_MS));
-            }
+        List<Animator> animationList = getTabClosingAnimators();
+        for (StripLayoutGroupTitle groupTitle : mClosingGroupTitles) {
+            animationList.add(
+                    getViewWidthAnimator(groupTitle, mGroupTitleOverlapWidth, ANIM_TAB_CLOSED_MS));
         }
 
         // Queue the animations.
@@ -3730,11 +3667,7 @@ public class StripLayoutHelper
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        boolean runImprovedTabAnimations = mStripTabs.length > 1;
                         rebuildStripTabs(/* deferAnimations= */ false);
-                        if (!ChromeFeatureList.sTabletTabStripAnimation.isEnabled()) {
-                            resizeStripOnTabClose(runImprovedTabAnimations);
-                        }
                         clearStateOnCloseAnimationsEnd();
                     }
                 });
@@ -3884,7 +3817,7 @@ public class StripLayoutHelper
         rebuildStripViews();
 
         // If a tab close is animating, the resize may be handled elsewhere.
-        if (mMultiStepTabCloseAnimRunning || mPendingMouseTabClosure) return null;
+        if (mPendingMouseTabClosure) return null;
         recordPinnedOnlyTabStripUserAction();
 
         // Otherwise, animate the required width changes.
@@ -4497,7 +4430,6 @@ public class StripLayoutHelper
         if (tabToAnimate != null) {
             assert animate;
             if (!tabAddedAnimation) {
-                mMultiStepTabCloseAnimRunning = true;
                 // Resize the tab strip accordingly.
                 resizeStripOnTabClose();
             } else {
@@ -4602,10 +4534,7 @@ public class StripLayoutHelper
     }
 
     private boolean isLiveTab(StripLayoutTab tab) {
-        return !tab.isClosed()
-                && !tab.isDraggedOffStrip()
-                && !tab.isCollapsed()
-                && !(tab.isDying() && ChromeFeatureList.sTabletTabStripAnimation.isEnabled());
+        return !tab.isClosed() && !tab.isDraggedOffStrip() && !tab.isCollapsed() && !tab.isDying();
     }
 
     /** Returns the total number of unpinned tabs that are live. */
@@ -4734,10 +4663,8 @@ public class StripLayoutHelper
         if (animate) resizeAnimationList = new ArrayList<>();
         for (int i = 0; i < mStripTabs.length; i++) {
             StripLayoutTab tab = mStripTabs[i];
-            if ((tab.isDying() && !ChromeFeatureList.sTabletTabStripAnimation.isEnabled())
-                    || tab.isCollapsed()) {
-                continue;
-            }
+            if (tab.isCollapsed()) continue;
+
             float cachedTabWidth = getCachedTabWidth(tab.getIsPinned());
             if (resizeAnimationList != null) {
                 // Handle animating a tab being closed for TabletTabStripAnimation.
@@ -4753,11 +4680,8 @@ public class StripLayoutHelper
                     continue;
                 }
 
-                int duration =
-                        ChromeFeatureList.sTabletTabStripAnimation.isEnabled()
-                                ? NEW_ANIM_TAB_RESIZE_MS
-                                : ANIM_TAB_RESIZE_MS;
-                resizeAnimationList.add(getViewWidthAnimator(tab, cachedTabWidth, duration));
+                resizeAnimationList.add(
+                        getViewWidthAnimator(tab, cachedTabWidth, NEW_ANIM_TAB_RESIZE_MS));
             } else {
                 mStripTabs[i].setWidth(cachedTabWidth);
             }
@@ -4897,11 +4821,7 @@ public class StripLayoutHelper
                 // idealX represents where a tab should be placed in the tab strip.
                 setTabIdealX(tab, startX);
 
-                if (ChromeFeatureList.sTabletTabStripAnimation.isEnabled() || !tab.isDying()) {
-                    delta = (tab.getWidth() - TAB_OVERLAP_WIDTH_DP) * tab.getWidthWeight();
-                } else {
-                    delta = getEffectiveTabWidth(tab.getIsPinned());
-                }
+                delta = (tab.getWidth() - TAB_OVERLAP_WIDTH_DP) * tab.getWidthWeight();
             } else if (view instanceof StripLayoutGroupTitle groupTitle) {
                 // Offset to "undo" the tab overlap width as that doesn't apply to non-tab views.
                 // Also applies the desired overlap with the previous tab.
@@ -5500,10 +5420,6 @@ public class StripLayoutHelper
 
     void setRunningAnimatorForTesting(Animator animator) {
         mRunningAnimator = animator;
-    }
-
-    protected boolean isMultiStepCloseAnimationsRunningForTesting() {
-        return mMultiStepTabCloseAnimRunning;
     }
 
     protected float getLastReorderXForTesting() {

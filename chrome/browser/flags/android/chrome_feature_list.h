@@ -268,7 +268,6 @@ BASE_DECLARE_FEATURE(kTabSwitcherDragDropAndroid);
 BASE_DECLARE_FEATURE(kTabSwitcherGroupSuggestionsAndroid);
 BASE_DECLARE_FEATURE(kTabSwitcherGroupSuggestionsTestModeAndroid);
 BASE_DECLARE_FEATURE(kTabWindowManagerReportIndicesMismatch);
-BASE_DECLARE_FEATURE(kTabletTabStripAnimation);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
 BASE_DECLARE_FEATURE(kThirdPartyDisableChromeAutofillSettingsScreen);

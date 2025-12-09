@@ -4167,11 +4167,6 @@ inline constexpr char kChromeNativeUrlOverridingName[] =
 inline constexpr char kChromeNativeUrlOverridingDescription[] =
     "Allows for URL overriding for chrome-native:// pages";
 
-inline constexpr char kTabletTabStripAnimationName[] =
-    "Tablet Tab Strip Animation";
-inline constexpr char kTabletTabStripAnimationDescription[] =
-    "Enables new tablet tab strip animations.";
-
 inline constexpr char kDataSharingDebugLogsName[] =
     "Enable data sharing debug logs";
 inline constexpr char kDataSharingDebugLogsDescription[] =

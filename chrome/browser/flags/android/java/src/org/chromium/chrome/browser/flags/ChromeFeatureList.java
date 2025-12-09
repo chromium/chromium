@@ -642,7 +642,6 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_ENABLE_NEW_SYNC_DASHBOARD_URL = "SyncEnableNewSyncDashboardUrl";
     public static final String SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE =
             "SyncEnablePasswordsSyncErrorMessageAlternative";
-    public static final String TABLET_TAB_STRIP_ANIMATION = "TabletTabStripAnimation";
     public static final String TAB_ARCHIVAL_DRAG_DROP_ANDROID = "TabArchivalDragDropAndroid";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_FREEZING_USES_DISCARD = "TabFreezingUsesDiscard";
@@ -1048,8 +1047,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_STRIP_INCOGNITO_MIGRATION, BuildConfig.IS_DESKTOP_ANDROID, true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
-    public static final CachedFlag sTabletTabStripAnimation =
-            newCachedFlag(TABLET_TAB_STRIP_ANIMATION, true);
     public static final CachedFlag sTestDefaultDisabled =
             newCachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = newCachedFlag(TEST_DEFAULT_ENABLED, true);
@@ -1244,7 +1241,6 @@ public abstract class ChromeFeatureList {
                     sTabStripDensityChangeAndroid,
                     sTabStripIncognitoMigration,
                     sTabWindowManagerReportIndicesMismatch,
-                    sTabletTabStripAnimation,
                     sToolbarPhoneAnimationRefactor,
                     sToolbarSnapshotRefactor,
                     sToolbarStaleCaptureBugFix,

@@ -414,8 +414,7 @@ public class StripLayoutUtils {
     }
 
     public static boolean skipTabEdgePositionCalculation(StripLayoutTab tab) {
-        return (tab.isDying() && !ChromeFeatureList.sTabletTabStripAnimation.isEnabled())
-                || tab.isDraggedOffStrip();
+        return tab.isDraggedOffStrip();
     }
 
     public static boolean shouldApplyMoreDensity() {
