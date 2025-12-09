@@ -90,6 +90,7 @@ std::string GetEncodedHandshakeMessage() {
   lens::ClientToAimMessage message;
   lens::HandshakePing* ping = message.mutable_handshake_ping();
   ping->add_capabilities(lens::FeatureCapability::DEFAULT);
+  ping->add_capabilities(lens::FeatureCapability::OPEN_THREADS_VIEW);
   const size_t size = message.ByteSizeLong();
   std::vector<uint8_t> serialized_message(size);
   message.SerializeToArray(&serialized_message[0], size);

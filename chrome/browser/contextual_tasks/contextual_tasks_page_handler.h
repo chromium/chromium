@@ -47,7 +47,7 @@ class ContextualTasksPageHandler
   void SetThreadTitle(const std::string& title) override;
 
   void CloseSidePanel() override;
-  void ShowThreadHistory(ShowThreadHistoryCallback callback) override;
+  void ShowThreadHistory() override;
   void IsShownInTab(IsShownInTabCallback callback) override;
   void OpenMyActivityUi() override;
   void OpenHelpUi() override;

@@ -14,8 +14,7 @@ export function getHtml(this: ContextualTasksAppElement) {
   ${this.isShownInTab_ ? '' : html`
       <top-toolbar .title="${this.threadTitle_}"
           .attachedTabs="${this.contextTabs_}"
-          @new-thread-click="${this.onNewThreadClick_}"
-          @thread-history-click="${this.onThreadHistoryClick_}">
+          @new-thread-click="${this.onNewThreadClick_}">
       </top-toolbar>
   `}
   <webview id="threadFrame" src="${this.threadUrl_}"></webview>

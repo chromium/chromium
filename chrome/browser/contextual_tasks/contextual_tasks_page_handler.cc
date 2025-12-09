@@ -111,12 +111,11 @@ void ContextualTasksPageHandler::CloseSidePanel() {
   web_ui_controller_->CloseSidePanel();
 }
 
-void ContextualTasksPageHandler::ShowThreadHistory(
-    ShowThreadHistoryCallback callback) {
-  std::vector<contextual_tasks::mojom::ThreadPtr> threads;
-  // TODO(crbug.com/445469925): Query backend asynchronously to get thread
-  // history.
-  std::move(callback).Run(std::move(threads));
+void ContextualTasksPageHandler::ShowThreadHistory() {
+  // Send a message to AIM to open the threads view.
+  lens::ClientToAimMessage message;
+  message.mutable_open_threads_view()->mutable_payload();
+  PostMessageToWebview(message);
 }
 
 void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {

@@ -57,9 +57,8 @@ suite('TopToolbarTest', () => {
     const historyButton = topToolbar.shadowRoot.querySelector(
         'cr-icon-button[title="Thread History"]');
     assertHTMLElement(historyButton);
-    const historyEvent = eventToPromise('thread-history-click', topToolbar);
     historyButton.click();
-    await historyEvent;
+    await proxy.handler.whenCalled('showThreadHistory');
   });
 
   test('handles close button click', async () => {

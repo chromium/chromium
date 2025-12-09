@@ -12,7 +12,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {ContextualTasksComposeboxElement} from './composebox.js';
-import type {Tab, Thread} from './contextual_tasks.mojom-webui.js';
+import type {Tab} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
@@ -41,7 +41,6 @@ export class ContextualTasksAppElement extends CrLitElement {
       isShownInTab_: {type: Boolean},
       threadUrl_: {type: String},
       threadTitle_: {type: String},
-      historyThreads_: {type: Array},
       contextTabs_: {type: Array},
     };
   }
@@ -50,7 +49,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor isShownInTab_: boolean = true;  // Most start in a tab.
   protected accessor threadUrl_: string = '';
   protected accessor threadTitle_: string = '';
-  protected accessor historyThreads_: Thread[] = [];
   protected accessor contextTabs_: Tab[] = [];
   private listenerIds_: number[] = [];
   private oauthToken_: string = '';
@@ -72,16 +70,6 @@ export class ContextualTasksAppElement extends CrLitElement {
         'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
     const {url} = await this.browserProxy_.handler.getThreadUrl();
     this.threadUrl_ = url.url;
-  }
-
-  protected async onThreadHistoryClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenThreadHistory');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.OpenThreadHistory', true);
-    const {threads} = await this.browserProxy_.handler.showThreadHistory();
-    this.historyThreads_ = threads;
-    // TODO(crbug.com/445469925): Display the threads in a drawer.
   }
 
   override async connectedCallback() {
