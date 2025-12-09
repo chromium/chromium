@@ -2611,4 +2611,34 @@ TEST_F(ComposeboxQueryControllerTest,
               EqualsProto(second_file_request_id));
 }
 
+TEST_F(ComposeboxQueryControllerTest, UploadFileBeforeClusterInfoUpdatesRequestId) {
+  // Act: Start the file upload flow BEFORE cluster info is received.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Act: Initialize the session (fetches cluster info).
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Assert: File upload should proceed and succeed.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Assert: The request ID in the file info should now have the routing info.
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .routing_info()
+                .cell_address(),
+            kTestCellAddress);
+  EXPECT_EQ(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                .routing_info()
+                .server_address(),
+            kTestServerAddress);
+}
+
 }  // namespace contextual_search

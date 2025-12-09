@@ -927,6 +927,17 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
       !request_id_generator_.HasRoutingInfo()) {
     std::unique_ptr<lens::LensOverlayRequestId> request_id =
         request_id_generator_.SetRoutingInfo(server_response.routing_info());
+
+    // Update the request id in all of the active_files_ to use the new routing
+    // info.
+    for (auto& [file_token, file_info] : active_files_) {
+      file_info->request_id.mutable_routing_info()->CopyFrom(
+          server_response.routing_info());
+      if (file_info->viewport_request_id_) {
+        file_info->viewport_request_id_->mutable_routing_info()->CopyFrom(
+            server_response.routing_info());
+      }
+    }
   }
   SetQueryControllerState(QueryControllerState::kClusterInfoReceived);
 
