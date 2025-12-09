@@ -1195,6 +1195,7 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL canSend = hasContent && !compactMode;
   BOOL showShortcuts = !hasContent && !canSend;
   BOOL showLeadingImage = !compactMode || !allowsMultimodalActions;
+  BOOL shouldPersistAIMButton = IsComposeboxAIMNudgeEnabled() && !compactMode;
 
   ComposeboxInputPlateControls leadingAction =
       allowsMultimodalActions ? ComposeboxInputPlateControls::kPlus
@@ -1213,7 +1214,9 @@ CreateInputDataFromAnnotatedPageContent(
       modeSwitchButton = ComposeboxInputPlateControls::kCreateImage;
       break;
     case ComposeboxMode::kRegularSearch:
-      modeSwitchButton = ComposeboxInputPlateControls::kNone;
+      modeSwitchButton = shouldPersistAIMButton
+                             ? ComposeboxInputPlateControls::kAIM
+                             : ComposeboxInputPlateControls::kNone;
       break;
   }
 

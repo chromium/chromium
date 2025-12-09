@@ -72,7 +72,15 @@
       return [UIColor colorNamed:kBlueHaloColor];
     }
   } else {
-    return [UIColor colorNamed:kSecondaryBackgroundColor];
+    return [UIColor clearColor];
+  }
+}
+
+- (UIColor*)aimButtonBorderColorWithAIMEnabled:(BOOL)AIMEnabled {
+  if (AIMEnabled) {
+    return [UIColor clearColor];
+  } else {
+    return [UIColor colorNamed:kGrey400Color];
   }
 }
 
