@@ -418,6 +418,7 @@ static_library("content_shell_lib") {
       "//components/strings:components_strings",
       "//services/tracing/public/cpp",
       "//services/tracing/public/mojom",
+      "//ui/accessibility:ax_base",
       "//ui/shell_dialogs",
     ]
   }

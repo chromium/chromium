@@ -22,29 +22,33 @@
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace {
 
-static const char kGraphicsTracingCategories[] =
+const char kGraphicsTracingCategories[] =
     "-*,blink,cc,gpu,renderer.scheduler,sequence_manager,v8,toplevel,viz,evdev,"
     "input,benchmark";
 
-static const char kDetailedGraphicsTracingCategories[] =
+const char kDetailedGraphicsTracingCategories[] =
     "-*,blink,cc,gpu,renderer.scheduler,sequence_manager,v8,toplevel,viz,evdev,"
     "input,benchmark,disabled-by-default-skia,disabled-by-default-skia.gpu,"
     "disabled-by-default-skia.gpu.cache,disabled-by-default-skia.shaders,"
     "disabled-by-default-gpu.dawn,disabled-by-default-gpu.graphite.dawn";
 
-static const char kNavigationTracingCategories[] =
+const char kNavigationTracingCategories[] =
     "-*,benchmark,toplevel,ipc,base,browser,navigation,omnibox,ui,shutdown,"
     "safe_browsing,loading,startup,mojom,renderer_host,"
     "disabled-by-default-system_stats,disabled-by-default-cpu_profiler,dwrite,"
     "fonts,ServiceWorker,passwords,disabled-by-default-file,sql,"
     "disabled-by-default-user_action_samples,disk_cache";
 
-static const char kAllTracingCategories[] = "*";
+const char kAllTracingCategories[] = "*";
+
+constexpr ui::AXMode kVoiceOverEnabledAXMode =
+    ui::kAXModeComplete | ui::AXMode::kFromPlatform | ui::AXMode::kScreenReader;
 
 }  // namespace
 
@@ -258,8 +262,7 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scopedAccessibilityMode;
   if (UIAccessibilityIsVoiceOverRunning()) {
     _scopedAccessibilityMode =
         content::BrowserAccessibilityState::GetInstance()
-            ->CreateScopedModeForProcess(ui::kAXModeComplete |
-                                         ui::AXMode::kFromPlatform);
+            ->CreateScopedModeForProcess(kVoiceOverEnabledAXMode);
   }
 
   // Register for VoiceOver notifications.
@@ -509,8 +512,7 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scopedAccessibilityMode;
       content::BrowserAccessibilityState::GetInstance();
   if (UIAccessibilityIsVoiceOverRunning()) {
     _scopedAccessibilityMode = accessibility_state->CreateScopedModeForProcess(
-        ui::kAXModeComplete | ui::AXMode::kFromPlatform |
-        ui::AXMode::kScreenReader);
+        kVoiceOverEnabledAXMode);
   } else {
     _scopedAccessibilityMode.reset();
   }
