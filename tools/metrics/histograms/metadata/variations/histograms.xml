@@ -762,7 +762,8 @@ chromium-metrics-reviews@google.com.
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The UI thread run time of the VariationsSeedStore::StoreSeedData function.
+    The run time of the VariationsSeedStore::StoreSeedData function until the
+    callback is called with the result. Changed in M145.
   </summary>
 </histogram>
 

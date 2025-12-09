@@ -155,6 +155,23 @@ StoreSeedResult Uncompress(const std::string& compressed, std::string* result) {
   return StoreSeedResult::kSuccess;
 }
 
+// Wrapper to record the time elapsed between the call of this function and the
+// call to the given callback.
+template <typename... Args>
+base::OnceCallback<void(Args...)> CallbackUmaHistogramTimer(
+    base::OnceCallback<void(Args...)> done_callback,
+    std::string_view histogram_name) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(Args...)> done_callback,
+         std::string histogram_name, base::TimeTicks start_time, Args... args) {
+        base::UmaHistogramTimes(histogram_name,
+                                base::TimeTicks::Now() - start_time);
+        std::move(done_callback).Run(std::forward<Args>(args)...);
+      },
+      std::move(done_callback), std::string(histogram_name),
+      base::TimeTicks::Now());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Marks seed storing as successful on the Java side to avoid repeated seed
 // fetches. Called only on first run.
@@ -300,7 +317,8 @@ void VariationsSeedStore::StoreSeedData(
     bool is_delta_compressed,
     bool is_gzip_compressed,
     bool require_synchronous) {
-  base::ScopedUmaHistogramTimer store_seed_timer("Variations.StoreSeed.Time");
+  auto done_callback_with_timer = CallbackUmaHistogramTimer(
+      std::move(done_callback), /*histogram_name=*/"Variations.StoreSeed.Time");
 
   base::UmaHistogramCounts1000("Variations.StoreSeed.DataSize",
                                data.length() / 1024);
@@ -323,12 +341,13 @@ void VariationsSeedStore::StoreSeedData(
     ReadSeedData(
         /*done_callback=*/base::BindOnce(
             &VariationsSeedStore::ProcessAndStoreSeedData,
-            weak_ptr_factory_.GetWeakPtr(), std::move(done_callback),
+            weak_ptr_factory_.GetWeakPtr(), std::move(done_callback_with_timer),
             std::move(seed_data), require_synchronous),
         SeedType::LATEST, require_synchronous);
   } else {
     ProcessAndStoreSeedData(
-        std::move(done_callback), std::move(seed_data), require_synchronous,
+        std::move(done_callback_with_timer), std::move(seed_data),
+        require_synchronous,
         SeedReaderWriter::ReadSeedDataResult{LoadSeedResult::kSuccess, "", ""});
   }
 }

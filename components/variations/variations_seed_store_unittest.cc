@@ -1781,6 +1781,16 @@ TEST_P(StoreSeedDataAllGroupsTest,
   EXPECT_EQ("456", seed_store.GetLatestSerialNumber());
 }
 
+TEST_P(StoreSeedDataAllGroupsTest, StoreSeedData_RecordsUmaHistogramTimer) {
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(StoreSeedData(seed_store, SerializeSeed(CreateTestSeed())));
+  // Verify that the timer was recorded.
+  histogram_tester.ExpectTotalCount("Variations.StoreSeed.Time", 1);
+}
+
 class LoadSafeSeedDataGroupTest
     : public SeedStoreGroupTestBase,
       public ::testing::WithParamInterface<std::string_view> {
