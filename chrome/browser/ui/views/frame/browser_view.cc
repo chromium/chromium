@@ -12,6 +12,7 @@
 #include <set>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/byte_count.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -4943,6 +4944,10 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
     result = views::CloseRequestResult::kCannotClose;
   }
 
+  // Layout must be suppressed during teardown. Normally, this is automatic
+  // when the layout manager is destroyed in the destructor, but it also needs
+  // to happen when the tabstrip model is being torn down.
+  base::AutoReset<bool> suppress_layout(&suppress_layout_for_teardown_, true);
   browser_->OnWindowClosing();
   return result;
 }
@@ -5113,7 +5118,8 @@ gfx::Size BrowserView::GetMinimumSize() const {
 
 void BrowserView::Layout(PassKey) {
   TRACE_EVENT0("ui", "BrowserView::Layout");
-  if (!initialized_ || in_process_fullscreen_) {
+  if (!initialized_ || in_process_fullscreen_ ||
+      suppress_layout_for_teardown_) {
     return;
   }
 
