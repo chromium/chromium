@@ -117,6 +117,12 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kGetAIPageContentSubframeTimeoutParam;
 
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kGetAIPageContentMainFrameTimeoutEnabled);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kGetAIPageContentMainFrameTimeoutParam;
+
 typedef base::EnumSet<proto::RequestContext,
                       proto::RequestContext_MIN,
                       proto::RequestContext_MAX>
@@ -380,6 +386,12 @@ bool ShouldEnableOptimizationGuideIconView();
 // subframes. An empty return value indicates no timeout should be applied.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::optional<base::TimeDelta> GetSubframeGetAIPageContentTimeout();
+
+// Returns what the timeout for calls to GetAIPageContent should be for
+// the main frame. An empty return value indicates no timeout should be
+// applied.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+std::optional<base::TimeDelta> GetMainFrameGetAIPageContentTimeout();
 
 }  // namespace features
 }  // namespace optimization_guide
