@@ -176,6 +176,8 @@ if (!is_android) {
       "//third_party/protobuf:protobuf_lite",
       "//url",
     ]
+
+    deps += [ "//chrome/browser/autocomplete:aim_eligibility_service" ]
   }
 
   mojom("mojo_bindings") {
