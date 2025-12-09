@@ -238,6 +238,8 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   chrome_pdf::Selection selection_;
   uint32_t page_count_ = 0;
   bool is_tagged_ = false;
+  std::unique_ptr<chrome_pdf::AccessibilityStructureElement>
+      doc_structure_tree_root_;
   std::unique_ptr<ui::AXNodeData> doc_node_;
   // The banner node will have an appropriate ARIA landmark for easy navigation
   // for screen reader users. It will contain the status node below.

@@ -35,14 +35,14 @@ class PdfAccessibilityTreeBuilder {
       const chrome_pdf::AccessibilityPageObjects& page_objects,
       const chrome_pdf::AccessibilityPageInfo& page_info,
       uint32_t page_index,
+      const chrome_pdf::AccessibilityStructureElement* page_structure_tree,
       ui::AXNodeData* root_node,
       blink::WebAXObject* container_obj,
       std::vector<std::unique_ptr<ui::AXNodeData>>* nodes,
       std::map<int32_t, chrome_pdf::PageCharacterIndex>*
           node_id_to_page_char_index,
       std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>*
-          node_id_to_annotation_info
-  );
+          node_id_to_annotation_info);
 
   PdfAccessibilityTreeBuilder(const PdfAccessibilityTreeBuilder&) = delete;
   PdfAccessibilityTreeBuilder& operator=(const PdfAccessibilityTreeBuilder&) =
@@ -53,7 +53,9 @@ class PdfAccessibilityTreeBuilder {
 
  private:
   friend class PdfAccessibilityTreeBuilderHeuristic;
+  friend class PdfAccessibilityTreeBuilderStructure;
 
+  bool IsFullyTaggedPage() const;
   void AddWordStartsAndEnds(ui::AXNodeData* inline_text_box);
   ui::AXNodeData* CreateAndAppendNode(ax::mojom::Role role,
                                       ax::mojom::Restriction restriction);
@@ -106,6 +108,8 @@ class PdfAccessibilityTreeBuilder {
       buttons_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityChoiceFieldInfo>>
       choice_fields_;
+  const raw_ptr<const chrome_pdf::AccessibilityStructureElement>
+      page_structure_tree_;
 
   uint32_t page_index_;
   raw_ptr<ui::AXNodeData> root_node_;

@@ -6,11 +6,13 @@
 
 #include <optional>
 #include <queue>
+#include <set>
 #include <string>
 
 #include "base/i18n/break_iterator.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder_heuristic.h"
+#include "components/pdf/renderer/pdf_accessibility_tree_builder_structure.h"
 #include "components/strings/grit/components_strings.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/page_character_index.h"
@@ -88,6 +90,22 @@ bool IsTextRenderModeStroke(
   }
 }
 
+void CollectTaggedTextRunStartIndices(
+    const chrome_pdf::AccessibilityStructureElement* element,
+    std::set<uint32_t>& tagged_start_indices) {
+  if (!element) {
+    return;
+  }
+
+  for (const auto& text_run_ptr : element->associated_text_runs_if_available) {
+    tagged_start_indices.insert(text_run_ptr->start_index);
+  }
+
+  for (const auto& child : element->children) {
+    CollectTaggedTextRunStartIndices(child.get(), tagged_start_indices);
+  }
+}
+
 }  // namespace
 
 namespace pdf {
@@ -99,14 +117,14 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
     const chrome_pdf::AccessibilityPageObjects& page_objects,
     const chrome_pdf::AccessibilityPageInfo& page_info,
     uint32_t page_index,
+    const chrome_pdf::AccessibilityStructureElement* page_structure_tree,
     ui::AXNodeData* root_node,
     blink::WebAXObject* container_obj,
     std::vector<std::unique_ptr<ui::AXNodeData>>* nodes,
     std::map<int32_t, chrome_pdf::PageCharacterIndex>*
         node_id_to_page_char_index,
     std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>*
-        node_id_to_annotation_info
-    )
+        node_id_to_annotation_info)
     : mark_headings_using_heuristic_(mark_headings_using_heuristic),
       text_runs_(text_runs),
       chars_(chars),
@@ -116,13 +134,13 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
       text_fields_(page_objects.form_fields.text_fields),
       buttons_(page_objects.form_fields.buttons),
       choice_fields_(page_objects.form_fields.choice_fields),
+      page_structure_tree_(page_structure_tree),
       page_index_(page_index),
       root_node_(root_node),
       container_obj_(container_obj),
       nodes_(nodes),
       node_id_to_page_char_index_(node_id_to_page_char_index),
-      node_id_to_annotation_info_(node_id_to_annotation_info)
-{
+      node_id_to_annotation_info_(node_id_to_annotation_info) {
   page_node_ = CreateAndAppendNode(ax::mojom::Role::kRegion,
                                    ax::mojom::Restriction::kReadOnly);
   page_node_->AddStringAttribute(
@@ -146,10 +164,35 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
 
 PdfAccessibilityTreeBuilder::~PdfAccessibilityTreeBuilder() = default;
 
+bool PdfAccessibilityTreeBuilder::IsFullyTaggedPage() const {
+  if (!page_structure_tree_ || text_runs_->empty()) {
+    return false;
+  }
+
+  std::set<uint32_t> tagged_start_indices;
+  CollectTaggedTextRunStartIndices(page_structure_tree_, tagged_start_indices);
+
+  // Consider fully tagged if all text runs are referenced in the structure
+  // tree. If any text runs are missing from the structure tree, the PDF is
+  // partially tagged.
+  return tagged_start_indices.size() == text_runs_->size();
+}
+
 void PdfAccessibilityTreeBuilder::BuildPageTree() {
-  // Build tree using heuristics.
-  // TODO(crbug.com/40707542): Add structure tree mode for tagged PDFs.
-  PdfAccessibilityTreeBuilderHeuristic(*this).BuildPageTree();
+  // Determine which mode to use based on structure tree availability and
+  // whether the page is fully tagged.
+  if (IsFullyTaggedPage()) {
+    VLOG(1) << "Using structure tree mode for PDF accessibility tree.";
+    // Use structure tree mode for fully-tagged PDFs.
+    PdfAccessibilityTreeBuilderStructure(*this, page_structure_tree_)
+        .BuildPageTree();
+  } else {
+    VLOG(1) << "Using heuristic mode for PDF accessibility tree.";
+    // Fall back to heuristic mode for untagged or partially-tagged PDFs.
+    // TODO(crbug.com/40707542): Extend structure tree to handle partially
+    // tagged pages also.
+    PdfAccessibilityTreeBuilderHeuristic(*this).BuildPageTree();
+  }
 }
 
 void PdfAccessibilityTreeBuilder::AddWordStartsAndEnds(
