@@ -248,9 +248,7 @@ const char kSecondURLText[] = "You've arrived";
 // should be opened in the same tab (not create a new tab).
 - (void)testOpenURLFromNTP {
   [ChromeEarlGrey sceneOpenURL:GURL("https://anything")];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          "https://anything")]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL("https://anything")];
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
@@ -259,9 +257,7 @@ const char kSecondURLText[] = "You've arrived";
 - (void)testOpenURLFromTab {
   [ChromeEarlGrey loadURL:GURL("https://invalid")];
   [ChromeEarlGrey sceneOpenURL:GURL("https://anything")];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          "https://anything")]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL("https://anything")];
   [ChromeEarlGrey waitForMainTabCount:2];
 }
 
@@ -271,9 +267,7 @@ const char kSecondURLText[] = "You've arrived";
   [ChromeEarlGrey closeCurrentTab];
   [ChromeEarlGrey waitForMainTabCount:0];
   [ChromeEarlGrey sceneOpenURL:GURL("https://anything")];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          "https://anything")]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL("https://anything")];
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
@@ -378,9 +372,7 @@ const char kSecondURLText[] = "You've arrived";
 
   // The dino game should be loaded.
   [ChromeEarlGrey waitForPageToFinishLoading];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(
-                            base::SysNSStringToUTF8(@"chrome://dino"))];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL("chrome://dino/")];
 
   GREYAssertTrue([SigninEarlGrey isSignedOut], @"Failed to sign-out.");
 
