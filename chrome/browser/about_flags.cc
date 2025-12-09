@@ -11802,15 +11802,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kEnableChromeRefreshTokenBinding)},
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-third-party-mode-content-provider",
-     flag_descriptions::kAutofillThirdPartyModeContentProviderName,
-     flag_descriptions::kAutofillThirdPartyModeContentProviderDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillThirdPartyModeContentProvider)},
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
     {"three-button-password-save-dialog",
      flag_descriptions::kThreeButtonPasswordSaveDialogName,

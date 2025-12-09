@@ -4211,11 +4211,6 @@ inline constexpr char kTextSafetyClassifierName[] = "Text Safety Classifier";
 inline constexpr char kTextSafetyClassifierDescription[] =
     "Enables text safety classifier for on-device models";
 
-inline constexpr char kAutofillThirdPartyModeContentProviderName[] =
-    "Autofill Third Party Mode Content Provider";
-inline constexpr char kAutofillThirdPartyModeContentProviderDescription[] =
-    "Enables querying the third party autofill mode state from the Chrome app.";
-
 inline constexpr char kThreeButtonPasswordSaveDialogName[] =
     "Three Button Password Save Dialog";
 inline constexpr char kThreeButtonPasswordSaveDialogDescription[] =
