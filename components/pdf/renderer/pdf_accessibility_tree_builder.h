@@ -51,15 +51,43 @@ class PdfAccessibilityTreeBuilder {
 
   void BuildPageTree();
 
- private:
-  friend class PdfAccessibilityTreeBuilderHeuristic;
-  friend class PdfAccessibilityTreeBuilderStructure;
+  // Accessors for tree builders.
+  bool mark_headings_using_heuristic() const {
+    return mark_headings_using_heuristic_;
+  }
+  ui::AXNodeData* page_node() const { return page_node_; }
+  const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs() const {
+    return *text_runs_;
+  }
+  const std::vector<uint32_t>& text_run_start_indices() const {
+    return text_run_start_indices_;
+  }
+  const std::vector<chrome_pdf::AccessibilityLinkInfo>& links() const {
+    return *links_;
+  }
+  const std::vector<chrome_pdf::AccessibilityImageInfo>& images() const {
+    return *images_;
+  }
+  const std::vector<chrome_pdf::AccessibilityHighlightInfo>& highlights()
+      const {
+    return *highlights_;
+  }
+  const std::vector<chrome_pdf::AccessibilityTextFieldInfo>& text_fields()
+      const {
+    return *text_fields_;
+  }
+  const std::vector<chrome_pdf::AccessibilityButtonInfo>& buttons() const {
+    return *buttons_;
+  }
+  const std::vector<chrome_pdf::AccessibilityChoiceFieldInfo>& choice_fields()
+      const {
+    return *choice_fields_;
+  }
+  uint32_t page_index() const { return page_index_; }
 
-  bool IsFullyTaggedPage() const;
-  void AddWordStartsAndEnds(ui::AXNodeData* inline_text_box);
+  // Node creation methods used by tree builders.
   ui::AXNodeData* CreateAndAppendNode(ax::mojom::Role role,
                                       ax::mojom::Restriction restriction);
-  ui::AXNodeData* CreateStaticTextNode();
   ui::AXNodeData* CreateStaticTextNode(
       const chrome_pdf::PageCharacterIndex& page_char_index);
   ui::AXNodeData* CreateInlineTextBoxNode(
@@ -76,6 +104,16 @@ class PdfAccessibilityTreeBuilder {
       const chrome_pdf::AccessibilityTextFieldInfo& text_field);
   ui::AXNodeData* CreateButtonNode(
       const chrome_pdf::AccessibilityButtonInfo& button);
+  ui::AXNodeData* CreateChoiceFieldNode(
+      const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field);
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  ui::AXNodeData* CreateOcrWrapperNode(const gfx::PointF& position, bool start);
+#endif
+
+ private:
+  bool IsFullyTaggedPage() const;
+  void AddWordStartsAndEnds(ui::AXNodeData* inline_text_box);
+  ui::AXNodeData* CreateStaticTextNode();
   ui::AXNodeData* CreateListboxOptionNode(
       const chrome_pdf::AccessibilityChoiceFieldOptionInfo& choice_field_option,
       ax::mojom::Restriction restriction);
@@ -87,11 +125,6 @@ class PdfAccessibilityTreeBuilder {
       ax::mojom::Restriction restriction);
   ui::AXNodeData* CreateComboboxNode(
       const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field);
-  ui::AXNodeData* CreateChoiceFieldNode(
-      const chrome_pdf::AccessibilityChoiceFieldInfo& choice_field);
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  ui::AXNodeData* CreateOcrWrapperNode(const gfx::PointF& position, bool start);
-#endif
 
   const bool mark_headings_using_heuristic_;
   std::vector<uint32_t> text_run_start_indices_;

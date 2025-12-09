@@ -25,7 +25,7 @@ PdfAccessibilityTreeBuilderStructure::~PdfAccessibilityTreeBuilderStructure() =
     default;
 
 void PdfAccessibilityTreeBuilderStructure::BuildPageTree() {
-  WalkStructureTree(structure_tree_root_, builder_->page_node_);
+  WalkStructureTree(structure_tree_root_, builder_->page_node());
 }
 
 // static
@@ -64,11 +64,11 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderStructure::CreateNodeWithTextContent(
   std::vector<size_t> text_run_indices;
   for (const auto& text_run_ptr : text_runs) {
     auto it = std::ranges::find_if(
-        *builder_->text_runs_, [&text_run_ptr](const auto& tr) {
+        builder_->text_runs(), [&text_run_ptr](const auto& tr) {
           return tr.start_index == text_run_ptr->start_index;
         });
-    if (it != builder_->text_runs_->end()) {
-      size_t idx = std::distance(builder_->text_runs_->begin(), it);
+    if (it != builder_->text_runs().end()) {
+      size_t idx = std::distance(builder_->text_runs().begin(), it);
       text_run_indices.push_back(idx);
     }
   }
@@ -79,8 +79,8 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderStructure::CreateNodeWithTextContent(
 
   // Create static text node as child of container.
   chrome_pdf::PageCharacterIndex page_char_index = {
-      builder_->page_index_,
-      builder_->text_run_start_indices_[text_run_indices[0]]};
+      builder_->page_index(),
+      builder_->text_run_start_indices()[text_run_indices[0]]};
   ui::AXNodeData* static_text_node =
       builder_->CreateStaticTextNode(page_char_index);
   container_node->child_ids.push_back(static_text_node->id);
@@ -89,9 +89,9 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderStructure::CreateNodeWithTextContent(
   std::string accumulated_text;
   for (size_t text_run_index : text_run_indices) {
     const chrome_pdf::AccessibilityTextRunInfo& text_run =
-        (*builder_->text_runs_)[text_run_index];
+        (builder_->text_runs())[text_run_index];
     page_char_index.char_index =
-        builder_->text_run_start_indices_[text_run_index];
+        builder_->text_run_start_indices()[text_run_index];
 
     ui::AXNodeData* inline_text_box =
         builder_->CreateInlineTextBoxNode(text_run, page_char_index);
