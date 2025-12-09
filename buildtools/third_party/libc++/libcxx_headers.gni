@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "c03062d6c9382e7eeb455660308f4d2652b700bd",
+    libcxx_revision == "e82038b2e906a946e51ceb74ca855f44b0e58c3a",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -550,6 +550,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__locale_dir/support/fuchsia.h",
   "//third_party/libc++/src/include/__locale_dir/support/linux.h",
   "//third_party/libc++/src/include/__locale_dir/support/netbsd.h",
+  "//third_party/libc++/src/include/__locale_dir/support/newlib.h",
   "//third_party/libc++/src/include/__locale_dir/support/no_locale/characters.h",
   "//third_party/libc++/src/include/__locale_dir/support/no_locale/strtonum.h",
   "//third_party/libc++/src/include/__locale_dir/support/windows.h",
