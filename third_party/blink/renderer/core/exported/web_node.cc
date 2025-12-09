@@ -350,6 +350,8 @@ base::ScopedClosureRunner WebNode::AddEventListener(
    private:
     const AtomicString& event_type_name() {
       switch (event_type_) {
+        case WebNode::EventType::kAutofill:
+          return event_type_names::kAutofill;
         case EventType::kSelectionchange:
           return event_type_names::kSelectionchange;
         case EventType::kBeforeinput:

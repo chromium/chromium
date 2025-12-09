@@ -660,6 +660,10 @@
       base_feature: "none",
     },
     {
+      name: "AutofillEvent",
+      status: "experimental",
+    },
+    {
       name: "AutomationControlled",
       base_feature: "none",
       public: true,

@@ -32,6 +32,7 @@
     "audioend",
     "audioprocess",
     "audiostart",
+    "autofill",
     "auxclick",
     "availablechange",
     "backgroundfetchabort",

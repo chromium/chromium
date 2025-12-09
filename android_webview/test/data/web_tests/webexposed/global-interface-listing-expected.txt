@@ -1916,6 +1916,7 @@ interface Document : Node
     getter onanimationend
     getter onanimationiteration
     getter onanimationstart
+    getter onautofill
     getter onauxclick
     getter onbeforecopy
     getter onbeforecut
@@ -2146,6 +2147,7 @@ interface Document : Node
     setter onanimationend
     setter onanimationiteration
     setter onanimationstart
+    setter onautofill
     setter onauxclick
     setter onbeforecopy
     setter onbeforecut

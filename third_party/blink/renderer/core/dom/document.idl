@@ -225,6 +225,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [RuntimeEnabled=RouteMatching] readonly attribute RouteMap routeMap;
 
     // Event handler attributes
+    [RuntimeEnabled=AutofillEvent] attribute EventHandler onautofill;
     attribute EventHandler onbeforecopy;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;

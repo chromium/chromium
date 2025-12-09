@@ -36,6 +36,7 @@
     "onanimationend",
     "onanimationiteration",
     "onanimationstart",
+    "onautofill",
     "onauxclick",
     "onbeforecopy",
     "onbeforecut",
