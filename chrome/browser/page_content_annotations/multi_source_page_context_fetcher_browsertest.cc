@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"

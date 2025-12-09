@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/actor_policy_checker.h"
 
 #include "base/base_switches.h"
+#include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/version.h"

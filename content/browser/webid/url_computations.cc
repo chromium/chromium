@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/mappers.h"

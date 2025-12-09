@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/dbus_interfaces/org_gnome_Mutter_ScreenCast.h"

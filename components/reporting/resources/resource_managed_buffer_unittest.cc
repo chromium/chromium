@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/resources/resource_manager.h"

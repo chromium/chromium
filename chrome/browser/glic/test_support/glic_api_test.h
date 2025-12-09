@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "base/json/json_writer.h"
+#include "base/strings/strcat.h"
 #include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"

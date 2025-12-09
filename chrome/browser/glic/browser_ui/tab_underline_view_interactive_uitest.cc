@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include "base/numerics/ranges.h"
+#include "base/strings/strcat.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"

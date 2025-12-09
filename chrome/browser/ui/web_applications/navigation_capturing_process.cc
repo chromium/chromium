@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/to_string.h"
 #include "base/time/clock.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/profiles/profile.h"

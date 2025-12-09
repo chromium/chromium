@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/memory.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected_macros.h"
 
 namespace installer {

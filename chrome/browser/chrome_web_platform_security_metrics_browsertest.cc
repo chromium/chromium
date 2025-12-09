@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"

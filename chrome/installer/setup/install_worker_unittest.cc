@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_os_info_override_win.h"

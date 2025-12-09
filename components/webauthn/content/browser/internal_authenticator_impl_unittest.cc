@@ -5,6 +5,7 @@
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "content/browser/webauth/authenticator_test_base.h"
 #include "content/public/browser/content_browser_client.h"

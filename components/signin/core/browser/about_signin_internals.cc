@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"

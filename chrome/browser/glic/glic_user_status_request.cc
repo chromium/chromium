@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "components/variations/net/variations_http_headers.h"

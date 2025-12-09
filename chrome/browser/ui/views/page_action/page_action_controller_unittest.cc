@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"

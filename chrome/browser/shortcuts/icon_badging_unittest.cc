@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/gmock_expected_support.h"
 #include "build/branding_buildflags.h"

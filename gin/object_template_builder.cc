@@ -8,6 +8,7 @@
 
 #include <string_view>
 
+#include "base/strings/strcat.h"
 #include "gin/interceptor.h"
 #include "gin/per_isolate_data.h"
 #include "gin/public/wrappable_pointer_tags.h"

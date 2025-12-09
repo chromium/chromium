@@ -6,6 +6,7 @@
 
 #import "base/files/file_path.h"
 #import "base/run_loop.h"
+#import "base/strings/strcat.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/enterprise/browser/reporting/report_request.h"

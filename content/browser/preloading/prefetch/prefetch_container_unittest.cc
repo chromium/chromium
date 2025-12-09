@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"

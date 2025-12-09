@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/containers/flat_set.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/authentication/test/separate_profiles_util.h"

@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"

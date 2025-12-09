@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/run_loop.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"

@@ -5,6 +5,8 @@
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"

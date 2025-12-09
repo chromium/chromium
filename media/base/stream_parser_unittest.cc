@@ -12,6 +12,7 @@
 #include <sstream>
 
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

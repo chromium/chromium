@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "build/build_config.h"

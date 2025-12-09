@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/lazy_instance.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/browser_process.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/glic/widget/inactive_view_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"

@@ -5,6 +5,7 @@
 #include "content/browser/btm/btm_page_visit_observer.h"
 
 #include "base/feature_list.h"
+#include "base/strings/to_string.h"
 #include "base/test/simple_test_clock.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/content/source_url_recorder.h"

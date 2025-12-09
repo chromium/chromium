@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/i18n/number_formatting.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"

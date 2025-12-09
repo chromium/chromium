@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/feature_list.h"
+#import "base/strings/strcat.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"

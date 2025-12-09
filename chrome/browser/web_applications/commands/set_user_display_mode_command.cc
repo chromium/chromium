@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"

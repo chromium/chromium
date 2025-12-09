@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/first_party_sets/test/scoped_mock_first_party_sets_handler.h"
 #include "content/public/browser/web_contents.h"

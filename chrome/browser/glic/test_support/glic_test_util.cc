@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 
+#include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"

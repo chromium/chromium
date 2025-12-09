@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/command_line.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/variations_smoke_test/variations_smoke_test_app_interface.h"

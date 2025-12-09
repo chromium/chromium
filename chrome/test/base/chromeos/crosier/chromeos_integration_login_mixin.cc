@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"

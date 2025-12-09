@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"

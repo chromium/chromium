@@ -4,6 +4,7 @@
 
 #include "components/policy/test_support/request_handler_for_client_cert_provisioning.h"
 
+#include "base/strings/string_view_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
 #include "crypto/keypair.h"

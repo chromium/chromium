@@ -10,6 +10,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"

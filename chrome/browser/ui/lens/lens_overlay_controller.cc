@@ -18,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/kill.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

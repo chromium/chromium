@@ -13,6 +13,7 @@
 #include "base/memory/raw_span.h"
 #include "base/memory/safety_checks.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"

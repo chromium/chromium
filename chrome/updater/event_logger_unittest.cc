@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/simple_test_clock.h"

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"

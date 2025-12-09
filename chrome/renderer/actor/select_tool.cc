@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/notimplemented.h"
+#include "base/strings/to_string.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/chrome_features.h"

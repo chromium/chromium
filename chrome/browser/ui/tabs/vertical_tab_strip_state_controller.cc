@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"

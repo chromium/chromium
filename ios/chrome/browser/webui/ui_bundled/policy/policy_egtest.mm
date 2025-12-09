@@ -6,6 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/json/json_reader.h"
+#import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.cc"

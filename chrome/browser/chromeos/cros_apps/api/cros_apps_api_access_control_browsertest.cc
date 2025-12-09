@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_mutable_registry.h"
 #include "chrome/browser/chromeos/cros_apps/cros_apps_test_utils.h"

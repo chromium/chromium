@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 

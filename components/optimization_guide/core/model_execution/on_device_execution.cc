@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"

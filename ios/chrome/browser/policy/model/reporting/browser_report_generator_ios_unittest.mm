@@ -8,6 +8,7 @@
 
 #import "base/files/file_path.h"
 #import "base/run_loop.h"
+#import "base/strings/strcat.h"
 #import "base/test/bind.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

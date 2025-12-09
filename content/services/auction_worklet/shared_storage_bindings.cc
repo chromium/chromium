@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"

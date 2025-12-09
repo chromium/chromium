@@ -11,6 +11,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/test/test_file_util.h"
 #include "components/reporting/util/status_macros.h"
 #include "testing/gmock/include/gmock/gmock.h"

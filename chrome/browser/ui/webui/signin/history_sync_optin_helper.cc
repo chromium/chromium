@@ -13,6 +13,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/sequence_checker_impl.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"

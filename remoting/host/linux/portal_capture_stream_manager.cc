@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/loggable.h"
 #include "remoting/host/base/screen_resolution.h"

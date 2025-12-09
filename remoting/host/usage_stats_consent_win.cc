@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/win/registry.h"
 

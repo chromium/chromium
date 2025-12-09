@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "media/base/media_log.h"
 #include "media/base/media_log_events.h"

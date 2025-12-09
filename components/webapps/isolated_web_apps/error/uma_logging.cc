@@ -6,6 +6,8 @@
 
 #include <string_view>
 
+#include "base/strings/strcat.h"
+
 namespace web_app {
 namespace {
 const char kUmaSuccessSuffix[] = "Success";

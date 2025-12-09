@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/model/tab_organization_service_impl.h"
 
+#import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"

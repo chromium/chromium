@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"

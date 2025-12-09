@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"

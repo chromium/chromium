@@ -6,6 +6,7 @@
 #include <queue>
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"

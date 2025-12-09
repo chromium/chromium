@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "content/public/browser/cookie_insight_list_data.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"

@@ -7,6 +7,7 @@
 #include <ostream>
 #include <variant>
 
+#include "base/strings/to_string.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"

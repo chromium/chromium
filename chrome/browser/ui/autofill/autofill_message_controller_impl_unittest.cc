@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"

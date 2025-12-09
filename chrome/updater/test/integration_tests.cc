@@ -26,6 +26,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -82,7 +83,6 @@
 #include <unistd.h>
 
 #include "base/environment.h"
-#include "base/strings/strcat.h"
 #include "chrome/updater/util/posix_util.h"
 #endif
 

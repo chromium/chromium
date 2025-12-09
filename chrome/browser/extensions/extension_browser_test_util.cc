@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"

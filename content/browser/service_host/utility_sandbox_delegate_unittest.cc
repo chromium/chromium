@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/environment.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"

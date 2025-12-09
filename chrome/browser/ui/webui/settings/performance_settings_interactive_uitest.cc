@@ -4,6 +4,7 @@
 
 #include "base/json/values_util.h"
 #include "base/power_monitor/battery_state_sampler.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"

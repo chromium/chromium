@@ -4,6 +4,7 @@
 
 #include "content/public/browser/web_contents_observer.h"
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"

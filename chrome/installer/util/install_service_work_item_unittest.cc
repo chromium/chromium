@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/win/registry.h"

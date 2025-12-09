@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"

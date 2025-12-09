@@ -10,6 +10,7 @@
 
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"

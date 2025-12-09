@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/client/client_discardable_manager.h"
 
+#include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {

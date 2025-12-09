@@ -10,6 +10,7 @@
 
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/application_locale_storage/application_locale_storage.h"

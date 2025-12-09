@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
+#import "base/strings/strcat.h"
 #import "components/policy/core/common/cloud/affiliation.h"
 #import "components/policy/core/common/management/management_service.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"

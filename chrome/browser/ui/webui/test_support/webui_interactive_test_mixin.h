@@ -8,6 +8,7 @@
 #include <concepts>
 #include <type_traits>
 
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"

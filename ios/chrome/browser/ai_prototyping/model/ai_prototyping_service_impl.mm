@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
 
+#import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"

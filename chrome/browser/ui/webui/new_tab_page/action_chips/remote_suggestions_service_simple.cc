@@ -13,6 +13,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"

@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"

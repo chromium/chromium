@@ -6,6 +6,7 @@
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/notreached.h"
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

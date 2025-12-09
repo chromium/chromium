@@ -7,6 +7,7 @@
 #import <utility>
 
 #import "base/functional/bind.h"
+#import "base/strings/strcat.h"
 #import "base/time/time.h"
 #import "components/optimization_guide/core/model_execution/feature_keys.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"

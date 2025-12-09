@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "base/time/clock.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
