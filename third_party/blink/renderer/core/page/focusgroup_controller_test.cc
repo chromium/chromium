@@ -253,7 +253,7 @@ TEST_F(FocusgroupControllerTest,
     <table id=table focusgroup=grid>
       <tr>
         <td id=c1 tabindex=0>1</td>
-        <td id=c2 tabindex=-1>2</td>
+        <td id=c2 tabindex=0>2</td>
       </tr>
     </table>
   )HTML");
@@ -443,24 +443,24 @@ TEST_F(FocusgroupControllerTest, WrapsInDirection) {
 TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div>
-      <span id=item1 tabindex=0></span>
+      <button id=item1></button>
     </div>
     <div id=fg1 focusgroup="toolbar">
-      <span id=item2 tabindex=-1></span>
+      <button id=item2></button>
       <div>
         <div id=fg2 focusgroup="toolbar">
-          <span id=item3 tabindex=-1></span>
+          <button id=item3></button>
           <div>
             <span id=item4></span>
           </div>
           <table id=fg3 focusgroup="grid">
             <tr>
-              <td id=item5 tabindex=-1>
+              <td id=item5 tabindex=0>
                 <!-- The following is an error. -->
                 <div id=fg4 focusgroup="grid">
-                  <span id=item6 tabindex=-1></span>
+                  <button id=item6></button>
                   <div id=fg5 focusgroup="toolbar">
-                    <span id=item7 tabindex=-1></span>
+                    <button id=item7></button>
                   </div>
                 </div>
               </td>
@@ -469,7 +469,7 @@ TEST_F(FocusgroupControllerTest, FindNearestFocusgroupAncestor) {
           <div id=fg6-container>
             <template shadowrootmode=open>
               <div id=fg6 focusgroup="toolbar">
-                <span id=item8 tabindex=-1></span>
+                <button id=item8></button>
               </div>
             </template>
           </div>
@@ -563,17 +563,17 @@ TEST_F(FocusgroupControllerTest, NextElement) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup>
       <span id=item1></span>
-      <span id=item2 tabindex=-1></span>
+      <button id=item2></button>
     </div>
     <div id=fg2 focusgroup>
-      <span id=item3 tabindex=-1></span>
+      <button id=item3></button>
     </div>
     <div id=fg3 focusgroup>
         <template shadowrootmode=open>
-          <span id=item4 tabindex=-1></span>
+          <button id=item4></button>
         </template>
     </div>
-    <span id=item5 tabindex=-1></span>
+    <button id=item5></button>
   )HTML");
   auto* fg1 = GetElementById("fg1");
   auto* fg2 = GetElementById("fg2");
@@ -599,17 +599,17 @@ TEST_F(FocusgroupControllerTest, PreviousElement) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup>
       <span id=item1></span>
-      <span id=item2 tabindex=-1></span>
+      <button id=item2></button>
     </div>
     <div id=fg2 focusgroup>
-      <span id=item3 tabindex=-1></span>
+      <button id=item3></button>
     </div>
     <div id=fg3 focusgroup>
         <template shadowrootmode=open>
-          <span id=item4 tabindex=-1></span>
+          <button id=item4></button>
         </template>
     </div>
-    <span id=item5 tabindex=-1></span>
+    <button id=item5></button>
   )HTML");
   auto* fg3 = GetElementById("fg3");
   ASSERT_TRUE(fg3);
@@ -630,16 +630,16 @@ TEST_F(FocusgroupControllerTest, LastFocusgroupItemWithin) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup="toolbar">
       <span id=item1></span>
-      <span id=item2 tabindex=-1></span>
+      <button id=item2></button>
     </div>
     <div id=fg2 focusgroup="toolbar">
         <template shadowrootmode=open>
-          <span id=item3 tabindex=-1></span>
-          <span id=item4 tabindex=-1></span>
+          <button id=item3></button>
+          <button id=item4></button>
           <span id=item5></span>
         </template>
     </div>
-    <span id=item5 tabindex=-1></span>
+    <button id=item5></button>
   )HTML");
   auto* fg1 = GetElementById("fg1");
   auto* fg2 = GetElementById("fg2");
@@ -660,12 +660,12 @@ TEST_F(FocusgroupControllerTest, FirstFocusgroupItemWithin) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=fg1 focusgroup="toolbar">
       <span id=item1></span>
-      <span id=item2 tabindex=-1></span>
+      <button id=item2></button>
     </div>
     <div id=fg2 focusgroup="toolbar">
         <template shadowrootmode=open>
-          <span id=item3 tabindex=-1></span>
-          <span id=item4 tabindex=-1></span>
+          <button id=item3></button>
+          <button id=item4></button>
           <span id=item5></span>
         </template>
     </div>
@@ -692,14 +692,14 @@ TEST_F(FocusgroupControllerTest, FirstFocusgroupItemWithin) {
 TEST_F(FocusgroupControllerTest, IsFocusgroupItemWithOwner) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=outer_fg focusgroup="toolbar">
-      <span id=outer_item1 tabindex=0></span>
+      <button id=outer_item1></button>
       <div>
         <div id=inner_fg focusgroup="toolbar">
-          <span id=inner_item1 tabindex=-1></span>
-          <span id=inner_item2 tabindex=-1></span>
+          <button id=inner_item1></button>
+          <button id=inner_item2></button>
         </div>
       </div>
-      <span id=outer_item2 tabindex=-1></span>
+      <button id=outer_item2></button>
     </div>
   )HTML");
   auto* outer_fg = GetElementById("outer_fg");
@@ -791,9 +791,9 @@ TEST_F(FocusgroupControllerTest, CellAtIndexInRowBehaviorOnNoCellFound) {
 TEST_F(FocusgroupControllerTest, DontMoveFocusWhenNoFocusedElement) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div focusgroup>
-      <span id=item1 tabindex=0></span>
-      <span id=item2 tabindex=0></span>
-      <span tabindex=-1></span>
+      <button id=item1></button>
+      <button id=item2></button>
+      <button></button>
     </div>
   )HTML");
   ASSERT_EQ(GetDocument().FocusedElement(), nullptr);
@@ -809,9 +809,9 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenNoFocusedElement) {
 TEST_F(FocusgroupControllerTest, DontMoveFocusWhenModifierKeyIsSet) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div focusgroup>
-      <span id=item1 tabindex=0></span>
-      <span id=item2 tabindex=0></span>
-      <span tabindex=-1></span>
+      <button id=item1></button>
+      <button id=item2></button>
+      <button></button>
     </div>
   )HTML");
   // 1. Set the focus on an item of the focusgroup.
@@ -831,9 +831,9 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenModifierKeyIsSet) {
 TEST_F(FocusgroupControllerTest, DontMoveFocusWhenItAlreadyMoved) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div focusgroup>
-      <span id=item1 tabindex=0></span>
-      <span id=item2 tabindex=0></span>
-      <span tabindex=-1></span>
+      <button id=item1></button>
+      <button id=item2></button>
+      <button></button>
     </div>
   )HTML");
   // 1. Set the focus on an item of the focusgroup.
@@ -860,16 +860,16 @@ TEST_F(FocusgroupControllerTest, DontMoveFocusWhenItAlreadyMoved) {
 TEST_F(FocusgroupControllerTest, NestedFocusgroupsHaveSeparateScopes) {
   GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=outer focusgroup="toolbar">
-      <button id=outer1 tabindex=0>Outer 1</button>
-      <button id=outer2 tabindex=-1>Outer 2</button>
+      <button id=outer1>Outer 1</button>
+      <button id=outer2>Outer 2</button>
 
       <div id=inner focusgroup="menu">
-        <button id=inner1 tabindex=-1>Inner 1</button>
-        <button id=inner2 tabindex=-1>Inner 2</button>
-        <button id=inner3 tabindex=-1>Inner 3</button>
+        <button id=inner1>Inner 1</button>
+        <button id=inner2>Inner 2</button>
+        <button id=inner3>Inner 3</button>
       </div>
 
-      <button id=outer3 tabindex=-1>Outer 3</button>
+      <button id=outer3>Outer 3</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -932,17 +932,17 @@ TEST_F(FocusgroupControllerTest, NestedFocusgroupsHaveSeparateScopes) {
 TEST_F(FocusgroupControllerTest, GetFocusgroupOwnerOfItem) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id=fg focusgroup="toolbar">
-      <span id=item1 tabindex=0></span>
-      <span id=item2 tabindex=-1></span>
+      <button id=item1></button>
+      <button id=item2></button>
       <span id=non_focusable>Not focusable</span>
       <div id=opted_out focusgroup="none">
-        <span id=opted_out_item tabindex=0></span>
+        <button id=opted_out_item></button>
       </div>
       <div id=nested_fg focusgroup="toolbar">
-        <span id=nested_item tabindex=0></span>
+        <button id=nested_item></button>
       </div>
     </div>
-    <span id=outside_item tabindex=0></span>
+    <button id=outside_item></button>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
@@ -1134,13 +1134,13 @@ TEST_F(FocusgroupControllerTest, SegmentDetectionNonFocusgroupItem) {
   EXPECT_EQ(utils::LastFocusgroupItemInSegment(*outside), nullptr);
 }
 
-TEST_F(FocusgroupControllerTest, EntryElementLowestPositiveTabindex) {
+TEST_F(FocusgroupControllerTest, EntryElementFirstInSegment) {
   ScopedFocusgroupForTest focusgroup_enabled(true);
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
       <button id="btn1" tabindex="5">Button 1</button>
-      <button id="btn2" tabindex="2">Button 2</button>
+      <button id="btn2">Button 2</button>
       <button id="btn3" tabindex="3">Button 3</button>
       <button id="btn4" tabindex="1">Button 4</button>
     </div>
@@ -1149,188 +1149,217 @@ TEST_F(FocusgroupControllerTest, EntryElementLowestPositiveTabindex) {
 
   auto* fg = GetElementById("fg");
   auto* btn1 = GetElementById("btn1");
-  auto* btn4 = GetElementById("btn4");
+  auto* btn2 = GetElementById("btn2");
 
   ASSERT_TRUE(fg);
   ASSERT_TRUE(btn1);
-  ASSERT_TRUE(btn4);
+  ASSERT_TRUE(btn2);
 
-  // Should select btn4 (tabindex="1") - lowest positive tabindex.
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn1, *fg, mojom::blink::FocusType::kForward);
-  EXPECT_EQ(entry, btn4);
-
-  // Reverse for backward direction.
-  entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn1, *fg, mojom::blink::FocusType::kBackward);
+  // Should always select first item in tree order (btn1), regardless of
+  // tabindex values.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn2, *fg);
   EXPECT_EQ(entry, btn1);
 
   // IsEntryElementForFocusgroupSegment should give the same results.
-  EXPECT_TRUE(utils::IsEntryElementForFocusgroupSegment(
-      *btn4, *fg, mojom::blink::FocusType::kForward));
-  EXPECT_TRUE(utils::IsEntryElementForFocusgroupSegment(
-      *btn1, *fg, mojom::blink::FocusType::kBackward));
-  EXPECT_FALSE(utils::IsEntryElementForFocusgroupSegment(
-      *btn1, *fg, mojom::blink::FocusType::kForward));
-  EXPECT_FALSE(utils::IsEntryElementForFocusgroupSegment(
-      *btn4, *fg, mojom::blink::FocusType::kBackward));
+  EXPECT_TRUE(utils::IsEntryElementForFocusgroupSegment(*btn1, *fg));
+  EXPECT_FALSE(utils::IsEntryElementForFocusgroupSegment(*btn2, *fg));
 }
 
-TEST_F(FocusgroupControllerTest, EntryElementZeroTabindexForward) {
+// Tests for negative tabindex removed because tabindex=-1 elements are no
+// longer focusgroup items per the updated spec behavior.
+
+TEST_F(FocusgroupControllerTest, EntryPriorityOverFirstInSegment) {
   ScopedFocusgroupForTest focusgroup_enabled(true);
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
-      <button id="btn1" tabindex="0">Button 1</button>
-      <button id="btn2" tabindex="0">Button 2</button>
-      <button id="btn3" tabindex="0">Button 3</button>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  auto* fg = GetElementById("fg");
-  auto* btn1 = GetElementById("btn1");
-  auto* btn2 = GetElementById("btn2");
-
-  ASSERT_TRUE(fg);
-  ASSERT_TRUE(btn1);
-  ASSERT_TRUE(btn2);
-
-  // Forward direction: should select first element with tabindex=0.
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn2, *fg, mojom::blink::FocusType::kForward);
-  EXPECT_EQ(entry, btn1);
-}
-
-TEST_F(FocusgroupControllerTest, EntryElementZeroTabindexBackward) {
-  ScopedFocusgroupForTest focusgroup_enabled(true);
-
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <div id="fg" focusgroup="toolbar">
-      <button id="btn1" tabindex="0">Button 1</button>
-      <button id="btn2" tabindex="0">Button 2</button>
-      <button id="btn3" tabindex="0">Button 3</button>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  auto* fg = GetElementById("fg");
-  auto* btn2 = GetElementById("btn2");
-  auto* btn3 = GetElementById("btn3");
-
-  ASSERT_TRUE(fg);
-  ASSERT_TRUE(btn2);
-  ASSERT_TRUE(btn3);
-
-  // Backward direction: should select last element with tabindex=0.
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn2, *fg, mojom::blink::FocusType::kBackward);
-  EXPECT_EQ(entry, btn3);
-}
-
-TEST_F(FocusgroupControllerTest, EntryElementNegativeTabindexForward) {
-  ScopedFocusgroupForTest focusgroup_enabled(true);
-
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <div id="fg" focusgroup="toolbar">
-      <button id="btn1" tabindex="-1">Button 1</button>
-      <button id="btn2" tabindex="-1">Button 2</button>
-      <button id="btn3" tabindex="-1">Button 3</button>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  auto* fg = GetElementById("fg");
-  auto* btn1 = GetElementById("btn1");
-  auto* btn2 = GetElementById("btn2");
-
-  ASSERT_TRUE(fg);
-  ASSERT_TRUE(btn1);
-  ASSERT_TRUE(btn2);
-
-  // Forward direction: should select first element with tabindex=-1.
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn2, *fg, mojom::blink::FocusType::kForward);
-  EXPECT_EQ(entry, btn1);
-}
-
-TEST_F(FocusgroupControllerTest, EntryElementNegativeTabindexBackward) {
-  ScopedFocusgroupForTest focusgroup_enabled(true);
-
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <div id="fg" focusgroup="toolbar">
-      <button id="btn1" tabindex="-1">Button 1</button>
-      <button id="btn2" tabindex="-1">Button 2</button>
-      <button id="btn3" tabindex="-1">Button 3</button>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  auto* fg = GetElementById("fg");
-  auto* btn2 = GetElementById("btn2");
-  auto* btn3 = GetElementById("btn3");
-
-  ASSERT_TRUE(fg);
-  ASSERT_TRUE(btn2);
-  ASSERT_TRUE(btn3);
-
-  // Backward direction: should select last element with tabindex=-1.
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn2, *fg, mojom::blink::FocusType::kBackward);
-  EXPECT_EQ(entry, btn3);
-}
-
-TEST_F(FocusgroupControllerTest, EntryElementPriorityOrder) {
-  ScopedFocusgroupForTest focusgroup_enabled(true);
-
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <div id="fg" focusgroup="toolbar">
-      <button id="neg" tabindex="-1">Negative</button>
-      <button id="zero" tabindex="0">Zero</button>
-      <button id="pos5" tabindex="5">Positive 5</button>
+      <button id="btn1" tabindex="1">Positive 1</button>
+      <button id="priority" focusgroup-entry-priority>Priority</button>
       <button id="pos2" tabindex="2">Positive 2</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
   auto* fg = GetElementById("fg");
-  auto* neg = GetElementById("neg");
-  auto* pos2 = GetElementById("pos2");
+  auto* btn1 = GetElementById("btn1");
+  auto* priority = GetElementById("priority");
 
   ASSERT_TRUE(fg);
-  ASSERT_TRUE(neg);
-  ASSERT_TRUE(pos2);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(priority);
 
-  // Should select lowest positive tabindex (pos2) over zero and negative.
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *neg, *fg, mojom::blink::FocusType::kForward);
-  EXPECT_EQ(entry, pos2);
+  // Entry-priority should take precedence over first item in segment.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn1, *fg);
+  EXPECT_EQ(entry, priority);
 }
 
-TEST_F(FocusgroupControllerTest, EntryElementZeroOverNegative) {
+TEST_F(FocusgroupControllerTest, MultipleEntryPriorityFirstInSegment) {
   ScopedFocusgroupForTest focusgroup_enabled(true);
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
-      <button id="neg1" tabindex="-1">Negative 1</button>
-      <button id="zero" tabindex="0">Zero</button>
-      <button id="neg2" tabindex="-1">Negative 2</button>
+      <button id="btn1">Button 1</button>
+      <button id="priority1" focusgroup-entry-priority>Priority 1</button>
+      <button id="priority2" focusgroup-entry-priority>Priority 2</button>
+      <button id="btn2">Button 2</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
   auto* fg = GetElementById("fg");
-  auto* neg1 = GetElementById("neg1");
-  auto* zero = GetElementById("zero");
+  auto* btn1 = GetElementById("btn1");
+  auto* priority1 = GetElementById("priority1");
 
   ASSERT_TRUE(fg);
-  ASSERT_TRUE(neg1);
-  ASSERT_TRUE(zero);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(priority1);
 
-  // Should select zero tabindex over negative.
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *neg1, *fg, mojom::blink::FocusType::kForward);
-  EXPECT_EQ(entry, zero);
+  // When multiple elements have entry-priority, first in segment wins.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn1, *fg);
+  EXPECT_EQ(entry, priority1);
+}
+
+TEST_F(FocusgroupControllerTest, EntryPriorityMemoryTakesPrecedence) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1">Button 1</button>
+      <button id="priority" focusgroup-entry-priority>Priority</button>
+      <button id="btn2">Button 2</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn2 = GetElementById("btn2");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn2);
+
+  // Set memory to btn2.
+  fg->SetFocusgroupLastFocused(*btn2);
+
+  // Memory should take precedence over entry-priority.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn1, *fg);
+  EXPECT_EQ(entry, btn2);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementWithReadingFlowOrder) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .flex-container {
+        display: flex;
+        reading-flow: flex-visual;
+      }
+      #btn1 { order: 3; }
+      #btn2 { order: 2; }
+      #btn3 { order: 1; }
+    </style>
+    <div id="fg" class="flex-container" focusgroup="toolbar">
+      <button id="btn1">Button 1</button>
+      <button id="btn2">Button 2</button>
+      <button id="btn3">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn3 = GetElementById("btn3");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn3);
+
+  // Visual/reading-flow order is: btn3, btn2, btn1.
+  // Entry element should be btn3 (first in reading-flow order).
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn1, *fg);
+  EXPECT_EQ(entry, btn3);
+
+  EXPECT_TRUE(utils::IsEntryElementForFocusgroupSegment(*btn3, *fg));
+  EXPECT_FALSE(utils::IsEntryElementForFocusgroupSegment(*btn1, *fg));
+}
+
+TEST_F(FocusgroupControllerTest, EntryPriorityWithReadingFlowOrder) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .flex-container {
+        display: flex;
+        reading-flow: flex-visual;
+      }
+      #btn1 { order: 3; }
+      #btn2 { order: 1; }
+      #priority { order: 2; }
+    </style>
+    <div id="fg" class="flex-container" focusgroup="toolbar">
+      <button id="btn1">Button 1</button>
+      <button id="btn2">Button 2</button>
+      <button id="priority" focusgroup-entry-priority>Priority</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* priority = GetElementById("priority");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(priority);
+
+  // Visual/reading-flow order is: btn2, priority, btn1.
+  // Entry-priority should take precedence over position in reading-flow order.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn1, *fg);
+  EXPECT_EQ(entry, priority);
+
+  EXPECT_TRUE(utils::IsEntryElementForFocusgroupSegment(*priority, *fg));
+  EXPECT_FALSE(utils::IsEntryElementForFocusgroupSegment(*btn1, *fg));
+}
+
+TEST_F(FocusgroupControllerTest, MultipleEntryPriorityWithReadingFlowOrder) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      .flex-container {
+        display: flex;
+        reading-flow: flex-visual;
+      }
+      #priority1 { order: 3; }
+      #priority2 { order: 1; }
+      #btn1 { order: 2; }
+    </style>
+    <div id="fg" class="flex-container" focusgroup="toolbar">
+      <button id="priority1" focusgroup-entry-priority>Priority 1</button>
+      <button id="priority2" focusgroup-entry-priority>Priority 2</button>
+      <button id="btn1">Button 1</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* priority2 = GetElementById("priority2");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(priority2);
+
+  // Visual/reading-flow order is: priority2, btn1, priority1.
+  // When multiple elements have entry-priority, first in reading-flow order
+  // wins.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn1, *fg);
+  EXPECT_EQ(entry, priority2);
+
+  EXPECT_TRUE(utils::IsEntryElementForFocusgroupSegment(*priority2, *fg));
+  EXPECT_FALSE(utils::IsEntryElementForFocusgroupSegment(*btn1, *fg));
 }
 
 TEST_F(FocusgroupControllerTest, EntryElementWithAlreadyFocused) {
@@ -1338,7 +1367,7 @@ TEST_F(FocusgroupControllerTest, EntryElementWithAlreadyFocused) {
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
-      <button id="btn1" tabindex="1">Button 1</button>
+      <button id="btn1">Button 1</button>
       <button id="btn2" tabindex="2">Button 2</button>
       <button id="btn3" tabindex="3">Button 3</button>
     </div>
@@ -1356,10 +1385,9 @@ TEST_F(FocusgroupControllerTest, EntryElementWithAlreadyFocused) {
   btn2->Focus();
   UpdateAllLifecyclePhasesForTest();
 
-  // Should return nullptr if another item in segment is already focused.
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn1, *fg, mojom::blink::FocusType::kForward);
-  EXPECT_EQ(entry, nullptr);
+  // Should return the item in segment that is focused.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn1, *fg);
+  EXPECT_EQ(entry, btn2);
 }
 
 TEST_F(FocusgroupControllerTest, EntryElementMemoryRestoration) {
@@ -1367,7 +1395,7 @@ TEST_F(FocusgroupControllerTest, EntryElementMemoryRestoration) {
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
-      <button id="btn1" tabindex="1">Button 1</button>
+      <button id="btn1">Button 1</button>
       <button id="btn2" tabindex="2">Button 2</button>
       <button id="btn3" tabindex="3">Button 3</button>
     </div>
@@ -1385,8 +1413,7 @@ TEST_F(FocusgroupControllerTest, EntryElementMemoryRestoration) {
   fg->SetFocusgroupLastFocused(*btn3);
 
   // Should restore memory item (btn3) even though btn1 has lower tabindex.
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn1, *fg, mojom::blink::FocusType::kForward);
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn1, *fg);
   EXPECT_EQ(entry, btn3);
 }
 
@@ -1395,7 +1422,7 @@ TEST_F(FocusgroupControllerTest, EntryElementSegmentBoundary) {
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
-      <button id="btn1" tabindex="1">Button 1</button>
+      <button id="btn1">Button 1</button>
       <div focusgroup="none">
         <button id="barrier">Barrier</button>
       </div>
@@ -1415,13 +1442,11 @@ TEST_F(FocusgroupControllerTest, EntryElementSegmentBoundary) {
 
   // btn1 and btn2 are in different segments, so entry element
   // for btn2's segment should be btn2 (lowest positive in that segment).
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn2, *fg, mojom::blink::FocusType::kForward);
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn2, *fg);
   EXPECT_EQ(entry, btn2);
 
   // Entry element for btn1's segment should be btn1 (only item in segment).
-  entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn1, *fg, mojom::blink::FocusType::kForward);
+  entry = utils::GetEntryElementForFocusgroupSegment(*btn1, *fg);
   EXPECT_EQ(entry, btn1);
 }
 
@@ -1452,8 +1477,7 @@ TEST_F(FocusgroupControllerTest, EntryElementMemoryOutsideSegment) {
 
   // Memory should not be restored since btn1 is in a different segment
   // Should fall back to lowest positive tabindex in btn2's segment (btn2).
-  auto* entry = utils::GetEntryElementForFocusgroupSegment(
-      *btn2, *fg, mojom::blink::FocusType::kForward);
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(*btn2, *fg);
   EXPECT_EQ(entry, btn2);
 }
 
@@ -1465,12 +1489,12 @@ TEST_F(FocusgroupControllerTest,
       .rf { display:flex; flex-direction:row-reverse; reading-flow:flex-visual; }
     </style>
     <div id="fg" focusgroup="toolbar">
-      <button id="btn1" tabindex="0">Button 1</button>
+      <button id="btn1">Button 1</button>
       <div class="rf">
-        <button id="v1" tabindex="0">Visual 1</button>
-        <button id="v2" tabindex="0">Visual 2</button>
+        <button id="v1">Visual 1</button>
+        <button id="v2">Visual 2</button>
       </div>
-      <button id="btn2" tabindex="0">Button 2</button>
+      <button id="btn2">Button 2</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1519,8 +1543,8 @@ TEST_F(FocusgroupControllerTest, ReadingFlowNavigationEdgeCasesWithOrder) {
       }
     </style>
     <div id="fg" class="flex" focusgroup="toolbar">
-      <button id="btn1" tabindex="0">Button 1</button>
-      <button id="btn2" tabindex="0">Button 2</button>
+      <button id="btn1">Button 1</button>
+      <button id="btn2">Button 2</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1570,9 +1594,9 @@ TEST_F(FocusgroupControllerTest,
       }
     </style>
     <div id="fg" class="flex" focusgroup="toolbar">
-      <button id="btn1" tabindex="0">Button 1</button>
-      <button id="btn2" tabindex="0">Button 2</button>
-      <button id="btn3" tabindex="0">Button 3</button>
+      <button id="btn1">Button 1</button>
+      <button id="btn2">Button 2</button>
+      <button id="btn3">Button 3</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1594,11 +1618,11 @@ TEST_F(FocusgroupControllerTest,
       }
     </style>
     <div id="fg" class="flex" focusgroup="toolbar">
-      <button id="btn1" tabindex="0">Button 1</button>
+      <button id="btn1">Button 1</button>
       <div focusgroup="none">
-        <button id="opted_out" tabindex="0">Opted Out</button>
+        <button id="opted_out">Opted Out</button>
       </div>
-      <button id="btn2" tabindex="0">Button 2</button>
+      <button id="btn2">Button 2</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1619,9 +1643,9 @@ TEST_F(FocusgroupControllerTest, ReadingFlowNavigationFlexVisualReordering) {
       }
     </style>
     <div id="fg" class="flex-container" focusgroup="toolbar">
-      <button id="btn1" tabindex="0">Button 1</button>
-      <button id="btn2" tabindex="0">Button 2</button>
-      <button id="btn3" tabindex="0">Button 3</button>
+      <button id="btn1">Button 1</button>
+      <button id="btn2">Button 2</button>
+      <button id="btn3">Button 3</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1644,9 +1668,9 @@ TEST_F(FocusgroupControllerTest, ReadingFlowNavigationFlexOrderProperty) {
       #btn1 { order: 3; }
     </style>
     <div id="fg" class="flex-container" focusgroup="toolbar">
-      <button id="btn1" tabindex="0">Button 1</button>
-      <button id="btn2" tabindex="0">Button 2</button>
-      <button id="btn3" tabindex="0">Button 3</button>
+      <button id="btn1">Button 1</button>
+      <button id="btn2">Button 2</button>
+      <button id="btn3">Button 3</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1666,9 +1690,9 @@ TEST_F(FocusgroupControllerTest, ReadingFlowSegmentOrdering) {
       }
     </style>
     <div id="fg" class="flex-container" focusgroup="toolbar">
-      <button id="a" tabindex="0">A</button>
-      <button id="b" tabindex="0">B</button>
-      <button id="c" tabindex="0">C</button>
+      <button id="a">A</button>
+      <button id="b">B</button>
+      <button id="c">C</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1689,10 +1713,10 @@ TEST_F(FocusgroupControllerTest, ReadingFlowSegmentBoundaryOptOut) {
       }
     </style>
     <div id="fg" class="flex-container" focusgroup="toolbar">
-      <button id="a" tabindex="0">A</button>
-      <div focusgroup="none"><button id="opt" tabindex="0">Opted</button></div>
-      <button id="b" tabindex="0">B</button>
-      <button id="c" tabindex="0">C</button>
+      <button id="a">A</button>
+      <div focusgroup="none"><button id="opt">Opted</button></div>
+      <button id="b">B</button>
+      <button id="c">C</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1713,11 +1737,11 @@ TEST_F(FocusgroupControllerTest, ReadingFlowSegmentWithOptedOutBarrier) {
       .rf { display:flex; flex-direction:row-reverse; reading-flow:flex-visual; }
     </style>
     <div id="fg" class="rf" focusgroup="toolbar">
-      <button id="a" tabindex="0">A</button>
-      <button id="b" tabindex="0">B</button>
-      <div focusgroup="none"><button id="bar" tabindex="0">Barrier</button></div>
-      <button id="c" tabindex="0">C</button>
-      <button id="d" tabindex="0">D</button>
+      <button id="a">A</button>
+      <button id="b">B</button>
+      <div focusgroup="none"><button id="bar">Barrier</button></div>
+      <button id="c">C</button>
+      <button id="d">D</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1733,18 +1757,26 @@ TEST_F(FocusgroupControllerTest, ReadingFlowSegmentNestedFocusgroupSkip) {
   ScopedFocusgroupForTest focusgroup_enabled(true);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="fg" focusgroup="toolbar">
-      <button id="a" tabindex="0">A</button>
+      <button id="a">A</button>
+      <button id="b">B</button>
       <div focusgroup="toolbar" id="nested">
-        <button id="nested_item" tabindex="0">Nested</button>
+        <button id="nested_item_1">Nested</button>
+        <button id="nested_item_2">Nested</button>
       </div>
-      <button id="b" tabindex="0">B</button>
+      <button id="c">C</button>
+      <button id="d">D</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  // Nested focusgroup container is skipped; items A and B are one segment.
+  // Nested focusgroup container is considered a barrier.
   ExpectSegmentDirectionalOrder(GetElementById("fg"),
                                 {GetElementById("a"), GetElementById("b")});
-  EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(GetElementById("nested_item"),
+  ExpectSegmentDirectionalOrder(
+      GetElementById("nested"),
+      {GetElementById("nested_item_1"), GetElementById("nested_item_2")});
+  ExpectSegmentDirectionalOrder(GetElementById("fg"),
+                                {GetElementById("c"), GetElementById("d")});
+  EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(GetElementById("nested_item_1"),
                                                 GetElementById("fg")));
 }
 
@@ -1756,13 +1788,13 @@ TEST_F(FocusgroupControllerTest, ReadingFlowSegmentMultipleBarriersMixed) {
       #x { order:4; } #y { order:1; } #z { order:3; } #w { order:2; }
     </style>
     <div id="fg" class="rf" focusgroup="toolbar">
-      <button id="x" tabindex="0">X</button>
-      <div focusgroup="none"><button id="opt1" tabindex="0">Opt1</button></div>
-      <div focusgroup="toolbar" id="nested"><button id="nested_item" tabindex="0">Nested</button></div>
-      <button id="y" tabindex="0">Y</button>
-      <div focusgroup="none"><button id="opt2" tabindex="0">Opt2</button></div>
-      <button id="z" tabindex="0">Z</button>
-      <button id="w" tabindex="0">W</button>
+      <button id="x">X</button>
+      <div focusgroup="none"><button id="opt1">Opt1</button></div>
+      <div focusgroup="toolbar" id="nested"><button id="nested_item">Nested</button></div>
+      <button id="y">Y</button>
+      <div focusgroup="none"><button id="opt2">Opt2</button></div>
+      <button id="z">Z</button>
+      <button id="w">W</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1785,9 +1817,9 @@ TEST_F(FocusgroupControllerTest, ReadingFlowSegmentOrderPropertySegments) {
       #o3 { order:2; }
     </style>
     <div id="fg" class="flex-container" focusgroup="toolbar">
-      <button id="o1" tabindex="0">One</button>
-      <button id="o2" tabindex="0">Two</button>
-      <button id="o3" tabindex="0">Three</button>
+      <button id="o1">One</button>
+      <button id="o2">Two</button>
+      <button id="o3">Three</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1817,12 +1849,12 @@ TEST_F(FocusgroupControllerTest, ReadingFlowComplexNestedContainers) {
       .inner-flex #item3 { order: 1; }
     </style>
     <div class="outer-flex" id="fg" focusgroup="toolbar">
-      <span id="item1" tabindex="0">item1 (DOM 1, outer order 3)</span>
+      <button id="item1">item1 (DOM 1, outer order 3)</button>
       <div class="inner-flex inner-container">
-        <span id="item2" tabindex="0">item2 (DOM 2, inner order 2)</span>
-        <span id="item3" tabindex="0">item3 (DOM 3, inner order 1)</span>
+        <button id="item2">item2 (DOM 2, inner order 2)</button>
+        <button id="item3">item3 (DOM 3, inner order 1)</button>
       </div>
-      <span id="item4" tabindex="0">item4 (DOM 4, outer order 2)</span>
+      <button id="item4">item4 (DOM 4, outer order 2)</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -1858,11 +1890,11 @@ TEST_F(FocusgroupControllerTest,
       .owner #z { order: 2; }
     </style>
     <div class="ancestor">
-      <button id="sibling" tabindex="0">Sibling</button>
+      <button id="sibling">Sibling</button>
       <div class="owner" id="owner" focusgroup="toolbar">
-        <button id="x" tabindex="0">X order 3</button>
-        <button id="y" tabindex="0">Y order 1</button>
-        <button id="z" tabindex="0">Z order 2</button>
+        <button id="x">X order 3</button>
+        <button id="y">Y order 1</button>
+        <button id="z">Z order 2</button>
       </div>
     </div>
   )HTML");
@@ -1900,12 +1932,12 @@ TEST_F(FocusgroupControllerTest, ReadingFlowComplexMixedReadingFlowAndNormal) {
       }
     </style>
     <div id="fg" focusgroup="toolbar">
-      <button id="btn1" tabindex="0">Button 1</button>
+      <button id="btn1">Button 1</button>
       <div class="reading-flow-container">
-        <button id="btn2" tabindex="0">Button 2</button>
-        <button id="btn3" tabindex="0">Button 3</button>
+        <button id="btn2">Button 2</button>
+        <button id="btn3">Button 3</button>
       </div>
-      <button id="btn4" tabindex="0">Button 4</button>
+      <button id="btn4">Button 4</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -2020,24 +2052,24 @@ TEST_F(FocusgroupControllerTest, ReadingFlowComplexPartialReordering) {
     </style>
     <div focusgroup="toolbar wrap" id="fg">
       <div class="reading-flow-container-reversed">
-        <button id="btn3" tabindex="0">Button 3</button>
-        <button id="btn2" tabindex="0">Button 2</button>
-        <button id="btn1" tabindex="0">Button 1</button>
+        <button id="btn3">Button 3</button>
+        <button id="btn2">Button 2</button>
+        <button id="btn1">Button 1</button>
       </div>
-      <button id="btn4" tabindex="0">Button 4</button>
-      <button id="btn5" tabindex="0">Button 5</button>
+      <button id="btn4">Button 4</button>
+      <button id="btn5">Button 5</button>
       <div class="reading-flow-container">
-        <button id="btn7" tabindex="0">Button 7</button>
-        <button id="btn6" tabindex="0">Button 6</button>
-        <button id="btn8" tabindex="0">Button 8</button>
+        <button id="btn7">Button 7</button>
+        <button id="btn6">Button 6</button>
+        <button id="btn8">Button 8</button>
         <div class="reading-flow-container-nested">
-          <button id="btn11" tabindex="0">Button 11</button>
-          <button id="btn10" tabindex="0">Button 10</button>
-          <button id="btn9" tabindex="0">Button 9</button>
+          <button id="btn11">Button 11</button>
+          <button id="btn10">Button 10</button>
+          <button id="btn9">Button 9</button>
         </div>
-        <button id="btn12" tabindex="0">Button 12</button>
+        <button id="btn12">Button 12</button>
       </div>
-      <button id="btn13" tabindex="0">Button 13</button>
+      <button id="btn13">Button 13</button>
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -2109,6 +2141,25 @@ TEST_F(FocusgroupControllerTest, HasFocusgroupEntryPriorityAttributeDynamic) {
 
   EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn1));
   EXPECT_TRUE(utils::HasFocusgroupEntryPriority(*btn2));
+}
+
+TEST_F(FocusgroupControllerTest, DoesElementContainBarrierWithOptOut) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1">1</button>
+      <div id="optout" focusgroup="none">
+        <button id="barrier">Barrier</button>
+      </div>
+      <button id="btn2">2</button>
+    </div>
+  )HTML");
+
+  auto* fg = GetElementById("fg");
+  ASSERT_TRUE(fg);
+
+  // The focusgroup contains a barrier because the opted-out subtree contains a
+  // focusable element.
+  EXPECT_TRUE(utils::DoesElementContainBarrier(*fg));
 }
 
 }  // namespace blink

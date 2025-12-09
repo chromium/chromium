@@ -356,7 +356,7 @@ Element* FocusgroupControllerUtils::NextFocusgroupItemInDirection(
 
 Element* FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(
     const Element* element) {
-  if (!element || !element->IsFocusable()) {
+  if (!element || !element->IsKeyboardFocusableSlow()) {
     return nullptr;
   }
 
@@ -373,8 +373,9 @@ bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
   CHECK(element);
   CHECK(RuntimeEnabledFeatures::FocusgroupGridEnabled(
       element->GetExecutionContext()));
-  if (!element->IsFocusable())
+  if (!element->IsKeyboardFocusableSlow()) {
     return false;
+  }
 
   // TODO(bebeaudr): Add support for manual grids, where the grid focusgroup
   // items aren't necessarily on an table cell layout object.
@@ -383,51 +384,40 @@ bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
 
 bool FocusgroupControllerUtils::IsEntryElementForFocusgroupSegment(
     const Element& item,
-    const Element& owner,
-    mojom::blink::FocusType direction) {
+    const Element& owner) {
   if (!IsFocusgroupItemWithOwner(&item, &owner)) {
     return false;
   }
-  return &item == GetEntryElementForFocusgroupSegment(item, owner, direction);
+  return &item == GetEntryElementForFocusgroupSegment(item, owner);
 }
 
 const Element* FocusgroupControllerUtils::GetEntryElementForFocusgroupSegment(
     const Element& item,
-    const Element& owner,
-    mojom::blink::FocusType direction) {
+    const Element& owner) {
   DCHECK(IsFocusgroupItemWithOwner(&item, &owner));
 
   Element* memory_item = owner.GetFocusgroupLastFocused();
 
   // Walk through all items in the segment to find the best candidate.
-  const Element* item_in_segment = nullptr;
-
-  // Start from the beginning/end of the segment based on direction.
-  if (direction == mojom::blink::FocusType::kForward) {
-    item_in_segment = FirstFocusgroupItemInSegment(item);
-  } else {
-    DCHECK(direction == mojom::blink::FocusType::kBackward);
-    item_in_segment = LastFocusgroupItemInSegment(item);
-  }
+  // Always start from the beginning of the segment.
+  const Element* item_in_segment = FirstFocusgroupItemInSegment(item);
 
   if (!item_in_segment) {
     return nullptr;
   }
 
-  const Element* best_positive_tabindex = nullptr;
-  const Element* best_zero_tabindex = nullptr;
-  const Element* best_negative_tabindex = nullptr;
+  const Element* entry_priority_item = nullptr;
+  const Element* first_item = nullptr;
   bool memory_item_in_segment = false;
 
   // Iterate through all items in segment.
   while (item_in_segment) {
     DCHECK(IsFocusgroupItemWithOwner(item_in_segment, &owner));
     if (item_in_segment->IsFocusedElementInDocument()) {
-      // If another item in the segment is already focused (which can occur
-      // when checking whether we should tab from that focused item to another
-      // item in the same segment), return nullptr to ensure there is only one
-      // item in sequential tab order per segment.
-      return nullptr;
+      // If another item in the segment is already focused, return it, as
+      // only one focusgroup item per segment can be in the sequential focus
+      // order.
+      return item_in_segment;
     }
 
     if (memory_item && item_in_segment == memory_item) {
@@ -436,34 +426,22 @@ const Element* FocusgroupControllerUtils::GetEntryElementForFocusgroupSegment(
       // element in the segment.
       memory_item_in_segment = true;
       item_in_segment = NextFocusgroupItemInSegmentInDirection(
-          *item_in_segment, owner, direction);
+          *item_in_segment, owner, mojom::blink::FocusType::kForward);
       continue;
     }
 
-    int tab_index = item_in_segment->tabIndex();
-    if (tab_index > 0) {
-      if (!best_positive_tabindex) {
-        best_positive_tabindex = item_in_segment;
-      } else if (direction == mojom::blink::FocusType::kForward &&
-                 tab_index < best_positive_tabindex->tabIndex()) {
-        best_positive_tabindex = item_in_segment;
-      } else if (direction == mojom::blink::FocusType::kBackward &&
-                 tab_index > best_positive_tabindex->tabIndex()) {
-        best_positive_tabindex = item_in_segment;
-      }
-    } else if (tab_index == 0) {
-      // Zero tabindex: keep the first one (in direction).
-      if (!best_zero_tabindex) {
-        best_zero_tabindex = item_in_segment;
-      }
-    } else {
-      // Negative tabindex: keep the first one (in direction).
-      if (!best_negative_tabindex) {
-        best_negative_tabindex = item_in_segment;
-      }
+    // Check for focusgroup-entry-priority attribute.
+    if (!entry_priority_item && HasFocusgroupEntryPriority(*item_in_segment)) {
+      entry_priority_item = item_in_segment;
     }
-    item_in_segment = NextFocusgroupItemInSegmentInDirection(*item_in_segment,
-                                                             owner, direction);
+
+    // Track the first item in segment.
+    if (!first_item) {
+      first_item = item_in_segment;
+    }
+
+    item_in_segment = NextFocusgroupItemInSegmentInDirection(
+        *item_in_segment, owner, mojom::blink::FocusType::kForward);
   }
 
   if (memory_item_in_segment) {
@@ -471,14 +449,11 @@ const Element* FocusgroupControllerUtils::GetEntryElementForFocusgroupSegment(
   }
 
   // Return in priority order.
-  if (best_positive_tabindex) {
-    return best_positive_tabindex;
+  if (entry_priority_item) {
+    return entry_priority_item;
   }
-  if (best_zero_tabindex) {
-    return best_zero_tabindex;
-  }
-  if (best_negative_tabindex) {
-    return best_negative_tabindex;
+  if (first_item) {
+    return first_item;
   }
   return nullptr;
 }
@@ -592,76 +567,19 @@ Element* FocusgroupControllerUtils::LastFocusgroupItemWithin(
   return last;
 }
 
-bool FocusgroupControllerUtils::DoesFocusgroupContainBarrier(
-    const Element& focusgroup) {
-  DCHECK(IsActualFocusgroup(focusgroup.GetFocusgroupData()));
-
-  // Walk through descendants looking for barriers.
-  const Element* el = NextElement(&focusgroup, /*skip_subtree=*/false);
-  while (el && FlatTreeTraversal::IsDescendantOf(*el, focusgroup)) {
-    FocusgroupData data = el->GetFocusgroupData();
-
-    // We can't use First/LastFocusgroupItemWithin here since we need to
-    // recursively check nested focusgroups and opted-out subtrees.
-    if (el->IsFocusable()) {
-      if (IsActualFocusgroup(data)) {
-        if (DoesFocusgroupContainBarrier(*el)) {
-          return true;
-        }
-        // Since we're recursively checking this focusgroup, we can skip its
-        // children.
-        el = NextElement(el, /*skip_subtree=*/true);
-        continue;
-      }
-    }
-
-    // Check opted-out subtrees.
-    if (data.behavior == FocusgroupBehavior::kOptOut) {
-      if (DoesOptOutSubtreeContainBarrier(*el)) {
-        return true;
-      }
-      // Since we're recursively checking this subtree, we can skip its
-      // children.
-      el = NextElement(el, /*skip_subtree=*/true);
-      continue;
-    }
-    el = NextElement(el, /*skip_subtree=*/false);
-  }
-
-  return false;
-}
-
-bool FocusgroupControllerUtils::DoesOptOutSubtreeContainBarrier(
-    const Element& opted_out_root) {
-  DCHECK(opted_out_root.GetFocusgroupData().behavior ==
-         FocusgroupBehavior::kOptOut);
-
-  // Check if the opted-out root itself is keyboard focusable.
-  if (opted_out_root.IsKeyboardFocusableSlow()) {
+bool FocusgroupControllerUtils::DoesElementContainBarrier(
+    const Element& element) {
+  // Check if the element itself is keyboard focusable.
+  if (element.IsKeyboardFocusableSlow()) {
     return true;
   }
-
-  // Walk through descendants looking for barriers.
-  const Element* el = NextElement(&opted_out_root, /*skip_subtree=*/false);
-  while (el && FlatTreeTraversal::IsDescendantOf(*el, opted_out_root)) {
-    if (el->IsKeyboardFocusableSlow()) {
+  // Check if any descendant is keyboard focusable.
+  for (Node& node : FlatTreeTraversal::DescendantsOf(element)) {
+    if (const Element* el = DynamicTo<Element>(node);
+        el && el->IsKeyboardFocusableSlow()) {
       return true;
     }
-
-    // Check nested focusgroups recursively.
-    FocusgroupData data = el->GetFocusgroupData();
-    if (IsActualFocusgroup(data)) {
-      if (DoesFocusgroupContainBarrier(*el)) {
-        return true;
-      }
-      // Since we're recursively checking this focusgroup, we can skip its
-      // children.
-      el = NextElement(el, /*skip_subtree=*/true);
-      continue;
-    }
-    el = NextElement(el, /*skip_subtree=*/false);
   }
-
   return false;
 }
 
@@ -701,7 +619,7 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
     }
     // Check if this element contains a barrier.
     if (nested_focusgroup_owner) {
-      if (DoesFocusgroupContainBarrier(*nested_focusgroup_owner)) {
+      if (DoesElementContainBarrier(*nested_focusgroup_owner)) {
         return nullptr;
       }
       // Since we've determined this nested focusgroup is not a barrier, we can
@@ -712,7 +630,7 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
       continue;
     }
     if (opted_out_subtree_root) {
-      if (DoesOptOutSubtreeContainBarrier(*opted_out_subtree_root)) {
+      if (DoesElementContainBarrier(*opted_out_subtree_root)) {
         return nullptr;
       }
       // Since we've determined this opted-out subtree is not a barrier, we can
@@ -725,7 +643,7 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
     // We already know that the item is a descendant of owner, and is not opted
     // out nor in a nested focusgroup scope so we don't need to check that
     // again, all that matters is that it is focusable. If so, return it.
-    if (element->IsFocusable()) {
+    if (element->IsKeyboardFocusableSlow()) {
       return element;
     }
     element = traversal_context.NextInDirection(element, direction,
@@ -737,7 +655,7 @@ FocusgroupControllerUtils::NextFocusgroupItemInSegmentInDirection(
 const Element* FocusgroupControllerUtils::FirstFocusgroupItemInSegment(
     const Element& item) {
   const Element* owner = focusgroup::FindFocusgroupOwner(&item);
-  if (!owner || !item.IsFocusable()) {
+  if (!owner || !item.IsKeyboardFocusableSlow()) {
     return nullptr;
   }
 
@@ -757,7 +675,7 @@ const Element* FocusgroupControllerUtils::FirstFocusgroupItemInSegment(
 const Element* FocusgroupControllerUtils::LastFocusgroupItemInSegment(
     const Element& item) {
   const Element* owner = focusgroup::FindFocusgroupOwner(&item);
-  if (!owner || !item.IsFocusable()) {
+  if (!owner || !item.IsKeyboardFocusableSlow()) {
     return nullptr;
   }
 

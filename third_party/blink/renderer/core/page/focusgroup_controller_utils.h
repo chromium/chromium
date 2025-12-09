@@ -117,11 +117,7 @@ class CORE_EXPORT FocusgroupControllerUtils {
   static Element* FirstFocusgroupItemWithin(const Element* owner);
   static Element* LastFocusgroupItemWithin(const Element* owner);
 
-  // Checks if a focusgroup contains barriers.
-  static bool DoesFocusgroupContainBarrier(const Element& focusgroup);
-
-  // Checks if an opted-out subtree contains barriers.
-  static bool DoesOptOutSubtreeContainBarrier(const Element& opted_out_root);
+  static bool DoesElementContainBarrier(const Element& element);
 
   // These helpers work on segments, not entire focusgroups. (see class comment
   // above for definition of segment).
@@ -157,11 +153,11 @@ class CORE_EXPORT FocusgroupControllerUtils {
   //
   // Selection priority (highest to lowest):
   // 1. Last focused item (if memory is enabled and item is in this segment).
-  // 2a. If direction is forwards, Item with lowest positive non-zero tabindex
-  // value. 2b. If direction is backwards, Item with highest positive non-zero
-  // tabindex value.
-  // 3. First/last item with tabindex=0 or implicit focusability (by direction).
-  // 4. First/last item with tabindex=-1 (by direction).
+  // 2. First item with focusgroup-entry-priority attribute.
+  // 3. First item in segment.
+  //
+  // Note: Elements with tabindex=-1 are not focusgroup items and do not
+  // participate in focusgroup navigation.
   //
   // Returns nullptr if:
   // - |item| is not a focusgroup item
@@ -170,15 +166,11 @@ class CORE_EXPORT FocusgroupControllerUtils {
   //
   // |item|: Any focusgroup item in the segment to query.
   // |owner|: The focusgroup owner of |item| (must be valid).
-  // |direction|: the direction that sequential focus navigation is moving in.
-  static bool IsEntryElementForFocusgroupSegment(
-      const Element& item,
-      const Element& owner,
-      mojom::blink::FocusType direction);
+  static bool IsEntryElementForFocusgroupSegment(const Element& item,
+                                                 const Element& owner);
   static const Element* GetEntryElementForFocusgroupSegment(
       const Element& item,
-      const Element& owner,
-      mojom::blink::FocusType direction);
+      const Element& owner);
 
   // Returns true if the element is opted out or within an opted-out focusgroup
   // subtree.
