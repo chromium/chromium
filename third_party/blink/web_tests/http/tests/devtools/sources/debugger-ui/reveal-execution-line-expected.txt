@@ -1,7 +1,0 @@
-Tests that execution line is revealed and highlighted when debugger is paused.
-
-
-Running: testRevealAndHighlightExecutionLine
-Set timer for test function.
-Execution line revealed and highlighted.
-
