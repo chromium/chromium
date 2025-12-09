@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,8 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/persistent_cache.h"
@@ -26,6 +23,10 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/code_cache_util.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -74,7 +75,7 @@ class CodeCacheWithPersistentCacheHostImpl
  public:
   explicit CodeCacheWithPersistentCacheHostImpl(
       mojo::Remote<mojom::blink::CodeCacheHost> remote)
-      : async_host_(base::ThreadPool::CreateSequencedTaskRunner(
+      : async_host_(worker_pool::CreateSequencedTaskRunner(
                         base::TaskTraits{base::MayBlock()}),
                     remote.Unbind()) {}
 
@@ -111,11 +112,12 @@ class CodeCacheWithPersistentCacheHostImpl
     // Handle the reply via a callback bound weakly to `this` to ensure that
     // `callback` is not run after `this` is destroyed.
     async_host_.AsyncCall(&AsyncCodeCacheHost::FetchCachedCode)
-        .WithArgs(
-            cache_type, url,
-            base::BindPostTaskToCurrentDefault(base::BindOnce(
-                &CodeCacheWithPersistentCacheHostImpl::OnFetchCachedCodeReply,
-                weak_factory_.GetWeakPtr(), std::move(callback))));
+        .WithArgs(cache_type, url,
+                  base::BindPostTaskToCurrentDefault(
+                      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                          &CodeCacheWithPersistentCacheHostImpl::
+                              OnFetchCachedCodeReply,
+                          weak_factory_.GetWeakPtr(), std::move(callback)))));
   }
 
   void ClearCodeCacheEntry(mojom::blink::CodeCacheType cache_type,
@@ -154,8 +156,8 @@ class CodeCacheWithPersistentCacheHostImpl
                             remote_.get()),
           web_assembly_cache_(mojom::blink::CodeCacheType::kWebAssembly,
                               remote_.get()) {
-      remote_.set_disconnect_handler(base::BindOnce(
-          &AsyncCodeCacheHost::OnDisconnect, base::Unretained(this)));
+      remote_.set_disconnect_handler(
+          BindOnce(&AsyncCodeCacheHost::OnDisconnect, Unretained(this)));
     }
 
     void DidGenerateCacheableMetadata(mojom::blink::CodeCacheType cache_type,
@@ -224,8 +226,8 @@ class CodeCacheWithPersistentCacheHostImpl
           case State::kInitialized:
             // First request since connecting -- fetch backend params.
             remote_->GetPendingBackend(
-                cache_type_, base::BindOnce(&RemoteCache::OnPendingBackend,
-                                            weak_factory_.GetWeakPtr()));
+                cache_type_, ::blink::BindOnce(&RemoteCache::OnPendingBackend,
+                                               weak_factory_.GetWeakPtr()));
             state_ = State::kWaitingForCache;
             [[fallthrough]];
 
@@ -372,7 +374,7 @@ class CodeCacheWithPersistentCacheHostImpl
     std::move(callback).Run(response_time, std::move(data));
   }
 
-  base::SequenceBound<AsyncCodeCacheHost> async_host_;
+  SequenceBound<AsyncCodeCacheHost> async_host_;
   base::WeakPtrFactory<CodeCacheWithPersistentCacheHostImpl> weak_factory_{
       this};
 };
