@@ -16,9 +16,7 @@ import org.chromium.google_apis.gaia.GaiaId;
 /**
  * Helper to serialize/deserialize (@link FullscreenSigninAndHistorySyncConfig} and {@link
  * BottomSheetSigninAndHistorySyncConfig} objects using Bundle, to bypass crash due to the use of
- * Parcelable in activity extras (See https://crbug.com/172602571)
- *
- * <p>TODO(crbug.com/401195865): Remove this class once https://crbug.com/172602571 is fixed.
+ * Parcelable in activity extras (See https://crbug.com/172602571 & https://crbug.com/394559360).
  */
 @NullMarked
 final class SigninAndHistorySyncBundleHelper {
