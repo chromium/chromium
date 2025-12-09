@@ -112,9 +112,15 @@ const CGFloat kIconPointSize = 16.0;
 
 - (void)setConsumer:(id<LocationBarConsumer>)consumer {
   _consumer = consumer;
+
+  if (!_consumer) {
+    return;
+  }
+
   [consumer setSearchByImageEnabled:self.searchEngineSupportsSearchByImage];
   [consumer setLensImageEnabled:self.searchEngineSupportsLens];
   [self updatePlaceholderType];
+  [self searchEngineChanged];
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {

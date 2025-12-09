@@ -224,6 +224,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "location_bar_coordinator_unittest.mm",
+    "location_bar_mediator_unittest.mm",
     "location_bar_steady_view_mediator_unittest.mm",
   ]
   deps = [
@@ -231,6 +232,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/omnibox/browser:test_support",
+    "//components/search_engines",
     "//components/variations",
     "//components/variations:test_support",
     "//ios/chrome/app/strings",
