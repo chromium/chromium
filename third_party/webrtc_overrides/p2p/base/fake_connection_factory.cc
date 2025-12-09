@@ -42,6 +42,7 @@ void FakeConnectionFactory::Prepare(uint32_t allocator_flags) {
                                            "ice_password");
   session->set_generation(0);
   session->SubscribePortReady(
+      this,
       [this](webrtc::PortAllocatorSession* session,
              webrtc::PortInterface* port) { OnPortReady(session, port); });
   session->StartGettingPorts();
