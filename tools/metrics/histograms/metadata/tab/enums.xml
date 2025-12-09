@@ -227,6 +227,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Learn more clicked"/>
 </enum>
 
+<!-- LINT.IfChange(SavedTabGroupOpenedSubmenuDesktop) -->
+
+<enum name="SavedTabGroupOpenedSubmenuDesktop">
+  <int value="0"
+      label="Opened from the tab group submenu from the bookmarks bar."/>
+  <int value="1"
+      label="Opened from the tab group submenu from the everything menu."/>
+  <int value="2" label="Opened from the tab group submenu from the app menu."/>
+  <int value="3"
+      label="Opened from the tab group submenu from the mac system menu."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SavedTabGroupOpenedSubmenuDesktop) -->
+
 <!-- LINT.IfChange(SavedTabGroupSyncBridge.MigrationResult) -->
 
 <enum name="SavedTabGroupSyncBridge.MigrationResult">
@@ -280,8 +294,17 @@ chromium-metrics-reviews@google.com.
 <enum name="SharedTabGroupRecallTypeDesktop">
   <int value="0" label="Opened from the bookmarks bar."/>
   <int value="1" label="Opened from the everything menu."/>
-  <int value="2" label="Opened from the tab groups sub menu."/>
+  <int value="2"
+      label="Opened from the tab groups sub menu. Replaced by additional
+             entries to this histogram specifying the type of submenu."/>
   <int value="3" label="Closed from the tab group editor bubble."/>
+  <int value="4"
+      label="Opened from the tab group submenu from the bookmarks bar."/>
+  <int value="5"
+      label="Opened from the tab group submenu from the everything menu."/>
+  <int value="6" label="Opened from the tab group submenu from the app menu."/>
+  <int value="7"
+      label="Opened from the tab group submenu from the mac system menu."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SharedTabGroupRecallTypeDesktop) -->

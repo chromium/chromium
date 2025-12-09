@@ -1237,6 +1237,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.SavedTabGroupOpenedSubmenu"
+    enum="SavedTabGroupOpenedSubmenuDesktop" expires_after="2026-03-15">
+  <owner>dominicaustria@google.com</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Tracks the type of tab group submenu that a user used to open a saved tab
+    group.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.SavedTabGroupPinnedCount" units="groups"
     expires_after="2026-05-17">
   <owner>dljames@chromium.org</owner>

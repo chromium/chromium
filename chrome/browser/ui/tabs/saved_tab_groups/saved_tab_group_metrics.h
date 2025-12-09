@@ -16,9 +16,13 @@ namespace tab_groups::saved_tab_groups::metrics {
 enum class SharedTabGroupRecallTypeDesktop {
   kOpenedFromBookmarksBar = 0,
   kOpenedFromEverythingMenu = 1,
-  kOpenedFromSubmenu = 2,
+  kOpenedFromSubmenu = 2,  // Replaced by the submenu options below.
   kClosed = 3,
-  kMaxValue = kClosed
+  kOpenedFromSubmenuFromBookmarksBar = 4,
+  kOpenedFromSubmenuFromEverythingMenu = 5,
+  kOpenedFromSubmenuFromAppMenu = 6,
+  kOpenedFromSubmenuFromMacSystemMenu = 7,
+  kMaxValue = kOpenedFromSubmenuFromMacSystemMenu
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SharedTabGroupRecallTypeDesktop)
 
@@ -36,8 +40,23 @@ enum class SharedTabGroupManageTypeDesktop {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SharedTabGroupManageTypeDesktop)
 
+// Different ways a user can open a saved tab group from a submenu.
+// These values are persisted to logs. Entries should not be renumbered and
+// number values should never be reused.
+// LINT.IfChange(SavedTabGroupOpenedSubmenuDesktop)
+enum class SavedTabGroupOpenedSubmenuDesktop {
+  kBookmarksBar = 0,
+  kEverythingMenu = 1,
+  kAppMenu = 2,
+  kMacSystemMenu = 3,
+  kMaxValue = kMacSystemMenu
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SavedTabGroupOpenedSubmenuDesktop)
+
 void RecordSharedTabGroupRecallType(SharedTabGroupRecallTypeDesktop action);
 void RecordSharedTabGroupManageType(SharedTabGroupManageTypeDesktop action);
+void RecordSavedTabGroupOpenedSubmenu(
+    SavedTabGroupOpenedSubmenuDesktop submenu_type);
 
 }  // namespace tab_groups::saved_tab_groups::metrics
 
