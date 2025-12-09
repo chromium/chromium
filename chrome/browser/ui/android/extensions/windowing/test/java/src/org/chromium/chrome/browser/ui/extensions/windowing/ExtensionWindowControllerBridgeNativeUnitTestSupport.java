@@ -39,7 +39,8 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                                 FAKE_CHROME_ANDROID_TASK_ID,
                                 /* mockNatives= */ false,
-                                /* isPendingTask= */ false)
+                                /* isPendingTask= */ false,
+                                /* isDesktopMode= */ true)
                         .mChromeAndroidTask;
 
         mExtensionWindowControllerBridge =

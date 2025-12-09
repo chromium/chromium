@@ -160,22 +160,22 @@ final class PendingActionManager {
         }
     }
 
-    void requestMaximize(Rect futureBounds) {
+    void requestMaximize(Rect futureBoundsInDp) {
         synchronized (mPendingActionsLock) {
             mPendingActions[0] = PendingAction.MAXIMIZE;
             mPendingActions[1] = PendingAction.NONE;
 
-            mPendingBoundsInDp = futureBounds;
+            mPendingBoundsInDp = futureBoundsInDp;
             updateFutureStatesLocked();
         }
     }
 
-    void requestRestore(Rect futureBounds) {
+    void requestRestore(Rect futureBoundsInDp) {
         synchronized (mPendingActionsLock) {
             mPendingActions[0] = PendingAction.RESTORE;
             mPendingActions[1] = PendingAction.NONE;
 
-            mPendingBoundsInDp = futureBounds;
+            mPendingBoundsInDp = futureBoundsInDp;
             updateFutureStatesLocked();
         }
     }

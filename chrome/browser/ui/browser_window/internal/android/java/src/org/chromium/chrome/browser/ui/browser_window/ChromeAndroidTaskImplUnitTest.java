@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.ActivityScopedObjects;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.ActivityWindowAndroidMocks;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskUnitTestSupport.ChromeAndroidTaskWithMockDeps;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.ui.display.DisplayUtil;
@@ -90,9 +89,13 @@ public class ChromeAndroidTaskImplUnitTest {
             int taskId, boolean isPendingTask) {
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
-                        taskId, /* mockNatives= */ true, isPendingTask);
+                        taskId, /* mockNatives= */ true, isPendingTask, /* isDesktopMode= */ true);
         var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
-        mockDesktopWindowingMode(activityWindowAndroidMocks);
+
+        // Move mock Activity to the "resumed" state.
+        var mockActivity = activityWindowAndroidMocks.mMockActivity;
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.RESUMED);
 
         return chromeAndroidTaskWithMockDeps;
     }
@@ -101,20 +104,14 @@ public class ChromeAndroidTaskImplUnitTest {
     private static ActivityScopedObjects createActivityScopedObjects(int taskId) {
         var activityWindowAndroidMocks =
                 ChromeAndroidTaskUnitTestSupport.createActivityWindowAndroidMocks(taskId);
-        mockDesktopWindowingMode(activityWindowAndroidMocks);
-        return ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
-                activityWindowAndroidMocks.mMockActivityWindowAndroid, mock(Profile.class));
-    }
-
-    @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
-    private static void mockDesktopWindowingMode(
-            ActivityWindowAndroidMocks activityWindowAndroidMocks) {
         ChromeAndroidTaskUnitTestSupport.mockDesktopWindowingMode(activityWindowAndroidMocks);
 
         // Move mock Activity to the "resumed" state.
         var mockActivity = activityWindowAndroidMocks.mMockActivity;
         ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.RESUMED);
+        return ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                activityWindowAndroidMocks.mMockActivityWindowAndroid, mock(Profile.class));
     }
 
     @Test
@@ -1472,6 +1469,28 @@ public class ChromeAndroidTaskImplUnitTest {
                 chromeAndroidTask
                         .getPendingActionManagerForTesting()
                         .isMaximizedFuture(chromeAndroidTask.getState()));
+    }
+
+    @Test
+    public void maximize_whenPendingCreate_returnCachedMaximizeBound() {
+        // Arrange.
+        // Cache a maximize bound.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        // Create a pending task.
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
+        // Act.
+        task.maximize();
+
+        // Assert.
+        assertEquals(
+                ChromeAndroidTaskImpl.convertBoundsInPxToDp(
+                        DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX, mockWindowAndroid.getDisplay()),
+                task.getBoundsInDp());
     }
 
     @Test

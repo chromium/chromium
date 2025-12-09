@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
@@ -14,6 +15,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
 import android.view.WindowInsets;
@@ -103,6 +105,15 @@ final class ChromeAndroidTaskImpl
     private interface ActivityUser<T> {
         T use(Activity activity, ActivityWindowAndroid activityWindowAndroid);
     }
+
+    /**
+     * Store the maximized bounds for a pending Task.
+     *
+     * <p>A pending Task doesn't have a live Activity and is unable to get maximized bounds. We
+     * cache the maximized bounds of a live Activity for pending Tasks as the maximized bounds don't
+     * change.
+     */
+    @Nullable public static Rect sCachedMaximizeRectInDp;
 
     private final AtomicInteger mState = new AtomicInteger(State.UNKNOWN);
 
@@ -704,8 +715,8 @@ final class ChromeAndroidTaskImpl
         if (Boolean.TRUE.equals(mPendingActionManager.isMaximizedFuture(mState.get()))) return;
 
         if (mState.get() == State.PENDING_CREATE) {
-            // TODO(crbug.com/459857984): remove empty bound and set a correct bound.
-            mPendingActionManager.requestMaximize(new Rect());
+            assertNonNull(sCachedMaximizeRectInDp);
+            mPendingActionManager.requestMaximize(sCachedMaximizeRectInDp);
             return;
         }
 
@@ -876,6 +887,7 @@ final class ChromeAndroidTaskImpl
         return assumeNonNull(mState.get());
     }
 
+    @SuppressLint("StaticGuardedByInstance")
     private void setActivityScopedObjectsInternal(ActivityScopedObjects activityScopedObjects) {
         synchronized (mActivityScopedObjectsLock) {
             assert mActivityScopedObjects == null
@@ -909,6 +921,16 @@ final class ChromeAndroidTaskImpl
             activityScopedObjects.mTabModel.addObserver(this);
             activityScopedObjects.mTabModel.associateWithBrowserWindow(
                     mAndroidBrowserWindow.getOrCreateNativePtr());
+
+            // Cache the maximize bound.
+            if (VERSION.SDK_INT >= VERSION_CODES.R) {
+                var activity = getActivity(activityWindowAndroid);
+                sCachedMaximizeRectInDp =
+                        convertBoundsInPxToDp(
+                                ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(
+                                        activity.getWindowManager()),
+                                activityWindowAndroid.getDisplay());
+            }
         }
     }
 
