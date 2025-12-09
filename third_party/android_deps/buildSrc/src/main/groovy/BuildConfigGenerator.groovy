@@ -696,7 +696,7 @@ No modifications.
             sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
         } else if (!dependency.visible) {
             sb.append('  # To remove visibility constraint, add this dependency to\n')
-            sb.append("  # //${pathToBuildGradle}/build.gradle.\n")
+            sb.append("  # //${pathToBuildGradle}/build.gradle.template\n")
             sb.append("visibility = ${makeGnArray(internalTargetVisibility)}\n")
         }
         return sb.toString()

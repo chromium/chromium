@@ -91,6 +91,7 @@ dependencies {
     supportsAndroidCompileLatest 'org.checkerframework:checker-qual:+'
     supportsAndroidCompileLatest 'org.checkerframework:checker-util:+'
     supportsAndroidCompileLatest 'org.codehaus.mojo:animal-sniffer-annotations:+'
+    supportsAndroidCompileLatest 'org.jetbrains.kotlinx:atomicfu-jvm:+'
     supportsAndroidCompileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+'
     supportsAndroidCompileLatest 'org.reactivestreams:reactive-streams:+'
     compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-android:+'
