@@ -78,11 +78,22 @@ class MojoWebUIBrowserTest::WebUITestContentBrowserClient
                             base::Unretained(this)));
   }
 
-  void RegisterWebUIInterfaceBrokers(
+  void RegisterTrustedWebUIInterfaceBrokers(
       content::WebUIBrowserInterfaceBrokerRegistry& registry) override {
-    ChromeContentBrowserClient::RegisterWebUIInterfaceBrokers(registry);
+    ChromeContentBrowserClient::RegisterTrustedWebUIInterfaceBrokers(registry);
+    AddTestRunnerService(registry);
+  }
 
-    registry.AddBinderForTesting(base::BindLambdaForTesting(
+  void RegisterUntrustedWebUIInterfaceBrokers(
+      content::WebUIBrowserInterfaceBrokerRegistry& registry) override {
+    ChromeContentBrowserClient::RegisterUntrustedWebUIInterfaceBrokers(
+        registry);
+    AddTestRunnerService(registry);
+  }
+
+  void AddTestRunnerService(
+      content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+    registry.AddGlobal(base::BindLambdaForTesting(
         [&](content::WebUIController* controller,
             mojo::PendingReceiver<web_ui_test::mojom::TestRunner> receiver) {
           content::RenderFrameHost* rfh =

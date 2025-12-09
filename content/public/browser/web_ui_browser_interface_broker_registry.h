@@ -97,11 +97,14 @@ class InterfaceRegistrationHelper {
 class CONTENT_EXPORT WebUIBrowserInterfaceBrokerRegistry {
  public:
   WebUIBrowserInterfaceBrokerRegistry();
-  ~WebUIBrowserInterfaceBrokerRegistry();
   WebUIBrowserInterfaceBrokerRegistry(
       const WebUIBrowserInterfaceBrokerRegistry&) = delete;
+  ~WebUIBrowserInterfaceBrokerRegistry();
   WebUIBrowserInterfaceBrokerRegistry& operator=(
       const WebUIBrowserInterfaceBrokerRegistry&) = delete;
+
+  static WebUIBrowserInterfaceBrokerRegistry& GetTrustedRegistry();
+  static WebUIBrowserInterfaceBrokerRegistry& GetUntrustedRegistry();
 
   template <typename ControllerType>
   InterfaceRegistrationHelper<ControllerType> ForWebUI() {
@@ -157,24 +160,6 @@ class CONTENT_EXPORT WebUIBrowserInterfaceBrokerRegistry {
   // controller doesn't have registered interface broker initializers.
   std::unique_ptr<PerWebUIBrowserInterfaceBroker> CreateInterfaceBroker(
       WebUIController& controller);
-
-  // Add interface |binder| to all WebUIs registered here.
-  //
-  // This method should only be used in tests. This method should be called
-  // after ContentBrowserClient::RegisterWebUIInterfaceBrokers and before WebUIs
-  // being created.
-  template <typename Interface>
-  void AddBinderForTesting(
-      base::RepeatingCallback<void(WebUIController*,
-                                   mojo::PendingReceiver<Interface>)> binder) {
-    for (auto& it : binder_initializers_) {
-      it.second.push_back(base::BindRepeating(
-          [](decltype(binder) binder, WebUIBinderMap* binder_map) {
-            binder_map->Add<Interface>(binder);
-          },
-          binder));
-    }
-  }
 
  private:
   // Note: |global_binder_initializers_| are available to all WebUIs with a

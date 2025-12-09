@@ -353,9 +353,14 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 #endif
 }
 
-void ChromeContentBrowserClient::RegisterWebUIInterfaceBrokers(
+void ChromeContentBrowserClient::RegisterTrustedWebUIInterfaceBrokers(
     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
-  chrome::internal::PopulateChromeWebUIFrameInterfaceBrokers(registry);
+  chrome::internal::PopulateTrustedChromeWebUIFrameInterfaceBrokers(registry);
+}
+
+void ChromeContentBrowserClient::RegisterUntrustedWebUIInterfaceBrokers(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+  chrome::internal::PopulateUntrustedChromeWebUIFrameInterfaceBrokers(registry);
 }
 
 void ChromeContentBrowserClient::

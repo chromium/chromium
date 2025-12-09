@@ -36,6 +36,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/bindings_policy.h"
@@ -143,6 +144,7 @@ WebUIImpl::~WebUIImpl() {
   // Note: Calling this might delete |web_content_| and |frame_host_|. The two
   // pointers are now potentially dangling.
   // See https://crbug.com/1308391
+  broker_.reset();
   controller_.reset();
 
   remote_.reset();
@@ -222,6 +224,30 @@ void WebUIImpl::SetUpMojoConnection() {
       receiver_.BindNewEndpointAndPassRemote());
 }
 
+WebUIBrowserInterfaceBrokerRegistry& GetRegistryFor(
+    WebUIController& controller) {
+  switch (controller.GetTrustPolicy()) {
+    case WebUIController::TrustPolicy::kTrusted:
+      return WebUIBrowserInterfaceBrokerRegistry::GetTrustedRegistry();
+    case WebUIController::TrustPolicy::kUntrusted:
+      return WebUIBrowserInterfaceBrokerRegistry::GetUntrustedRegistry();
+  }
+}
+
+void WebUIImpl::SetUpMojoInterfaceBroker() {
+  CHECK(GetController()) << "controller has not been set yet";
+
+  broker_ =
+      GetRegistryFor(*GetController()).CreateInterfaceBroker(*GetController());
+  if (broker_) {
+    RenderFrameHostImpl* rfh =
+        static_cast<RenderFrameHostImpl*>(GetRenderFrameHost());
+    // If this WebUIController has a per-WebUI interface broker, create the
+    // broker's remote and ask renderer to use it.
+    rfh->EnableMojoJsBindingsWithBroker(broker_->BindNewPipeAndPassRemote());
+  }
+}
+
 void WebUIImpl::TearDownMojoConnection() {
   // This is expected to be called only for outermost main frames.
   if (frame_host_->GetParentOrOuterDocument())
@@ -276,7 +302,8 @@ bool WebUIImpl::HasRenderFrameHost() const {
 }
 
 void WebUIImpl::SetController(std::unique_ptr<WebUIController> controller) {
-  DCHECK(controller);
+  CHECK(controller);
+  CHECK(!controller_) << "controller cannot be set twice";
   controller_ = std::move(controller);
 }
 

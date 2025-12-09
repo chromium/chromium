@@ -1695,7 +1695,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // The exposed interfaces are grouped by the WebUI controller type. For any
   // given WebUI page, only the interfaces corresponding to its controller type
   // will be exposed.
-  virtual void RegisterWebUIInterfaceBrokers(
+  virtual void RegisterTrustedWebUIInterfaceBrokers(
+      WebUIBrowserInterfaceBrokerRegistry& registry) {}
+  virtual void RegisterUntrustedWebUIInterfaceBrokers(
       WebUIBrowserInterfaceBrokerRegistry& registry) {}
 
   // Allows the embedder to register browser channel-associated interfaces that

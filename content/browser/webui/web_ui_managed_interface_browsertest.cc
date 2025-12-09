@@ -255,11 +255,14 @@ class WebUIManagedInterfaceBrowserTest : public ContentBrowserTest {
         delete;
     ~TestContentBrowserClient() override = default;
 
-    void RegisterWebUIInterfaceBrokers(
+    void RegisterTrustedWebUIInterfaceBrokers(
         WebUIBrowserInterfaceBrokerRegistry& registry) override {
       registry.ForWebUI<WebUIManagedInterfaceTestUI>()
           .Add<mojom::TestWebUIJsBridge>();
     }
+
+    void RegisterUntrustedWebUIInterfaceBrokers(
+        WebUIBrowserInterfaceBrokerRegistry& registry) override {}
   };
 
   std::unique_ptr<TestFooWebUIControllerFactory> factory_;

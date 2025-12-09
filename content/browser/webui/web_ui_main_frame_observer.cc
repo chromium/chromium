@@ -172,8 +172,7 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
     return;
   }
 
-  web_ui_->GetController()->WebUIReadyToCommitNavigation(
-      web_ui_->GetRenderFrameHost());
+  web_ui_->SetUpMojoInterfaceBroker();
 
   GURL site_url =
       web_ui_->GetRenderFrameHost()->GetSiteInstance()->GetSiteURL();

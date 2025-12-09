@@ -24,10 +24,16 @@ void PopulateChromeWebUIFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host);
 
-// PopulateChromeWebUIFrameInterfaceBrokers() registers BrowserInterfaceBrokers
-// for each WebUI, these brokers are used to handle that WebUI's JavaScript
-// Mojo.bindInterface calls.
-void PopulateChromeWebUIFrameInterfaceBrokers(
+// PopulateTrustedChromeWebUIFrameInterfaceBrokers() registers
+// BrowserInterfaceBrokers for each trusted WebUI, these brokers are used to
+// handle that WebUI's JavaScript Mojo.bindInterface calls.
+void PopulateTrustedChromeWebUIFrameInterfaceBrokers(
+    content::WebUIBrowserInterfaceBrokerRegistry& registry);
+
+// PopulateUntrustedChromeWebUIFrameInterfaceBrokers() registers
+// BrowserInterfaceBrokers for each untrusted WebUI, these brokers are used to
+// handle that WebUI's JavaScript Mojo.bindInterface calls.
+void PopulateUntrustedChromeWebUIFrameInterfaceBrokers(
     content::WebUIBrowserInterfaceBrokerRegistry& registry);
 
 } // namespace chrome::internal

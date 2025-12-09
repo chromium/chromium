@@ -24,6 +24,7 @@
 
 namespace content {
 class NavigationRequest;
+class PerWebUIBrowserInterfaceBroker;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 class WebUIMainFrameObserver;
@@ -58,6 +59,11 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
 
   // Called right after AllowBindings is notified to a RenderFrame.
   void SetUpMojoConnection();
+  // Sets up a "broker" object which will accept incoming mojo connections and
+  // set up the appropriate handlers. The controller must already be set before
+  // calling this. This method may be called multiple times if the WebUI is
+  // reused.
+  void SetUpMojoInterfaceBroker();
 
   // Called when a RenderFrame is deleted for a WebUI (i.e. a renderer crash).
   void TearDownMojoConnection();
@@ -158,6 +164,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   // Notifies this WebUI about notifications in the main frame.
   const std::unique_ptr<WebUIMainFrameObserver> web_contents_observer_;
 
+  // broker_ may change if a WebUI instance if reused.
+  std::unique_ptr<PerWebUIBrowserInterfaceBroker> broker_;
   std::unique_ptr<WebUIController> controller_;
 
   mojo::AssociatedRemote<mojom::WebUI> remote_;

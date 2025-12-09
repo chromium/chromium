@@ -611,6 +611,16 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
                CustomizeColorSchemeModeHandlerFactory>()
       .Add<help_bubble::mojom::HelpBubbleHandlerFactory>();
 
+  if (webui_browser::IsWebUIBrowserEnabled()) {
+    registry.ForWebUI<WebUIBrowserUI>()
+        .Add<webui_browser::mojom::PageHandlerFactory>()
+        .Add<bookmark_bar::mojom::PageHandlerFactory>()
+        .Add<extensions_bar::mojom::PageHandlerFactory>()
+        .Add<searchbox::mojom::PageHandler>()
+        .Add<tabs_api::mojom::TabStripService>()
+        .Add<tracked_element::mojom::TrackedElementHandler>();
+  }
+
   // TODO(crbug.com/452983498): Migrate all remaining
   // RegisterWebUIControllerInterfaceBinder calls to registry.ForWebUI().Add()
   // calls.
@@ -618,6 +628,9 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
 
 void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+  registry.AddGlobal<color_change_listener::mojom::PageHandler>(
+      base::BindRepeating(&BindColorChangeListener));
+
   if (lens::features::IsLensOverlayEnabled()) {
     registry.ForWebUI<lens::LensSidePanelUntrustedUI>()
         .Add<lens::mojom::LensSidePanelPageHandlerFactory>()
@@ -643,16 +656,6 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
   registry.ForWebUI<NtpMicrosoftAuthUntrustedUI>()
       .Add<new_tab_page::mojom::
                MicrosoftAuthUntrustedDocumentInterfacesFactory>();
-
-  if (webui_browser::IsWebUIBrowserEnabled()) {
-    registry.ForWebUI<WebUIBrowserUI>()
-        .Add<webui_browser::mojom::PageHandlerFactory>()
-        .Add<bookmark_bar::mojom::PageHandlerFactory>()
-        .Add<extensions_bar::mojom::PageHandlerFactory>()
-        .Add<searchbox::mojom::PageHandler>()
-        .Add<tabs_api::mojom::TabStripService>()
-        .Add<tracked_element::mojom::TrackedElementHandler>();
-  }
 
   if (features::IsWebUIReloadButtonEnabled()) {
     registry.ForWebUI<ReloadButtonUI>()

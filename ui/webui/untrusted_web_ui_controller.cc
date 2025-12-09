@@ -6,6 +6,7 @@
 
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_client.h"
 
 namespace ui {
 
@@ -16,5 +17,10 @@ UntrustedWebUIController::UntrustedWebUIController(content::WebUI* web_ui)
 }
 
 UntrustedWebUIController::~UntrustedWebUIController() = default;
+
+content::WebUIController::TrustPolicy
+UntrustedWebUIController::GetTrustPolicy() {
+  return WebUIController::TrustPolicy::kUntrusted;
+}
 
 }  // namespace ui
