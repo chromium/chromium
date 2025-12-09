@@ -496,7 +496,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "OfflineItemModelManager",
 #endif
     "OmniboxInputWatcher",
-    "OpenerHeuristicService",
     "PermissionManagerFactory",
     "PrivacySandboxService",
     "SafeBrowsingNavigationObserverManager",

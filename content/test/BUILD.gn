@@ -1778,7 +1778,6 @@ test("content_browsertests") {
     "../browser/storage_partition_impl_browsertest.cc",
     "../browser/system_dns_resolution/system_dns_resolver_browsertest.cc",
     "../browser/text_fragment_browsertest.cc",
-    "../browser/tpcd_heuristics/opener_heuristic_browsertest.cc",
     "../browser/tracing/background_tracing_manager_browsertest.cc",
     "../browser/tracing/memory_instrumentation_browsertest.cc",
     "../browser/tracing/memory_tracing_browsertest.cc",

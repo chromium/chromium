@@ -220,7 +220,6 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
-#include "chrome/browser/tpcd/heuristics/opener_heuristic_service_factory.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
@@ -1121,7 +1120,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   OneGoogleBarServiceFactory::GetInstance();
   OneTimePermissionsTrackerFactory::GetInstance();
 #endif
-  OpenerHeuristicServiceFactory::GetInstance();
   if (optimization_guide::ShouldStartModelValidator()) {
     optimization_guide::ModelValidatorKeyedServiceFactory::GetInstance();
   }
