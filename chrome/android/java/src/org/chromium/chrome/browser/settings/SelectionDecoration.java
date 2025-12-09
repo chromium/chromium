@@ -21,12 +21,18 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
 
+import java.util.Map;
+
 /**
  * Controls the highlight of the selected main menu item. We should consider migrating this into
  * Containment implementation.
  */
 @NullMarked
 class SelectionDecoration extends RecyclerView.ItemDecoration {
+    // For historical reason, there are main menu prefs that is navigating to the same
+    // fragment. To handle the case, we unify the entries.
+    private static final Map<String, String> DEDUP_MAP = Map.of("sign_in", "manage_sync");
+
     /** Margin between items. This is added both top and bottom. */
     private final int mVerticalMarginPx;
 
@@ -42,9 +48,15 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
 
     /**
      * Key of the selected preference defined in main_preference.xml. Maybe null if no entry in the
-     * xml is selected.
+     * xml is selected, or mPreference is set.
      */
     private @Nullable String mKey;
+
+    /**
+     * Preference instance of the selected item on the main menu. May be null if the detailed page
+     * is updated by something other than selecting a main menu item.
+     */
+    private @Nullable Preference mPreference;
 
     /** A flag to re-draw background decoration. */
     private boolean mIsDirty = true;
@@ -58,13 +70,39 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
                         radiusPx, radiusPx, selectedBackgroundColor);
     }
 
+    private static @Nullable String dedup(@Nullable String key) {
+        if (key != null) {
+            String dedupped = DEDUP_MAP.get(key);
+            if (dedupped != null) {
+                return dedupped;
+            }
+        }
+        return key;
+    }
+
     /**
      * Sets the key of the preference entry in main_preferences.xml to be highlighted. Setting null
      * unsets the highlight.
      */
     void setKey(@Nullable String key) {
+        key = dedup(key);
+        if (mPreference != null) {
+            String preferenceKey = dedup(mPreference.getKey());
+            if (TextUtils.equals(preferenceKey, key)) {
+                return;
+            }
+        }
+        mPreference = null;
         mKey = key;
         mIsDirty = true;
+    }
+
+    void setSelectedPreference(Preference preference) {
+        if (mPreference != preference) {
+            mPreference = preference;
+            mKey = null;
+            mIsDirty = true;
+        }
     }
 
     @Override
@@ -98,19 +136,25 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
         var preferenceGroupAdapter = (PreferenceGroupAdapter) parent.getAdapter();
         assert preferenceGroupAdapter != null;
 
+        boolean highlightFound = false;
         for (int i = 0; i < parent.getChildCount(); ++i) {
             View view = parent.getChildAt(i);
+            int position = parent.getChildAdapterPosition(view);
+            Preference preference = preferenceGroupAdapter.getItem(position);
 
             boolean selected = false;
-            if (mKey != null) {
-                int position = parent.getChildAdapterPosition(view);
-                Preference preference = preferenceGroupAdapter.getItem(position);
-                if (preference != null && TextUtils.equals(mKey, preference.getKey())) {
-                    selected = true;
+            if (!highlightFound) {
+                if (mPreference != null) {
+                    selected = (mPreference == preference);
+                } else if (mKey != null) {
+                    if (preference != null && TextUtils.equals(mKey, dedup(preference.getKey()))) {
+                        selected = true;
+                    }
                 }
             }
 
             if (selected) {
+                highlightFound = true;
                 view.setBackground(mSelectedBackground);
                 if (view.findViewById(android.R.id.title) instanceof TextView textView) {
                     textView.setTextAppearance(
