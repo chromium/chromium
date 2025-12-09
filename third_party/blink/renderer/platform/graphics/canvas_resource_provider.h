@@ -459,7 +459,7 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
 
   ~CanvasResourceProviderExternalBitmap() override = default;
 
-  bool IsValid() const override { return GetSkSurface(); }
+  bool IsValid() const override;
   bool IsAccelerated() const override { return false; }
   bool SupportsDirectCompositing() const override { return false; }
   bool IsSingleBuffered() const override { return false; }

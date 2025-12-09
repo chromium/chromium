@@ -169,6 +169,10 @@ CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
                              /*context_provider_wrapper=*/nullptr,
                              /*delegate=*/nullptr) {}
 
+bool CanvasResourceProviderExternalBitmap::IsValid() const {
+  return GetSkSurface();
+}
+
 scoped_refptr<StaticBitmapImage>
 CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
