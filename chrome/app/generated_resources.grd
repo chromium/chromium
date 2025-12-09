@@ -15026,9 +15026,6 @@ This can include information about installed software, files, your browser, the 
 Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:
 '''
       </message>
-      <message name="IDS_COULDNT_STARTUP_PROFILE_ERROR" desc="Error displayed when Chrome cannot start because profiles were not opened correctly.">
-        Cannot start Chrome because something went wrong when opening your profile. Try to restart Chrome.
-      </message>
       <message name="IDS_REFUSE_TO_RUN_AS_ROOT" desc="Short error message displayed in an error dialog on startup if the user tries to run Chrome as root.">
         <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can not be run as root.
       </message>

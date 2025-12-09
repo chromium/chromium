@@ -508,6 +508,12 @@ chromium_strings.grd. -->
           Google Chrome is unresponsive. Relaunch now?
         </message>
       </if>
+      <!-- General app failure messages -->
+      <if expr="not is_chromeos and not is_android">
+        <message name="IDS_COULDNT_STARTUP_PROFILE_ERROR" desc="Error displayed when Chrome cannot start because profiles were not opened correctly.">
+          Cannot start Chrome because something went wrong when opening your profile. Try to restart Chrome.
+        </message>
+      </if>
       <!-- Sharing messages -->
       <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
         To send a number from here to your Android phone, sign in to Chrome on both devices.
