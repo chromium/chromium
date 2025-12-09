@@ -54,29 +54,6 @@ final class ExtensionWindowControllerBridgeImpl
                 });
     }
 
-    /**
-     * Deprecated. Use {@link #initializeWindowControllerListObserverForTesting()} instead.
-     *
-     * <p>TODO(crbug.com/466457024): delete this method.
-     */
-    @Deprecated
-    static void addWindowControllerListObserverForTesting() {
-        ExtensionWindowControllerBridgeImplJni.get()
-                .addWindowControllerListObserverForTesting(); // IN-TEST
-    }
-
-    /**
-     * Deprecated. Use {@link #initializeWindowControllerListObserverForTesting()} instead.
-     *
-     * <p>TODO(crbug.com/466457024): delete this method.
-     */
-    @Deprecated
-    static void removeWindowControllerListObserverForTesting() {
-        ExtensionWindowControllerBridgeImplJni.get()
-                .removeWindowControllerListObserverForTesting(); // IN-TEST
-        sExtensionInternalEventsForTesting.clear();
-    }
-
     static Map<Integer, List<@ExtensionInternalWindowEventForTesting Integer>>
             getExtensionInternalEventsForTesting() {
         return sExtensionInternalEventsForTesting;
