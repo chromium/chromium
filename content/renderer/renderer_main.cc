@@ -265,14 +265,8 @@ int RendererMain(MainFunctionParams parameters) {
     // Consider CrRendererMain a display critical thread. While some Javascript
     // running on the main thread might not be, experiments demonstrated that
     // overall this improves user-perceived performance.
-    // If kInputScenarioPriorityBoost is enabled, the main thread will only be
-    // display critical when user input is detected.
-    base::ThreadType thread_type =
-        base::FeatureList::IsEnabled(
-            blink::features::kInputScenarioPriorityBoost)
-            ? base::ThreadType::kDefault
-            : base::ThreadType::kDisplayCritical;
-    base::PlatformThread::SetCurrentThreadType(thread_type);
+    base::PlatformThread::SetCurrentThreadType(
+        base::ThreadType::kDisplayCritical);
 
     // Startup tracing creates a tracing thread, which is incompatible on
     // platforms that require single-threaded sandbox initialization. In these

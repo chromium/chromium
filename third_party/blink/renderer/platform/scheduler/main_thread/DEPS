@@ -28,7 +28,4 @@ specific_include_rules = {
   "main_thread_unittest.cc": [
     "+base/message_loop/message_pump_type.h",
   ],
-  "main_thread_scheduler_impl.h": [
-    "+base/threading/scoped_thread_priority.h",
-  ],
 }

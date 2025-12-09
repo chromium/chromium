@@ -979,12 +979,6 @@ constexpr base::FeatureParam<int>
 
 BASE_FEATURE(kInputPredictorTypeChoice, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kInputScenarioPriorityBoost, base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<bool> kInputScenarioPriorityBoostIncludesLoading{
-    &features::kInputScenarioPriorityBoost,
-    "input_scenario_priority_boost_includes_loading", false};
-
 // When enabled, wake ups from throttleable TaskQueues are limited to 1 per
 // minute in a page that has been backgrounded for 5 minutes.
 //

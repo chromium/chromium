@@ -25,7 +25,6 @@
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
@@ -154,9 +153,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // std::nullopt.
     std::optional<features::TaskDeferralPolicy>
         discrete_input_task_deferral_policy;
-
-    bool input_scenario_priority_boost_enabled;
-    bool input_scenario_priority_boost_includes_loading;
   };
 
   static const char* RAILModeToString(RAILMode rail_mode);
@@ -781,10 +777,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // Task queues that have been detached from their scheduler and may have
     // pending tasks that need to run.
     HashSet<scoped_refptr<MainThreadTaskQueue>> detached_task_queues;
-
-    // Temporarily boosts the main thread priority. Only used if
-    // kInputScenarioPriorityBoost is enabled.
-    std::optional<base::ScopedBoostPriority> main_thread_priority_boost;
 
     // `WidgetScheduler`s that have not been shut down.
     HashSet<scoped_refptr<WidgetSchedulerImpl>> widget_schedulers;
