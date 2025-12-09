@@ -52,7 +52,7 @@ class ContextualTasksPageHandler : public contextual_tasks::mojom::PageHandler {
   void IsShownInTab(IsShownInTabCallback callback) override;
   void OpenMyActivityUi() override;
   void OpenHelpUi() override;
-  void MoveTaskUiToToNewTab() override;
+  void MoveTaskUiToNewTab() override;
   void GetOAuthToken(GetOAuthTokenCallback callback) override;
   void GetAttachedTabs(GetAttachedTabsCallback callback) override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;

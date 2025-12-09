@@ -102,6 +102,10 @@ bool HasCommonSearchQueryParameters(const GURL& url);
 // Append the dark mode param to the provided |url_to_modify|.
 GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode);
 
+// Remove parameters that cause the SRP to be rendered for the side panel. Used
+// when opening the SRP in a new tab.
+GURL RemoveSidePanelURLParameters(const GURL& url);
+
 }  // namespace lens
 
 #endif  // COMPONENTS_LENS_LENS_URL_UTILS_H_

@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -24,6 +25,8 @@
 using testing::_;
 using testing::Return;
 
+class ContextualTasksUI;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -34,6 +37,7 @@ namespace {
 
 constexpr char kTestUrl[] = "https://example.com";
 constexpr char kAiPageUrl[] = "https://google.com/search?udm=50";
+constexpr char kSrpUrl[] = "https://google.com/search?q=query";
 
 // A mock ContextualTasksUiService that is specifically used for tests around
 // intercepting navigation. Namely the `HandleNavigation` method is the real
@@ -58,7 +62,38 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
                base::WeakPtr<tabs::TabInterface> tab,
                base::WeakPtr<BrowserWindowInterface> browser),
               (override));
+  MOCK_METHOD(void,
+              OnSearchResultsNavigationInTab,
+              (const GURL& url, base::WeakPtr<tabs::TabInterface> tab),
+              (override));
+  MOCK_METHOD(void,
+              OnSearchResultsNavigationInSidePanel,
+              (content::OpenURLParams url_params,
+               ContextualTasksUI* webui_controller),
+              (override));
+
+  // Make the impl method public for this test.
+  bool HandleNavigationImpl(content::OpenURLParams url_params,
+                            content::WebContents* source_contents,
+                            tabs::TabInterface* tab,
+                            bool is_to_new_tab) override {
+    return ContextualTasksUiService::HandleNavigationImpl(
+        std::move(url_params), source_contents, tab, is_to_new_tab);
+  }
 };
+
+content::OpenURLParams CreateOpenUrlParams(const GURL& url,
+                                           bool is_renderer_initiated) {
+  content::Referrer referrer;
+  return content::OpenURLParams(
+      url, referrer, WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL, is_renderer_initiated);
+}
+
+// A matcher that checks that an OpenURLParams object has the specified URL.
+MATCHER_P(OpenURLParamsHasUrl, expected_url, "") {
+  return arg.url == expected_url;
+}
 
 }  // namespace
 
@@ -110,7 +145,7 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
-      navigated_url, /* initiated_in_page= */ true, web_contents.get(), false));
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -130,8 +165,7 @@ TEST_F(ContextualTasksUiServiceTest, BrowserUiNavigationFromWebUiIgnored) {
   // Specifically flag the navigation as not from in-page. This mimics actions
   // like back, forward, and omnibox navigation.
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      navigated_url,
-      /* initiated_in_page= */ false, web_contents.get(), false));
+      CreateOpenUrlParams(navigated_url, false), web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -146,9 +180,8 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(GURL(kTestUrl),
-                                                  /* initiated_in_page= */ true,
-                                                  web_contents.get(), false));
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(GURL(kTestUrl), true), web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -162,8 +195,7 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      GURL(kTestUrl), /* initiated_in_page= */ false, web_contents.get(),
-      false));
+      CreateOpenUrlParams(GURL(kTestUrl), false), web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -179,7 +211,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
-      ai_url, /* initiated_in_page= */ false, web_contents.get(), false));
+      CreateOpenUrlParams(ai_url, false), web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -194,7 +226,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
-      ai_url, /* initiated_in_page= */ false, web_contents.get(), false));
+      CreateOpenUrlParams(ai_url, false), web_contents.get(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -210,7 +242,56 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      GURL(kAiPageUrl), /* initiated_in_page= */ false, web_contents.get(),
+      CreateOpenUrlParams(GURL(kAiPageUrl), false), web_contents.get(), false));
+  task_environment()->RunUntilIdle();
+}
+
+// If the search results page is navigated to while viewing the UI in a tab,
+// ensure the correct event is fired.
+TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
+  GURL navigated_url(kSrpUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_,
+              OnSearchResultsNavigationInTab(navigated_url, _))
+      .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
+      false));
+  task_environment()->RunUntilIdle();
+}
+
+// If the search results page is navigated to while viewing the UI in the side
+// panel (e.g. no tab tied to the WebContents), ensure the correct event is
+// fired.
+TEST_F(ContextualTasksUiServiceTest,
+       SearchResultsNavigation_ViewedInSidePanel) {
+  GURL navigated_url(kSrpUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
+                                     OpenURLParamsHasUrl(navigated_url), _))
+      .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
       false));
   task_environment()->RunUntilIdle();
 }

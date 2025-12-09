@@ -4324,12 +4324,16 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   contextual_tasks::ContextualTasksUiService* contextual_tasks_ui_service =
       contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
           profile);
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
-      contextual_tasks_ui_service &&
-      contextual_tasks_ui_service->HandleNavigation(
-          target_url, /* initiated_in_page= */ true, web_contents,
-          /*is_to_new_tab=*/true)) {
-    return false;
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    content::OpenURLParams url_params(
+        target_url, referrer, disposition,
+        ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL, true);
+    if (contextual_tasks_ui_service &&
+        contextual_tasks_ui_service->HandleNavigation(std::move(url_params),
+                                                      web_contents,
+                                                      /*is_to_new_tab=*/true)) {
+      return false;
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

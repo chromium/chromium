@@ -89,7 +89,7 @@ export class TopToolbarElement extends CrLitElement {
     this.$.menu.get().close();
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.OpenInNewTab');
-    this.browserProxy_.handler.moveTaskUiToToNewTab();
+    this.browserProxy_.handler.moveTaskUiToNewTab();
   }
 
   protected onMyActivityClick_() {

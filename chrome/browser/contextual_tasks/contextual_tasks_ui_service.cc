@@ -191,25 +191,50 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       ->Show(/*transition_from_tab=*/true);
 }
 
+void ContextualTasksUiService::OnSearchResultsNavigationInTab(
+    const GURL& url,
+    base::WeakPtr<tabs::TabInterface> tab) {
+  if (!tab || !tab->GetContents()) {
+    return;
+  }
+
+  content::NavigationController::LoadURLParams params(url);
+  params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  tab->GetContents()->GetController().LoadURLWithParams(params);
+}
+
+void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
+    content::OpenURLParams url_params,
+    ContextualTasksUI* webui_controller) {
+  url_params.url = lens::AppendCommonSearchParametersToURL(
+      url_params.url, g_browser_process->GetApplicationLocale(), false);
+  webui_controller->TransferNavigationToEmbeddedPage(url_params);
+}
+
 bool ContextualTasksUiService::HandleNavigation(
-    const GURL& navigation_url,
-    bool initiated_in_page,
+    content::OpenURLParams url_params,
     content::WebContents* source_contents,
     bool is_to_new_tab) {
+  return HandleNavigationImpl(
+      std::move(url_params), source_contents,
+      tabs::TabInterface::MaybeGetFromContents(source_contents), is_to_new_tab);
+}
+
+bool ContextualTasksUiService::HandleNavigationImpl(
+    content::OpenURLParams url_params,
+    content::WebContents* source_contents,
+    tabs::TabInterface* tab,
+    bool is_to_new_tab) {
   // Allow any navigation to the contextual tasks host.
-  if (IsContextualTasksHost(navigation_url)) {
+  if (IsContextualTasksHost(url_params.url)) {
     return false;
   }
 
-  bool is_nav_to_ai = IsAiUrl(navigation_url);
-  bool is_nav_to_sign_in = IsSignInDomain(navigation_url);
+  bool is_nav_to_ai = IsAiUrl(url_params.url);
+  bool is_nav_to_sign_in = IsSignInDomain(url_params.url);
 
-  // Try to get the active tab if there is one. This will be null if the link is
-  // originating from the side panel.
-  tabs::TabInterface* tab = nullptr;
   BrowserWindowInterface* browser = nullptr;
   if (source_contents) {
-    tab = tabs::TabInterface::MaybeGetFromContents(source_contents);
     BrowserWindow* window =
         BrowserWindow::FindBrowserWindowWithWebContents(source_contents);
     if (window) {
@@ -220,7 +245,7 @@ bool ContextualTasksUiService::HandleNavigation(
   // Intercept any navigation where the wrapping WebContents is the WebUI host
   // unless it is the embedded page.
   if (IsContextualTasksHost(source_contents->GetLastCommittedURL())) {
-    if (is_nav_to_ai || !initiated_in_page) {
+    if (!url_params.is_renderer_initiated) {
       return false;
     }
     // Allow users to sign in within the <webview>.
@@ -235,12 +260,52 @@ bool ContextualTasksUiService::HandleNavigation(
       task_id = GetTaskIdFromHostURL(source_contents->GetLastCommittedURL());
     }
 
+    // If the navigation is to a search results page or AI page, it is allowed
+    // if being viewed in the side panel, but only if it is intercepted without
+    // the side panel-specific params. If the params have already been added, do
+    // nothing, otherwise this logic causes an infinite "intercept" loop.
+    if (IsSearchResultsPage(url_params.url) || is_nav_to_ai) {
+      // The search results page needs to be handled differently depending on
+      // whether viewed in a tab or side panel.
+      if (tab && !is_nav_to_ai) {
+        // The SRP should never be embedded in the WebUI when viewed in a tab.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ContextualTasksUiService::OnSearchResultsNavigationInTab,
+                weak_ptr_factory_.GetWeakPtr(), url_params.url,
+                tab->GetWeakPtr()));
+        return true;
+      } else if (!lens::HasCommonSearchQueryParameters(url_params.url)) {
+        // If a navigation to search results happened without the common
+        // params and in the side panel, it needs special handling.
+        ContextualTasksUI* webui_controller = nullptr;
+        if (source_contents->GetWebUI()) {
+          webui_controller = source_contents->GetWebUI()
+                                 ->GetController()
+                                 ->GetAs<ContextualTasksUI>();
+        }
+
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ContextualTasksUiService::OnSearchResultsNavigationInSidePanel,
+                weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
+                webui_controller));
+        return true;
+      } else {
+        // If already in the side panel and the custom params are present,
+        // allow the navigation.
+        return false;
+      }
+    }
+
     // This needs to be posted in case the called method triggers a navigation
     // in the same WebContents, invalidating the nav handle used up the chain.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&ContextualTasksUiService::OnThreadLinkClicked,
-                       weak_ptr_factory_.GetWeakPtr(), navigation_url, task_id,
+                       weak_ptr_factory_.GetWeakPtr(), url_params.url, task_id,
                        tab ? tab->GetWeakPtr() : nullptr,
                        browser ? browser->GetWeakPtr() : nullptr));
     return true;
@@ -255,7 +320,7 @@ bool ContextualTasksUiService::HandleNavigation(
         FROM_HERE,
         base::BindOnce(
             &ContextualTasksUiService::OnNavigationToAiPageIntercepted,
-            weak_ptr_factory_.GetWeakPtr(), navigation_url,
+            weak_ptr_factory_.GetWeakPtr(), url_params.url,
             tab ? tab->GetWeakPtr() : nullptr, is_to_new_tab));
     return true;
   }
@@ -366,23 +431,47 @@ void ContextualTasksUiService::OnTaskChangedInPanel(
   coordinator->OnTaskChanged(web_contents, new_task_id);
 }
 
-void ContextualTasksUiService::MoveTaskUiToToNewTab(
+void ContextualTasksUiService::MoveTaskUiToNewTab(
     const base::Uuid& task_id,
-    BrowserWindowInterface* browser) {
+    BrowserWindowInterface* browser,
+    const GURL& inner_frame_url) {
   auto* coordinator =
       contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
   CHECK(coordinator);
 
-  std::unique_ptr<content::WebContents> web_contents =
-      coordinator->DetachWebContentsForTask(task_id);
-  if (!web_contents) {
-    return;
-  }
+  // If the side panel wasn't showing an AI page, don't embed the page in the
+  // webui - navigate directly to the link instead.
+  if (!IsAiUrl(inner_frame_url)) {
+    // Since the web content will no longer be hosted in the side panel, make
+    // sure to remove the param that makes the page render for it.
+    NavigateParams params(browser,
+                          lens::RemoveSidePanelURLParameters(inner_frame_url),
+                          ui::PAGE_TRANSITION_LINK);
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
 
-  NavigateParams params(browser, std::move(web_contents));
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params.transition = ui::PAGE_TRANSITION_LINK;
-  Navigate(&params);
+  } else {
+    std::unique_ptr<content::WebContents> web_contents =
+        coordinator->DetachWebContentsForTask(task_id);
+    if (!web_contents) {
+      return;
+    }
+
+    content::WebUI* webui = web_contents->GetWebUI();
+
+    NavigateParams params(browser, std::move(web_contents));
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    params.transition = ui::PAGE_TRANSITION_LINK;
+    Navigate(&params);
+
+    // Notify the WebUI that the tab status has changed only after the contents
+    // has been moved to a tab.
+    if (webui && webui->GetController()) {
+      webui->GetController()
+          ->GetAs<ContextualTasksUI>()
+          ->OnSidePanelStateChanged();
+    }
+  }
 
   coordinator->Close();
 }

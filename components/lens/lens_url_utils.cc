@@ -215,4 +215,11 @@ GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode) {
                     : kDarkModeParameterLightValue);
 }
 
+GURL RemoveSidePanelURLParameters(const GURL& url) {
+  GURL processed_url = url;
+  processed_url = net::AppendOrReplaceQueryParameter(
+      processed_url, kChromeSidePanelParameterKey, std::nullopt);
+  return processed_url;
+}
+
 }  // namespace lens

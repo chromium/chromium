@@ -482,13 +482,6 @@ GURL RemoveIgnoredSearchURLParameters(const GURL& url) {
   return processed_url;
 }
 
-GURL RemoveSidePanelURLParameters(const GURL& url) {
-  GURL processed_url = url;
-  processed_url = net::AppendOrReplaceQueryParameter(
-      processed_url, kChromeSidePanelParameterKey, std::nullopt);
-  return processed_url;
-}
-
 GURL GetSidePanelNewTabUrl(const GURL& side_panel_url, std::string vsrid) {
   if (side_panel_url.is_empty()) {
     return GURL();
