@@ -44,7 +44,7 @@ void OmniboxAimPopupWebUIContent::CloseUI() {
   if (webui_controller) {
     auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
     if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-      omnibox_popup_ui->popup_aim_handler()->OnClose();
+      omnibox_popup_ui->popup_aim_handler()->OnWidgetClosed();
     }
   }
 }
@@ -73,7 +73,8 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
   }
 }
 
-void OmniboxAimPopupWebUIContent::OnClosedWithInput(const std::string& input) {
+void OmniboxAimPopupWebUIContent::OnPageClosedWithInput(
+    const std::string& input) {
   location_bar_view()->GetOmniboxView()->RevertAll();
   location_bar_view()->GetOmniboxView()->SetUserText(base::UTF8ToUTF16(input),
                                                      /*update_popup=*/false);

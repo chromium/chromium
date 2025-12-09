@@ -19,7 +19,7 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Notifies the handler to close the popup, note that not every close action
   // goes through this path as C++/Views code is responsible for presentation.
-  Close();
+  RequestClose();
 
   // Called to open URLs in AIM such as the suggestion activity link.
   NavigateCurrentTab(url.mojom.Url url);
@@ -34,12 +34,12 @@ interface Page {
 
   // Called when the widget in which the AIM popup view is embedded in appears.
   // `context` is the searchbox context that should be set on the composebox.
-  OnShow(searchbox.mojom.SearchContextStub context);
+  OnWidgetShown(searchbox.mojom.SearchContextStub context);
 
   // Called when searchbox context is added outside of a OnShow call.
   AddContext(searchbox.mojom.SearchContextStub context);
 
   // Called when the widget in which the AIM popup view is embedded in closes.
   // The page is expected to return the input text via the callback.
-  OnClose() => (string input);
+  OnWidgetClosed() => (string input);
 };

@@ -44,13 +44,13 @@ void OmniboxPopupAimHandler::OnShow(
     std::unique_ptr<SearchboxContextData::Context> context) {
   auto page_context = ToSearchContext(std::move(context));
   CHECK(page_context);
-  page_->OnShow(std::move(page_context));
+  page_->OnWidgetShown(std::move(page_context));
 }
 
-void OmniboxPopupAimHandler::OnClose() {
+void OmniboxPopupAimHandler::OnWidgetClosed() {
   // Unretained() is safe because `page_` is a mojo remote owned by `this`.
-  page_->OnClose(base::BindOnce(&OmniboxPopupAimHandler::OnClosedCallback,
-                                base::Unretained(this)));
+  page_->OnWidgetClosed(base::BindOnce(
+      &OmniboxPopupAimHandler::OnClosedCallback, base::Unretained(this)));
 }
 
 void OmniboxPopupAimHandler::OnClosedCallback(const std::string& input) {
@@ -59,7 +59,7 @@ void OmniboxPopupAimHandler::OnClosedCallback(const std::string& input) {
   OmniboxAimPopupWebUIContent* aim_popup_content =
       static_cast<OmniboxAimPopupWebUIContent*>(wrapper->GetHost().get());
   if (aim_popup_content) {
-    aim_popup_content->OnClosedWithInput(input);
+    aim_popup_content->OnPageClosedWithInput(input);
   }
 }
 
@@ -72,7 +72,7 @@ void OmniboxPopupAimHandler::AddContext(
   page_->AddContext(std::move(search_context));
 }
 
-void OmniboxPopupAimHandler::Close() {
+void OmniboxPopupAimHandler::RequestClose() {
   omnibox_popup_ui_->embedder()->CloseUI();
 }
 
