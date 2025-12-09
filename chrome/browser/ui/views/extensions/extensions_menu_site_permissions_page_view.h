@@ -43,11 +43,12 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
   // Updates the page contents with the given parameters.
   void Update(const std::u16string& extension_name,
               const ui::ImageModel& extension_icon,
-              ExtensionsMenuViewModel::ExtensionSitePermissions
-                  extension_site_permissions);
+              ExtensionsMenuViewModel::ExtensionSiteAccessOptionsState
+                  site_access_state);
 
-  // Updates `show_requests_toggle_` state to `is_on`.
-  void UpdateShowRequestsToggle(bool is_on);
+  // Updates `show_requests_toggle_` with the given toggle state.
+  void UpdateShowRequestsToggle(
+      ExtensionsMenuViewModel::ControlState toggle_state);
 
   extensions::ExtensionId extension_id() { return extension_id_; }
 

@@ -245,7 +245,8 @@ void ExtensionsMenuViewPlatformDelegateViews::
 
   // ... of that extension.
   if (site_permissions_page->extension_id() == extension_id) {
-    site_permissions_page->UpdateShowRequestsToggle(can_show_requests);
+    site_permissions_page->UpdateShowRequestsToggle(
+        menu_model_->GetExtensionShowRequestsToggleState(extension_id));
   }
 }
 
@@ -520,11 +521,15 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateSitePermissionsPage(
   std::u16string extension_name = view_model->GetActionName();
   ui::ImageModel extension_icon =
       view_model->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
-  ExtensionsMenuViewModel::ExtensionSitePermissions extension_site_settings =
-      menu_model_->GetExtensionSitePermissions(extension_id);
-
+  ExtensionsMenuViewModel::ExtensionSiteAccessOptionsState
+      extension_site_access_options =
+          menu_model_->GetExtensionSiteAccessOptionsState(extension_id);
   site_permissions_page->Update(extension_name, extension_icon,
-                                extension_site_settings);
+                                extension_site_access_options);
+
+  ExtensionsMenuViewModel::ControlState show_requests_toggle =
+      menu_model_->GetExtensionShowRequestsToggleState(extension_id);
+  site_permissions_page->UpdateShowRequestsToggle(show_requests_toggle);
 }
 
 ExtensionsMenuMainPageView*

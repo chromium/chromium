@@ -83,22 +83,6 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     bool is_enterprise;
   };
 
-  // Holds the information for an extension's site permissions in the
-  // extension's menu. This will be used by the platform delegate as needed.
-  struct ExtensionSitePermissions {
-    // The text to display for the current site (e.g. "example.com").
-    std::u16string current_site;
-    // The current site access of the extension (e.g. on click, on site, on all
-    // sites).
-    extensions::PermissionsManager::UserSiteAccess site_access;
-    // Whether the "on site" option is enabled.
-    bool is_on_site_enabled;
-    // Whether the "on all sites" option is enabled.
-    bool is_on_all_sites_enabled;
-    // Whether the toggle to show access requests in the toolbar is on.
-    bool is_show_requests_toggle_on;
-  };
-
   // The type of optional section to display in the menu.
   enum class OptionalSection {
     // A section alerting the user that a page reload is required for changes to
@@ -110,6 +94,39 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     kHostAccessRequests,
     // No optional section should be displayed.
     kNone
+  };
+
+  // A generic structure for UI controls (buttons, toggles, radio buttons).
+  struct ControlState {
+    // Represents the availability and interactivity the control.
+    enum class Status {
+      // The control is not displayed.
+      kHidden,
+      // The control is displayed but cannot be interacted with.
+      kDisabled,
+      // The control is displayed and interactive.
+      kEnabled
+    };
+
+    // The interactivity status of the control.
+    Status status = Status::kHidden;
+    // The text label to display. Empty if not applicable.
+    std::u16string text;
+    // The accessible name. Empty if not applicable.
+    std::u16string accessible_name;
+    // The checked/toggled state. False for buttons with no on/off state.
+    bool is_on = false;
+  };
+
+  // Holds the information for an extension's site access in the extension's
+  // menu. This will be used by the platform delegate as needed.
+  struct ExtensionSiteAccessOptionsState {
+    // The state for the 'on click' site access option.
+    ControlState on_click_option;
+    // The state for the 'on site' site access option.
+    ControlState on_site_option;
+    // The state for the 'on all sites' site access option.
+    ControlState on_all_sites_option;
   };
 
   ExtensionsMenuViewModel(
@@ -155,10 +172,14 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Returns the menu item info for an extension.
   MenuItemInfo GetMenuItemInfo(const extensions::ExtensionId& extension_id);
 
-  // Returns the site permissions for an extension. This will crash if called
-  // when the user cannot modify the extension site permissions, as this method
-  // would compute invalid values.
-  ExtensionSitePermissions GetExtensionSitePermissions(
+  // Returns the site access options state for an extension. This will crash if
+  // called when the user cannot modify the extension site permissions, as this
+  // method would compute invalid values.
+  ExtensionSiteAccessOptionsState GetExtensionSiteAccessOptionsState(
+      const extensions::ExtensionId& extension_id);
+
+  // Returns the show requests toggle state for an extension.
+  ControlState GetExtensionShowRequestsToggleState(
       const extensions::ExtensionId& extension_id);
 
   // Returns the optional section to display in the menu.
