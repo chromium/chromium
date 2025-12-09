@@ -141,9 +141,10 @@ class LocalStorageImplTest : public testing::Test {
 
   void InitializeStorage(const base::FilePath& path) {
     DCHECK(!storage_);
-    storage_ =
-        std::make_unique<LocalStorageImpl>(path, base::NullCallback(),
-                                           /*receiver=*/mojo::NullReceiver());
+    storage_ = std::make_unique<LocalStorageImpl>(
+        path, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::NullCallback(),
+        /*receiver=*/mojo::NullReceiver());
   }
 
   void ShutDownStorage() {

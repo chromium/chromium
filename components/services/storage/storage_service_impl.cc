@@ -144,6 +144,7 @@ void StorageServiceImpl::BindLocalStorageControl(
 
   auto new_local_storage = std::make_unique<LocalStorageImpl>(
       path.value_or(base::FilePath()),
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&StorageServiceImpl::ShutDownAndRemoveLocalStorage,
                      weak_ptr_factory_.GetWeakPtr()),
       std::move(receiver));
@@ -172,6 +173,10 @@ void StorageServiceImpl::BindSessionStorageControl(
 
   auto new_session_storage = std::make_unique<SessionStorageImpl>(
       path.value_or(base::FilePath()),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::WithBaseSyncPrimitives(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+      base::SequencedTaskRunner::GetCurrentDefault(),
 #if BUILDFLAG(IS_ANDROID)
       // On Android there is no support for session storage restoring, and since
       // the restoring code is responsible for database cleanup, we must

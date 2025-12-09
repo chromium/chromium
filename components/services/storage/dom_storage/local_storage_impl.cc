@@ -30,6 +30,8 @@
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
@@ -208,17 +210,20 @@ class LocalStorageImpl::StorageAreaHolder final
 
 LocalStorageImpl::LocalStorageImpl(
     const base::FilePath& storage_root,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     DestructLocalStorageCallback destruct_callback,
     mojo::PendingReceiver<mojom::LocalStorageControl> receiver)
     : destruct_callback_(std::move(destruct_callback)),
       directory_(storage_root.empty() ? storage_root
                                       : storage_root.Append(kLocalStoragePath)),
+      database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::WithBaseSyncPrimitives(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       memory_dump_id_(base::StringPrintf("LocalStorage/0x%" PRIXPTR,
                                          reinterpret_cast<uintptr_t>(this))) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
-          this, "LocalStorage", base::SequencedTaskRunner::GetCurrentDefault(),
-          MemoryDumpProvider::Options());
+          this, "LocalStorage", task_runner, MemoryDumpProvider::Options());
 
   if (receiver) {
     control_receiver_.Bind(std::move(receiver));
@@ -526,7 +531,7 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
     in_memory_ = false;
     database_ = AsyncDomStorageDatabase::Open(
         StorageType::kLocalStorage, directory_, kLocalStorageLeveldbName,
-        memory_dump_id_,
+        memory_dump_id_, database_task_runner_,
         base::BindOnce(&LocalStorageImpl::OnDatabaseOpened,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -537,6 +542,7 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
   database_ = AsyncDomStorageDatabase::Open(
       StorageType::kLocalStorage,
       /*directory=*/base::FilePath(), "local-storage", memory_dump_id_,
+      database_task_runner_,
       base::BindOnce(&LocalStorageImpl::OnDatabaseOpened,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -600,13 +606,12 @@ void LocalStorageImpl::DeleteAndRecreateDatabase() {
 
   // If tried to recreate database on disk already, try again but this time
   // in memory.
-  if (tried_to_recreate_during_open_) {
-    if (in_memory_) {
-      // Give up completely, run without any database.
-      OnConnectionFinished();
-      return;
-    }
+  if (tried_to_recreate_during_open_ && !in_memory_) {
     recreate_in_memory = true;
+  } else if (tried_to_recreate_during_open_) {
+    // Give up completely, run without any database.
+    OnConnectionFinished();
+    return;
   }
 
   tried_to_recreate_during_open_ = true;
@@ -614,9 +619,7 @@ void LocalStorageImpl::DeleteAndRecreateDatabase() {
   // Destroy database, and try again.
   if (!in_memory_) {
     DomStorageDatabaseFactory::Destroy(
-        directory_, kLocalStorageLeveldbName,
-        AsyncDomStorageDatabase::GetTaskRunnerForDb(directory_,
-                                                    kLocalStorageLeveldbName),
+        directory_, kLocalStorageLeveldbName, database_task_runner_,
         base::BindOnce(&LocalStorageImpl::OnDBDestroyed,
                        weak_ptr_factory_.GetWeakPtr(), recreate_in_memory));
   } else {
@@ -757,16 +760,9 @@ void LocalStorageImpl::OnShutdownComplete() {
   DCHECK(shutdown_complete_callback_);
   // Flush any final tasks on the DB task runner before invoking the callback.
   PurgeAllStorageAreas();
-  bool database_created = !!database_;
   database_.reset();
-  if (database_created && !in_memory_) {
-    AsyncDomStorageDatabase::GetTaskRunnerForDb(directory_,
-                                                kLocalStorageLeveldbName)
-        ->PostTaskAndReply(FROM_HERE, base::DoNothing(),
-                           std::move(shutdown_complete_callback_));
-  } else {
-    std::move(shutdown_complete_callback_).Run();
-  }
+  database_task_runner_->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), std::move(shutdown_complete_callback_));
 }
 
 void LocalStorageImpl::GetStatistics(size_t* total_cache_size,

@@ -79,8 +79,9 @@ class SessionStorageImplTest : public testing::Test {
     if (!session_storage_) {
       remote_session_storage_.reset();
       session_storage_ = std::make_unique<SessionStorageImpl>(
-          temp_path(), backing_mode_, kSessionStorageDirectory,
-          base::DoNothing(),
+          temp_path(), blocking_task_runner_,
+          base::SequencedTaskRunner::GetCurrentDefault(), backing_mode_,
+          kSessionStorageDirectory, base::DoNothing(),
           remote_session_storage_.BindNewPipeAndPassReceiver());
     }
     return session_storage_.get();
@@ -154,6 +155,9 @@ class SessionStorageImplTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   SessionStorageImpl::BackingMode backing_mode_ =
       SessionStorageImpl::BackingMode::kRestoreDiskState;
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_{
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})};
   std::unique_ptr<SessionStorageImpl> session_storage_;
   mojo::Remote<mojom::SessionStorageControl> remote_session_storage_;
 };

@@ -81,6 +81,7 @@ class SessionStorageDataMapTest : public testing::Test {
         StorageType::kSessionStorage,
         /*directory=*/base::FilePath(), "SessionStorageDataMapTest",
         /*memory_dump_id=*/std::nullopt,
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](DbStatus status) {
           ASSERT_TRUE(status.ok());
           loop.Quit();

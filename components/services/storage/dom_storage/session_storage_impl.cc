@@ -94,6 +94,8 @@ void SessionStorageErrorResponse(base::OnceClosure callback, DbStatus status) {
 
 SessionStorageImpl::SessionStorageImpl(
     const base::FilePath& partition_directory,
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> memory_dump_task_runner,
     BackingMode backing_mode,
     std::string database_name,
     DestructSessionStorageCallback destruct_callback,
@@ -102,6 +104,7 @@ SessionStorageImpl::SessionStorageImpl(
       backing_mode_(backing_mode),
       database_name_(std::move(database_name)),
       partition_directory_(partition_directory),
+      database_task_runner_(std::move(blocking_task_runner)),
       memory_dump_id_(base::StringPrintf("SessionStorage/0x%" PRIXPTR,
                                          reinterpret_cast<uintptr_t>(this))),
       receiver_(this, std::move(receiver)),
@@ -109,8 +112,7 @@ SessionStorageImpl::SessionStorageImpl(
           base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
-          this, "SessionStorage",
-          base::SequencedTaskRunner::GetCurrentDefault(),
+          this, "SessionStorage", std::move(memory_dump_task_runner),
           base::trace_event::MemoryDumpProvider::Options());
   receiver_.set_disconnect_handler(
       base::BindOnce(&SessionStorageImpl::OnReceiverDisconnected,
@@ -760,17 +762,15 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
       !partition_directory_.empty()) {
     // We were given a subdirectory to write to, so use a disk backed database.
     if (backing_mode_ == BackingMode::kClearDiskStateOnOpen) {
-      DomStorageDatabaseFactory::Destroy(
-          partition_directory_, database_name_,
-          AsyncDomStorageDatabase::GetTaskRunnerForDb(partition_directory_,
-                                                      database_name_),
-          base::DoNothing());
+      DomStorageDatabaseFactory::Destroy(partition_directory_, database_name_,
+                                         database_task_runner_,
+                                         base::DoNothing());
     }
 
     in_memory_ = false;
     database_ = AsyncDomStorageDatabase::Open(
         StorageType::kSessionStorage, partition_directory_, database_name_,
-        memory_dump_id_,
+        memory_dump_id_, database_task_runner_,
         base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -781,6 +781,7 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
   database_ = AsyncDomStorageDatabase::Open(
       StorageType::kSessionStorage,
       /*directory=*/base::FilePath(), "SessionStorageDatabase", memory_dump_id_,
+      database_task_runner_,
       base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -869,13 +870,12 @@ void SessionStorageImpl::DeleteAndRecreateDatabase() {
 
   // If tried to recreate database on disk already, try again but this time
   // in memory.
-  if (tried_to_recreate_during_open_) {
-    if (in_memory_) {
-      // Give up completely, run without any database.
-      OnConnectionFinished();
-      return;
-    }
+  if (tried_to_recreate_during_open_ && !in_memory_) {
     recreate_in_memory = true;
+  } else if (tried_to_recreate_during_open_) {
+    // Give up completely, run without any database.
+    OnConnectionFinished();
+    return;
   }
 
   tried_to_recreate_during_open_ = true;
@@ -885,9 +885,7 @@ void SessionStorageImpl::DeleteAndRecreateDatabase() {
   // Destroy database, and try again.
   if (!in_memory_) {
     DomStorageDatabaseFactory::Destroy(
-        partition_directory_, database_name_,
-        AsyncDomStorageDatabase::GetTaskRunnerForDb(partition_directory_,
-                                                    database_name_),
+        partition_directory_, database_name_, database_task_runner_,
         base::BindOnce(&SessionStorageImpl::OnDBDestroyed,
                        weak_ptr_factory_.GetWeakPtr(), recreate_in_memory));
   } else {
@@ -908,16 +906,9 @@ void SessionStorageImpl::OnShutdownComplete() {
   DCHECK(shutdown_complete_callback_);
   // Flush any final tasks on the DB task runner before invoking the callback.
   PurgeAllNamespaces();
-  bool database_created = !!database_;
   database_.reset();
-  if (database_created && !in_memory_) {
-    AsyncDomStorageDatabase::GetTaskRunnerForDb(partition_directory_,
-                                                database_name_)
-        ->PostTaskAndReply(FROM_HERE, base::DoNothing(),
-                           std::move(shutdown_complete_callback_));
-  } else {
-    std::move(shutdown_complete_callback_).Run();
-  }
+  database_task_runner_->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), std::move(shutdown_complete_callback_));
 }
 
 void SessionStorageImpl::GetStatistics(size_t* total_cache_size,

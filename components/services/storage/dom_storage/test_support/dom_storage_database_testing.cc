@@ -103,11 +103,16 @@ void OpenAsyncDomStorageDatabaseInMemorySync(
     std::unique_ptr<AsyncDomStorageDatabase>* result) {
   base::test::TestFuture<DbStatus> status_future;
 
+  scoped_refptr<base::SequencedTaskRunner> database_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::WithBaseSyncPrimitives(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+
   std::unique_ptr<AsyncDomStorageDatabase> database =
       AsyncDomStorageDatabase::Open(
           storage_type, /*directory=*/base::FilePath(),
           "TestInMemoryDomStorageDatabase", /*memory_dump_id=*/std::nullopt,
-          status_future.GetCallback());
+          std::move(database_task_runner), status_future.GetCallback());
 
   const DbStatus& status = status_future.Get();
   ASSERT_TRUE(status.ok()) << status.ToString();
