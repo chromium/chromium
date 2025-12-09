@@ -97,7 +97,8 @@ class CONTENT_EXPORT Navigator {
   void DidNavigate(RenderFrameHostImpl* render_frame_host,
                    const mojom::DidCommitProvisionalLoadParams& params,
                    std::unique_ptr<NavigationRequest> navigation_request,
-                   bool was_within_same_document);
+                   bool was_within_same_document,
+                   bool caused_by_ad);
 
   // Called on a newly created subframe during a history navigation. The browser
   // process looks up the corresponding FrameNavigationEntry for the new frame

@@ -364,6 +364,14 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // See RFHI::honor_sticky_activation_for_history_intervention_ for details.
   // This is used for a new renderer-initiated navigation to decide if the page
   // that initiated the navigation should be skipped on back/forward button.
+  //
+  // |caused_by_ad| indicates whether this navigation was caused by an ad. More
+  // specifically, this is whether an ad script was in the JavaScript stack at
+  // the time of the navigation, or whether the navigating frame is an ad frame,
+  // as determined by Ad Tagging. This is used to ad-tag the originating and/or
+  // the new NavigationEntry, which will further determine whether these entries
+  // should be skipped due to the back-to-ad intervention during back/forward UI
+  // navigation.
   bool RendererDidNavigate(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
@@ -371,6 +379,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_same_document_navigation,
       bool was_on_initial_empty_document,
       bool previous_document_had_history_intervention_activation,
+      bool caused_by_ad,
       NavigationRequest* navigation_request);
 
   // Notifies us that we just became active. This is used by the WebContentsImpl
@@ -817,6 +826,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_same_document,
       bool replace_entry,
       bool previous_document_had_history_intervention_activation,
+      bool caused_by_ad,
       NavigationRequest* request,
       LoadCommittedDetails* details,
       ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
@@ -825,6 +835,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool was_restored,
+      bool caused_by_ad,
       NavigationRequest* request,
       bool keep_pending_entry,
       LoadCommittedDetails* details,
@@ -835,6 +846,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_same_document,
       bool replace_entry,
       bool previous_document_had_history_intervention_activation,
+      bool caused_by_ad,
       NavigationRequest* request,
       LoadCommittedDetails* details,
       ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
@@ -951,6 +963,36 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       int reference_index,
       bool skippable,
       RenderFrameHostImpl* source_rfh_for_report);
+
+  // Tags the originating and new entry to indicate whether they are ad related.
+  //
+  // Relation to History Manipulation Intervention:
+  // The standard intervention skips entries for a document if the document
+  // creates any NavigationEntry without having received user activation. This
+  // function supports a stricter intervention for ads: it marks entries created
+  // by ads to be skipped even if the user has activated the page. This ensures
+  // users are not trapped by ads, even on pages where they have interacted with
+  // the content.
+  //
+  // `is_same_document`: True if this is a same-document navigation.
+  // `caused_by_ad`: True if an ad (script or frame) initiated the navigation.
+  // `new_entry`: The entry currently being committed. Its
+  //     `is_entry_created_by_ad` status will be updated based on
+  //     `caused_by_ad`.
+  // `is_append`: True if this is a new entry (e.g., history.pushState,
+  //     location.assign). If true, we may also tag the *previous* entry as an
+  //     `ad_entry_creator`.
+  // `is_replace`: True if this is a replaced entry (e.g., history.replaceState,
+  //     location.replace).
+  // `is_main_frame`: True if this navigation is occurring in the main frame.
+  //     Used to filter out cross-document main frame navigations, which are not
+  //     currently subject to this intervention.
+  void SetAdCreatorAndTargetEntryStatusIfNeeded(NavigationEntryImpl& new_entry,
+                                                bool is_same_document,
+                                                bool caused_by_ad,
+                                                bool is_append,
+                                                bool is_replace,
+                                                bool is_main_frame);
 
   // Called when one PendingEntryRef is deleted. When all of the refs for the
   // current pending entry have been deleted, this automatically discards the

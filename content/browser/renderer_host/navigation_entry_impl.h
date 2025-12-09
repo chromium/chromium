@@ -178,6 +178,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   std::string GetExtraHeaders() const override;
   void AddExtraHeaders(const std::string& extra_headers) override;
   int64_t GetMainFrameDocumentSequenceNumber() const override;
+  bool IsPossiblySkippableAdEntryForTesting() const override;
 
   // Creates a copy of this NavigationEntryImpl that can be modified
   // independently from the original, but that shares FrameNavigationEntries.
@@ -453,6 +454,26 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     should_skip_on_back_forward_ui_ = should_skip;
   }
 
+  // These functions are for the ad-related additions to the history
+  // manipulation intervention.
+  bool is_ad_entry_creator() const { return is_ad_entry_creator_; }
+  void set_is_ad_entry_creator(bool is_ad_entry_creator) {
+    is_ad_entry_creator_ = is_ad_entry_creator;
+  }
+  bool is_entry_created_by_ad() const { return is_entry_created_by_ad_; }
+  void set_is_entry_created_by_ad(bool is_entry_created_by_ad) {
+    is_entry_created_by_ad_ = is_entry_created_by_ad;
+  }
+
+  // Returns true if this entry might be skipped on back/forward navigation in
+  // the UI even if there has been a user activation, due to ad related actions
+  // (i.e., ads both created this entry and caused it to create another entry).
+  // The final determination of whether to skip it will be made in
+  // NavigationControllerImpl.
+  bool is_possibly_skippable_ad_entry() const {
+    return is_ad_entry_creator_ && is_entry_created_by_ad_;
+  }
+
   BackForwardCacheMetrics* back_forward_cache_metrics() {
     return back_forward_cache_metrics_.get();
   }
@@ -661,6 +682,25 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // navigations.
   // TODO(shivanisha): Persist this field once the intervention is stable.
   bool should_skip_on_back_forward_ui_;
+
+  // `is_entry_created_by_ad_`: Indicates whether this navigation entry was
+  // created by an ad. Updated for same-document navigations or subframe
+  // cross-document navigations based on the initiator's ad status (e.g., ad
+  // script in JavaScript stack).
+  //
+  // `is_ad_entry_creator_`: Indicates whether a *new* navigation entry was
+  // created by an ad while this entry was active. Once set, it is never reset.
+  // This prevents pages from hiding that an ad entry was created.
+  //
+  // If both `is_entry_created_by_ad_` and `is_ad_entry_creator_` are true, this
+  // entry is considered a "possibly skippable ad entry" (see
+  // is_possibly_skippable_ad_entry() for implications).
+  //
+  // These states are not reset in `ResetForCommit`.
+  //
+  // TODO(yaoxia):  Persist these fields once the intervention is stable.
+  bool is_entry_created_by_ad_;
+  bool is_ad_entry_creator_;
 
   // It is preserved at commit but not persisted.
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics_;

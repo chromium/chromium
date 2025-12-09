@@ -221,6 +221,13 @@ struct DidCommitSameDocumentNavigationParams {
   // This is used for attributing soft navigation metrics to the
   // correct UKM Source ID.
   mojo_base.mojom.UnguessableToken same_document_metrics_token;
+
+  // For ad-related aspects of the history manipulation intervention, this
+  // indicates whether this same-document navigation was caused by an ad. More
+  // specifically, this is whether an ad script was in the JavaScript stack at
+  // the time of the navigation, or whether the frame is an ad frame, as
+  // determined by Ad Tagging.
+  bool caused_by_ad;
 };
 
 struct CookieManagerInfo {

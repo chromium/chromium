@@ -30,6 +30,22 @@ function createAdFrame(url, name, sbox_attr, load_callback, error_callback) {
   document.body.appendChild(frame);
 }
 
+function executeHistoryPushStateFromAdScript(url) {
+  history.pushState({}, '', url);
+}
+
+function executeHistoryReplaceStateFromAdScript(url) {
+  history.replaceState({}, '', url);
+}
+
+function executeLocationAssignFromAdScript(url) {
+  location.assign(url);
+}
+
+function executeLocationReplaceFromAdScript(url) {
+  location.replace(url);
+}
+
 function createAdFramePromise(url, name, sbox_attr) {
   return new Promise((resolve, reject) => {
     createAdFrame(url, name, sbox_attr, resolve, reject);

@@ -4129,6 +4129,12 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   same_document_params->same_document_metrics_token =
       same_document_metrics_token;
 
+  // `IsAdScriptInStack()` is the primary check. The IsAdFrame() check really
+  // only covers an edge scenario of a genuine user click (e.g., <a> tag) within
+  // an ad frame triggering a fragment navigation.
+  same_document_params->caused_by_ad =
+      GetWebFrame()->IsAdFrame() || GetWebFrame()->IsAdScriptInStack();
+
   DidCommitNavigationInternal(
       commit_type, transition, navigation_state.get(),
       network::ParsedPermissionsPolicy(),   // permissions_policy_header
