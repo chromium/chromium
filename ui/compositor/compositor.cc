@@ -282,15 +282,6 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   if (command_line->HasSwitch(switches::kUISlowAnimations)) {
     slow_animations_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
         gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
-  } else if (command_line->HasSwitch(switches::kAnimationDurationScale)) {
-    double animation_duration_scale = 1.0f;
-    if (!base::StringToDouble(command_line->GetSwitchValueASCII(
-                                  switches::kAnimationDurationScale),
-                              &animation_duration_scale)) {
-      animation_duration_scale = 1.0f;
-    }
-    slow_animations_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
-        animation_duration_scale);
   }
 
   settings.disable_frame_rate_limit =

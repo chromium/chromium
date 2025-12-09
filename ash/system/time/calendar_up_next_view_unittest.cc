@@ -4,7 +4,6 @@
 
 #include "ash/system/time/calendar_up_next_view.h"
 
-#include <optional>
 #include <utility>
 
 #include "ash/public/cpp/test/test_system_tray_client.h"
@@ -20,7 +19,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_requests.h"
-#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -73,12 +71,9 @@ class CalendarUpNextViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     controller_ = std::make_unique<CalendarViewController>();
-    normal_duration_.emplace(
-        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void TearDown() override {
-    normal_duration_.reset();
     controller_.reset();
     AshTestBase::TearDown();
   }
@@ -176,7 +171,6 @@ class CalendarUpNextViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<CalendarUpNextView> up_next_view_;
   std::unique_ptr<CalendarViewController> controller_;
-  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(CalendarUpNextViewTest, ShouldShowMultipleUpcomingEvents) {

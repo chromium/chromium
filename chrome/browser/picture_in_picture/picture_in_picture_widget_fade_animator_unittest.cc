@@ -6,7 +6,6 @@
 
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -27,12 +26,9 @@ class PictureInPictureWidgetFadeAnimatorTest : public views::ViewsTestBase {
     ViewsTestBase::SetUp();
     fade_animator_ = std::make_unique<PictureInPictureWidgetFadeAnimator>();
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    normal_duration_.emplace(
-        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void TearDown() override {
-    normal_duration_.reset();
     if (widget_) {
       widget_.reset();
     }
@@ -62,7 +58,6 @@ class PictureInPictureWidgetFadeAnimatorTest : public views::ViewsTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<PictureInPictureWidgetFadeAnimator> fade_animator_;
-  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 }  // anonymous namespace

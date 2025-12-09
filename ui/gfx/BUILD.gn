@@ -129,6 +129,8 @@ component("gfx") {
     "overlay_transform_utils.h",
     "platform_font.cc",
     "platform_font.h",
+    "scoped_animation_duration_scale_mode.cc",
+    "scoped_animation_duration_scale_mode.h",
     "scrollbar_size.cc",
     "scrollbar_size.h",
     "selection_model.cc",
@@ -477,15 +479,6 @@ component("color_space") {
     }
   }
   defines = [ "COLOR_SPACE_IMPLEMENTATION" ]
-}
-
-component("animation_scale") {
-  sources = [
-    "scoped_animation_duration_scale_mode.cc",
-    "scoped_animation_duration_scale_mode.h",
-  ]
-  deps = [ "//base" ]
-  defines = [ "IS_ANIMATION_SCALE_IMPL" ]
 }
 
 # Depend on this to use image/resize_image_dimensions.h without pulling in

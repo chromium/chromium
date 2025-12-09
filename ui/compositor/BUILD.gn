@@ -92,10 +92,7 @@ component("compositor") {
 
   defines = [ "COMPOSITOR_IMPLEMENTATION" ]
 
-  public_deps = [
-    "//cc",
-    "//ui/gfx:animation_scale",
-  ]
+  public_deps = [ "//cc" ]
   deps = [
     "//base",
     "//cc/animation",

@@ -3308,7 +3308,6 @@ component("ash") {
     "//ui/base/mojom:ui_base_types",
     "//ui/events",
     "//ui/gfx",
-    "//ui/gfx:animation_scale",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry/mojom",
     "//ui/lottie",

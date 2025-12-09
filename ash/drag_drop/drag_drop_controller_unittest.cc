@@ -56,7 +56,6 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -186,7 +185,7 @@ class CompletableLinearAnimation : public gfx::LinearAnimation {
   CompletableLinearAnimation& operator=(const CompletableLinearAnimation&) =
       delete;
 
-  void Complete() { Step(start_time() + GetDuration()); }
+  void Complete() { Step(start_time() + duration()); }
 };
 
 class TestDragDropController : public DragDropController {
@@ -473,9 +472,6 @@ class DragDropControllerTest : public AshTestBase {
     drag_drop_controller_->set_enabled(true);
     aura::client::SetDragDropClient(Shell::GetPrimaryRootWindow(),
                                     drag_drop_controller_.get());
-
-    normal_duration_.emplace(
-        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void TearDown() override {
@@ -534,6 +530,14 @@ class DragDropControllerTest : public AshTestBase {
     return widget;
   }
 
+  std::unique_ptr<TestDragDropController> drag_drop_controller_;
+  raw_ptr<NiceMock<MockShellDelegate>, DanglingUntriaged> mock_shell_delegate_ =
+      nullptr;
+
+  NiceMock<MockNewWindowDelegate> new_window_delegate_;
+
+  bool quit_ = false;
+
   void RunWithClosure(base::RepeatingCallback<void(bool)> loop) {
     quit_ = false;
 
@@ -544,13 +548,6 @@ class DragDropControllerTest : public AshTestBase {
       loop.Run(/*inside=*/false);
     }
   }
-
-  std::unique_ptr<TestDragDropController> drag_drop_controller_;
-  raw_ptr<NiceMock<MockShellDelegate>, DanglingUntriaged> mock_shell_delegate_ =
-      nullptr;
-  NiceMock<MockNewWindowDelegate> new_window_delegate_;
-  bool quit_ = false;
-  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(DragDropControllerTest, DragDropInSingleViewTest) {

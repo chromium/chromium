@@ -243,7 +243,6 @@ static_library("test_support") {
     "//ui/events:events_base",
     "//ui/events:test_support",
     "//ui/gfx",
-    "//ui/gfx:animation_scale",
     "//ui/gfx/geometry",
     "//ui/platform_window",
     "//ui/wm",
