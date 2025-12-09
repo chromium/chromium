@@ -143,6 +143,14 @@ TEST_F(BatchingMediaLogTest, EventSentWithoutDelayAfterIpcInterval) {
   EXPECT_EQ(2, message_count());
 }
 
+TEST_F(BatchingMediaLogTest, EventSentBeforeDestruction) {
+  AddEvent<media::MediaLogEvent::kPlay>();
+  log_.OnWebMediaPlayerDestroyed();
+
+  // Created, played, destroyed.
+  ASSERT_EQ(3u, GetMediaLogRecords().size());
+}
+
 TEST_F(BatchingMediaLogTest, DurationChanged) {
   AddEvent<media::MediaLogEvent::kPlay>();
   AddEvent<media::MediaLogEvent::kPause>();

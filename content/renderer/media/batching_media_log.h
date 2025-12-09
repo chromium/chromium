@@ -61,6 +61,7 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // Posted as a delayed task on |task_runner_| to throttle ipc message
   // frequency.
   void SendQueuedMediaEvents();
+  void SendQueuedMediaEvents_Locked();
 
   void MaybeQueueEvent_Locked(std::unique_ptr<media::MediaLogRecord> event);
 
