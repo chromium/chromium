@@ -250,7 +250,7 @@ cr-searchbox-icon {
  * Webkit mask images hide borders so container rules are created to
  * show focus borders on these icons. */
 .searchbox-icon-button-container {
-  border-radius: 4px;
+  border-radius: 50%;
   display: flex;
   height: 36px;
   position: absolute;
