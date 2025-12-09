@@ -136,13 +136,13 @@ public class ShadowAsyncTask<Result> {
 
     @Implementation
     public AsyncTask<Result> executeOnExecutor(LocationAwareExecutor executor) {
-        return executeOnExecutor((Executor) executor);
+        return executeOnExecutor(executor, null);
     }
 
     @Implementation
     public AsyncTask<Result> executeOnExecutor(
             LocationAwareExecutor executor, @Nullable Location location) {
-        return executeOnExecutor(executor);
+        return executeOnExecutor((Executor) executor);
     }
 
     @Implementation

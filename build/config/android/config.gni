@@ -315,10 +315,12 @@ if (is_android) {
     # Where to write failed expectations for bots to read.
     expectations_failure_dir = "$root_build_dir/failed_expectations"
 
-    # Enables rewriting of certain method invocations with overloads that take an
-    # additional argument of type org.chromium.base.task.Location (see
-    # //build/android/location_rewriter)
-    enable_java_location_rewrite = false
+    # Enables rewriting of certain method invocations with overloads that take
+    # an additional argument of type org.chromium.base.task.Location (see
+    # //build/android/location_rewriter). Turned on for "default" and "canary"
+    # channel for tracing.
+    enable_java_location_rewrite =
+        android_channel == "default" || android_channel == "canary"
   }
 
   if (is_asan) {
