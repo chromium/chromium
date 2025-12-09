@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
@@ -162,6 +163,13 @@ class MockQuotaManager : public QuotaManager {
 
   void SetDisableDatabase(bool disable) { db_disabled_ = disable; }
 
+  // If `HoldBackResults()` is called, then calls to `UpdateOrCreateBucket()`
+  // won't be run until `ReleaseResults()` is called. This is useful because in
+  // production code, the QuotaManager runs asynchronously, whereas `this` mock
+  // quota manager typically runs synchronously.
+  void HoldBackResults() { delay_results_ = true; }
+  void ReleaseResults();
+
  protected:
   ~MockQuotaManager() override;
 
@@ -235,6 +243,9 @@ class MockQuotaManager : public QuotaManager {
   std::map<const blink::StorageKey, int> write_error_tracker_;
 
   bool db_disabled_ = false;
+
+  bool delay_results_ = false;
+  std::list<base::ScopedClosureRunner> delayed_results_;
 
   base::WeakPtrFactory<MockQuotaManager> weak_factory_{this};
 };
