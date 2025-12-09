@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -376,7 +377,7 @@ bool WEBPImageDecoder::UpdateDemuxer() {
         is_lossy_not_animated_no_alpha_ = true;
         static constexpr char kType[] = "WebP";
         update_bpp_histogram_callback_ =
-            base::BindOnce(&UpdateBppHistogram<kType>);
+            blink::BindOnce(&UpdateBppHistogram<kType>);
       }
     }
   }

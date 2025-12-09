@@ -15,7 +15,6 @@
 #include "base/barrier_closure.h"
 #include "base/bit_cast.h"
 #include "base/compiler_specific.h"
-#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
@@ -24,6 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
@@ -1462,9 +1463,10 @@ TEST(CrabbyStaticAVIFTests, ParallelDecoding) {
       base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&event)));
 
   for (size_t i = 0; i < n_decodes; ++i) {
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        base::BindOnce(DecodeTask, base::Unretained(&data), &barrier));
+    PostCrossThreadTask(
+        *base::ThreadPool::CreateSequencedTaskRunner({}), FROM_HERE,
+        CrossThreadBindOnce(&DecodeTask, CrossThreadUnretained(&data),
+                            CrossThreadUnretained(&barrier)));
   }
 
   event.Wait();

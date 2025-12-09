@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace blink {
@@ -196,7 +197,7 @@ TEST(RWBufferTest, HasNoSnapshots) {
 }
 
 TEST(RWBufferTest, FunctionConstructorSmall) {
-  RWBuffer buffer(base::BindOnce(&write_into_buffer, 1), 20);
+  RWBuffer buffer(blink::BindOnce(&write_into_buffer, 1), 20);
 
   EXPECT_EQ(20U, buffer.size());
 
@@ -206,7 +207,7 @@ TEST(RWBufferTest, FunctionConstructorSmall) {
 }
 
 TEST(RWBufferTest, FunctionConstructorLarge) {
-  RWBuffer buffer(base::BindOnce(&write_into_buffer, 1000), 1000 * 26);
+  RWBuffer buffer(blink::BindOnce(&write_into_buffer, 1000), 1000 * 26);
 
   EXPECT_EQ(1000U * 26, buffer.size());
 
