@@ -45,7 +45,6 @@ DesktopMediaPickerController::~DesktopMediaPickerController() = default;
 void DesktopMediaPickerController::Show(
     const Params& params,
     const std::vector<DesktopMediaList::Type>& sources,
-    DesktopMediaList::WebContentsFilter includable_web_contents_filter,
     DoneCallback done_callback) {
   DCHECK(!base::Contains(sources, DesktopMediaList::Type::kNone));
   DCHECK(!done_callback_);
@@ -57,7 +56,7 @@ void DesktopMediaPickerController::Show(
 
   // Keep same order as the input |sources| and avoid duplicates.
   source_lists_ = picker_factory_->CreateMediaList(
-      sources, params.web_contents, std::move(includable_web_contents_filter));
+      sources, params.web_contents, params.includable_web_contents_filter);
   if (source_lists_.empty()) {
     OnPickerDialogResults("At least one source type must be specified.", {});
     return;

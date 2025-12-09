@@ -176,12 +176,14 @@ void ScreenshotDataCollector::CollectDataAndDetectPII(
   picker_params.app_name = name;
   picker_params.target_name = name;
   picker_params.request_audio = false;
+  picker_params.includable_web_contents_filter =
+      std::move(includable_web_contents_filter);
   picker_controller_ = std::make_unique<DesktopMediaPickerController>(
       picker_factory_for_testing_);
   picker_params.restricted_by_policy =
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   picker_controller_->Show(picker_params, std::move(media_types),
-                           includable_web_contents_filter, std::move(callback));
+                           std::move(callback));
 }
 
 void ScreenshotDataCollector::OnSourceSelected(const std::string& err,

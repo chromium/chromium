@@ -98,13 +98,12 @@ void GlicScreenshotCapturer::CaptureScreenshot(
   picker_params.target_name = name;
   picker_params.request_audio = false;
   picker_params.restricted_by_policy = false;
-  DesktopMediaList::WebContentsFilter includable_web_contents_filter =
+  picker_params.includable_web_contents_filter =
       base::BindRepeating([](content::WebContents* wc) { return false; });
   DesktopMediaPickerController::DoneCallback source_selected_callback =
       base::BindOnce(&GlicScreenshotCapturer::OnSourceSelected,
                      weak_ptr_factory_.GetWeakPtr());
   picker_controller_->Show(picker_params, {DesktopMediaList::Type::kScreen},
-                           includable_web_contents_filter,
                            std::move(source_selected_callback));
 }
 

@@ -117,6 +117,10 @@ class DesktopMediaPicker {
     // picker.
     blink::mojom::PreferredDisplaySurface preferred_display_surface =
         blink::mojom::PreferredDisplaySurface::NO_PREFERENCE;
+    // `includable_web_contents_filter` is used to restrict any
+    // DesktopMediaList::Type::kWebContents sources. It should return true if a
+    // given WebContents is a valid target, or false if it should be excluded.
+    DesktopMediaList::WebContentsFilter includable_web_contents_filter;
 #if BUILDFLAG(IS_ANDROID)
     // On Android, this indicates that this is a request to share the current
     // tab.
@@ -128,8 +132,6 @@ class DesktopMediaPicker {
     // On Android, this indicates the allowed capture level for this request.
     AllowedScreenCaptureLevel allowed_capture_level =
         AllowedScreenCaptureLevel::kUnrestricted;
-    // On Android, this filter is used to filter the tabs that can be captured.
-    DesktopMediaList::WebContentsFilter includable_web_contents_filter;
 #endif
     // track the result of the picker, because the behavior with the
     // Extension API is different, and could therefore lead to mismeasurement.

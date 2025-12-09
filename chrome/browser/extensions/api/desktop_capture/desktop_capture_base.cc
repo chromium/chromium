@@ -175,6 +175,8 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_params.exclude_system_audio = exclude_system_audio;
   picker_params.suppress_local_audio_playback =
       suppress_local_audio_playback_intended;
+  picker_params.includable_web_contents_filter =
+      std::move(includable_web_contents_filter);
   // TODO(crbug.com/405218400): Add Android-specific parameters here, like
   // Params::exclude_self_browser_surface.
   picker_controller_ =
@@ -182,7 +184,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_params.restricted_by_policy =
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   picker_controller_->Show(picker_params, std::move(media_types),
-                           includable_web_contents_filter, std::move(callback));
+                           std::move(callback));
   return RespondLater();
 }
 
