@@ -102,8 +102,10 @@ class ActiveDevicesMediaCoordinatorTestParameterized
     web_contents_tester_->SetMediaCaptureRawDeviceIdsOpened(
         media_stream_type_,
         std::vector(open_device_ids_.begin(), open_device_ids_.end()));
-    coordinator_->OnRequestUpdate(rfh_id.child_id, rfh_id.frame_routing_id,
-                                  media_stream_type_, state);
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    coordinator_->OnRequestUpdate(rfh_id.child_id.GetUnsafeValue(),
+                                  rfh_id.frame_routing_id, media_stream_type_,
+                                  state);
 
     // Wait until the coordinator actually gets the new list of active devices.
     WaitForGetMediaCaptureRawDeviceIdsOpened();

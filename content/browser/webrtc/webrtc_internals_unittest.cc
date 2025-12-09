@@ -168,7 +168,7 @@ class WebRtcInternalsTest : public testing::Test {
     ASSERT_TRUE(actual_data->is_dict());
     const base::Value::Dict& dict = actual_data->GetDict();
 
-    VerifyInt(dict, "rid", frame_id.child_id);
+    VerifyInt(dict, "rid", frame_id.child_id.GetUnsafeValue());
     VerifyInt(dict, "pid", pid);
     // origin/url is the empty string in tests.
     VerifyString(dict, "origin", "");
@@ -189,7 +189,7 @@ class WebRtcInternalsTest : public testing::Test {
     ASSERT_TRUE(actual_data->is_dict());
     const base::Value::Dict& dict = actual_data->GetDict();
 
-    VerifyInt(dict, "rid", frame_id.child_id);
+    VerifyInt(dict, "rid", frame_id.child_id.GetUnsafeValue());
     VerifyInt(dict, "pid", pid);
     VerifyInt(dict, "request_id", request_id);
     VerifyString(dict, "stream_id", stream_id);
@@ -206,7 +206,7 @@ class WebRtcInternalsTest : public testing::Test {
     ASSERT_TRUE(actual_data->is_dict());
     const base::Value::Dict& dict = actual_data->GetDict();
 
-    VerifyInt(dict, "rid", frame_id.child_id);
+    VerifyInt(dict, "rid", frame_id.child_id.GetUnsafeValue());
     VerifyInt(dict, "pid", pid);
     VerifyInt(dict, "request_id", request_id);
     VerifyString(dict, "error", error);
@@ -318,7 +318,7 @@ TEST_F(WebRtcInternalsTest, SendAddPeerConnectionUpdate) {
   ASSERT_TRUE(observer.event_data()->is_dict());
   const base::Value::Dict& dict = observer.event_data()->GetDict();
 
-  VerifyInt(dict, "rid", kFrameId.child_id);
+  VerifyInt(dict, "rid", kFrameId.child_id.GetUnsafeValue());
   VerifyInt(dict, "lid", kLid);
   VerifyInt(dict, "pid", kPid);
   VerifyString(dict, "url", kUrl);
@@ -346,7 +346,7 @@ TEST_F(WebRtcInternalsTest, SendRemovePeerConnectionUpdate) {
   ASSERT_TRUE(observer.event_data()->is_dict());
   const base::Value::Dict& dict = observer.event_data()->GetDict();
 
-  VerifyInt(dict, "rid", kFrameId.child_id);
+  VerifyInt(dict, "rid", kFrameId.child_id.GetUnsafeValue());
   VerifyInt(dict, "lid", kLid);
 
   webrtc_internals.RemoveObserver(&observer);
@@ -374,7 +374,7 @@ TEST_F(WebRtcInternalsTest, SendUpdatePeerConnectionUpdate) {
   ASSERT_TRUE(observer.event_data()->is_dict());
   const base::Value::Dict& dict = observer.event_data()->GetDict();
 
-  VerifyInt(dict, "rid", kFrameId.child_id);
+  VerifyInt(dict, "rid", kFrameId.child_id.GetUnsafeValue());
   VerifyInt(dict, "lid", kLid);
   VerifyString(dict, "type", update_type);
   VerifyString(dict, "value", update_value);
@@ -590,7 +590,7 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   ASSERT_TRUE(list.begin()->is_dict());
   const base::Value::Dict& dict = list.begin()->GetDict();
 
-  VerifyInt(dict, "rid", kFrameId.child_id);
+  VerifyInt(dict, "rid", kFrameId.child_id.GetUnsafeValue());
   VerifyInt(dict, "lid", kLid);
   VerifyInt(dict, "pid", kPid);
   VerifyString(dict, "url", kUrl);
@@ -630,7 +630,7 @@ TEST_F(WebRtcInternalsTest, OnAddStandardStats) {
   ASSERT_TRUE(observer.event_data()->is_dict());
   const base::Value::Dict& dict = observer.event_data()->GetDict();
 
-  VerifyInt(dict, "rid", kFrameId.child_id);
+  VerifyInt(dict, "rid", kFrameId.child_id.GetUnsafeValue());
   VerifyInt(dict, "lid", kLid);
   VerifyList(dict, "reports", list);
 

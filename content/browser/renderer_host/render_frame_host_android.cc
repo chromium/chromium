@@ -110,10 +110,12 @@ RenderFrameHostAndroid::GetJavaObject() {
                                   ->GetBrowserContext()
                                   ->IsOffTheRecord();
     const GlobalRenderFrameHostId rfh_id = render_frame_host_->GetGlobalId();
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     ScopedJavaLocalRef<jobject> local_ref = Java_RenderFrameHostImpl_create(
         env, reinterpret_cast<intptr_t>(this),
         render_frame_host_->delegate()->GetJavaRenderFrameHostDelegate(),
-        is_incognito, rfh_id.child_id, rfh_id.frame_routing_id);
+        is_incognito, rfh_id.child_id.GetUnsafeValue(),
+        rfh_id.frame_routing_id);
     obj_ = JavaObjectWeakGlobalRef(env, local_ref);
     return local_ref;
   }

@@ -216,10 +216,11 @@ void DesktopCaptureChooseDesktopMediaFunctionBase::OnPickerDialogResults(
 
   std::string result;
   if (source.type != DesktopMediaID::TYPE_NONE) {
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     result = content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-        render_frame_host_id.child_id, render_frame_host_id.frame_routing_id,
-        url::Origin::Create(origin), source,
-        content::kRegistryStreamTypeDesktop);
+        render_frame_host_id.child_id.GetUnsafeValue(),
+        render_frame_host_id.frame_routing_id, url::Origin::Create(origin),
+        source, content::kRegistryStreamTypeDesktop);
   }
 
   Options options;

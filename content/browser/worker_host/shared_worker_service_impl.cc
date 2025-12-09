@@ -169,12 +169,13 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   }
 
   RenderFrameHost* main_frame = render_frame_host->frame_tree()->GetMainFrame();
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   if (!GetContentClient()->browser()->AllowSharedWorker(
           info->url, render_frame_host->ComputeSiteForCookies(),
           main_frame->GetLastCommittedOrigin(), info->options->name,
           storage_key, info->same_site_cookies,
           render_frame_host->GetBrowserContext(),
-          client_render_frame_host_id.child_id,
+          client_render_frame_host_id.child_id.GetUnsafeValue(),
           client_render_frame_host_id.frame_routing_id)) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;

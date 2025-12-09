@@ -2798,7 +2798,7 @@ class SafeBrowsingBlockingPageIDNTest
     resource.url = request_url;
     resource.threat_type = GetParam();
     resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
-        CreateForRenderFrameToken(primary_main_frame_id.child_id,
+        CreateForRenderFrameToken(primary_main_frame_id.child_id.value(),
                                   primary_main_frame->GetFrameToken().value());
     resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 

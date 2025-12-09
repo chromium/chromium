@@ -258,7 +258,7 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
         GURL(url),
         security_interstitials::UnsafeResourceLocator::
             CreateForRenderFrameToken(
-                primary_main_frame->GetGlobalId().child_id,
+                primary_main_frame->GetGlobalId().child_id.value(),
                 primary_main_frame->GetFrameToken().value()),
         /*navigation_id=*/std::nullopt,
         SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
@@ -300,7 +300,8 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
     security_interstitials::UnsafeResource resource;
     resource.url = GURL(url);
     resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
-        CreateForRenderFrameToken(frame_id.child_id, frame_token.value());
+        CreateForRenderFrameToken(frame_id.child_id.value(),
+                                  frame_token.value());
     resource.threat_type = threat_type;
     return resource;
   }
@@ -647,7 +648,7 @@ TEST_F(SafeBrowsingUIManagerTest, InvalidRenderFrameHostId) {
   content::GlobalRenderFrameHostId invalid_rfh_id;
   resource.rfh_locator =
       security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
-          invalid_rfh_id.child_id, base::UnguessableToken::Create());
+          invalid_rfh_id.child_id.value(), base::UnguessableToken::Create());
   ASSERT_FALSE(unsafe_resource_util::GetWebContentsForResource(resource));
 
   EXPECT_FALSE(IsAllowlisted(resource));

@@ -310,7 +310,7 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
     resource->rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-        primary_main_frame_id.child_id,
+        primary_main_frame_id.child_id.value(),
         primary_main_frame->GetFrameToken().value());
     resource->is_async_check = is_async_check;
   }

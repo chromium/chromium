@@ -328,7 +328,7 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   resource.url = request_url;
   resource.threat_type = threat_type;
   resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-      primary_main_frame_id.child_id,
+      primary_main_frame_id.child_id.value(),
       primary_main_frame->GetFrameToken().value());
   resource.threat_source =
       g_browser_process->safe_browsing_service()
@@ -388,7 +388,7 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
   resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-      primary_main_frame_id.child_id,
+      primary_main_frame_id.child_id.value(),
       primary_main_frame->GetFrameToken().value());
   resource.threat_source =
       g_browser_process->safe_browsing_service()
@@ -477,7 +477,7 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   resource.url = request_url;
   resource.threat_type = threat_type;
   resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-      primary_main_frame_id.child_id,
+      primary_main_frame_id.child_id.value(),
       primary_main_frame->GetFrameToken().value());
   resource.threat_source =
       g_browser_process->safe_browsing_service()

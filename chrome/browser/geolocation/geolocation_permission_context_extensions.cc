@@ -87,9 +87,10 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
             extensions::mojom::APIPermissionID::kGeolocation, extension,
             web_contents->GetPrimaryMainFrame())) {
       // Make sure the extension is in the calling process.
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       if (extensions::ProcessMap::Get(profile_)->Contains(
-              extension->id(),
-              request_id.global_render_frame_host_id().child_id)) {
+              extension->id(), request_id.global_render_frame_host_id()
+                                   .child_id.GetUnsafeValue())) {
         *permission_set = true;
         *new_permission = true;
         return true;

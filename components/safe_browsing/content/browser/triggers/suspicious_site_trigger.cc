@@ -98,7 +98,7 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
   resource.url = primary_rfh.GetLastCommittedURL();
   resource.rfh_locator =
       security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
-          primary_rfh_id.child_id, primary_rfh.GetFrameToken().value());
+          primary_rfh_id.child_id.value(), primary_rfh.GetFrameToken().value());
 
   TriggerManagerReason reason;
   if (!trigger_manager_->StartCollectingThreatDetailsWithReason(

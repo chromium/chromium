@@ -411,10 +411,11 @@ void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
     if (tab) {
       auto* printing_context_delegate = static_cast<PrintingContextDelegate*>(
           printing_context_delegate_.get());
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       PrintingContextAndroid::SetPendingPrint(
           web_contents->GetTopLevelNativeWindow(),
           GetPrintableForTab(tab->GetJavaObject()),
-          printing_context_delegate->rfh_id().child_id,
+          printing_context_delegate->rfh_id().child_id.GetUnsafeValue(),
           printing_context_delegate->rfh_id().frame_routing_id);
     }
   }

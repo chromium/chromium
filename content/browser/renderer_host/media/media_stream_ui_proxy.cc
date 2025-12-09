@@ -109,8 +109,9 @@ class MediaStreamUIProxy::Core {
                                         bool captured_surface_control_active);
   void ProcessStateChangeFromUI(const DesktopMediaID& media,
                                 blink::mojom::MediaStreamStateChange);
-  RenderFrameHostDelegate* GetRenderFrameHostDelegate(int render_process_id,
-                                                      int render_frame_id);
+  RenderFrameHostDelegate* GetRenderFrameHostDelegate(
+      ChildProcessId render_process_id,
+      int render_frame_id);
 
   base::WeakPtr<MediaStreamUIProxy> proxy_;
   std::unique_ptr<MediaStreamUI> ui_;
@@ -144,8 +145,10 @@ void MediaStreamUIProxy::Core::RequestAccess(
     std::unique_ptr<MediaStreamRequest> request) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   RenderFrameHostDelegate* render_delegate = GetRenderFrameHostDelegate(
-      request->render_process_id, request->render_frame_id);
+      ChildProcessId::FromUnsafeValue(request->render_process_id),
+      request->render_frame_id);
 
   // Tab may have gone away, or has no delegate from which to request access.
   if (!render_delegate) {
@@ -358,7 +361,7 @@ void MediaStreamUIProxy::Core::ProcessStateChangeFromUI(
 }
 
 RenderFrameHostDelegate* MediaStreamUIProxy::Core::GetRenderFrameHostDelegate(
-    int render_process_id,
+    ChildProcessId render_process_id,
     int render_frame_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (test_render_delegate_)

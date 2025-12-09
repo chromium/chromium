@@ -12,7 +12,8 @@ namespace content {
 
 void GlobalRenderFrameHostId::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {
-  proto->set_process_id(child_id);
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  proto->set_process_id(child_id.GetUnsafeValue());
   proto->set_routing_id(frame_routing_id);
 }
 

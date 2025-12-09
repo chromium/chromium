@@ -355,6 +355,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   static RenderFrameHostImpl* FromID(GlobalRenderFrameHostId id);
   static RenderFrameHostImpl* FromID(int process_id, int routing_id);
+  static RenderFrameHostImpl* FromID(ChildProcessId process_id, int routing_id);
   // Returns the `RenderFrameHostImpl` with the given `blink::LocalFrameToken`,
   // or `nullptr` if no such `RenderFrameHostImpl` exists.
   //

@@ -56,7 +56,10 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
     GURL url;
     GlobalRenderFrameHostId frame_id;
     bool is_worker;
-    int process_id() const { return frame_id.child_id; }
+    int process_id() const {
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+      return frame_id.child_id.GetUnsafeValue();
+    }
   };
 
   // Creates a new FileSystemAccessEntryPtr from the path to a file. Assumes the

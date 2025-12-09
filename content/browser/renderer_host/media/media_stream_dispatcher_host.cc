@@ -511,8 +511,10 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
   }
 
   MediaDeviceSaltAndOrigin salt_and_origin = std::move(*ui_check_result);
-  if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id_.child_id,
-                                           salt_and_origin.origin())) {
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  if (!MediaStreamManager::IsOriginAllowed(
+          render_frame_host_id_.child_id.GetUnsafeValue(),
+          salt_and_origin.origin())) {
     std::move(callback).Run(MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
                             /*label=*/std::string(),
                             /*stream_devices_set=*/nullptr,
@@ -607,8 +609,10 @@ void MediaStreamDispatcherHost::DoOpenDevice(
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id_.child_id,
-                                           salt_and_origin.origin())) {
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  if (!MediaStreamManager::IsOriginAllowed(
+          render_frame_host_id_.child_id.GetUnsafeValue(),
+          salt_and_origin.origin())) {
     std::move(callback).Run(false /* success */, std::string(),
                             blink::MediaStreamDevice());
     return;
@@ -633,8 +637,9 @@ void MediaStreamDispatcherHost::SetCapturingLinkSecured(
     bool is_secure) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   media_stream_manager_->SetCapturingLinkSecured(
-      render_frame_host_id_.child_id,
+      render_frame_host_id_.child_id.GetUnsafeValue(),
       session_id.value_or(base::UnguessableToken()), type, is_secure);
 }
 
@@ -806,8 +811,10 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
     GetOpenDeviceCallback callback,
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id_.child_id,
-                                           salt_and_origin.origin())) {
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  if (!MediaStreamManager::IsOriginAllowed(
+          render_frame_host_id_.child_id.GetUnsafeValue(),
+          salt_and_origin.origin())) {
     std::move(callback).Run(MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
                             nullptr);
     return;
@@ -872,7 +879,7 @@ MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
 }
 
 void MediaStreamDispatcherHost::ReceivedBadMessage(
-    int render_process_id,
+    ChildProcessId render_process_id,
     bad_message::BadMessageReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -884,7 +891,7 @@ void MediaStreamDispatcherHost::ReceivedBadMessage(
 }
 
 void MediaStreamDispatcherHost::SetBadMessageCallbackForTesting(
-    base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+    base::RepeatingCallback<void(ChildProcessId, bad_message::BadMessageReason)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!bad_message_callback_for_testing_);

@@ -77,7 +77,7 @@ class NfcPermissionContextTests : public content::RenderViewHostTestHarness {
 
   // A map between renderer child id and a pair represending the bridge id and
   // whether the requested permission was allowed.
-  std::map<int,
+  std::map<content::ChildProcessId,
            std::pair<permissions::PermissionRequestID::RequestLocalId, bool>>
       responses_;
 };
@@ -119,11 +119,11 @@ void NfcPermissionContextTests::CheckPermissionMessageSentInternal(
     MockRenderProcessHost* process,
     int request_id,
     bool allowed) {
-  ASSERT_EQ(responses_.count(process->GetDeprecatedID()), 1U);
+  ASSERT_EQ(responses_.count(process->GetID()), 1U);
   EXPECT_EQ(permissions::PermissionRequestID::RequestLocalId(request_id),
-            responses_[process->GetDeprecatedID()].first);
-  EXPECT_EQ(allowed, responses_[process->GetDeprecatedID()].second);
-  responses_.erase(process->GetDeprecatedID());
+            responses_[process->GetID()].first);
+  EXPECT_EQ(allowed, responses_[process->GetID()].second);
+  responses_.erase(process->GetID());
 }
 
 void NfcPermissionContextTests::SetUp() {

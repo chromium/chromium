@@ -689,7 +689,7 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
   resource.url = web_contents->GetLastCommittedURL();
   resource.rfh_locator =
       security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
-          primary_main_frame_id.child_id,
+          primary_main_frame_id.child_id.value(),
           primary_main_frame->GetFrameToken().value());
   resource.token = token;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =

@@ -277,8 +277,8 @@ std::string GetGenerateStreamsLogString(
   return base::StringPrintf(
       "GenerateStreams({render_process_id=%d}, {render_frame_id=%d}, "
       "{requester_id=%d}, {page_request_id=%d})",
-      render_frame_host_id.child_id, render_frame_host_id.frame_routing_id,
-      requester_id, page_request_id);
+      render_frame_host_id.child_id.value(),
+      render_frame_host_id.frame_routing_id, requester_id, page_request_id);
 }
 
 std::string GetOpenDeviceLogString(GlobalRenderFrameHostId render_frame_host_id,
@@ -289,9 +289,9 @@ std::string GetOpenDeviceLogString(GlobalRenderFrameHostId render_frame_host_id,
   return base::StringPrintf(
       "OpenDevice({render_process_id=%d}, {render_frame_id=%d}, "
       "{requester_id=%d}, {page_request_id=%d}, {device_id=%s}, {type=%s})",
-      render_frame_host_id.child_id, render_frame_host_id.frame_routing_id,
-      requester_id, page_request_id, device_id.c_str(),
-      StreamTypeToString(type));
+      render_frame_host_id.child_id.value(),
+      render_frame_host_id.frame_routing_id, requester_id, page_request_id,
+      device_id.c_str(), StreamTypeToString(type));
 }
 
 std::string GetStopStreamDeviceLogString(
@@ -302,8 +302,9 @@ std::string GetStopStreamDeviceLogString(
   return base::StringPrintf(
       "StopStreamDevice({render_process_id=%d}, {render_frame_id=%d}, "
       "{requester_id=%d}, {device_id=%s}, {session_id=%s})",
-      render_frame_host_id.child_id, render_frame_host_id.frame_routing_id,
-      requester_id, device_id.c_str(), session_id.ToString().c_str());
+      render_frame_host_id.child_id.value(),
+      render_frame_host_id.frame_routing_id, requester_id, device_id.c_str(),
+      session_id.ToString().c_str());
 }
 
 void SendLogMessage(const std::string& message) {
@@ -371,9 +372,10 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
         case media::FakeVideoCaptureDevice::DisplayMediaType::BROWSER:
           desktop_media_type = DesktopMediaID::TYPE_WEB_CONTENTS;
           display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
-          web_contents_id = captured_tab_id.value_or(
-              WebContentsMediaCaptureId{render_frame_host_id.child_id,
-                                        render_frame_host_id.frame_routing_id});
+          // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+          web_contents_id = captured_tab_id.value_or(WebContentsMediaCaptureId{
+              render_frame_host_id.child_id.GetUnsafeValue(),
+              render_frame_host_id.frame_routing_id});
           break;
       }
     }
@@ -396,9 +398,10 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
     case blink::mojom::PreferredDisplaySurface::BROWSER:
       desktop_media_type = DesktopMediaID::TYPE_WEB_CONTENTS;
       display_surface = media::mojom::DisplayCaptureSurfaceType::BROWSER;
-      web_contents_id = captured_tab_id.value_or(
-          WebContentsMediaCaptureId{render_frame_host_id.child_id,
-                                    render_frame_host_id.frame_routing_id});
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+      web_contents_id = captured_tab_id.value_or(WebContentsMediaCaptureId{
+          render_frame_host_id.child_id.GetUnsafeValue(),
+          render_frame_host_id.frame_routing_id});
       break;
   }
   DesktopMediaID media_id(desktop_media_type, desktop_media_id_id,
@@ -545,7 +548,7 @@ class MediaStreamManager::DeviceRequest {
     SendLogMessage(base::StringPrintf(
         "DR::DeviceRequest({requesting_process_id=%d}, "
         "{requesting_frame_id=%d}, {requester_id=%d}, {request_type=%s})",
-        requesting_render_frame_host_id.child_id,
+        requesting_render_frame_host_id.child_id.value(),
         requesting_render_frame_host_id.frame_routing_id, requester_id,
         RequestTypeToString(request_type)));
   }
@@ -601,8 +604,9 @@ class MediaStreamManager::DeviceRequest {
         requester_id, base::JoinString(requested_audio_device_ids, ",").c_str(),
         base::JoinString(requested_video_device_ids, "").c_str()));
     target_render_frame_host_id_ = requesting_render_frame_host_id;
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     ui_request_ = std::make_unique<MediaStreamRequest>(
-        requesting_render_frame_host_id.child_id,
+        requesting_render_frame_host_id.child_id.GetUnsafeValue(),
         requesting_render_frame_host_id.frame_routing_id, page_request_id,
         salt_and_origin.origin(), user_gesture, request_type_,
         requested_audio_device_ids, requested_video_device_ids, audio_type_,
@@ -629,8 +633,9 @@ class MediaStreamManager::DeviceRequest {
       GlobalRenderFrameHostId target_render_frame_host_id) {
     DCHECK(!ui_request_);
     target_render_frame_host_id_ = target_render_frame_host_id;
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     ui_request_ = std::make_unique<MediaStreamRequest>(
-        target_render_frame_host_id_.child_id,
+        target_render_frame_host_id_.child_id.GetUnsafeValue(),
         target_render_frame_host_id_.frame_routing_id, page_request_id,
         salt_and_origin.origin(), user_gesture, request_type_,
         std::vector<std::string>{}, std::vector<std::string>{}, audio_type_,
@@ -676,15 +681,17 @@ class MediaStreamManager::DeviceRequest {
     if (stream_type == MediaStreamType::NUM_MEDIA_TYPES) {
       for (int i = static_cast<int>(MediaStreamType::NO_SERVICE) + 1;
            i < static_cast<int>(MediaStreamType::NUM_MEDIA_TYPES); ++i) {
+        // TODO(crbug.com/379869738) Remove GetUnsafeValue.
         media_observer->OnMediaRequestStateChanged(
-            target_render_frame_host_id_.child_id,
+            target_render_frame_host_id_.child_id.GetUnsafeValue(),
             target_render_frame_host_id_.frame_routing_id, page_request_id,
             salt_and_origin.origin().GetURL(), static_cast<MediaStreamType>(i),
             new_state);
       }
     } else {
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       media_observer->OnMediaRequestStateChanged(
-          target_render_frame_host_id_.child_id,
+          target_render_frame_host_id_.child_id.GetUnsafeValue(),
           target_render_frame_host_id_.frame_routing_id, page_request_id,
           salt_and_origin.origin().GetURL(), stream_type, new_state);
     }
@@ -752,8 +759,9 @@ class MediaStreamManager::DeviceRequest {
       return;
     }
 
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     media_observer->OnSetCapturingLinkSecured(
-        target_render_frame_host_id_.child_id,
+        target_render_frame_host_id_.child_id.GetUnsafeValue(),
         target_render_frame_host_id_.frame_routing_id, page_request_id,
         video_type_, is_secure);
   }
@@ -2796,8 +2804,10 @@ DesktopMediaID MediaStreamManager::ResolveTabCaptureDeviceIdOnUIThread(
     const GURL& origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Resolve DesktopMediaID for the specified device id.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   return DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
-      capture_device_id, requesting_render_frame_host_id.child_id,
+      capture_device_id,
+      requesting_render_frame_host_id.child_id.GetUnsafeValue(),
       requesting_render_frame_host_id.frame_routing_id,
       url::Origin::Create(origin), kRegistryStreamTypeTab);
 }
@@ -3067,12 +3077,14 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
   // owned by BrowserMainLoop and so outlives the IO thread.
   // TODO(crbug.com/40833062): Avoid using PTZ permission checks for non-gUM
   // tracks.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&MediaDevicesPermissionChecker::
-                         HasPanTiltZoomPermissionGrantedOnUIThread,
-                     request->requesting_render_frame_host_id.child_id,
-                     request->requesting_render_frame_host_id.frame_routing_id),
+      base::BindOnce(
+          &MediaDevicesPermissionChecker::
+              HasPanTiltZoomPermissionGrantedOnUIThread,
+          request->requesting_render_frame_host_id.child_id.GetUnsafeValue(),
+          request->requesting_render_frame_host_id.frame_routing_id),
       base::BindOnce(
           &MediaStreamManager::PanTiltZoomPermissionChecked,
           base::Unretained(this), label,
@@ -3101,12 +3113,14 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
   // owned by BrowserMainLoop and so outlives the IO thread.
   // TODO(crbug.com/40833063): Avoid this check once you have this permission
   // value from original context.
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&MediaDevicesPermissionChecker::
-                         HasPanTiltZoomPermissionGrantedOnUIThread,
-                     request->requesting_render_frame_host_id.child_id,
-                     request->requesting_render_frame_host_id.frame_routing_id),
+      base::BindOnce(
+          &MediaDevicesPermissionChecker::
+              HasPanTiltZoomPermissionGrantedOnUIThread,
+          request->requesting_render_frame_host_id.child_id.GetUnsafeValue(),
+          request->requesting_render_frame_host_id.frame_routing_id),
       base::BindOnce(
           &MediaStreamManager::PanTiltZoomPermissionChecked,
           base::Unretained(this), label,
@@ -4023,7 +4037,8 @@ void MediaStreamManager::SetCapturingLinkSecured(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   for (LabeledDeviceRequest& labeled_request : requests_) {
     DeviceRequest* request = labeled_request.second.get();
-    if (request->requesting_render_frame_host_id.child_id !=
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    if (request->requesting_render_frame_host_id.child_id.GetUnsafeValue() !=
         render_process_id) {
       continue;
     }

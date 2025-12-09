@@ -1921,7 +1921,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
       }
       resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
           CreateForRenderFrameToken(
-              primary_main_frame_id.child_id,
+              primary_main_frame_id.child_id.value(),
               primary_main_frame->GetFrameToken().value());
       if (!ui_manager_->IsAllowlisted(resource.url, resource.rfh_locator,
                                       resource.navigation_id,

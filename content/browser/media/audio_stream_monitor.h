@@ -54,7 +54,7 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
 
   // Called by the WebContentsImpl if |render_process_id| dies; used to clear
   // any outstanding poll callbacks.
-  void RenderProcessGone(int render_process_id);
+  void RenderProcessGone(ChildProcessId render_process_id);
 
   // Starts or stops monitoring respectively for the stream owned by the
   // specified renderer.  Safe to call from any thread.

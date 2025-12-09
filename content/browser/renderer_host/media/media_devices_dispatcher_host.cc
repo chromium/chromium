@@ -421,9 +421,10 @@ void MediaDevicesDispatcherHost::AuthorizationCompleted(
 std::unique_ptr<AudioOutputAuthorizationHandler>
 MediaDevicesDispatcherHost::CreateAuthorizationHandler() {
   CHECK_CURRENTLY_ON(BrowserThread::IO);
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   return std::make_unique<AudioOutputAuthorizationHandler>(
       media_stream_manager_->audio_system(), media_stream_manager_,
-      render_frame_host_id_.child_id);
+      render_frame_host_id_.child_id.GetUnsafeValue());
 }
 
 void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
@@ -810,7 +811,7 @@ void MediaDevicesDispatcherHost::FinalizeGetAudioInputCapabilities() {
 }
 
 void MediaDevicesDispatcherHost::ReceivedBadMessage(
-    int render_process_id,
+    ChildProcessId render_process_id,
     bad_message::BadMessageReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -822,7 +823,7 @@ void MediaDevicesDispatcherHost::ReceivedBadMessage(
 }
 
 void MediaDevicesDispatcherHost::SetBadMessageCallbackForTesting(
-    base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+    base::RepeatingCallback<void(ChildProcessId, bad_message::BadMessageReason)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!bad_message_callback_for_testing_);
@@ -831,7 +832,8 @@ void MediaDevicesDispatcherHost::SetBadMessageCallbackForTesting(
 
 void MediaDevicesDispatcherHost::SetCaptureHandleConfigCallbackForTesting(
     base::RepeatingCallback<
-        void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback) {
+        void(ChildProcessId, int, blink::mojom::CaptureHandleConfigPtr)>
+        callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!capture_handle_config_callback_for_testing_);
   capture_handle_config_callback_for_testing_ = std::move(callback);

@@ -1765,10 +1765,13 @@ void WebTestControlHost::WebTestRuntimeFlagsChanged(
   // need to send it once per process so we build a list of the first
   // frame we find per process.
   for (auto& item : web_test_render_frame_map_) {
-    if (item.first.child_id == render_process_id) {
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    if (item.first.child_id.GetUnsafeValue() == render_process_id) {
       continue;
     }
-    process_to_frame_map.emplace(item.first.child_id, item.second.get());
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    process_to_frame_map.emplace(item.first.child_id.GetUnsafeValue(),
+                                 item.second.get());
   }
 
   // Then we send the new flags to those frames.

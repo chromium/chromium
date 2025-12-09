@@ -199,8 +199,10 @@ void RecordUmaSelection(content::GlobalRenderFrameHostId capturer_global_id,
       // Whether the current tab was selected. Note that this can happen
       // through a non-explicit selection of the current tab through the
       // list of all available tabs.
+
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       const bool current_tab_selected =
-          capturer_global_id.child_id ==
+          capturer_global_id.child_id.GetUnsafeValue() ==
               selected_media.web_contents_id.render_process_id &&
           capturer_global_id.frame_routing_id ==
               selected_media.web_contents_id.main_render_frame_id;

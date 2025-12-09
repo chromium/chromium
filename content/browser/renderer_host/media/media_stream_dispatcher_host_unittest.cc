@@ -422,7 +422,8 @@ class MediaStreamDispatcherHostTest : public RenderViewHostTestHarness {
     std::move(callback).Run(salt_and_origin_);
   }
 
-  MOCK_METHOD2(MockOnBadMessage, void(int, bad_message::BadMessageReason));
+  MOCK_METHOD2(MockOnBadMessage,
+               void(ChildProcessId, bad_message::BadMessageReason));
 
  protected:
   std::unique_ptr<FakeMediaStreamUIProxy> CreateMockUI(bool expect_started) {
@@ -1521,7 +1522,8 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
        NoRenderFrameHostMultiCaptureNotAllowed) {
   GlobalRenderFrameHostId main_rfh_global_id = global_rfh_id();
   // Use a wrong id
-  int main_render_process_id = main_rfh_global_id.child_id - 1;
+  auto main_render_process_id = ChildProcessId::FromUnsafeValue(
+      main_rfh_global_id.child_id.GetUnsafeValue() - 1);
   int render_frame_id = main_rfh_global_id.frame_routing_id - 1;
 
   base::test::TestFuture<GenerateStreamsUIThreadCheckResult> future;

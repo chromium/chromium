@@ -3238,7 +3238,7 @@ void ChromeContentBrowserClient::GuestPermissionRequestHelper(
     base::OnceCallback<void(bool)> callback,
     bool allow) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::map<int, int> process_map;
+  std::map<content::ChildProcessId, int> process_map;
   bool has_web_view_guest = false;
   // Record access to file system for potential display in UI.
   for (const auto& it : render_frames) {
@@ -3246,9 +3246,12 @@ void ChromeContentBrowserClient::GuestPermissionRequestHelper(
       continue;
     }
 
-    process_map.insert(std::pair<int, int>(it.child_id, it.frame_routing_id));
+    process_map.insert(std::pair<content::ChildProcessId, int>(
+        it.child_id, it.frame_routing_id));
 
-    if (extensions::WebViewRendererState::GetInstance()->IsGuest(it.child_id)) {
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    if (extensions::WebViewRendererState::GetInstance()->IsGuest(
+            it.child_id.GetUnsafeValue())) {
       has_web_view_guest = true;
     }
   }
@@ -3257,7 +3260,8 @@ void ChromeContentBrowserClient::GuestPermissionRequestHelper(
     return;
   }
   DCHECK_EQ(1U, process_map.size());
-  std::map<int, int>::const_iterator it = process_map.begin();
+  std::map<content::ChildProcessId, int>::const_iterator it =
+      process_map.begin();
 
   extensions::WebViewPermissionHelper* web_view_permission_helper =
       extensions::WebViewPermissionHelper::FromRenderFrameHostId(

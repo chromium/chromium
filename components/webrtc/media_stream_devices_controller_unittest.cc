@@ -204,9 +204,11 @@ class MediaStreamDevicesControllerTest : public testing::Test {
     base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
                            blink::mojom::StreamDevicesPtr>
         result_future;
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     webrtc::MediaStreamDevicesController::RequestPermissions(
         content::MediaStreamRequest{
-            /*render_process_id=*/render_frame_host_id_.child_id,
+            /*render_process_id=*/render_frame_host_id_.child_id
+                .GetUnsafeValue(),
             /*render_frame_id=*/render_frame_host_id_.frame_routing_id,
             /*page_request_id=*/0,
             /*url_origin=*/origin_,

@@ -137,7 +137,7 @@ std::ostream& operator<<(std::ostream& os, const FrameTextDumpResult& frame) {
              "event:%s rfh_id:(%d,%d) amp_frame:%s unique_navigation_id:%d "
              "contents:%s",
              TextDumpEventToString(frame.event()).c_str(),
-             frame.rfh_id().child_id, frame.rfh_id().frame_routing_id,
+             frame.rfh_id().child_id.value(), frame.rfh_id().frame_routing_id,
              base::ToString(frame.amp_frame()), frame.unique_navigation_id(),
              frame.utf8_contents().value_or("null").c_str());
 }

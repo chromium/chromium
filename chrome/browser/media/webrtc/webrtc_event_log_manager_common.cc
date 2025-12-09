@@ -885,7 +885,8 @@ BrowserContextId GetBrowserContextId(
   return reinterpret_cast<BrowserContextId>(browser_context);
 }
 
-BrowserContextId GetBrowserContextId(int render_process_id) {
+BrowserContextId GetBrowserContextId(
+    content::ChildProcessId render_process_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::RenderProcessHost* const host =

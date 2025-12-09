@@ -191,7 +191,7 @@ void ServiceWorkerContainerHostForClient::Register(
     // TODO(crbug.com/40364838): Validate that it is acceptable to have an
     // invalid global_frame_id for worker cases.
     global_frame_id = service_worker_client().GetRenderFrameHostId();
-    DCHECK(global_frame_id.child_id != ChildProcessHost::kInvalidUniqueID);
+    DCHECK(global_frame_id.child_id);
     DCHECK(global_frame_id.frame_routing_id != IPC::mojom::kRoutingIdNone);
   }
 

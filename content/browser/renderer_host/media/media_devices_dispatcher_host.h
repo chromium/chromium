@@ -182,19 +182,20 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
       const std::optional<std::string>& raw_id);
 
-  void ReceivedBadMessage(int render_process_id,
+  void ReceivedBadMessage(ChildProcessId render_process_id,
                           bad_message::BadMessageReason reason);
 
   using AuthorizationHandlerCreateFactoryCallback = base::RepeatingCallback<
       std::unique_ptr<AudioOutputAuthorizationHandler>()>;
 
   void SetBadMessageCallbackForTesting(
-      base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
-          callback);
+      base::RepeatingCallback<void(ChildProcessId,
+                                   bad_message::BadMessageReason)> callback);
 
   void SetCaptureHandleConfigCallbackForTesting(
       base::RepeatingCallback<
-          void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback);
+          void(ChildProcessId, int, blink::mojom::CaptureHandleConfigPtr)>
+          callback);
 
   void SetAuthorizationForTesting(
       AuthorizationHandlerCreateFactoryCallback authorization_handler);
@@ -220,10 +221,11 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 
   std::vector<uint32_t> subscription_ids_;
 
-  base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+  base::RepeatingCallback<void(ChildProcessId, bad_message::BadMessageReason)>
       bad_message_callback_for_testing_;
 
-  base::RepeatingCallback<void(int, int, blink::mojom::CaptureHandleConfigPtr)>
+  base::RepeatingCallback<
+      void(ChildProcessId, int, blink::mojom::CaptureHandleConfigPtr)>
       capture_handle_config_callback_for_testing_;
 
   // The callback to create AudioOutputAuthorizationHandler.

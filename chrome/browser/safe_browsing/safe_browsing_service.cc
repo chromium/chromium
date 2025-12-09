@@ -818,7 +818,7 @@ bool SafeBrowsingServiceImpl::IsURLAllowlisted(
       primary_main_frame->GetGlobalId();
   auto rfh_locator =
       security_interstitials::UnsafeResourceLocator::CreateForRenderFrameToken(
-          primary_main_frame_id.child_id,
+          primary_main_frame_id.child_id.value(),
           primary_main_frame->GetFrameToken().value());
   return ui_manager_->IsAllowlisted(url, rfh_locator,
                                     /*navigation_id=*/std::nullopt,

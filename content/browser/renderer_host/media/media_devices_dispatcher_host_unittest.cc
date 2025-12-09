@@ -308,10 +308,11 @@ class MediaDevicesDispatcherHostTest
   MOCK_METHOD0(MockAudioInputCapabilitiesCallback, void());
   MOCK_METHOD0(MockAllVideoInputDeviceFormatsCallback, void());
   MOCK_METHOD0(MockAvailableVideoInputDeviceFormatsCallback, void());
-  MOCK_METHOD2(MockOnBadMessage, void(int, bad_message::BadMessageReason));
+  MOCK_METHOD2(MockOnBadMessage,
+               void(ChildProcessId, bad_message::BadMessageReason));
 
   void OnCaptureHandleConfigAccepted(
-      int render_process_id,
+      ChildProcessId render_process_id,
       int render_frame_id,
       blink::mojom::CaptureHandleConfigPtr config) {
     ASSERT_TRUE(expected_set_capture_handle_config_.has_value());
@@ -326,7 +327,7 @@ class MediaDevicesDispatcherHostTest
   }
 
   void ExpectOnCaptureHandleConfigAccepted(
-      int render_process_id,
+      ChildProcessId render_process_id,
       int render_frame_id,
       blink::mojom::CaptureHandleConfigPtr config) {
     ASSERT_FALSE(expected_set_capture_handle_config_);
@@ -639,7 +640,7 @@ class MediaDevicesDispatcherHostTest
   std::vector<blink::WebMediaDeviceInfoArray> enumerated_devices_;
 
   struct ExpectedCaptureHandleConfig {
-    int render_process_id;
+    ChildProcessId render_process_id;
     int render_frame_id;
     blink::mojom::CaptureHandleConfigPtr config;
   };

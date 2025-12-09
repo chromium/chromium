@@ -213,12 +213,12 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   std::optional<bad_message::BadMessageReason>
   ValidateControlsForGenerateStreams(const blink::StreamControls& controls);
 
-  void ReceivedBadMessage(int render_process_id,
+  void ReceivedBadMessage(ChildProcessId render_process_id,
                           bad_message::BadMessageReason reason);
 
   void SetBadMessageCallbackForTesting(
-      base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
-          callback);
+      base::RepeatingCallback<void(ChildProcessId,
+                                   bad_message::BadMessageReason)> callback);
 
   static int next_requester_id_;
 
@@ -233,7 +233,7 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
                   BrowserThread::DeleteOnUIThread>
       web_contents_observer_;
 
-  base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+  base::RepeatingCallback<void(ChildProcessId, bad_message::BadMessageReason)>
       bad_message_callback_for_testing_;
 
   base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_{this};

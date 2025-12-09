@@ -692,8 +692,10 @@ void TaskManagerImpl::StopUpdating() {
 Task* TaskManagerImpl::GetTaskByRoute(
     content::GlobalRenderFrameHostId render_frame_host_id) const {
   for (const auto& task_provider : task_providers_) {
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     Task* task = task_provider->GetTaskOfUrlRequest(
-        render_frame_host_id.child_id, render_frame_host_id.frame_routing_id);
+        render_frame_host_id.child_id.GetUnsafeValue(),
+        render_frame_host_id.frame_routing_id);
     if (task)
       return task;
   }

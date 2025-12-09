@@ -227,7 +227,7 @@ void AsyncCheckTracker::MaybeDisplayBlockingPage(
   }
   auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
   resource.rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
-      primary_main_frame->GetGlobalId().child_id,
+      primary_main_frame->GetGlobalId().child_id.value(),
       primary_main_frame->GetFrameToken().value());
   // The callback has already been run when BaseUIManager attempts to
   // trigger post commit error page, so there is no need to run again.

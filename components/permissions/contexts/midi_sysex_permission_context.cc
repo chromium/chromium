@@ -34,9 +34,11 @@ void MidiSysexPermissionContext::UpdateTabContext(
   if (allowed) {
     content_settings->OnContentAllowed(ContentSettingsType::MIDI_SYSEX);
 
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     content::ChildProcessSecurityPolicy::GetInstance()
         ->GrantSendMidiSysExMessage(
-            request_data.id.global_render_frame_host_id().child_id);
+            request_data.id.global_render_frame_host_id()
+                .child_id.GetUnsafeValue());
   } else {
     content_settings->OnContentBlocked(ContentSettingsType::MIDI_SYSEX);
   }

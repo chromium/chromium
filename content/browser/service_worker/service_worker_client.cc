@@ -799,7 +799,8 @@ GlobalRenderFrameHostId ServiceWorkerClient::GetRenderFrameHostId() const {
 
 int ServiceWorkerClient::GetProcessId() const {
   if (IsContainerForWindowClient()) {
-    return GetRenderFrameHostId().child_id;
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    return GetRenderFrameHostId().child_id.GetUnsafeValue();
   }
   DCHECK(IsContainerForWorkerClient());
   return process_id_for_worker_client_;

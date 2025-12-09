@@ -31,7 +31,7 @@ PermissionRequestID& PermissionRequestID::operator=(
 
 std::string PermissionRequestID::ToString() const {
   return base::StringPrintf(
-      "%d,%d,%" PRId64, global_render_frame_host_id_.child_id,
+      "%d,%d,%" PRId64, global_render_frame_host_id_.child_id.value(),
       global_render_frame_host_id_.frame_routing_id, request_local_id_.value());
 }
 

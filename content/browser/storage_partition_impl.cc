@@ -2141,7 +2141,8 @@ void StoragePartitionImpl::OnAuthRequired(
     if (context.navigation_or_document()) {
       auto* render_frame_host = context.navigation_or_document()->GetDocument();
       if (render_frame_host) {
-        process_id = render_frame_host->GetGlobalId().child_id;
+        // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+        process_id = render_frame_host->GetGlobalId().child_id.GetUnsafeValue();
       }
     }
   } else if (context.type() == ContextType::kSharedOrServiceWorkerContext) {

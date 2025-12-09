@@ -2107,6 +2107,13 @@ RenderFrameHost* RenderFrameHost::FromID(const GlobalRenderFrameHostId& id) {
 // static
 RenderFrameHost* RenderFrameHost::FromID(int render_process_id,
                                          int render_frame_id) {
+  return RenderFrameHostImpl::FromID(GlobalRenderFrameHostId(
+      ChildProcessId::FromUnsafeValue(render_process_id), render_frame_id));
+}
+
+// static
+RenderFrameHost* RenderFrameHost::FromID(ChildProcessId render_process_id,
+                                         int render_frame_id) {
   return RenderFrameHostImpl::FromID(
       GlobalRenderFrameHostId(render_process_id, render_frame_id));
 }
@@ -2133,6 +2140,14 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromID(GlobalRenderFrameHostId id) {
 // static
 RenderFrameHostImpl* RenderFrameHostImpl::FromID(int render_process_id,
                                                  int render_frame_id) {
+  return RenderFrameHostImpl::FromID(GlobalRenderFrameHostId(
+      ChildProcessId::FromUnsafeValue(render_process_id), render_frame_id));
+}
+
+// static
+RenderFrameHostImpl* RenderFrameHostImpl::FromID(
+    ChildProcessId render_process_id,
+    int render_frame_id) {
   return RenderFrameHostImpl::FromID(
       GlobalRenderFrameHostId(render_process_id, render_frame_id));
 }
