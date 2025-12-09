@@ -12725,7 +12725,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "GeminiFullChatHistory"
+                        "GeminiFullChatHistory",
+                        "GeminiLoadingStateRedesign"
                     ]
                 }
             ]
@@ -12741,21 +12742,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GeminiImmediateOverlay"
-                    ]
-                }
-            ]
-        }
-    ],
-    "HeliosLoadingRedesign": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiLoadingStateRedesign"
                     ]
                 }
             ]
