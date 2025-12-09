@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 
+class OptimizationGuideKeyedService;
+
 // An interface for the class responsible for generating the action chips given
 // a tab.
 class ActionChipsGenerator {
@@ -27,7 +29,9 @@ class ActionChipsGenerator {
 // An implementation of the interface above.
 class ActionChipsGeneratorImpl : public ActionChipsGenerator {
  public:
-  explicit ActionChipsGeneratorImpl(const TabIdGenerator* tab_id_generator);
+  ActionChipsGeneratorImpl(
+      const TabIdGenerator* tab_id_generator,
+      OptimizationGuideKeyedService* optimization_guide_decider);
   ~ActionChipsGeneratorImpl() override;
 
   // Not copiable
@@ -41,6 +45,7 @@ class ActionChipsGeneratorImpl : public ActionChipsGenerator {
 
  private:
   raw_ptr<const TabIdGenerator> tab_id_generator_;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_decider_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_GENERATOR_H_

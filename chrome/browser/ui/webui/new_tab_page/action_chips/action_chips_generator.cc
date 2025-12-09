@@ -8,11 +8,13 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-data-view.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/search/ntp_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -38,14 +40,45 @@ enum class ChipsGenerationScenario {
   kDeepDive,
 };
 
+bool IsDeepDiveTab(const TabInterface& tab,
+                   OptimizationGuideKeyedService* optimization_guide_decider) {
+  if (!optimization_guide_decider) {
+    return false;
+  }
+
+  GURL url = tab.GetContents()->GetLastCommittedURL();
+  // To determine if a tab is a "deep dive" tab, we check two things:
+  // 1. The URL must NOT be on the `NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST`.
+  //    `CanApplyOptimization` returns `kTrue` if the URL is not on the
+  //    blocklist.
+  // 2. The URL must BE on the `NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST`.
+  //    `CanApplyOptimization` returns `kTrue` if the URL is on the allowlist.
+  // Both conditions must be met for the tab to be considered a deep dive tab.
+  bool allowed_by_blocklist =
+      optimization_guide_decider->CanApplyOptimization(
+          url,
+          optimization_guide::proto::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST,
+          /*optimization_metadata=*/nullptr) ==
+      optimization_guide::OptimizationGuideDecision::kTrue;
+  bool allowed_by_allowlist =
+      optimization_guide_decider->CanApplyOptimization(
+          url,
+          optimization_guide::proto::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST,
+          /*optimization_metadata=*/nullptr) ==
+      optimization_guide::OptimizationGuideDecision::kTrue;
+  return allowed_by_blocklist && allowed_by_allowlist;
+}
+
 ChipsGenerationScenario GetScenario(
-    base::optional_ref<const TabInterface> tab) {
+    base::optional_ref<const TabInterface> tab,
+    OptimizationGuideKeyedService* optimization_guide_decider) {
   if (ntp_features::kNtpNextShowStaticTextParam.Get() || !tab.has_value()) {
     return ChipsGenerationScenario::kStaticChipsOnly;
   }
-  // TODO: b:457512149 - Support the deep dive chips when the EDU tab check is
-  // in. For now, the param is used to enable the deep dive chips.
-  if (ntp_features::kNtpNextShowDeepDiveSuggestionsParam.Get()) {
+
+  // Check if deep dive parameter is enabled, and tab is in deep dive vertical.
+  if (ntp_features::kNtpNextShowDeepDiveSuggestionsParam.Get() &&
+      IsDeepDiveTab(*tab, optimization_guide_decider)) {
     return ChipsGenerationScenario::kDeepDive;
   }
   return ChipsGenerationScenario::kSteady;
@@ -127,8 +160,16 @@ std::vector<ActionChipPtr> CreateChipsForSteadyState(
 }  // namespace
 
 ActionChipsGeneratorImpl::ActionChipsGeneratorImpl(
-    const TabIdGenerator* tab_id_generator)
-    : tab_id_generator_(tab_id_generator) {}
+    const TabIdGenerator* tab_id_generator,
+    OptimizationGuideKeyedService* optimization_guide_decider)
+    : tab_id_generator_(tab_id_generator),
+      optimization_guide_decider_(optimization_guide_decider) {
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST,
+         optimization_guide::proto::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST});
+  }
+}
 
 ActionChipsGeneratorImpl::~ActionChipsGeneratorImpl() = default;
 
@@ -136,7 +177,7 @@ void ActionChipsGeneratorImpl::GenerateActionChips(
     base::optional_ref<const TabInterface> tab,
     base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
         callback) {
-  switch (GetScenario(tab)) {
+  switch (GetScenario(tab, optimization_guide_decider_)) {
     case ChipsGenerationScenario::kStaticChipsOnly:
       std::move(callback).Run(CreateChipsForSteadyState(
           tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
