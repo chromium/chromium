@@ -19,6 +19,9 @@
 /// Attaches the current tab's content to the context.
 - (void)attachCurrentTabContent;
 
+/// Requests a refresh of UI.
+- (void)requestUIRefresh;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_MUTATOR_H_

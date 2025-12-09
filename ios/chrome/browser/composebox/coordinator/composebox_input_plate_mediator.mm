@@ -237,7 +237,7 @@ CreateInputDataFromAnnotatedPageContent(
       _aimEligibilitySubscription =
           _aimEligibilityService->RegisterEligibilityChangedCallback(
               base::BindRepeating(^{
-                [weakSelf updateButtonsVisibility];
+                [weakSelf commitUIUpdates];
               }));
     }
   }
@@ -328,10 +328,7 @@ CreateInputDataFromAnnotatedPageContent(
     [self attachCurrentTabContent];
   }
 
-  [self updateCompactMode];
-  [self updateConsumerItems];
-  [self updateConsumerActionsState];
-  [self updateButtonsVisibility];
+  [self commitUIUpdates];
 }
 
 - (void)processPDFFileURL:(GURL)PDFFileURL {
@@ -470,9 +467,7 @@ CreateInputDataFromAnnotatedPageContent(
       break;
   }
 
-  [self updateCompactMode];
-  [self updateButtonsVisibility];
-  [self updateConsumerActionsState];
+  [self commitUIUpdates];
 }
 
 #pragma mark - ComposeboxTabPickerSelectionDelegate
@@ -773,6 +768,10 @@ CreateInputDataFromAnnotatedPageContent(
   [self attachSelectedTabsWithWebStateIDs:webStateIDs cachedWebStateIDs:{}];
 }
 
+- (void)requestUIRefresh {
+  [self commitUIUpdates];
+}
+
 #pragma mark - ComposeboxFileUploadObserver
 
 - (void)onFileUploadStatusChanged:(const base::UnguessableToken&)fileToken
@@ -947,6 +946,7 @@ CreateInputDataFromAnnotatedPageContent(
   if (!item.previewImage) {
     item.previewImage = image;
     [self updateConsumerItems];
+    [self commitUIUpdates];
   }
 
   base::OnceClosure task;
@@ -1165,8 +1165,13 @@ CreateInputDataFromAnnotatedPageContent(
                isSearchQuery:(BOOL)isSearchQuery
          userInputInProgress:(BOOL)userInputInProgress {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _hasText = text.length() > 0;
-  [self updateButtonsVisibility];
+  BOOL hasText = text.length() > 0;
+  if (hasText == _hasText) {
+    return;
+  }
+  _hasText = hasText;
+
+  [self commitUIUpdates];
 }
 
 - (ComposeboxMode)composeboxMode {
@@ -1284,11 +1289,10 @@ CreateInputDataFromAnnotatedPageContent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self.consumer setItems:_items.containedItems];
   [self updateOptionToAttachCurrentTab];
-  [self updateConsumerActionsState];
-  [self updateButtonsVisibility];
 
-  if (!_items.empty && [_modeHolder isRegularSearch]) {
-    // AI mode is implicitly enabled by items attachment.
+  // AI mode is implicitly enabled by items attachment.
+  BOOL shouldSwitchToAIM = !_items.empty && [_modeHolder isRegularSearch];
+  if (shouldSwitchToAIM) {
     [self.metricsRecorder
         recordAiModeActivationSource:AiModeActivationSource::kImplicit];
     _modeHolder.mode = ComposeboxMode::kAIM;
@@ -1301,10 +1305,23 @@ CreateInputDataFromAnnotatedPageContent(
   [self.consumer setCompact:compact];
 }
 
+// Pushes the batched UI updates to the consumer.
+- (void)commitUIUpdates {
+  _isUpdatingCompactMode = YES;
+
+  // Update button visibility first, as the compact state change is asynchronous
+  // and could conflict.
+  [self updateButtonsVisibility];
+  [self updateConsumerActionsState];
+  [self updateCompactMode];
+
+  _isUpdatingCompactMode = NO;
+}
+
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
-  [self updateButtonsVisibility];
+  [self commitUIUpdates];
 }
 
 - (void)templateURLServiceShuttingDown:(TemplateURLService*)urlService {
@@ -1322,15 +1339,13 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
   _isMultiline = sender.numberOfLines > 1;
-  _isUpdatingCompactMode = YES;
-  [self updateCompactMode];
-  [self updateButtonsVisibility];
-  _isUpdatingCompactMode = NO;
+  [self commitUIUpdates];
 }
 
 - (void)composeboxInputItemCollectionDidUpdateItems:
     (ComposeboxInputItemCollection*)composeboxInputItemCollection {
   [self updateConsumerItems];
+  [self commitUIUpdates];
 }
 
 @end
