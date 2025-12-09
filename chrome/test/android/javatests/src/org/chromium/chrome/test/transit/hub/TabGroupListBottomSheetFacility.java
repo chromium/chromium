@@ -8,8 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.junit.Assert.assertTrue;
-
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
@@ -43,7 +40,6 @@ public class TabGroupListBottomSheetFacility<
     /** Constructor. Expects a specific title and selected color. */
     public TabGroupListBottomSheetFacility(
             List<Token> expectedTabGroupIds, boolean isNewTabGroupRowVisible) {
-        assertTrue(ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled());
 
         mTabGroupIds = expectedTabGroupIds;
 

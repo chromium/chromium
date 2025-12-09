@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 
 /** The app menu shown when pressing ("...") in an Incognito Tab showing a web page. */
@@ -16,9 +15,7 @@ public class IncognitoWebPageAppMenuFacility extends PageAppMenuFacility<WebPage
         }
         mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
 
-        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
-            mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
-        }
+        mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
 
         mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID);
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {

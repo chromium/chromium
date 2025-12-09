@@ -557,9 +557,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowAddToGroup() {
-        return ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()
-                && (!ChromeFeatureList.sTabModelInitFixes.isEnabled()
-                        || mTabModelSelector.isTabStateInitialized());
+        return (!ChromeFeatureList.sTabModelInitFixes.isEnabled()
+                || mTabModelSelector.isTabStateInitialized());
     }
 
     private MVCListAdapter.ListItem buildAddToGroupItem(@Nullable Tab currentTab) {

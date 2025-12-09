@@ -152,7 +152,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
      */
     void setOnLongPressTabItemEventListener(@Nullable OnLongPressTabItemEventListener listener) {
         assert mTabGridItemLongPressOrchestrator == null;
-        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled() && listener != null) {
+        if (listener != null) {
             setTabGridItemLongPressOrchestrator(
                     new TabGridItemLongPressOrchestrator(
                             mRecyclerViewSupplier,

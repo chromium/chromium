@@ -44,7 +44,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DATA_SHARING_JOIN_ONLY;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstTabInDialog;
@@ -141,7 +140,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -153,7 +151,6 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -178,7 +175,6 @@ import java.util.concurrent.TimeoutException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@DisableFeatures(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
 @EnableFeatures({DATA_SHARING, DATA_SHARING_JOIN_ONLY})
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
@@ -430,44 +426,6 @@ public class TabGridDialogTest {
         waitForDialogHidingAnimationInTabSwitcher(cta);
 
         verifyTabSwitcherCardCount(cta, 1);
-    }
-
-    @Test
-    @MediumTest
-    public void testAddTabSkipsHideDialogForSync() {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-        // Open dialog from tab switcher and verify dialog is showing correct content.
-        openDialogFromTabSwitcherAndVerify(cta, 2, null);
-
-        // Add a tab to hide the group.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelSelector selector = cta.getTabModelSelector();
-                    Tab destinationTab = selector.getModel(false).getTabAt(0);
-                    Tab tab =
-                            cta.getCurrentTabCreator()
-                                    .createNewTab(
-                                            new LoadUrlParams("about:blank"),
-                                            "About title",
-                                            TabLaunchType.FROM_SYNC_BACKGROUND,
-                                            null,
-                                            TabModel.INVALID_TAB_INDEX);
-                    selector.getTabGroupModelFilterProvider()
-                            .getTabGroupModelFilter(false)
-                            .mergeListOfTabsToGroup(
-                                    List.of(tab),
-                                    destinationTab,
-                                    /* notify= */ MergeNotificationType.DONT_NOTIFY);
-                });
-        CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
-        verifyShowingDialog(cta, 3, null);
     }
 
     @Test
@@ -1379,68 +1337,6 @@ public class TabGridDialogTest {
         waitForDialogHidingAnimation(cta);
         verifyFirstCardTitle(CUSTOMIZED_TITLE1);
         openDialogFromTabSwitcherAndVerify(cta, 2, CUSTOMIZED_TITLE1);
-    }
-
-    // Regression test for https://crbug.com/1378226.
-    @Test
-    @MediumTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263769")
-    public void testTabGroupNaming_afterMergeWithSelectionEditor() throws ExecutionException {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 4);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 4);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Open dialog and modify group title.
-        openDialogFromTabSwitcherAndVerify(
-                cta,
-                4,
-                cta.getResources()
-                        .getQuantityString(R.plurals.bottom_tab_grid_title_placeholder, 4, 4));
-        editDialogTitle(cta, CUSTOMIZED_TITLE1);
-
-        // Verify the title is updated in both tab switcher and dialog.
-        clickScrimToExitDialog(cta);
-        waitForDialogHidingAnimation(cta);
-        verifyFirstCardTitle(CUSTOMIZED_TITLE1);
-        openDialogFromTabSwitcherAndVerify(cta, 4, CUSTOMIZED_TITLE1);
-        openSelectionEditorAndVerify(cta, 4);
-
-        // Ungroup tab.
-        mSelectionEditorRobot
-                .actionRobot
-                .clickItemAtAdapterPosition(1)
-                .clickItemAtAdapterPosition(2)
-                .clickToolbarMenuButton()
-                .clickToolbarMenuItem("Ungroup tabs");
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
-
-        // Verify the ungroup occurred.
-        clickScrimToExitDialog(cta);
-        waitForDialogHidingAnimation(cta);
-        verifyFirstCardTitle(CUSTOMIZED_TITLE1);
-        verifyTabSwitcherCardCount(cta, 3);
-
-        enterTabListEditor(cta);
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
-        mSelectionEditorRobot
-                .actionRobot
-                .clickItemAtAdapterPosition(0)
-                .clickItemAtAdapterPosition(1)
-                .clickItemAtAdapterPosition(2)
-                .clickToolbarMenuButton()
-                .clickToolbarMenuItem("Group tabs");
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
-
-        // Verify the group worked and the title remained.
-        verifyFirstCardTitle(CUSTOMIZED_TITLE1);
-        openDialogFromTabSwitcherAndVerify(cta, 4, CUSTOMIZED_TITLE1);
-        clickScrimToExitDialog(cta);
-        waitForDialogHidingAnimation(cta);
     }
 
     @Test
@@ -2541,11 +2437,6 @@ public class TabGridDialogTest {
     private RecyclerView getRecyclerView(ChromeTabbedActivity cta) {
         ViewGroup group = (ViewGroup) cta.findViewById(getTabSwitcherAncestorId(cta));
         return group.findViewById(R.id.tab_list_recycler_view);
-    }
-
-    private void enterTabListEditor(ChromeTabbedActivity cta) {
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_select_tabs);
     }
 
     private void clickThroughConfirmationDialog() {
