@@ -706,7 +706,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.EmptyGestureScrollUpdateFrame" enum="Boolean"
-    expires_after="M145">
+    expires_after="M146">
   <owner>oksamyt@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
