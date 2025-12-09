@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_STATUS_TRACKER_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_STATUS_TRACKER_H_
 
-#include <map>
 #include <string>
 
 #include "base/compiler_specific.h"

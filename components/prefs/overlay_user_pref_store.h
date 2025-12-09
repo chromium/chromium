@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"

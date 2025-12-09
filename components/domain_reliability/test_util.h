@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOMAIN_RELIABILITY_TEST_UTIL_H_
 #define COMPONENTS_DOMAIN_RELIABILITY_TEST_UTIL_H_
 
+#include <map>
 #include <memory>
 
 #include "base/functional/callback_forward.h"

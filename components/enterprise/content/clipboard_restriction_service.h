@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ENTERPRISE_CONTENT_CLIPBOARD_RESTRICTION_SERVICE_H_
 #define COMPONENTS_ENTERPRISE_CONTENT_CLIPBOARD_RESTRICTION_SERVICE_H_
 
-#include <map>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"

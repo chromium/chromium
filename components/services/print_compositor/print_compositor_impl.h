@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SERVICES_PRINT_COMPOSITOR_PRINT_COMPOSITOR_IMPL_H_
 #define COMPONENTS_SERVICES_PRINT_COMPOSITOR_PRINT_COMPOSITOR_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

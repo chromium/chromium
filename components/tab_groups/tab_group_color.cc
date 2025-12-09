@@ -4,6 +4,8 @@
 
 #include "components/tab_groups/tab_group_color.h"
 
+#include <map>
+
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"

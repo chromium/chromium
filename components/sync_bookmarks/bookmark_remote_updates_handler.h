@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_REMOTE_UPDATES_HANDLER_H_
 #define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_REMOTE_UPDATES_HANDLER_H_
 
-#include <map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_FEATURE_PROMO_CONTROLLER_H_
 
 #include <initializer_list>
-#include <map>
 #include <memory>
 #include <optional>
 #include <ostream>

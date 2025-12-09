@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_WEBRTC_MEDIA_STREAM_DEVICES_CONTROLLER_H_
 #define COMPONENTS_WEBRTC_MEDIA_STREAM_DEVICES_CONTROLLER_H_
 
-#include <map>
 #include <string>
 
 #include "base/functional/callback.h"

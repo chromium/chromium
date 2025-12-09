@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_TEST_SYNCED_WINDOW_DELEGATES_GETTER_H_
 #define COMPONENTS_SYNC_SESSIONS_TEST_SYNCED_WINDOW_DELEGATES_GETTER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>

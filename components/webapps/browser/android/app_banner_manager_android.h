@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_ANDROID_APP_BANNER_MANAGER_ANDROID_H_
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_APP_BANNER_MANAGER_ANDROID_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

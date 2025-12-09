@@ -6,7 +6,6 @@
 #define COMPONENTS_TRUSTED_VAULT_STANDALONE_TRUSTED_VAULT_BACKEND_H_
 
 #include <cstdint>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

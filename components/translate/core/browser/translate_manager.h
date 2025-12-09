@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MANAGER_H_
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_SINGLE_ICON_HASHER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_SINGLE_ICON_HASHER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>

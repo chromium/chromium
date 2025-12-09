@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_UNDO_BOOKMARK_UNDO_SERVICE_H_
 #define COMPONENTS_UNDO_BOOKMARK_UNDO_SERVICE_H_
 
-#include <map>
-
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"

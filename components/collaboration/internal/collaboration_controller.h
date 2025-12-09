@@ -6,7 +6,6 @@
 #define COMPONENTS_COLLABORATION_INTERNAL_COLLABORATION_CONTROLLER_H_
 
 #include <array>
-#include <map>
 #include <memory>
 
 #include "base/functional/callback.h"

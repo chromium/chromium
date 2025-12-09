@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTION_COORDINATOR_H_
 #define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTION_COORDINATOR_H_
 
-#include <map>
 #include <string>
 #include <vector>
 

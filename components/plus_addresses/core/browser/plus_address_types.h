@@ -6,7 +6,6 @@
 #define COMPONENTS_PLUS_ADDRESSES_CORE_BROWSER_PLUS_ADDRESS_TYPES_H_
 
 #include <iosfwd>
-#include <map>
 #include <optional>
 #include <ostream>
 #include <string>

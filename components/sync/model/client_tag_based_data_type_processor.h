@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_MODEL_CLIENT_TAG_BASED_DATA_TYPE_PROCESSOR_H_
 #define COMPONENTS_SYNC_MODEL_CLIENT_TAG_BASED_DATA_TYPE_PROCESSOR_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_H_
 #define CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_SAVER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_SAVER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

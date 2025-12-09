@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_TASK_MANAGER_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_TASK_MANAGER_H_
 
-#include <map>
-
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"

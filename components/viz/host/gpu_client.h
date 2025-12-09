@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_HOST_GPU_CLIENT_H_
 #define COMPONENTS_VIZ_HOST_GPU_CLIENT_H_
 
-#include <map>
 #include <memory>
 
 #include "base/functional/callback_forward.h"

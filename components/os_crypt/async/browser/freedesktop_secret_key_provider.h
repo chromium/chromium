@@ -6,7 +6,6 @@
 #define COMPONENTS_OS_CRYPT_ASYNC_BROWSER_FREEDESKTOP_SECRET_KEY_PROVIDER_H_
 
 #include <cstdint>
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

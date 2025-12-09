@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_PASSWORD_FORM_FILL_DATA_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_PASSWORD_FORM_FILL_DATA_H_
 
-#include <map>
 #include <optional>
 #include <vector>
 

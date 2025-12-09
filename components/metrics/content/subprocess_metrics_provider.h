@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_CONTENT_SUBPROCESS_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_CONTENT_SUBPROCESS_METRICS_PROVIDER_H_
 
-#include <map>
 #include <memory>
 
 #include "base/containers/variant_map.h"

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_MOJOM_AUTOFILL_TYPES_MOJOM_TRAITS_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_MOJOM_AUTOFILL_TYPES_MOJOM_TRAITS_H_
 
-#include <map>
 #include <optional>
 #include <string>
 #include <utility>

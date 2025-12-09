@@ -16,7 +16,6 @@
 #ifndef COMPONENTS_VARIATIONS_VARIATIONS_ASSOCIATED_DATA_H_
 #define COMPONENTS_VARIATIONS_VARIATIONS_ASSOCIATED_DATA_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string_view>

@@ -37,7 +37,6 @@
 // single sequence. In practice this will be the PM sequence.
 
 #include <cstring>
-#include <map>
 #include <utility>
 
 #include "base/check.h"

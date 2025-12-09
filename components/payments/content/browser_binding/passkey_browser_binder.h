@@ -6,7 +6,6 @@
 #define COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_PASSKEY_BROWSER_BINDER_H_
 
 #include <cstdint>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

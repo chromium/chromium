@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_MANTA_MAHI_PROVIDER_H_
 #define COMPONENTS_MANTA_MAHI_PROVIDER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

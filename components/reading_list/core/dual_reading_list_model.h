@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_READING_LIST_CORE_DUAL_READING_LIST_MODEL_H_
 #define COMPONENTS_READING_LIST_CORE_DUAL_READING_LIST_MODEL_H_
 
-#include <map>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"

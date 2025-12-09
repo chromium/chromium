@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_SAVED_TAB_GROUP_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_PUBLIC_SAVED_TAB_GROUP_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>

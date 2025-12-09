@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_STORAGE_SERVICE_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_STORAGE_SERVICE_H_
 
-#include <map>
 #include <optional>
 
 #include "base/feature_list.h"

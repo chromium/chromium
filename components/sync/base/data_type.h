@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_BASE_DATA_TYPE_H_
 
 #include <iosfwd>
-#include <map>
 #include <memory>
 #include <string>
 

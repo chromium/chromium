@@ -6,7 +6,7 @@
 #define COMPONENTS_TAB_GROUPS_TAB_GROUP_COLOR_H_
 
 #include <stddef.h>
-#include <map>
+
 #include <string>
 
 #include "base/component_export.h"

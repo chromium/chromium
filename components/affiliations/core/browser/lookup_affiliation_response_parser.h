@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <vector>
 
 #include "components/affiliations/core/browser/affiliation_api.pb.h"

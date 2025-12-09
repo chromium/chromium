@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <compare>
-#include <map>
 #include <memory>
 
 #include "base/byte_count.h"

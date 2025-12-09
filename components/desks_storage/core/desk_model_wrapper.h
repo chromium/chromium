@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"

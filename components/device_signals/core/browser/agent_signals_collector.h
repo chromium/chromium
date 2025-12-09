@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_AGENT_SIGNALS_COLLECTOR_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_AGENT_SIGNALS_COLLECTOR_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <vector>

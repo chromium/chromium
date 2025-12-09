@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 
 #include "components/domain_reliability/beacon.h"

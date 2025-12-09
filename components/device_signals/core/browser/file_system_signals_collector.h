@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_FILE_SYSTEM_SIGNALS_COLLECTOR_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_FILE_SYSTEM_SIGNALS_COLLECTOR_H_
 
-#include <map>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"

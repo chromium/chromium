@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_IMPL_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_IMPL_H_
 
-#include <map>
-
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"

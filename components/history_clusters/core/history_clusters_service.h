@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
