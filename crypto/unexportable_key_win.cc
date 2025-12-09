@@ -15,7 +15,6 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
@@ -29,7 +28,6 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
-#include "crypto/features.h"
 #include "crypto/hash.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
@@ -436,9 +434,7 @@ class ECDSAKey : public UnexportableSigningKey {
   }
 
   bool IsHardwareBacked() const override {
-    return base::FeatureList::IsEnabled(features::kIsHardwareBackedFixEnabled)
-               ? provider_type_ == ProviderType::kTPM
-               : true;
+    return provider_type_ == ProviderType::kTPM;
   }
 
  private:
@@ -483,9 +479,7 @@ class RSAKey : public UnexportableSigningKey {
   }
 
   bool IsHardwareBacked() const override {
-    return base::FeatureList::IsEnabled(features::kIsHardwareBackedFixEnabled)
-               ? provider_type_ == ProviderType::kTPM
-               : true;
+    return provider_type_ == ProviderType::kTPM;
   }
 
  private:

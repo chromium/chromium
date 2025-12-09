@@ -10,14 +10,11 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "crypto/evp.h"
-#include "crypto/features.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
 #include "crypto/unexportable_key.h"
-#include "net/base/features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
@@ -354,9 +351,6 @@ class UnexportableSSLPlatformKeyWinTest : public testing::TestWithParam<bool> {
 };
 
 TEST_P(UnexportableSSLPlatformKeyWinTest, WrapUnexportableKeySlowly) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      crypto::features::kIsHardwareBackedFixEnabled);
-
   auto provider = UseHardwareBackedKeys()
                       ? crypto::GetUnexportableKeyProvider({})
                       : crypto::GetMicrosoftSoftwareUnexportableKeyProvider();
