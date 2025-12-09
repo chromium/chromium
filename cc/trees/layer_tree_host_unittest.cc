@@ -26,6 +26,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
+#include "cc/base/features.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/heads_up_display_layer.h"
@@ -69,6 +70,8 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree_layer_tree_delegate.h"
+#include "cc/trees/proxy.h"
+#include "cc/trees/proxy_main.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/swap_promise.h"
@@ -7200,9 +7203,79 @@ class LayerTreeHostTestBeginMainFrameTimeIsAlsoImplTime
 
 // TODO(mithro): Re-enable the multi-threaded version of this test
 // http://crbug.com/537621
-// SINGLE_AND_MULTI_THREAD_TEST_F(
-//    LayerTreeHostTestBeginMainFrameTimeIsAlsoImplTime);
 SINGLE_THREAD_TEST_F(LayerTreeHostTestBeginMainFrameTimeIsAlsoImplTime);
+
+// Tests the flag for kMainIdleBypassScheduler works as expected, pausing
+// the main frame until the next begin_frame time.
+class LayerTreeHostTestBypassSchedulerPauseUntil : public LayerTreeHostTest {
+ public:
+  LayerTreeHostTestBypassSchedulerPauseUntil() = default;
+
+  void BeginTest() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kMainIdleBypassScheduler);
+    // Send a main frame to kick off the test.
+    PostSetNeedsCommitToMainThread();
+    // We expect that Main will go idle until the frame interval is over.
+    layer_tree_host()->RequestBeginMainFrameNotExpected(true);
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* impl) override {
+    begin_frame_args = impl->CurrentBeginFrameArgs();
+  }
+
+  void DidCommitAndDrawFrame() override {
+    // Once we draw the frame, pause the renderer.
+    auto paused = layer_tree_host()->PauseRendering();
+  }
+
+  void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {
+    ASSERT_EQ(time, begin_frame_args.frame_time + begin_frame_args.interval);
+    EndTest();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  viz::BeginFrameArgs begin_frame_args;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestBypassSchedulerPauseUntil);
+
+// Tests the flag for kMainIdleBypassScheduler works as expected, where
+// pausing and hiding the renderer in the middle of the frame lifecycle
+// causes the main thread to receive the idle signal.
+class LayerTreeHostTestBypassSchedulerPauseSoon : public LayerTreeHostTest {
+ public:
+  LayerTreeHostTestBypassSchedulerPauseSoon() = default;
+
+  void BeginTest() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kMainIdleBypassScheduler);
+    // Send a main frame to kick off the test.
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override {
+    // Request that we idle the main frame after we have a main
+    // frame in flight.
+    layer_tree_host()->RequestBeginMainFrameNotExpected(true);
+  }
+
+  void DidCommitAndDrawFrame() override {
+    // Once we draw the frame, pause the renderer and set the host
+    // as being invisible. This triggers the auto-pause check.
+    scoped_pause_rendering_ = layer_tree_host()->PauseRendering();
+    layer_tree_host()->SetVisible(false);
+  }
+
+  void BeginMainFrameNotExpectedSoon() override { EndTest(); }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ScopedPauseRendering> scoped_pause_rendering_;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestBypassSchedulerPauseSoon);
 
 class LayerTreeHostTestActivateOnInvisible : public LayerTreeHostTest {
  public:

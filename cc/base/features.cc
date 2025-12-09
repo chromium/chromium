@@ -261,4 +261,6 @@ BASE_FEATURE(kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage,
 BASE_FEATURE(kUnlockDuringGpuImageOperations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMainIdleBypassScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

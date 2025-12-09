@@ -85,18 +85,32 @@ void ProxyMain::DestroyProxyImplOnImplThread(
 void ProxyMain::BeginMainFrameNotExpectedSoon() {
   TRACE_EVENT0("cc", "ProxyMain::BeginMainFrameNotExpectedSoon");
   DCHECK(IsMainThread());
+  request_begin_main_frame_not_expected_ = false;
   layer_tree_host_->BeginMainFrameNotExpectedSoon();
 }
 
 void ProxyMain::BeginMainFrameNotExpectedUntil(base::TimeTicks time) {
   TRACE_EVENT0("cc", "ProxyMain::BeginMainFrameNotExpectedUntil");
   DCHECK(IsMainThread());
+  request_begin_main_frame_not_expected_ = false;
   layer_tree_host_->BeginMainFrameNotExpectedUntil(time);
 }
 
 void ProxyMain::DidCommitAndDrawFrame(int source_frame_number) {
   DCHECK(IsMainThread());
+  main_frames_in_flight_--;
+  begin_impl_frame_idle_ = true;
   layer_tree_host_->DidCommitAndDrawFrame(source_frame_number);
+
+  // After drawing the frame, the main thread might be able to go idle.
+  if (request_begin_main_frame_not_expected_) {
+    if (ShouldBeginMainFrameNotExpectedUntil()) {
+      BeginMainFrameNotExpectedUntil(last_begin_main_frame_args_.frame_time +
+                                     last_begin_main_frame_args_.interval);
+    } else if (ShouldBeginMainFrameNotExpectedSoon()) {
+      BeginMainFrameNotExpectedSoon();
+    }
+  }
 }
 
 void ProxyMain::DidLoseLayerTreeFrameSink() {
@@ -132,6 +146,11 @@ void ProxyMain::BeginMainFrame(
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
 
   base::TimeTicks begin_main_frame_start_time = base::TimeTicks::Now();
+  main_frames_in_flight_++;
+  needs_begin_main_frame_ = false;
+
+  last_begin_main_frame_args_ = begin_main_frame_state->begin_frame_args;
+  begin_impl_frame_idle_ = false;
 
   const viz::BeginFrameArgs& frame_args =
       begin_main_frame_state->begin_frame_args;
@@ -582,6 +601,7 @@ void ProxyMain::SetShouldWarmUp() {
 
 void ProxyMain::SetNeedsAnimate(bool urgent) {
   DCHECK(IsMainThread());
+  needs_begin_main_frame_ = true;
   if (SendCommitRequestToImplThreadIfNeeded(ANIMATE_PIPELINE_STAGE, urgent)) {
     TRACE_EVENT_INSTANT1("cc", "ProxyMain::SetNeedsAnimate",
                          TRACE_EVENT_SCOPE_THREAD, "urgent", urgent);
@@ -590,6 +610,7 @@ void ProxyMain::SetNeedsAnimate(bool urgent) {
 
 void ProxyMain::SetNeedsUpdateLayers() {
   DCHECK(IsMainThread());
+  needs_begin_main_frame_ = true;
   // If we are currently animating, make sure we also update the layers.
   if (current_pipeline_stage_ == ANIMATE_PIPELINE_STAGE) {
     final_pipeline_stage_ =
@@ -623,6 +644,7 @@ void ProxyMain::SetNeedsCommit() {
 void ProxyMain::SetNeedsRedraw(const gfx::Rect& damage_rect) {
   TRACE_EVENT0("cc", "ProxyMain::SetNeedsRedraw");
   DCHECK(IsMainThread());
+  needs_begin_main_frame_ = true;
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyImpl::SetNeedsRedrawOnImpl,
@@ -882,12 +904,78 @@ void ProxyMain::UpdateBrowserControlsState(
                      animate, offset_tag_modifications));
 }
 
+bool ProxyMain::BeginFrameNeeded() const {
+  // Rendering being paused implies we expect more BeginMainFrames.
+  if (!pause_rendering_) {
+    return true;
+  }
+  // Drain any in-flight main frame updates before pausing impl frames.
+  if (main_frames_in_flight_ != 0) {
+    return true;
+  }
+  return false;
+}
+
+bool ProxyMain::ShouldBeginMainFrameNotExpectedUntil() const {
+  if (needs_begin_main_frame_ || (main_frames_in_flight_ > 0)) {
+    return false;
+  }
+  if (!layer_tree_host_->IsVisible()) {
+    return false;
+  }
+  if (paused_) {
+    return false;
+  }
+  // If we've gone idle and have stopped getting BeginFrames, we should send
+  // SendBeginMainFrameNotExpectedSoon instead.
+  if (!BeginFrameNeeded() && begin_impl_frame_idle_) {
+    return false;
+  }
+
+  // TODO(crbug.com/454038686): Figure out if did_commit_during_frame_
+  // signal should cause us to return false here.
+
+  return true;
+}
+
+bool ProxyMain::ShouldBeginMainFrameNotExpectedSoon() const {
+  // Don't notify if a BeginMainFrame has already been requested or is in
+  // progress.
+  if (needs_begin_main_frame_ || (main_frames_in_flight_ > 0)) {
+    return false;
+  }
+
+  // Only send this when we've stopped getting BeginFrames and have gone idle.
+  if (BeginFrameNeeded() || !begin_impl_frame_idle_) {
+    return false;
+  }
+  return true;
+}
+
+// When kMainIdleBypassScheduler is enabled, requesting
+// BeginMainFrameNotExpected bypasses updating scheduler state and performs the
+// calculation in place.
 void ProxyMain::RequestBeginMainFrameNotExpected(bool new_state) {
   DCHECK(IsMainThread());
-  ImplThreadTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProxyImpl::RequestBeginMainFrameNotExpectedOnImpl,
-                     base::Unretained(proxy_impl_.get()), new_state));
+  if (!base::FeatureList::IsEnabled(features::kMainIdleBypassScheduler)) {
+    ImplThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ProxyImpl::RequestBeginMainFrameNotExpectedOnImpl,
+                       base::Unretained(proxy_impl_.get()), new_state));
+    return;
+  }
+  request_begin_main_frame_not_expected_ = new_state;
+
+  if (request_begin_main_frame_not_expected_) {
+    if (ShouldBeginMainFrameNotExpectedUntil()) {
+      // TODO(crbug.com/467384421): Figure out if we can decrease
+      // the overhead by avoiding this call if the deadline is short.
+      BeginMainFrameNotExpectedUntil(last_begin_main_frame_args_.frame_time +
+                                     last_begin_main_frame_args_.interval);
+    } else if (ShouldBeginMainFrameNotExpectedSoon()) {
+      BeginMainFrameNotExpectedSoon();
+    }
+  }
 }
 
 bool ProxyMain::SendCommitRequestToImplThreadIfNeeded(

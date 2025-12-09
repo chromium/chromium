@@ -502,7 +502,9 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   void BeginMainFrameNotExpectedSoon() override {
     test_hooks_->BeginMainFrameNotExpectedSoon();
   }
-  void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}
+  void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {
+    test_hooks_->BeginMainFrameNotExpectedUntil(time);
+  }
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& frame_timing_details) override {

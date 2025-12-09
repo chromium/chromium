@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -107,6 +108,7 @@ class TestHooks : public AnimationDelegate {
   // Main thread hooks.
   virtual void ApplyViewportChanges(const ApplyViewportChangesArgs& args) {}
   virtual void BeginMainFrameNotExpectedSoon() {}
+  virtual void BeginMainFrameNotExpectedUntil(base::TimeTicks when) {}
   virtual void WillApplyCompositorChanges() {}
   virtual void BeginMainFrame(const viz::BeginFrameArgs& args) {}
   virtual void WillBeginMainFrame() {}
