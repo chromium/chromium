@@ -7221,7 +7221,7 @@ THE SOFTWARE.
 
 The MIT License
 
-Copyright (c) 2012-2017 Christian Rau
+Copyright (c) 2012-2025 Christian Rau
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -7982,6 +7982,12 @@ Google patch: Remove upstream-only license text from the LICENSE file.
 ----------------------------------------------------------------------
 
 File: install-sh (only for ICU4C)
+
+Google patch: Remove upstream-only license text from the LICENSE file.
+
+----------------------------------------------------------------------
+
+File: sorttable.js (only for ICU4J)
 
 Google patch: Remove upstream-only license text from the LICENSE file.
 
