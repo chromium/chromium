@@ -7906,7 +7906,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/sandbox-attribute.https.html [ Failure ]
 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.worker.html [ Failure ]
 [ Debug Mac13 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
-[ Debug Mac13 ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/elements/edit/undo-dom-edits.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure Skip Timeout ]
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/anchor-focus.https.html [ Failure ]
@@ -8054,7 +8053,6 @@ crbug.com/1450020 [ Mac12-arm64 Release ] compositing/geometry/preserve-3d-switc
 
 # Sheriff 2023-06-07
 crbug.com/1451210 [ Mac ] external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html [ Failure Pass ]
-crbug.com/40916182 [ Debug Linux ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure Pass ]
 
 # Since HTTPS upgrades run in the //chrome layer, these will fail when ran in content shell.
 external/wpt/https-upgrades/tentative/upgrade.https.sub.html [ Timeout ]
@@ -8407,7 +8405,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14 ] fullscreen/anonymous-block-merge-crash.html [ Failure ]
 [ Mac14 ] http/tests/devtools/csp/csp-inline-warning-contains-stacktrace.js [ Failure ]
 [ Mac14 ] http/tests/devtools/oopif/oopif-console-preserves-log-on-frame-navigation.js [ Failure ]
-[ Mac14 ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure ]
 [ Mac14 ] http/tests/devtools/sources/debugger/debugger-scope-resolve-identifiers.js [ Failure ]
 [ Mac14 ] http/tests/devtools/sxg/sxg-cert-not-found.js [ Failure ]
 [ Mac14 ] http/tests/inspector-protocol/webaudio/graph-event-lifecycle.js [ Failure ]
@@ -8477,7 +8474,6 @@ crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBi
 [ Mac14-arm64 ] http/tests/devtools/console/console-linkify-relative-links.js [ Failure Pass ]
 [ Mac14-arm64 ] http/tests/devtools/csp/csp-inline-warning-contains-stacktrace.js [ Failure ]
 [ Mac14-arm64 ] http/tests/devtools/oopif/oopif-console-preserves-log-on-frame-navigation.js [ Failure ]
-[ Mac14-arm64 ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure ]
 [ Mac14-arm64 ] http/tests/devtools/sources/debugger/debugger-scope-resolve-identifiers.js [ Failure ]
 [ Mac14-arm64 ] http/tests/devtools/sxg/sxg-cert-not-found.js [ Failure ]
 [ Mac14-arm64 ] http/tests/images/force-reload.html [ Timeout ]
