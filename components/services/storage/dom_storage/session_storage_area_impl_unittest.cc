@@ -65,9 +65,7 @@ class SessionStorageAreaImplTest : public testing::Test {
     leveldb_database_ = AsyncDomStorageDatabase::Open(
         StorageType::kSessionStorage,
         /*directory=*/base::FilePath(), "SessionStorageAreaImplTestDatabase",
-        /*memory_dump_id=*/std::nullopt,
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-        base::DoNothing());
+        /*memory_dump_id=*/std::nullopt, base::DoNothing());
     leveldb_database_->RunDatabaseTask(
         base::BindOnce([](DomStorageDatabaseLevelDB& db) {
           return db.Put(StdStringToUint8Vector("map-0-key1"),

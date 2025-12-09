@@ -17,7 +17,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -48,13 +47,10 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   using DestructLocalStorageCallback =
       base::OnceCallback<void(LocalStorageImpl*)>;
   // Constructs a Local Storage implementation which will create its root
-  // "Local Storage" directory in |storage_root| if non-empty. |task_runner|
-  // run tasks on the same sequence as the one which constructs this object.
-  // |legacy_task_runner| must support blocking operations and its tasks must
-  // be able to block shutdown. If valid, |receiver| will be bound to this
-  // object to allow for remote control via the LocalStorageControl interface.
+  // "Local Storage" directory in |storage_root| if non-empty.If valid,
+  // |receiver| will be bound to this object to allow for remote control via the
+  // LocalStorageControl interface.
   LocalStorageImpl(const base::FilePath& storage_root,
-                   scoped_refptr<base::SequencedTaskRunner> task_runner,
                    DestructLocalStorageCallback destruct_callback,
                    mojo::PendingReceiver<mojom::LocalStorageControl> receiver);
   ~LocalStorageImpl() override;
@@ -171,8 +167,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   } connection_state_ = NO_CONNECTION;
 
   bool force_keep_session_state_ = false;
-
-  const scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
 
   base::trace_event::MemoryAllocatorDumpGuid memory_dump_id_;
 

@@ -158,7 +158,6 @@ class StorageAreaImplTest : public testing::Test,
         StorageType::kSessionStorage,
         /*directory=*/base::FilePath(), "StorageAreaImplTest",
         /*memory_dump_id=*/std::nullopt,
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](DbStatus status) { loop.Quit(); }));
     loop.Run();
 
@@ -1225,14 +1224,14 @@ struct FuzzState {
 
 }  // namespace
 
-TEST_F(StorageAreaImplTest, PrefixForkingPsuedoFuzzer) {
+TEST_F(StorageAreaImplTest, PrefixForkingPseudoFuzzer) {
   const std::string kKey1 = "key1";
   const std::vector<uint8_t> kKey1Vec = ToBytes(kKey1);
   const std::string kKey2 = "key2";
   const std::vector<uint8_t> kKey2Vec = ToBytes(kKey2);
   const int kTotalAreas = 1000;
 
-  // This tests tries to throw all possible enumartions of operations and
+  // This tests tries to throw all possible enumerations of operations and
   // forking at areas. The purpose is to hit all edge cases possible to
   // expose any loading bugs.
 

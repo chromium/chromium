@@ -55,11 +55,17 @@ class AsyncDomStorageDatabase {
 
   ~AsyncDomStorageDatabase();
 
-  // Creates an `AsyncDomStorageDatabase` then posts a task to open the database
-  // on `blocking_task_runner`. Callers may immediately start using the
-  // returned `AsyncDomStorageDatabase`. Runs `callback` with the open database
-  // result. After failing to open, `AsyncDomStorageDatabase` must be
-  // discarded because no database tasks will run.
+  // May only be called on a non-empty `directory`. This will always return the
+  // same task runner for a given `directory` and `dbname`.
+  static scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
+      const base::FilePath& directory,
+      const std::string& dbname);
+
+  // Creates an `AsyncDomStorageDatabase` then asynchronously opens the
+  // database. Callers may immediately start using the returned
+  // `AsyncDomStorageDatabase`. Runs `callback` with the open database result.
+  // After failing to open, `AsyncDomStorageDatabase` must be discarded because
+  // no database tasks will run.
   //
   // To create an in-memory database, provide an empty `directory`.
   static std::unique_ptr<AsyncDomStorageDatabase> Open(
@@ -68,7 +74,6 @@ class AsyncDomStorageDatabase {
       const std::string& dbname,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       StatusCallback callback);
 
   // Represents a batch of changes from a single commit source. There will be
