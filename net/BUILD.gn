@@ -3753,6 +3753,7 @@ fuzzer_test("net_parse_proxy_list_pac_fuzzer") {
     ":net_fuzzer_test_support",
     "//net",
   ]
+  libfuzzer_options = [ "max_len=131072" ]
 }
 
 fuzzer_test("net_parse_proxy_host_matching_rules_fuzzer") {
