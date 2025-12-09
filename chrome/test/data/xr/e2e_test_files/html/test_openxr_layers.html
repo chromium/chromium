@@ -1,0 +1,145 @@
+<!doctype html>
+<!--
+Tests WebXR secondary views are correctly exposed when requested for a session.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      // Use 'webgl2' to work around a mysterious context loss on the pixel 7
+      // used by the bot.
+      useWebGL2 = true;
+      immersiveSessionInit = {
+        requiredFeatures: ['layers']
+      };
+
+      let projectionLayer = null;
+      let quadLayer = null;
+      let cylinderLayer = null;
+      let equirectLayer = null;
+      let cubeLayer = null;
+      let glBinding = null;
+      let frameCount = 0;
+
+      const defaultOptions = {
+        layout: 'mono',
+        viewPixelWidth: 1024,
+        viewPixelHeight: 1024,
+      };
+
+      function fillColor(gl, subImage, color) {
+        gl.viewport(
+            subImage.viewport.x, subImage.viewport.y, subImage.viewport.width,
+            subImage.viewport.height);
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - viewport");
+        gl.framebufferTexture2D(
+            gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D,
+            subImage.colorTexture, 0);
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - framebufferTexture2D");
+        gl.clearColor(color[0], color[1], color[2], color[3]);
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - clearColor");
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - clear");
+        gl.finish();
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor");
+      }
+
+      onSessionStartedCallback = function(session) {
+        // Provide a frame buffer for later rendering.
+        gl.bindFramebuffer(gl.FRAMEBUFFER, gl.createFramebuffer());
+      };
+
+      updateRenderStateCallback = function(session, gl) {
+        glBinding = new XRWebGLBinding(session, gl);
+
+        projectionLayer = glBinding.createProjectionLayer(
+            {textureType: 'texture', depthFormat: 0 /*GL_NONE*/});
+
+        const refSpace = sessionInfos[getSessionType(session)].currentRefSpace;
+        const common_transform = new XRRigidTransform({x: 0, y: 1.5, z: -3});
+        const common_options = {
+          ...defaultOptions,
+          space: refSpace,
+          transform: common_transform,
+        };
+
+        quadLayer = glBinding.createQuadLayer(common_options);
+        cylinderLayer = glBinding.createCylinderLayer(common_options);
+        equirectLayer = glBinding.createEquirectLayer(common_options);
+        cubeLayer = glBinding.createCubeLayer(common_options);
+
+        session.updateRenderState({
+          layers:
+              [projectionLayer, quadLayer, cylinderLayer, equirectLayer, cubeLayer]
+        });
+      };
+
+      onImmersiveXRFrameCallback = function(session, frame, gl) {
+        if (++frameCount > 10) {
+          // A few frames should be enough as there's no difference
+          // between frames.
+          done();
+        }
+
+        const pose = frame.getViewerPose(
+            sessionInfos[getSessionType(session)].currentRefSpace);
+        for (const view of pose.views) {
+          let subImage = glBinding.getViewSubImage(projectionLayer, view);
+          fillColor(gl, subImage, [1.0, 0.0, 0.0, 1.0]);  // Red
+        }
+
+        let subImage = glBinding.getSubImage(quadLayer, frame);
+        fillColor(gl, subImage, [0.0, 1.0, 0.0, 1.0]);  // Green
+
+        subImage = glBinding.getSubImage(cylinderLayer, frame);
+        fillColor(gl, subImage, [0.0, 0.0, 1.0, 1.0]);  // Blue
+
+        subImage = glBinding.getSubImage(equirectLayer, frame);
+        fillColor(gl, subImage, [1.0, 1.0, 0.0, 1.0]);  // Yellow
+
+        subImage = glBinding.getSubImage(cubeLayer, frame);
+
+        const cubeFaceColors = [
+          // Layer 0: Positive X (Right) - Red
+          [1.0, 0.0, 0.0, 1.0],
+          // Layer 1: Negative X (Left) - Cyan
+          [0.0, 1.0, 1.0, 1.0],
+          // Layer 2: Positive Y (Top) - Green
+          [0.0, 1.0, 0.0, 1.0],
+          // Layer 3: Negative Y (Bottom) - Magenta
+          [1.0, 0.0, 1.0, 1.0],
+          // Layer 4: Positive Z (back) - Blue
+          [0.0, 0.0, 1.0, 1.0],
+          // Layer 5: Negative Z (front) - Yellow
+          [1.0, 1.0, 0.0, 1.0]
+        ];
+
+        gl.viewport(
+            subImage.viewport.x, subImage.viewport.y,
+            subImage.viewport.width,  // halfWidth,
+            subImage.viewport.height);
+        assert_equals(gl.getError(), gl.NO_ERROR, "viewport");
+        for (let i = 0; i < 6; i++) {
+          gl.framebufferTexture2D(
+              gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
+              gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, subImage.colorTexture, 0);
+          assert_equals(gl.getError(), gl.NO_ERROR, "framebufferTexture2D");
+          const color = cubeFaceColors[i];
+          gl.clearColor(color[0], color[1], color[2], color[3]);
+          assert_equals(gl.getError(), gl.NO_ERROR, "clearColor");
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+          assert_equals(gl.getError(), gl.NO_ERROR, "clear");
+          gl.finish();
+          assert_equals(gl.getError(), gl.NO_ERROR, "finish");
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -12,7 +12,8 @@ WebXR page that only submits one frame.
     <script src="../resources/webxr_boilerplate.js"></script>
     <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
     <script>
-      shouldSetBaseLayer = false;
+      // Do not create the baseLayer.
+      updateRenderStateCallback = null;
       var frame_count = 0;
       var frame_expected = false;
       var delay_ended = false;

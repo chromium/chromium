@@ -17,6 +17,7 @@ var glAttribs = {
   xrCompatible: true,
 };
 var gl = null;
+var useWebGL2 = false;
 var onMagicWindowXRFrameCallback = null;
 var onImmersiveXRFrameCallback = null;
 var onARFrameCallback = null;
@@ -25,7 +26,11 @@ var onPoseCallback = null;
 var shouldSubmitFrame = true;
 var hasPresentedFrame = false;
 var arSessionRequestWouldTriggerPermissionPrompt = null;
-var shouldSetBaseLayer = true;
+// Set updateRenderStateCallback to null if the test doesn't want to
+// create any layer.
+var updateRenderStateCallback = function(session, gl) {
+  session.updateRenderState({baseLayer: new XRWebGLLayer(session, gl)});
+}
 
 var sessionTypes = Object.freeze({
   IMMERSIVE: 1,
@@ -159,7 +164,11 @@ function onSessionStarted(session) {
   session.addEventListener('end', onSessionEnded);
   // Initialize the WebGL context for use with XR if it hasn't been already
   if (!gl) {
-    gl = webglCanvas.getContext('webgl', glAttribs);
+    if (useWebGL2) {
+      gl = webglCanvas.getContext('webgl2', glAttribs);
+    } else {
+      gl = webglCanvas.getContext('webgl', glAttribs);
+    }
     if (!gl) {
       throw 'Failed to get WebGL context';
     }
@@ -173,13 +182,13 @@ function onSessionStarted(session) {
     onSessionStartedCallback(session);
   }
 
-  if (shouldSetBaseLayer) {
-    session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
-  }
-
+  // Get the reference space before creating layers.
   session.requestReferenceSpace(referenceSpaceMap[sessionType])
-      .then( (refSpace) => {
+      .then((refSpace) => {
         sessionInfos[sessionType].currentRefSpace = refSpace;
+        if (updateRenderStateCallback) {
+          updateRenderStateCallback(session, gl);
+        }
         session.requestAnimationFrame(onXRFrame);
       });
 }
@@ -205,7 +214,10 @@ function onXRFrame(t, frame) {
     return;
   }
 
-  gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+  if (session.renderState.baseLayer) {
+    gl.bindFramebuffer(
+        gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+  }
 
   // If in an immersive session, set canvas to blue.
   // If in an AR session, just draw the camera.

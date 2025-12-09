@@ -175,7 +175,10 @@ WebGLUnownedTexture* XRWebGLSharedImageSwapChain::ProduceTexture() {
 
   const XRSharedImageData& content_image_data = layer()->SharedImage();
 
-  CHECK(content_image_data.shared_image);
+  if (!content_image_data.shared_image) {
+    return nullptr;
+  }
+
   CHECK(content_image_data.sync_token.HasData());
 
   // Create a texture backed by the shared image.

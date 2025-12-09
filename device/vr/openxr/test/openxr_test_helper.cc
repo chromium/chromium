@@ -72,6 +72,10 @@ const std::vector<const char*>& OpenXrTestHelper::GetSupportedExtensions() {
 #elif BUILDFLAG(IS_ANDROID)
       XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME,
       XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME,
+      // For layers.
+      XR_KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME,
+      XR_KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME,
+      XR_KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME,
 #endif
   });
   return *kExtensions;
@@ -94,7 +98,6 @@ OpenXrTestHelper::OpenXrTestHelper()
     // test_hook_;
     : system_id_(0),
       session_(XR_NULL_HANDLE),
-      swapchain_(XR_NULL_HANDLE),
       frame_count_(0),
       session_state_(XR_SESSION_STATE_UNKNOWN),
       frame_begin_(false),
@@ -129,7 +132,7 @@ OpenXrTestHelper::~OpenXrTestHelper() = default;
 
 void OpenXrTestHelper::Reset() {
   session_ = XR_NULL_HANDLE;
-  swapchain_ = XR_NULL_HANDLE;
+  swapchains_.clear();
   session_state_ = XR_SESSION_STATE_UNKNOWN;
 
   system_id_ = 0;
@@ -331,17 +334,13 @@ XrResult OpenXrTestHelper::DestroySession(XrSession session) {
 }
 
 XrSwapchain OpenXrTestHelper::CreateSwapchain() {
-  // Our OpenXR backend currently only creates one swapchain at a time, so any
-  // previously created swapchain must have been destroyed.
-  DCHECK_EQ(swapchain_, static_cast<XrSwapchain>(XR_NULL_HANDLE));
-  swapchain_ = TreatIntegerAsHandle<XrSwapchain>(++next_handle_);
-  return swapchain_;
+  auto swapchain = TreatIntegerAsHandle<XrSwapchain>(++next_handle_);
+  swapchains_.insert(swapchain);
+  return swapchain;
 }
 
 XrResult OpenXrTestHelper::DestroySwapchain(XrSwapchain swapchain) {
-  RETURN_IF_XR_FAILED(ValidateSwapchain(swapchain));
-  swapchain_ = XR_NULL_HANDLE;
-  return XR_SUCCESS;
+  return swapchains_.erase(swapchain) ? XR_SUCCESS : XR_ERROR_HANDLE_INVALID;
 }
 
 XrInstance OpenXrTestHelper::CreateInstance() {
@@ -1506,9 +1505,9 @@ XrResult OpenXrTestHelper::ValidateSession(XrSession session) const {
 }
 
 XrResult OpenXrTestHelper::ValidateSwapchain(XrSwapchain swapchain) const {
-  RETURN_IF(swapchain_ == XR_NULL_HANDLE, XR_ERROR_HANDLE_INVALID,
+  RETURN_IF(swapchains_.empty(), XR_ERROR_HANDLE_INVALID,
             "XrSwapchain has not been queried");
-  RETURN_IF(swapchain != swapchain_, XR_ERROR_HANDLE_INVALID,
+  RETURN_IF(!swapchains_.contains(swapchain), XR_ERROR_HANDLE_INVALID,
             "XrSwapchain invalid");
 
   return XR_SUCCESS;

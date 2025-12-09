@@ -71,6 +71,9 @@ XrBrowserTestBase::XrBrowserTestBase() : env_(base::Environment::Create()) {
   enable_features_.push_back(features::kLogJsConsoleMessages);
 #if BUILDFLAG(ENABLE_VR)
   enable_features_.push_back(device::features::kWebXrVisibleBlurred);
+#if BUILDFLAG(IS_ANDROID)
+  enable_features_.push_back(device::features::kWebXRLayers);
+#endif
 #endif
 }
 

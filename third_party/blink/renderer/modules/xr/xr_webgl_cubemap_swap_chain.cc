@@ -220,6 +220,10 @@ void XRWebGLCubemapSwapChain::OnFrameEnd() {
   WebGLUnownedTexture* source_texture = GetCurrentTexture();
   WebGLUnownedTexture* target_texture = wrapped_swapchain_->GetCurrentTexture();
 
+  if (!source_texture || !target_texture) {
+    return;
+  }
+
   CHECK_EQ(descriptor().width, descriptor().height);
   CHECK_EQ(wrapped_swapchain_->descriptor().width, descriptor().width);
   CHECK_EQ(wrapped_swapchain_->descriptor().height, descriptor().height);

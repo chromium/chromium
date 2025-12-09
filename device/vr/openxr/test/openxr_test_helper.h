@@ -17,6 +17,7 @@
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/test/test_hook.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -231,7 +232,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   // to validate that they were queried before being used.
   XrSystemId system_id_;
   XrSession session_;
-  XrSwapchain swapchain_;
+  absl::flat_hash_set<XrSwapchain> swapchains_;
   XrHandTrackerEXT left_hand_;
   XrHandTrackerEXT right_hand_;
 

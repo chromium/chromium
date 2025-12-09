@@ -2142,6 +2142,7 @@ if (is_android) {
         "../browser/vr/webxr_vr_frame_pose_browser_test.cc",
         "../browser/vr/webxr_vr_indicators_browser_test.cc",
         "../browser/vr/webxr_vr_input_browser_test.cc",
+        "../browser/vr/webxr_vr_layers_browser_test.cc",
         "../browser/vr/webxr_vr_permission_browser_test.cc",
         "../browser/vr/webxr_vr_permission_request_browser_test.cc",
         "../browser/vr/webxr_vr_pixel_browser_test.cc",
