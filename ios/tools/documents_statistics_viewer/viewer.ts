@@ -154,8 +154,9 @@ function sortItems(items: Item[], sorting: string): Item[] {
           return 1;
         }
         return a.accessed.localeCompare(b.accessed);
+      default:
+        return 0;
     }
-    return 0;
   });
   return sortedItems;
 }
