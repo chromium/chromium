@@ -269,13 +269,24 @@ void EnclaveAuthenticatorTestBase::AddTestPasskeyToModel() {
 
 void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval(
     base::span<const uint8_t> trusted_vault_key,
-    int trusted_vault_key_version) {
-  enclave_manager().StoreKeys(kSyncGaiaId, {base::ToVector(trusted_vault_key)},
-                              trusted_vault_key_version);
+    int trusted_vault_key_version,
+    bool with_store_keys_lock) {
+  if (with_store_keys_lock) {
+    auto store_keys_lock = enclave_manager().GetStoreKeysLock();
+    enclave_manager().StoreKeys(kSyncGaiaId,
+                                {base::ToVector(trusted_vault_key)},
+                                trusted_vault_key_version);
+  } else {
+    enclave_manager().StoreKeys(kSyncGaiaId,
+                                {base::ToVector(trusted_vault_key)},
+                                trusted_vault_key_version);
+  }
 }
 
-void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval() {
-  SimulateTrustedVaultKeyRetrieval(kSecurityDomainSecret, kSecretVersion);
+void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval(
+    bool with_store_keys_lock) {
+  SimulateTrustedVaultKeyRetrieval(kSecurityDomainSecret, kSecretVersion,
+                                   with_store_keys_lock);
 }
 
 void EnclaveAuthenticatorTestBase::
@@ -286,7 +297,7 @@ void EnclaveAuthenticatorTestBase::
   // indicates an opportunistic key retrieval logic. In this case (if either a
   // system UV or a usable GPM PIN is present) Enclave Manager stores keys and
   // adds device to account.
-  SimulateTrustedVaultKeyRetrieval();
+  SimulateTrustedVaultKeyRetrieval(/*with_store_keys_lock=*/false);
   EXPECT_EQ(enclave_keys_waiter.Wait(),
             EnclaveManager::OutOfContextRecoveryOutcome::
                 kStoreKeysFromOpportunisticFlowSucceeded);
@@ -361,10 +372,9 @@ void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
     const std::string& pin_value) {
   WaitForEnclaveLoaded();
 
-  {
-    auto store_keys_lock = enclave_manager().GetStoreKeysLock();
-    SimulateTrustedVaultKeyRetrieval(kSecurityDomainSecret, /*version=*/0);
-  }
+  SimulateTrustedVaultKeyRetrieval(kSecurityDomainSecret,
+                                   /*trusted_vault_key_version=*/0,
+                                   /*with_store_keys_lock=*/true);
 
   base::test::TestFuture<bool> add_device_future;
   enclave_manager().AddDeviceAndPINToAccount(

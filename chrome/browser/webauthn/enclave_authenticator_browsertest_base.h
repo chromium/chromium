@@ -95,10 +95,11 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   bool IsUVPAA();
   void SetBiometricsEnabled(bool enabled);
   void AddTestPasskeyToModel();
-  void SimulateTrustedVaultKeyRetrieval();
+  void SimulateTrustedVaultKeyRetrieval(bool with_store_keys_lock);
   void SimulateTrustedVaultKeyRetrieval(
       base::span<const uint8_t> trusted_vault_key,
-      int trusted_vault_key_version);
+      int trusted_vault_key_version,
+      bool with_store_keys_lock);
   void SimulateOpportunisticTrustedVaultKeyRetrieval();
 
   // Convenience methods for setting up the mock trusted vault connection:
