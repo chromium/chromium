@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "chrome/browser/passage_embeddings/embeddings_candidate_generator.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -148,10 +149,9 @@ PageEmbeddingsService::PageEmbeddingsService(
 PageEmbeddingsService::PageEmbeddingsService(
     page_content_annotations::PageContentExtractionService*
         page_content_extraction_service)
-    : PageEmbeddingsService(
-          PageEmbeddingsService::EmbeddingCandidatesGenerator(),
-          page_content_extraction_service,
-          nullptr) {}
+    : PageEmbeddingsService(base::BindRepeating(&GenerateEmbeddingsCandidates),
+                            page_content_extraction_service,
+                            nullptr) {}
 
 PageEmbeddingsService::~PageEmbeddingsService() = default;
 

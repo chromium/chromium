@@ -8,6 +8,21 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
+source_set("page_content_annotations") {
+  sources = [
+    "page_content_annotations_service_factory.h",
+    "page_content_annotations_web_contents_observer.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/continuous_search/browser",
+    "//components/continuous_search/common",
+    "//components/page_content_annotations/core",
+    "//content/public/browser",
+  ]
+}
+
 source_set("extraction_service") {
   sources = [
     "page_content_extraction_service.h",

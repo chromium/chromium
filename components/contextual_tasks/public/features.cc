@@ -45,6 +45,10 @@ const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
 const base::FeatureParam<double> kMinMultiSignalScore{
     &kContextualTasksContext, "ContextualTasksContextMinMultiSignalScore", 0.8};
 
+const base::FeatureParam<double> kContentVisibilityThreshold{
+    &kContextualTasksContext,
+    "ContextualTasksContextContentVisibilityThreshold", 0.7};
+
 const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
     &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
     1.0};
