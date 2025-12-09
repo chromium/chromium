@@ -979,9 +979,7 @@ TEST_F(MP4StreamParserTest, Vp9) {
                             VideoColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED));
 
-  ASSERT_TRUE(video_decoder_config_.hdr_metadata().has_value());
-
-  const auto& hdr_metadata = *video_decoder_config_.hdr_metadata();
+  const auto& hdr_metadata = video_decoder_config_.hdr_metadata();
   EXPECT_EQ(hdr_metadata.cta_861_3->max_content_light_level, 1000u);
   EXPECT_EQ(hdr_metadata.cta_861_3->max_frame_average_light_level, 640u);
 

@@ -480,8 +480,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
           GetHdrMetadataAgtmFromItutT35(p->itut_t35->country_code,
                                         t35_payload_span);
       if (agtm.has_value()) {
-        gfx::HDRMetadata hdr_metadata =
-            config_.hdr_metadata().value_or(gfx::HDRMetadata());
+        gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
         // Overwrite existing AGTM metadata if any.
         hdr_metadata.agtm = agtm;
         config_.set_hdr_metadata(hdr_metadata);

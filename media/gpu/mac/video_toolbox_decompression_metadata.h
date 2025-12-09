@@ -46,7 +46,7 @@ struct MEDIA_GPU_EXPORT VideoToolboxDecodeMetadata {
   base::TimeDelta duration = kNoTimestamp;
   VideoAspectRatio aspect_ratio;
   gfx::ColorSpace color_space;
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
 
   // The frame should be dropped after decoding. Used to implement Reset().
   bool discard = false;

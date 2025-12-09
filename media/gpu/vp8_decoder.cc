@@ -200,9 +200,9 @@ VideoColorSpace VP8Decoder::GetVideoColorSpace() const {
   return VideoColorSpace();
 }
 
-std::optional<gfx::HDRMetadata> VP8Decoder::GetHDRMetadata() const {
+gfx::HDRMetadata VP8Decoder::GetHDRMetadata() const {
   // VP8 doesn't support HDR metadata.
-  return std::nullopt;
+  return gfx::HDRMetadata();
 }
 
 size_t VP8Decoder::GetRequiredNumOfPictures() const {

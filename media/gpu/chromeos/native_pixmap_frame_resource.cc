@@ -350,13 +350,12 @@ void NativePixmapFrameResource::set_color_space(
   color_space_ = color_space;
 }
 
-const std::optional<gfx::HDRMetadata>& NativePixmapFrameResource::hdr_metadata()
-    const {
+const gfx::HDRMetadata& NativePixmapFrameResource::hdr_metadata() const {
   return hdr_metadata_;
 }
 
 void NativePixmapFrameResource::set_hdr_metadata(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata) {
   hdr_metadata_ = hdr_metadata;
 }
 

@@ -1044,11 +1044,9 @@ TEST_F(AV1DecoderTest, DecodeStreamWithAgtmMetadata) {
     testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
   }
   EXPECT_EQ(results, expected);
-  const std::optional<gfx::HDRMetadata> hdr_metadata =
-      decoder_->GetHDRMetadata();
-  ASSERT_TRUE(hdr_metadata.has_value());
-  ASSERT_TRUE(hdr_metadata->agtm.has_value());
-  EXPECT_EQ(hdr_metadata->agtm->payload->size(), 99u);
+  const gfx::HDRMetadata hdr_metadata = decoder_->GetHDRMetadata();
+  ASSERT_TRUE(hdr_metadata.agtm.has_value());
+  EXPECT_EQ(hdr_metadata.agtm->payload->size(), 99u);
 }
 
 // TODO(hiroh): Add more tests: reference frame tracking, render size change,

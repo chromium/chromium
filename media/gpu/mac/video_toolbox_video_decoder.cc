@@ -360,7 +360,7 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
   }
 
   metadata->hdr_metadata = accelerator_->GetHDRMetadata();
-  if (!metadata->hdr_metadata) {
+  if (metadata->hdr_metadata.IsEmpty()) {
     // Note: The VP9 accelerator contains this same logic so that the format
     // description can include HDR metadata (there is no in-band HDR metadata
     // in VP9). The other accelerators use only in-band HDR metadata.

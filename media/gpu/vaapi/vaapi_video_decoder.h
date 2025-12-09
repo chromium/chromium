@@ -221,8 +221,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   VideoCodecProfile profile_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoColorSpace color_space_ GUARDED_BY_CONTEXT(sequence_checker_);
-  std::optional<gfx::HDRMetadata> hdr_metadata_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  gfx::HDRMetadata hdr_metadata_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Aspect ratio from the config.
   VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);

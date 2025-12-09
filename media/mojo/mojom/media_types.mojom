@@ -235,7 +235,7 @@ struct VideoDecoderConfig {
   array<uint8> extra_data;
   EncryptionScheme encryption_scheme;
   VideoColorSpace color_space_info;
-  gfx.mojom.HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata hdr_metadata;
 };
 
 // Native struct media::SubsampleEntry;
@@ -476,7 +476,7 @@ struct VideoFrame {
   VideoFrameMetadata metadata;
 
   gfx.mojom.ColorSpace color_space;
-  gfx.mojom.HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata hdr_metadata;
 };
 
 // Possible choices for storing VideoFrame data.

@@ -557,11 +557,9 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Apple's Rec709) with sRGB, for compatibility with existing behavior.
   gfx::ColorSpace CompatRGBColorSpace() const;
 
-  const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
-    return hdr_metadata_;
-  }
+  const gfx::HDRMetadata& hdr_metadata() const { return hdr_metadata_; }
 
-  void set_hdr_metadata(const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+  void set_hdr_metadata(const gfx::HDRMetadata& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
 
@@ -892,7 +890,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const ID unique_id_;
 
   gfx::ColorSpace color_space_;
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Sampler conversion information which is used in vulkan context for android.

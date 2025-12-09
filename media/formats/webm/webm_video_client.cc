@@ -94,8 +94,9 @@ bool WebMVideoClient::InitializeConfig(
   if (colour_parsed_) {
     WebMColorMetadata color_metadata = colour_parser_.GetWebMColorMetadata();
     color_space = color_metadata.color_space;
-    if (color_metadata.hdr_metadata.has_value())
-      config->set_hdr_metadata(*color_metadata.hdr_metadata);
+    if (!color_metadata.hdr_metadata.IsEmpty()) {
+      config->set_hdr_metadata(color_metadata.hdr_metadata);
+    }
     is_8bit = color_metadata.BitsPerChannel <= 8;
   }
 
@@ -111,7 +112,7 @@ bool WebMVideoClient::InitializeConfig(
     video_codec = VideoCodec::kVP9;
     profile = GetVP9CodecProfile(
         codec_private, color_space.GuessGfxColorSpace().IsHDR() ||
-                           config->hdr_metadata().has_value() || !is_8bit);
+                           !config->hdr_metadata().IsEmpty() || !is_8bit);
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   } else if (codec_id == "V_AV1") {
     video_codec = VideoCodec::kAV1;

@@ -1611,8 +1611,9 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
               return kRanOutOfSurfaces;
             if (current_decrypt_config_)
               curr_pic_->set_decrypt_config(current_decrypt_config_->Clone());
-            if (hdr_metadata_.has_value())
+            if (!hdr_metadata_.IsEmpty()) {
               curr_pic_->set_hdr_metadata(hdr_metadata_);
+            }
 
             state_ = State::kTryNewFrame;
           }
@@ -1735,17 +1736,11 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
                         // 3. Both container and bitstream.
                         // Thus we should also extract HDR metadata here in case
                         // we miss the information.
-                        if (!hdr_metadata_.has_value()) {
-                          hdr_metadata_.emplace();
-                        }
-                        hdr_metadata_->cta_861_3 = info.ToGfx();
+                        hdr_metadata_.cta_861_3 = info.ToGfx();
                         return true;
                       },
                       [this](const H264SEIMasteringDisplayInfo& info) {
-                        if (!hdr_metadata_.has_value()) {
-                          hdr_metadata_.emplace();
-                        }
-                        hdr_metadata_->smpte_st_2086 = info.ToGfx();
+                        hdr_metadata_.smpte_st_2086 = info.ToGfx();
                         return true;
                       },
                       [](const std::monostate) { return true; }},
@@ -1791,7 +1786,7 @@ VideoColorSpace H264Decoder::GetVideoColorSpace() const {
   return picture_color_space_;
 }
 
-std::optional<gfx::HDRMetadata> H264Decoder::GetHDRMetadata() const {
+gfx::HDRMetadata H264Decoder::GetHDRMetadata() const {
   return hdr_metadata_;
 }
 

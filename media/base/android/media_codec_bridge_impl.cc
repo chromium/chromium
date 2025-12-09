@@ -449,9 +449,9 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
   auto j_csd1 = ToJavaByteArray(env, config.csd1);
 
   std::unique_ptr<JniHdrMetadata> jni_hdr_metadata;
-  if (config.hdr_metadata.has_value()) {
+  if (!config.hdr_metadata.IsEmpty()) {
     jni_hdr_metadata = std::make_unique<JniHdrMetadata>(
-        config.container_color_space, config.hdr_metadata.value());
+        config.container_color_space, config.hdr_metadata);
   }
   auto j_hdr_metadata = jni_hdr_metadata ? jni_hdr_metadata->obj() : nullptr;
   auto j_decoder_name = ConvertUTF8ToJavaString(env, config.name);

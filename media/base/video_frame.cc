@@ -1436,8 +1436,8 @@ std::string VideoFrame::AsHumanReadableString() const {
   s << ConfigToString(format(), storage_type_, coded_size(), visible_rect_,
                       natural_size_)
     << " timestamp:" << timestamp_.InMicroseconds()
-    << " color_space: " << ColorSpace().ToString() << " hdr_metadata: "
-    << (hdr_metadata_ ? hdr_metadata_->ToString() : "unset");
+    << " color_space: " << ColorSpace().ToString()
+    << " hdr_metadata: " << hdr_metadata_.ToString();
   if (HasSharedImage()) {
     s << " shared_image: {"
       << " format: " << shared_image()->format().ToString()

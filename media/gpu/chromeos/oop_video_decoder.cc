@@ -100,7 +100,7 @@ scoped_refptr<FrameResource> CreateDecodedFrameResource(
     base::TimeDelta timestamp,
     const VideoFrameMetadata& metadata,
     const gfx::ColorSpace& color_space,
-    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata) {
   // The VideoFrame mojo traits already perform an extensive validation of the
   // frame. No additional validations need to take place.
 
@@ -1105,7 +1105,7 @@ void OOPVideoDecoder::OnVideoFrameDecoded(
     const gfx::Rect visible_rect = frame->visible_rect();
     const gfx::Size natural_size = frame->natural_size();
     const gfx::ColorSpace color_space = frame->ColorSpace();
-    const std::optional<gfx::HDRMetadata> hdr_metadata = frame->hdr_metadata();
+    const gfx::HDRMetadata& hdr_metadata = frame->hdr_metadata();
     const VideoFrameMetadata metadata = metadata_to_propagate;
     const base::UnguessableToken received_tracking_token =
         *frame->metadata().tracking_token;

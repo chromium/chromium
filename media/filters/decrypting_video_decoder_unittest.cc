@@ -570,7 +570,7 @@ TEST_F(DecryptingVideoDecoderTest, ColorSpace) {
   EnterNormalDecodingState();
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsValid());
   EXPECT_FALSE(decoded_video_frame_->ColorSpace().IsHDR());
-  EXPECT_FALSE(decoded_video_frame_->hdr_metadata());
+  EXPECT_TRUE(decoded_video_frame_->hdr_metadata().IsEmpty());
 }
 
 // Test the case where ColorSpace and HDRMetadata in the config are set in the
@@ -580,8 +580,8 @@ TEST_F(DecryptingVideoDecoderTest, HDRMetadata) {
   EnterNormalDecodingState();
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsValid());
   EXPECT_TRUE(decoded_video_frame_->ColorSpace().IsHDR());
-  EXPECT_TRUE(decoded_video_frame_->hdr_metadata());
-  EXPECT_TRUE(decoded_video_frame_->hdr_metadata()->IsValid());
+  EXPECT_FALSE(decoded_video_frame_->hdr_metadata().IsEmpty());
+  EXPECT_TRUE(decoded_video_frame_->hdr_metadata().IsValid());
 }
 
 }  // namespace media

@@ -148,7 +148,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
   VideoColorSpace GetVideoColorSpace() const override;
-  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
+  gfx::HDRMetadata GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -191,7 +191,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   VideoColorSpace picture_color_space_;
   uint8_t bit_depth_ = 0;
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 
   int32_t stream_id_ = 0;
   std::unique_ptr<DecryptConfig> decrypt_config_;

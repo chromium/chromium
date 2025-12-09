@@ -344,8 +344,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     const std::optional<gfx::HdrMetadataAgtm> agtm =
         GetHdrMetadataAgtmFromItutT35(country_code.data()[0], payload);
     if (agtm.has_value()) {
-      gfx::HDRMetadata hdr_metadata =
-          config_.hdr_metadata().value_or(gfx::HDRMetadata());
+      gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
       hdr_metadata.agtm = agtm;
       config_.set_hdr_metadata(hdr_metadata);
     }

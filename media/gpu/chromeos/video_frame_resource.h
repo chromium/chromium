@@ -57,9 +57,8 @@ class VideoFrameResource : public FrameResource {
   const base::UnguessableToken& tracking_token() const override;
   gfx::ColorSpace ColorSpace() const override;
   void set_color_space(const gfx::ColorSpace& color_space) override;
-  const std::optional<gfx::HDRMetadata>& hdr_metadata() const override;
-  void set_hdr_metadata(
-      const std::optional<gfx::HDRMetadata>& hdr_metadata) override;
+  const gfx::HDRMetadata& hdr_metadata() const override;
+  void set_hdr_metadata(const gfx::HDRMetadata& hdr_metadata) override;
   base::TimeDelta timestamp() const override;
   void set_timestamp(base::TimeDelta timestamp) override;
   void AddDestructionObserver(base::OnceClosure callback) override;

@@ -51,10 +51,8 @@ class MEDIA_GPU_EXPORT CodecPicture
     colorspace_ = colorspace;
   }
 
-  const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
-    return hdr_metadata_;
-  }
-  void set_hdr_metadata(const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+  const gfx::HDRMetadata& hdr_metadata() const { return hdr_metadata_; }
+  void set_hdr_metadata(const gfx::HDRMetadata& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
 
@@ -67,7 +65,7 @@ class MEDIA_GPU_EXPORT CodecPicture
   gfx::Rect visible_rect_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
   VideoColorSpace colorspace_;
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 };
 
 }  // namespace media

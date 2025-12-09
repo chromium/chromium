@@ -308,7 +308,7 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
       static_cast<int>(gfx_cs.GetPrimaryID()),
       static_cast<int>(gfx_cs.GetTransferID()),
       static_cast<int>(gfx_cs.GetMatrixID()),
-      static_cast<int>(gfx_cs.GetRangeID()), config.hdr_metadata().has_value());
+      static_cast<int>(gfx_cs.GetRangeID()), !config.hdr_metadata().IsEmpty());
 
   using Self = MojoVideoDecoderService;
   decoder_->Initialize(

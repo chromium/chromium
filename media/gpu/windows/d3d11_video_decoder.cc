@@ -964,8 +964,11 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   if (picture_color_space.IsHDR()) {
     // Some streams may have varying metadata, so bitstream metadata should be
     // preferred over metadata provide by the configuration.
-    frame->set_hdr_metadata(picture->hdr_metadata() ? picture->hdr_metadata()
-                                                    : config_.hdr_metadata());
+    gfx::HDRMetadata hdr_metadata = picture->hdr_metadata();
+    if (hdr_metadata.IsEmpty()) {
+      hdr_metadata = config_.hdr_metadata();
+    }
+    frame->set_hdr_metadata(hdr_metadata);
   }
 
   frame->metadata().is_webgpu_compatible =

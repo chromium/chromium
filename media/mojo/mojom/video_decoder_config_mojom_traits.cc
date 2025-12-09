@@ -52,7 +52,7 @@ bool StructTraits<media::mojom::VideoDecoderConfigDataView,
   if (!input.ReadColorSpaceInfo(&color_space))
     return false;
 
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
   if (!input.ReadHdrMetadata(&hdr_metadata))
     return false;
 
@@ -64,11 +64,8 @@ bool StructTraits<media::mojom::VideoDecoderConfigDataView,
                      natural_size, extra_data, encryption_scheme);
 
   output->set_level(input.level());
-
   output->set_aspect_ratio(aspect_ratio);
-
-  if (hdr_metadata)
-    output->set_hdr_metadata(hdr_metadata.value());
+  output->set_hdr_metadata(hdr_metadata);
 
   if (!output->IsValidConfig())
     return false;

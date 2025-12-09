@@ -553,10 +553,10 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     return false;
   frame->set_color_space(color_space);
 
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
   if (!input.ReadHdrMetadata(&hdr_metadata))
     return false;
-  frame->set_hdr_metadata(std::move(hdr_metadata));
+  frame->set_hdr_metadata(hdr_metadata);
 
   *output = std::move(frame);
   return true;

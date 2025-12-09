@@ -771,8 +771,7 @@ VideoFrameExternalResource VideoResourceUpdater::CopyHardwareResource(
       viz::TransferableResource::ResourceSource::kVideo,
       hardware_resource->sync_token(), overrides);
 
-  transferable_resource.hdr_metadata =
-      video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
+  transferable_resource.hdr_metadata = video_frame->hdr_metadata();
   transferable_resource.needs_detiling = video_frame->metadata().needs_detiling;
 
   external_resource.resource = std::move(transferable_resource);
@@ -821,8 +820,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
   auto transfer_resource = viz::TransferableResource::Make(
       shared_image, viz::TransferableResource::ResourceSource::kVideo,
       video_frame->acquire_sync_token(), overrides);
-  transfer_resource.hdr_metadata =
-      video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
+  transfer_resource.hdr_metadata = video_frame->hdr_metadata();
   transfer_resource.needs_detiling = video_frame->metadata().needs_detiling;
   if (video_frame->metadata().read_lock_fences_enabled) {
     transfer_resource.synchronization_type =
@@ -1259,8 +1257,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
         frame_resource->shared_image(),
         viz::TransferableResource::ResourceSource::kVideo,
         frame_resource->sync_token());
-    transferable_resource.hdr_metadata =
-        video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
+    transferable_resource.hdr_metadata = video_frame->hdr_metadata();
     transferable_resource.needs_detiling =
         video_frame->metadata().needs_detiling;
     external_resource.resource = std::move(transferable_resource);
@@ -1285,8 +1282,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
       frame_resource->shared_image(),
       viz::TransferableResource::ResourceSource::kVideo,
       frame_resource->sync_token());
-  transferable_resource.hdr_metadata =
-      video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
+  transferable_resource.hdr_metadata = video_frame->hdr_metadata();
 
   external_resource.resource = std::move(transferable_resource);
   external_resource.release_callback =

@@ -117,8 +117,8 @@ std::string VideoDecoderConfig::AsHumanReadableString() const {
     << ", flipped: " << video_transformation().mirrored
     << ", color space: " << color_space_info().ToGfxColorSpace().ToString();
 
-  if (hdr_metadata().has_value()) {
-    s << ", hdr metadata: " << hdr_metadata()->ToString();
+  if (!hdr_metadata().IsEmpty()) {
+    s << ", hdr metadata: " << hdr_metadata().ToString();
   }
 
   return s.str();

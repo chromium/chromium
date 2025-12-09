@@ -127,13 +127,12 @@ void VideoFrameResource::set_color_space(const gfx::ColorSpace& color_space) {
   GetMutableVideoFrame()->set_color_space(color_space);
 }
 
-const std::optional<gfx::HDRMetadata>& VideoFrameResource::hdr_metadata()
-    const {
+const gfx::HDRMetadata& VideoFrameResource::hdr_metadata() const {
   return frame_->hdr_metadata();
 }
 
 void VideoFrameResource::set_hdr_metadata(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata) {
   GetMutableVideoFrame()->set_hdr_metadata(hdr_metadata);
 }
 

@@ -338,7 +338,7 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
   }
 
   // Attach the HDR metadata from the `config_` if it's not set on the `frame`.
-  if (!frame->hdr_metadata() && config_.hdr_metadata()) {
+  if (frame->hdr_metadata().IsEmpty() && !config_.hdr_metadata().IsEmpty()) {
     frame->set_hdr_metadata(config_.hdr_metadata());
   }
 

@@ -354,7 +354,7 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
   // will be used to upgrade `video_info` from its backwards
   // compatible codec (e.g., H.264, H.265) to a Dolby Vision codec.
   std::optional<CodecProfileLevel> dv_info;
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
 
   bool IsFormatValid() const;
 

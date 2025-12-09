@@ -32,7 +32,7 @@ class VideoToolboxAV1AcceleratorTest : public testing::Test {
   std::unique_ptr<VideoToolboxAV1Accelerator> accelerator_{
       std::make_unique<VideoToolboxAV1Accelerator>(
           std::make_unique<NullMediaLog>(),
-          std::nullopt,
+          gfx::HDRMetadata(),
           base::BindRepeating(&VideoToolboxAV1AcceleratorTest::OnDecode,
                               base::Unretained(this)),
           base::BindRepeating(&VideoToolboxAV1AcceleratorTest::OnOutput,

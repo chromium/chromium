@@ -57,7 +57,7 @@ class MEDIA_EXPORT VideoCodecConfig {
 
   // VP9 HDR metadata is only embedded in the container. HDR10 metadata is
   // embedded in the video stream.
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
 
   // Enables the async MediaCodec.Callback API. |on_buffers_available_cb|
   // will be called when input or output buffers are available. This will be
