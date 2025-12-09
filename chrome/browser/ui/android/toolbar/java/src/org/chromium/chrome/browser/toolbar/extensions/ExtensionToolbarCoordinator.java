@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
-import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -48,11 +47,6 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
-        // Check if the extension UI is enabled first.
-        if (ExtensionUi.isEnabled(task.getProfile())) {
-            return null;
-        }
-
         ExtensionToolbarCoordinator coordinator =
                 ServiceLoaderUtil.maybeCreate(ExtensionToolbarCoordinator.class);
         if (coordinator == null) {
