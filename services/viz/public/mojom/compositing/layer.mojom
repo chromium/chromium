@@ -92,6 +92,7 @@ struct TextureLayerExtra {
   bool force_texture_to_opaque;
   gfx.mojom.PointF uv_top_left;
   gfx.mojom.PointF uv_bottom_right;
+  bool update_transferable_resource;
   TransferableResource? transferable_resource;
 };
 

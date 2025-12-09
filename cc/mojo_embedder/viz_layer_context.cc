@@ -712,6 +712,7 @@ void SerializeTextureLayerExtra(
   extra->uv_top_left = layer.uv_top_left();
   extra->uv_bottom_right = layer.uv_bottom_right();
 
+  extra->update_transferable_resource = layer.needs_set_resource_push();
   if (layer.needs_set_resource_push()) {
     if (layer.resource_id() != viz::kInvalidResourceId) {
       std::vector<viz::ResourceId> ids(1, layer.resource_id());

@@ -645,6 +645,8 @@ void UpdateTextureLayerExtra(const mojom::TextureLayerExtraPtr& extra,
     }
     layer.SetTransferableResource(extra->transferable_resource.value(),
                                   std::move(release_callback));
+  } else if (extra->update_transferable_resource) {
+    layer.ClearTransferableResource();
   }
 }
 
