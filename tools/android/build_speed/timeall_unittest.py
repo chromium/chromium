@@ -222,9 +222,9 @@ class TimeallTest(unittest.TestCase):
         benchmark_options = kwargs['benchmark_options']
         self.assertEqual(len(benchmark_options), 1)
         options = benchmark_options[0]
-        self.assertEqual(options.benchmark, 'module_internal_nosig')
+        self.assertEqual(options.benchmark, 'chrome_junit_sig')
         self.assertEqual(options.r, 1)
-        self.assertEqual(options.e, 'android_34_google_apis_x64_local.textpb')
+        self.assertEqual(options.e, '')
         self.assertTrue(options.i)
         self.assertTrue(options.n)
         self.assertTrue(options.s)
@@ -243,18 +243,18 @@ class TimeallTest(unittest.TestCase):
 
         # Spot check the first and last generated options
         first_options = benchmark_options[0]
-        self.assertEqual(first_options.benchmark, 'module_internal_nosig')
+        self.assertEqual(first_options.benchmark, 'chrome_junit_sig')
         self.assertEqual(first_options.r, 3)
-        self.assertEqual(first_options.e,
-                         'android_34_google_apis_x64_local.textpb')
+        self.assertEqual(first_options.e, '')
         self.assertTrue(first_options.i)
         self.assertTrue(first_options.n)
         self.assertTrue(first_options.s)
 
         last_options = benchmark_options[-1]
-        self.assertEqual(last_options.benchmark, 'chrome_junit_sig')
+        self.assertEqual(last_options.benchmark, 'cta_test_sig')
         self.assertEqual(last_options.r, 3)
-        self.assertEqual(last_options.e, '')
+        self.assertEqual(last_options.e,
+                         'android_31_google_apis_x64_local.textpb')
         self.assertTrue(last_options.i)
         self.assertFalse(last_options.n)
         self.assertFalse(last_options.s)

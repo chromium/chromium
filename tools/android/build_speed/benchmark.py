@@ -230,9 +230,9 @@ _BENCHMARKS = [
     ),
     Benchmark(
         name='chrome_junit_sig',
-        from_string='public void callCacheTabThumbnail() {',
+        from_string='@Mock Profile mProfile;',
         to_string=
-        'public void NewInterface<sub>Method(){};public void callCacheTabThumbnail() {',  # pylint: disable=line-too-long
+        'public void NewInterface<sub>Method(){};@Mock Profile mProfile;',  # pylint: disable=line-too-long
         change_file=
         'chrome/android/junit/src/org/chromium/chrome/browser/ExampleRobolectricTest.java',  # pylint: disable=line-too-long
         can_run=True,

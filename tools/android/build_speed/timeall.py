@@ -114,11 +114,11 @@ def _run_benchmarks(benchmark_options: list[_Options], **kwargs):
 
 def run(debug: bool):
     benchmarks = [
+        "chrome_junit_sig",
         "module_internal_nosig",
         "chrome_nosig",
         "base_sig",
         "cta_test_sig",
-        "chrome_junit_sig",
     ]
 
     if debug:
