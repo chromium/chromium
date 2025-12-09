@@ -14,6 +14,8 @@
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -170,17 +172,23 @@ class BASE_EXPORT MemoryDumpManager {
   // Holds the state of a process memory dump that needs to be carried over
   // across task runners in order to fulfill an asynchronous CreateProcessDump()
   // request. At any time exactly one task runner owns a
-  // ProcessMemoryDumpAsyncState.
-  struct ProcessMemoryDumpAsyncState {
+  // ProcessMemoryDumpAsyncState, except for a brief overlap while one task
+  // runner is handing off the ownership to the next, when both task runners
+  // hold a reference.
+  class ProcessMemoryDumpAsyncState
+      : public RefCountedThreadSafe<ProcessMemoryDumpAsyncState> {
+   public:
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     ProcessMemoryDumpAsyncState(
         MemoryDumpRequestArgs req_args,
         const MemoryDumpProviderInfo::OrderedSet& dump_providers,
         ProcessMemoryDumpCallback callback,
         scoped_refptr<SequencedTaskRunner> dump_thread_task_runner);
+
     ProcessMemoryDumpAsyncState(const ProcessMemoryDumpAsyncState&) = delete;
     ProcessMemoryDumpAsyncState& operator=(const ProcessMemoryDumpAsyncState&) =
         delete;
-    ~ProcessMemoryDumpAsyncState();
 
     // A ProcessMemoryDump to collect data from MemoryDumpProviders.
     std::unique_ptr<ProcessMemoryDump> process_memory_dump;
@@ -207,6 +215,10 @@ class BASE_EXPORT MemoryDumpManager {
     // threads outside of the lock_ to avoid races when disabling tracing.
     // It is immutable for all the duration of a tracing session.
     const scoped_refptr<SequencedTaskRunner> dump_thread_task_runner;
+
+   private:
+    friend class RefCountedThreadSafe<ProcessMemoryDumpAsyncState>;
+    ~ProcessMemoryDumpAsyncState();
   };
 
   static const int kMaxConsecutiveFailuresCount;
@@ -226,7 +238,7 @@ class BASE_EXPORT MemoryDumpManager {
   // failures in MDP and thread hops, and always calls FinishAsyncProcessDump()
   // at the end.
   void ContinueAsyncProcessDump(
-      ProcessMemoryDumpAsyncState* owned_pmd_async_state);
+      scoped_refptr<ProcessMemoryDumpAsyncState> pmd_async_state);
 
   // Invokes OnMemoryDump() of the given MDP. Should be called on the MDP task
   // runner.
@@ -234,7 +246,7 @@ class BASE_EXPORT MemoryDumpManager {
                           ProcessMemoryDump* pmd);
 
   void FinishAsyncProcessDump(
-      std::unique_ptr<ProcessMemoryDumpAsyncState> pmd_async_state);
+      scoped_refptr<ProcessMemoryDumpAsyncState> pmd_async_state);
 
   // Helper for RegierDumpProvider* functions.
   void RegisterDumpProviderInternal(
