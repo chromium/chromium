@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.Adapter;
+import android.widget.PopupWindow;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.LayoutRes;
@@ -183,7 +184,10 @@ class AppMenuHandlerImpl
                                 AppMenuHandlerImpl.this,
                                 /* startIndex= */ index,
                                 /* withAssertions= */ false);
-                        mAppMenu.updateMenuHeight();
+                        PopupWindow mainPopup = mAppMenu.getPopup();
+                        if (mainPopup != null && mainPopup.isShowing()) {
+                            mAppMenu.updateMenuHeight();
+                        }
                     }
 
                     @Override
@@ -195,7 +199,10 @@ class AppMenuHandlerImpl
                                 AppMenuHandlerImpl.this,
                                 /* startIndex= */ index,
                                 /* withAssertions= */ false);
-                        mAppMenu.updateMenuHeight();
+                        PopupWindow mainPopup = mAppMenu.getPopup();
+                        if (mainPopup != null && mainPopup.isShowing()) {
+                            mAppMenu.updateMenuHeight();
+                        }
                     }
                 };
     }
