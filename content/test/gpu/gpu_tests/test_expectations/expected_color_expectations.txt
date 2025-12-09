@@ -137,6 +137,8 @@ crbug.com/446124895 [ android android-pixel-10 ] ExpectedColor_MediaRecorderFrom
 
 crbug.com/458633863 [ win qualcomm-0x36334330 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
+crbug.com/467247264 [ win11 nvidia-0x2184 ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
