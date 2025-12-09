@@ -12232,7 +12232,6 @@ from previous Chrome versions.
   <int value="-706159808" label="QuickAnswersOnEditableText:disabled"/>
   <int value="-706106753" label="AutofillGranularFillingAvailable:disabled"/>
   <int value="-705746939" label="ChromeDuet:enabled"/>
-  <int value="-705464246" label="ChromeCartDomBasedHeuristics:enabled"/>
   <int value="-705262196"
       label="OpenAllProfilesFromProfilePickerExperiment:disabled"/>
   <int value="-705212373" label="IncognitoNtpRevamp:disabled"/>
@@ -12702,7 +12701,6 @@ from previous Chrome versions.
   <int value="-540972085" label="ManagedConfiguration:enabled"/>
   <int value="-540150399" label="TapVisualizerApp:enabled"/>
   <int value="-539515670" label="CrOSLateBootArcVmmSwap:disabled"/>
-  <int value="-538728016" label="ChromeCartDomBasedHeuristics:disabled"/>
   <int value="-538448229" label="MaxUnthrottledTimeoutNestingLevel:enabled"/>
   <int value="-538398895"
       label="EnterpriseUpdatedProfileCreationScreen:disabled"/>
