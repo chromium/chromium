@@ -13,8 +13,6 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "url/gurl.h"
 
-class PrefService;
-
 namespace supervised_user {
 class WebContentHandler;
 class SupervisedUserService;
@@ -85,7 +83,6 @@ class SupervisedUserInterstitial {
   // Returns the HTML contents of the error page with the approvals section.
   static std::string GetHTMLContentsWithApprovals(
       SupervisedUserService* supervised_user_service,
-      PrefService* pref_service,
       FilteringBehaviorReason reason,
       bool already_sent_request,
       bool is_main_frame,

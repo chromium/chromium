@@ -26,7 +26,6 @@
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -242,12 +241,9 @@ std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
         result.url, g_browser_process->GetApplicationLocale());
   }
 #endif
-  Profile* profile = Profile::FromBrowserContext(
-      navigation_handle()->GetWebContents()->GetBrowserContext());
   return SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
-      supervised_user_service(), profile->GetPrefs(), result.reason,
-      already_sent_request, is_main_frame,
-      g_browser_process->GetApplicationLocale());
+      supervised_user_service(), result.reason, already_sent_request,
+      is_main_frame, g_browser_process->GetApplicationLocale());
 }
 
 const GURL& ClassifyUrlNavigationThrottle::currently_navigated_url() const {

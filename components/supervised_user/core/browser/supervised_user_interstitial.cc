@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -81,7 +80,6 @@ std::string SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
 // static
 std::string SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
     SupervisedUserService* supervised_user_service,
-    PrefService* pref_service,
     FilteringBehaviorReason reason,
     bool already_sent_request,
     bool is_main_frame,
