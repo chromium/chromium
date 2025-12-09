@@ -132,7 +132,7 @@ EditorMenuView::EditorMenuView(
 
 EditorMenuView::~EditorMenuView() {
   CHECK(delegate_);
-  delegate_->OnEditorMenuVisibilityChanged(false);
+  delegate_->OnEditorMenuVisibilityChanged(false, /*destroy_session=*/false);
 }
 
 // static
