@@ -751,12 +751,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   config.imagePadding = 5;
   self.aimButtonWidthConstraint.constant = kAIMButtonWidth;
   _aimButton.layer.borderWidth = 0;
+  _aimButton.accessibilityTraits = UIAccessibilityTraitButton;
 
   if (self.AIModeEnabled) {
     config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 22);
     config.background.backgroundColor =
         [_theme aimButtonBackgroundColorWithAIMEnabled:YES];
     config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:YES];
+    _aimButton.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_COMPOSEBOX_AIM_BUTTON_DISABLE_ACTION_ACCESSIBILITY_LABEL);
   } else {
     config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
     config.background.backgroundColor =
@@ -765,6 +768,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     _aimButton.layer.borderWidth = 1;
     _aimButton.layer.borderColor =
         [_theme aimButtonBorderColorWithAIMEnabled:NO].CGColor;
+    _aimButton.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_COMPOSEBOX_AIM_BUTTON_ENABLE_ACTION_ACCESSIBILITY_LABEL);
   }
 
   _aimButton.configuration = config;
@@ -807,6 +812,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                            scale:UIImageSymbolScaleMedium];
   _aimButtonXIndicator.image =
       DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
+  // The parent button view is the relevant element.
+  _aimButtonXIndicator.isAccessibilityElement = NO;
   [_aimButton addSubview:_aimButtonXIndicator];
 
   [NSLayoutConstraint activateConstraints:@[

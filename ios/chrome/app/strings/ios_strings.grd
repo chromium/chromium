@@ -1392,6 +1392,12 @@
       <message name="IDS_IOS_COMPOSEBOX_AIM_ACTION" desc="The contextual menu option for starting AI Mode. [iOS only].">
         AI Mode
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_AIM_BUTTON_DISABLE_ACTION_ACCESSIBILITY_LABEL" desc="The accessibility label to use for the AIM button in the Composebox when its action is to turn off AI Mode. [iOS only].">
+        Turn off AI Mode
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_AIM_BUTTON_ENABLE_ACTION_ACCESSIBILITY_LABEL" desc="The accessibility label to use for the AIM button in the Composebox when its action is to turn on AI Mode. [iOS only].">
+        Turn on AI Mode
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER" desc="The placeholder to show when AIM is enabled and no user text was added.">
         Ask Google anything
       </message>
