@@ -4,9 +4,6 @@
 
 #include "ui/display/win/display_info.h"
 
-#include <string.h>
-
-#include "base/compiler_specific.h"
 #include "base/hash/hash.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,18 +11,6 @@
 #include "ui/display/win/screen_win_headless.h"
 
 namespace display::win::internal {
-
-namespace {
-
-// Return a string view from a fixed-length array representing a string, up
-// until the first nul terminator, if any.
-template <size_t N>
-std::wstring_view FixedArrayToStringView(
-    const std::wstring_view::value_type (&str)[N]) {
-  return std::wstring_view(str, UNSAFE_TODO(::wcsnlen(str, N)));
-}
-
-}  // namespace
 
 DisplayInfo::DisplayInfo(
     std::optional<HMONITOR> hmonitor,

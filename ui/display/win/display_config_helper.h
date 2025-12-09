@@ -8,10 +8,19 @@
 #include <windows.h>
 
 #include <optional>
+#include <string_view>
 
 #include "ui/display/display_export.h"
 
 namespace display::win {
+
+// Return a string view from a fixed-length array representing a string, up
+// until the first nul terminator, if any.
+template <size_t N>
+std::wstring_view FixedArrayToStringView(
+    const std::wstring_view::value_type (&str)[N]) {
+  return std::wstring_view(str, ::wcsnlen_s(str, N));
+}
 
 DISPLAY_EXPORT std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
     HMONITOR monitor);

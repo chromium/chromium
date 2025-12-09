@@ -4,9 +4,7 @@
 
 #include "ui/display/win/test/screen_util_win.h"
 
-#include <cwchar>
-
-#include "base/compiler_specific.h"
+#include "base/check_op.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace display {
@@ -16,14 +14,12 @@ namespace test {
 MONITORINFOEX CreateMonitorInfo(const gfx::Rect& monitor,
                                 const gfx::Rect& work,
                                 const std::wstring& device_name) {
-  MONITORINFOEX monitor_info;
-  UNSAFE_TODO(::ZeroMemory(&monitor_info, sizeof(monitor_info)));
+  MONITORINFOEX monitor_info = {};
   monitor_info.cbSize = sizeof(monitor_info);
   monitor_info.rcMonitor = monitor.ToRECT();
   monitor_info.rcWork = work.ToRECT();
-  size_t device_char_count = ARRAYSIZE(monitor_info.szDevice);
-  UNSAFE_TODO(
-      wcsncpy(monitor_info.szDevice, device_name.c_str(), device_char_count));
+  CHECK_LT(device_name.size(), std::size(monitor_info.szDevice));
+  base::span(monitor_info.szDevice).copy_prefix_from(device_name);
   return monitor_info;
 }
 
