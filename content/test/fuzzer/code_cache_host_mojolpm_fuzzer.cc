@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/icu_util.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
