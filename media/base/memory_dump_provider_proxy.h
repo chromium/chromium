@@ -23,7 +23,7 @@ using MemoryDumpCB =
 class MEDIA_EXPORT MemoryDumpProviderProxy final
     : public base::trace_event::MemoryDumpProvider {
  public:
-  MemoryDumpProviderProxy(const char* name,
+  MemoryDumpProviderProxy(MemoryDumpProvider::Name name,
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           MemoryDumpCB dump_cb);
 

@@ -42,6 +42,7 @@ import("//build_overrides/build.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 
 if (is_ios) {
   # Used to access target_environment and target_platform.
@@ -160,6 +161,14 @@ buildflag_header("ios_cronet_buildflags") {
 }
 
 use_epoll = is_linux || is_chromeos || is_android
+
+generate_allowlist_from_histograms_file("memory_dump_provider_name_variants") {
+  namespace = "trace_event_metrics"
+  input_xml_file = "//tools/metrics/histograms/metadata/memory/histograms.xml"
+  output_file = "trace_event/memory_dump_provider_name_variants.h"
+  tag = "variant"
+  allow_list_name = "MemoryDumpProviderName"
+}
 
 # Base and everything it depends on should be a static library rather than
 # a source set. Base is more of a "library" in the classic sense in that many
@@ -2484,6 +2493,7 @@ component("base") {
   ]
 
   public_deps += [
+    ":memory_dump_provider_name_variants",
     "//base/tracing/protos:chrome_track_event_zero",
     "//third_party/perfetto:libperfetto",
   ]

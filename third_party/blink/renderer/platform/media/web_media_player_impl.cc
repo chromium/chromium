@@ -587,7 +587,8 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       frame_->GetTaskRunner(TaskType::kInternalMedia));
 
   main_thread_mem_dumper_ = std::make_unique<media::MemoryDumpProviderProxy>(
-      "WebMediaPlayer_MainThread", main_task_runner_,
+      media::MemoryDumpProviderProxy::Name("WebMediaPlayer_MainThread"),
+      main_task_runner_,
       blink::BindRepeating(&WebMediaPlayerImpl::OnMainThreadMemoryDump,
                            weak_this_, media_player_id_));
 
@@ -3313,7 +3314,8 @@ void WebMediaPlayerImpl::MakeDemuxerThreadDumper(media::Demuxer* demuxer) {
   // posts a media thread task that deletes `media_thread_mem_dumper_` and
   // waits for it to finish.
   media_thread_mem_dumper_ = std::make_unique<media::MemoryDumpProviderProxy>(
-      "WebMediaPlayer_MediaThread", media_task_runner_,
+      media::MemoryDumpProviderProxy::Name("WebMediaPlayer_MediaThread"),
+      media_task_runner_,
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &WebMediaPlayerImpl::OnMediaThreadMemoryDump, media_player_id_,
           CrossThreadUnretained(demuxer))));

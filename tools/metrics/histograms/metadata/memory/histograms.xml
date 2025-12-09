@@ -46,6 +46,92 @@ chromium-metrics-reviews@google.com.
   <variant name="Scroll" summary="Scroll"/>
 </variants>
 
+<variants name="MemoryDumpProviderName">
+  <variant name="android__ResourceManagerImpl"
+      summary="android::ResourceManagerImpl"/>
+  <variant name="android_meminfo"/>
+  <variant name="AndroidGraphics"/>
+  <variant name="AutocompleteController"/>
+  <variant name="AXPlatformNode"/>
+  <variant name="AXPlatformNodeWin"/>
+  <variant name="BlinkGC"/>
+  <variant name="BlinkObjectCounters"/>
+  <variant name="BlobStorageContext"/>
+  <variant name="BucketContext"/>
+  <variant name="Canvas"/>
+  <variant name="cc__GpuImageDecodeCache" summary="cc::GpuImageDecodeCache"/>
+  <variant name="cc__ResourcePool" summary="cc::ResourcePool"/>
+  <variant name="cc__ResourceProvider" summary="cc::ResourceProvider"/>
+  <variant name="cc__SoftwareImageDecodeCache"
+      summary="cc::SoftwareImageDecodeCache"/>
+  <variant name="cc__StagingBufferPool" summary="cc::StagingBufferPool"/>
+  <variant name="ClientDiscardableSharedMemoryManager"/>
+  <variant name="CommandBuffer"/>
+  <variant name="ContextProviderCommandBuffer"/>
+  <variant name="DawnCache"/>
+  <variant name="DawnSharedContext"/>
+  <variant name="DevTools"/>
+  <variant name="DiscardableSharedMemoryManager"/>
+  <variant name="DOMStorage"/>
+  <variant name="DownloadService"/>
+  <variant name="ExtensionFunctions"/>
+  <variant name="FontCaches"/>
+  <variant name="FrameBufferPool"/>
+  <variant name="FrameEvictionManager"/>
+  <variant name="gpu__BufferManager" summary="gpu::BufferManager"/>
+  <variant name="gpu__RenderbufferManager" summary="gpu::RenderbufferManager"/>
+  <variant name="gpu__ServiceTransferCache"
+      summary="gpu::ServiceTransferCache"/>
+  <variant name="gpu__TextureManager" summary="gpu::TextureManager"/>
+  <variant name="gpu__TransferBufferManager"
+      summary="gpu::TransferBufferManager"/>
+  <variant name="GpuMemoryBufferVideoFramePool"/>
+  <variant name="GpuPersistentCache"/>
+  <variant name="GraphiteVizMemoryAssistant"/>
+  <variant name="GrShaderCache"/>
+  <variant name="hibernated_canvas"/>
+  <variant name="IndexedDBBackingStore"/>
+  <variant name="InMemoryURLIndex"/>
+  <variant name="IPCChannel"/>
+  <variant name="JavaHeap"/>
+  <variant name="LevelDB"/>
+  <variant name="LeveldbValueStore"/>
+  <variant name="LocalStorage"/>
+  <variant name="MadvFreeDiscardableMemoryAllocator"/>
+  <variant name="Malloc"/>
+  <variant name="media__V4l2VideoDecodeAccelerator"
+      summary="media::V4l2VideoDecodeAccelerator"/>
+  <variant name="media__VaapiVideoEncodeAccelerator"
+      summary="media::VaapiVideoEncodeAccelerator"/>
+  <variant name="media__VideoResourceUpdater"
+      summary="media::VideoResourceUpdater"/>
+  <variant name="MemoryCache"/>
+  <variant name="MojoHandleTable"/>
+  <variant name="MojoLevelDB"/>
+  <variant name="MojoMessages"/>
+  <variant name="ParkableImages"/>
+  <variant name="ParkableStrings"/>
+  <variant name="PartitionAlloc"/>
+  <variant name="PartitionAlloc.AddressSpace"/>
+  <variant name="SessionStorage"/>
+  <variant name="SharedContextState"/>
+  <variant name="SharedImageManager"/>
+  <variant name="SharedMemoryTracker"/>
+  <variant name="Skia"/>
+  <variant name="Sql"/>
+  <variant name="sql__Database" summary="sql::Database"/>
+  <variant name="TabRestoreServiceHelper"/>
+  <variant name="TestDumpProvider"/>
+  <variant name="TestDumpProvider.Allowlisted"/>
+  <variant name="TextureOwner"/>
+  <variant name="TileManager"/>
+  <variant name="V8Isolate"/>
+  <variant name="V8SharedMemory"/>
+  <variant name="vulkan"/>
+  <variant name="WebMediaPlayer_MainThread"/>
+  <variant name="WebMediaPlayer_MediaThread"/>
+</variants>
+
 <variants name="ProcessMemoryAllocator2">
   <variant name=".AndroidOtherPrivateDirty"
       summary="Other private dirty memory, including GPU memory, as reported

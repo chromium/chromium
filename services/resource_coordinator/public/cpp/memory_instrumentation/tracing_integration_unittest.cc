@@ -57,11 +57,11 @@ namespace memory_instrumentation {
 namespace {
 
 constexpr char kMDPName[] = "TestDumpProvider";
-constexpr char kWhitelistedMDPName[] = "WhitelistedTestDumpProvider";
-constexpr char kBackgroundButNotSummaryWhitelistedMDPName[] =
-    "BackgroundButNotSummaryWhitelistedTestDumpProvider";
+constexpr char kAllowlistedMDPName[] = "TestDumpProvider.Allowlisted";
+constexpr char kBackgroundButNotSummaryAllowlistedMDPName[] =
+    "TestDumpProvider.AllowlistedBackgroundButNotSummary";
 constexpr auto kTestMDPWhitelist = std::to_array<std::string_view>(
-    {kWhitelistedMDPName, kBackgroundButNotSummaryWhitelistedMDPName});
+    {kAllowlistedMDPName, kBackgroundButNotSummaryAllowlistedMDPName});
 
 // GTest matchers for MemoryDumpRequestArgs arguments.
 MATCHER(IsDetailedDump, "") {
@@ -231,7 +231,7 @@ class MemoryTracingIntegrationTest : public testing::Test {
       MemoryDumpProvider* mdp,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const MemoryDumpProvider::Options& options,
-      const char* name = kMDPName) {
+      MemoryDumpProvider::Name name = kMDPName) {
     mdm_->set_dumper_registrations_ignored_for_testing(false);
     mdm_->RegisterDumpProvider(mdp, name, std::move(task_runner), options);
     mdm_->set_dumper_registrations_ignored_for_testing(true);
@@ -306,7 +306,7 @@ TEST_F(MemoryTracingIntegrationTest, TestBackgroundTracingSetup) {
   base::trace_event::SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
   auto mdp = std::make_unique<MockMemoryDumpProvider>();
   RegisterDumpProvider(&*mdp, nullptr, MemoryDumpProvider::Options(),
-                       kWhitelistedMDPName);
+                       kAllowlistedMDPName);
 
   base::RunLoop run_loop;
   auto test_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -430,7 +430,7 @@ TEST_F(MemoryTracingIntegrationTest, PeriodicDumpingWithMultipleModes) {
   // The expected sequence with light=1ms, heavy=5ms is H,L,L,L,L,H,...
   auto mdp = std::make_unique<MockMemoryDumpProvider>();
   RegisterDumpProvider(&*mdp, nullptr, MemoryDumpProvider::Options(),
-                       kWhitelistedMDPName);
+                       kAllowlistedMDPName);
 
   testing::InSequence sequence;
   EXPECT_CALL(*mdp, OnMemoryDump(IsDetailedDump(), _));
@@ -463,7 +463,7 @@ TEST_F(MemoryTracingIntegrationTest, TestWhitelistingMDP) {
   RegisterDumpProvider(mdp1.get(), nullptr);
   std::unique_ptr<MockMemoryDumpProvider> mdp2(new MockMemoryDumpProvider);
   RegisterDumpProvider(mdp2.get(), nullptr, MemoryDumpProvider::Options(),
-                       kWhitelistedMDPName);
+                       kAllowlistedMDPName);
 
   EXPECT_CALL(*mdp1, OnMemoryDump(_, _)).Times(0);
   EXPECT_CALL(*mdp2, OnMemoryDump(_, _)).Times(1);

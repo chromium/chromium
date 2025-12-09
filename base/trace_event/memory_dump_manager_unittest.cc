@@ -66,14 +66,14 @@ MATCHER(IsNotDeterministicDump, "") {
 namespace {
 
 constexpr char kMDPName[] = "TestDumpProvider";
-constexpr char kAllowlistedMDPName[] = "AllowlistedTestDumpProvider";
+constexpr char kAllowlistedMDPName[] = "TestDumpProvider.Allowlisted";
 constexpr std::string_view kTestMDPAllowlist[] = {kAllowlistedMDPName};
 
 void RegisterDumpProvider(
     MemoryDumpProvider* mdp,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const MemoryDumpProvider::Options& options,
-    const char* name = kMDPName) {
+    MemoryDumpProvider::Name name = kMDPName) {
   MemoryDumpManager* mdm = MemoryDumpManager::GetInstance();
   mdm->set_dumper_registrations_ignored_for_testing(false);
   mdm->RegisterDumpProvider(mdp, name, std::move(task_runner), options);

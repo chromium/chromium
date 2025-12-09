@@ -17,6 +17,7 @@
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/memory_dump_provider_info.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -30,8 +31,6 @@ class SingleThreadTaskRunner;
 class Thread;
 
 namespace trace_event {
-
-class MemoryDumpProvider;
 
 // This is the interface exposed to the rest of the codebase to deal with
 // memory tracing. The main entry point for clients is represented by
@@ -79,23 +78,26 @@ class BASE_EXPORT MemoryDumpManager {
   //  - mdp: the MemoryDumpProvider instance to be registered. MemoryDumpManager
   //      does NOT take memory ownership of |mdp|, which is expected to either
   //      be a singleton or unregister itself.
-  //  - name: a friendly name (duplicates allowed). Used for debugging and
-  //      run-time profiling of memory-infra internals. Must be a long-lived
-  //      C string.
+  //  - name: a name for the provider, which must be a member of the
+  //      MemoryDumpProviderName histogram variant. Used for metrics, debugging
+  //      and run-time profiling of memory-infra internals. Must be a long-lived
+  //      C string. Duplicates are allowed, but all providers registered with
+  //      the same name should be instances of the same class, because their
+  //      metrics will be aggregated.
   //  - task_runner: either a SingleThreadTaskRunner or SequencedTaskRunner. All
   //      the calls to |mdp| will be run on the given |task_runner|. If passed
   //      null |mdp| should be able to handle calls on arbitrary threads.
   //  - options: extra optional arguments. See memory_dump_provider.h.
   void RegisterDumpProvider(MemoryDumpProvider* mdp,
-                            const char* name,
+                            MemoryDumpProvider::Name name,
                             scoped_refptr<SingleThreadTaskRunner> task_runner);
   void RegisterDumpProvider(MemoryDumpProvider* mdp,
-                            const char* name,
+                            MemoryDumpProvider::Name name,
                             scoped_refptr<SingleThreadTaskRunner> task_runner,
                             MemoryDumpProvider::Options options);
   void RegisterDumpProviderWithSequencedTaskRunner(
       MemoryDumpProvider* mdp,
-      const char* name,
+      MemoryDumpProvider::Name name,
       scoped_refptr<SequencedTaskRunner> task_runner,
       MemoryDumpProvider::Options options);
   void UnregisterDumpProvider(MemoryDumpProvider* mdp);
@@ -237,7 +239,7 @@ class BASE_EXPORT MemoryDumpManager {
   // Helper for RegierDumpProvider* functions.
   void RegisterDumpProviderInternal(
       MemoryDumpProvider* mdp,
-      const char* name,
+      MemoryDumpProvider::Name name,
       scoped_refptr<SequencedTaskRunner> task_runner,
       const MemoryDumpProvider::Options& options);
 

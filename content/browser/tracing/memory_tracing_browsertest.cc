@@ -108,7 +108,7 @@ class MemoryTracingTest : public ContentBrowserTest {
 
     mock_dump_provider_ = std::make_unique<MockDumpProvider>();
     MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        mock_dump_provider_.get(), "MockDumpProvider", nullptr);
+        mock_dump_provider_.get(), "TestDumpProvider", nullptr);
     MemoryDumpManager::GetInstance()
         ->set_dumper_registrations_ignored_for_testing(false);
     ContentBrowserTest::SetUp();

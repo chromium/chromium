@@ -150,37 +150,40 @@ void MemoryDumpManager::Initialize(
 
 void MemoryDumpManager::RegisterDumpProvider(
     MemoryDumpProvider* mdp,
-    const char* name,
+    MemoryDumpProvider::Name name,
     scoped_refptr<SingleThreadTaskRunner> task_runner,
     MemoryDumpProvider::Options options) {
   options.dumps_on_single_thread_task_runner = true;
-  RegisterDumpProviderInternal(mdp, name, std::move(task_runner), options);
+  RegisterDumpProviderInternal(mdp, std::move(name), std::move(task_runner),
+                               options);
 }
 
 void MemoryDumpManager::RegisterDumpProvider(
     MemoryDumpProvider* mdp,
-    const char* name,
+    MemoryDumpProvider::Name name,
     scoped_refptr<SingleThreadTaskRunner> task_runner) {
   // Set |dumps_on_single_thread_task_runner| to true because all providers
   // without task runner are run on dump thread.
   MemoryDumpProvider::Options options;
   options.dumps_on_single_thread_task_runner = true;
-  RegisterDumpProviderInternal(mdp, name, std::move(task_runner), options);
+  RegisterDumpProviderInternal(mdp, std::move(name), std::move(task_runner),
+                               options);
 }
 
 void MemoryDumpManager::RegisterDumpProviderWithSequencedTaskRunner(
     MemoryDumpProvider* mdp,
-    const char* name,
+    MemoryDumpProvider::Name name,
     scoped_refptr<SequencedTaskRunner> task_runner,
     MemoryDumpProvider::Options options) {
   DCHECK(task_runner);
   options.dumps_on_single_thread_task_runner = false;
-  RegisterDumpProviderInternal(mdp, name, std::move(task_runner), options);
+  RegisterDumpProviderInternal(mdp, std::move(name), std::move(task_runner),
+                               options);
 }
 
 void MemoryDumpManager::RegisterDumpProviderInternal(
     MemoryDumpProvider* mdp,
-    const char* name,
+    MemoryDumpProvider::Name name,
     scoped_refptr<SequencedTaskRunner> task_runner,
     const MemoryDumpProvider::Options& options) {
   if (dumper_registrations_ignored_for_testing_) {
@@ -191,10 +194,12 @@ void MemoryDumpManager::RegisterDumpProviderInternal(
   // have small enough performance overhead that it is reasonable to run them
   // in the background while the user is doing other things. Those MDPs are
   // 'allowed in background mode'.
-  bool allowed_in_background_mode = IsMemoryDumpProviderInAllowlist(name);
+  bool allowed_in_background_mode =
+      IsMemoryDumpProviderInAllowlist(name.static_name().data());
 
   scoped_refptr<MemoryDumpProviderInfo> mdpinfo = new MemoryDumpProviderInfo(
-      mdp, name, std::move(task_runner), options, allowed_in_background_mode);
+      mdp, name.static_name().data(), std::move(task_runner), options,
+      allowed_in_background_mode);
 
   {
     AutoLock lock(lock_);
