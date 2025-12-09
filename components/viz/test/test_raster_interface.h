@@ -38,9 +38,6 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void set_context_lost(bool context_lost) { context_lost_ = context_lost; }
 
   // Capability setters below here.
-  void set_gpu_rasterization(bool gpu_rasterization) {
-    // TODO(crbug.com/443000825): Remove this method.
-  }
   void set_msaa_is_slow(bool msaa_is_slow) {
     caps_.msaa_is_slow = msaa_is_slow;
   }

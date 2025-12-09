@@ -2607,11 +2607,9 @@ class LayerTreeHostTestGpuRasterDeviceSizeChanged : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     context_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
-    worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
@@ -6932,11 +6930,9 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     context_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
-    worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
@@ -6980,11 +6976,9 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     context_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
-    worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
@@ -7027,11 +7021,9 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     context_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
-    worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
@@ -7692,11 +7684,9 @@ class RasterizeWithGpuRasterizationCreatesResources : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     context_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
-    worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
@@ -7741,11 +7731,9 @@ class GpuRasterizationRasterizesBorderTiles : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     context_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
-    worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
@@ -8381,11 +8369,9 @@ class GpuRasterizationSucceedsWithLargeImage : public LayerTreeHostTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     context_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
-    worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
     worker_provider->GetWritableGpuFeatureInfo()
         .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;

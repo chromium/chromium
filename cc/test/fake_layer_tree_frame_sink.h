@@ -90,7 +90,6 @@ class FakeLayerTreeFrameSink : public LayerTreeFrameSink {
 
   static std::unique_ptr<FakeLayerTreeFrameSink> Create3dForGpuRasterization() {
     return Builder()
-        .AllContexts(&viz::TestRasterInterface::set_gpu_rasterization, true)
         .EnableGpuTileRasterizationFeatureInWorkerContext()
         .Build();
   }

@@ -15521,7 +15521,6 @@ class MsaaIsSlowLayerTreeHostImplTest
         FakeLayerTreeFrameSink::Builder()
             .AllContexts(&viz::TestRasterInterface::set_msaa_is_slow,
                          msaa_is_slow)
-            .AllContexts(&viz::TestRasterInterface::set_gpu_rasterization, true)
             .AllContexts(&viz::TestRasterInterface::set_avoid_stencil_buffers,
                          avoid_stencil_buffers)
             .EnableGpuTileRasterizationFeatureInWorkerContext()
