@@ -48,6 +48,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   protected accessor isShownInTab_: boolean = true;  // Most start in a tab.
   protected accessor threadUrl_: string = '';
+  private pendingUrl_: string = '';
   protected accessor threadTitle_: string = '';
   protected accessor contextTabs_: Tab[] = [];
   private listenerIds_: number[] = [];
@@ -94,21 +95,22 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.browserProxy_.callbackRouter.setOAuthToken.addListener(
             (oauthToken: string) => {
               this.oauthToken_ = oauthToken;
+              if (this.pendingUrl_) {
+                this.threadUrl_ = this.pendingUrl_;
+                this.pendingUrl_ = '';
+              }
             }));
 
     this.updateToolbarVisibility();
 
     // Setup the webview request overrides before loading the first URL.
-    // TODO(crbug.com/461596412): Fetching the OAuth token is async, so there
-    // is no guarantee by the time the URL below is loaded, the OAuth is
-    // present. Ideally, the OAuth will always be ready early, but if not, hold
-    // the initial request until the OAuth is ready.
     this.setupWebviewRequestOverrides();
 
     // Check if the URL that loaded this page has a task attached to it. If it
     // does, we'll use the tasks URL to load the embedded page.
     const params = new URLSearchParams(window.location.search);
     const taskUuid = params.get('task');
+    let threadUrl = '';
     if (taskUuid) {
       const {url} =
           await this.browserProxy_.handler.getUrlForTask({value: taskUuid});
@@ -116,10 +118,17 @@ export class ContextualTasksAppElement extends CrLitElement {
 
       const aiPageParams = new URLSearchParams(new URL(url.url).search);
       this.browserProxy_.handler.setThreadTitle(aiPageParams.get('q') || '');
-      this.threadUrl_ = url.url;
+      threadUrl = url.url;
     } else {
       const {url} = await this.browserProxy_.handler.getThreadUrl();
-      this.threadUrl_ = url.url;
+      threadUrl = url.url;
+    }
+
+    // Wait until the OAuth token is ready before loading the URL.
+    if (this.oauthToken_) {
+      this.threadUrl_ = threadUrl;
+    } else {
+      this.pendingUrl_ = threadUrl;
     }
   }
 
