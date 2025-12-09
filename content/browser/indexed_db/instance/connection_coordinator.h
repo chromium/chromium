@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
@@ -31,11 +32,14 @@ class CONTENT_EXPORT ConnectionCoordinator {
 
   ~ConnectionCoordinator();
 
-  void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection);
-
+  // `synchronous_duration` tracks the work done prior to calling these methods
+  // (such as backing store initialization).
+  void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection,
+                              base::TimeDelta synchronous_duration);
   void ScheduleDeleteDatabase(
       mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
-      base::OnceClosure on_deletion_complete);
+      base::OnceClosure on_deletion_complete,
+      base::TimeDelta synchronous_duration);
 
   // Call this method to prune any tasks that don't want to be run during
   // force close. Returns any error caused by rolling back changes.

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -95,6 +96,26 @@ enum class IndexedDBAction {
   // using the IDBFactory::DeleteDatabase API.
   kDatabaseDeleteAttempt = 1,
   kMaxValue = kDatabaseDeleteAttempt,
+};
+
+// Accumulates the elapsed time between construction and destruction into
+// `duration`.
+class ScopedTimeAccumulator {
+ public:
+  explicit ScopedTimeAccumulator(base::TimeDelta& duration)
+      : duration_(duration), start_time_(base::TimeTicks::Now()) {}
+  ~ScopedTimeAccumulator() {
+    *duration_ += base::TimeTicks::Now() - start_time_;
+  }
+
+  ScopedTimeAccumulator(const ScopedTimeAccumulator&) = delete;
+  ScopedTimeAccumulator& operator=(const ScopedTimeAccumulator&) = delete;
+  ScopedTimeAccumulator(ScopedTimeAccumulator&&) = delete;
+  ScopedTimeAccumulator& operator=(ScopedTimeAccumulator&&) = delete;
+
+ private:
+  const raw_ref<base::TimeDelta> duration_;
+  base::TimeTicks start_time_;
 };
 
 void ReportOpenStatus(BackingStoreOpenResult result,

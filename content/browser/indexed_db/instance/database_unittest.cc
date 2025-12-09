@@ -163,7 +163,8 @@ TEST_P(DatabaseTest, ConnectionLifecycle) {
           database_callbacks.BindNewEndpointAndPassDedicatedRemote()),
       transaction_id1, IndexedDBDatabaseMetadata::NO_VERSION,
       mojo::NullAssociatedReceiver());
-  db_->ScheduleOpenConnection(std::move(connection1));
+  db_->ScheduleOpenConnection(std::move(connection1),
+                              /*synchronous_duration=*/{});
   db_ = nullptr;
   run_loop.Run();
 
@@ -187,7 +188,8 @@ TEST_P(DatabaseTest, ForcedClose) {
           database_callbacks.BindNewEndpointAndPassDedicatedRemote()),
       upgrade_transaction_id, IndexedDBDatabaseMetadata::NO_VERSION,
       mojo::NullAssociatedReceiver());
-  db_->ScheduleOpenConnection(std::move(connection));
+  db_->ScheduleOpenConnection(std::move(connection),
+                              /*synchronous_duration=*/{});
   db_ = nullptr;
 
   base::RunLoop run_loop;
@@ -213,7 +215,8 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
           database_callbacks.BindNewEndpointAndPassDedicatedRemote()),
       transaction_id1, IndexedDBDatabaseMetadata::NO_VERSION,
       mojo::NullAssociatedReceiver());
-  db_->ScheduleOpenConnection(std::move(connection));
+  db_->ScheduleOpenConnection(std::move(connection),
+                              /*synchronous_duration=*/{});
   RunPostedTasks();
 
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
@@ -234,7 +237,8 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
       std::make_unique<DatabaseCallbacks>(
           database_callbacks2.BindNewEndpointAndPassDedicatedRemote()),
       transaction_id2, /*version=*/3, mojo::NullAssociatedReceiver());
-  db_->ScheduleOpenConnection(std::move(connection2));
+  db_->ScheduleOpenConnection(std::move(connection2),
+                              /*synchronous_duration=*/{});
   RunPostedTasks();
 
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
@@ -254,7 +258,8 @@ TEST_P(DatabaseTest, ForceCloseWithConnectionsInVariousStates) {
   db_->ScheduleDeleteDatabase(
       mojo::AssociatedRemote<blink::mojom::IDBFactoryClient>(
           std::move(non_associated3)),
-      /*on_deletion_complete=*/base::DoNothing());
+      /*on_deletion_complete=*/base::DoNothing(),
+      /*synchronous_duration=*/{});
   RunPostedTasks();
 
   EXPECT_EQ(db_->ConnectionCount(), 1UL);
@@ -294,7 +299,8 @@ TEST_P(DatabaseTest, MojomWithInvalidParameter) {
           database_callbacks.BindNewEndpointAndPassDedicatedRemote()),
       transaction_id1, IndexedDBDatabaseMetadata::NO_VERSION,
       mojo::NullAssociatedReceiver());
-  db_->ScheduleOpenConnection(std::move(connection));
+  db_->ScheduleOpenConnection(std::move(connection),
+                              /*synchronous_duration=*/{});
   db_ = nullptr;
   run_loop.Run();
 

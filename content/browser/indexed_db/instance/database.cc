@@ -411,16 +411,20 @@ Status Database::ForceClose(const std::string& message) && {
 }
 
 void Database::ScheduleOpenConnection(
-    std::unique_ptr<PendingConnection> connection) {
+    std::unique_ptr<PendingConnection> connection,
+    base::TimeDelta synchronous_duration) {
   CHECK(!force_closing_);
-  connection_coordinator_.ScheduleOpenConnection(std::move(connection));
+  connection_coordinator_.ScheduleOpenConnection(std::move(connection),
+                                                 synchronous_duration);
 }
 
 void Database::ScheduleDeleteDatabase(
     mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
-    base::OnceClosure on_deletion_complete) {
+    base::OnceClosure on_deletion_complete,
+    base::TimeDelta synchronous_duration) {
   connection_coordinator_.ScheduleDeleteDatabase(
-      std::move(factory_client), std::move(on_deletion_complete));
+      std::move(factory_client), std::move(on_deletion_complete),
+      synchronous_duration);
 }
 
 Status Database::VersionChangeOperation(int64_t version,

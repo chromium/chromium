@@ -317,8 +317,10 @@ chromium-metrics-reviews@google.com.
     <variant name="ClearObjectStore"/>
     <variant name="ContinueCursor"/>
     <variant name="CountRecords"/>
+    <variant name="CreateDatabase"/>
     <variant name="CreateIndex"/>
     <variant name="CreateObjectStore"/>
+    <variant name="DeleteDatabase"/>
     <variant name="DeleteIndex"/>
     <variant name="DeleteObjectStore"/>
     <variant name="DeleteRecordRange"/>
@@ -327,6 +329,7 @@ chromium-metrics-reviews@google.com.
     <variant name="GetKeyGeneratorCurrentNumber"/>
     <variant name="GetRecord"/>
     <variant name="OpenCursor"/>
+    <variant name="OpenDatabase"/>
     <variant name="PrefetchCursor"/>
     <variant name="PutRecord"/>
     <variant name="RenameIndex"/>

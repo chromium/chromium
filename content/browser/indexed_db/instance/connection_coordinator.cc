@@ -26,6 +26,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
@@ -71,14 +73,16 @@ class ConnectionCoordinator::ConnectionRequest {
       BucketContext& bucket_context,
       Database* db,
       ConnectionCoordinator* connection_coordinator,
-      mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client)
+      mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
+      base::TimeDelta synchronous_duration)
       : bucket_context_handle_(bucket_context),
         db_(db),
         connection_coordinator_(connection_coordinator),
         tasks_available_callback_(
             base::BindRepeating(&BucketContext::QueueRunTasks,
                                 bucket_context.AsWeakPtr())),
-        factory_client_(std::move(factory_client)) {}
+        factory_client_(std::move(factory_client)),
+        synchronous_duration_(synchronous_duration) {}
 
   ConnectionRequest(const ConnectionRequest&) = delete;
   ConnectionRequest& operator=(const ConnectionRequest&) = delete;
@@ -164,6 +168,10 @@ class ConnectionCoordinator::ConnectionRequest {
   Status saved_status_;
 
   PartitionedLockHolder lock_receiver_;
+
+  // The total duration of synchronous work done for this request, including any
+  // work done before `this` is created.
+  base::TimeDelta synchronous_duration_;
 };
 
 class ConnectionCoordinator::OpenRequest
@@ -172,11 +180,13 @@ class ConnectionCoordinator::OpenRequest
   OpenRequest(BucketContext& bucket_context,
               Database* db,
               std::unique_ptr<PendingConnection> pending_connection,
+              base::TimeDelta synchronous_duration,
               ConnectionCoordinator* connection_coordinator)
       : ConnectionRequest(bucket_context,
                           db,
                           connection_coordinator,
-                          std::move(pending_connection->factory_client)),
+                          std::move(pending_connection->factory_client),
+                          synchronous_duration),
         pending_(std::move(pending_connection)),
         was_cold_open_(pending_->was_cold_open),
         uses_sqlite_(bucket_context.ShouldUseSqlite()) {
@@ -223,6 +233,7 @@ class ConnectionCoordinator::OpenRequest
   }
 
   void InitDatabase(bool has_connections) {
+    base::ElapsedTimer timer;
     saved_status_ = db_->OpenInternal();
     if (saved_status_.ok()) {
       if (bucket_context_handle_->ShouldUseSqlite()) {
@@ -244,6 +255,11 @@ class ConnectionCoordinator::OpenRequest
       return;
     }
 
+    LogDuration(synchronous_duration_ += timer.Elapsed(),
+                db_->version() == IndexedDBDatabaseMetadata::NO_VERSION
+                    ? "IndexedDB.BackendDuration.CreateDatabase"
+                    : "IndexedDB.BackendDuration.OpenDatabase",
+                bucket_context_handle_->in_memory());
     ContinueOpening(has_connections);
   }
 
@@ -482,17 +498,20 @@ class ConnectionCoordinator::DeleteRequest
       Database* db,
       mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
       base::OnceClosure on_database_deleted,
+      base::TimeDelta synchronous_duration,
       ConnectionCoordinator* connection_coordinator)
       : ConnectionRequest(bucket_context,
                           db,
                           connection_coordinator,
-                          std::move(factory_client)),
+                          std::move(factory_client),
+                          synchronous_duration),
         on_database_deleted_(std::move(on_database_deleted)) {}
 
   DeleteRequest(const DeleteRequest&) = delete;
   DeleteRequest& operator=(const DeleteRequest&) = delete;
 
   void Perform(bool has_connections) override {
+    ScopedTimeAccumulator accumulator(synchronous_duration_);
     // Since `state_` is checked after the call to `Perform()`, temporarily make
     // `tasks_available_callback_` a no-op.
     base::AutoReset suspend_callback(&tasks_available_callback_,
@@ -530,6 +549,7 @@ class ConnectionCoordinator::DeleteRequest
   }
 
   void InitDatabase(bool has_connections) {
+    ScopedTimeAccumulator accumulator(synchronous_duration_);
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
     saved_status_ = db_->OpenInternal();
     if (!saved_status_.ok()) {
@@ -565,6 +585,7 @@ class ConnectionCoordinator::DeleteRequest
   }
 
   void DoDelete() {
+    base::ElapsedTimer timer;
     state_ = RequestState::kPendingTransactionComplete;
     UMA_HISTOGRAM_ENUMERATION(
         indexed_db::kBackingStoreActionUmaName,
@@ -577,6 +598,9 @@ class ConnectionCoordinator::DeleteRequest
       saved_status_ = Status::OK();
       std::move(factory_client_)->DeleteSuccess(old_version.value());
       state_ = RequestState::kDone;
+      LogDuration(synchronous_duration_ += timer.Elapsed(),
+                  "IndexedDB.BackendDuration.DeleteDatabase",
+                  bucket_context_handle_->in_memory());
     } else {
       // TODO(jsbell): Consider including sanitized leveldb status
       // message.
@@ -611,18 +635,21 @@ ConnectionCoordinator::ConnectionCoordinator(Database* db,
 ConnectionCoordinator::~ConnectionCoordinator() = default;
 
 void ConnectionCoordinator::ScheduleOpenConnection(
-    std::unique_ptr<PendingConnection> connection) {
+    std::unique_ptr<PendingConnection> connection,
+    base::TimeDelta synchronous_duration) {
   request_queue_.push(std::make_unique<OpenRequest>(
-      *bucket_context_, db_, std::move(connection), this));
+      *bucket_context_, db_, std::move(connection), synchronous_duration,
+      this));
   bucket_context_->QueueRunTasks();
 }
 
 void ConnectionCoordinator::ScheduleDeleteDatabase(
     mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
-    base::OnceClosure on_deletion_complete) {
+    base::OnceClosure on_deletion_complete,
+    base::TimeDelta synchronous_duration) {
   request_queue_.push(std::make_unique<DeleteRequest>(
       *bucket_context_, db_, std::move(factory_client),
-      std::move(on_deletion_complete), this));
+      std::move(on_deletion_complete), synchronous_duration, this));
   bucket_context_->QueueRunTasks();
 }
 

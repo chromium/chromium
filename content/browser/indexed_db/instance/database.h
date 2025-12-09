@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
@@ -102,13 +103,15 @@ class CONTENT_EXPORT Database {
   // (BucketContext).
   Status ForceClose(const std::string& message) &&;
 
-  void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection);
+  void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection,
+                              base::TimeDelta synchronous_duration);
 
   // `on_deletion_complete` is called only if the database existed and was
   // actually deleted.
   void ScheduleDeleteDatabase(
       mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client,
-      base::OnceClosure on_deletion_complete);
+      base::OnceClosure on_deletion_complete,
+      base::TimeDelta synchronous_duration);
 
   // Number of connections that have progressed passed initial open call.
   size_t ConnectionCount() const { return connections_.size(); }

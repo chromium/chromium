@@ -553,6 +553,7 @@ void BucketContext::Open(
         transaction_receiver,
     int64_t transaction_id,
     int scheduling_priority) {
+  base::ElapsedTimer timer;
   TRACE_EVENT0("IndexedDB", "BucketContext::Open");
 
   if (version < 1 && version != blink::IndexedDBDatabaseMetadata::NO_VERSION) {
@@ -614,7 +615,7 @@ void BucketContext::Open(
     database_ptr = it->second.get();
   }
 
-  database_ptr->ScheduleOpenConnection(std::move(connection));
+  database_ptr->ScheduleOpenConnection(std::move(connection), timer.Elapsed());
 }
 
 void BucketContext::DeleteDatabase(
@@ -622,6 +623,7 @@ void BucketContext::DeleteDatabase(
         pending_factory_client,
     const std::u16string& name,
     bool force_close) {
+  base::ElapsedTimer timer;
   TRACE_EVENT0("IndexedDB", "BucketContext::DeleteDatabase");
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client(
       std::move(pending_factory_client));
@@ -654,10 +656,11 @@ void BucketContext::DeleteDatabase(
     CreateAndAddDatabase(name);
   }
   auto it = databases_.find(name);
-  it->second->ScheduleDeleteDatabase(
-      std::move(factory_client),
-      /*on_deletion_complete=*/base::BindOnce(delegate().on_files_written,
-                                              /*flushed=*/true));
+  it->second->ScheduleDeleteDatabase(std::move(factory_client),
+                                     /*on_deletion_complete=*/
+                                     base::BindOnce(delegate().on_files_written,
+                                                    /*flushed=*/true),
+                                     timer.Elapsed());
   if (force_close) {
     std::unique_ptr<Database> database = std::move(it->second);
     databases_.erase(it);
@@ -956,7 +959,8 @@ BucketContext::InitBackingStore(bool create_if_missing) {
               .Append(GetSqliteDbDirectory(bucket_locator()))
               // All database names hash to the same length file name.
               .Append(DatabaseNameToFileName(u"any_string"))
-              // The WAL file will use the path with "-wal" appended. This appends ".wal".
+              // The WAL file will use the path with "-wal" appended. This
+              // appends ".wal".
               .AddExtensionASCII("wal")
               .value()
               .size();
