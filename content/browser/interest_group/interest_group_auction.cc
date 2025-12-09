@@ -1211,7 +1211,7 @@ ConstructGhostWinnerFromGroupAndCandidate(
           return blink::HashedKAnonKeyForAdComponentBid(ad.render_url()) ==
                  component_ad_hash;
         });
-    if (component_ad_it == group.ads->end()) {
+    if (component_ad_it == group.ad_components->end()) {
       return std::nullopt;
     }
     result.ad_components.emplace_back(component_ad_it->render_url());
