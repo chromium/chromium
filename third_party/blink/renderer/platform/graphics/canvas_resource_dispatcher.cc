@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
 namespace {
@@ -277,6 +279,8 @@ bool CanvasResourceDispatcher::PrepareFrame(
   const viz::ResourceId resource_id = next_resource_id;
   resource.id = resource_id;
 
+  const gfx::Size resource_size = resource.GetSize();
+
   // Create a new ref on `canvas_resource` to pass to the placeholder, which
   // will manage the lifetime of this ref.
   auto resource_ref_for_placeholder = canvas_resource;
@@ -298,10 +302,11 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   const bool needs_blending = !is_opaque;
   constexpr gfx::PointF uv_top_left(0.f, 0.f);
-  constexpr gfx::PointF uv_bottom_right(1.f, 1.f);
   quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id, uv_top_left,
-               uv_bottom_right, SkColors::kTransparent, nearest_neighbor,
-               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+               gfx::PointF(resource_size.width(), resource_size.height()),
+               SkColors::kTransparent, nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
 
   frame->render_pass_list.push_back(std::move(pass));
 
