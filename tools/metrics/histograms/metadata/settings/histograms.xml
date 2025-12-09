@@ -1447,7 +1447,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.TrackedPreferenceChanged{TrackedPreferencesExternalValidators}"
-    enum="TrackedPreference" expires_after="2026-04-05">
+    enum="TrackedPreference" expires_after="2026-06-07">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 

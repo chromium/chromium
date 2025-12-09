@@ -824,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.SidePanelResultStatus"
-    enum="SidePanelResultStatus" expires_after="2026-04-05">
+    enum="SidePanelResultStatus" expires_after="2026-06-07">
   <owner>juanmojica@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
