@@ -11385,6 +11385,50 @@
             ]
         }
     ],
+    "GlicButtonAltLabel": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "GlicButtonAltLabel"
+                    ]
+                },
+                {
+                    "name": "LabelA",
+                    "params": {
+                        "glic-button-alt-label-variant": "0"
+                    },
+                    "enable_features": [
+                        "GlicButtonAltLabel"
+                    ]
+                },
+                {
+                    "name": "LabelB",
+                    "params": {
+                        "glic-button-alt-label-variant": "1"
+                    },
+                    "enable_features": [
+                        "GlicButtonAltLabel"
+                    ]
+                },
+                {
+                    "name": "LabelC",
+                    "params": {
+                        "glic-button-alt-label-variant": "2"
+                    },
+                    "enable_features": [
+                        "GlicButtonAltLabel"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicClientResponsivenessCheckExtension": [
         {
             "platforms": [
