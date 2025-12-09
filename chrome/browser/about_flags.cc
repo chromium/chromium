@@ -4337,12 +4337,6 @@ const FeatureEntry::FeatureVariation
         // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kMerchantTrustEnabledWithSampleData[] = {
-    {page_info::kMerchantTrustEnabledWithSampleDataName, "true"}};
-const FeatureEntry::FeatureVariation kMerchantTrustVariations[] = {
-    {"Enabled with sample data", kMerchantTrustEnabledWithSampleData,
-     std::size(kMerchantTrustEnabledWithSampleData), nullptr}};
-
 const FeatureEntry::FeatureParam kAudioDuckingAttenuation_60[] = {
     {"attenuation", "60"}};
 const FeatureEntry::FeatureParam kAudioDuckingAttenuation_70[] = {
@@ -9240,14 +9234,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLeftHandSideActivityIndicatorsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(
          content_settings::features::kLeftHandSideActivityIndicators)},
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"merchant-trust", flag_descriptions::kMerchantTrustName,
-     flag_descriptions::kMerchantTrustDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(page_info::kMerchantTrust,
-                                    kMerchantTrustVariations,
-                                    "MerchantTrust")},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
     {"privacy-policy-insights", flag_descriptions::kPrivacyPolicyInsightsName,

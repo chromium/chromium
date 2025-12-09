@@ -3469,10 +3469,6 @@ inline constexpr char kLeftHandSideActivityIndicatorsName[] =
 inline constexpr char kLeftHandSideActivityIndicatorsDescription[] =
     "Moves activity indicators to the left-hand side of location bar.";
 
-inline constexpr char kMerchantTrustName[] = "Merchant Trust";
-inline constexpr char kMerchantTrustDescription[] =
-    "Enables the merchant trust UI in page info.";
-
 inline constexpr char kPrivacyPolicyInsightsName[] = "Privacy Policy Insights";
 inline constexpr char kPrivacyPolicyInsightsDescription[] =
     "Enables the privacy policy insights UI in page info.";
