@@ -5,6 +5,7 @@
 #import <functional>
 
 #import "base/functional/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -159,8 +160,11 @@ class ErrorPageTest : public WebTestWithWebState {
 
 // Tests that the error page is correctly displayed after navigating back to it
 // multiple times. See http://crbug.com/944037 .
-// TODO(crbug.com/428030191): Re-enable test.
-TEST_F(ErrorPageTest, DISABLED_BackForwardErrorPage) {
+TEST_F(ErrorPageTest, BackForwardErrorPage) {
+  if (!base::ios::IsRunningOnOrLater(26, 1, 0)) {
+    // Test fails due to WebKit crash before iOS 26.1. crbug.com/428030191
+    return;
+  }
   test::LoadUrl(web_state(), server_.GetURL("/close-socket"));
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/close-socket")));
 
