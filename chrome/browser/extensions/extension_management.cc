@@ -251,6 +251,10 @@ bool ExtensionManagement::HasAllowlistedExtension() {
   }
 
   // If there are deferred extensions try loading them.
+  if (deferred_ids_.empty()) {
+    return false;
+  }
+
   while (!deferred_ids_.empty()) {
     auto extension_id = *deferred_ids_.begin();
     // This will remove the entry from |deferred_ids_|.
@@ -258,9 +262,11 @@ bool ExtensionManagement::HasAllowlistedExtension() {
     DCHECK(!base::Contains(deferred_ids_, extension_id));
     if (AccessById(extension_id)->installation_mode ==
         ManagedInstallationMode::kAllowed) {
+      NotifyExtensionManagementPrefChanged();
       return true;
     }
   }
+  NotifyExtensionManagementPrefChanged();
 
   return false;
 }
@@ -931,8 +937,10 @@ bool ExtensionManagement::ParseById(const std::string& extension_id,
 
 internal::IndividualSettings* ExtensionManagement::GetSettingsForId(
     const std::string& extension_id) {
-  if (base::Contains(deferred_ids_, extension_id))
+  if (base::Contains(deferred_ids_, extension_id)) {
     LoadDeferredExtensionSetting(extension_id);
+    NotifyExtensionManagementPrefChanged();
+  }
 
   auto iter_id = settings_by_id_.find(extension_id);
   if (iter_id == settings_by_id_.end())

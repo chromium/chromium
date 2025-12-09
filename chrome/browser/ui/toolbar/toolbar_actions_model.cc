@@ -151,7 +151,54 @@ void ToolbarActionsModel::OnExtensionUninstalled(
 }
 
 void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
+  // First, update the force-pinned actions. This can notify observers.
   UpdatePinnedActionIds();
+
+  // After that, check for any newly-applied `default_pinned` settings.
+  // This can happen if policies are loaded after an extension is installed,
+  // which is common for extensions installed via the registry.
+  if (profile_->IsOffTheRecord()) {
+    return;
+  }
+
+  auto* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+
+  // To avoid multiple preference writes and notifications, calculate all
+  // changes and then commit them once.
+  extensions::ExtensionIdList new_pinned_list =
+      extension_prefs_->GetPinnedExtensions();
+  std::vector<ActionId> actions_to_notify;
+
+  // action_ids() is a sorted flat_set, so iteration order is deterministic.
+  for (const auto& action_id : action_ids_) {
+    // Force-pinned actions are handled by `UpdatePinnedActionIds()` and are not
+    // stored in the user-facing pref.
+    if (IsActionForcePinned(action_id)) {
+      continue;
+    }
+
+    const bool is_pinned = base::Contains(new_pinned_list, action_id);
+    const extensions::ManagedToolbarPinMode pin_mode =
+        extension_management->GetToolbarPinMode(action_id);
+
+    if (pin_mode == extensions::ManagedToolbarPinMode::kDefaultPinned &&
+        !is_pinned) {
+      // Pinning adds the extension to the end of the list.
+      new_pinned_list.push_back(action_id);
+      actions_to_notify.push_back(action_id);
+    }
+  }
+
+  if (!actions_to_notify.empty()) {
+    // This will trigger a single pref change notification, which in turn will
+    // call UpdatePinnedActionIds() and notify observers once.
+    extension_prefs_->SetPinnedExtensions(new_pinned_list);
+
+    for (const auto& action_id : actions_to_notify) {
+      extension_action_dispatcher_->OnActionPinnedStateChanged(action_id, true);
+    }
+  }
 }
 
 void ToolbarActionsModel::OnExtensionPermissionsUpdated(
