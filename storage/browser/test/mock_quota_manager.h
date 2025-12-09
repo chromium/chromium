@@ -7,13 +7,15 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <list>
 #include <map>
 #include <memory>
 #include <set>
-#include <utility>
+#include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
