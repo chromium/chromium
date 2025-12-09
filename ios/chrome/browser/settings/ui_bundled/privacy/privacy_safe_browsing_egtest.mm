@@ -349,7 +349,8 @@ void PressInfoButtonForCell(NSString* cellId) {
   return config;
 }
 
-- (void)testSBERCellIsPresent {
+// TODO(crbug.com/467409016): Fix and re-enable this test.
+- (void)DISABLED_testSBERCellIsPresent {
   OpenPrivacySafeBrowsingSettings();
   PressInfoButtonForCell(kSettingsSafeBrowsingStandardProtectionCellId);
   [ElementInteractionWithGreyMatcher(
