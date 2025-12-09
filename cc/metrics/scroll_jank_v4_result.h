@@ -49,15 +49,20 @@ using JankReasonArray =
 // To simplify the documentation below, we use "this frame" to refer to the
 // frame in which the scroll update was presented.
 struct ScrollJankV4Result {
+  static constexpr int kMaxVsyncsSincePreviousFrame = 1000000;
+  static constexpr int kMaxMissedVsyncs = kMaxVsyncsSincePreviousFrame - 1;
+
   // Number of VSyncs that that Chrome missed before presenting the scroll
   // update for each reason. If at least one value is greater than zero, this
-  // frame was delayed and thus the scroll update is considered janky.
+  // frame was delayed and thus the scroll update is considered janky. Each
+  // value is guaranteed to be at most `kMaxMissedVsyncs`.
   JankReasonArray<int> missed_vsyncs_per_reason = {};
 
   // How many VSyncs were between (A) this frame and (B) the previous frame.
   // If this value is greater than one, then Chrome potentially missed one or
   // more VSyncs (i.e. might have been able to present this scroll update
-  // earlier). Empty if this frame is the first frame in a scroll.
+  // earlier). Guaranteed to be at most `kMaxVsyncsSincePreviousFrame`. Empty if
+  // this frame is the first frame in a scroll.
   std::optional<int> vsyncs_since_previous_frame = std::nullopt;
 
   // The running delivery cut-off based on frames preceding this frame. See

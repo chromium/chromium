@@ -684,6 +684,36 @@ TEST_F(ScrollJankV4DeciderTest, ScrollWithZeroVsyncs) {
   EXPECT_THAT(result2, kHasNoMissedVsyncs);
 }
 
+// Regression test for https://crbug.com/466003353.
+TEST_F(ScrollJankV4DeciderTest, ScrollWithHugeNumberOfMissedVsyncs) {
+  ScrollJankV4Result result1 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(3),
+                         .last_input_generation_ts = MillisSinceEpoch(11),
+                         .has_inertial_input = false,
+                         .abs_total_raw_delta_pixels = 2.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(32)}},
+      CreateBeginFrameArgs(MillisSinceEpoch(16)));
+  EXPECT_THAT(result1, kHasNoMissedVsyncs);
+
+  ScrollJankV4Result result2 = decider_.DecideJankForFrameWithRealScrollUpdates(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(19),
+                         .last_input_generation_ts = MillisSinceEpoch(27),
+                         .has_inertial_input = false,
+                         .abs_total_raw_delta_pixels = 2.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f},
+                    /* synthetic= */ std::nullopt),
+      ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(16032)}},
+      {.frame_time = MillisSinceEpoch(16016),
+       .interval = base::Microseconds(1)});
+  EXPECT_THAT(
+      result2,
+      HasMissedVsyncs(
+          JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 999999));
+  EXPECT_EQ(result2.vsyncs_since_previous_frame, 1000000);
+}
+
 /*
 Tests that the decider evaluates each scroll separately (i.e. doesn't evaluate a
 scroll against a previous scroll).
@@ -2211,6 +2241,30 @@ TEST_F(ScrollJankV4DeciderTest,
           }),
       DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
       CreateBeginFrameArgs(MillisSinceEpoch(90))));
+}
+
+TEST_F(ScrollJankV4DeciderTest, IsNotValidFrameWithZeroInterval) {
+  EXPECT_FALSE(ScrollJankV4Decider::IsValidFrame(
+      ScrollUpdates(
+          Real{
+              .first_input_generation_ts = MillisSinceEpoch(80),
+              .last_input_generation_ts = MillisSinceEpoch(80),
+          },
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)}),
+      DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
+      {.frame_time = MillisSinceEpoch(90), .interval = base::TimeDelta()}));
+}
+
+TEST_F(ScrollJankV4DeciderTest, IsNotValidFrameWithNegativeInterval) {
+  EXPECT_FALSE(ScrollJankV4Decider::IsValidFrame(
+      ScrollUpdates(
+          Real{
+              .first_input_generation_ts = MillisSinceEpoch(80),
+              .last_input_generation_ts = MillisSinceEpoch(80),
+          },
+          Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(80)}),
+      DamagingFrame{.presentation_ts = MillisSinceEpoch(100)},
+      {.frame_time = MillisSinceEpoch(90), .interval = -kVsyncInterval}));
 }
 
 TEST_F(ScrollJankV4DeciderTest, IsFastScroll) {
