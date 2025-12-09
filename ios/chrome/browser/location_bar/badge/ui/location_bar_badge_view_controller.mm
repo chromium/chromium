@@ -533,7 +533,8 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
   // Badge icon tint color.
   if (isInUnifiedContainer) {
-    _badgeIcon.tintColor = [UIColor whiteColor];
+    _badgeIcon.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+    _label.textColor = [UIColor colorNamed:kSolidWhiteColor];
   } else {
     _badgeIcon.tintColor = shouldShowMutedColors
                                ? [UIColor colorNamed:kGrey600Color]
