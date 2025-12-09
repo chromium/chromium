@@ -147,8 +147,8 @@ ui::TextEditCommand FakeLinuxUi::GetTextEditCommandForEvent(
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-printing::PrintDialogLinuxInterface* FakeLinuxUi::CreatePrintDialog(
-    printing::PrintingContextLinux* context) {
+std::unique_ptr<printing::PrintDialogLinuxInterface>
+FakeLinuxUi::CreatePrintDialog(printing::PrintingContextLinux* context) {
   return nullptr;
 }
 

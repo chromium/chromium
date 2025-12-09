@@ -155,8 +155,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   virtual base::flat_map<std::string, std::string> GetKeyboardLayoutMap() = 0;
 
 #if BUILDFLAG(ENABLE_PRINTING)
-  virtual printing::PrintDialogLinuxInterface* CreatePrintDialog(
-      printing::PrintingContextLinux* context) = 0;
+  virtual std::unique_ptr<printing::PrintDialogLinuxInterface>
+  CreatePrintDialog(printing::PrintingContextLinux* context) = 0;
 
   virtual gfx::Size GetPdfPaperSize(
       printing::PrintingContextLinux* context) = 0;

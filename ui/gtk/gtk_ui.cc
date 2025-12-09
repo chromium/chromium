@@ -809,9 +809,9 @@ ui::TextEditCommand GtkUi::GetTextEditCommandForEvent(const ui::Event& event,
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-printing::PrintDialogLinuxInterface* GtkUi::CreatePrintDialog(
+std::unique_ptr<printing::PrintDialogLinuxInterface> GtkUi::CreatePrintDialog(
     printing::PrintingContextLinux* context) {
-  return PrintDialogGtk::CreatePrintDialog(context, platform_.get());
+  return std::make_unique<PrintDialogGtk>(context, platform_.get());
 }
 
 gfx::Size GtkUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {

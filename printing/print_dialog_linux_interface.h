@@ -46,12 +46,6 @@ class PrintDialogLinuxInterface {
   virtual void PrintDocument(const MetafilePlayer& metafile,
                              const std::u16string& document_name) = 0;
 
-  // Releases the caller's ownership of the PrintDialogLinuxInterface. When
-  // called, the caller must not access the PrintDialogLinuxInterface
-  // afterwards, and vice versa.
-  virtual void ReleaseDialog() = 0;
-
- protected:
   virtual ~PrintDialogLinuxInterface() = default;
 };
 

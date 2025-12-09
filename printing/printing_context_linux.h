@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_context.h"
 
@@ -49,7 +48,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
 
  private:
   std::u16string document_name_;
-  raw_ptr<PrintDialogLinuxInterface> print_dialog_;
+  std::unique_ptr<PrintDialogLinuxInterface> print_dialog_;
 };
 
 }  // namespace printing
