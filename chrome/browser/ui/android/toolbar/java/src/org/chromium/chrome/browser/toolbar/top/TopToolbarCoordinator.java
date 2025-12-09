@@ -390,6 +390,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
         mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
                 (tabStripTransitionDelegate) -> {
+                    if (mControlContainer == null) return;
                     mTabStripTransitionCoordinator =
                             new TabStripTransitionCoordinator(
                                     browserControlsVisibilityManager,
