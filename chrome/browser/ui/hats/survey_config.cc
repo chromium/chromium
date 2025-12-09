@@ -103,6 +103,7 @@ constexpr char kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker[] =
     "identity-switch-profile-profile-picker";
 constexpr char kHatsSurveyTriggerLensOverlayResults[] = "lens-overlay-results";
 constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
+constexpr char kHatsSurveyTriggerNextPanel[] = "next-panel";
 constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
     "ntp-photos-module-opt-out";
 constexpr char kHatsSurveyTriggerPasswordChangeCanceled[] =
@@ -323,6 +324,15 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopNtpModules,
       kHatsSurveyTriggerNtpModules);
+
+  // Next Panel survey.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopNextPanel,
+      kHatsSurveyTriggerNextPanel,
+      /*presupplied_trigger_id=*/"XWXw3UM1k0ugnJ3q1cK0PKSCtgF3",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Experiment ID"});
 
   // History embeddings survey.
   survey_configs.emplace_back(

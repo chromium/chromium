@@ -1037,6 +1037,11 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopNtpModules,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the Happiness Tracking System for Desktop Chrome
+// Next Panel.
+BASE_FEATURE(kHappinessTrackingSurveysForDesktopNextPanel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Happiness Tracking System for History Embeddings.
 BASE_FEATURE(kHappinessTrackingSurveysForHistoryEmbeddings,
              base::FEATURE_DISABLED_BY_DEFAULT);

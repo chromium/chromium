@@ -16,6 +16,7 @@
 class BrowserWindowInterface;
 class SidePanelEntryScope;
 class SidePanelRegistry;
+class PrefService;
 
 namespace base {
 class Uuid;
@@ -169,6 +170,9 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   const raw_ptr<ContextualTasksContextController> context_controller_;
 
   const raw_ptr<ContextualTasksUiService> ui_service_;
+
+  // Pref service for the current profile.
+  const raw_ptr<PrefService> pref_service_;
 
   // WebView of the current side panel. It's owned by side panel framework so
   // weak pointer is needed in case it's destroyed. The WebContents in the

@@ -1325,6 +1325,10 @@ inline constexpr char kPinSplitTabButton[] = "browser.pin_split_tab_button";
 inline constexpr char kPinContextualTaskButton[] =
     "browser.pin_contextual_task_button";
 
+// An integer pref that tracks how many times the next panel has been opened.
+inline constexpr char kContextualTasksNextPanelOpenCount[] =
+    "contextual_tasks.next_panel_open_count";
+
 // A boolean pref set to true if links/tabs can be dragged to create split tabs.
 inline constexpr char kSplitViewDragAndDropEnabled[] =
     "browser.split_view_drag_and_drop_enabled";
