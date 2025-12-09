@@ -109,6 +109,14 @@ void WidgetAXManager::OnChildManagerRemoved(WidgetAXManager& child_manager) {
   child_manager.parent_ax_tree_id_ = ui::AXTreeID();
 }
 
+void WidgetAXManager::AddObserver(WidgetAXManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WidgetAXManager::RemoveObserver(WidgetAXManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {
   if (mode.has_mode(ui::AXMode::kNativeAPIs)) {
     Enable();
@@ -308,6 +316,9 @@ void WidgetAXManager::InitAXTreeManager() {
 }
 
 void WidgetAXManager::Enable() {
+  if (is_enabled_) {
+    return;
+  }
   is_enabled_ = true;
   tree_source_ = std::make_unique<ViewAccessibilityAXTreeSource>(
       widget_->GetRootView()->GetViewAccessibility().GetUniqueId(), ax_tree_id_,
@@ -327,6 +338,13 @@ void WidgetAXManager::Enable() {
   pending_data_updates_.insert(
       widget_->GetRootView()->GetViewAccessibility().GetUniqueId());
   SendPendingUpdate();
+  NotifyEnabled();
+}
+
+void WidgetAXManager::NotifyEnabled() {
+  for (WidgetAXManagerObserver& observer : observers_) {
+    observer.OnWidgetAXManagerEnabled();
+  }
 }
 
 void WidgetAXManager::SendPendingUpdate() {

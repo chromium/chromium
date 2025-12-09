@@ -89,6 +89,7 @@ component("views") {
     "accessibility/ax_virtual_view.h",
     "accessibility/tree/view_accessibility_ax_tree_source.h",
     "accessibility/tree/widget_ax_manager.h",
+    "accessibility/tree/widget_ax_manager_observer.h",
     "accessibility/tree/widget_view_ax_cache.h",
     "accessibility/view_accessibility.h",
     "accessibility/view_accessibility_utils.h",
@@ -1003,6 +1004,7 @@ source_set("test_support") {
   testonly = true
   sources = [
     "accessibility/tree/view_accessibility_ax_tree_source_test_api.h",
+    "accessibility/tree/widget_ax_manager_test_api.cc",
     "accessibility/tree/widget_ax_manager_test_api.h",
     "animation/test/flood_fill_ink_drop_ripple_test_api.cc",
     "animation/test/flood_fill_ink_drop_ripple_test_api.h",
@@ -1447,7 +1449,6 @@ test("views_unittests") {
       "accessibility/atomic_view_ax_tree_manager_unittest.cc",
       "accessibility/ax_virtual_view_unittest.cc",
       "accessibility/tree/view_accessibility_ax_tree_source_unittest.cc",
-      "accessibility/tree/widget_ax_manager_test_api.cc",
       "accessibility/tree/widget_ax_manager_unittest.cc",
       "accessibility/tree/widget_view_ax_cache_unittest.cc",
       "accessibility/view_accessibility_unittest.cc",

@@ -46,6 +46,21 @@ class WidgetAXManagerTest : public test::WidgetTest {
       features::kAccessibilityTreeForViews};
 };
 
+class WidgetAXManagerObserver : public views::WidgetAXManagerObserver {
+ public:
+  WidgetAXManagerObserver() = default;
+  WidgetAXManagerObserver(const WidgetAXManagerObserver&) = delete;
+  WidgetAXManagerObserver& operator=(const WidgetAXManagerObserver&) = delete;
+  ~WidgetAXManagerObserver() override = default;
+
+  void OnWidgetAXManagerEnabled() override { ++enabled_count_; }
+
+  int enabled_count() const { return enabled_count_; }
+
+ private:
+  int enabled_count_ = 0;
+};
+
 TEST_F(WidgetAXManagerTest, InitiallyDisabled) {
   EXPECT_FALSE(manager()->is_enabled());
 }
@@ -714,6 +729,44 @@ TEST_F(WidgetAXManagerTest, CacheTracksChildAddRemoveAfterEnable) {
 
   root->RemoveChildViewT(child);
   EXPECT_EQ(api.cache()->Get(child_id), nullptr);
+}
+
+TEST_F(WidgetAXManagerTest, ObserverReceivesNotificationWhenEnabled) {
+  WidgetAXManagerObserver observer;
+  manager()->AddObserver(&observer);
+
+  WidgetAXManagerTestApi api(manager());
+  EXPECT_EQ(observer.enabled_count(), 0);
+
+  api.Enable();
+  EXPECT_EQ(observer.enabled_count(), 1);
+
+  manager()->RemoveObserver(&observer);
+}
+
+TEST_F(WidgetAXManagerTest, ObserverNotifiedOnlyOnceForRepeatedEnable) {
+  WidgetAXManagerObserver observer;
+  manager()->AddObserver(&observer);
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+  EXPECT_EQ(observer.enabled_count(), 1);
+
+  manager()->OnAXModeAdded(ui::AXMode::kNativeAPIs);
+  EXPECT_EQ(observer.enabled_count(), 1);
+
+  manager()->RemoveObserver(&observer);
+}
+
+TEST_F(WidgetAXManagerTest, RemovedObserverDoesNotReceiveNotifications) {
+  WidgetAXManagerObserver observer;
+  manager()->AddObserver(&observer);
+  manager()->RemoveObserver(&observer);
+
+  WidgetAXManagerTestApi api(manager());
+  api.Enable();
+
+  EXPECT_EQ(observer.enabled_count(), 0);
 }
 
 }  // namespace views::test
