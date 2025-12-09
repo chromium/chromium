@@ -66,7 +66,7 @@ class FakeJniDelegate : public JniDelegate {
              base::OnceCallback<void(bool)> completion_callback) override {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(completion_callback), simulate_errors_));
+        base::BindOnce(std::move(completion_callback), !simulate_errors_));
   }
 
   void set_bridge(ThirdPartyCredentialManagerBridge* bridge) {
@@ -156,7 +156,7 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulStoreCall) {
   run_loop.Run();
 }
 
-TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnuccessfulStoreCall) {
+TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnsuccessfulStoreCall) {
   base::RunLoop run_loop;
   base::MockCallback<StoreCallback> mock_callback;
   fake_jni_delegate().set_error_simulation(true);
