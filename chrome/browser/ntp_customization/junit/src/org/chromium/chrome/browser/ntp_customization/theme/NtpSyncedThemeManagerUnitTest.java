@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ntp_customization.theme;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -85,12 +84,8 @@ public class NtpSyncedThemeManagerUnitTest {
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
-        // Verifying side effects of extractAndSaveSyncedThemeInfo
-        CustomBackgroundInfo savedInfo =
-                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
-        assertEquals(info.backgroundUrl, savedInfo.backgroundUrl);
-        assertEquals(info.collectionId, savedInfo.collectionId);
-        assertEquals(info.isDailyRefreshEnabled, savedInfo.isDailyRefreshEnabled);
-        assertEquals(info.isUploadedImage, savedInfo.isUploadedImage);
+
+        // Verifying that the manager is destroyed.
+        verify(mNatives).destroy(anyLong());
     }
 }

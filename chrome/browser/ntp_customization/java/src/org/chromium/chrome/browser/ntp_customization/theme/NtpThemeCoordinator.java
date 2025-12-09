@@ -99,13 +99,15 @@ public class NtpThemeCoordinator {
                         mContext,
                         profile,
                         mCallbackController.makeCancelable(
-                                () -> {
+                                (Bitmap bitmap) -> {
                                     initializeBottomSheetContent(
                                             BottomSheetType.SINGLE_THEME_COLLECTION);
+                                    initializeBottomSheetContent(BottomSheetType.THEME_COLLECTIONS);
                                     mMediator.updateTrailingIconVisibilityForSectionType(
                                             THEME_COLLECTION);
                                     mBottomSheetDelegate.onNewColorSelected(
                                             /* isDifferentColor= */ true);
+                                    mBottomSheetDelegate.onNewThemeCollectionImageSelected(bitmap);
                                 }));
         mNtpThemeDelegate = createNtpThemeDelegate();
         mMediator =

@@ -548,7 +548,7 @@ public class NtpCustomizationUtils {
      *
      * @param bitmap The bitmap from which to extract and save the primary color.
      */
-    private static void pickAndSavePrimaryColor(Bitmap bitmap) {
+    static void pickAndSavePrimaryColor(Bitmap bitmap) {
         @ColorInt Integer primaryColor = getContentBasedSeedColor(bitmap);
         if (primaryColor != null) {
             setCustomizedPrimaryColorToSharedPreference(primaryColor.intValue());
@@ -984,11 +984,20 @@ public class NtpCustomizationUtils {
     /**
      * Updates the necessary preferences and files for theme collection image or user uploaded
      * image.
+     *
+     * @param customBackgroundInfo The {@link CustomBackgroundInfo} containing the theme collection
+     *     info if passed in a theme collection image.
+     * @param bitmap The bitmap of the theme collection or uploaded image.
+     * @param backgroundImageInfo The {@link BackgroundImageInfo} containing the portrait and
+     *     landscape transformation matrices of the image.
+     * @param skipSavingPrimaryColor True if color selection and saving are deferred until the
+     *     bottom sheet is dismissed.
      */
-    public static void saveBackgroundInfoForThemeCollectionOrUploadedImage(
+    public static void saveBackgroundInfo(
             @Nullable CustomBackgroundInfo customBackgroundInfo,
             Bitmap bitmap,
-            BackgroundImageInfo backgroundImageInfo) {
+            BackgroundImageInfo backgroundImageInfo,
+            boolean skipSavingPrimaryColor) {
         updateBackgroundImageFile(bitmap);
 
         if (customBackgroundInfo != null) {
@@ -997,7 +1006,10 @@ public class NtpCustomizationUtils {
             removeCustomBackgroundInfoFromSharedPreference();
         }
 
-        pickAndSavePrimaryColor(bitmap);
+        if (!skipSavingPrimaryColor) {
+            pickAndSavePrimaryColor(bitmap);
+        }
+
         updateBackgroundImageInfo(backgroundImageInfo);
     }
 

@@ -250,8 +250,11 @@ public class NtpCustomizationConfigManager {
 
         mBackgroundImageType = NtpBackgroundImageType.IMAGE_FROM_DISK;
 
-        NtpCustomizationUtils.saveBackgroundInfoForThemeCollectionOrUploadedImage(
-                /* customBackgroundInfo= */ null, bitmap, backgroundImageInfo);
+        NtpCustomizationUtils.saveBackgroundInfo(
+                /* customBackgroundInfo= */ null,
+                bitmap,
+                backgroundImageInfo,
+                /* skipSavingPrimaryColor= */ false);
 
         onBackgroundChanged(bitmap, backgroundImageInfo, oldType);
     }

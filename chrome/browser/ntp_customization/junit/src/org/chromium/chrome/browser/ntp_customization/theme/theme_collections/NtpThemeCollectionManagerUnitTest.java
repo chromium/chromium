@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,9 +32,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -46,10 +50,11 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class NtpThemeCollectionManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Profile mProfile;
     @Mock private ImageFetcher mImageFetcher;
     @Mock private NtpThemeCollectionBridge.Natives mNatives;
-    @Mock private Runnable mOnThemeImageSelectedCallback;
+    @Mock private Callback<Bitmap> mOnThemeImageSelectedCallback;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
 
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
@@ -94,10 +99,25 @@ public class NtpThemeCollectionManagerUnitTest {
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
 
-        verify(mOnThemeImageSelectedCallback).run();
+        // This is needed for the async task inside
+        // saveBackgroundInfoForThemeCollectionOrUploadedImage
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
+        verify(mOnThemeImageSelectedCallback).onResult(eq(bitmap));
         verify(mNtpCustomizationConfigManager)
                 .onThemeCollectionImageSelected(
                         eq(bitmap), eq(info), any(BackgroundImageInfo.class));
+        // Verifying side effects of
+        // NtpCustomizationUtils.saveBackgroundInfoForThemeCollectionOrUploadedImage
+        assertTrue(NtpCustomizationUtils.getBackgroundImageFile().exists());
+        assertEquals(
+                info.collectionId,
+                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference().collectionId);
+        assertNotNull(NtpCustomizationUtils.readNtpBackgroundImageInfo());
+        // Color picking is postponed.
+        assertEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
     }
 
     @Test
@@ -163,5 +183,24 @@ public class NtpThemeCollectionManagerUnitTest {
         String collectionId = "test_id";
         mNtpThemeCollectionManager.setThemeCollectionDailyRefreshed(collectionId);
         verify(mNatives).setThemeCollectionDailyRefreshed(eq(1L), eq(collectionId));
+    }
+
+    @Test
+    public void testOnCustomBackgroundImageUpdated_destroyed() {
+        mNtpThemeCollectionManager =
+                new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
+        GURL backgroundUrl = JUnitTestGURLs.URL_1;
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(backgroundUrl, "collectionId", false, true);
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+
+        mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(info);
+
+        verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
+        mNtpThemeCollectionManager.destroy();
+        mBitmapCallbackCaptor.getValue().onResult(bitmap);
+        verify(mOnThemeImageSelectedCallback, never()).onResult(any());
+        verify(mNtpCustomizationConfigManager, never())
+                .onThemeCollectionImageSelected(any(), any(), any());
     }
 }

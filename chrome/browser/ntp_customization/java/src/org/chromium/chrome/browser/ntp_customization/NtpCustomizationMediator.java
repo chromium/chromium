@@ -13,12 +13,14 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ViewFlipper;
 
@@ -78,6 +80,7 @@ public class NtpCustomizationMediator {
     private @Nullable Profile mProfile;
     private @Nullable Integer mCurrentBottomSheet;
     private boolean mShouldRecreate;
+    private @Nullable Bitmap mNewThemeCollectionImage;
     private static @Nullable PrefService sPrefServiceForTest;
 
     public NtpCustomizationMediator(
@@ -107,6 +110,13 @@ public class NtpCustomizationMediator {
 
                     @Override
                     public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                        // Pick and save the primary color if a new theme collection image is
+                        // selected.
+                        if (NtpCustomizationConfigManager.getInstance().getBackgroundImageType()
+                                        == THEME_COLLECTION
+                                && mNewThemeCollectionImage != null) {
+                            NtpCustomizationUtils.pickAndSavePrimaryColor(mNewThemeCollectionImage);
+                        }
                         mBottomSheetContent.onSheetClosed();
                         mBottomSheetController.removeObserver(mBottomSheetObserver);
                         // Notify to recreate activities if a new customized theme color is selected
@@ -151,6 +161,11 @@ public class NtpCustomizationMediator {
     // Called when a customized theme color is selected or removed.
     void onNewColorSelected(boolean isDifferentColor) {
         mShouldRecreate = isDifferentColor;
+    }
+
+    // Called when a new theme collection image is selected or removed.
+    void onNewThemeCollectionImageSelected(@Nullable Bitmap image) {
+        mNewThemeCollectionImage = image;
     }
 
     /** Handles system back press and back button clicks on the bottom sheet. */

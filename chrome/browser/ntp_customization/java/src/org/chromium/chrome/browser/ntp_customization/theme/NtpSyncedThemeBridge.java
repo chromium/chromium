@@ -42,9 +42,10 @@ public class NtpSyncedThemeBridge {
 
     /** Cleans up the C++ side of this class. */
     public void destroy() {
-        assert mNativeNtpSyncedThemeBridge != 0;
-        NtpSyncedThemeBridgeJni.get().destroy(mNativeNtpSyncedThemeBridge);
-        mNativeNtpSyncedThemeBridge = 0;
+        if (mNativeNtpSyncedThemeBridge != 0) {
+            NtpSyncedThemeBridgeJni.get().destroy(mNativeNtpSyncedThemeBridge);
+            mNativeNtpSyncedThemeBridge = 0;
+        }
     }
 
     /**

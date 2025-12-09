@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -51,6 +52,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -825,5 +827,67 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
         NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(timestamp);
         assertEquals(timestamp, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
+    }
+
+    @Test
+    public void testSaveBackgroundInfo() {
+        // Scenario 1: With CustomBackgroundInfo, no postponed color picking.
+        CustomBackgroundInfo customBackgroundInfo =
+                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, true);
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        Matrix portraitMatrix = new Matrix();
+        Matrix landscapeMatrix = new Matrix();
+        landscapeMatrix.setScale(2.0f, 2.0f);
+        BackgroundImageInfo backgroundImageInfo =
+                new BackgroundImageInfo(
+                        portraitMatrix,
+                        landscapeMatrix,
+                        /* portraitWindowSize= */ null,
+                        /* landscapeWindowSize= */ null);
+
+        NtpCustomizationUtils.saveBackgroundInfo(
+                customBackgroundInfo,
+                bitmap,
+                backgroundImageInfo,
+                /* skipSavingPrimaryColor= */ false);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
+        assertTrue(NtpCustomizationUtils.getBackgroundImageFile().exists());
+        CustomBackgroundInfo restoredInfo =
+                NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
+        assertEquals(customBackgroundInfo.backgroundUrl, restoredInfo.backgroundUrl);
+        assertEquals(customBackgroundInfo.collectionId, restoredInfo.collectionId);
+        assertEquals(customBackgroundInfo.isUploadedImage, restoredInfo.isUploadedImage);
+        assertEquals(
+                customBackgroundInfo.isDailyRefreshEnabled, restoredInfo.isDailyRefreshEnabled);
+        assertNotEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        BackgroundImageInfo restoredMatrices = NtpCustomizationUtils.readNtpBackgroundImageInfo();
+        assertNotNull(restoredMatrices);
+        assertEquals(portraitMatrix, restoredMatrices.getPortraitMatrix());
+        assertEquals(landscapeMatrix, restoredMatrices.getLandscapeMatrix());
+
+        // Clean up for next scenario.
+        NtpCustomizationUtils.deleteBackgroundImageFileImpl();
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+
+        // Scenario 2: Without CustomBackgroundInfo, with postponed color picking.
+        NtpCustomizationUtils.saveBackgroundInfo(
+                /* customBackgroundInfo= */ null,
+                bitmap,
+                backgroundImageInfo,
+                /* skipSavingPrimaryColor= */ true);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
+        assertTrue(NtpCustomizationUtils.getBackgroundImageFile().exists());
+        assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+        assertEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        restoredMatrices = NtpCustomizationUtils.readNtpBackgroundImageInfo();
+        assertNotNull(restoredMatrices);
+        assertEquals(portraitMatrix, restoredMatrices.getPortraitMatrix());
+        assertEquals(landscapeMatrix, restoredMatrices.getLandscapeMatrix());
     }
 }

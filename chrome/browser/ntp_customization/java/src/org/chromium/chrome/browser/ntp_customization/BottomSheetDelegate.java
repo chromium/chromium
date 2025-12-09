@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import android.graphics.Bitmap;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -49,4 +51,11 @@ public interface BottomSheetDelegate {
      * @param isDifferentColor Whether a different primary color is selected by users.
      */
     void onNewColorSelected(boolean isDifferentColor);
+
+    /**
+     * Called when a new theme collection image is selected.
+     *
+     * @param bitmap The bitmap of the new theme collection image.
+     */
+    void onNewThemeCollectionImageSelected(@Nullable Bitmap bitmap);
 }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -15,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
@@ -33,8 +35,9 @@ public class NtpThemeCollectionManager {
     private final NtpThemeCollectionBridge mNtpThemeCollectionBridge;
     private final Context mContext;
     private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
-    private final Runnable mOnThemeImageSelectedCallback;
+    private final Callback<Bitmap> mOnThemeImageSelectedCallback;
     private final @Nullable ImageFetcher mImageFetcher;
+    private boolean mIsDestroyed;
 
     /**
      * Constructs a new NtpThemeCollectionManager.
@@ -44,7 +47,7 @@ public class NtpThemeCollectionManager {
      * @param onThemeImageSelectedCallback The callback to run when a theme image is selected.
      */
     public NtpThemeCollectionManager(
-            Context context, Profile profile, Runnable onThemeImageSelectedCallback) {
+            Context context, Profile profile, Callback<Bitmap> onThemeImageSelectedCallback) {
         mContext = context;
         mNtpThemeCollectionBridge =
                 new NtpThemeCollectionBridge(profile, this::onCustomBackgroundImageUpdated);
@@ -56,6 +59,7 @@ public class NtpThemeCollectionManager {
     /** Cleans up the C++ side of {@link NtpThemeCollectionBridge}. */
     public void destroy() {
         mNtpThemeCollectionBridge.destroy();
+        mIsDestroyed = true;
     }
 
     /**
@@ -143,14 +147,18 @@ public class NtpThemeCollectionManager {
                 mImageFetcher,
                 info.backgroundUrl,
                 (bitmap) -> {
-                    if (bitmap != null) {
-                        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
-                                bitmap,
-                                info,
-                                NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
-                                        mContext, bitmap));
-                        mOnThemeImageSelectedCallback.run();
+                    if (bitmap == null || mIsDestroyed) {
+                        return;
                     }
+
+                    BackgroundImageInfo backgroundImageInfo =
+                            NtpCustomizationUtils.calculateInitialThemeCollectionImageMatrices(
+                                    mContext, bitmap);
+                    mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
+                            bitmap, info, backgroundImageInfo);
+                    mOnThemeImageSelectedCallback.onResult(bitmap);
+                    NtpCustomizationUtils.saveBackgroundInfo(
+                            info, bitmap, backgroundImageInfo, /* skipSavingPrimaryColor= */ true);
                 });
     }
 

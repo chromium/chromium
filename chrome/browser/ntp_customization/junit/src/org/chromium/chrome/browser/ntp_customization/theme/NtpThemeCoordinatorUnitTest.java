@@ -154,7 +154,12 @@ public class NtpThemeCoordinatorUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
 
+        verify(mNtpThemeCollectionsCoordinator)
+                .initializeBottomSheetContent(eq(BottomSheetType.SINGLE_THEME_COLLECTION));
+        verify(mNtpThemeCollectionsCoordinator)
+                .initializeBottomSheetContent(eq(BottomSheetType.THEME_COLLECTIONS));
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
+        verify(mBottomSheetDelegate).onNewThemeCollectionImageSelected(eq(bitmap));
         verify(mMediator)
                 .updateTrailingIconVisibilityForSectionType(
                         NtpBackgroundImageType.THEME_COLLECTION);
