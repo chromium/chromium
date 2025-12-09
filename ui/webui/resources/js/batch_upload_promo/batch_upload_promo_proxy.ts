@@ -3,34 +3,32 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '../batch_upload_promo.mojom-webui.js';
+import type {PageHandlerInterface} from '../batch_upload_promo.mojom-webui.js';
 
-let instance: BatchUploadPromoProxy|null = null;
-
-/** Holds Mojo interfaces for communication with the browser process. */
-export class BatchUploadPromoProxy {
-  handler: PageHandlerRemote;
+export interface BatchUploadPromoProxy {
   callbackRouter: PageCallbackRouter;
+  handler: PageHandlerInterface;
+}
 
-  private constructor(
-      handler: PageHandlerRemote, callbackRouter: PageCallbackRouter) {
-    this.handler = handler;
-    this.callbackRouter = callbackRouter;
+export class BatchUploadPromoProxyImpl implements BatchUploadPromoProxy {
+  callbackRouter: PageCallbackRouter;
+  handler: PageHandlerInterface;
+
+  private constructor() {
+    this.callbackRouter = new PageCallbackRouter();
+    this.handler = new PageHandlerRemote();
+    PageHandlerFactory.getRemote().createBatchUploadPromoHandler(
+        this.callbackRouter.$.bindNewPipeAndPassRemote(),
+        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
+  }
+
+  static setInstance(obj: BatchUploadPromoProxy) {
+    instance = obj;
   }
 
   static getInstance(): BatchUploadPromoProxy {
-    if (!instance) {
-      const handler = new PageHandlerRemote();
-      const callbackRouter = new PageCallbackRouter();
-      PageHandlerFactory.getRemote().createBatchUploadPromoHandler(
-          callbackRouter.$.bindNewPipeAndPassRemote(),
-          handler.$.bindNewPipeAndPassReceiver());
-      instance = new BatchUploadPromoProxy(handler, callbackRouter);
-    }
-    return instance;
-  }
-
-  static setInstance(
-      handler: PageHandlerRemote, callbackRouter: PageCallbackRouter) {
-    instance = new BatchUploadPromoProxy(handler, callbackRouter);
+    return instance || (instance = new BatchUploadPromoProxyImpl());
   }
 }
+
+let instance: BatchUploadPromoProxy|null = null;

@@ -31,7 +31,7 @@ import {RouteObserverMixin} from '../router.js';
 
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {BatchUploadPromoProxy} from 'chrome://resources/js/batch_upload_promo/batch_upload_promo_proxy.js';
+import {BatchUploadPromoProxyImpl} from 'chrome://resources/js/batch_upload_promo/batch_upload_promo_proxy.js';
 // </if>
 
 // clang-format on
@@ -168,12 +168,12 @@ export class SettingsSyncControlsElement extends
 
     // <if expr="not is_chromeos">
     if (loadTimeData.getBoolean('unoPhase2FollowUp')) {
-      BatchUploadPromoProxy.getInstance()
+      BatchUploadPromoProxyImpl.getInstance()
           .callbackRouter.onLocalDataCountChanged.addListener(
               (batchUploadPromoData: number) => {
                 this.batchUploadPromoLocalDataCount_ = batchUploadPromoData;
               });
-      BatchUploadPromoProxy.getInstance()
+      BatchUploadPromoProxyImpl.getInstance()
           .handler.getBatchUploadPromoLocalDataCount()
           .then(({localDataCount}) => {
             this.batchUploadPromoLocalDataCount_ = localDataCount;
@@ -261,7 +261,7 @@ export class SettingsSyncControlsElement extends
 
     // Prevent navigation to href='#' and open the batch upload dialog instead.
     event.preventDefault();
-    BatchUploadPromoProxy.getInstance().handler.onBatchUploadPromoClicked();
+    BatchUploadPromoProxyImpl.getInstance().handler.onBatchUploadPromoClicked();
   }
   // </if>
 

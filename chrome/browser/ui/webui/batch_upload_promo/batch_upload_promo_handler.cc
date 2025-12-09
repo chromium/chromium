@@ -91,8 +91,6 @@ void BatchUploadPromoHandler::OnSyncShutdown(syncer::SyncService* sync) {
 
 void BatchUploadPromoHandler::GetBatchUploadPromoLocalDataCount(
     GetBatchUploadPromoLocalDataCountCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
-
   if (!SyncServiceFactory::IsSyncAllowed(&profile_.get())) {
     std::move(callback).Run(0);
     return;
@@ -104,8 +102,6 @@ void BatchUploadPromoHandler::GetBatchUploadPromoLocalDataCount(
 }
 
 void BatchUploadPromoHandler::OnBatchUploadPromoClicked() {
-  CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
-
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     return;

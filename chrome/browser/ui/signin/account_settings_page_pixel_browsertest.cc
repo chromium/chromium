@@ -5,6 +5,8 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -32,13 +34,20 @@ constexpr char kScreenshotBaselineCL[] = "7146804";
 
 class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
  public:
-  AccountSettingsPagePixelBrowserTest() = default;
+  AccountSettingsPagePixelBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                              syncer::kUnoPhase2FollowUp},
+        /*disabled_features=*/{});
+  }
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateTestSyncService));
+    batch_upload_test_helper_.SetupBatchUploadTestingFactoryInProfile(
+        Profile::FromBrowserContext(context));
   }
 
   void SigninWithFullInfo() {
@@ -79,6 +88,13 @@ class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
     GetTestSyncService()->GetUserSettings()->SetDecryptionPassphrase(
         std::string(kTestPassphrase));
     GetTestSyncService()->FireStateChanged();
+  }
+
+  void AddBatchUploadData() {
+    batch_upload_test_helper_.SetReturnDescriptions(syncer::BOOKMARKS,
+                                                    /*item_count=*/3);
+    batch_upload_test_helper_.SetReturnDescriptions(syncer::PASSWORDS,
+                                                    /*item_count=*/2);
   }
 
  protected:
@@ -128,8 +144,8 @@ class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
     return steps;
   }
 
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
+  base::test::ScopedFeatureList feature_list_;
+  BatchUploadServiceTestHelper batch_upload_test_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(AccountSettingsPagePixelBrowserTest,
@@ -203,6 +219,15 @@ IN_PROC_BROWSER_TEST_F(
 
   RunTestSequence(NavigateToSettingsAndScreenshot(
       "account_settings_page_sync_datatype_disabled_by_policy"));
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSettingsPagePixelBrowserTest,
+                       OpenAccountSettingsPageWithBatchUploadPromo) {
+  AddBatchUploadData();
+  GetTestSyncService()->FireStateChanged();
+
+  SigninWithFullInfo();
+  RunTestSequence(NavigateToSettingsAndScreenshot("account_settings_page"));
 }
 
 }  // namespace

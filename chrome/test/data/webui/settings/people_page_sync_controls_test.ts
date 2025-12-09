@@ -18,8 +18,12 @@ import {getSyncAllPrefs, getSyncAllPrefsManaged} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // <if expr="not is_chromeos">
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {PageStatus, routes, UserSelectableType} from 'chrome://settings/settings.js';
 import {waitAfterNextRender, flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {BatchUploadPromoProxyImpl} from 'chrome://settings/lazy_load.js';
+
+import {TestBatchUploadPromoProxy} from './test_batch_upload_promo_browser_proxy.js';
 // </if>
 
 // clang-format on
@@ -307,12 +311,17 @@ suite('SyncControlsSubpageTest', function() {
 suite('SyncControlsAccountSettingsTest', function() {
   let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
+  let batchUploadPromoProxy: TestBatchUploadPromoProxy;
 
   setup(async function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    batchUploadPromoProxy = new TestBatchUploadPromoProxy();
+    BatchUploadPromoProxyImpl.setInstance(batchUploadPromoProxy);
+
+    loadTimeData.overrideValues(
+        {replaceSyncPromosWithSignInPromos: true, unoPhase2FollowUp: true});
     resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -334,7 +343,6 @@ suite('SyncControlsAccountSettingsTest', function() {
   });
 
   teardown(function() {
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
     resetRouterForTesting();
   });
 
@@ -392,8 +400,8 @@ suite('SyncControlsAccountSettingsTest', function() {
     assertFalse(isVisible(customizeSync));
   });
 
-  test('SignedIn', function() {
-    setupPrefs();
+  test('SignedIn', async function() {
+    await setupPrefs();
 
     // Controls are shown when signed in and there is no error.
     assertFalse(syncControls.hidden);
@@ -431,7 +439,7 @@ suite('SyncControlsAccountSettingsTest', function() {
   });
 
   test('SignedInLocalSyncEnabled', async function() {
-    setupPrefs();
+    await setupPrefs();
 
     // Controls are available by default.
     assertFalse(syncControls.hidden);
@@ -447,7 +455,7 @@ suite('SyncControlsAccountSettingsTest', function() {
   });
 
   test('ChangeDataTypeToggle', async function() {
-    setupPrefs();
+    await setupPrefs();
 
     // Make sure that the autofill toggle is present and can be interacted with.
     const autofillToggle =
@@ -616,7 +624,7 @@ suite('SyncControlsAccountSettingsTest', function() {
       });
 
   test('DisableToggleAndHidePolicyIndicatorWhenSyncIsDisabled', async () => {
-    setupPrefs();
+    await setupPrefs();
 
     syncControls.syncStatus = {
       disabled: true,
@@ -674,6 +682,95 @@ suite('SyncControlsAccountSettingsTest', function() {
 
     router.navigateTo(routes.ACCOUNT);
     assertFalse(syncControls.hidden);
+  });
+
+  test('BatchUploadPromoNotVisibleWithoutLocalData', async () => {
+    await setupPrefs();
+    await flushTasks();
+
+    assertFalse(isChildVisible(syncControls, '#batchUploadPromo'));
+  });
+
+  test('BatchUploadPromoWithLocalDataItemUponInitialization', async () => {
+    batchUploadPromoProxy.handler.setBatchUploadPromoLocalDataCount(5);
+
+    // Create the sync controls again with the initial local data count.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    syncControls = document.createElement('settings-sync-controls');
+    document.body.appendChild(syncControls);
+    syncControls.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    await setupPrefs();
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    assertTrue(isChildVisible(syncControls, '#batchUploadPromo'));
+  });
+
+  test('BatchUploadPromoWithOneLocalDataItem', async () => {
+    await setupPrefs();
+
+    // Notify the UI that there is one item to be uploaded and wait for the
+    // batch upload promo to show.
+    batchUploadPromoProxy.page.onLocalDataCountChanged(1);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    const batchUploadElement =
+        syncControls.shadowRoot!.querySelector(`#batchUploadPromo`);
+    assertTrue(!!batchUploadElement);
+    assertTrue(isVisible(batchUploadElement));
+
+    // Check that the correct version of the string is displayed.
+    const expectedPromoString = '1 item is saved only to this device. ' +
+        'To use it on your other devices, save it in your Google Account.';
+    assertEquals(expectedPromoString, batchUploadElement.textContent);
+  });
+
+  test('BatchUploadPromoWithMultipleLocalDataItems', async () => {
+    await setupPrefs();
+
+    // Notify the UI that there are multiple items to be uploaded and wait for
+    // the batch upload promo to show.
+    batchUploadPromoProxy.page.onLocalDataCountChanged(9);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    const batchUploadElement =
+        syncControls.shadowRoot!.querySelector(`#batchUploadPromo`);
+    assertTrue(!!batchUploadElement);
+    assertTrue(isVisible(batchUploadElement));
+
+    // Check that the correct version of the string is displayed.
+    const expectedPromoString = '9 items are saved only to this device. ' +
+        'To use them on your other devices, save them in your Google Account.';
+    assertEquals(expectedPromoString, batchUploadElement.textContent);
+  });
+
+  test('BatchUploadPromoClickOpensDialog', async () => {
+    await setupPrefs();
+
+    // Notify the UI that there are multiple items to be uploaded and wait for
+    // the batch upload promo to show.
+    batchUploadPromoProxy.page.onLocalDataCountChanged(9);
+    await flushTasks();
+    await waitAfterNextRender(syncControls);
+
+    assertTrue(isChildVisible(syncControls, '#batchUploadPromo'));
+
+    const batchUploadLinkElement =
+        syncControls.shadowRoot!.querySelector<HTMLElement>(
+            '#openBatchUploadLink');
+    assertTrue(!!batchUploadLinkElement);
+    batchUploadLinkElement.click();
+
+    // Make sure the call to open the batch upload dialog is executed.
+    assertEquals(
+        1,
+        batchUploadPromoProxy.handler.getCallCount(
+            'onBatchUploadPromoClicked'));
   });
 });
 // </if>

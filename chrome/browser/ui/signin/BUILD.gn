@@ -232,7 +232,10 @@ if (!is_android) {
         "cookie_clear_on_exit_migration_notice_browsertest.cc",
       ]
 
-      deps += [ "//chrome/browser/content_settings:content_settings_factory" ]
+      deps += [
+        "//chrome/browser/content_settings:content_settings_factory",
+        "//chrome/browser/profiles/batch_upload:test_support",
+      ]
     }
   }
 }
