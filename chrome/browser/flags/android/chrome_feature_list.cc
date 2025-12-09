@@ -458,6 +458,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kXplatSyncedSetup,
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
+    &media::kAutoDocPiPPermissionPromptAndroid,
     &media::kAutoPictureInPictureAndroid,
     &media::kContextMenuPictureInPictureAndroid,
     &net::features::kVerifyQWACs,

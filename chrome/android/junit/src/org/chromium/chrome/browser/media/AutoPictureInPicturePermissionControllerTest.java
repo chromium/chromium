@@ -8,8 +8,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -22,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -34,7 +37,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -49,7 +54,7 @@ public class AutoPictureInPicturePermissionControllerTest {
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
-    @Mock private WebContents mWebContents;
+    private WebContents mWebContents;
 
     private AutoPictureInPictureTabHelper mTabHelper;
 
@@ -60,6 +65,11 @@ public class AutoPictureInPicturePermissionControllerTest {
 
         mActivityController = Robolectric.buildActivity(Activity.class);
         mActivity = mActivityController.setup().get();
+
+        mWebContents =
+                mock(
+                        WebContents.class,
+                        withSettings().extraInterfaces(WebContentsObserver.Observable.class));
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
         lenient().when(mWebContents.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
@@ -196,6 +206,32 @@ public class AutoPictureInPicturePermissionControllerTest {
         Assert.assertNull(
                 "Helper should release reference after dismiss",
                 mTabHelper.getPermissionController());
+    }
+
+    @Test
+    public void testIsAutoPictureInPictureInUse() {
+        when(mNativeMock.isAutoPictureInPictureInUse(mWebContents)).thenReturn(true);
+        Assert.assertTrue(
+                AutoPictureInPicturePermissionController.isAutoPictureInPictureInUse(mWebContents));
+
+        when(mNativeMock.isAutoPictureInPictureInUse(mWebContents)).thenReturn(false);
+        Assert.assertFalse(
+                AutoPictureInPicturePermissionController.isAutoPictureInPictureInUse(mWebContents));
+    }
+
+    @Test
+    public void testPrimaryPageChanged_ClearsAllowOnce() {
+        mTabHelper.setHasAllowOnce(true);
+
+        // Capture the observer registered by the helper
+        ArgumentCaptor<WebContentsObserver> captor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mWebContents).addObserver(captor.capture());
+
+        // Simulate primary page changed
+        captor.getValue().primaryPageChanged(mock(Page.class));
+
+        Assert.assertFalse("Allow once should be cleared on navigation", mTabHelper.hasAllowOnce());
     }
 
     private ButtonCompat findButton(AutoPipPermissionDialogView view, String text) {

@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.media;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 
 /**
  * A tab helper that stores the state of Auto-PiP permissions for a specific WebContents. This
@@ -22,20 +24,38 @@ public class AutoPictureInPictureTabHelper implements UserData {
     public static final Class<AutoPictureInPictureTabHelper> USER_DATA_KEY =
             AutoPictureInPictureTabHelper.class;
 
+    /**
+     * Observes {@link WebContents} events to clear the {@link #mHasAllowOnce} state when the
+     * primary page changes.
+     */
+    private final WebContentsObserver mWebContentsObserver;
+
     private boolean mHasAllowOnce;
-    private boolean mAutoPipTriggered;
     private @Nullable AutoPictureInPicturePermissionController mPermissionController;
 
-    public static AutoPictureInPictureTabHelper get(WebContents webContents) {
-        AutoPictureInPictureTabHelper helper =
-                webContents.getOrSetUserData(USER_DATA_KEY, AutoPictureInPictureTabHelper::new);
-        // UserDataHost can theoretically return null, but our factory never does.
-        // This assertion satisfies NullAway.
-        assert helper != null;
-        return helper;
+    /**
+     * Retrieves the {@link AutoPictureInPictureTabHelper} for the given {@link WebContents},
+     * creating it if it doesn't already exist. The return value can be null if the {@link
+     * WebContents} is not fully initialized or its internal data storage has been
+     * garbage-collected.
+     *
+     * @param webContents The WebContents to get the helper for.
+     * @return The {@link AutoPictureInPictureTabHelper} or null if it cannot be created or
+     *     retrieved.
+     */
+    public static @Nullable AutoPictureInPictureTabHelper fromWebContents(WebContents webContents) {
+        return webContents.getOrSetUserData(USER_DATA_KEY, AutoPictureInPictureTabHelper::new);
     }
 
-    public AutoPictureInPictureTabHelper(WebContents webContents) {}
+    public AutoPictureInPictureTabHelper(WebContents webContents) {
+        mWebContentsObserver =
+                new WebContentsObserver(webContents) {
+                    @Override
+                    public void primaryPageChanged(Page page) {
+                        setHasAllowOnce(false);
+                    }
+                };
+    }
 
     /** Sets whether the user has granted "Allow Once" permission for this session. */
     public void setHasAllowOnce(boolean hasAllowOnce) {
@@ -45,21 +65,6 @@ public class AutoPictureInPictureTabHelper implements UserData {
     /** Returns true if the user has granted "Allow Once" permission for this session. */
     public boolean hasAllowOnce() {
         return mHasAllowOnce;
-    }
-
-    /** Sets whether Auto-PiP has been triggered recently. */
-    public void setAutoPipTriggered(boolean triggered) {
-        mAutoPipTriggered = triggered;
-    }
-
-    /** Returns true if Auto-PiP has been triggered recently. */
-    public boolean isAutoPipTriggered() {
-        return mAutoPipTriggered;
-    }
-
-    /** Clears the auto-pip triggered flag without consuming it (used for navigation resets). */
-    public void clearAutoPipTriggered() {
-        mAutoPipTriggered = false;
     }
 
     /**
@@ -85,5 +90,10 @@ public class AutoPictureInPictureTabHelper implements UserData {
     /** Returns the active permission controller, or null if none is showing. */
     public @Nullable AutoPictureInPicturePermissionController getPermissionController() {
         return mPermissionController;
+    }
+
+    @Override
+    public void destroy() {
+        mWebContentsObserver.observe(null);
     }
 }

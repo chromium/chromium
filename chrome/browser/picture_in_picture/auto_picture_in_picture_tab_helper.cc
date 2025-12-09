@@ -31,7 +31,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -98,8 +98,6 @@ void AutoPictureInPictureTabHelper::PrimaryPageChanged(content::Page& page) {
   StopAndResetAsyncTasks();
 
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/459582604): Clear the "Allow Once" and "Auto PiP Triggered"
-  // states in the Java AutoPictureInPicturePermissionController.
   hide_button_clicked_time_ = std::nullopt;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -938,9 +936,6 @@ void AutoPictureInPictureTabHelper::OnTabBecameActive() {
         back_to_tab_post_hide_time, base::Milliseconds(1), base::Hours(10),
         100);
   }
-
-  // TODO(crbug.com/459582604): Clear the "Auto PiP Triggered" state in the Java
-  // AutoPictureInPicturePermissionController.
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // We're the newly active tab, possibly before we've been notified by the tab

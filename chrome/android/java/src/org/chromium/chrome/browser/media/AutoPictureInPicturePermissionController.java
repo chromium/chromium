@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.media;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -50,7 +51,10 @@ public class AutoPictureInPicturePermissionController {
         }
 
         WebContents webContents = tab.getWebContents();
-        AutoPictureInPictureTabHelper helper = AutoPictureInPictureTabHelper.get(webContents);
+        // When prompt is triggered, webContents is expected to be valid and can retrieve helper
+        // from UserDataHost.
+        AutoPictureInPictureTabHelper helper =
+                assertNonNull(AutoPictureInPictureTabHelper.fromWebContents(webContents));
 
         // Don't show a new prompt if one is already active for this WebContents.
         if (helper.getPermissionController() != null) {
@@ -75,34 +79,16 @@ public class AutoPictureInPicturePermissionController {
         controller.show(activity);
     }
 
-    @CalledByNative
-    public static void setAutoPipTriggered(WebContents webContents) {
-        AutoPictureInPictureTabHelper.get(webContents).setAutoPipTriggered(true);
-    }
-
-    public static boolean isAutoPipTriggered(WebContents webContents) {
-        return AutoPictureInPictureTabHelper.get(webContents).isAutoPipTriggered();
-    }
-
     /**
-     * Clears the auto-pip triggered flag. This is called by native code when the user navigates to
-     * a new page or the tab becomes visible again, ensuring that a stale trigger doesn't cause the
-     * prompt to appear unexpectedly later.
-     */
-    @CalledByNative
-    public static void clearAutoPipTriggered(WebContents webContents) {
-        AutoPictureInPictureTabHelper.get(webContents).clearAutoPipTriggered();
-    }
-
-    /**
-     * Clears any "Allow Once" state associated with a WebContents. This should be called when the
-     * WebContents is destroyed or navigates away.
+     * Returns true if auto picture-in-picture has been recently triggered or is currently active
+     * for the given WebContents. This is used to determine if a permission prompt is needed.
      *
-     * @param webContents The WebContents to clear the state for.
+     * @param webContents The WebContents to check.
+     * @return True if auto picture-in-picture is in use or was recently triggered, false otherwise.
      */
-    @CalledByNative
-    public static void clearAllowOnceState(WebContents webContents) {
-        AutoPictureInPictureTabHelper.get(webContents).setHasAllowOnce(false);
+    public static boolean isAutoPictureInPictureInUse(WebContents webContents) {
+        return AutoPictureInPicturePermissionControllerJni.get()
+                .isAutoPictureInPictureInUse(webContents);
     }
 
     private AutoPictureInPicturePermissionController(WebContents webContents) {
@@ -160,8 +146,9 @@ public class AutoPictureInPicturePermissionController {
 
         // Ensure the helper releases its reference to this controller.
         if (!mWebContents.isDestroyed()) {
-            AutoPictureInPictureTabHelper helper = AutoPictureInPictureTabHelper.get(mWebContents);
-            if (helper.getPermissionController() == this) {
+            AutoPictureInPictureTabHelper helper =
+                    AutoPictureInPictureTabHelper.fromWebContents(mWebContents);
+            if (helper != null && helper.getPermissionController() == this) {
                 helper.setPermissionController(null);
             }
         }
@@ -184,7 +171,8 @@ public class AutoPictureInPicturePermissionController {
                 // TODO(crbug.com/459582604): close the document PiP window.
                 break;
             case AutoPipPermissionDialogView.UiResult.ALLOW_ONCE:
-                AutoPictureInPictureTabHelper.get(mWebContents).setHasAllowOnce(true);
+                assertNonNull(AutoPictureInPictureTabHelper.fromWebContents(mWebContents))
+                        .setHasAllowOnce(true);
                 break;
         }
 
@@ -199,5 +187,8 @@ public class AutoPictureInPicturePermissionController {
         void setPermissionStatus(
                 @JniType("content::WebContents*") WebContents webContents,
                 @ContentSetting int status);
+
+        boolean isAutoPictureInPictureInUse(
+                @JniType("content::WebContents*") WebContents webContents);
     }
 }

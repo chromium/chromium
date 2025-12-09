@@ -16,6 +16,7 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -105,6 +106,20 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                 mThinWebView.getView(),
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTO_DOC_PIP_PERMISSION_PROMPT_ANDROID)) {
+            WebContents webContents = mInitiatorTab.getWebContents();
+            if (webContents != null
+                    && AutoPictureInPicturePermissionController.isAutoPictureInPictureInUse(
+                            webContents)) {
+                mThinWebView
+                        .getView()
+                        .post(
+                                () ->
+                                        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                                                this, mInitiatorTab));
+            }
+        }
     }
 
     @Override

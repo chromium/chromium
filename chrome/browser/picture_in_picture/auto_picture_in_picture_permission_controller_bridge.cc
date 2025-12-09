@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/picture_in_picture/auto_picture_in_picture_permission_controller_bridge.h"
-
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -22,27 +21,23 @@ using base::android::JavaRef;
 
 namespace picture_in_picture {
 
-// Sets a flag to indicate that auto-pip has been triggered.
-void AutoPictureInPicturePermissionControllerBridge::SetAutoPipTriggered(
-    content::WebContents& web_contents) {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_AutoPictureInPicturePermissionController_setAutoPipTriggered(
-      env, web_contents.GetJavaWebContents());
-}
+jboolean
+JNI_AutoPictureInPicturePermissionController_IsAutoPictureInPictureInUse(
+    JNIEnv* env,
+    content::WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!web_contents) {
+    return false;
+  }
 
-// Clears the flag that indicates that auto-pip has been triggered.
-void AutoPictureInPicturePermissionControllerBridge::ClearAutoPipTriggered(
-    content::WebContents& web_contents) {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_AutoPictureInPicturePermissionController_clearAutoPipTriggered(
-      env, web_contents.GetJavaWebContents());
-}
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  if (!tab_helper) {
+    return false;
+  }
 
-void AutoPictureInPicturePermissionControllerBridge::ClearAllowOnceState(
-    content::WebContents& web_contents) {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_AutoPictureInPicturePermissionController_clearAllowOnceState(
-      env, web_contents.GetJavaWebContents());
+  return tab_helper->AreAutoPictureInPicturePreconditionsMet() ||
+         tab_helper->IsInAutoPictureInPicture();
 }
 
 jint JNI_AutoPictureInPicturePermissionController_GetPermissionStatus(
