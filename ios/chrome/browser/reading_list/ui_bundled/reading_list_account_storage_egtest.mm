@@ -53,7 +53,7 @@ NSString* const kPage1Title = @"Page 1 Title";
 const char kPage1URL[] = "/page1";
 NSString* const kPage2Title = @"Page 2 Title";
 const char kPage2URL[] = "/page2";
-constexpr base::TimeDelta kLongPressDuration = base::Seconds(1);
+constexpr base::TimeDelta kLongPressDuration = base::Seconds(2);
 constexpr base::TimeDelta kSyncActiveTimeout = base::Seconds(5);
 
 id<GREYMatcher> SignedInSnackbar(NSString* email) {
