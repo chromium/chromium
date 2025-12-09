@@ -2698,7 +2698,11 @@ def _is_allowed_ldflag(flag):
       "-Wl,-z,max-page-size=",
       # Let Soong handle the stripping of debug library according to the
       # lunch configuration.
-      "-Wl,--strip-debug"
+      "-Wl,--strip-debug",
+      # Android is experimenting with XOM(crbug.com/379071663) which conflicts with
+      # rosegment flag. Disable this flag until XOM has landed, and we have
+      # an attribute which we can use to enable --no-rosegment.
+      "-Wl,--no-rosegment",
   ])
 
 
