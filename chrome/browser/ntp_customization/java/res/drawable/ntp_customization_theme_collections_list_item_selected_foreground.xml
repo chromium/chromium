@@ -13,7 +13,7 @@ found in the LICENSE file.
       <stroke
           android:width="@dimen/ntp_customization_theme_collections_list_item_selected_background_width"
           android:color="@color/baseline_primary_40" />
-      <corners android:radius="@dimen/ntp_customization_theme_collections_list_item_background_radius" />
+      <corners android:radius="@dimen/ntp_customization_theme_collections_list_item_selected_background_outer_radius" />
     </shape>
   </item>
 
