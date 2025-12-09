@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/text/justification_opportunity.h"
 
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
@@ -24,12 +25,20 @@ std::pair<bool, bool> CheckJustificationOpportunity(
       return {false, false};
 
     // https://drafts.csswg.org/css-text-4/#valdef-text-justify-inter-character
-    case TextJustify::kInterCharacter:
+    case TextJustify::kInterCharacter: {
       if (Character::IsDefaultIgnorable(ch)) {
         return {false, false};
       }
+      if (ch == uchar::kObjectReplacementCharacter) {
+        is_after_opportunity = false;
+        return {false, false};
+      }
+      // We should expand before this glyph if the glyph is placed after an
+      // atomic inline.
+      bool expand_before = !is_after_opportunity;
       is_after_opportunity = true;
-      return {false, true};
+      return {expand_before, true};
+    }
 
     // https://drafts.csswg.org/css-text-4/#valdef-text-justify-inter-word
     case TextJustify::kInterWord:
