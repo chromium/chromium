@@ -20,8 +20,13 @@ def trim_cmd(cmd):
   """Removes internal flags from cmd since they're just used to communicate from
   the host machine to this script running on the swarm slaves."""
   sanitizers = [
-      'asan', 'lsan', 'msan', 'tsan', 'coverage-continuous-mode',
-      'skip-set-lpac-acls'
+      'asan',
+      'lsan',
+      'msan',
+      'tsan',
+      'coverage-continuous-mode',
+      'skip-set-lpac-acls',
+      'skip-symbolization-script',
   ]
   internal_flags = frozenset('--%s=%d' % (name, value) for name in sanitizers
                              for value in [0, 1])
@@ -373,7 +378,9 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
   detect_odr_violation = not '--asan-detect-odr-violation=0' in cmd
   # Treat sanitizer warnings as test case failures.
   use_sanitizer_warnings_script = '--fail-san=1' in cmd
-  if stdoutfile or sys.platform in ['win32', 'cygwin']:
+  if '--skip-symbolization-script=1' in cmd:
+    use_symbolization_script = False
+  elif stdoutfile or sys.platform in ['win32', 'cygwin']:
     # Symbolization works in-process on Windows even when sandboxed.
     use_symbolization_script = False
   else:
