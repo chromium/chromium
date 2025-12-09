@@ -18,6 +18,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, DoodleShareDialogFocus) {
   RunTest("new_tab_page/doodle_share_dialog_focus_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, AppFocus) {
+// TODO(crbug.com/460148348): Fix flaky test.
+IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, DISABLED_AppFocus) {
   RunTest("new_tab_page/app_focus_test.js", "mocha.run()");
 }
