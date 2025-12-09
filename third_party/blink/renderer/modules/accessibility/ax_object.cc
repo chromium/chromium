@@ -6624,7 +6624,12 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
   }
 
   // Image map children are entirely dependent on the parent image.
-  if (ParentObject() && IsA<HTMLImageElement>(ParentObject()->GetNode())) {
+  // Use ParentObjectIfPresent() because during detachment the parent may
+  // already be detached, and we should not destroy the child in that case
+  // since the parent's destruction will handle cleanup.
+  AXObject* parent = ParentObjectIfPresent();
+  if (parent && !parent->IsDetached() &&
+      IsA<HTMLImageElement>(parent->GetNode())) {
     return true;
   }
 
