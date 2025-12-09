@@ -1355,13 +1355,6 @@ BASE_FEATURE(kNewFilesPolicyUX, base::FEATURE_ENABLED_BY_DEFAULT);
 // referrers instead of their ordinary behavior.
 BASE_FEATURE(kNoReferrers, base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// Changes behavior of requireInteraction for notifications. Instead of staying
-// on-screen until dismissed, they are instead shown for a very long time.
-BASE_FEATURE(kNotificationDurationLongForRequireInteraction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kOfflineAutoFetch, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
