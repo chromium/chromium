@@ -7759,6 +7759,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOM_LINKS_REMOVE" desc="The text label of the custom link remove button on the edit shortcut dialog. (On the New Tab Page)">
         Remove
       </message>
+      <message name="IDS_NTP_MOST_VISITED_SITES_REMOVE" desc="The accessible label of the most visited tile remove button. (On the New Tab Page)">
+        Remove <ph name="SHORTCUT_TITLE">$1<ex>YouTube</ex></ph>
+      </message>
       <message name="IDS_NTP_CUSTOM_LINKS_CANCEL" desc="The text label of the custom link cancel button on the edit shortcut dialog. (On the New Tab Page)">
         Cancel
       </message>
