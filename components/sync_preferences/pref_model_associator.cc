@@ -140,6 +140,8 @@ void PrefModelAssociator::InitPrefAndAssociate(
     syncer::SyncChangeList* sync_changes) {
   VLOG(1) << "Associating preference " << pref_name;
 
+  CHECK(!dual_layer_user_prefs_ ||
+        user_prefs_ == dual_layer_user_prefs_->GetAccountPrefStore());
   const base::Value* user_pref_value = nullptr;
   user_prefs_->GetValue(pref_name, &user_pref_value);
 
@@ -157,20 +159,32 @@ void PrefModelAssociator::InitPrefAndAssociate(
 
     if (user_pref_value) {
       DVLOG(1) << "Found user pref value for " << pref_name;
-      // We have both server and local values. Merge them if account storage
-      // is not supported.
-      // TODO(crbug.com/40264973): Consider the case where a value is set before
-      // initial merge. This would overwrite the value the user just set.
-      base::Value new_value(helper::MergePreference(
-          client_.get(), pref_name, *user_pref_value, sync_value));
-      // Update the local preference based on what we got from the sync
-      // server.
-      if (new_value.is_none()) {
-        LOG(WARNING) << "Sync has null value for pref " << pref_name;
-        user_prefs_->RemoveValue(pref_name,
-                                 pref_service_->GetWriteFlags(pref_name));
-      } else if (*user_pref_value != new_value) {
-        SetPrefWithTypeCheck(pref_name, new_value);
+      // If account storage is enabled, `user_pref_value` refers to the account
+      // value. This value being different from the remote value implies that
+      // the value was updated before sync initialization. In some rare cases
+      // though, the account value might be more recent than the local value,
+      // for example if the pref was changed while the user was in the
+      // signin-pending state, but it's an okay compromise to let the local
+      // value win.
+      // Else if account storage is disabled, this implies there exists both
+      // server and local values. Merge them.
+      base::Value new_value;
+      if (dual_layer_user_prefs_ &&
+          base::FeatureList::IsEnabled(
+              syncer::kSyncPreferencesUseSelectedTypes)) {
+        new_value = user_pref_value->Clone();
+      } else {
+        new_value = helper::MergePreference(client_.get(), pref_name,
+                                            *user_pref_value, sync_value);
+        // Update the local preference based on what we got from the sync
+        // server.
+        if (new_value.is_none()) {
+          LOG(WARNING) << "Sync has null value for pref " << pref_name;
+          user_prefs_->RemoveValue(pref_name,
+                                   pref_service_->GetWriteFlags(pref_name));
+        } else if (*user_pref_value != new_value) {
+          SetPrefWithTypeCheck(pref_name, new_value);
+        }
       }
 
       // If the merge resulted in an updated value, inform the syncer.
