@@ -45,7 +45,14 @@ using testing::SetArgPointee;
 struct ActiveUserTestCase {
   const char* url;
   std::vector<const char*> emails;
+  // Represents the email that's expected to be retrieved from `url`. This can
+  // be an empty string.
   const char* expected_active_email;
+  // Represents the value returned by `ContentAreaUserProvider::GetUser`. When
+  // this is null, this is the same as `expected_active_email`, and when it's
+  // set it's because a fallback default is used instead of something being
+  // retrieved from `url`.
+  const char* expected_default_active_email = "";
 };
 
 std::vector<ActiveUserTestCase> TestCases() {
@@ -67,6 +74,7 @@ std::vector<ActiveUserTestCase> TestCases() {
           // The index is out of bounds so we can't tell which of the two
           // accounts is active.
           .expected_active_email = "",
+          .expected_default_active_email = "foo@gmail.com",
       },
       ActiveUserTestCase{
           .url = "https://sites.google.com/abcd/u/0/efgh/",
@@ -103,6 +111,7 @@ std::vector<ActiveUserTestCase> TestCases() {
           // The index is out of bounds so we can't tell which of the two
           // accounts is active.
           .expected_active_email = "",
+          .expected_default_active_email = "foo@gmail.com",
       },
       ActiveUserTestCase{
           .url = "https://script.google.com/?authuser=0",
@@ -127,6 +136,7 @@ std::vector<ActiveUserTestCase> TestCases() {
           .url = "https://docs.google.com/",
           .emails = {"foo@gmail.com", "bar@gmail.com"},
           .expected_active_email = "",
+          .expected_default_active_email = "foo@gmail.com",
       },
       ActiveUserTestCase{
           .url = "https://console.cloud.google.com/",
@@ -155,6 +165,10 @@ class ActiveUserEmailBrowserTest
 
   std::string expected_active_email() const {
     return GetParam().expected_active_email;
+  }
+
+  std::string expected_default_active_email() const {
+    return GetParam().expected_default_active_email;
   }
 
  protected:
@@ -286,7 +300,7 @@ std::vector<ReferrerChainTestCase> ReferrerChainTestCases() {
       ReferrerChainTestCase{
           .referrer_chain = {"https://bar.baz.com/", "https://foo.bar/"},
           .emails = {"foo@gmail.com", "bar@gmail.com"},
-          .expected_active_email = "",
+          .expected_active_email = "foo@gmail.com",
       },
       ReferrerChainTestCase{
           .referrer_chain = {"https://bar.baz.com/",
@@ -403,7 +417,11 @@ class ReferrerChainActiveUserEmailBrowserTest
 IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest, GetActiveUser) {
   active_user_test_mixin_->SetFakeCookieValue();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
-  ASSERT_EQ(expected_active_email(),
+  std::string expected_email = expected_active_email();
+  if (!expected_default_active_email().empty()) {
+    expected_email = expected_default_active_email();
+  }
+  ASSERT_EQ(expected_email,
             ContentAreaUserProvider::GetUser(browser()->profile(),
                                              /*web_contents=*/nullptr, url()));
 
@@ -433,10 +451,14 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest,
 
   active_user_test_mixin_->SetFakeCookieValue();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_urlf_url));
-  ASSERT_EQ(
-      expected_active_email(),
-      ContentAreaUserProvider::GetUser(browser()->profile(),
-                                       /*web_contents=*/nullptr, non_urlf_url));
+
+  std::string expected_email = expected_active_email();
+  if (!expected_default_active_email().empty()) {
+    expected_email = expected_default_active_email();
+  }
+  ASSERT_EQ(expected_email, ContentAreaUserProvider::GetUser(
+                                browser()->profile(),
+                                /*web_contents=*/nullptr, non_urlf_url));
 
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());

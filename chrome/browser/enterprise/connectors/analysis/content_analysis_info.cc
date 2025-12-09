@@ -108,11 +108,12 @@ std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
       email = GetActiveContentAreaUser(identity_manager(), referrer_url);
 
       if (!email.empty()) {
-        break;
+        return email;
       }
     }
   }
-  return email;
+
+  return GetDefaultActiveUser(identity_manager(), tab_url());
 }
 
 // static

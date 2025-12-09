@@ -120,6 +120,18 @@ std::string GetActiveFrameUser(signin::IdentityManager* im,
   return GetEmailFromUrl(im, frame_url);
 }
 
+std::string GetDefaultActiveUser(signin::IdentityManager* im, const GURL& url) {
+  if (!im || !IncludeContentAreaAccountEmail(url, GoogleDomains())) {
+    return "";
+  }
+
+  auto accounts = im->GetAccountsInCookieJar();
+  if (accounts.GetAllAccounts().size() >= 1) {
+    return accounts.GetAllAccounts()[0].email;
+  }
+  return "";
+}
+
 bool CanRetrieveActiveUser(const GURL& tab_url) {
   return IncludeContentAreaAccountEmail(tab_url, GoogleDomains());
 }

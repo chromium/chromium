@@ -43,7 +43,7 @@ namespace {
 constexpr char kWorkspaceUrlForUser0[] = "https://docs.google.com/u/0/";
 constexpr char kWorkspaceUrlForUser1[] =
     "https://mail.google.com/foo/bar?authuser=1";
-constexpr char kNonWorkspaceUrl[] = "https://google.com/";
+constexpr char kNonWorkspaceUrl[] = "https://not.workspace.com/";
 constexpr char kUserName[] = "test-user@chromium.org";
 
 constexpr char kContentAreaUser0[] = "foo@gmail.com";
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "rule_name",
                                    "rule_id": "222",
                                    "destinations": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "BLOCK"}
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "warn_rule_name",
                                    "rule_id": "333",
                                    "destinations": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "WARN"}
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "warn rule name",
                                    "rule_id": "1416",
                                    "destinations": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "WARN"}
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "report_rule_name",
                                    "rule_id": "4321",
                                    "destinations": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "BLOCK"}
@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "report_rule_name",
                                    "rule_id": "6543",
                                    "destinations": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "WARN"}
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "report_rule_name",
                                    "rule_id": "7654",
                                    "destinations": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "WARN"}
@@ -1013,7 +1013,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "report_rule_name",
                                    "rule_id": "8765",
                                    "destinations": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "REPORT"}
@@ -1056,7 +1056,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "report_rule_name",
                                    "rule_id": "9753",
                                    "destinations": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "REPORT"}
@@ -1242,7 +1242,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyReported) {
                                    "name": "report_only",
                                    "rule_id": "1248",
                                    "sources": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "REPORT"}
@@ -1333,7 +1333,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
                                    "name": "block",
                                    "rule_id": "987",
                                    "sources": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "BLOCK"}
@@ -1431,7 +1431,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "warn",
                                    "rule_id": "3927",
                                    "sources": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "WARN"}
@@ -1534,7 +1534,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "warn_cancel",
                                    "rule_id": "101",
                                    "sources": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "destinations": {
                                      "os_clipboard": true
@@ -1640,7 +1640,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "warn_bypass",
                                    "rule_id": "12345",
                                    "sources": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "restrictions": [
                                      {"class": "CLIPBOARD", "level": "WARN"}
@@ -1802,7 +1802,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    "name": "warn_bypass_os",
                                    "rule_id": "111",
                                    "sources": {
-                                     "urls": ["google.com"]
+                                     "urls": ["google.com", "not.workspace.com"]
                                    },
                                    "destinations": {
                                      "os_clipboard": true
