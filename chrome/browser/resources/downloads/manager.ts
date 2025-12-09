@@ -319,6 +319,16 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
         this.inSearchMode_ ? 'noSearchResults' : 'noDownloads');
   }
 
+  /**
+   * @return Whether the undo command can be handled by accelerator.
+   */
+  private canHandleUndoByAccelerator_(): boolean {
+    // If the toolbar's search field is in a focused state, we should not
+    // handle the undo command by accelerator, as it conflicts with the
+    // text undo accelerator key of the search field.
+    return !this.$.toolbar.isSearchFocused();
+  }
+
   private onKeyDown_(e: KeyboardEvent) {
     let clearAllKey = 'c';
     // <if expr="is_macosx">
@@ -337,7 +347,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
       // <if expr="is_macosx">
       hasTriggerModifier = !e.ctrlKey && e.metaKey;
       // </if>
-      if (hasTriggerModifier) {
+      if (hasTriggerModifier && this.canHandleUndoByAccelerator_()) {
         this.onUndoCommand_();
         e.preventDefault();
       }
