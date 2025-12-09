@@ -339,14 +339,14 @@ export class NetworkRequest {
     if (this.#requestOverrides?.headers) {
       const headerMap = new DefaultMap<string, string[]>(() => []);
       for (const header of this.#requestOverrides.headers) {
-        headerMap.get(header.name).push(header.value.value.trim());
+        headerMap.get(header.name).push(header.value.value);
       }
-      for (const [name, values] of headerMap.entries()) {
+      for (const [name, value] of headerMap.entries()) {
         headers.push({
           name,
           value: {
             type: 'string',
-            value: values.join(', ').trimEnd(),
+            value: value.join('\n').trimEnd(),
           },
         });
       }
