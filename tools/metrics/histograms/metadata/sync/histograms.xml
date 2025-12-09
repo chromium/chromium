@@ -868,10 +868,13 @@ chromium-metrics-reviews@google.com.
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
-    Recorded once for every sync entity change (whenever it is commited to the
-    server or updated from the server). This metric is used for monitoring
-    general health of sync client-side code. Note: This is only recorded with a
-    data type suffix. The base version is never recorded.
+    Recorded once for every sync entity change (whenever it is about to be
+    commited to the server or updated from the server). This metric is used for
+    monitoring general health of sync client-side code. Note: This is only
+    recorded with a data type suffix. The base version is never recorded. Note:
+    this metric may be recorded multiple times for the same entity change, e.g.
+    if there is a retry commit after a server error, hence compare its changes
+    against Sync.CommitResponse{SyncDataType}.
   </summary>
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
@@ -1680,7 +1683,9 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Number of network requests issued by sync to the sync server, grouped by
-    content type.
+    content type. Note: this metric is recorded before the request is sent and
+    it may be impacted by network / server errors (e.g. due to retries). Compare
+    against Sync.URLFetchResponse.
   </summary>
 </histogram>
 
@@ -1733,6 +1738,9 @@ chromium-metrics-reviews@google.com.
     sum across buckets does not represent the total number of requests sent to
     the server, since multiple datatypes can be grouped in a single request. See
     Sync.PostedClientToServerMessage for the total number of requests/messages.
+    Note: this metric is recorded before the request is sent and it may be
+    impacted by network / server errors (e.g. due to retries). Compare against
+    Sync.CommitResponse.
   </summary>
 </histogram>
 
@@ -1747,6 +1755,8 @@ chromium-metrics-reviews@google.com.
     across buckets does not represent the total number of requests sent to the
     server, since multiple datatypes can be grouped in a single request. See
     Sync.PostedClientToServerMessage for the total number of requests/messages.
+    Note: this metric is recorded before the request is sent and it may be
+    impacted by network / server errors (e.g. due to retries).
   </summary>
 </histogram>
 
