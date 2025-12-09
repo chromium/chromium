@@ -1701,6 +1701,11 @@ class CONTENT_EXPORT NavigationRequest
   // navigation started.
   bool DidCookiesChangeAfterStart(bool exclude_http_only) const;
 
+  // Returns true if the navigation to the initial WebUI, which is used to
+  // render the browser's UI, instead of general web content. This navigation
+  // is treated specially in some cases, such as skipping NavigationThrottles.
+  bool IsInitialWebUINavigation();
+
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
