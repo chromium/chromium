@@ -29,7 +29,7 @@
   OmniboxInttestViewController* _viewController;
   raw_ptr<FakeOmniboxClient> _fakeOmniboxClient;
   raw_ptr<FakeSuggestionsBuilder> _fakeSuggestionsBuilder;
-  // TODO(crbug.com/462066136): Move to a TestAutocompleteService.
+  // TODO(crbug.com/462066136): Move to a TestAutocompleteBrowserAgent.
   std::unique_ptr<OmniboxInttestAutocompleteController> _autocompleteController;
 }
 

@@ -9,6 +9,7 @@
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
@@ -120,6 +121,7 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser);
   AppLauncherBrowserAgent::CreateForBrowser(browser);
   OmniboxPositionBrowserAgent::CreateForBrowser(browser);
+  AutocompleteBrowserAgent::CreateForBrowser(browser);
   ToolbarsSizeBrowserAgent::CreateForBrowser(browser);
 
   // Only create the FullscreenBrowserAgent and ReaderModeBrowserAgent for

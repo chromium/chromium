@@ -123,6 +123,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_app_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model/automation:eg_app_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled:eg_app_support+eg2",

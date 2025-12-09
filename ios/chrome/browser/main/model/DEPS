@@ -14,6 +14,7 @@ specific_include_rules = {
     # go/keep-sorted start
     "+components/data_sharing/public/features.h",
     "+ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h",
+    "+ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h",
     "+ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h",
     "+ios/chrome/browser/bubble/model",
     "+ios/chrome/browser/collaboration/model/collaboration_service_factory.h",

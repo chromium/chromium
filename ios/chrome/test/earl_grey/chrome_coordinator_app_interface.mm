@@ -9,6 +9,7 @@
 
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/stub_history_coordinator_delegate.h"
 #import "ios/chrome/browser/main/model/browser_impl.h"
@@ -269,6 +270,7 @@
 }
 
 + (void)startOmniboxCoordinator {
+  AutocompleteBrowserAgent::CreateForBrowser(self.helper.browser);
   OmniboxInttestCoordinator* coordinator = [[OmniboxInttestCoordinator alloc]
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
