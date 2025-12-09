@@ -38,6 +38,7 @@
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/browser/updater/browser_updater_helper_client_mac.h"
+#include "chrome/browser/updater/updater.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/updater/constants.h"
@@ -222,15 +223,15 @@ void SetActive() {
 
 }  // namespace
 
-std::string CurrentlyInstalledVersion() {
+base::Version CurrentlyInstalledVersion() {
   base::ScopedBlockingCall blocks(FROM_HERE, base::BlockingType::WILL_BLOCK);
   base::FilePath outer_bundle = base::apple::OuterBundlePath();
   base::FilePath plist_path =
       outer_bundle.Append("Contents").Append("Info.plist");
   NSDictionary* info_plist = [NSDictionary
       dictionaryWithContentsOfFile:base::apple::FilePathToNSString(plist_path)];
-  return base::SysNSStringToUTF8(base::apple::ObjCCast<NSString>(
-      info_plist[@"CFBundleShortVersionString"]));
+  return base::Version(base::SysNSStringToUTF8(base::apple::ObjCCast<NSString>(
+      info_plist[@"CFBundleShortVersionString"])));
 }
 
 UpdaterScope GetBrowserUpdaterScope() {
