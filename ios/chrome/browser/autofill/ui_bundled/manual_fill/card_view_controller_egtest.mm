@@ -640,18 +640,19 @@ void DismissPaymentBottomSheet() {
 }
 
 // Tests that the "Add Payment Method..." action works on OTR.
-// TODO(crbug.com/462093327): Re-enable flaky test.
-- (void)FLAKY_testOTRAddPaymentMethodActionOpensAddPaymentMethodSettings {
+- (void)testOTRAddPaymentMethodActionOpensAddPaymentMethodSettings {
+  [AutofillAppInterface saveLocalCreditCard];
+
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadURL];
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
-  [AutofillAppInterface saveLocalCreditCard];
-
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
+  DismissPaymentBottomSheet();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
