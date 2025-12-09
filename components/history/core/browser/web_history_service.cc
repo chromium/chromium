@@ -329,11 +329,108 @@ base::Value::Dict CreateDeletion(const std::string& min_time,
   return deletion;
 }
 
+WebHistoryService::QueryHistoryResult ParseQueryResponse(
+    const base::Value::Dict& response) {
+  WebHistoryService::QueryHistoryResult query_history_result;
+
+  if (const base::Value::List* events = response.FindList("event")) {
+    query_history_result.events.reserve(events->size());
+
+    for (const base::Value& event : *events) {
+      const base::Value::Dict* event_dict = event.GetIfDict();
+      if (!event_dict) {
+        continue;
+      }
+      const base::Value::List* results = event_dict->FindList("result");
+      if (!results || results->empty()) {
+        continue;
+      }
+      const base::Value::Dict* result = results->front().GetIfDict();
+      if (!result) {
+        continue;
+      }
+      const std::string* url = result->FindString("url");
+      if (!url) {
+        continue;
+      }
+      const base::Value::List* ids = result->FindList("id");
+      if (!ids || ids->empty()) {
+        continue;
+      }
+
+      WebHistoryService::QueryHistoryResult::Event result_event;
+      result_event.url = GURL(*url);
+
+      // Title is optional.
+      if (const std::string* title = result->FindString("title")) {
+        result_event.title = *title;
+      }
+
+      // Favicon URL is optional.
+      if (const std::string* favicon_url = result->FindString("favicon_url")) {
+        result_event.favicon_url = GURL(*favicon_url);
+      }
+
+      // Extract the timestamps of all the visits to this URL.
+      // They are referred to as "IDs" by the server.
+      result_event.visits.reserve(ids->size());
+      for (const base::Value& id : *ids) {
+        const base::Value::Dict* id_dict = id.GetIfDict();
+        const std::string* timestamp_string;
+        int64_t timestamp_usec = 0;
+        if (!id_dict ||
+            !(timestamp_string = id_dict->FindString("timestamp_usec")) ||
+            !base::StringToInt64(*timestamp_string, &timestamp_usec)) {
+          continue;
+        }
+
+        WebHistoryService::QueryHistoryResult::Event::Visit result_visit;
+
+        // The timestamp on the server is a Unix time in microseconds.
+        result_visit.timestamp =
+            base::Time::UnixEpoch() + base::Microseconds(timestamp_usec);
+
+        // Get the ID of the client that this visit came from.
+        if (const std::string* client_id = result->FindString("client_id")) {
+          result_visit.client_id = *client_id;
+        }
+
+        result_event.visits.push_back(std::move(result_visit));
+      }
+
+      // In rare cases, it may happen that all of the visits were invalid /
+      // couldn't be parsed. In that case, the entire event is invalid.
+      if (result_event.visits.empty()) {
+        continue;
+      }
+
+      query_history_result.events.push_back(std::move(result_event));
+    }
+  }
+  if (const std::string* continuation_token =
+          response.FindString("continuation_token")) {
+    query_history_result.continuation_token = *continuation_token;
+  }
+
+  return query_history_result;
+}
+
 }  // namespace
 
 WebHistoryService::Request::Request() = default;
-
 WebHistoryService::Request::~Request() = default;
+
+WebHistoryService::QueryHistoryResult::QueryHistoryResult() = default;
+WebHistoryService::QueryHistoryResult::QueryHistoryResult(
+    const QueryHistoryResult&) = default;
+WebHistoryService::QueryHistoryResult::QueryHistoryResult(
+    QueryHistoryResult&&) = default;
+WebHistoryService::QueryHistoryResult::~QueryHistoryResult() = default;
+
+WebHistoryService::QueryHistoryResult::Event::Event() = default;
+WebHistoryService::QueryHistoryResult::Event::Event(const Event&) = default;
+WebHistoryService::QueryHistoryResult::Event::Event(Event&&) = default;
+WebHistoryService::QueryHistoryResult::Event::~Event() = default;
 
 WebHistoryService::WebHistoryService(
     signin::IdentityManager* identity_manager,
@@ -513,8 +610,18 @@ void WebHistoryService::QueryHistoryCompletionCallback(
     WebHistoryService::QueryWebHistoryCallback callback,
     WebHistoryService::Request* request,
     bool success) {
-  std::move(callback).Run(request,
-                          success ? ReadResponse(*request) : std::nullopt);
+  if (!success) {
+    std::move(callback).Run(request, std::nullopt);
+    return;
+  }
+
+  std::optional<base::Value::Dict> response = ReadResponse(*request);
+  if (!response) {
+    std::move(callback).Run(request, std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(request, ParseQueryResponse(*response));
 }
 
 void WebHistoryService::ExpireHistoryCompletionCallback(

@@ -724,7 +724,8 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     scoped_refptr<QueryHistoryState> state,
     base::Time start_time,
     WebHistoryService::Request* request,
-    base::optional_ref<const base::Value::Dict> results_dict) {
+    base::optional_ref<const WebHistoryService::QueryHistoryResult>
+        query_history_result) {
   // If the response came in too late, do nothing.
   // TODO(dubroy): Maybe show a banner, and prompt the user to reload?
   if (!web_history_timer_->IsRunning()) {
@@ -733,94 +734,39 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
   web_history_timer_->Stop();
   web_history_request_.reset();
 
-  if (results_dict.has_value()) {
+  if (query_history_result.has_value()) {
     has_synced_results_ = true;
-    if (const base::Value::List* events = results_dict->FindList("event")) {
-      state->remote_results.reserve(state->remote_results.size() +
-                                    events->size());
-      std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
-      for (const base::Value& event : *events) {
-        const base::Value::Dict* event_dict = event.GetIfDict();
-        if (!event_dict) {
+
+    state->remote_results.reserve(state->remote_results.size() +
+                                  query_history_result->events.size());
+    std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
+    for (const WebHistoryService::QueryHistoryResult::Event& event :
+         query_history_result->events) {
+      if (state->original_options.host_only) {
+        // Do post filtering to skip entries that do not have the correct
+        // hostname.
+        if (event.url.GetHost() != host_name_utf8) {
           continue;
-        }
-        const base::Value::List* results = event_dict->FindList("result");
-        if (!results || results->empty()) {
-          continue;
-        }
-        const base::Value::Dict* result = results->front().GetIfDict();
-        if (!result) {
-          continue;
-        }
-        const std::string* url = result->FindString("url");
-        if (!url) {
-          continue;
-        }
-        const base::Value::List* ids = result->FindList("id");
-        if (!ids || ids->empty()) {
-          continue;
-        }
-
-        GURL gurl(*url);
-        if (state->original_options.host_only) {
-          // Do post filter to skip entries that do not have the correct
-          // hostname.
-          if (gurl.GetHost() != host_name_utf8) {
-            continue;
-          }
-        }
-
-        // Ignore any URLs that should not be shown in the history page.
-        if (driver_->ShouldHideWebHistoryUrl(gurl)) {
-          continue;
-        }
-
-        std::u16string title;
-
-        // Title is optional.
-        if (const std::string* s = result->FindString("title")) {
-          title = base::UTF8ToUTF16(*s);
-        }
-
-        std::string favicon_url;
-        if (const std::string* s = result->FindString("favicon_url")) {
-          favicon_url = *s;
-        }
-
-        // Extract the timestamps of all the visits to this URL.
-        // They are referred to as "IDs" by the server.
-        for (const base::Value& id : *ids) {
-          const std::string* timestamp_string;
-          int64_t timestamp_usec = 0;
-
-          auto* id_dict = id.GetIfDict();
-          if (!id_dict ||
-              !(timestamp_string = id_dict->FindString("timestamp_usec")) ||
-              !base::StringToInt64(*timestamp_string, &timestamp_usec)) {
-            NOTREACHED() << "Unable to extract timestamp.";
-          }
-          // The timestamp on the server is a Unix time.
-          base::Time time =
-              base::Time::UnixEpoch() + base::Microseconds(timestamp_usec);
-
-          // Get the ID of the client that this visit came from.
-          std::string client_id;
-          if (const std::string* s = result->FindString("client_id")) {
-            client_id = *s;
-          }
-
-          state->remote_results.emplace_back(HistoryEntry(
-              HistoryEntry::REMOTE_ENTRY, gurl, title, time, client_id,
-              !state->search_text.empty(), std::u16string(),
-              /* blocked_visit */ false, GURL(favicon_url), 0, 0,
-              /*is_actor_visit=*/false,
-              /*app_id= */ std::nullopt));
         }
       }
+
+      // Ignore any URLs that should not be shown in the history page.
+      if (driver_->ShouldHideWebHistoryUrl(event.url)) {
+        continue;
+      }
+
+      for (const WebHistoryService::QueryHistoryResult::Event::Visit& visit :
+           event.visits) {
+        state->remote_results.emplace_back(
+            HistoryEntry::REMOTE_ENTRY, event.url,
+            base::UTF8ToUTF16(event.title), visit.timestamp, visit.client_id,
+            !state->search_text.empty(), std::u16string(),
+            /*blocked_visit=*/false, event.favicon_url, 0, 0,
+            /*is_actor_visit=*/false,
+            /*app_id=*/std::nullopt);
+      }
     }
-    const std::string* continuation_token =
-        results_dict->FindString("continuation_token");
-    state->remote_status = !continuation_token || continuation_token->empty()
+    state->remote_status = query_history_result->continuation_token.empty()
                                ? REACHED_BEGINNING
                                : MORE_RESULTS;
   } else {

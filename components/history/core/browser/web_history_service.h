@@ -80,13 +80,37 @@ class WebHistoryService : public KeyedService {
     Request();
   };
 
-  // Callback with the result of a call to QueryHistory(). Currently, the
-  // dictionary Value is just the parsed JSON response from the server.
-  // TODO(dubroy): Extract the dictionary Value into a structured results
-  // object.
+  struct QueryHistoryResult {
+    QueryHistoryResult();
+    QueryHistoryResult(const QueryHistoryResult&);
+    QueryHistoryResult(QueryHistoryResult&&);
+    ~QueryHistoryResult();
+
+    struct Event {
+      Event();
+      Event(const Event&);
+      Event(Event&&);
+      ~Event();
+
+      struct Visit {
+        base::Time timestamp;
+        std::string client_id;
+      };
+
+      GURL url;
+      std::string title;
+      GURL favicon_url;
+      std::vector<Visit> visits;
+    };
+
+    std::vector<Event> events;
+    std::string continuation_token;
+  };
+
+  // Callback with the result of a call to QueryHistory().
   using QueryWebHistoryCallback =
       base::OnceCallback<void(Request*,
-                              base::optional_ref<const base::Value::Dict>)>;
+                              base::optional_ref<const QueryHistoryResult>)>;
 
   using ExpireWebHistoryCallback = base::OnceCallback<void(bool success)>;
 
