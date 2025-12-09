@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -399,29 +400,23 @@ void ItemStatePrefsChangedObserver::OnWillDispatchEvent(const Event& event) {
   }
 }
 
-// On Android, the returned FilePath points to a temporary file managed
-// by `temp_dir`. The caller MUST ensure `temp_dir` is not destroyed before
-// they are finished using the FilePath, as its destruction will delete the
-// underlying file, resulting in a broken path.
-// TODO(crbug.com/448823672): Refactor TestExtensionDir to use or compatible
-// with virtual document path.
-ui::SelectedFileInfo GetSelectedFileInfoForPath(const base::FilePath& path,
-                                                base::ScopedTempDir& temp_dir) {
+base::FilePath GetUnpackedPath(TestExtensionDir& dir) {
+  base::FilePath absolute_file_path = dir.UnpackedPath();
 #if BUILDFLAG(IS_ANDROID)
-  // On Android, file path related to load unpacked tests need to work with
-  // virtual document path instead of direct file paths. This helper copies the
-  // extension files to a temporary cache directory and creates a virtual
-  // document path pointing to it.
-  CHECK(temp_dir.CreateUniqueTempDir());
+  // On Android, file path related to load unpacked tests must be resolved to a
+  // virtual document path, as extensions can only be loaded using this path.
+  std::optional<base::FilePath> virtual_document_path =
+      base::test::android::GetVirtualDocumentPathFromCacheDirDirectory(
+          absolute_file_path);
 
-  std::optional<base::FilePath> cache_path =
-      base::test::android::CreateCacheCopyAndGetVirtualDocumentPath(path,
-                                                                    temp_dir);
-  CHECK(cache_path.has_value());
-  return ui::SelectedFileInfo(*cache_path);
+  // If the path cannot be resolved to a virtual document path, the whole test
+  // should failed as the extension cannot be loaded without it. The CHECK will
+  // abort the test execution.
+  CHECK(virtual_document_path.has_value());
+  return *virtual_document_path;
 #else
   // On other platforms, we can use the direct file path.
-  return ui::SelectedFileInfo(path);
+  return absolute_file_path;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -543,7 +538,7 @@ const Extension* DeveloperPrivateApiUnitTest::LoadUnpackedExtension() {
   // irrelevant detail to these tests. Disable it.
   loader.set_allow_file_access(false);
 
-  return loader.LoadExtension(dir.UnpackedPath()).get();
+  return loader.LoadExtension(GetUnpackedPath(dir)).get();
 }
 
 const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
@@ -1016,10 +1011,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   function = base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
   function->set_accept_dialog_for_testing(true);
-  base::ScopedTempDir temp_dir_copy;
-  ui::SelectedFileInfo selected_path =
-      GetSelectedFileInfoForPath(path, temp_dir_copy);
-  function->set_selected_file_for_testing(selected_path);
+  function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
 
   // Function should succeed and extension is added.
@@ -1030,16 +1022,14 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   ASSERT_EQ(1u, id_difference.size());
   // The new extension should have the same path.
   EXPECT_EQ(
-      selected_path.file_path,
+      path,
       registry()->enabled_extensions().GetByID(*id_difference.begin())->path());
 
   // Try loading a bad extension and accepting the dialog.
   function = base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
   path = data_dir().AppendASCII("empty_manifest");
   function->set_accept_dialog_for_testing(true);
-  base::ScopedTempDir temp_dir_invalid;
-  function->set_selected_file_for_testing(
-      GetSelectedFileInfoForPath(path, temp_dir_invalid));
+  function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   base::Value::List unpacked_args;
   base::Value::Dict options;
@@ -1069,14 +1059,12 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
              "version": 1,
              "manifest_version": 2
            })");
-    base::FilePath path = dir.UnpackedPath();
+    base::FilePath path = GetUnpackedPath(dir);
 
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->set_accept_dialog_for_testing(true);
-    base::ScopedTempDir temp_dir_copy;
-    function->set_selected_file_for_testing(
-        GetSelectedFileInfoForPath(path, temp_dir_copy));
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -1100,14 +1088,12 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
   {
     // Load an extension with no manifest.
     TestExtensionDir dir;
-    base::FilePath path = dir.UnpackedPath();
+    base::FilePath path = GetUnpackedPath(dir);
 
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->set_accept_dialog_for_testing(true);
-    base::ScopedTempDir temp_dir_copy;
-    function->set_selected_file_for_testing(
-        GetSelectedFileInfoForPath(path, temp_dir_copy));
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -1135,14 +1121,12 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
              "version": "1.0",
              "manifest_version": 2
            })");
-    base::FilePath path = dir.UnpackedPath();
+    base::FilePath path = GetUnpackedPath(dir);
 
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->set_accept_dialog_for_testing(true);
-    base::ScopedTempDir temp_dir_copy;
-    function->set_selected_file_for_testing(
-        GetSelectedFileInfoForPath(path, temp_dir_copy));
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -1167,10 +1151,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
            "version": 1,
            "manifest_version": 2
          })");
-  base::FilePath path = dir.UnpackedPath();
-  base::ScopedTempDir first_dir_copy;
-  ui::SelectedFileInfo selected_path =
-      GetSelectedFileInfoForPath(path, first_dir_copy);
+  base::FilePath path = GetUnpackedPath(dir);
 
   DeveloperPrivateAPI::UnpackedRetryId retry_guid;
   {
@@ -1179,7 +1160,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->set_accept_dialog_for_testing(true);
-    function->set_selected_file_for_testing(selected_path);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -1201,7 +1182,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->set_accept_dialog_for_testing(true);
-    function->set_selected_file_for_testing(selected_path);
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -1226,14 +1207,12 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
              "version": 1,
              "manifest_version": 2
            })");
-    base::FilePath second_path = second_dir.UnpackedPath();
+    base::FilePath second_path = GetUnpackedPath(second_dir);
 
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->set_accept_dialog_for_testing(true);
-    base::ScopedTempDir second_dir_copy;
-    function->set_selected_file_for_testing(
-        GetSelectedFileInfoForPath(second_path, second_dir_copy));
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(second_path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
@@ -1255,12 +1234,6 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
            "version": "1.0",
            "manifest_version": 2
          })");
-#if BUILDFLAG(IS_ANDROID)
-  // Since Android copies the directory from the source path, the operation
-  // above will not modify the content in Android's local directory. We need to
-  // manually copy the directory again to overwrite the file in Android.
-  ASSERT_TRUE(base::CopyDirectory(path, first_dir_copy.GetPath(), true));
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Set the picker to an invalid path. Here, we create a real file with an
   // invalid manifest. This file is never actually used because the retry GUID
@@ -1268,16 +1241,14 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
   // picker should be skipped if a retry ID is supplied).
   TestExtensionDir invalid_dir;
   invalid_dir.WriteManifest("This is an invalid file.");
-  base::FilePath invalid_path = invalid_dir.UnpackedPath();
+  base::FilePath invalid_path = GetUnpackedPath(dir);
 
   {
     // Try reloading the extension by supplying the retry id. It should succeed.
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->set_accept_dialog_for_testing(true);
-    base::ScopedTempDir invalid_dir_copy;
-    function->set_selected_file_for_testing(
-        GetSelectedFileInfoForPath(invalid_path, invalid_dir_copy));
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(invalid_path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     TestExtensionRegistryObserver observer(registry());
     api_test_utils::RunFunction(function.get(),
@@ -1289,11 +1260,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     scoped_refptr<const Extension> extension =
         observer.WaitForExtensionLoaded();
     ASSERT_TRUE(extension);
-#if BUILDFLAG(IS_ANDROID)
-    EXPECT_EQ(extension->path(), selected_path.file_path);
-#else
     EXPECT_EQ(extension->path(), path);
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   {
@@ -1301,9 +1268,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->set_accept_dialog_for_testing(true);
-    base::ScopedTempDir invalid_dir_copy;
-    function->set_selected_file_for_testing(
-        GetSelectedFileInfoForPath(invalid_path, invalid_dir_copy));
+    function->set_selected_file_for_testing(ui::SelectedFileInfo(invalid_path));
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(),
@@ -1341,7 +1306,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
   // Create a good unpacked extension.
   TestExtensionDir dir;
   dir.WriteManifest(kGoodManifest);
-  base::FilePath path = dir.UnpackedPath();
+  base::FilePath path = GetUnpackedPath(dir);
 
   scoped_refptr<const Extension> extension;
   {
@@ -1459,7 +1424,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
            "version": "1",
            "manifest_version": 2
          })");
-  base::FilePath path = dir.UnpackedPath();
+  base::FilePath path = GetUnpackedPath(dir);
   ui::FileInfo file(path, path.BaseName());
   api::DeveloperPrivateNotifyDragInstallInProgressFunction::
       SetDropFileForTesting(&file);
