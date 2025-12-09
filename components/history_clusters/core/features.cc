@@ -35,7 +35,7 @@ const base::FeatureParam<bool> kJourneysImagesCover{
 
 BASE_FEATURE(kOmniboxHistoryClusterProvider,
              "JourneysOmniboxHistoryClusterProvider",
-             enabled_by_default_desktop_only);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNonUserVisibleDebug,
              "JourneysNonUserVisibleDebug",
