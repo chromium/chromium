@@ -45,6 +45,10 @@
       "targets_spec_directory": "src/infra/config/generated/builders/try/chromeos-x64-libfuzzer-asan-rel-tests/targets"
     }
   },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
   "$build/siso": {
     "configs": [
       "builder"
@@ -65,5 +69,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.fuzz",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }

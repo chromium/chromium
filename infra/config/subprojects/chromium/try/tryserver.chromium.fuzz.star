@@ -198,28 +198,38 @@ try_.builder(
 
 # Libfuzzer test bots.
 
-_mirror_builder(name = "chromeos-x64-libfuzzer-asan-rel-tests")
+# All test bots should run on the CQ for any changes to fuzztest.
+# See crbug.com/466122130.
+def _test_builder(**kwargs):
+    _mirror_builder(
+        cq_settings = try_.cq_settings(
+            location_filters = ["third_party/fuzztest"],
+        ),
+        **kwargs
+    )
 
-_mirror_builder(name = "linux-x64-libfuzzer-asan-dbg-tests")
+_test_builder(name = "chromeos-x64-libfuzzer-asan-rel-tests")
 
-_mirror_builder(name = "linux-x64-libfuzzer-asan-rel-tests")
+_test_builder(name = "linux-x64-libfuzzer-asan-dbg-tests")
 
-_mirror_builder(name = "linux-x64-libfuzzer-msan-rel-tests")
+_test_builder(name = "linux-x64-libfuzzer-asan-rel-tests")
 
-_mirror_builder(name = "linux-x64-libfuzzer-ubsan-rel-tests")
+_test_builder(name = "linux-x64-libfuzzer-msan-rel-tests")
 
-_mirror_builder(name = "linux-x86-libfuzzer-asan-rel-tests")
+_test_builder(name = "linux-x64-libfuzzer-ubsan-rel-tests")
 
-_mirror_builder(
+_test_builder(name = "linux-x86-libfuzzer-asan-rel-tests")
+
+_test_builder(
     name = "mac-arm64-libfuzzer-asan-rel-tests",
     cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
 )
 
-_mirror_builder(
+_test_builder(
     name = "win-x64-libfuzzer-asan-rel-tests",
     os = os.WINDOWS_DEFAULT,
 )
 
-_mirror_builder(name = "linux-x64-centipede-asan-rel-tests")
+_test_builder(name = "linux-x64-centipede-asan-rel-tests")
