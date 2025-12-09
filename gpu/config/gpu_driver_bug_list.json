@@ -3453,21 +3453,6 @@
       ]
     },
     {
-      "id": 445,
-      "description": "Disable shared D3D device for MFVEA on Intel ",
-      "comment":[
-        "Video encoder MFT acquires device lock and does not release it, leading to",
-        "gpu process stall."
-      ],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "features": [
-        "disable_mfvea_shared_device"
-      ]
-    },
-    {
       "id": 446,
       "description": "Video jitter happens during letterboxing on old Qualcomm GPUs",
       "cr_bugs": [406175378],

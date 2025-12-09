@@ -1254,9 +1254,6 @@ void MediaFoundationVideoEncodeAccelerator::SetCommandBufferHelperCB(
   // access textures, with D3DImageBacking handling synchronization.
   bool use_shared_device =
       gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn;
-  if (workarounds_.disable_mfvea_shared_device) {
-    use_shared_device = false;
-  }
   SetState(kAcquiringCommandBuffer);
   gpu_task_runner_ = gpu_task_runner;
   gpu_task_runner->PostTaskAndReplyWithResult(
