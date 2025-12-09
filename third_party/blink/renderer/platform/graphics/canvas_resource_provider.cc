@@ -170,7 +170,10 @@ CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
                              /*delegate=*/nullptr) {}
 
 bool CanvasResourceProviderExternalBitmap::IsValid() const {
-  return GetSkSurface();
+  if (!surface_) {
+    surface_ = CreateSkSurface();
+  }
+  return surface_.get();
 }
 
 scoped_refptr<StaticBitmapImage>
