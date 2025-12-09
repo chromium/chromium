@@ -549,10 +549,9 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
     return base::unexpected("Failed to create the ONNX Runtime environment.");
   }
 
-  // Get the ORT EP name and library path pair specified by
-  // `kWebNNOrtEpLibraryPathForTesting` switch if it exists and the switch value
-  // is valid.
-  std::optional<std::pair<std::string, base::FilePath>> specified_ep_path_info;
+  // If `kWebNNOrtEpLibraryPathForTesting` switch exists and the switch value is
+  // valid, register the EP via loading EP libraries from the specified path.
+  // Failure is ignored.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebNNOrtEpLibraryPathForTesting)) {
     std::wstring value =
@@ -564,38 +563,34 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
                    << switches::kWebNNOrtEpLibraryPathForTesting << ": "
                    << result.error() << " The switch will be ignored.";
     } else {
-      specified_ep_path_info = result.value();
+      std::pair<std::string, base::FilePath> ep_path_info =
+          std::move(result.value());
+      CALL_ORT_FUNC(ort_api->RegisterExecutionProviderLibrary(
+          env.get(), ep_path_info.first.c_str(),
+          ep_path_info.second.value().c_str()));
     }
   }
 
-  // Register known execution providers if they are not registered yet.
+  // Register EPs from `ep_package_info_map` if they are not registered yet.
   // Failure is ignored.
   for (const auto& [ep_name, package_info] : ep_package_info_map) {
     if (IsExecutionProviderRegistered(ort_api, env.get(), ep_name)) {
       continue;
     }
 
-    // First try to load EP libraries from the specified path by
-    // `kWebNNOrtEpLibraryPathForTesting` switch if the EP name matches the
-    // specified EP name. Otherwise, try to load it from the EP package info.
-    base::FilePath ep_library_path;
-    if (specified_ep_path_info && ep_name == specified_ep_path_info->first) {
-      ep_library_path = specified_ep_path_info->second;
-    } else {
-      if (!GetDependentEpPackages().contains(package_info->family_name)) {
-        if (platform_functions
-                ->InitializePackageDependency(package_info->family_name,
-                                              package_info->version)
-                .empty()) {
-          continue;
-        }
-        GetDependentEpPackages().insert(package_info->family_name);
+    if (!GetDependentEpPackages().contains(package_info->family_name)) {
+      if (platform_functions
+              ->InitializePackageDependency(package_info->family_name,
+                                            package_info->version)
+              .empty()) {
+        continue;
       }
-      ep_library_path = package_info->library_path;
+      GetDependentEpPackages().insert(package_info->family_name);
     }
 
     CALL_ORT_FUNC(ort_api->RegisterExecutionProviderLibrary(
-        env.get(), ep_name.c_str(), ep_library_path.value().c_str()));
+        env.get(), ep_name.c_str(),
+        package_info->library_path.value().c_str()));
   }
 
   if (ort_logging_level == ORT_LOGGING_LEVEL_VERBOSE ||
