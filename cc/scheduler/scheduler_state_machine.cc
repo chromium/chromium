@@ -14,16 +14,42 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "cc/base/features.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace cc {
 
 namespace {
 // Surfaces and CompositorTimingHistory don't support more than 1 pending swap.
 const int kMaxPendingSubmitFrames = 1;
+
+bool IsEligibleToThrottleMainFrameRate(const SchedulerSettings& settings) {
+#if BUILDFLAG(IS_ANDROID)
+  // Do not enable throttling for the synchronous compositor, as it hasn't been
+  // evaluated for this use case, as of 09/2025. The aim is to make sure that
+  // this does not get enabled on WebView when the feature is active on Android,
+  // as they share the same binary configuration. Exclude this platform, which
+  // is using the synchronous compositor.
+  bool is_webview = settings.using_synchronous_renderer_compositor;
+  // Still requires balancing tradeoffs for desktop Android, not enabled yet.
+  bool is_desktop = base::android::device_info::is_desktop();
+  return !is_webview && !is_desktop;
+#else
+  return true;
+#endif
+}
+
+bool ShouldThrottleMainFrameRate(const SchedulerSettings& settings) {
+  return IsEligibleToThrottleMainFrameRate(settings) &&
+         base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
+}
 
 }  // namespace
 
@@ -1548,22 +1574,13 @@ void SchedulerStateMachine::FrameIntervalUpdated(
   //
   // Apply some slack, so that if for some reason the interval is a bit larger
   // than 8.33333333333333ms, then we catch it still.
-  //
-  // Do not enable throttling for the synchronous compositor, as it hasn't been
-  // evaluated for this use case, as of 09/2025. The aim is to make sure that
-  // this does not get enabled on WebView when the feature is active on Android,
-  // as they share the same binary configuration. Exclude this platform, which
-  // is using the synchronous compositor.
   constexpr float kSlackFactor = .9;
   bool fast_vsync_interval =
       frame_interval < base::Hertz(120) * (1 / kSlackFactor);
-  if (fast_vsync_interval && !settings_.using_synchronous_renderer_compositor) {
+  if (fast_vsync_interval && IsEligibleToThrottleMainFrameRate(settings_)) {
     features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
   }
-  // Same as above, no synchronous compositor.
-  if (fast_vsync_interval &&
-      base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz) &&
-      !settings_.using_synchronous_renderer_compositor) {
+  if (fast_vsync_interval && ShouldThrottleMainFrameRate(settings_)) {
     // Here as well, use a slack factor, to make sure that small timing
     // variations don't result in uneven pacing.
     //
