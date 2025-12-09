@@ -190,13 +190,6 @@ void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
       CONTENT_SETTING_DEFAULT);
 }
 
-bool CookieSettings::AreThirdPartyCookiesLimited() const {
-  // Checks whether we are in the limited state via Mode B.
-  return tracking_protection_settings_ &&
-         tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
-         !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
-}
-
 // TODO(crbug.com/40247160): Update to take in CookieSettingOverrides.
 bool CookieSettings::IsThirdPartyAccessAllowed(
     const GURL& first_party_url,
@@ -376,7 +369,9 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
 }
 
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() const {
-  return AreThirdPartyCookiesLimited() ||
+  return (tracking_protection_settings_ &&
+          tracking_protection_settings_->IsTrackingProtection3pcdEnabled() &&
+          !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) ||
          net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
 }
 

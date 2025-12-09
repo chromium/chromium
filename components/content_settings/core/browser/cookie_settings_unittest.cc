@@ -282,21 +282,27 @@ using CookieSettingsTest = CookieSettingsTestBase;
 class CookieSettingsTestP : public CookieSettingsTestBase,
                             public testing::WithParamInterface<GrantSource> {
  public:
-  CookieSettingsTestP() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
+  void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(EnabledFeatures(),
+                                                DisabledFeatures());
+    CookieSettingsTestBase::SetUp();
+  }
 
+  std::vector<base::test::FeatureRefAndParams> EnabledFeatures() const {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {features::kTpcdHeuristicsGrants,
+         {{"TpcdReadHeuristicsGrants", "true"}}}};
     if (Is3pcdMetadataGrantEligible()) {
       enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
-    } else {
-      disabled_features.push_back(net::features::kTpcdMetadataGrants);
     }
+    return enabled_features;
+  }
 
-    enabled_features.push_back({features::kTpcdHeuristicsGrants,
-                                {{"TpcdReadHeuristicsGrants", "true"}}});
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+  std::vector<base::test::FeatureRef> DisabledFeatures() const {
+    if (Is3pcdMetadataGrantEligible()) {
+      return {};
+    }
+    return {net::features::kTpcdMetadataGrants};
   }
 
   bool IsStorageAccessGrantEligibleViaAPI() const {
@@ -798,27 +804,6 @@ TEST_F(CookieSettingsTest, ThirdPartyExceptionSessionOnly) {
   cookie_settings_->SetThirdPartyCookieSetting(kBlockedSite,
                                                CONTENT_SETTING_SESSION_ONLY);
   EXPECT_FALSE(cookie_settings_->IsCookieSessionOnly(kBlockedSite));
-}
-
-using AreThirdPartyCookiesLimited = CookieSettingsTestP;
-
-TEST_P(AreThirdPartyCookiesLimited, TrueWhen3pcsNotBlockedInModeB) {
-  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  prefs_.SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
-  EXPECT_TRUE(cookie_settings_->AreThirdPartyCookiesLimited());
-}
-
-TEST_P(AreThirdPartyCookiesLimited, FalseWhenAll3pcsBlockedInModeB) {
-  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  prefs_.SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
-  EXPECT_FALSE(cookie_settings_->AreThirdPartyCookiesLimited());
-}
-
-TEST_P(AreThirdPartyCookiesLimited,
-       FalseWhenCookieControlsModePrefSetToBlockThirdParty) {
-  prefs_.SetInteger(prefs::kCookieControlsMode,
-                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
-  EXPECT_FALSE(cookie_settings_->AreThirdPartyCookiesLimited());
 }
 
 class CookieSettingsTestUserBypass : public CookieSettingsTest {
@@ -1534,15 +1519,25 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAExpiredGrant) {
             CONTENT_SETTING_BLOCK);
 }
 
-TEST_P(CookieSettingsTestP, GetCookieSetting3pcdMetadataGrants) {
+class CookieSettings3pcdTestP : public CookieSettingsTestP {
+ public:
+  void SetUp() override {
+    auto enabled_features = EnabledFeatures();
+    enabled_features.push_back(
+        {content_settings::features::kTrackingProtection3pcd, {}});
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                DisabledFeatures());
+    CookieSettingsTestBase::SetUp();
+  }
+};
+
+TEST_P(CookieSettings3pcdTestP, GetCookieSetting3pcdMetadataGrants) {
   const GURL top_level_url(kFirstPartySite);
   const GURL url(kAllowedSite);
   const GURL third_url(kBlockedSite);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
-
-  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
 
   ContentSettingsForOneType tpcd_metadata_grants;
   tpcd_metadata_grants.emplace_back(
@@ -1595,20 +1590,12 @@ TEST_P(CookieSettingsTestP, GetCookieSetting3pcdMetadataGrants) {
       cookie_settings_->IsAllowedByTpcdMetadataGrant(top_level_url, third_url));
 }
 
-TEST_P(CookieSettingsTestP, GetCookieSetting3pcdHeuristicsGrants) {
+TEST_P(CookieSettings3pcdTestP, GetCookieSetting3pcdHeuristicsGrants) {
   const GURL first_party_url(kFirstPartySite);
   const GURL third_party_url(kAllowedSite);
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
-
-  {
-    base::RunLoop run_loop;
-    prefs_.SetInteger(prefs::kCookieControlsMode,
-                      static_cast<int>(CookieControlsMode::kBlockThirdParty));
-    prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-    run_loop.RunUntilIdle();
-  }
 
   // Expect that cookies are blocked before setting the temporary grant.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
@@ -1650,7 +1637,13 @@ TEST_P(CookieSettingsTestP, GetCookieSetting3pcdHeuristicsGrants) {
             CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicOverrides) {
+class CookieSettings3pcdTest : public CookieSettingsTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      content_settings::features::kTrackingProtection3pcd};
+};
+
+TEST_F(CookieSettings3pcdTest, SetTemporaryCookieGrantForHeuristicOverrides) {
   const GURL first_party_url(kFirstPartySite);
   const GURL third_party_url(kAllowedSite);
   const base::TimeDelta expiration_short = base::Seconds(5);
@@ -1658,7 +1651,6 @@ TEST_F(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicOverrides) {
 
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
-  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
 
   // Expect that cookies are blocked before setting the temporary grant.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
@@ -1702,7 +1694,7 @@ TEST_F(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicOverrides) {
             CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicSchemeless) {
+TEST_F(CookieSettings3pcdTest, SetTemporaryCookieGrantForHeuristicSchemeless) {
   const GURL first_party_http_url(kHttpSite);
   const GURL first_party_https_url(kHttpsSite);
   const GURL third_party_url(kAllowedSite);
@@ -1710,7 +1702,6 @@ TEST_F(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicSchemeless) {
 
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
-  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
 
   // Expect that cookies are blocked before setting the temporary grant.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
@@ -2150,14 +2141,12 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
     CustomTestName);
 
+#if !BUILDFLAG(IS_IOS)
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    AreThirdPartyCookiesLimited,
-#if BUILDFLAG(IS_IOS)
-    testing::Values(GrantSource::kNoneGranted),
-#else
+    CookieSettings3pcdTestP,
     testing::Range(GrantSource::kNoneGranted, GrantSource::kGrantSourceCount),
-#endif
     CustomTestName);
+#endif
 
 }  // namespace content_settings

@@ -1010,7 +1010,7 @@ void PrivacySandboxSettingsImpl::OnBlockAllThirdPartyCookiesChanged() {
 
 bool PrivacySandboxSettingsImpl::AreRelatedWebsiteSetsEnabled() const {
   if (tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    return cookie_settings_->AreThirdPartyCookiesLimited();
+    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
   }
   return pref_service_->GetBoolean(
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);

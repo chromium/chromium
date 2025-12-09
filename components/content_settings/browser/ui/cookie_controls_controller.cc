@@ -195,10 +195,11 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   }
 
   auto blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
-  if (cookie_settings_->AreThirdPartyCookiesLimited()) {
-    blocking_status = CookieBlocking3pcdStatus::kLimited;
-  } else if (tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) {
-    blocking_status = CookieBlocking3pcdStatus::kAll;
+  if (tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
+    blocking_status =
+        tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()
+            ? CookieBlocking3pcdStatus::kAll
+            : CookieBlocking3pcdStatus::kLimited;
   }
 
   SettingInfo info;
