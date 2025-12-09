@@ -716,9 +716,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
                                    weight:UIFontWeightMedium];
   NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSAttributedString* attributedTitle =
-      [[NSAttributedString alloc] initWithString:@"AI Mode"
-                                      attributes:attributes];
+  NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+      initWithString:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION)
+          attributes:attributes];
   config.attributedTitle = attributedTitle;
 
   config.imagePadding = 5;
