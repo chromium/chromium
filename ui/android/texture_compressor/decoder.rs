@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 use crate::selectors::TABLES;
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct BlockMetadata {
     pub base: [[i32; 3]; 2],
@@ -134,19 +135,61 @@ pub fn parse_block_metadata(etc1_block: u64) -> BlockMetadata {
         flip: ((etc1_block >> 32) & 0b1) == 1,
     }
 }
-// Compute the final pixel color using the block's base color and per-pixel
-// bits. From the Khronos Data Format Specification v1.4.0
-// The modifier value comes from Table 142. and Table 143.
-// - `base`: should be the base color as an [R, G, B].
-// - `table_idx`: should be the index for the modifier table. (range 0-7).
-// - `negative`: If true, the modifier value is treated as negative.
-// - `large`: If true, we select the large value from the table.
-// The return value is a u32 packed in the 0xAABBGGRR layout.
-pub fn apply_modifier(base: [i32; 3], table_idx: u32, negative: bool, large: bool) -> u32 {
-    let base_delta = (TABLES[table_idx as usize][large as usize]) as i32;
-    let modifier_delta = if negative { -base_delta } else { base_delta };
 
-    let mut output_rgba: u32 = 0xFF000000; // Set alpha channel to 1.0
+// The spec specifies the modifier table in the order of -large, -small, +small,
+// +large. However, in order to look up with the negative and large bit as-is,
+// table needs to be in the order of +small, +large, -small, -large.
+// This creates a shuffled table to allow such access.
+pub const OPTIMIZED_MODIFIER_TABLE: [[i32; 4]; 8] = generate_modifier_table();
+const fn generate_modifier_table() -> [[i32; 4]; 8] {
+    let mut table = [[0; 4]; 8];
+    let mut i = 0;
+    // The modifier table provides pairs of [small, large] for each table index.
+    // The two bits extracted for a pixel select one of four possible deltas.
+    //
+    // Selector bits logic: index = (negative << 1) | large
+    // | Index | Bits (Neg, Large) | Sign | Magnitude | Value  |
+    // |-------|-------------------|------|-----------|--------|
+    // |   0   |       0, 0        |  +   |   small   | +small |
+    // |   1   |       0, 1        |  +   |   large   | +large |
+    // |   2   |       1, 0        |  -   |   small   | -small |
+    // |   3   |       1, 1        |  -   |   large   | -large |
+
+    while i < 8 {
+        let small = TABLES[i][0] as i32;
+        let large = TABLES[i][1] as i32;
+        table[i][0] = small;
+        table[i][1] = large;
+        table[i][2] = -small;
+        table[i][3] = -large;
+        i += 1;
+    }
+    table
+}
+
+// Applies the modifier (luminance change) to a single pixel and calculates the
+// RGBA value.
+// - `input_etc1`: should be the full 64-bit ETC1 data.
+// - `shift`: should be the index of the pixel(0-15).
+// - `base`: should be the base color as an [R, G, B].
+// - `subblock_mod`: should be the index for the modifier table. (range 0-7).
+// The return value is a u32 packed in the 0xAABBGGRR layout.
+pub fn apply_modifier(input_etc1: u64, shift: usize, base: [i32; 3], subblock_mod: u32) -> u32 {
+    // The lower-32 bit contains indices for the color modifiers of all 16
+    // pixels(a-p).
+    //
+    // Bits 16-31 (the upper 16 bit) decides whether the modifier value is negative
+    // or not. Bit 16 corresponds to pixel 'a', ..., Bit 31 to pixel 'p'
+    //
+    // Bits 0-15 (the lower 16 bit) decides whether the modifier value is large or
+    // not. Bit 0 corresponds to pixel 'a', ..., Bit 15 to pixel 'p'
+    let large = (input_etc1 >> shift) & 1;
+    let negative = (input_etc1 >> (shift + 16)) & 1;
+    let pixel_mod = negative << 1 | large;
+
+    let modifier_delta = OPTIMIZED_MODIFIER_TABLE[subblock_mod as usize][pixel_mod as usize];
+
+    let mut output_rgba: u32 = 0xFF000000; // Set Alpha to 255
 
     for i in 0..3 {
         let channel_color = (base[i] + modifier_delta).clamp(0, 255) as u32;
@@ -167,48 +210,61 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
     //  [ d h l p ]].
     let mut output = [[0 as u32; 4]; 4];
 
-    for col in 0..4 {
+    // In ETC1, each block can be divided into two subblocks, either vertically or
+    // horizontally depending on the flip bit. Regardless of the direction, the
+    // loop is structured so that pixels in the first subblock is processed first,
+    // then the second. Within each loop, the same base color and table index is
+    // used. This is faster than iterating the block in pixel order, which requires
+    // switching between the base colors inside the loop.
+    if metadata.flip {
+        // When flip bit = 1, the block is divided into two 4×2 subblocks.
+        // - Pixels a,e,i,m, b,f,j,n (rows 0, 1) use base color 1.
+        // - Pixels c,g,k,o, d,h,l,p (rows 2, 3) use base color 2.
+        for row in 0..2 {
+            for col in 0..4 {
+                // TODO: base[0] actually means base color 1, and base[1] means base color 2.
+                //       Refactor this section for clarity.
+                output[row][col] = apply_modifier(
+                    input_etc1,
+                    row + col * 4,
+                    metadata.base[0],
+                    metadata.table_idx_1,
+                );
+            }
+        }
+        for row in 2..4 {
+            for col in 0..4 {
+                output[row][col] = apply_modifier(
+                    input_etc1,
+                    row + col * 4,
+                    metadata.base[1],
+                    metadata.table_idx_2,
+                );
+            }
+        }
+    } else {
+        // When flip bit = 0, the block is divided into two 2×4 subblocks.
+        // - Pixels a,b,c,d, e,f,g,h (columns 0, 1) use base color 1.
+        // - Pixels i,j,k,l, m,n,o,p (columns 2, 3) use base color 2.
         for row in 0..4 {
-            // When flip bit = 0, the block is divided into two 2×4 subblocks.
-            // - Pixels a,b,c,d, e,f,g,h (columns 0, 1) use base color 1.
-            // - Pixels i,j,k,l, m,n,o,p (columns 2, 3) use base color 2.
-            //
-            // When flip bit = 1, the block is divided into two 4×2 subblocks.
-            // - Pixels a,e,i,m, b,f,j,n (rows 0, 1) use base color 1.
-            // - Pixels c,g,k,o, d,h,l,p (rows 2, 3) use base color 2.
-
-            let left_half = col <= 1;
-            let top_half = row <= 1;
-
-            let use_base_color_1 = if metadata.flip { top_half } else { left_half };
-
-            // The lower-32 bit contains indices for the color modifiers of all 16 pixels
-            // (a-p).
-            //
-            // Bits 16-31 (the upper 16 bit) decides whether the modifier value is negative
-            // or not. Bit 16 corresponds to pixel 'a', ..., Bit 31 to pixel 'p'
-            //
-            // Bits 0-15 (the lower 16 bit) decides whether the modifier value is large or
-            // not. Bit 0 corresponds to pixel 'a', ..., Bit 15 to pixel 'p'
-
-            // The modifier table provides pairs of [small, large] for each table index.
-            // The two bits extracted for a pixel select one of four possible deltas.
-            // For example, TABLES[2] is [9,29]
-            // - negative = 1, large = 1 : -large (ex. -29)
-            // - negative = 1, large = 0 : -small (ex. -9)
-            // - negative = 0, large = 0 : +small (ex. 9)
-            // - negative = 0, large = 1 : +large (ex. 29)
-
-            let shift = row + col * 4;
-            let large = (input_etc1 >> shift) & 0b1 == 1;
-            let negative = (input_etc1 >> shift + 16) & 0b1 == 1;
-            // TODO: base[0] actually means base color 1, and base[1] means base color 2.
-            //       Refactor this section for clarity.
-            output[row][col] = if use_base_color_1 {
-                apply_modifier(metadata.base[0], metadata.table_idx_1, negative, large)
-            } else {
-                apply_modifier(metadata.base[1], metadata.table_idx_2, negative, large)
-            };
+            for col in 0..2 {
+                output[row][col] = apply_modifier(
+                    input_etc1,
+                    row + col * 4,
+                    metadata.base[0],
+                    metadata.table_idx_1,
+                );
+            }
+        }
+        for row in 0..4 {
+            for col in 2..4 {
+                output[row][col] = apply_modifier(
+                    input_etc1,
+                    row + col * 4,
+                    metadata.base[1],
+                    metadata.table_idx_2,
+                );
+            }
         }
     }
     return output;

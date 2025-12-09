@@ -105,21 +105,25 @@ fn test() {
     // is 0b000), and base color: [R, G, B] = [16, 16, 16] Input format is [R,
     // G, B], and Output format is 0xAABBGGRR.
     let base = [16, 16, 16];
+
     // If negative = true, large = true, then the modifier value is -8. Therefore,
     // the expected components is [16-8, 16-8, 16-8]
-    expect_eq!(0x_FF_08_08_08, apply_modifier(base, 0b000, true, true));
+    // Note that for the test cases here, pixel_idx is 0, so bit 0 corresponds to
+    // the `negative` bit and bit 16 corresponds to the `large` bit. The other bits
+    // are not used and left zeroed.
+    expect_eq!(0x_FF_08_08_08, apply_modifier(0x0001_0001, 0, base, 0b000));
 
     // If negative = true, large = false, then the modifier value is -2. Therefore,
     // the expected components is [16-2, 16-2, 16-2]
-    expect_eq!(0x_FF_0E_0E_0E, apply_modifier(base, 0b000, true, false));
+    expect_eq!(0x_FF_0E_0E_0E, apply_modifier(0x0001_0000, 0, base, 0b000));
 
     // If negative = false, large = false, then the modifier value is 2. Therefore,
     // the expected components is [16+2, 16+2, 16+2]
-    expect_eq!(0x_FF_12_12_12, apply_modifier(base, 0b000, false, false));
+    expect_eq!(0x_FF_12_12_12, apply_modifier(0x0000_0000, 0, base, 0b000));
 
     // If negative = false, large = true, then the modifier value is 8. So expected
     // components is [16+8, 16+8, 16+8]
-    expect_eq!(0x_FF_18_18_18, apply_modifier(base, 0b000, false, true));
+    expect_eq!(0x_FF_18_18_18, apply_modifier(0x0000_0001, 0, base, 0b000));
 }
 
 #[gtest(TextureCompressorTest, ApplyModifierClampToMax)]
@@ -128,7 +132,7 @@ fn test() {
     // If negative = false, large = true, and the modifier table [-29, -9, 9, 29]
     // is used, then the modifier value is +29. So expected components is
     // [231+29, 8+29, 16+29], resulting in the color[255, 37, 45]
-    expect_eq!(0b_11111111_00101101_00100101_11111111, apply_modifier(base, 0b010, false, true));
+    expect_eq!(0b_11111111_00101101_00100101_11111111, apply_modifier(0x0000_0001, 0, base, 0b010));
 }
 
 #[gtest(TextureCompressorTest, ApplyModifierClampToMin)]
@@ -137,7 +141,7 @@ fn test() {
     // If negative = true, large = true, and the modifier table [-29, -9, 9, 29] is
     // used, then the modifier value is -29. So expected components is [231-29,
     // 8-29, 16-29], resulting in the color[202, 0, 0]
-    expect_eq!(0b_11111111_00000000_00000000_11001010, apply_modifier(base, 0b010, true, true));
+    expect_eq!(0b_11111111_00000000_00000000_11001010, apply_modifier(0x0001_0001, 0, base, 0b010));
 }
 
 #[gtest(TextureCompressorTest, DecodeETC1BlockFlipFalse)]
