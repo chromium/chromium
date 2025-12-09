@@ -168,7 +168,7 @@ std::string GetFrenchPageHtml(const std::string& html_tag,
 // Builds a distillable (eligible for Reader mode) HTML document with a French
 // text and the given `html` and `meta` tags.
 std::string GetFrenchPageDistillableHtml() {
-  return std::string("<!DOCTYPE html><html><head><title>Test Page "
+  return std::string("<!DOCTYPE html><html lang=\"fr\"><head><title>Test Page "
                      "Title</title></head><body><div><p>") +
          kFrenchText + "</p><p>" + kFrenchText + "</p><p>" + kFrenchText +
          "</p><p>" + kFrenchText + "</p><p>" + kFrenchText + "</p><p>" +
@@ -250,9 +250,10 @@ void TestResponseProvider::GetResponseHeadersAndBody(
   } else if (url.GetPath() == kFrenchPageWithLinkPath) {
     GURL page_path_url = web::test::HttpServer::MakeUrl(
         base::StringPrintf("http://%s", kFrenchPagePath));
-    *response_body = base::StringPrintf(
-        "<html><body>%s<br/><a href='%s' id='link'>link</a></body></html>",
-        kFrenchText, page_path_url.spec().c_str());
+    *response_body =
+        base::StringPrintf("<html lang=\"fr\"><body>%s<br/><a href='%s' "
+                           "id='link'>link</a></body></html>",
+                           kFrenchText, page_path_url.spec().c_str());
     return;
   } else if (url.GetPath() == kFrenchPageNoTranslateContent) {
     GURL page_path_url = web::test::HttpServer::MakeUrl(
@@ -354,12 +355,6 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that different language signals are detected correctly.
 - (void)testLanguageDetection {
-// TODO(crbug.com/40192556): test failing on ipad device
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
   const GURL URL =
       web::test::HttpServer::MakeUrl("http://scenarioLanguageDetection");
   std::map<GURL, std::string> responses;
@@ -422,8 +417,7 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that history.pushState triggers a new detection.
-// TODO(crbug.com/40910864): This test is flaky.
-- (void)FLAKY_testLanguageDetectionWithPushState {
+- (void)testLanguageDetectionWithPushState {
   const GURL URL = web::test::HttpServer::MakeUrl(
       "http://scenarioLanguageDetectionPushState");
   std::map<GURL, std::string> responses;
@@ -454,12 +448,6 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that language detection is performed on hash changes.
 - (void)testLanguageDetectionWithHashChange {
-// TODO(crbug.com/383556552): This test is flaky on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Generate a page with French text and a button that changes the text to
   // English and triggers a hash change.
   std::string html = base::StringPrintf(
@@ -605,8 +593,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the infobar banner persists as the page scrolls mode and that the
 // banner can be dimissed.
-// TODO(crbug.com/334867767): Test fails on random devices and simulator.
-- (void)FLAKY_testInfobarShowHideDismiss {
+- (void)testInfobarShowHideDismiss {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -642,12 +629,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that the page can be translated and that translation can be reverted
 // using the banner and modal.
 - (void)testInfobarTranslateRevert {
-// TODO(crbug.com/383556552): This test is flaky on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -781,12 +762,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that the page can be translated and that translation can be reverted
 // in incognito mode.
 - (void)testInfobarTranslateRevertIncognito {
-// TODO(crbug.com/383556552): This test is flaky on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -832,14 +807,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the target language can be changed. TODO(crbug.com/40670920):
 // implement test for changing source language.
-// TODO(crbug.com/460748990): Test is flaky.
-- (void)FLAKY_testInfobarChangeTargetLanguage {
-// TODO(crbug.com/383556552): This test is flaky on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
+- (void)testInfobarChangeTargetLanguage {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -894,14 +862,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the "Always Translate" options can be toggled and the prefs are
 // updated accordingly.
-// TODO(crbug.com/334867767) Fix and reenable tests.
 - (void)testInfobarAlwaysTranslate {
-// TODO(crbug.com/383556552): This test is flaky on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -963,14 +924,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the "Never Translate ..." options dismisses the infobar and
 // updates the prefs accordingly.
-// TODO(crbug.com/460749272): Test is flaky.
-- (void)FLAKY_testInfobarNeverTranslate {
-// TODO(crbug.com/383556552): This test is flaky on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
+- (void)testInfobarNeverTranslate {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1032,11 +986,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that the "Never Translate this site" option dismisses the infobar and
 // updates the prefs accordingly.
 - (void)testInfobarNeverTranslateSite {
-  // TODO(crbug.com/334867767): Test fails when run on iOS 17 iPad simulator.
-  if (base::ios::IsRunningOnIOS17OrLater() && [ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 17 iPad simulator.");
-  }
-
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1099,12 +1048,6 @@ void TestResponseProvider::GetLanguageResponse(
 // translate is available and it brings up the Translate infobar and translates
 // the page when tapped.
 - (void)testTranslateManualTrigger {
-// TODO(crbug.com/383556552): This test is flaky on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1146,12 +1089,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Test that tapping cancel in the Modal doesn't save changes to source/target
 // languages and doesn't start a Translate
 - (void)testTranslateModalCancel {
-// TODO(crbug.com/383556552): This test is flaky on iPad device.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1334,11 +1271,6 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that triggering translate after opening and closing reader mode works.
 - (void)testTranslateAfterReaderMode {
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Set up server with a French page.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1390,11 +1322,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that translation applied prior to Reader Mode is displayed and that
 // translate infobars are suppressed when reader mode is activated.
 - (void)testTranslatePriorToReaderMode {
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Set up server with a French page.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1469,11 +1396,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that translation settings in Reader Mode is displayed and that
 // translation is applied when selected.
 - (void)testTranslateInReaderMode {
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Set up server with a French page.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1611,11 +1533,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that opening and closing reader mode does not impact the state of the
 // translate badge.
 - (void)testTranslateBadgeInReaderMode {
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Set up server with a French page.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1654,11 +1571,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that for a tab where translation was applied in Reading Mode, deletion
 // of the original web state correctly closes Reading Mode state.
 - (void)testTranslateInClosedReaderMode {
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Set up server with a French page.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1698,12 +1610,6 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that the translate badge is shown before, during and after turning off
 // Reader mode if badge support is enabled.
 - (void)testTranslateBadgeWithReaderModeBadgeSupport {
-// TODO(crbug.com/438763264): test failing on ipad.
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
-  }
-#endif
   // Set up server with a French page.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
