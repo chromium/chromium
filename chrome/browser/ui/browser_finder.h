@@ -208,6 +208,9 @@ size_t GetTabbedBrowserCount(Profile* profile);
 // `profile`, excluding DevTools windows.
 size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile);
 
+// Returns the number of Guest browsers excluding DevTools windows.
+size_t GetGuestBrowserCount();
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_BROWSER_FINDER_H_

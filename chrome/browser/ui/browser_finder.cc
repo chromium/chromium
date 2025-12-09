@@ -404,7 +404,7 @@ size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
   }
 
   size_t incognito_window_count = 0;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+  GlobalBrowserCollection::GetInstance()->ForEach(
       [profile, &incognito_window_count](BrowserWindowInterface* browser) {
         if (browser->GetProfile()->IsSameOrParent(profile) &&
             browser->GetProfile()->IsOffTheRecord() &&
@@ -414,6 +414,19 @@ size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
         return true;
       });
   return incognito_window_count;
+}
+
+size_t GetGuestBrowserCount() {
+  size_t guest_browser_count = 0;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&guest_browser_count](BrowserWindowInterface* browser) {
+        if (browser->GetProfile()->IsGuestSession() &&
+            browser->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+          guest_browser_count++;
+        }
+        return true;
+      });
+  return guest_browser_count;
 }
 
 }  // namespace chrome
