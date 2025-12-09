@@ -97,13 +97,13 @@ TEST(AccountInfoUtilTest, FromUserInfo) {
   ASSERT_TRUE(maybe_account_info.has_value());
 
   AccountInfo& account_info = maybe_account_info.value();
-  ASSERT_EQ(account_info.email, "user@example.com");
-  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.GetEmail(), "user@example.com");
+  ASSERT_EQ(account_info.GetGaiaId().ToString(), "gaia_id_user_example_com");
   ASSERT_EQ(account_info.GetHostedDomain(), "example.com");
-  ASSERT_EQ(account_info.full_name, "full name");
-  ASSERT_EQ(account_info.given_name, "given name");
-  ASSERT_EQ(account_info.locale, "locale");
-  ASSERT_EQ(account_info.picture_url, "https://example.com/picture/user");
+  ASSERT_EQ(account_info.GetFullName(), "full name");
+  ASSERT_EQ(account_info.GetGivenName(), "given name");
+  ASSERT_EQ(account_info.GetLocale(), "locale");
+  ASSERT_EQ(account_info.GetAvatarUrl(), "https://example.com/picture/user");
 }
 
 // Tests that AccountInfoFromUserInfo returns an AccountInfo with the value
@@ -121,13 +121,13 @@ TEST(AccountInfoUtilTest, FromUserInfoWithSub) {
   ASSERT_TRUE(maybe_account_info.has_value());
 
   AccountInfo& account_info = maybe_account_info.value();
-  ASSERT_EQ(account_info.email, "user@example.com");
-  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.GetEmail(), "user@example.com");
+  ASSERT_EQ(account_info.GetGaiaId().ToString(), "gaia_id_user_example_com");
   ASSERT_EQ(account_info.GetHostedDomain(), "example.com");
-  ASSERT_EQ(account_info.full_name, "full name");
-  ASSERT_EQ(account_info.given_name, "given name");
-  ASSERT_EQ(account_info.locale, "locale");
-  ASSERT_EQ(account_info.picture_url, "https://example.com/picture/user");
+  ASSERT_EQ(account_info.GetFullName(), "full name");
+  ASSERT_EQ(account_info.GetGivenName(), "given name");
+  ASSERT_EQ(account_info.GetLocale(), "locale");
+  ASSERT_EQ(account_info.GetAvatarUrl(), "https://example.com/picture/user");
 }
 
 // Tests that AccountInfoFromUserInfo returns an AccountInfo with the value
@@ -145,13 +145,13 @@ TEST(AccountInfoUtilTest, FromUserInfoWithIdAndSub) {
   ASSERT_TRUE(maybe_account_info.has_value());
 
   AccountInfo& account_info = maybe_account_info.value();
-  ASSERT_EQ(account_info.email, "user@example.com");
-  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.GetEmail(), "user@example.com");
+  ASSERT_EQ(account_info.GetGaiaId().ToString(), "gaia_id_user_example_com");
   ASSERT_EQ(account_info.GetHostedDomain(), "example.com");
-  ASSERT_EQ(account_info.full_name, "full name");
-  ASSERT_EQ(account_info.given_name, "given name");
-  ASSERT_EQ(account_info.locale, "locale");
-  ASSERT_EQ(account_info.picture_url, "https://example.com/picture/user");
+  ASSERT_EQ(account_info.GetFullName(), "full name");
+  ASSERT_EQ(account_info.GetGivenName(), "given name");
+  ASSERT_EQ(account_info.GetLocale(), "locale");
+  ASSERT_EQ(account_info.GetAvatarUrl(), "https://example.com/picture/user");
 }
 
 // Tests that AccountInfoFromUserInfo returns an AccountInfo with empty or
@@ -167,13 +167,13 @@ TEST(AccountInfoUtilTest, FromUserInfo_EmptyValues) {
   ASSERT_TRUE(maybe_account_info.has_value());
 
   AccountInfo& account_info = maybe_account_info.value();
-  ASSERT_EQ(account_info.email, "user@example.com");
-  ASSERT_EQ(account_info.gaia.ToString(), "gaia_id_user_example_com");
+  ASSERT_EQ(account_info.GetEmail(), "user@example.com");
+  ASSERT_EQ(account_info.GetGaiaId().ToString(), "gaia_id_user_example_com");
   ASSERT_EQ(account_info.GetHostedDomain(), std::string());
-  ASSERT_EQ(account_info.full_name, std::string());
-  ASSERT_EQ(account_info.given_name, std::string());
-  ASSERT_EQ(account_info.locale, std::string());
-  ASSERT_EQ(account_info.picture_url, kNoPictureURLFound);
+  ASSERT_EQ(account_info.GetFullName(), std::nullopt);
+  ASSERT_EQ(account_info.GetGivenName(), std::nullopt);
+  ASSERT_EQ(account_info.GetLocale(), std::nullopt);
+  ASSERT_EQ(account_info.GetAvatarUrl(), std::string());
 }
 
 // Tests that AccountInfoFromUserInfo returns an AccountInfo with the value
@@ -207,7 +207,7 @@ TEST(AccountInfoUtilTest, FromUserInfo_NoPictureUrl) {
   ASSERT_TRUE(maybe_account_info.has_value());
 
   AccountInfo& account_info = maybe_account_info.value();
-  ASSERT_EQ(account_info.picture_url, kNoPictureURLFound);
+  ASSERT_EQ(account_info.GetAvatarUrl(), std::string());
 }
 
 // Tests that if AccountInfoFromUserInfo fails if the value passed has no

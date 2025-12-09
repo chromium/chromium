@@ -47,6 +47,7 @@ constexpr std::string_view kAccountCapabilityBooleanValueKey = "booleanValue";
 // Keys used to store the different values in the JSON dictionary in a
 // serialized form on disk.
 namespace local {
+using ::kNoPictureURLFound;
 using ::signin::kAccountIdKey;
 using ::signin::kLastDownloadedImageURLWithSizeKey;
 using ::signin::constants::kNoHostedDomainFound;
@@ -213,25 +214,32 @@ base::Value::Dict SerializeAccountInfo(const AccountInfo& account_info) {
     hosted_domain_to_set = hosted_domain->empty() ? local::kNoHostedDomainFound
                                                   : std::string(*hosted_domain);
   }
+  std::string avatar_url_to_set;
+  if (std::optional<std::string_view> avatar_url =
+          account_info.GetAvatarUrl()) {
+    avatar_url_to_set = avatar_url->empty() ? local::kNoPictureURLFound
+                                            : std::string(*avatar_url);
+  }
   return base::Value::Dict()
-      .Set(local::kAccountIdKey, account_info.account_id.ToString())
-      .Set(local::kAccountEmailKey, account_info.email)
-      .Set(local::kAccountGaiaKey, account_info.gaia.ToString())
+      .Set(local::kAccountIdKey, account_info.GetAccountId().ToString())
+      .Set(local::kAccountEmailKey, account_info.GetEmail())
+      .Set(local::kAccountGaiaKey, account_info.GetGaiaId().ToString())
       .Set(local::kAccountHostedDomainKey, hosted_domain_to_set)
-      .Set(local::kAccountFullNameKey, account_info.full_name)
-      .Set(local::kAccountGivenNameKey, account_info.given_name)
-      .Set(local::kAccountLocaleKey, account_info.locale)
-      .Set(local::kAccountPictureURLKey, account_info.picture_url)
+      .Set(local::kAccountFullNameKey, account_info.GetFullName().value_or(""))
+      .Set(local::kAccountGivenNameKey,
+           account_info.GetGivenName().value_or(""))
+      .Set(local::kAccountLocaleKey, account_info.GetLocale().value_or(""))
+      .Set(local::kAccountPictureURLKey, avatar_url_to_set)
       .Set(local::kAccountChildAttributeKey,
-           static_cast<int>(account_info.is_child_account))
+           static_cast<int>(account_info.IsChildAccount()))
       .Set(local::kAdvancedProtectionAccountStatusKey,
-           account_info.is_under_advanced_protection)
+           account_info.IsUnderAdvancedProtection())
       .Set(local::kAccountAccessPoint,
            static_cast<int>(account_info.access_point))
       .Set(local::kLastDownloadedImageURLWithSizeKey,
-           account_info.last_downloaded_image_url_with_size)
+           account_info.GetLastDownloadedAvatarUrlWithSize().value_or(""))
       .Set(local::kAccountCapabilitiesKey,
-           SerializeAccountCapabilities(account_info.capabilities));
+           SerializeAccountCapabilities(account_info.GetAccountCapabilities()));
 }
 
 std::optional<AccountInfo> DeserializeAccountInfo(
