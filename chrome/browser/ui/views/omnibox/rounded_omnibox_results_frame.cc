@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -356,24 +355,16 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
   contents_->SetBoundsRect(results_bounds);
 }
 
-void RoundedOmniboxResultsFrame::VisibilityChanged(View* starting_from,
-                                                   bool is_visible) {
-  views::View::VisibilityChanged(starting_from, is_visible);
+void RoundedOmniboxResultsFrame::AddedToWidget() {
 #if defined(USE_AURA)
   if (!forward_mouse_events_) {
     return;
   }
-
-  if (is_visible) {
-    // Use a ui::EventTargeter that allows mouse and touch events in the top
-    // portion of the Widget to pass through to the omnibox beneath it.
-    auto results_targeter = std::make_unique<aura::WindowTargeter>();
-    results_targeter->SetInsets(GetContentInsets());
-    GetWidget()->GetNativeWindow()->SetEventTargeter(
-        std::move(results_targeter));
-  } else {
-    GetWidget()->GetNativeWindow()->SetEventTargeter(nullptr);
-  }
+  // Use a ui::EventTargeter that allows mouse and touch events in the top
+  // portion of the Widget to pass through to the omnibox beneath it.
+  auto results_targeter = std::make_unique<aura::WindowTargeter>();
+  results_targeter->SetInsets(GetContentInsets());
+  GetWidget()->GetNativeWindow()->SetEventTargeter(std::move(results_targeter));
 #endif  // USE_AURA
 }
 
