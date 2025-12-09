@@ -4764,13 +4764,6 @@ IN_PROC_BROWSER_TEST_P(
       sharedStorage.set('customKey', 'customValue');
     )");
 
-  if (!AllowThirdPartyCookies()) {
-    // Enable block of all third party cookies in the tracking protection
-    // setting.
-    GetProfile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
-                                         true);
-  }
-
   if (SharedStorageSuccessExpected()) {
     EXPECT_TRUE(set_result.is_ok());
     WaitForHistograms({kTimingDocumentSetHistogram});
@@ -4848,13 +4841,6 @@ IN_PROC_BROWSER_TEST_P(
   content::EvalJsResult set_result = content::EvalJs(fenced_frame_rfh, R"(
       sharedStorage.set('customKey', 'customValue');
     )");
-
-  if (!AllowThirdPartyCookies()) {
-    // Enable block of all third party cookies in the tracking protection
-    // setting.
-    GetProfile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
-                                         true);
-  }
 
   if (SharedStorageSuccessExpected()) {
     EXPECT_TRUE(set_result.is_ok());
