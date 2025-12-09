@@ -212,12 +212,6 @@ class NavigationManagerImpl final : public NavigationManager {
   void UpdateCurrentItemForReplaceState(const GURL& url,
                                         NSString* state_object);
 
-  // Same as GoToIndex(int), but allows renderer-initiated navigations and
-  // specifying whether or not the navigation is caused by the user gesture.
-  void GoToIndex(int index,
-                 NavigationInitiationType initiation_type,
-                 bool has_user_gesture);
-
   // NavigationManager:
   BrowserState* GetBrowserState() const final;
   WebState* GetWebState() const final;
@@ -330,6 +324,12 @@ class NavigationManagerImpl final : public NavigationManager {
     kBackList,
     kForwardList,
   };
+
+  // Same as GoToIndex(int), but allows renderer-initiated navigations and
+  // specifying whether or not the navigation is caused by the user gesture.
+  void GoToIndex(int index,
+                 NavigationInitiationType initiation_type,
+                 bool has_user_gesture);
 
   // Appends a new session blob fetcher with given source.
   void AppendSessionDataBlobFetcher(SessionDataBlobFetcher loader,
