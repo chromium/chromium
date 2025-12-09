@@ -237,11 +237,15 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
     return;
   }
 
+  WaitForObservation(std::move(result));
+}
+
+void ToolController::WaitForObservation(mojom::ActionResultPtr result) {
   if (tabs::TabInterface* target_tab =
           active_state_->tool->GetTargetTab().Get()) {
     observation_delayer_->Wait(
         *target_tab,
-        base::BindOnce(&ToolController::PostInvokeTool,
+        base::BindOnce(&ToolController::ObservationDelayComplete,
                        weak_ptr_factory_.GetWeakPtr(), std::move(result)));
   } else {
     journal().Log(active_state_->tool->JournalURL(), task_->id(),
@@ -250,6 +254,27 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
                       .AddError("Tab is gone when tool finishes successfully")
                       .Build());
     PostInvokeTool(std::move(result));
+  }
+}
+
+void ToolController::ObservationDelayComplete(
+    mojom::ActionResultPtr action_result,
+    ObservationDelayController::Result observation_result) {
+  switch (observation_result) {
+    case ObservationDelayController::Result::kOk:
+      PostInvokeTool(std::move(action_result));
+      break;
+    case ObservationDelayController::Result::kPageNavigated: {
+      size_t last_navigation_count = observation_delayer_->NavigationCount();
+      // The page navigated, restart the observation.
+      journal().Log(active_state_->tool->JournalURL(), task_->id(),
+                    "ToolController Restarting Observation", {});
+      observation_delayer_ = active_state_->tool->GetObservationDelayer(
+          observation_page_stability_config_);
+      observation_delayer_->SetNavigationCount(last_navigation_count + 1);
+      WaitForObservation(std::move(action_result));
+      break;
+    }
   }
 }
 

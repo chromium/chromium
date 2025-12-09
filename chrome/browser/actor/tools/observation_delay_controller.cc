@@ -55,6 +55,9 @@ base::TimeDelta GetLcpDelay() {
   return features::kActorObservationDelayLcp.Get();
 }
 
+// This should be similar to the number of redirects.
+constexpr size_t kMaxNavigations = 20;
+
 }  // namespace
 
 ObservationDelayController::ObservationDelayController(
@@ -264,6 +267,11 @@ void ObservationDelayController::MoveToState(State new_state) {
       PostMoveToStateClosure(State::kDone, GetLcpDelay()).Run();
       break;
     }
+    case State::kPageNavigated: {
+      result_ = Result::kPageNavigated;
+      MoveToState(State::kDone);
+      break;
+    }
     case State::kDidTimeout: {
       MoveToState(State::kDone);
       break;
@@ -274,7 +282,10 @@ void ObservationDelayController::MoveToState(State new_state) {
       CHECK(ready_callback_);
       wait_journal_entry_.reset();
       page_stability_monitor_remote_.reset();
-      PostFinishedTask(std::move(ready_callback_));
+      PostFinishedTask(
+          base::BindOnce([](ReadyCallback callback,
+                            Result result) { std::move(callback).Run(result); },
+                         std::move(ready_callback_), result_));
       break;
     }
   }
@@ -309,28 +320,52 @@ void ObservationDelayController::DCheckStateTransition(State old_state,
           {State::kWaitForPageStability,
               {State::kWaitForLoadCompletion,
                State::kPageStabilityMonitorDisconnected,
-               State::kDidTimeout}},
+               State::kDidTimeout,
+              State::kPageNavigated}},
           {State::kPageStabilityMonitorDisconnected,
               {State::kWaitForLoadCompletion}},
           {State::kWaitForLoadCompletion,
               {State::kDidTimeout,
+               State::kPageNavigated,
                State::kWaitForVisualStateUpdate}},
           {State::kWaitForVisualStateUpdate,
               {State::kDidTimeout,
+               State::kPageNavigated,
                State::kMaybeDelayForLcp}},
           {State::kMaybeDelayForLcp,
               {State::kDidTimeout,
+               State::kPageNavigated,
                State::kDelayForLcp,
                State::kDone}},
-           {State::kDelayForLcp,
+          {State::kDelayForLcp,
               {State::kDidTimeout,
+               State::kPageNavigated,
                State::kDone}},
           {State::kDidTimeout,
+              {State::kDone}},
+          {State::kPageNavigated,
               {State::kDone}}
           // clang-format on
       }));
   DCHECK_STATE_TRANSITION(transitions, old_state, new_state);
 #endif  // DCHECK_IS_ON()
+}
+
+void ObservationDelayController::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame() || state_ == State::kInitial) {
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          kActorRestartObservationDelayControllerOnNavigate)) {
+    return;
+  }
+  // If we exceed the number of navigations just keep waiting for observations.
+  if (navigation_count_ >= kMaxNavigations) {
+    return;
+  }
+  MoveToState(State::kPageNavigated);
 }
 
 void ObservationDelayController::DidStopLoading() {
@@ -366,6 +401,8 @@ std::string_view ObservationDelayController::StateToString(State state) {
       return "DelayForLcp";
     case State::kDidTimeout:
       return "DidTimeout";
+    case State::kPageNavigated:
+      return "PageNavigated";
     case State::kDone:
       return "Done";
   }
@@ -388,6 +425,14 @@ base::OnceClosure ObservationDelayController::PostMoveToStateClosure(
       },
       base::SequencedTaskRunner::GetCurrentDefault(),
       MoveToStateClosure(new_state), delay);
+}
+
+size_t ObservationDelayController::NavigationCount() const {
+  return navigation_count_;
+}
+
+void ObservationDelayController::SetNavigationCount(size_t count) {
+  navigation_count_ = count;
 }
 
 }  // namespace actor

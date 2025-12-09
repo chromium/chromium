@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/tools/observation_delay_test_util.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
@@ -53,9 +54,18 @@ class ObservationDelayControllerTest : public ObservationDelayTest {
   ScopedFeatureList scoped_feature_list_;
 };
 
+class ObservationDelayControllerNavigateTest
+    : public ObservationDelayTest,
+      public base::test::WithFeatureOverride {
+ public:
+  ObservationDelayControllerNavigateTest()
+      : base::test::WithFeatureOverride(
+            kActorRestartObservationDelayControllerOnNavigate) {}
+};
+
 // Ensure that a navigation while the page stability monitor is in-progress
 // moves the controller to wait on the load.
-IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
+IN_PROC_BROWSER_TEST_P(ObservationDelayControllerNavigateTest,
                        NavigateDuringPageStabilization) {
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
@@ -67,7 +77,51 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   ASSERT_TRUE(InitiateFetchRequest());
 
   // Start waiting on the controller. It should be blocked in page stability.
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(*active_tab(), result.GetCallback());
+  ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
+
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  TestNavigationManager manager(web_contents(), url);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents(), url));
+
+  if (IsParamFeatureEnabled()) {
+    ASSERT_TRUE(controller.WaitForState(State::kDone));
+    ASSERT_EQ(result.Get(), ObservationDelayController::Result::kPageNavigated);
+  } else {
+    // Stop before committing the navigation. The observer should remain waiting
+    // on page stability.
+    ASSERT_TRUE(manager.WaitForResponse());
+    ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
+
+    // Complete the navigation. The controller should wait for load, then a
+    // visual update, then complete.
+    ASSERT_TRUE(manager.WaitForNavigationFinished());
+    ASSERT_TRUE(controller.WaitForState(State::kWaitForLoadCompletion));
+    ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
+    ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
+    ASSERT_TRUE(controller.WaitForState(State::kDone));
+    ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+  }
+}
+
+// Ensure that a navigation while the page stability monitor is in-progress
+// moves the controller to wait on the load.
+IN_PROC_BROWSER_TEST_P(ObservationDelayControllerNavigateTest,
+                       NavigateWithTooManyRestarts) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+  // Force the navigation count to be very large.
+  controller.SetNavigationCount(1000);
+
+  // Initiate a fetch to block page stability.
+  ASSERT_TRUE(InitiateFetchRequest());
+
+  // Start waiting on the controller. It should be blocked in page stability.
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
 
@@ -80,14 +134,14 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   ASSERT_TRUE(manager.WaitForResponse());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
 
-  // Complete the navigation. The controller should wait for load, then a visual
-  // update, then complete.
+  // Complete the navigation. The controller should wait for load, then a
+  // visual update, then complete.
   ASSERT_TRUE(manager.WaitForNavigationFinished());
   ASSERT_TRUE(controller.WaitForState(State::kWaitForLoadCompletion));
   ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
   ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
   ASSERT_TRUE(controller.WaitForState(State::kDone));
-  ASSERT_TRUE(result.Wait());
+  ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
 }
 
 IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
@@ -103,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   ASSERT_TRUE(InitiateFetchRequest());
 
   // Start waiting on the controller. It should be blocked in page stability.
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
@@ -119,7 +173,8 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 }
 
 // Test waiting on a new document load after waiting for the page to stabilize.
-IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
+IN_PROC_BROWSER_TEST_P(ObservationDelayControllerNavigateTest,
+                       LoadAfterStability) {
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
@@ -130,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
 
   // Start waiting, since a fetch is in progress we should be waiting for page
   // stability.
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
@@ -142,19 +197,27 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
                                                  embedded_test_server());
   ASSERT_TRUE(deferred_navigation.RunToDOMContentLoadedEvent());
 
-  // The controller should reach the loading state and stay there.
-  ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForLoadCompletion));
-  EXPECT_FALSE(result.IsReady());
+  if (IsParamFeatureEnabled()) {
+    ASSERT_TRUE(controller.WaitForState(State::kDone));
+    ASSERT_EQ(result.Get(), ObservationDelayController::Result::kPageNavigated);
+  } else {
+    // The controller should reach the loading state and stay there.
+    ASSERT_TRUE(
+        DoesReachSteadyState(controller, State::kWaitForLoadCompletion));
+    EXPECT_FALSE(result.IsReady());
 
-  // Unblock the subframe, the controller should now proceed through the
-  // remaining states.
-  ASSERT_TRUE(deferred_navigation.RunToLoadEvent());
+    // Unblock the subframe, the controller should now proceed through the
+    // remaining states.
+    ASSERT_TRUE(deferred_navigation.RunToLoadEvent());
 
-  ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
-  ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
-  ASSERT_TRUE(controller.WaitForState(State::kDone));
-  ASSERT_TRUE(result.Wait());
+    ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
+    ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
+    ASSERT_TRUE(controller.WaitForState(State::kDone));
+    ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+  }
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ObservationDelayControllerNavigateTest);
 
 // Ensure that putting a tab into the background while its waiting to stabilize
 // doesn't affect the PageStabilityMonitor.
@@ -173,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
   // Start waiting, since a fetch is in progress we should be waiting for page
   // stability.
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
@@ -237,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerLcpTest, NoDelayWhenLcpReady) {
                                             journal(), PageStabilityConfig());
 
   base::ElapsedTimer timer;
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
@@ -262,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerLcpTest,
                                             journal(), PageStabilityConfig());
 
   base::ElapsedTimer timer;
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
@@ -317,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayControllerExcludeAdRequestsTest,
   ASSERT_TRUE(web_contents()->IsLoading());
   ASSERT_FALSE(web_contents()->IsLoadingExcludingAdSubframes());
 
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   // Regardless of the feature status, the controller should move to wait for

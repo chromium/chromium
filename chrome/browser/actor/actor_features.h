@@ -89,6 +89,8 @@ extern const base::FeatureParam<
 // Kill switch for binding the created tab to the task that created it.
 BASE_DECLARE_FEATURE(kActorBindCreatedTabToTask);
 
+BASE_DECLARE_FEATURE(kActorRestartObservationDelayControllerOnNavigate);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_

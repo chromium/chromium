@@ -282,6 +282,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.ObservationDelay.DidNavigate" enum="Boolean"
+    expires_after="2026-08-11">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Records whether the ObservationDelayController's DidStartNaigation()
+    occurred. Recorded when the observation delay is completed.
+  </summary>
+</histogram>
+
 <histogram name="Actor.ObservationDelay.DidTimeout" enum="Boolean"
     expires_after="2026-08-11">
   <owner>linnan@google.com</owner>
