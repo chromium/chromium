@@ -92,6 +92,32 @@ namespace declarativeNetRequest {
     memoryLimitExceeded
   };
 
+  // <!-- Lists the types of condition currently supported by RuleCondition, to
+  // aid feature detection. Must be kept consistent with the RuleCondition
+  // dictionary. -->
+  enum RuleConditionKeys {
+    urlFilter,
+    regexFilter,
+    isUrlFilterCaseSensitive,
+    initiatorDomains,
+    excludedInitiatorDomains,
+    requestDomains,
+    excludedRequestDomains,
+    topDomains,
+    excludedTopDomains,
+    domains,
+    excludedDomains,
+    resourceTypes,
+    excludedResourceTypes,
+    requestMethods,
+    excludedRequestMethods,
+    domainType,
+    tabIds,
+    excludedTabIds,
+    responseHeaders,
+    excludedResponseHeaders
+  };
+
   // Describes a single static ruleset.
   dictionary Ruleset {
     // A non-empty string uniquely identifying the ruleset. IDs beginning with
@@ -190,6 +216,8 @@ namespace declarativeNetRequest {
     DOMString[]? excludedValues;
   };
 
+  // <!-- When adding/removing keys from this dictionary, also update the
+  // RuleConditionKeys enum. -->
   dictionary RuleCondition {
 
     // The pattern which is matched against the network request url.
