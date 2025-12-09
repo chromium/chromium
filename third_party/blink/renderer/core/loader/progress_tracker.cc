@@ -25,8 +25,6 @@
 
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 
-#include "build/build_config.h"
-#include "components/viz/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -36,7 +34,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -123,7 +120,7 @@ void ProgressTracker::SendFinalProgress() {
   if (progress_value_ == 1)
     return;
   progress_value_ = 1;
-  NotifyLoadProgressChanged();
+  frame_->GetLocalFrameHostRemote().DidChangeLoadProgress(progress_value_);
 }
 
 void ProgressTracker::WillStartLoading(uint64_t identifier,
@@ -217,7 +214,7 @@ void ProgressTracker::MaybeSendProgress() {
       progress_value_ - last_notified_progress_value_;
   if (notification_progress_delta >= kProgressNotificationInterval ||
       notified_progress_time_delta >= kProgressNotificationTimeInterval) {
-    NotifyLoadProgressChanged();
+    frame_->GetLocalFrameHostRemote().DidChangeLoadProgress(progress_value_);
     last_notified_progress_value_ = progress_value_;
     last_notified_progress_time_ = now;
   }
@@ -232,16 +229,6 @@ void ProgressTracker::CompleteProgress(uint64_t identifier) {
   UpdateProgressItem(item->value, progress_item.bytes_received,
                      progress_item.bytes_received);
   MaybeSendProgress();
-}
-
-void ProgressTracker::NotifyLoadProgressChanged() {
-  frame_->GetLocalFrameHostRemote().DidChangeLoadProgress(progress_value_);
-#if BUILDFLAG(IS_ANDROID)
-  if (::features::IsAndroidAnimatedProgressBarInVizEnabled() &&
-      frame_->IsMainFrame() && frame_->GetPage()) {
-    frame_->GetPage()->GetChromeClient().DidUpdateLoadProgress(progress_value_);
-  }
-#endif
 }
 
 }  // namespace blink

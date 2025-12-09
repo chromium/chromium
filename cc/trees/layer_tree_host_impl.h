@@ -36,7 +36,6 @@
 #include "cc/input/browser_controls_offset_manager_client.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/input_handler.h"
-#include "cc/input/progress_bar_offset_manager.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/metrics/average_lag_tracking_manager.h"
@@ -688,9 +687,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   BrowserControlsOffsetManager* browser_controls_manager() {
     return browser_controls_offset_manager_.get();
   }
-  ProgressBarOffsetManager* progress_bar_manager() {
-    return progress_bar_offset_manager_.get();
-  }
   const GlobalStateThatImpactsTilePriority& global_tile_state() {
     return global_tile_state_;
   }
@@ -1184,7 +1180,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   std::unique_ptr<BrowserControlsOffsetManager>
       browser_controls_offset_manager_;
-  std::unique_ptr<ProgressBarOffsetManager> progress_bar_offset_manager_;
 
   std::unique_ptr<PageScaleAnimation> page_scale_animation_;
 
