@@ -169,6 +169,12 @@ CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
                              /*context_provider_wrapper=*/nullptr,
                              /*delegate=*/nullptr) {}
 
+bool CanvasResourceProviderExternalBitmap::IsGpuContextLost() const {
+  auto* raster_interface = RasterInterface();
+  return !raster_interface ||
+         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+}
+
 bool CanvasResourceProviderExternalBitmap::IsValid() const {
   if (!surface_) {
     surface_ = CreateSkSurface();
