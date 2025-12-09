@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller.h"
+#import "ios/chrome/browser/data_import/ui/data_import_invalid_passwords_view_controller.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
@@ -30,15 +31,14 @@
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface CredentialImportCoordinator () <
     CredentialImportMediatorDelegate,
+    CredentialImportViewControllerDelegate,
     PasskeyKeychainProviderBridgeDelegate,
-    PasskeyWelcomeScreenViewControllerDelegate,
-    PromoStyleViewControllerDelegate>
+    PasskeyWelcomeScreenViewControllerDelegate>
 @end
 
 @implementation CredentialImportCoordinator {
@@ -135,7 +135,7 @@
   [self presentViewController:wrapper];
 }
 
-#pragma mark - PromoStyleViewControllerDelegate
+#pragma mark - CredentialImportViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
   switch (_mediator.importStage) {
@@ -182,6 +182,16 @@
 
 - (void)didTapDismissButton {
   [self.delegate credentialImportCoordinatorDidFinish:self];
+}
+
+- (void)didTapInfoButton {
+  CHECK_GT(_mediator.invalidPasswords.count, 0u);
+  DataImportInvalidPasswordsViewController* invalidPasswordsViewController =
+      [[DataImportInvalidPasswordsViewController alloc]
+          initWithInvalidPasswords:_mediator.invalidPasswords];
+  [self presentViewController:
+            [[UINavigationController alloc]
+                initWithRootViewController:invalidPasswordsViewController]];
 }
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate

@@ -23,10 +23,16 @@ constexpr int kExpectedItemCount = 2;
 
 }  // namespace
 
+@interface CredentialImportViewController () <UITableViewDelegate>
+@end
+
 @implementation CredentialImportViewController {
   // Displays the status of importing specific credential types.
   ImportDataItemTableView* _tableView;
 }
+
+// Overrides property of super class (PromoStyleViewControllerDelegate).
+@dynamic delegate;
 
 - (void)viewDidLoad {
   // TODO(crbug.com/450982128): Use correct banner.
@@ -39,6 +45,14 @@ constexpr int kExpectedItemCount = 2;
                            target:self
                            action:@selector(cancelButtonTapped)];
   [super viewDidLoad];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    accessoryButtonTappedForRowWithIndexPath:(NSIndexPath*)indexPath {
+  CHECK_EQ(tableView, _tableView);
+  [self.delegate didTapInfoButton];
 }
 
 #pragma mark - CredentialImportConsumer
@@ -88,6 +102,7 @@ constexpr int kExpectedItemCount = 2;
 - (void)createTableView {
   _tableView =
       [[ImportDataItemTableView alloc] initWithItemCount:kExpectedItemCount];
+  _tableView.delegate = self;
   UIView* specificContentView = self.specificContentView;
   [specificContentView addSubview:_tableView];
   [NSLayoutConstraint activateConstraints:@[

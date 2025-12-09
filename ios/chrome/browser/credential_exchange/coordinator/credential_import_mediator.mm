@@ -102,12 +102,14 @@
 }
 
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results {
-  // TODO(crbug.com/450982128): Handle displaying errors.
-  [_consumer
-      setImportDataItem:[[ImportDataItem alloc]
-                            initWithType:ImportDataItemType::kPasswords
-                                  status:ImportDataItemImportStatus::kImported
-                                   count:results.number_imported]];
+  self.invalidPasswords =
+      [PasswordImportItem passwordImportItemsFromImportResults:results];
+  ImportDataItem* item =
+      [[ImportDataItem alloc] initWithType:ImportDataItemType::kPasswords
+                                    status:ImportDataItemImportStatus::kImported
+                                     count:results.number_imported];
+  item.invalidCount = self.invalidPasswords.count;
+  [_consumer setImportDataItem:item];
 }
 
 - (void)onPasskeysImported:(int)passkeysImported {

@@ -8,9 +8,20 @@
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+@protocol
+    CredentialImportViewControllerDelegate <PromoStyleViewControllerDelegate>
+
+// Called when user tapped the info button.
+- (void)didTapInfoButton;
+
+@end
+
 // Main screen for credential import, displaying different stages of import.
 @interface CredentialImportViewController
     : PromoStyleViewController <CredentialImportConsumer>
+
+// Delegate for handling dismissal of the view.
+@property(nonatomic, weak) id<CredentialImportViewControllerDelegate> delegate;
 
 @end
 
