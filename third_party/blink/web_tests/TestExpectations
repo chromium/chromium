@@ -5914,12 +5914,6 @@ crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate-des
 crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-scale.html [ Failure ]
 crbug.com/1322629 external/wpt/paint-timing/fcp-only/fcp-invisible-scale-transition.html [ Failure ]
 
-
-# Sheriff 2019-03-04
-# Also crbug.com/1044418
-crbug.com/41444682 [ Linux Release ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-3.js [ Failure Pass ]
-
-
 # Caused a revert of a good change.
 crbug.com/931533 media/video-played-collapse.html [ Failure Pass ]
 
@@ -6005,9 +5999,6 @@ crbug.com/979336 [ Mac ] fast/dynamic/anonymous-block-orphaned-lines.html [ Fail
 #   - WebRtcAudioBrowserTest.EstablishAudioOnlyCallAndVerifyGetSynchronizationSourcesWorks
 #   - WebRtcBrowserTest.EstablishVideoOnlyCallAndVerifyGetSynchronizationSourcesWorks
 crbug.com/988432 external/wpt/webrtc/RTCRtpReceiver-getSynchronizationSources.https.html [ Pass Timeout ]
-
-# Sheriff 2019-07-29
-crbug.com/41444682 [ Release Win ] http/tests/devtools/elements/shadow/elements-panel-shadow-selection-on-refresh-3.js [ Failure Pass Timeout ]
 
 #Sherrif 2019-08-16
 crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
