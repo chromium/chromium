@@ -20,16 +20,24 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_edit_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_card_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -334,6 +342,183 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
   // Verify that the user action was NOT recorded.
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "AutofillCreditCardDeletedAndHadCvc"));
+}
+
+class AutofillAddCreditCardViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
+ protected:
+  AutofillAddCreditCardViewControllerTest() {
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnableCvcStorageAndFilling);
+  }
+
+  LegacyChromeTableViewController* InstantiateController() override {
+    mock_delegate_ =
+        OCMProtocolMock(@protocol(AddCreditCardViewControllerDelegate));
+    return [[AutofillAddCreditCardViewController alloc]
+        initWithDelegate:mock_delegate_];
+  }
+
+  AutofillAddCreditCardViewController* GetAddController() {
+    return base::apple::ObjCCastStrict<AutofillAddCreditCardViewController>(
+        controller());
+  }
+
+  // Helper to find item by UI Type (public property)
+  AutofillCreditCardEditItem* GetItem(AutofillCreditCardUIType uiType) {
+    TableViewModel* model = [controller() tableViewModel];
+    for (NSInteger section = 0; section < [model numberOfSections]; ++section) {
+      NSInteger itemCount = [model numberOfItemsInSection:section];
+      for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+        NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
+                                                inSection:section];
+        id item = [model itemAtIndexPath:path];
+        AutofillCreditCardEditItem* editItem =
+            base::apple::ObjCCast<AutofillCreditCardEditItem>(item);
+        if (editItem && editItem.autofillCreditCardUIType == uiType) {
+          return editItem;
+        }
+      }
+    }
+    return nil;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  id mock_delegate_;
+};
+
+TEST_F(AutofillAddCreditCardViewControllerTest,
+       AccessibilityLabel_InvalidInput) {
+  CreateController();
+  CheckController();
+
+  AutofillCreditCardEditItem* item = GetItem(AutofillCreditCardUIType::kNumber);
+  ASSERT_TRUE(item);
+
+  // Mock invalid result
+  OCMStub([mock_delegate_ addCreditCardViewController:[OCMArg any]
+                              isValidCreditCardNumber:[OCMArg any]])
+      .andReturn(NO);
+
+  item.textFieldValue = @"1234";
+  // Cast to delegate to call protocol method
+  [(id<TableViewTextEditItemDelegate>)GetAddController()
+      tableViewItemDidChange:item];
+
+  // Verify accessibility label contains the error message
+  NSString* error = l10n_util::GetNSString(
+      IDS_IOS_AUTOFILL_INVALID_CARD_NUMBER_ACCESSIBILITY_ANNOUNCEMENT);
+  EXPECT_TRUE([item.cellAccessibilityLabel containsString:error]);
+}
+
+TEST_F(AutofillAddCreditCardViewControllerTest,
+       AccessibilityLabel_ValidInputWithPlaceholder) {
+  CreateController();
+  CheckController();
+  AutofillCreditCardEditItem* item =
+      GetItem(AutofillCreditCardUIType::kExpMonth);
+  ASSERT_TRUE(item);
+
+  OCMStub([mock_delegate_ addCreditCardViewController:[OCMArg any]
+                     isValidCreditCardExpirationMonth:[OCMArg any]])
+      .andReturn(YES);
+
+  item.textFieldValue = @"12";
+  [(id<TableViewTextEditItemDelegate>)GetAddController()
+      tableViewItemDidChange:item];
+
+  // Verify label contains placeholder
+  EXPECT_TRUE(item.textFieldPlaceholder.length > 0);
+  EXPECT_TRUE(
+      [item.cellAccessibilityLabel containsString:item.textFieldPlaceholder]);
+}
+
+class AutofillCreditCardEditTableViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
+ protected:
+  AutofillCreditCardEditTableViewControllerTest() {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
+                              ios::WebDataServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnableCvcStorageAndFilling);
+  }
+
+  LegacyChromeTableViewController* InstantiateController() override {
+    autofill::CreditCard credit_card =
+        autofill::CreditCard(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                             "https://www.example.com/");
+
+    return [[AutofillCreditCardEditTableViewController alloc]
+         initWithCreditCard:credit_card
+        personalDataManager:autofill::PersonalDataManagerFactory::GetForProfile(
+                                profile_.get())];
+  }
+
+  AutofillCreditCardEditTableViewController* GetEditController() {
+    return base::apple::ObjCCastStrict<
+        AutofillCreditCardEditTableViewController>(controller());
+  }
+
+  AutofillCreditCardEditItem* GetItem(AutofillCreditCardUIType uiType) {
+    TableViewModel* model = [controller() tableViewModel];
+    for (NSInteger section = 0; section < [model numberOfSections]; ++section) {
+      NSInteger itemCount = [model numberOfItemsInSection:section];
+      for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+        NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
+                                                inSection:section];
+        id item = [model itemAtIndexPath:path];
+        AutofillCreditCardEditItem* editItem =
+            base::apple::ObjCCast<AutofillCreditCardEditItem>(item);
+        if (editItem && editItem.autofillCreditCardUIType == uiType) {
+          return editItem;
+        }
+      }
+    }
+    return nil;
+  }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<Browser> browser_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AutofillCreditCardEditTableViewControllerTest,
+       AccessibilityLabel_InvalidCVC) {
+  CreateController();
+  CheckController();
+  // Use kSecurityCode for CVC
+  AutofillCreditCardEditItem* item =
+      GetItem(AutofillCreditCardUIType::kSecurityCode);
+  ASSERT_TRUE(item);
+
+  item.textFieldValue = @"1";
+  [(id<TableViewTextEditItemDelegate>)GetEditController()
+      tableViewItemDidChange:item];
+
+  NSString* error = l10n_util::GetNSString(
+      IDS_IOS_AUTOFILL_INVALID_CVC_ACCESSIBILITY_ANNOUNCEMENT);
+  EXPECT_TRUE([item.cellAccessibilityLabel containsString:error]);
+}
+
+TEST_F(AutofillCreditCardEditTableViewControllerTest,
+       AccessibilityLabel_ValidCVCWithPlaceholder) {
+  CreateController();
+  CheckController();
+  AutofillCreditCardEditItem* item =
+      GetItem(AutofillCreditCardUIType::kSecurityCode);
+  ASSERT_TRUE(item);
+
+  item.textFieldValue = @"123";
+  [(id<TableViewTextEditItemDelegate>)GetEditController()
+      tableViewItemDidChange:item];
+
+  // Should contain "Optional" placeholder
+  EXPECT_TRUE(
+      [item.cellAccessibilityLabel containsString:item.textFieldPlaceholder]);
 }
 
 }  // namespace

@@ -34,6 +34,8 @@ source_set("autofill") {
     "autofill_profile_table_view_controller.mm",
     "autofill_settings_profile_edit_table_view_controller.h",
     "autofill_settings_profile_edit_table_view_controller.mm",
+    "autofill_settings_util.h",
+    "autofill_settings_util.mm",
   ]
   deps = [
     ":constants",
@@ -134,6 +136,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/ui_bundled:util",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled:test_support",

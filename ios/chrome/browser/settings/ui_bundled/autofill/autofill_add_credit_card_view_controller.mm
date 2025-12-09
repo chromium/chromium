@@ -8,9 +8,11 @@
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -213,6 +215,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // the user types a character that makes the form valid/invalid.
   [self updateCreditCardData];
 
+  BOOL isValid = [self isItemValid:tableViewTextEditItem];
+
+  // Update Accessibility Label.
+  NSString* error =
+      isValid ? nil : [self errorMessageForItem:tableViewTextEditItem];
+  [AutofillSettingsUtil updateAccessibilityLabelForItem:tableViewTextEditItem
+                                           isInputValid:isValid
+                                           errorMessage:error];
+
   self.navigationItem.rightBarButtonItem.enabled =
       [_delegate addCreditCardViewController:self
                      isValidCreditCardNumber:_cardNumber
@@ -233,40 +244,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Considers a textfield to be valid if it has no data.
   if (tableViewTextEditItem.textFieldValue.length == 0) {
     tableViewTextEditItem.hasValidText = YES;
+    tableViewTextEditItem.cellAccessibilityLabel = nil;
     [self reconfigureCellsForItems:@[ tableViewTextEditItem ]];
     return;
   }
 
-  CHECK_NE(tableViewTextEditItem.type, ItemTypeUseCameraButton);
-  switch (tableViewTextEditItem.type) {
-    case ItemTypeCardNumber:
-      tableViewTextEditItem.hasValidText =
-          [_delegate addCreditCardViewController:self
-                         isValidCreditCardNumber:_cardNumber];
-      break;
-    case ItemTypeExpirationMonth:
-      tableViewTextEditItem.hasValidText =
-          [_delegate addCreditCardViewController:self
-                isValidCreditCardExpirationMonth:_expirationMonth];
-      break;
-    case ItemTypeExpirationYear:
-      tableViewTextEditItem.hasValidText =
-          [_delegate addCreditCardViewController:self
-                 isValidCreditCardExpirationYear:_expirationYear];
-      break;
-    case ItemTypeCardNickname:
-      tableViewTextEditItem.hasValidText =
-          [_delegate addCreditCardViewController:self
-                             isValidCardNickname:_cardNickname];
-      break;
-    case ItemTypeCardCvc:
-      tableViewTextEditItem.hasValidText =
-          [_delegate addCreditCardViewController:self isValidCardCvc:_cardCvc];
-      break;
-    default:
-      // For the 'Name on card' and 'Security code' textfield.
-      tableViewTextEditItem.hasValidText = YES;
-  }
+  BOOL isValid = [self isItemValid:tableViewTextEditItem];
+
+  // Update Visual State
+  tableViewTextEditItem.hasValidText = isValid;
+
+  // Update Accessibility Label
+  NSString* error =
+      isValid ? nil : [self errorMessageForItem:tableViewTextEditItem];
+  [AutofillSettingsUtil updateAccessibilityLabelForItem:tableViewTextEditItem
+                                           isInputValid:isValid
+                                           errorMessage:error];
+
   [self reconfigureCellsForItems:@[ tableViewTextEditItem ]];
 }
 
@@ -511,4 +505,37 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cardCvcItem;
 }
 
+#pragma mark - Private Helpers
+
+// Helper to get the localized error message for the item type.
+- (NSString*)errorMessageForItem:(TableViewTextEditItem*)item {
+  AutofillCreditCardEditItem* editItem =
+      base::apple::ObjCCastStrict<AutofillCreditCardEditItem>(item);
+
+  return [AutofillSettingsUtil
+      errorMessageForUIType:editItem.autofillCreditCardUIType];
+}
+
+// Helper to check if the text entered in the item is valid.
+- (BOOL)isItemValid:(TableViewTextEditItem*)item {
+  switch (item.type) {
+    case ItemTypeCardNumber:
+      return [_delegate addCreditCardViewController:self
+                            isValidCreditCardNumber:_cardNumber];
+    case ItemTypeExpirationMonth:
+      return [_delegate addCreditCardViewController:self
+                   isValidCreditCardExpirationMonth:_expirationMonth];
+    case ItemTypeExpirationYear:
+      return [_delegate addCreditCardViewController:self
+                    isValidCreditCardExpirationYear:_expirationYear];
+    case ItemTypeCardNickname:
+      return [_delegate addCreditCardViewController:self
+                                isValidCardNickname:_cardNickname];
+    case ItemTypeCardCvc:
+      return [_delegate addCreditCardViewController:self
+                                     isValidCardCvc:_cardCvc];
+    default:
+      return YES;
+  }
+}
 @end

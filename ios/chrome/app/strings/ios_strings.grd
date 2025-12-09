@@ -576,11 +576,17 @@
       <message name="IDS_IOS_AUTOFILL_INVALID_CARDHOLDER_NAME_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the credit card holder name is invalid. [iOS only]">
         Invalid cardholder name
       </message>
+      <message name="IDS_IOS_AUTOFILL_INVALID_CARD_NUMBER_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the credit card number is invalid. [iOS only]">
+        Invalid card number
+      </message>
       <message name="IDS_IOS_AUTOFILL_INVALID_CVC_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the credit card security code is invalid. [iOS only]">
         Invalid security code
       </message>
       <message name="IDS_IOS_AUTOFILL_INVALID_EXPIRATION_DATE_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the credit card expiration date is invalid. [iOS only]">
         Invalid expiration date
+      </message>
+      <message name="IDS_IOS_AUTOFILL_INVALID_NICKNAME_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement read by Voice Over when the credit card nickname is invalid. [iOS only]">
+        Invalid nickname
       </message>
       <message name="IDS_IOS_AUTOFILL_NICKNAME" desc="Title of the field representing the user defined nickname of a credit card. [Length: 15em] [iOS only]">
         Card nickname
