@@ -30,6 +30,17 @@ AwWebPerformanceMetricsObserver::OnFencedFramesStart(
   return STOP_OBSERVING;
 }
 
+void AwWebPerformanceMetricsObserver::OnFirstContentfulPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  content::WebContents* web_contents = GetDelegate().GetWebContents();
+  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
+  if (aw_contents) {
+    aw_contents->GetNavigationClient()->OnFirstContentfulPaint(
+        web_contents->GetPrimaryPage(),
+        timing.paint_timing->first_contentful_paint.value());
+  }
+}
+
 void AwWebPerformanceMetricsObserver::OnTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::PageLoadTiming& timing) {

@@ -48,7 +48,8 @@ public class NavigateApiTest extends AwParameterizedTest {
     private String mPage2Url;
 
     private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
-    private final TestAwNavigationListener mNavigationClient = new TestAwNavigationListener();
+    private final TestAwNavigationListener mNavigationClient =
+            new TestAwNavigationListener(new CallbackHelper());
     private CallbackHelper mOnPageLoadFinished;
 
     public NavigateApiTest(AwSettingsMutation param) {

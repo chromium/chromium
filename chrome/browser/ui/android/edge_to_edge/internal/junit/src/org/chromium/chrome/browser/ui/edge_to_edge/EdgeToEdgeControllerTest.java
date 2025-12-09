@@ -1394,19 +1394,6 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    public void firstContentfulPaint_uploadDebuggingReport() {
-        // Standard setup of a Web Tab ToEdge
-        when(mTab.isNativePage()).thenReturn(false);
-        mTabProvider.set(mTab);
-        verifyInteractions(mTab);
-
-        WebContentsObserver webContentsObserver =
-                mEdgeToEdgeControllerImpl.getWebContentsObserver();
-        assertNotNull(webContentsObserver);
-        webContentsObserver.firstContentfulPaintInPrimaryMainFrame(null, /* durationUs= */ 0);
-    }
-
-    @Test
     public void pushSafeAreaInsetUpdate_notDrawingToEdge() {
         mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(false);
         doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();

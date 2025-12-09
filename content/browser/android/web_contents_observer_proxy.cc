@@ -210,17 +210,6 @@ void WebContentsObserverProxy::DOMContentLoaded(
   }
 }
 
-void WebContentsObserverProxy::OnFirstContentfulPaintInPrimaryMainFrame() {
-  Page& primaryPage = web_contents()->GetPrimaryPage();
-  std::optional<base::TimeDelta> duration =
-      static_cast<PageImpl&>(primaryPage)
-          .GetFirstContentfulPaintInMainDocumentDuration();
-  DCHECK(duration);
-  Java_WebContentsObserverProxy_firstContentfulPaintInPrimaryMainFrame(
-      AttachCurrentThread(), java_observer_, primaryPage.GetJavaPage(),
-      duration->InMicroseconds());
-}
-
 void WebContentsObserverProxy::NavigationEntryCommitted(
     const LoadCommittedDetails& load_details) {
   JNIEnv* env = AttachCurrentThread();

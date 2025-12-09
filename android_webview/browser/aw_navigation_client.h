@@ -21,6 +21,8 @@ class AwNavigationClient {
   AwNavigationClient(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
   ~AwNavigationClient() = default;
 
+  void OnFirstContentfulPaint(content::Page& page,
+                              const base::TimeDelta& duration);
   void OnLargestContentfulPaint(content::Page& page,
                                 const base::TimeDelta& duration);
   void OnPerformanceMark(content::Page&,

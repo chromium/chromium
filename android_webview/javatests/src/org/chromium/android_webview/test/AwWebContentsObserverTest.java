@@ -6,9 +6,6 @@ package org.chromium.android_webview.test;
 
 import androidx.test.filters.SmallTest;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,6 +18,7 @@ import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwNavigation;
 import org.chromium.android_webview.AwPage;
 import org.chromium.android_webview.AwWebContentsObserver;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
@@ -28,12 +26,8 @@ import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
-import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
-
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 /** Tests for the AwWebContentsObserver class. */
 @RunWith(Parameterized.class)
@@ -45,31 +39,11 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
     private TestAwNavigationListener mNavigationListener;
     private AwTestContainerView mTestContainerView;
     private AwWebContentsObserver mWebContentsObserver;
-    private TestWebServer mWebServer;
 
     private GURL mExampleURL;
     private GURL mExampleURLWithFragment;
     private GURL mSyncURL;
     private GURL mUnreachableWebDataUrl;
-
-    private static final String JS_OBJECT_NAME = "testListener";
-    private static final String WEB_PERFORMANCE_METRICS_HTML =
-            """
-                <html>
-                <head>
-                <title>Hello, World!</title>
-                <script>
-                        const observer = new PerformanceObserver((list) => {
-                                testListener.postMessage(JSON.stringify(list.getEntries()));
-                        });
-                        observer.observe({entryTypes: ["paint"]});
-                </script>
-                </head>
-                <body>
-                Hello, World!
-                </body>
-                </html>
-            """;
 
     public AwWebContentsObserverTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -78,23 +52,15 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
     @Before
     public void setUp() throws Exception {
         mContentsClient = new TestAwContentsClient();
-        mNavigationListener = new TestAwNavigationListener();
+        mNavigationListener = new TestAwNavigationListener(new CallbackHelper());
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mTestContainerView.getAwContents().getNavigationClient().addListener(mNavigationListener);
         mWebContentsObserver =
                 mTestContainerView.getAwContents().getWebContentsObserverForTesting();
-        mWebServer = TestWebServer.start();
         mUnreachableWebDataUrl = new GURL(AwContentsStatics.getUnreachableWebDataUrl());
         mExampleURL = new GURL("http://www.example.com/");
         mExampleURLWithFragment = new GURL("http://www.example.com/#anchor");
         mSyncURL = new GURL("http://example.org/");
-    }
-
-    @After
-    public void tearDown() {
-        if (mWebServer != null) {
-            mWebServer.shutdown();
-        }
     }
 
     @Test
@@ -264,48 +230,6 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 mExampleURL.getSpec(),
                 doUpdateVisitedHistoryHelper.getUrl());
         Assert.assertEquals(true, doUpdateVisitedHistoryHelper.getIsReload());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testFirstContentfulPaint() throws Throwable {
-        mActivityTestRule
-                .getAwSettingsOnUiThread(mTestContainerView.getAwContents())
-                .setJavaScriptEnabled(true);
-
-        TestWebMessageListener listener = new TestWebMessageListener();
-        TestWebMessageListener.addWebMessageListenerOnUiThread(
-                mTestContainerView.getAwContents(), JS_OBJECT_NAME, new String[] {"*"}, listener);
-
-        String testPage =
-                mWebServer.setResponse(
-                        "/web_performance_metrics.html", WEB_PERFORMANCE_METRICS_HTML, null);
-
-        mActivityTestRule.loadUrlSync(
-                mTestContainerView.getAwContents(),
-                mContentsClient.getOnPageFinishedHelper(),
-                testPage);
-
-        // Wait for paint event to occur and js fcp load time to be returned via postmessage
-        TestWebMessageListener.Data data = listener.waitForOnPostMessage();
-
-        // Note: js value is in milliseconds, navigation client value is in microseconds
-        JSONObject jsFCPTimeData = new JSONArray(data.getAsString()).getJSONObject(1);
-        Duration jsFCP = Duration.ofMillis((long) jsFCPTimeData.getDouble("startTime"));
-        Long navigationFCPTime = mNavigationListener.getLastFirstContentfulPaintLoadTime();
-        Assert.assertNotNull(navigationFCPTime);
-        Duration navigationFCP = Duration.of(navigationFCPTime, ChronoUnit.MICROS);
-
-        // Note: The two time values may differ slightly. This is primarily due to
-        // coarsening for security reasons. We check here for a difference of 5 milliseconds
-        // as at a minimum we need to account for paint timing coarsening to the next multiple of
-        // 4 milliseconds, or coarser, when cross-origin isolated capability is false.
-        // See: https://w3c.github.io/paint-timing/#mark-paint-timing
-        // and https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp
-        // and
-        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/paint_timing.cc
-        Assert.assertTrue(jsFCP.minus(navigationFCP).abs().toMillis() < 5);
     }
 
     private void simulateNavigation(

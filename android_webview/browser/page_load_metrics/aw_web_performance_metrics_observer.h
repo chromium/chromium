@@ -38,6 +38,9 @@ class AwWebPerformanceMetricsObserver
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
 
+  void OnFirstContentfulPaintInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+
   void OnTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;

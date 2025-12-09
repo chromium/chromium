@@ -21,6 +21,14 @@ AwNavigationClient::AwNavigationClient(JNIEnv* env,
                                        const jni_zero::JavaRef<jobject>& obj)
     : java_ref_(env, obj) {}
 
+void AwNavigationClient::OnFirstContentfulPaint(
+    content::Page& page,
+    const base::TimeDelta& duration) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AwNavigationClient_onFirstContentfulPaint(
+      env, java_ref_.get(env), page.GetJavaPage(), duration.InMicroseconds());
+}
+
 void AwNavigationClient::OnLargestContentfulPaint(
     content::Page& page,
     const base::TimeDelta& duration) {

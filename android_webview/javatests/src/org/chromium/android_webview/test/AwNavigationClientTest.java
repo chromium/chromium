@@ -4,6 +4,10 @@
 
 package org.chromium.android_webview.test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+
 import androidx.test.filters.SmallTest;
 
 import org.json.JSONArray;
@@ -17,10 +21,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /** Tests for the AwNavigationClient class. */
@@ -32,6 +39,7 @@ public class AwNavigationClientTest extends AwParameterizedTest {
 
     private TestAwContentsClient mContentsClient;
     private TestAwNavigationListener mNavigationListener;
+    private CallbackHelper mCallbackHelper;
     private AwTestContainerView mTestContainerView;
     private TestWebServer mWebServer;
 
@@ -48,6 +56,13 @@ public class AwNavigationClientTest extends AwParameterizedTest {
                         <div id="second-lcp" style="font-size: 1.5em"></div>
                 </body>
                 </html>
+            """;
+    private static final String WEB_PERFORMANCE_FCP_JS =
+            """
+                const observer = new PerformanceObserver((list) => {
+                        testListener.postMessage(JSON.stringify(list.getEntries()));
+                });
+                observer.observe({entryTypes: ["paint"]});
             """;
     private static final String WEB_PERFORMANCE_LCP_JS =
             """
@@ -86,7 +101,8 @@ public class AwNavigationClientTest extends AwParameterizedTest {
     @Before
     public void setUp() throws Exception {
         mContentsClient = new TestAwContentsClient();
-        mNavigationListener = new TestAwNavigationListener();
+        mCallbackHelper = new CallbackHelper();
+        mNavigationListener = new TestAwNavigationListener(mCallbackHelper);
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mTestContainerView.getAwContents().getNavigationClient().addListener(mNavigationListener);
         mWebServer = TestWebServer.start();
@@ -97,6 +113,56 @@ public class AwNavigationClientTest extends AwParameterizedTest {
         if (mWebServer != null) {
             mWebServer.shutdown();
         }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFirstContentfulPaint() throws Throwable {
+        mActivityTestRule
+                .getAwSettingsOnUiThread(mTestContainerView.getAwContents())
+                .setJavaScriptEnabled(true);
+
+        TestWebMessageListener listener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                mTestContainerView.getAwContents(), JS_OBJECT_NAME, new String[] {"*"}, listener);
+
+        String testPage =
+                mWebServer.setResponse(
+                        "/web_performance_metrics.html",
+                        String.format(WEB_PERFORMANCE_METRICS_HTML, WEB_PERFORMANCE_FCP_JS),
+                        null);
+
+        int callBackCount = mCallbackHelper.getCallCount();
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                testPage);
+
+        // Wait for paint event to occur and js fcp load time to be returned via postmessage
+        TestWebMessageListener.Data data = listener.waitForOnPostMessage();
+
+        // Note: js value is in milliseconds, navigation client value is in microseconds
+        JSONObject jsFCPTimeData = new JSONArray(data.getAsString()).getJSONObject(1);
+        Duration jsFCP = Duration.ofMillis((long) jsFCPTimeData.getDouble("startTime"));
+
+        // Wait for FCP callback on the listener
+        mCallbackHelper.waitForCallback(callBackCount, 1);
+        Long navigationFCPTime = mNavigationListener.getLastFirstContentfulPaintLoadTime();
+        Assert.assertNotNull(navigationFCPTime);
+        Duration navigationFCP = Duration.of(navigationFCPTime, ChronoUnit.MICROS);
+
+        // Note: The two time values may differ slightly. This is primarily due to
+        // coarsening for security reasons. We check here for a difference of 5 milliseconds
+        // as at a minimum we need to account for paint timing coarsening to the next multiple of
+        // 4 milliseconds, or coarser, when cross-origin isolated capability is false.
+        // See: https://w3c.github.io/paint-timing/#mark-paint-timing
+        // and https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp
+        // and
+        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/paint_timing.cc
+        long diffFCP = jsFCP.minus(navigationFCP).toMillis();
+        assertThat(diffFCP, lessThan(5L));
+        assertThat(diffFCP, greaterThan(-5L));
     }
 
     @Test
@@ -149,7 +215,9 @@ public class AwNavigationClientTest extends AwParameterizedTest {
         for (int i = 0; i < expectedNumLCPs; i++) {
             JSONObject jsLCP = jsLCPs.getJSONObject(i);
             Long listenerLCP = listenerLCPs.get(i);
-            Assert.assertTrue(Math.abs(jsLCP.getLong("startTime") - listenerLCP) < 5);
+            long diffLCP = jsLCP.getLong("startTime") - listenerLCP;
+            assertThat(diffLCP, lessThan(5L));
+            assertThat(diffLCP, greaterThan(-5L));
         }
     }
 
