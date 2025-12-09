@@ -979,7 +979,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           });
     };
 
-    const LayoutUnit flex_base_border_box = ([&]() -> LayoutUnit {
+    const LayoutUnit base_border_size = ([&]() -> LayoutUnit {
       std::optional<Length> auto_flex_basis_length;
 
       if (flex_basis.HasAuto()) {
@@ -1025,32 +1025,12 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     // https://www.w3.org/TR/css-flexbox-1/#algo-main-item
     // Blink's FlexibleBoxAlgorithm expects it to be content + scrollbar widths,
     // but no padding or border.
-    DCHECK_GE(flex_base_border_box, main_axis_border_padding);
+    DCHECK_GE(base_border_size, main_axis_border_padding);
     const LayoutUnit base_content_size =
-        flex_base_border_box - main_axis_border_padding;
+        base_border_size - main_axis_border_padding;
 
     std::optional<Length> auto_min_length;
     if (ShouldApplyAutoMinSize(child)) {
-      const LayoutUnit content_size_suggestion = ([&]() -> LayoutUnit {
-        const LayoutUnit content_size =
-            is_main_axis_inline_axis
-                ? MinMaxSizesFunc(SizeType::kContent).sizes.min_size
-                : BlockSizeFunc(SizeType::kContent);
-
-        // For non-replaced elements with an aspect-ratio ensure the size
-        // provided by the aspect-ratio encompasses the min-intrinsic size.
-        if (!child.IsReplaced() && !child_style.AspectRatio().IsAuto()) {
-          return std::max(
-              content_size,
-              is_main_axis_inline_axis
-                  ? MinMaxSizesFunc(SizeType::kIntrinsic).sizes.min_size
-                  : BlockSizeFunc(SizeType::kIntrinsic));
-        }
-
-        return content_size;
-      })();
-      DCHECK_GE(content_size_suggestion, main_axis_border_padding);
-
       const LayoutUnit specified_size_suggestion = ([&]() -> LayoutUnit {
         const Length& specified_length_in_main_axis =
             is_horizontal_flow_ ? child_style.Width() : child_style.Height();
@@ -1073,6 +1053,26 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         return resolved_size == kIndefiniteSize ? LayoutUnit::Max()
                                                 : resolved_size;
       })();
+
+      const LayoutUnit content_size_suggestion = ([&]() -> LayoutUnit {
+        const LayoutUnit content_size =
+            is_main_axis_inline_axis
+                ? MinMaxSizesFunc(SizeType::kContent).sizes.min_size
+                : BlockSizeFunc(SizeType::kContent);
+
+        // For non-replaced elements with an aspect-ratio ensure the size
+        // provided by the aspect-ratio encompasses the min-intrinsic size.
+        if (!child.IsReplaced() && !child_style.AspectRatio().IsAuto()) {
+          return std::max(
+              content_size,
+              is_main_axis_inline_axis
+                  ? MinMaxSizesFunc(SizeType::kIntrinsic).sizes.min_size
+                  : BlockSizeFunc(SizeType::kIntrinsic));
+        }
+
+        return content_size;
+      })();
+      DCHECK_GE(content_size_suggestion, main_axis_border_padding);
 
       LayoutUnit auto_min_size =
           std::min(specified_size_suggestion, content_size_suggestion);
