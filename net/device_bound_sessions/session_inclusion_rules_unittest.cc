@@ -7,12 +7,15 @@
 #include <initializer_list>
 
 #include "base/strings/string_util.h"
+#include "base/test/gmock_expected_support.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+using base::test::ErrorIs;
 
 namespace net::device_bound_sessions {
 
@@ -59,19 +62,15 @@ class SessionInclusionRulesTest : public ::testing::Test {
   }
 
   void CheckMayIncludeSite(bool expected_may_include_site) {
-    auto inclusion_rules_or_error =
-        SessionInclusionRules::Create(origin_, params_, GURL());
-    ASSERT_TRUE(inclusion_rules_or_error.has_value());
-    SessionInclusionRules& rules = *inclusion_rules_or_error;
+    ASSERT_OK_AND_ASSIGN(
+        auto rules, SessionInclusionRules::Create(origin_, params_, GURL()));
     EXPECT_EQ(rules.may_include_site_for_testing(), expected_may_include_site);
   }
 
   void CheckEvaluateUrlTestCases(
       std::initializer_list<EvaluateUrlTestCase> test_cases) {
-    auto inclusion_rules_or_error =
-        SessionInclusionRules::Create(origin_, params_, GURL());
-    ASSERT_TRUE(inclusion_rules_or_error.has_value());
-    SessionInclusionRules& rules = *inclusion_rules_or_error;
+    ASSERT_OK_AND_ASSIGN(
+        auto rules, SessionInclusionRules::Create(origin_, params_, GURL()));
 
     for (const auto& test_case : test_cases) {
       SCOPED_TRACE(test_case.url);
@@ -82,24 +81,22 @@ class SessionInclusionRulesTest : public ::testing::Test {
 
   void CheckAddUrlRuleTestCases(
       std::initializer_list<AddUrlRuleTestCase> test_cases) {
-    auto inclusion_rules_or_error =
-        SessionInclusionRules::Create(origin_, params_, GURL());
-    ASSERT_TRUE(inclusion_rules_or_error.has_value());
+    EXPECT_OK(SessionInclusionRules::Create(origin_, params_, GURL()));
 
     for (const auto& test_case : test_cases) {
       SCOPED_TRACE(base::JoinString(
           {test_case.host_pattern, test_case.path_prefix}, ", "));
       params_.specifications.emplace_back(
           test_case.rule_type, test_case.host_pattern, test_case.path_prefix);
-      inclusion_rules_or_error =
+      auto inclusion_rules_or_error =
           SessionInclusionRules::Create(origin_, params_, GURL());
-      EXPECT_EQ(inclusion_rules_or_error.has_value(),
-                test_case.expected_is_added_result == SessionError::kSuccess);
-      if (test_case.expected_is_added_result != SessionError::kSuccess &&
-          !inclusion_rules_or_error.has_value()) {
-        EXPECT_EQ(inclusion_rules_or_error.error().type,
-                  test_case.expected_is_added_result);
+      if (test_case.expected_is_added_result == SessionError::kSuccess) {
+        EXPECT_OK(inclusion_rules_or_error);
+      } else {
+        EXPECT_THAT(inclusion_rules_or_error,
+                    ErrorIs(SessionError(test_case.expected_is_added_result)));
       }
+
       if (!inclusion_rules_or_error.has_value()) {
         // Forget about this rule so that future rules can be evaluated.
         params_.specifications.pop_back();
@@ -180,11 +177,10 @@ TEST_F(SessionInclusionRulesTest, IncludeSiteAttemptedButNotAllowed) {
 
   SessionParams::Scope params;
   params.include_site = true;
-  auto rules_or_error = SessionInclusionRules::Create(
-      subdomain_origin, params, GURL("https://some.site.test/refresh"));
-  ASSERT_FALSE(rules_or_error.has_value());
-  EXPECT_EQ(rules_or_error.error().type,
-            SessionError::kInvalidScopeIncludeSite);
+  EXPECT_THAT(
+      SessionInclusionRules::Create(subdomain_origin, params,
+                                    GURL("https://some.site.test/refresh")),
+      ErrorIs(SessionError(SessionError::kInvalidScopeIncludeSite)));
 }
 
 TEST_F(SessionInclusionRulesTest, IncludeSite) {

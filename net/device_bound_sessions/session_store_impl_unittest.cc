@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -22,8 +23,14 @@
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_params.h"
+#include "net/device_bound_sessions/session_store.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+using base::test::ErrorIs;
 
 namespace net::device_bound_sessions {
 
@@ -242,8 +249,8 @@ TEST_F(SessionStoreImplTest, RequireDBInit) {
 
   // Verify that restore session binding key call fails.
   RestoreSessionBindingKey(site, session.get());
-  EXPECT_TRUE(session->unexportable_key_id() ==
-              base::unexpected(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(session->unexportable_key_id(),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
 }
 
 TEST_F(SessionStoreImplTest, RequireValidBindingKeyForSave) {
@@ -325,8 +332,8 @@ TEST_F(SessionStoreImplTest, HandleNonexistingSite) {
   // an entry for the associated site.
   RestoreSessionBindingKey(site, session.get());
   EXPECT_EQ(store().GetAllSessions().size(), 0u);
-  EXPECT_TRUE(session->unexportable_key_id() ==
-              base::unexpected(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(session->unexportable_key_id(),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
 }
 
 TEST_F(SessionStoreImplTest, HandleNonexistingSession) {
@@ -350,8 +357,8 @@ TEST_F(SessionStoreImplTest, HandleNonexistingSession) {
   // Try to restore the unsaved session's binding key.
   RestoreSessionBindingKey(site, session2.get());
   EXPECT_EQ(store().GetAllSessions().size(), 1u);
-  EXPECT_TRUE(session2->unexportable_key_id() ==
-              base::unexpected(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_THAT(session2->unexportable_key_id(),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
 }
 
 TEST_F(SessionStoreImplTest, DeleteSessions) {

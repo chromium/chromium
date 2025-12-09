@@ -120,6 +120,10 @@ struct NET_EXPORT SessionError {
   bool IsServerError() const;
 
   ErrorType type;
+
+  bool operator==(const SessionError& other) const {
+    return type == other.type;
+  }
 };
 
 }  // namespace net::device_bound_sessions
