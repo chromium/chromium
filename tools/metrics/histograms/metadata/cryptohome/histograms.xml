@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountOperationResult"
-    enum="CryptohomeOOPMountOperationResult" expires_after="2026-04-05">
+    enum="CryptohomeOOPMountOperationResult" expires_after="2026-06-07">
   <owner>sarthakkukreti@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>

@@ -147,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.Query.FileCount.{ContextualSearchSource}"
-    units="count" expires_after="2026-03-22">
+    units="count" expires_after="2026-06-07">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.Duration.Total.{ContextualSearchSource}"
-    units="ms" expires_after="2026-03-22">
+    units="ms" expires_after="2026-06-07">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

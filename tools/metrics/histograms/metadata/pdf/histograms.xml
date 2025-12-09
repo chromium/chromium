@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2026-04-05">
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2026-06-07">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokeBrushType" enum="PDFInk2StrokeBrushType"
-    expires_after="2026-04-05">
+    expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokeHighlighterColor"
-    enum="PDFInk2StrokeHighlighterColor" expires_after="2026-04-05">
+    enum="PDFInk2StrokeHighlighterColor" expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokeInputDeviceType"
-    enum="PDFInk2StrokeInputDeviceType" expires_after="2026-04-05">
+    enum="PDFInk2StrokeInputDeviceType" expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokePenColor" enum="PDFInk2StrokePenColor"
-    expires_after="2026-04-05">
+    expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2Stroke{Brush}Size" enum="PDFInk2StrokeBrushSize"
-    expires_after="2026-04-05">
+    expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextHighlighterColor"
-    enum="PDFInk2StrokeHighlighterColor" expires_after="2026-04-05">
+    enum="PDFInk2StrokeHighlighterColor" expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextHighlightInputDeviceType"
-    enum="PDFInk2StrokeInputDeviceType" expires_after="2026-04-05">
+    enum="PDFInk2StrokeInputDeviceType" expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

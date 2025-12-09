@@ -643,7 +643,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Host.WebView.AutoPlay" enum="WebViewAutoPlayProgress"
-    expires_after="2026-04-05">
+    expires_after="2026-06-07">
   <owner>carlosk@chromium.org</owner>
   <owner>dewittj@google.com</owner>
   <summary>

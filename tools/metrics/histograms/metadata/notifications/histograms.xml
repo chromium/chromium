@@ -630,7 +630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Engagement.{Type}.Volume{Volume}"
-    units="site-engagement-score*2" expires_after="2026-04-05">
+    units="site-engagement-score*2" expires_after="2026-06-07">
   <owner>antoniosartori@chromium.org</owner>
   <owner>feuunk@chromium.org</owner>
   <summary>
@@ -930,7 +930,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Notifications.Scheduler.NotificationLifeCycleEvent{NotificationSchedulerClientType}"
     enum="NotificationSchedulerNotificationLifeCycleEvent"
-    expires_after="2026-03-05">
+    expires_after="2026-06-07">
   <owner>shaktisahu@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -956,7 +956,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Scheduler.Tips.FeatureTypeAction{NotificationTipsFeatureType}"
-    enum="NotificationSchedulerUserActionType" expires_after="2026-03-05">
+    enum="NotificationSchedulerUserActionType" expires_after="2026-06-07">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
@@ -974,7 +974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Scheduler.Tips.FeatureTypeShown"
-    enum="TipsNotificationsFeatureType" expires_after="2026-03-05">
+    enum="TipsNotificationsFeatureType" expires_after="2026-06-07">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
@@ -986,7 +986,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Tips.FeatureTipPromo.EventType{NotificationTipsFeatureType}"
-    enum="NotificationSchedulerUserActionType" expires_after="2026-03-05">
+    enum="NotificationSchedulerUserActionType" expires_after="2026-06-07">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
@@ -1005,7 +1005,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Tips.OptInPromo.EventType"
-    enum="TipsNotificationsOptInPromoEventType" expires_after="2026-03-05">
+    enum="TipsNotificationsOptInPromoEventType" expires_after="2026-06-07">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
@@ -1060,7 +1060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.ActivationStatus"
-    enum="WindowsNotificationActivationStatus" expires_after="2026-04-05">
+    enum="WindowsNotificationActivationStatus" expires_after="2026-06-07">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

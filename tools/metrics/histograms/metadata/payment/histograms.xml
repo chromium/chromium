@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PaymentRequest.AddressEditorTrigerred"
-    enum="PaymentRequestAddressEditorMode" expires_after="2026-04-05">
+    enum="PaymentRequestAddressEditorMode" expires_after="2026-06-07">
   <owner>vykochko@chromium.org</owner>
   <owner>smcgruer@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Events2" units="bitfield value"
-    expires_after="2026-04-05">
+    expires_after="2026-06-07">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>

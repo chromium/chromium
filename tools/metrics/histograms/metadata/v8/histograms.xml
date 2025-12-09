@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileDeserializeMicroSeconds" units="microseconds"
-    expires_after="2026-03-02">
+    expires_after="2026-06-07">
   <owner>jgruber@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
@@ -1458,7 +1458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.MaglevOptimizeExecute" units="microseconds"
-    expires_after="2026-03-02">
+    expires_after="2026-06-07">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>
@@ -2089,7 +2089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmDeoptsExecutedCount" units="deopts"
-    expires_after="2026-04-05">
+    expires_after="2026-06-07">
   <owner>mliedtke@chromium.org</owner>
   <owner>dlehmann@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>

@@ -2845,7 +2845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.MostVisitedTilesVisualDeduplication" units="tiles"
-    expires_after="2026-04-05">
+    expires_after="2026-06-07">
   <owner>hitarthkothari@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -3184,7 +3184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.WeeklyURLCount" units="URLs"
-    expires_after="2026-04-05">
+    expires_after="2026-06-07">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>

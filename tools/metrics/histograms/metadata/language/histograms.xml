@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.ClassifyText.Duration"
-    units="ms" expires_after="2026-04-05">
+    units="ms" expires_after="2026-06-07">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage"
-    enum="LocaleCodeBCP47" expires_after="2026-04-05">
+    enum="LocaleCodeBCP47" expires_after="2026-06-07">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.DetectPageLanguage.Duration"
-    units="ms" expires_after="2026-04-05">
+    units="ms" expires_after="2026-06-07">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
