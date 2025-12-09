@@ -4703,16 +4703,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.KcerRollbackHelper.Events"
-    enum="NssDbClientCertsRollbackEvent" expires_after="2025-09-05">
-  <owner>miersh@google.com</owner>
-  <owner>olsa@google.com</owner>
-  <summary>
-    Tracks events related to the rollback of double written keys and users
-    certificates from the software backed Chaps storage to the NSS DB.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Lobster.State" enum="LobsterState"
     expires_after="2026-04-26">
   <owner>hdchuong@google.com</owner>

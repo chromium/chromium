@@ -9,7 +9,6 @@
 namespace kcer {
 namespace {
 constexpr char kPkcs12MigrationHistogram[] = "ChromeOS.Kcer.Pkcs12Migration";
-constexpr char kKcerErrorHistogram[] = "ChromeOS.Kcer.Error";
 }  // namespace
 
 namespace internal {
@@ -22,10 +21,6 @@ void RecordKcerPkcs12ImportUmaEvent(internal::KcerPkcs12ImportEvent event) {
 
 void RecordPkcs12MigrationUmaEvent(Pkcs12MigrationUmaEvent event) {
   base::UmaHistogramEnumeration(kPkcs12MigrationHistogram, event);
-}
-
-void RecordKcerError(Error error) {
-  base::UmaHistogramEnumeration(kKcerErrorHistogram, error);
 }
 
 }  // namespace kcer

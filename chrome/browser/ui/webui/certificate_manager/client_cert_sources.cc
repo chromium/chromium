@@ -831,7 +831,6 @@ class WritableClientCertSource
     } else {
       kcer::RecordPkcs12MigrationUmaEvent(
           kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportKcerFailed);
-      kcer::RecordKcerError(kcer_import_result.error());
     }
 
     // Just return the nss_import_result. Kcer will attempt to import only if
