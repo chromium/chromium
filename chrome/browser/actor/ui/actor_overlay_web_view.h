@@ -40,6 +40,9 @@ class ActorOverlayWebView : public views::WebView {
   // Forwards the border glow visibility to WebUI.
   void SetBorderGlowVisibility(bool is_visible);
 
+  // Forwards the cursor coordinates to WebUI.
+  void MoveCursorTo(const gfx::Point& point, base::OnceClosure callback);
+
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
 

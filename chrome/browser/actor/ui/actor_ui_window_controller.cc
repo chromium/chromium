@@ -212,12 +212,16 @@ void ActorUiContentsContainerController::ApplyOverlayState(
     bool is_visible,
     ActorOverlayState state,
     base::OnceClosure callback) {
-  // Ensure the callback runs on any early return.
+  // Ensure the callback runs on any early return. We Release() ownership only
+  // when passing the callback to an asynchronous operation.
   base::ScopedClosureRunner runner(std::move(callback));
   if (!overlay_ || !is_visible) {
     return;
   }
   overlay_->SetBorderGlowVisibility(state.border_glow_visible);
+  if (state.mouse_target.has_value()) {
+    overlay_->MoveCursorTo(state.mouse_target.value(), runner.Release());
+  }
 }
 
 }  // namespace actor::ui

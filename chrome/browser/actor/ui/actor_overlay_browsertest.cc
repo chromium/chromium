@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -26,8 +27,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "ui/display/display_switches.h"
 
 namespace actor::ui {
 namespace {
@@ -38,7 +42,9 @@ class ActorOverlayTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActorUi, {{features::kGlicActorUiOverlayName, "true"}});
+        features::kGlicActorUi,
+        {{features::kGlicActorUiOverlayName, "true"},
+         {features::kGlicActorUiOverlayMagicCursorName, "true"}});
     InProcessBrowserTest::SetUp();
   }
 
@@ -460,6 +466,98 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayIsIgnoredByAccessibility) {
             views::View::FocusBehavior::NEVER);
   EXPECT_TRUE(overlay_web_view->GetViewAccessibility().GetIsIgnored());
 }
+
+std::string WaitForCursorTransformScript() {
+  return R"(
+    (async () => {
+      return new Promise(resolve => {
+        const check = () => {
+          const val = document.querySelector('actor-overlay-app')
+                              ?.shadowRoot
+                              ?.querySelector('#magicCursor')
+                              ?.style?.transform;
+          if (val && val.startsWith('translate')) {
+             resolve(val);
+          } else {
+             requestAnimationFrame(check);
+          }
+        };
+        check();
+      });
+    })();
+  )";
+}
+
+class ActorOverlayMagicCursorTest : public ActorOverlayTest,
+                                    public testing::WithParamInterface<float> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ActorOverlayTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor,
+                                    base::NumberToString(GetParam()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(ActorOverlayMagicCursorTest,
+                       MagicCursorMovesToCoordinates) {
+  ActorUiWindowController* window_controller =
+      ActorUiWindowController::From(browser());
+  ASSERT_NE(window_controller, nullptr);
+
+  ActorUiContentsContainerController* contents_controller =
+      window_controller->GetControllerForWebContents(
+          browser()->GetActiveTabInterface()->GetContents());
+  ASSERT_NE(contents_controller, nullptr);
+
+  // Initialize UI
+  ActorOverlayState init_state;
+  init_state.is_active = true;
+
+  TestFuture<void> init_future;
+  contents_controller->OnOverlayStateChanged(/*is_visible=*/true, init_state,
+                                             init_future.GetCallback());
+  ASSERT_TRUE(init_future.Wait());
+
+  content::WebContents* overlay_contents =
+      GetActorOverlayWebViewWebContents(browser());
+  ASSERT_NE(overlay_contents, nullptr);
+
+  ASSERT_TRUE(content::WaitForLoadStop(overlay_contents));
+
+  // Move Cursor
+  gfx::Point physical_target(75, 150);
+  ActorOverlayState move_state;
+  move_state.is_active = true;
+  move_state.mouse_target = physical_target;
+
+  TestFuture<void> move_future;
+  contents_controller->OnOverlayStateChanged(/*is_visible=*/true, move_state,
+                                             move_future.GetCallback());
+  ASSERT_TRUE(move_future.Wait());
+
+  // Verify Coordinates
+  float scale_factor =
+      overlay_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor();
+  EXPECT_EQ(scale_factor, GetParam());
+  double expected_x = physical_target.x() / scale_factor;
+  double expected_y = physical_target.y() / scale_factor;
+
+  std::string expected_transform = "translate(" +
+                                   base::NumberToString(expected_x) + "px, " +
+                                   base::NumberToString(expected_y) + "px)";
+  std::string actual_transform =
+      content::EvalJs(overlay_contents, WaitForCursorTransformScript())
+          .ExtractString();
+
+  LOG(INFO) << "Expected: " << expected_transform;
+  LOG(INFO) << "Actual: " << actual_transform;
+  EXPECT_EQ(actual_transform, expected_transform);
+}
+
+// Run with 0.5 (Low DPI), 1.0 (Standard), and 1.5 (High DPI).
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActorOverlayMagicCursorTest,
+                         testing::Values(0.5f, 1.0f, 1.5f));
 
 class ActorOverlayDisabledTest : public InProcessBrowserTest {
  public:

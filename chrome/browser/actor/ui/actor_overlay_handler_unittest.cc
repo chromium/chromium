@@ -48,11 +48,22 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
     set_border_glow_call_count_++;
   }
 
+  // mojom::ActorOverlayPage
+  void MoveCursorTo(const gfx::Point& point,
+                    MoveCursorToCallback callback) override {
+    last_cursor_point_ = point;
+    move_cursor_call_count_++;
+    // Simulate the WebUI replying immediately
+    std::move(callback).Run();
+  }
+
   // Test accessors
   bool is_scrim_background_visible() { return is_scrim_background_visible_; }
   int scrim_background_call_count() { return set_scrim_background_call_count_; }
   bool is_border_glow_visible() { return is_border_glow_visible_; }
   int border_glow_call_count() { return set_border_glow_call_count_; }
+  gfx::Point last_cursor_point() { return last_cursor_point_; }
+  int move_cursor_call_count() { return move_cursor_call_count_; }
 
  private:
   mojo::Receiver<mojom::ActorOverlayPage> receiver_{this};
@@ -60,6 +71,8 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   int set_scrim_background_call_count_ = 0;
   bool is_border_glow_visible_ = false;
   int set_border_glow_call_count_ = 0;
+  gfx::Point last_cursor_point_;
+  int move_cursor_call_count_ = 0;
 };
 
 class ActorOverlayHandlerTest : public testing::Test {
@@ -148,6 +161,18 @@ TEST_F(ActorOverlayHandlerTest, SetBorderGlowVisibility) {
 
   EXPECT_FALSE(fake_page_.is_border_glow_visible());
   EXPECT_EQ(fake_page_.border_glow_call_count(), 2);
+}
+
+TEST_F(ActorOverlayHandlerTest, MoveCursorTo) {
+  base::test::TestFuture<void> future;
+  gfx::Point point(100, 200);
+
+  handler_->MoveCursorTo(point, future.GetCallback());
+  fake_page_.FlushForTesting();
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_EQ(fake_page_.move_cursor_call_count(), 1);
+  EXPECT_EQ(fake_page_.last_cursor_point(), point);
 }
 
 TEST_F(ActorOverlayHandlerTest, HandlesNullTab) {

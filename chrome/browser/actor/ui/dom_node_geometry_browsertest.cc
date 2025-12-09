@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/ui/dom_node_geometry.h"
 
 #include "base/files/file_path.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -18,6 +19,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -25,6 +27,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "ui/display/display_switches.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 
 namespace actor::ui {
@@ -80,7 +83,9 @@ MATCHER_P(IsEqualToTrimmed, expected, "") {
   return Trim(arg) == Trim(expected);
 }
 
-class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
+class ActorUiDomNodeGeometryBrowserTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<float> {
  public:
   ActorUiDomNodeGeometryBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -92,10 +97,13 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor,
+                                    base::NumberToString(GetParam()));
     if (command_line->HasSwitch(switches::kVerifyPixels)) {
       // Increment "v0" for Skia Gold diff when different images are expected.
-      pixel_diff_ =
-          std::make_unique<ViewSkiaGoldPixelDiff>("ActorUiDomNodeGeometry_v0");
+      std::string screenshot_name = "ActorUiDomNodeGeometry_Scale" +
+                                    base::NumberToString(GetParam()) + "_v0";
+      pixel_diff_ = std::make_unique<ViewSkiaGoldPixelDiff>(screenshot_name);
     }
   }
 
@@ -164,8 +172,7 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
   std::string ElementTextAtPoint(const gfx::Point& pt) {
     content::EvalJsResult result = content::EvalJs(
         web_contents(),
-        absl::StrFormat("document.elementFromPoint(%d, %d).textContent", pt.x(),
-                        pt.y()));
+        absl::StrFormat("getElementTextAtPoint(%d, %d)", pt.x(), pt.y()));
     EXPECT_THAT(result, content::EvalJsResult::IsOk());
     EXPECT_TRUE(result.is_string());
     return result.ExtractString();
@@ -212,7 +219,7 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
   AriaToDomNodeMap aria_label_to_dom_node_;
 };
 
-IN_PROC_BROWSER_TEST_F(ActorUiDomNodeGeometryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorUiDomNodeGeometryBrowserTest,
                        GetDomNodePointFromApc_TopFrame) {
   LoadPage(embedded_test_server()->GetURL("/actor/dom_node_geometry.html"));
   GetPageApc();
@@ -245,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiDomNodeGeometryBrowserTest,
   SkiaWebContentsDiff();
 }
 
-IN_PROC_BROWSER_TEST_F(ActorUiDomNodeGeometryBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorUiDomNodeGeometryBrowserTest,
                        GetDomNodePointFromApc_SubFrame) {
   LoadPage(embedded_test_server()->GetURL("/actor/dom_node_geometry.html"));
   GetPageApc();
@@ -261,6 +268,11 @@ IN_PROC_BROWSER_TEST_F(ActorUiDomNodeGeometryBrowserTest,
 
   SkiaWebContentsDiff();
 }
+
+// Run with 0.5 (Low DPI), 1.0 (Standard), and 1.5 (High DPI).
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActorUiDomNodeGeometryBrowserTest,
+                         testing::Values(0.5f, 1.0f, 1.5f));
 
 }  // namespace
 }  // namespace actor::ui

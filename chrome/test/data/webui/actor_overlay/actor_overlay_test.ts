@@ -61,7 +61,7 @@ suite('Scrim', function() {
     assertFalse(page.classList.contains('background-visible'));
   });
 
-  test('MagicCursorDisabled', function() {
+  test('MagicCursorDisabled', async function() {
     const magicCursor =
         page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
     assertTrue(!!magicCursor);
@@ -69,9 +69,11 @@ suite('Scrim', function() {
     assertEquals('', magicCursor.style.transform);
 
     const point = {x: 100, y: 150};
-    page.moveCursorTo(point);
+    const movePromise = testRemote.moveCursorTo(point);
+    await microtasksFinished();
     assertEquals('', magicCursor.style.opacity);
     assertEquals('', magicCursor.style.transform);
+    await movePromise;
   });
 
   test('PreventsDefaultOnWheelEvent', async function() {
@@ -166,11 +168,17 @@ suite('BorderGlow', function() {
 
 suite('MagicCursor', function() {
   let page: ActorOverlayAppElement;
+  let testRemote: ActorOverlayPageRemote;
+  // Store original DPR to restore it after tests.
+  const originalDpr = window.devicePixelRatio;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isMagicCursorEnabled: true,
     });
+    const testBrowserProxy = new TestActorOverlayBrowserProxy();
+    ActorOverlayBrowserProxy.setInstance(testBrowserProxy);
+    testRemote = testBrowserProxy.remote;
   });
 
   setup(function() {
@@ -181,9 +189,88 @@ suite('MagicCursor', function() {
 
   teardown(function() {
     page.remove();
+    // Restore original DPR.
+    Object.defineProperty(window, 'devicePixelRatio', {
+      writable: true,
+      configurable: true,
+      value: originalDpr,
+    });
   });
 
-  test('MoveCursorAndVerifyLocation', function() {
+  test('MoveCursorAndVerifyLocation_StandardDPI', async function() {
+    // Force 1.0 scale.
+    Object.defineProperty(window, 'devicePixelRatio', {
+      writable: true,
+      configurable: true,
+      value: 1.0,
+    });
+
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+    assertEquals('', magicCursor.style.opacity);
+    assertEquals('', magicCursor.style.transform);
+
+    // Input: 100, 150 (Physical)
+    // Expected Output: 100 / 1.0 = 100px, 150 / 1.0 = 150px (Logical)
+    const point = {x: 100, y: 150};
+    const movePromise = testRemote.moveCursorTo(point);
+    await microtasksFinished();
+    assertEquals('translate(100px, 150px)', magicCursor.style.transform);
+    assertEquals('1', magicCursor.style.opacity);
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
+  });
+
+  test('MoveCursorAndVerifyLocation_HighDPI', async function() {
+    // Force 1.5 scale (High DPI).
+    Object.defineProperty(window, 'devicePixelRatio', {
+      writable: true,
+      configurable: true,
+      value: 1.5,
+    });
+
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+    assertEquals('', magicCursor.style.opacity);
+    assertEquals('', magicCursor.style.transform);
+
+    // Input: 150, 300 (Physical)
+    // Expected Output: 150 / 1.5 = 100px, 300 / 1.5 = 200px (Logical)
+    const point = {x: 150, y: 300};
+    const movePromise = testRemote.moveCursorTo(point);
+    await microtasksFinished();
+    assertEquals('translate(100px, 200px)', magicCursor.style.transform);
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
+  });
+
+  test('MoveCursorAndVerifyLocation_LowDPI', async function() {
+    // Force 0.5 scale (Low DPI)
+    Object.defineProperty(window, 'devicePixelRatio', {
+      writable: true,
+      configurable: true,
+      value: 0.5,
+    });
+
+    const magicCursor =
+        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
+    assertTrue(!!magicCursor);
+    assertEquals('', magicCursor.style.opacity);
+    assertEquals('', magicCursor.style.transform);
+
+    // Input: 50, 100 (Physical)
+    // Expected Output: 50 / 0.5 = 100px, 100 / 0.5 = 200px (Logical)
+    const point = {x: 50, y: 100};
+    const movePromise = testRemote.moveCursorTo(point);
+    await microtasksFinished();
+    assertEquals('translate(100px, 200px)', magicCursor.style.transform);
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
+  });
+
+  test('MoveCursorTwiceAndVerifyLocation', async function() {
     const magicCursor =
         page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
     assertTrue(!!magicCursor);
@@ -191,13 +278,19 @@ suite('MagicCursor', function() {
     assertEquals('', magicCursor.style.transform);
 
     const point = {x: 100, y: 150};
-    page.moveCursorTo(point);
+    const movePromise = testRemote.moveCursorTo(point);
+    await microtasksFinished();
     assertEquals('translate(100px, 150px)', magicCursor.style.transform);
     assertEquals('1', magicCursor.style.opacity);
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
 
     const point2 = {x: 50, y: 100};
-    page.moveCursorTo(point2);
+    const movePromise2 = testRemote.moveCursorTo(point2);
+    await microtasksFinished();
     assertEquals('translate(50px, 100px)', magicCursor.style.transform);
     assertEquals('1', magicCursor.style.opacity);
+    magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise2;
   });
 });

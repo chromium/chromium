@@ -90,6 +90,19 @@ void ActorOverlayWebView::SetBorderGlowVisibility(bool is_visible) {
   web_ui->SetBorderGlowVisibility(is_visible);
 }
 
+void ActorOverlayWebView::MoveCursorTo(const gfx::Point& point,
+                                       base::OnceClosure callback) {
+  // Ensure the callback runs on any early return. We Release() ownership only
+  // when passing the callback to an asynchronous operation.
+  base::ScopedClosureRunner runner(std::move(callback));
+  if (!features::kGlicActorUiOverlayMagicCursor.Get()) {
+    return;
+  }
+  if (actor::ui::ActorOverlayUI* web_ui = GetWebUi()) {
+    web_ui->MoveCursorTo(point, runner.Release());
+  }
+}
+
 actor::ui::ActorOverlayUI* ActorOverlayWebView::GetWebUi() {
   if (!web_contents()) {
     return nullptr;

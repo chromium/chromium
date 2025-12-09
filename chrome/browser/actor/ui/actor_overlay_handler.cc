@@ -51,4 +51,9 @@ void ActorOverlayHandler::SetBorderGlowVisibility(bool is_visible) {
   page_->SetBorderGlowVisibility(is_visible);
 }
 
+void ActorOverlayHandler::MoveCursorTo(const gfx::Point& point,
+                                       base::OnceClosure callback) {
+  page_->MoveCursorTo(point, std::move(callback));
+}
+
 }  // namespace actor::ui

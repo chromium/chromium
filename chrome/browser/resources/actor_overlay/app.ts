@@ -42,6 +42,7 @@ export class ActorOverlayAppElement extends CrLitElement {
   private eventTracker_: EventTracker = new EventTracker();
   private setScrimBackgroundListenerId_: number | null = null;
   private setBorderGlowVisibilityListenerId_: number | null = null;
+  private moveCursorToListenerId_: number|null = null;
   private shouldShowCursor_: boolean =
       loadTimeData.getBoolean('isMagicCursorEnabled');
   private isCursorInitialized_: boolean = false;
@@ -70,6 +71,11 @@ export class ActorOverlayAppElement extends CrLitElement {
         this.setBorderGlowVisibility.bind(this));
     proxy.handler.getCurrentBorderGlowVisibility().then(
         ({isVisible}) => this.setBorderGlowVisibility(isVisible));
+
+    // Magic Cursor
+    this.moveCursorToListenerId_ =
+        proxy.callbackRouter.moveCursorTo.addListener(
+            this.moveCursorTo.bind(this));
   }
 
   override disconnectedCallback() {
@@ -82,6 +88,9 @@ export class ActorOverlayAppElement extends CrLitElement {
     assert(this.setBorderGlowVisibilityListenerId_);
     ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
       this.setBorderGlowVisibilityListenerId_);
+    assert(this.moveCursorToListenerId_);
+    ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
+        this.moveCursorToListenerId_);
   }
 
   // Prevents user scroll gestures (mouse wheel, touchpad) from moving the
@@ -100,18 +109,27 @@ export class ActorOverlayAppElement extends CrLitElement {
     this.borderGlowVisible_ = this.isStandaloneBorderGlowEnabled_ && isVisible;
   }
 
-  // TODO(crbug.com/422539773): Make function private once it's called via the
-  // browser.
-  moveCursorTo(point: Point) {
+  private moveCursorTo(point: Point): Promise<void> {
     if (!this.$.magicCursor || !this.shouldShowCursor_) {
-      return;
+      return Promise.resolve();
     }
     if (!this.isCursorInitialized_) {
       this.$.magicCursor.style.opacity = '1';
       this.isCursorInitialized_ = true;
     }
-    this.$.magicCursor.style.transform =
-        `translate(${point.x}px, ${point.y}px)`;
+
+    const scale = window.devicePixelRatio;
+    const cssX = point.x / scale;
+    const cssY = point.y / scale;
+
+    const transitionFinished = new Promise<void>(resolve => {
+      this.$.magicCursor.addEventListener('transitionend', () => {
+        resolve();
+      }, {once: true});
+    });
+
+    this.$.magicCursor.style.transform = `translate(${cssX}px, ${cssY}px)`;
+    return transitionFinished;
   }
 }
 

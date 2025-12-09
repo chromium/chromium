@@ -95,4 +95,10 @@ bool ActorOverlayUI::IsActorOverlayWebContents(
   return false;
 }
 
+void ActorOverlayUI::MoveCursorTo(const gfx::Point& point,
+                                  base::OnceClosure callback) {
+  DCHECK(handler_);
+  handler_->MoveCursorTo(point, std::move(callback));
+}
+
 }  // namespace actor::ui

@@ -31,6 +31,7 @@ class ActorOverlayUI : public ::ui::MojoWebUIController,
 
   void SetOverlayBackground(bool is_visible);
   void SetBorderGlowVisibility(bool is_visible);
+  void MoveCursorTo(const gfx::Point& point, base::OnceClosure callback);
 
   // Checks if the passed in WebContents are associated with the ActorOverlayUI
   // WebUIController.

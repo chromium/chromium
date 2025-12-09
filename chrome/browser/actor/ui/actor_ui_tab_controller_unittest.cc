@@ -558,5 +558,26 @@ TEST_F(ActorUiTabControllerTest, RegisterCallbackWhileRegisteredDeathTest) {
       "");
 }
 
+TEST_F(ActorUiTabControllerTest, PropagatesMouseTargetToCallback) {
+  ActorOverlayState actor_overlay_state;
+  actor_overlay_state.is_active = true;
+  actor_overlay_state.mouse_target = gfx::Point(123, 456);
+
+  HandoffButtonState handoff_button_state;
+  UiTabState ui_tab_state(actor_overlay_state, handoff_button_state);
+
+  EXPECT_CALL(mock_overlay_callback_, Call(/*visibility=*/true, _, _))
+      .WillOnce([](bool visibility, ActorOverlayState state,
+                   base::OnceClosure callback) {
+        EXPECT_TRUE(state.mouse_target.has_value());
+        EXPECT_EQ(state.mouse_target.value(), gfx::Point(123, 456));
+        std::move(callback).Run();
+      });
+
+  base::test::TestFuture<bool> future;
+  tab_controller()->OnUiTabStateChange(ui_tab_state, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
 }  // namespace
 }  // namespace actor::ui

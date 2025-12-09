@@ -5,6 +5,7 @@
 module actor.ui.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Factory ensures that the Page and PageHandler interfaces are always created
 // together without requiring an initialization call from the WebUI to the
@@ -33,4 +34,16 @@ interface ActorOverlayPage {
 
   // Notifies the webui if the border glow should be visible.
   SetBorderGlowVisibility(bool is_visible);
+
+  // Notifies WebUI to move the magic cursor to a passed in gfx.mojom.Point
+  // object.
+  //
+  // |point| must be in physical pixels, matching the coordinate system of the
+  // AnnotatedPageContent proto.
+  //
+  // The WebUI implementation is responsible for scaling this down to logical
+  // pixels based on the current window.devicePixelRatio.
+  //
+  // Expects a response from WebUI once the transition is finished.
+  MoveCursorTo(gfx.mojom.Point point) => ();
 };
