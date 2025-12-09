@@ -49,8 +49,11 @@ class VerticalTabStripTopContainerTest
   }
 };
 
+// TODO(https://crbug.com/465857622) this test is disabled because the layout
+// will naturally set these values in the course of calculating the layout; to
+// test this directly, the view would need to be unit-tested.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerTest,
-                       LayoutWithoutExclusionZone) {
+                       DISABLED_LayoutWithoutExclusionZone) {
   top_container()->SetExclusionWidthForLayout(0);
   top_container()->SetToolbarHeightForLayout(0);
   LayoutBrowserView();
@@ -70,8 +73,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerTest,
   EXPECT_EQ(collapse_bounds.CenterPoint().y(), search_bounds.CenterPoint().y());
 }
 
+// TODO(https://crbug.com/465857622) this test is disabled because the layout
+// will naturally set these values in the course of calculating the layout; to
+// test this directly, the view would need to be unit-tested.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerTest,
-                       LayoutWithFullWidthExclusionZone) {
+                       DISABLED_LayoutWithFullWidthExclusionZone) {
   top_container()->SetExclusionWidthForLayout(0);
   top_container()->SetToolbarHeightForLayout(0);
   LayoutBrowserView();

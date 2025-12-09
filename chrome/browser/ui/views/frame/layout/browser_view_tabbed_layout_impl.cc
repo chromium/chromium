@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "ui/gfx/geometry/size.h"
@@ -600,6 +601,39 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                   gfx::Rect(content_left, params.visual_client_area.y(),
                             content_right - content_left,
                             params.visual_client_area.height()));
+
+  // Make final visual adjustments required for child views to paint.
+  if (tab_strip_type == TabStripType::kVertical) {
+    // Need to know the toolbar height relative to the tabstrip, so that
+    // vertical tabstrip elements can align with the toolbar.
+    const auto toolbar_bounds =
+        layout.GetBoundsFor(views().toolbar, views().browser_view);
+    const auto tabstrip_bounds = layout.GetBoundsFor(
+        views().vertical_tab_strip_container, views().browser_view);
+    CHECK(tabstrip_bounds);
+
+    // Calculate the toolbar height adjacent to the tabstrip. This will be zero
+    // if the toolbar is in e.g. an immersive mode overlay, or is not aligned
+    // with the tabstrip (which can happen in collapsed mode with leading
+    // caption buttons).
+    const int toolbar_height =
+        toolbar_bounds
+            ? std::max(0, toolbar_bounds->bottom() - tabstrip_bounds->y())
+            : 0;
+    views().vertical_tab_strip_container->SetToolbarHeightForLayout(
+        toolbar_height);
+
+    // If the toolbar is not in the browser, then the exclusion isn't either.
+    const int exclusion_width =
+        toolbar_bounds
+            ? std::max(0, base::ClampCeil(browser_params.leading_exclusion
+                                              .ContentWithPadding()
+                                              .width()) -
+                              tabstrip_bounds->x())
+            : 0;
+    views().vertical_tab_strip_container->SetExclusionWidthForLayout(
+        exclusion_width);
+  }
 
   return layout;
 }
