@@ -37,11 +37,14 @@
 }
 
 .rightSide {
+  display: flex;
   flex-shrink: 0;
+  justify-content: flex-end;
 }
 
 #rightButtonContainer {
-  float: right;
+  align-items: center;
+  display: flex;
   padding-right: 16px;
 }
 

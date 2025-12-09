@@ -72,13 +72,16 @@ suite('TopToolbarTest', () => {
   test('toggles sources button visibility', async () => {
     const sourcesButton = topToolbar.shadowRoot.querySelector('#sources');
     assertHTMLElement(sourcesButton);
-    assertTrue(sourcesButton.hasAttribute('hidden'));
+    // Initially, there are no attached tabs, so the favicon group should not
+    // render any items.
+    assertFalse(!!sourcesButton.shadowRoot!.querySelector('.favicon-item'));
 
     topToolbar.attachedTabs =
         [{tabId: 1, title: 'Tab 1', url: {url: 'https://example.com'}}];
     await microtasksFinished();
 
-    assertFalse(sourcesButton.hasAttribute('hidden'));
+    // After attaching a tab, the favicon group should render a favicon item.
+    assertTrue(!!sourcesButton.shadowRoot!.querySelector('.favicon-item'));
   });
 
   test('handles sources menu interactions', async () => {
@@ -153,5 +156,42 @@ suite('TopToolbarTest', () => {
     assertHTMLElement(helpButton);
     helpButton.click();
     await proxy.handler.whenCalled('openHelpUi');
+  });
+
+  test('shows 3 tab icons without number for 3 tabs', async () => {
+    const sourcesButton = topToolbar.shadowRoot.querySelector('#sources');
+    assertHTMLElement(sourcesButton);
+
+    topToolbar.attachedTabs = [
+      {tabId: 1, title: 'Tab 1', url: {url: 'https://example.com/1'}},
+      {tabId: 2, title: 'Tab 2', url: {url: 'https://example.com/2'}},
+      {tabId: 3, title: 'Tab 3', url: {url: 'https://example.com/3'}},
+    ];
+    await microtasksFinished();
+
+    const faviconItems =
+        sourcesButton.shadowRoot!.querySelectorAll('.favicon-item');
+    assertEquals(faviconItems.length, 3);
+    assertFalse(!!sourcesButton.shadowRoot!.querySelector('.more-items'));
+  });
+
+  test('shows 3 tab icons with number for 4 tabs', async () => {
+    const sourcesButton = topToolbar.shadowRoot.querySelector('#sources');
+    assertHTMLElement(sourcesButton);
+
+    topToolbar.attachedTabs = [
+      {tabId: 1, title: 'Tab 1', url: {url: 'https://example.com/1'}},
+      {tabId: 2, title: 'Tab 2', url: {url: 'https://example.com/2'}},
+      {tabId: 3, title: 'Tab 3', url: {url: 'https://example.com/3'}},
+      {tabId: 4, title: 'Tab 4', url: {url: 'https://example.com/4'}},
+    ];
+    await microtasksFinished();
+
+    const faviconItems =
+        sourcesButton.shadowRoot!.querySelectorAll('.favicon-item');
+    assertEquals(faviconItems.length, 3);
+    const moreItems = sourcesButton.shadowRoot!.querySelector('.more-items');
+    assertHTMLElement(moreItems);
+    assertEquals(moreItems.textContent, '+1');
   });
 });

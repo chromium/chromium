@@ -1,0 +1,50 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  background-color: var(--cr-fallback-color-surface);
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  padding: 5px 8px;
+  width: fit-content;
+}
+
+:host(:hover) {
+  background-color: var(--cr-hover-background-color);
+}
+
+.favicon-item {
+  align-items: center;
+  background-color: #eee; /* Fallback color */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border: 2px solid white; /* White border to separate icons */
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  overflow: hidden;
+  width: 20px;
+}
+
+.favicon-item:not(:first-child) {
+  margin-inline-start: -8px; /* Negative margin for overlap */
+}
+
+.more-items {
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
+  margin-inline-start: 6px; /* Spacing between last icon and text */
+  padding-inline-start: 2px;
+}
