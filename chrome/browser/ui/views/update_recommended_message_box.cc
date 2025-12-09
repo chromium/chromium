@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -54,10 +54,10 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
   update_message = l10n_util::GetPluralStringFUTF16(
-      IDS_UPDATE_RECOMMENDED_ALT, BrowserList::GetIncognitoBrowserCount());
+      IDS_UPDATE_RECOMMENDED_ALT, chrome::GetIncognitoBrowserCount());
 #else
   update_message = l10n_util::GetPluralStringFUTF16(
-      IDS_UPDATE_RECOMMENDED, BrowserList::GetIncognitoBrowserCount());
+      IDS_UPDATE_RECOMMENDED, chrome::GetIncognitoBrowserCount());
 #endif
 
   // Also deleted when the window closes.

@@ -121,7 +121,7 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
   auto CheckIncognitoWindowOpened(const Browser* default_browser) {
     return Check(base::BindLambdaForTesting([default_browser]() {
       BrowserWindowInterface* new_browser = nullptr;
-      if (BrowserList::GetIncognitoBrowserCount() == 1) {
+      if (chrome::GetIncognitoBrowserCount() == 1) {
         EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
         ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
             [default_browser, &new_browser](BrowserWindowInterface* browser) {

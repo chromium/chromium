@@ -2491,7 +2491,7 @@ void WebAppIntegrationTestDriver::SwitchIncognitoProfile() {
   }
   content::WebContentsAddedObserver nav_observer;
   CHECK(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
-  ASSERT_EQ(1U, BrowserList::GetIncognitoBrowserCount());
+  ASSERT_EQ(1U, chrome::GetIncognitoBrowserCount());
   nav_observer.GetWebContents();
   std::vector<Profile*> otr_profiles = profile()->GetAllOffTheRecordProfiles();
   CHECK(!otr_profiles.empty());
