@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -260,22 +261,34 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   }
 
   // Lay out vertical tab strip if visible.
+  int collapsed_vertical_tab_strip_adjustment = 0;
   if (IsParentedTo(views().vertical_tab_strip_container,
                    views().browser_view)) {
     gfx::Rect vertical_tab_strip_bounds;
     if (tab_strip_type == TabStripType::kVertical) {
-      // TODO(https://crbug.com/466106626): Handle collapsed vertical tabstrip.
-      const int min_normal_vertical_tab_strip_width = base::ClampCeil(
-          params.leading_exclusion.ContentWithPadding().width());
-      const int preferred_vertical_tab_strip_width =
+      int vertical_tab_strip_relative_top = 0;
+      int vertical_tab_strip_width =
           views().vertical_tab_strip_container->GetPreferredSize().width();
+      if (delegate().IsVerticalTabStripCollapsed()) {
+        // Collapsed tabstrip sits underneath caption buttons when present.
+        vertical_tab_strip_relative_top = base::ClampCeil(
+            params.leading_exclusion.ContentWithPadding().height());
+        collapsed_vertical_tab_strip_adjustment =
+            vertical_tab_strip_relative_top > 0 ? vertical_tab_strip_width : 0;
+      } else {
+        // Un-collapsed tabstrip must be at least as wide as the caption
+        // buttons, if present.
+        const int leading_exclusion_width = base::ClampCeil(
+            params.leading_exclusion.ContentWithPadding().width());
+        vertical_tab_strip_width =
+            std::max(vertical_tab_strip_width, leading_exclusion_width);
+      }
       vertical_tab_strip_bounds = gfx::Rect(
-          params.visual_client_area.x(), params.visual_client_area.y(),
-          std::max(min_normal_vertical_tab_strip_width,
-                   preferred_vertical_tab_strip_width),
-          params.visual_client_area.height());
-      params.Inset(
-          gfx::Insets::TLBR(0, vertical_tab_strip_bounds.width(), 0, 0));
+          params.visual_client_area.x(),
+          params.visual_client_area.y() + vertical_tab_strip_relative_top,
+          vertical_tab_strip_width,
+          params.visual_client_area.height() - vertical_tab_strip_relative_top);
+      params.InsetHorizontal(vertical_tab_strip_width, /*leading=*/true);
     }
     layout.AddChild(views().vertical_tab_strip_container,
                     vertical_tab_strip_bounds,
@@ -294,6 +307,20 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     top_container_layout.bounds =
         GetTopContainerBoundsInParent(top_container_local_bounds, params);
     params.SetTop(top_container_layout.bounds.bottom());
+
+    // Possibly bump the leading margin of the top container out to cover the
+    // caption buttons, leaving all of the child views in the same absolute
+    // position.
+    if (collapsed_vertical_tab_strip_adjustment > 0) {
+      top_container_layout.bounds.Outset(
+          gfx::Outsets::TLBR(0, collapsed_vertical_tab_strip_adjustment, 0, 0));
+      for (auto& [child, child_layout] : top_container_layout.children) {
+        if (!child_layout.bounds.IsEmpty()) {
+          child_layout.bounds.Offset(collapsed_vertical_tab_strip_adjustment,
+                                     0);
+        }
+      }
+    }
   }
 
   // Figure out whether the toolbar-height side panel should show and by how
