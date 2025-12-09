@@ -19518,13 +19518,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
     </if>
 
-    <!-- Quick Delete elements. -->
-    <if expr="is_android">
-        <message name ="IDS_QUICK_DELETE_PROMPT_SURVEY_CUSTOM_INVITATION" desc="The invitation shown to a user, which allows the user to accept taking a survey.">
-        You just deleted data in Chrome. We’d love to hear about your experience to improve Chrome.
-      </message>
-    </if>
-
     <!-- PDF Ink Signatures elements. -->
     <message name="IDS_PDF_INK_SIGNATURES_IPH_BODY" desc="Content of in-product help to introduce the PDF Ink Signatures feature.">
     Add freehand drawings, signatures, and highlights with the new Draw tool
