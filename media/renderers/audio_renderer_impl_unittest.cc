@@ -2039,6 +2039,21 @@ TEST_F(AudioRendererImplTest,
   EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
 }
 
+TEST_F(AudioRendererImplTest,
+       TranscribeAudioCallback_SinkNotOptimizedForHardwareParameters) {
+  EnableSpeechRecognition();
+  renderer_->SetWasPlayedWithUserActivationAndHighMediaEngagement(true);
+  sink_->SetIsOptimizedForHardwareParameters(false);
+
+  EXPECT_CALL(*this, SetOnReadyCallback(_));
+  Initialize();
+
+  EXPECT_CALL(*this, AddAudio(_, _)).Times(0);
+  Preroll();
+
+  StartTicking();
+}
+
 TEST_F(AudioRendererImplTest, TranscribeAudioCallback_SendsTimestamp) {
   EnableSpeechRecognition();
   renderer_->SetWasPlayedWithUserActivationAndHighMediaEngagement(true);

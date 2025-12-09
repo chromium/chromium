@@ -1154,7 +1154,8 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
     if (transcribe_audio_callback_ &&
         (was_played_with_user_activation_and_high_media_engagement_ ||
          was_unmuted_)) {
-      transcribe_audio_callback_.Run(buffer);
+      task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(transcribe_audio_callback_, buffer));
     }
 #endif
 
@@ -1624,7 +1625,7 @@ void AudioRendererImpl::TranscribeAudio(
     scoped_refptr<media::AudioBuffer> buffer) {
 #if !BUILDFLAG(IS_ANDROID)
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (speech_recognition_client_) {
+  if (speech_recognition_client_ && sink_->IsOptimizedForHardwareParameters()) {
     // TODO(crbug.com/413823334): Resend a `new_timestamp` when large
     // discontinuities are detected in the media's timestamps (due to muxing).
     auto new_timestamp = send_pts_for_transcription_
