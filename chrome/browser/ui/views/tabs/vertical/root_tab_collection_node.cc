@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 
+#include <algorithm>
+
+#include "base/stl_util.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -89,21 +92,49 @@ void RootTabCollectionNode::OnTabStripModelChanged(
   if (tab_strip_model->closing_all()) {
     return;
   }
+
+  std::set<TabCollectionNode*> selection_changes;
+
   if (selection.active_tab_changed()) {
     if (selection.old_tab) {
       TabCollectionNode* old_tab_node =
           GetNodeForHandle(selection.old_tab->GetHandle());
       if (old_tab_node) {
-        old_tab_node->NotifyDataChanged();
+        selection_changes.insert(old_tab_node);
       }
     }
     if (selection.new_tab) {
       TabCollectionNode* new_tab_node =
           GetNodeForHandle(selection.new_tab->GetHandle());
       if (new_tab_node) {
-        new_tab_node->NotifyDataChanged();
+        selection_changes.insert(new_tab_node);
       }
     }
+  }
+
+  if (selection.selection_changed()) {
+    SelectionHandles selected_tabs;
+    for (auto index : selection.new_model.selected_indices()) {
+      tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(index);
+      selected_tabs.insert(tab->GetHandle());
+    }
+    auto old_selections =
+        base::STLSetDifference<SelectionHandles>(selected_tabs_, selected_tabs);
+    auto new_selections =
+        base::STLSetDifference<SelectionHandles>(selected_tabs, selected_tabs_);
+
+    for (auto tab_handle :
+         base::STLSetUnion<SelectionHandles>(old_selections, new_selections)) {
+      TabCollectionNode* tab_node = GetNodeForHandle(tab_handle);
+      if (tab_node) {
+        selection_changes.insert(tab_node);
+      }
+    }
+    selected_tabs_ = selected_tabs;
+  }
+
+  for (auto* tab_node : selection_changes) {
+    tab_node->NotifyDataChanged();
   }
 }
 

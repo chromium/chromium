@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_ROOT_TAB_COLLECTION_NODE_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_ROOT_TAB_COLLECTION_NODE_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
@@ -51,9 +52,11 @@ class RootTabCollectionNode : public TabCollectionNode,
                               int model_index) override;
 
  private:
+  using SelectionHandles = base::flat_set<tabs::TabHandle>;
   void UpdateTabData(content::WebContents* contents, int model_index);
 
   raw_ptr<TabStripModel> tab_strip_model_;
+  SelectionHandles selected_tabs_;
   base::WeakPtrFactory<RootTabCollectionNode> weak_ptr_factory_{this};
 };
 
