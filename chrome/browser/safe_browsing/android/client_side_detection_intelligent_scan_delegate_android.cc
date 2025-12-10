@@ -155,7 +155,15 @@ ClientSideDetectionIntelligentScanDelegateAndroid::
         PrefService& pref,
         std::unique_ptr<optimization_guide::ModelBrokerClient>
             model_broker_client)
-    : pref_(pref), model_broker_client_(std::move(model_broker_client)) {
+    : pref_(pref),
+      model_broker_client_(std::move(model_broker_client)),
+      is_feature_enabled_(
+          !base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) &&
+          base::FeatureList::IsEnabled(
+              kClientSideDetectionSendIntelligentScanInfoAndroid)) {
+  if (!is_feature_enabled_) {
+    return;
+  }
   pref_change_registrar_.Init(&pref);
   pref_change_registrar_.Add(
       prefs::kSafeBrowsingEnhanced,
@@ -171,6 +179,9 @@ ClientSideDetectionIntelligentScanDelegateAndroid::
 
 bool ClientSideDetectionIntelligentScanDelegateAndroid::
     ShouldRequestIntelligentScan(ClientPhishingRequest* verdict) {
+  if (!is_feature_enabled_) {
+    return false;
+  }
   if (!IsEnhancedProtectionEnabled(*pref_)) {
     return false;
   }
@@ -180,10 +191,6 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
           ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED) {
     return true;
   }
-  if (!base::FeatureList::IsEnabled(
-          kClientSideDetectionSendIntelligentScanInfoAndroid)) {
-    return false;
-  }
   return verdict->client_side_detection_type() ==
              ClientSideDetectionType::FORCE_REQUEST &&
          verdict->has_llama_forced_trigger_info() &&
@@ -192,6 +199,9 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
 
 bool ClientSideDetectionIntelligentScanDelegateAndroid::
     IsIntelligentScanAvailable(bool log_failed_eligibility_reason) {
+  if (!is_feature_enabled_) {
+    return false;
+  }
   if (!model_broker_client_) {
     return false;
   }
@@ -277,12 +287,10 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Shutdown() {
 }
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::OnPrefsUpdated() {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+  if (!is_feature_enabled_) {
     return;
   }
-  bool is_feature_enabled = base::FeatureList::IsEnabled(
-      kClientSideDetectionSendIntelligentScanInfoAndroid);
-  if (IsEnhancedProtectionEnabled(*pref_) && is_feature_enabled) {
+  if (IsEnhancedProtectionEnabled(*pref_)) {
     StartModelDownload();
   } else {
     ResetAllInquiries();

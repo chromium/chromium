@@ -77,6 +77,8 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   // changes.
   PrefChangeRegistrar pref_change_registrar_;
 
+  const bool is_feature_enabled_;
+
   bool pause_inquiry_for_testing_ = false;
 };
 
