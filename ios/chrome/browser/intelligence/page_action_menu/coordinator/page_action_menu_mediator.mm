@@ -138,10 +138,7 @@ const CGFloat kFeatureRowIconSize = 20;
   if (!_readerModeTabHelper) {
     return NO;
   }
-  return base::FeatureList::IsEnabled(
-             kEnableReaderModePageEligibilityForToolsMenu)
-             ? _readerModeTabHelper->CurrentPageIsDistillable()
-             : _readerModeTabHelper->CurrentPageIsEligibleForReaderMode();
+  return _readerModeTabHelper->CurrentPageIsEligibleForReaderMode();
 }
 
 - (BOOL)isReaderModeActive {

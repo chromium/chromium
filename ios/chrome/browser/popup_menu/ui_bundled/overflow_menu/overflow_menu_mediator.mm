@@ -1711,15 +1711,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     return NO;
   }
 
-  // If `kEnableReaderModePageEligibilityForToolsMenu` is enabled then not only
-  // the page needs to support Reader mode, but it needs to be probably
-  // distillable according to the heuristic.
-  if (base::FeatureList::IsEnabled(
-          kEnableReaderModePageEligibilityForToolsMenu)) {
-    return helper->CurrentPageIsDistillable();
-  } else {
-    return helper->CurrentPageIsEligibleForReaderMode();
-  }
+  return helper->CurrentPageIsEligibleForReaderMode();
 }
 
 // Whether Reader mode is active.

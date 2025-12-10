@@ -1428,12 +1428,6 @@ const char kReaderModeOptimizationGuideEligibilityName[] =
 const char kReaderModeOptimizationGuideEligibilityDescription[] =
     "Enables the optimization guide eligibility check for Reader Mode.";
 
-const char kReaderModePageEligibilityHeuristicName[] =
-    "Enables Reader Mode page eligibility heuristic";
-const char kReaderModePageEligibilityHeuristicDescription[] =
-    "Enables Reader Mode heuristic to hide/show the tools menu entrypoint "
-    "depending on page eligibility.";
-
 const char kReaderModeReadabilityDistillerName[] =
     "Enables Readability distiller for Reader Mode";
 const char kReaderModeReadabilityDistillerDescription[] =

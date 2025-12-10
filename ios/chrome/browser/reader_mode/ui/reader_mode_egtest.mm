@@ -152,14 +152,6 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector
-            (testNotEligibleReaderModePageEnabledInToolsMenu)]) {
-    config.features_disabled.push_back(
-        kEnableReaderModePageEligibilityForToolsMenu);
-  } else {
-    config.features_enabled_and_params.push_back(
-        {kEnableReaderModePageEligibilityForToolsMenu, {}});
-  }
   if ([self isRunningTest:@selector(testReadabilityEnabled)]) {
     config.features_enabled_and_params.push_back(
         {dom_distiller::kReaderModeUseReadability, {}});
@@ -277,17 +269,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
           grey_accessibilityID(kBadgeButtonIncognitoAccessibilityIdentifier)];
 }
 
-// Test that a page that is not eligible for Reader Mode shows as a disabled
-// option in the Tools menu.
-- (void)testNotEligibleReaderModePageDisabledInToolsMenu {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
-
-  [self assertReaderModeInToolsMenuWithMatcher:
-            grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)];
-}
-
 // Test that a page that is not eligible for Reader Mode shows as an enabled
-// option in the Tools menu when there is no page eligibility criteria.
+// option in the Tools menu.
 - (void)testNotEligibleReaderModePageEnabledInToolsMenu {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
 
