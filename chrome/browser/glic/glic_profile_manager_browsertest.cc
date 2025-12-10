@@ -15,6 +15,8 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
@@ -34,6 +36,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,6 +76,17 @@ class MockGlicKeyedService : public GlicKeyedService {
                          contextual_cueing_service,
                          actor_keyed_service) {}
   MOCK_METHOD(void, CloseFloatingPanel, (), (override));
+  MOCK_METHOD(void,
+              OpenFreDialogInNewTab,
+              (BrowserWindowInterface*, mojom::InvocationSource),
+              (override));
+  MOCK_METHOD(void,
+              ToggleUI,
+              (BrowserWindowInterface*,
+               bool,
+               mojom::InvocationSource,
+               std::optional<std::string>),
+              (override));
 
   bool IsWindowDetached() const override { return detached_; }
   void SetWindowDetached() { detached_ = true; }
@@ -544,4 +558,60 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 
 }  // namespace
+
+class GlicProfileManagerDidSelectProfileTest
+    : public GlicProfileManagerBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GlicProfileManagerDidSelectProfileTest() {
+    if (IsTrustFREOnboardingEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kGlicTrustFirstOnboarding);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kGlicTrustFirstOnboarding);
+    }
+  }
+
+  bool IsTrustFREOnboardingEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
+                       DidSelectProfile_NoConsent) {
+  // Create a profile that is eligible but has not consented.
+  Profile* profile =
+#if BUILDFLAG(IS_CHROMEOS)
+      CreateNewUserSessionAndProfile(kAccountId1, /*allow_glic=*/false);
+#else
+      CreateNewProfile(/*signin_and_allow_glic=*/false);
+  SigninWithPrimaryAccount(profile);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  SetGlicCapability(profile, true);
+  profile->GetPrefs()->SetInteger(
+      glic::prefs::kGlicCompletedFre,
+      static_cast<int>(glic::prefs::FreStatus::kNotStarted));
+  ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
+  ASSERT_FALSE(GlicEnabling::HasConsentedForProfile(profile));
+
+  auto* service = GetMockGlicKeyedService(profile);
+
+  if (IsTrustFREOnboardingEnabled()) {
+    EXPECT_CALL(*service, ToggleUI(testing::IsNull(), true,
+                                   mojom::InvocationSource::kProfilePicker,
+                                   testing::Eq(std::nullopt)));
+  } else {
+    EXPECT_CALL(*service,
+                OpenFreDialogInNewTab(testing::NotNull(),
+                                      mojom::InvocationSource::kProfilePicker));
+  }
+
+  GlicProfileManager::GetInstance()->DidSelectProfile(profile);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicProfileManagerDidSelectProfileTest,
+                         testing::Bool());
 }  // namespace glic

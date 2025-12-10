@@ -278,7 +278,8 @@ void GlicProfileManager::DidSelectProfile(Profile* profile) {
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
 
-  if (!GlicEnabling::HasConsentedForProfile(profile)) {
+  if (!GlicEnabling::HasConsentedForProfile(profile) &&
+      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
     // Open a browser and show the FRE in a new tab.
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     service->OpenFreDialogInNewTab(displayer.browser(),

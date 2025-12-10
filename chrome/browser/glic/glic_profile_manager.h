@@ -106,6 +106,9 @@ class GlicProfileManager : public ProfileManagerObserver {
   base::WeakPtr<GlicProfileManager> GetWeakPtr();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(GlicProfileManagerDidSelectProfileTest,
+                           DidSelectProfile_NoConsent);
+
   // Callback from ProfilePicker::Show().
   void DidSelectProfile(Profile* profile);
 
