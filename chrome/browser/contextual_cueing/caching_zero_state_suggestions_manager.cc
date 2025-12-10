@@ -62,7 +62,7 @@ class CachingContextualCueingServiceImpl
                 EmptySuggestions()));
   }
 
-  void GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+  bool GetContextualGlicZeroStateSuggestionsForPinnedTabs(
       std::vector<content::WebContents*> pinned_web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
@@ -70,12 +70,13 @@ class CachingContextualCueingServiceImpl
       GlicSuggestionsCallback callback) override {
     PageReference focused_page;
     std::vector<GURL> urls;
-    if (focused_tab) {
+    if (focused_tab && focused_tab->GetLastCommittedURL().is_valid()) {
       urls.push_back(focused_tab->GetLastCommittedURL());
       focused_page.page = focused_tab->GetPrimaryPage().GetWeakPtr();
     }
     for (auto* web_contents : pinned_web_contents) {
-      if (web_contents != focused_tab) {
+      if (web_contents != focused_tab &&
+          web_contents->GetLastCommittedURL().is_valid()) {
         urls.push_back(web_contents->GetLastCommittedURL());
       }
     }
@@ -90,10 +91,10 @@ class CachingContextualCueingServiceImpl
         },
         std::move(callback));
     if (!new_entry) {
-      return;
+      return false;
     }
 
-    contextual_cueing_service_
+    return contextual_cueing_service_
         ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
             pinned_web_contents, is_fre, supported_tools, focused_tab,
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
