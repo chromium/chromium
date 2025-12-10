@@ -491,15 +491,15 @@ search-animated-glow {
 }
 
 #suggestionActivity {
-  bottom: var(--cr-composebox-suggestion-activity-bottom);
   color: var(--color-composebox-suggestion-activity);
+  display: flex;
   font-size: 12px;
   font-weight: 400;
-  left: 50%;
+  justify-content: flex-end;
   line-height: 18px;
-  margin-top: var(--cr-composebox-suggestion-activity-margin-top, 20px);
-  position: absolute;
-  transform: translate(-50%);
+  padding-bottom: 10px;
+  padding-inline-end: 18px;
+  position: relative;
 }
 
 :host([expanding_][show-file-carousel_][carousel-on-top_]) #inputContainer {
