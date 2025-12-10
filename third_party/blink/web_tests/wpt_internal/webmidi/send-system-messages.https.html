@@ -47,7 +47,7 @@ promise_test(async _ => {
   }
 
   for (const message of systemExclusiveMessages) {
-    assert_throws_dom('InvalidAccessError', () => output.send(message));
+    assert_throws_dom('NotAllowedError', () => output.send(message));
   }
 }, 'various types of system messages can be validated');
 

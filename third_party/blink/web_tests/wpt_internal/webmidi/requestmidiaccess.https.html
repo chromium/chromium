@@ -122,7 +122,7 @@ promise_test(async t => {
   assert_throws_js(TypeError, () => output.send([0xfff, 0x45, 0x7f]));
 
   // Test sending system exclusive messages. These should throw, since we don't have sysex access.
-  assert_throws_dom('InvalidAccessError', () => output.send([0xf0, 0x45, 0xf7]));
+  assert_throws_dom('NotAllowedError', () => output.send([0xf0, 0x45, 0xf7]));
 
   // Now test System Exclusive access without System Exclusive
   // permission - our test mock should not allow this type of access.

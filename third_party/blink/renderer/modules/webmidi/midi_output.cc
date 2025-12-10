@@ -124,7 +124,7 @@ class MessageValidator {
       if (IsSysex()) {
         if (!sysex_enabled) {
           exception_state.ThrowDOMException(
-              DOMExceptionCode::kInvalidAccessError,
+              DOMExceptionCode::kNotAllowedError,
               StrCat({"System exclusive message is not allowed ",
                       GetPositionString()}));
           return false;
