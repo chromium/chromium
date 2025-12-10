@@ -1,10 +1,6 @@
 # These tests rely on LayerTreeHostImpl to produce CompositorFrames, which it
 # doesn't do in TreesInViz mode.
 -CommitToPendingTreeLayerTreeHostImplTest.FarAwayQuadsDontNeedAA
--LayerTreeHostImplViewportCoveredTest.ActiveTreeGrowViewportInvalid
--LayerTreeHostImplViewportCoveredTest.ActiveTreeShrinkViewportInvalid
--LayerTreeHostImplViewportCoveredTest.ViewportCovered
--LayerTreeHostImplViewportCoveredTest.ViewportCoveredScaled
 
 # TODO(crbug.com/406251942) Investigate PictureLayerTilingSet::CleanUpTilings path
 -LayerTreeHostPictureTestForceRecalculateScales.RunSingleThread_DelegatingRenderer

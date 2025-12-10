@@ -10325,8 +10325,7 @@ TEST_P(LayerTreeHostImplTest, MayThrottleIfUnusedFrames) {
   EXPECT_TRUE(metadata.may_throttle_if_undrawn_frames);
 }
 
-class LayerTreeHostImplViewportCoveredTest
-    : public CommitToPendingTreeLayerTreeHostImplTest {
+class LayerTreeHostImplViewportCoveredTest : public LayerTreeHostImplTest {
  protected:
   LayerTreeHostImplViewportCoveredTest()
       : gutter_quad_material_(viz::DrawQuad::Material::kSolidColor),
@@ -10521,7 +10520,12 @@ class LayerTreeHostImplViewportCoveredTest
   bool did_activate_pending_tree_;
 };
 
-TEST_F(LayerTreeHostImplViewportCoveredTest, ViewportCovered) {
+// These tests are only relevant for CommitToPendingTree since they are checking
+// conditions that would need to be queried from the Viz process.
+INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(LayerTreeHostImplViewportCoveredTest,
+                                       CommitToPendingTree);
+
+TEST_P(LayerTreeHostImplViewportCoveredTest, ViewportCovered) {
   viewport_size_ = gfx::Size(1000, 1000);
 
   bool software = false;
@@ -10533,7 +10537,7 @@ TEST_F(LayerTreeHostImplViewportCoveredTest, ViewportCovered) {
   EXPECT_SCOPED(TestLayerIsLargerThanViewport());
 }
 
-TEST_F(LayerTreeHostImplViewportCoveredTest, ViewportCoveredScaled) {
+TEST_P(LayerTreeHostImplViewportCoveredTest, ViewportCoveredScaled) {
   viewport_size_ = gfx::Size(1000, 1000);
 
   bool software = false;
@@ -10547,7 +10551,7 @@ TEST_F(LayerTreeHostImplViewportCoveredTest, ViewportCoveredScaled) {
   EXPECT_SCOPED(TestLayerIsLargerThanViewport());
 }
 
-TEST_F(LayerTreeHostImplViewportCoveredTest, ActiveTreeGrowViewportInvalid) {
+TEST_P(LayerTreeHostImplViewportCoveredTest, ActiveTreeGrowViewportInvalid) {
   viewport_size_ = gfx::Size(1000, 1000);
 
   bool software = true;
@@ -10562,7 +10566,7 @@ TEST_F(LayerTreeHostImplViewportCoveredTest, ActiveTreeGrowViewportInvalid) {
   EXPECT_SCOPED(TestLayerIsLargerThanViewportWithOnDraw());
 }
 
-TEST_F(LayerTreeHostImplViewportCoveredTest, ActiveTreeShrinkViewportInvalid) {
+TEST_P(LayerTreeHostImplViewportCoveredTest, ActiveTreeShrinkViewportInvalid) {
   viewport_size_ = gfx::Size(1000, 1000);
 
   bool software = true;
