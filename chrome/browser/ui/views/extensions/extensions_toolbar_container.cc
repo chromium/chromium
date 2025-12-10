@@ -103,7 +103,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
       display_mode_(display_mode),
       action_hover_card_controller_(
           std::make_unique<ToolbarActionHoverCardController>(this)),
-      view_model_(std::make_unique<ExtensionsToolbarContainerViewModel>()) {
+      view_model_(std::make_unique<ExtensionsToolbarViewModel>()) {
   SetProperty(views::kElementIdentifierKey,
               kToolbarExtensionsContainerElementId);
 

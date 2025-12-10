@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/extensions/extensions_toolbar_container_view_model.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 
-ExtensionsToolbarContainerViewModel::ExtensionsToolbarContainerViewModel() =
-    default;
+ExtensionsToolbarViewModel::ExtensionsToolbarViewModel() = default;
 
-ExtensionsToolbarContainerViewModel::~ExtensionsToolbarContainerViewModel() =
-    default;
+ExtensionsToolbarViewModel::~ExtensionsToolbarViewModel() = default;
 
-void ExtensionsToolbarContainerViewModel::AddAction(
+void ExtensionsToolbarViewModel::AddAction(
     const ToolbarActionsModel::ActionId& action_id,
     BrowserWindowInterface* browser,
     std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate) {
@@ -19,7 +17,7 @@ void ExtensionsToolbarContainerViewModel::AddAction(
 }
 
 std::unique_ptr<ToolbarActionViewModel>
-ExtensionsToolbarContainerViewModel::RemoveAction(
+ExtensionsToolbarViewModel::RemoveAction(
     const ToolbarActionsModel::ActionId& action_id) {
   auto iter =
       std::ranges::find(actions_, action_id, &ToolbarActionViewModel::GetId);

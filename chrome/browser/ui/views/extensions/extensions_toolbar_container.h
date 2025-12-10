@@ -15,7 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/extensions/extensions_toolbar_container_view_model.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -333,7 +333,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
       action_hover_card_controller_;
 
   // The view model for this container.
-  std::unique_ptr<ExtensionsToolbarContainerViewModel> view_model_;
+  std::unique_ptr<ExtensionsToolbarViewModel> view_model_;
 
   // View for every action, does not imply pinned or currently shown.
   ToolbarIcons icons_;
