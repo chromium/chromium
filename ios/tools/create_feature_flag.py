@@ -344,6 +344,9 @@ def main():
                         required=True,
                         help="The team owner for the feature flag.")
     parser.add_argument(
+        "--bug",
+        help="Optional: The bug ID to associate with this feature flag.")
+    parser.add_argument(
         "--features-h-path",
         help="Optional: The relative path to the features.h file from the "
         "src root. If provided, the features.mm path will be derived "
@@ -435,7 +438,9 @@ def main():
         print(result.stderr.strip(), file=sys.stderr)
 
     if not args.no_git:
-        commit_message = f"[iOS]: Add {feature_name} feature flag"
+        commit_message = f"[iOS] Add {feature_name} feature flag"
+        if args.bug:
+            commit_message += f"\n\nBug: {args.bug}"
 
         print("\nFormatting code...")
         run_command(["git", "cl", "format"])
