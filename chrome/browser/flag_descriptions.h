@@ -2196,13 +2196,6 @@ inline constexpr char kFileHandlingIconsDescription[] =
     "icons. See https://github.com/WICG/file-handling/blob/main/explainer.md "
     "for more information.";
 
-inline constexpr char kFileSystemObserverName[] = "FileSystemObserver";
-inline constexpr char kFileSystemObserverDescription[] =
-    "Enables the FileSystemObserver interface, which allows websites to be "
-    "notified of changes to the file system. See "
-    "https://github.com/whatwg/fs/blob/main/proposals/FileSystemObserver.md "
-    "for more information.";
-
 inline constexpr char kAckCopyOutputRequestEarlyForViewTransitionName[] =
     "Ack CopyOutputRequest early for View Transition";
 inline constexpr char kAckCopyOutputRequestEarlyForViewTransitionDescription[] =

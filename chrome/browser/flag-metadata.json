@@ -5152,11 +5152,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "file-system-observer",
-    "owners": [ "dslee@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 134
-  },
-  {
     "name": "file-system-provider-cloud-file-system",
     "owners": [ "benreich@google.com", "cassycc@google.com", "simmonsjosh@google.com" ],
     "expiry_milestone": 140
