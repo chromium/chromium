@@ -195,7 +195,9 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 - (void)handleBadgeContainerCollapse:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
     case LocationBarBadgeType::kGeminiContextualCueChip:
-      _tracker->Dismissed(feature_engagement::kIPHiOSGeminiContextualCueChip);
+      if (!IsAskGeminiChipIgnoreCriteria()) {
+        _tracker->Dismissed(feature_engagement::kIPHiOSGeminiContextualCueChip);
+      }
       break;
     default:
       break;
