@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -53,6 +54,7 @@ namespace autofill::payments {
 using IssuerId = autofill::BnplIssuer::IssuerId;
 using ::testing::_;
 using ::testing::AnyOf;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::FieldsAre;
@@ -993,68 +995,6 @@ TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Tests that `OnIssuerSelected()` calls with an unlinked BNPL issuer will call
-// the payments network interface with the request details filled out correctly.
-TEST_F(
-    BnplManagerTest,
-    OnIssuerSelected_CallsGetDetailsForCreateBnplPaymentInstrument_UnlinkedIssuer) {
-  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
-
-  ASSERT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale,
-            kAppLocale);
-  ASSERT_EQ(
-      test_api(*bnpl_manager_).GetOngoingFlowState()->billing_customer_number,
-      kBillingCustomerNumber);
-
-  BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
-
-  EXPECT_CALL(*payments_network_interface_,
-              GetDetailsForCreateBnplPaymentInstrument(
-                  /*request_details=*/
-                  FieldsAre(kAppLocale, kBillingCustomerNumber,
-                            autofill::ConvertToBnplIssuerIdString(
-                                unlinked_issuer.issuer_id())),
-                  /*callback=*/_));
-
-  OnIssuerSelected(unlinked_issuer);
-
-  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->issuer,
-            unlinked_issuer);
-}
-
-// Tests that `OnIssuerSelected()` calls with a linked issuer where ToS
-// acceptance is required will call the payments network interface with the
-// request details filled out correctly.
-TEST_F(
-    BnplManagerTest,
-    OnIssuerSelected_CallsGetDetailsForUpdateBnplPaymentInstrument_TosAcceptanceRequired) {
-  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
-
-  ASSERT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale,
-            kAppLocale);
-  ASSERT_EQ(
-      test_api(*bnpl_manager_).GetOngoingFlowState()->billing_customer_number,
-      kBillingCustomerNumber);
-
-  BnplIssuer issuer = test::GetTestLinkedBnplIssuer(
-      IssuerId::kBnplKlarna,
-      DenseSet<PaymentInstrument::ActionRequired>{
-          PaymentInstrument::ActionRequired::kAcceptTos});
-
-  EXPECT_CALL(*payments_network_interface_,
-              GetDetailsForUpdateBnplPaymentInstrument(
-                  /*request_details=*/
-                  FieldsAre(kAppLocale, kBillingCustomerNumber,
-                            issuer.payment_instrument()->instrument_id(),
-                            /*type=*/kGetDetailsForAcceptTos,
-                            /*issuer_id=*/kBnplKlarnaIssuerId),
-                  /*callback=*/_));
-
-  OnIssuerSelected(issuer);
-
-  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->issuer, issuer);
-}
-
 // Tests that `OnDidGetLegalMessageFromServer` set the BNPL manager state if the
 // request has completed successfully, and shows the ToS UI. This test also
 // ensures the ToS/progress UI is closed after receiving a redirect URL for
@@ -1216,6 +1156,7 @@ TEST_F(BnplManagerTest, GetDetailsForUpdateBnplPaymentInstrument_Success) {
               GetDetailsForUpdateBnplPaymentInstrument(
                   /*request_details=*/
                   FieldsAre(kAppLocale, kBillingCustomerNumber,
+                            /*client_behavior_signals=*/IsEmpty(),
                             issuer.payment_instrument()->instrument_id(),
                             /*type=*/kGetDetailsForAcceptTos,
                             /*issuer_id=*/kBnplKlarnaIssuerId),
@@ -2273,6 +2214,103 @@ TEST_F(BnplManagerTest, OnAmountExtractionReturnedFromAi_Timeout_ShowsErrorUi) {
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_IOS)
+// Tests that `OnIssuerSelected()` calls with a linked issuer where ToS
+// acceptance is required will call the payments network interface with the
+// request details filled out correctly.
+TEST_F(
+    BnplManagerTest,
+    OnIssuerSelected_CallsGetDetailsForUpdateBnplPaymentInstrument_TosAcceptanceRequired) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
+
+  ASSERT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale,
+            kAppLocale);
+  ASSERT_EQ(
+      test_api(*bnpl_manager_).GetOngoingFlowState()->billing_customer_number,
+      kBillingCustomerNumber);
+
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer(
+      IssuerId::kBnplKlarna,
+      DenseSet<PaymentInstrument::ActionRequired>{
+          PaymentInstrument::ActionRequired::kAcceptTos});
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(
+      *payments_network_interface_,
+      GetDetailsForUpdateBnplPaymentInstrument(
+          /*request_details=*/
+          FieldsAre(
+              kAppLocale, kBillingCustomerNumber,
+              /*client_behavior_signals=*/
+              ElementsAre(
+                  ClientBehaviorConstants::kShowAccountEmailInLegalMessage),
+              issuer.payment_instrument()->instrument_id(),
+              /*type=*/kGetDetailsForAcceptTos,
+              /*issuer_id=*/kBnplKlarnaIssuerId),
+          /*callback=*/_));
+#else   // Desktop only.
+  EXPECT_CALL(*payments_network_interface_,
+              GetDetailsForUpdateBnplPaymentInstrument(
+                  /*request_details=*/
+                  FieldsAre(kAppLocale, kBillingCustomerNumber,
+                            /*client_behavior_signals=*/IsEmpty(),
+                            issuer.payment_instrument()->instrument_id(),
+                            /*type=*/kGetDetailsForAcceptTos,
+                            /*issuer_id=*/kBnplKlarnaIssuerId),
+                  /*callback=*/_));
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  OnIssuerSelected(issuer);
+
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->issuer, issuer);
+}
+
+// Tests that `OnIssuerSelected()` calls with an unlinked BNPL issuer will call
+// the payments network interface with the request details filled out correctly.
+TEST_F(
+    BnplManagerTest,
+    OnIssuerSelected_CallsGetDetailsForCreateBnplPaymentInstrument_UnlinkedIssuer) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
+
+  ASSERT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->app_locale,
+            kAppLocale);
+  ASSERT_EQ(
+      test_api(*bnpl_manager_).GetOngoingFlowState()->billing_customer_number,
+      kBillingCustomerNumber);
+
+  BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(
+      *payments_network_interface_,
+      GetDetailsForCreateBnplPaymentInstrument(
+          /*request_details=*/
+          FieldsAre(
+              kAppLocale, kBillingCustomerNumber,
+              /*client_behavior_signals=*/
+              ElementsAre(
+                  ClientBehaviorConstants::kShowAccountEmailInLegalMessage),
+              autofill::ConvertToBnplIssuerIdString(
+                  unlinked_issuer.issuer_id())),
+          /*callback=*/_));
+#else   // Desktop only.
+  EXPECT_CALL(*payments_network_interface_,
+              GetDetailsForCreateBnplPaymentInstrument(
+                  /*request_details=*/
+                  FieldsAre(kAppLocale, kBillingCustomerNumber,
+                            /*client_behavior_signals=*/IsEmpty(),
+                            autofill::ConvertToBnplIssuerIdString(
+                                unlinked_issuer.issuer_id())),
+                  /*callback=*/_));
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  OnIssuerSelected(unlinked_issuer);
+
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->issuer,
+            unlinked_issuer);
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 

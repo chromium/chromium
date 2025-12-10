@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_strategy.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -499,6 +500,10 @@ void BnplManager::GetDetailsForCreateBnplPaymentInstrument() {
   request_details.app_locale = ongoing_flow_state_->app_locale;
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
+#if BUILDFLAG(IS_ANDROID)
+  request_details.client_behavior_signals.push_back(
+      ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
+#endif  // BUILDFLAG(IS_ANDROID)
   request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
       ongoing_flow_state_->issuer->issuer_id());
 
@@ -515,6 +520,10 @@ void BnplManager::GetDetailsForUpdateBnplPaymentInstrument() {
   request_details.app_locale = ongoing_flow_state_->app_locale;
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
+#if BUILDFLAG(IS_ANDROID)
+  request_details.client_behavior_signals.push_back(
+      ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
+#endif  // BUILDFLAG(IS_ANDROID)
   request_details.instrument_id =
       ongoing_flow_state_->issuer->payment_instrument()->instrument_id();
   request_details.type =
