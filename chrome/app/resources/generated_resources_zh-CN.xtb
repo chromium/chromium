@@ -1263,7 +1263,7 @@
 <translation id="1849016657376805933">任何 HID 设备</translation>
 <translation id="1849022541429818637">可以捕获和使用您的鼠标输入</translation>
 <translation id="1849252834922144634">按住即可固定快捷方式</translation>
-<translation id="1850145825777333687">设备凭据</translation>
+<translation id="1850145825777333687">设备凭证</translation>
 <translation id="1850508293116537636">顺时针旋转(&amp;C)</translation>
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />注册之前，您需要清除 TPM，以使 <ph name="DEVICE_OS" /> 拥有对设备的所有权。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />您还可彻底关闭 TPM 设备。您的数据仍会通过软件加密技术得到妥善存储，但某些安全功能（例如由硬件支持的证书）将被停用。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />若要更改您的 TPM 设置，请重新启动并进入系统 BIOS/UEFI 设置。具体步骤因设备型号而异。如需了解详情，请于重新启动之前在另外一部设备上打开 <ph name="DEVICE_OS" /> 文档：g.co/flex/TPMHelp。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1851551847729706116">正在将“<ph name="TAB_NAME" />”共享到此标签页</translation>
@@ -4710,7 +4710,7 @@
 <translation id="4231231258999726714">正在设置 Steam for Chromebook</translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4232376164796433044">密码和自动填充</translation>
-<translation id="4232484478444192782">Android 手机可协助您完成操作。系统正在传输您的 Wi-Fi 凭据和密码。</translation>
+<translation id="4232484478444192782">Android 手机可协助您完成操作。系统正在传输您的 Wi-Fi 凭证和密码。</translation>
 <translation id="423327101839111402">移除分组“<ph name="NAME" />”</translation>
 <translation id="4233739489690259993">您的 Chromebook 将不会再收到安全更新和软件更新。要想获得最新安全功能和新功能，请升级您的设备。须遵守相关优惠条款。</translation>
 <translation id="4235965441080806197">取消登录</translation>
@@ -10081,7 +10081,7 @@
 <translation id="7988805580376093356">请从 USB（而非您的操作系统）中运行 <ph name="DEVICE_OS" />。</translation>
 <translation id="7988876720343145286">更多 Android 设置和权限</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />语音 <ph name="COUNT" /></translation>
-<translation id="7990958035181555539">从您的 Android 手机自动传输 Wi-Fi 凭据</translation>
+<translation id="7990958035181555539">从您的 Android 手机自动传输 Wi-Fi 凭证</translation>
 <translation id="7991296728590311172">开关控制设置</translation>
 <translation id="7992080146463834191">总结内容、简化复杂语言或提问。</translation>
 <translation id="7992203134935383159">语音合成</translation>

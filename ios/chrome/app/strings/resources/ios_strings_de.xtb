@@ -104,7 +104,7 @@
 <translation id="1377508275003315939">Passwörter</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} von {count} Adresse}other{{position} von {count} Adressen}}</translation>
 <translation id="1383876407941801731">Suchen</translation>
-<translation id="138618066238211776">Als „<ph name="USER_NAME" />“ fortfahren</translation>
+<translation id="138618066238211776">Als <ph name="USER_NAME" /> fortfahren</translation>
 <translation id="138692594145659985">Optionen zum Speichern von Karten</translation>
 <translation id="1396260204083880024">Angemeldet als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Öffne das Kontomenü.</translation>
 <translation id="1397144142234474689">Verlauf ausblenden</translation>
@@ -629,7 +629,7 @@
 <translation id="3469117812148449995">Optionen zum Speichern von Passwörtern</translation>
 <translation id="3472469028191701821">Wird in neuem Tab geöffnet</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{für {COUNT} Website oder App}other{für {COUNT} Websites oder Apps}}</translation>
-<translation id="3474624961160222204">Als „<ph name="NAME" />“ fortfahren</translation>
+<translation id="3474624961160222204">Als <ph name="NAME" /> fortfahren</translation>
 <translation id="3476450923187944815">In anderen Apps auf deine Passwörter zugreifen.</translation>
 <translation id="3485558910355485767">Neues Inkognitofenster</translation>
 <translation id="3488501490964659223">Tabs wurden geschlossen und Browserdaten gelöscht. Du wurdest abgemeldet.</translation>
@@ -925,7 +925,7 @@
 <translation id="4642472735733036929">Preis-Tracking gestoppt</translation>
 <translation id="4645575059429386691">Von deinen Eltern verwaltet</translation>
 <translation id="4647758699119474035">Angemeldet als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fehler bei Google-Konto. Öffne das Kontomenü.</translation>
-<translation id="4650125387981512669">Weiter als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4650125387981512669">Als <ph name="FIRST_RUN_ACCOUNT_NAME" /> fortfahren</translation>
 <translation id="4651927776207937667">{count,plural, =1{Nach 1 Minute ausblenden}other{Nach {count} Minuten ausblenden}}</translation>
 <translation id="4652817563047461855">Prüfe, ob deine Passwörter sicher sind, finde heraus, ob sie kompromittiert wurden, und informiere dich darüber, wie du dich im Internet besser schützen kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Speichern</translation>
@@ -1005,7 +1005,7 @@
 <translation id="4896467949657706481">Tabs wurden geschlossen und du wurdest abgemeldet</translation>
 <translation id="4911042367886397055">Willkommen zurück, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Du kannst eine Kopie deines Passworts geschützt mit Personen in deiner Familiengruppe teilen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="4917025507570489430">Du kannst vorhandene Browserdaten verwenden, wenn du als <ph name="USER_EMAIL" /> angemeldet bist. Deine Organisation kann diese Daten möglicherweise ansehen.</translation>
+<translation id="4917025507570489430">Du kannst vorhandene Browserdaten verwenden, wenn du als <ph name="USER_EMAIL" /> angemeldet bist. Deine Organisation kann diese Daten möglicherweise aufrufen.</translation>
 <translation id="4918086044614829423">Annehmen</translation>
 <translation id="4930714375720679147">Aktivieren</translation>
 <translation id="4932733599132424254">Datum</translation>
@@ -1325,7 +1325,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6090760257419195752">Geschlossene Warnungen</translation>
 <translation id="6094325891006032858">Erweitertes Safe Browsing aktivieren</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> gefunden</translation>
-<translation id="6100617279104942061">Angemeldet als <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
+<translation id="6100617279104942061">Angemeldet als <ph name="USER_EMAIL" />. Öffne die Einstellungen.</translation>
 <translation id="6100676328067737810">Deine Daten werden in deinem Google-Konto (<ph name="USER_EMAIL" />) gespeichert.</translation>
 <translation id="610083648014322104">Hol dir relevante Antworten basierend auf dem Inhalt der aktuellen Seite</translation>
 <translation id="6103540626693881831">Verschlüsselung auf dem Gerät</translation>

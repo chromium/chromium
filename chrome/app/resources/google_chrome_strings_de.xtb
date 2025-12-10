@@ -230,7 +230,7 @@
 <translation id="3541482654983822893">Chrome kann deine Passwörter nicht prüfen. Bitte versuche es in 24 Stunden noch einmal.</translation>
 <translation id="3576528680708590453">Dein Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="TARGET_URL_HOSTNAME" /> in einem alternativen Browser geöffnet wird.</translation>
 <translation id="3582972582564653026">Chrome auf allen deinen Geräten synchronisieren und personalisieren</translation>
-<translation id="3583751698304738917">Du bist in einem anderen Chrome-Profil bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet</translation>
+<translation id="3583751698304738917">Du bist in einem anderen Chrome-Profil bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet.</translation>
 <translation id="358381413217813387">Diese Seite mit Google Lens durchsuchen</translation>
 <translation id="3589519427766620380">Google Lens eine Frage zu dieser Seite stellen</translation>
 <translation id="3595784445906693824">In einem neuen Profil in Chrome anmelden?</translation>
@@ -325,7 +325,7 @@
 <translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Die Installation ist aufgrund eines Fehlers mit einem nicht unterstützten Protokoll fehlgeschlagen.</translation>
 <translation id="4728575227883772061">Installation aufgrund von unbekanntem Fehler fehlgeschlagen. Falls Google Chrome bereits ausgeführt wird, schließe es und versuche es noch einmal.</translation>
-<translation id="4737281654364167024">Melde dich mit <ph name="EMAIL" /> in Chrome an, um fortzufahren. So wird sichergestellt, dass die Richtlinien deiner Organisation eingehalten werden.</translation>
+<translation id="4737281654364167024">Melde dich mit <ph name="EMAIL" /> in Chrome an, um fortzufahren. So werden die Richtlinien deiner Organisation eingehalten.</translation>
 <translation id="4741235124132242877">Angepinnt! Du kannst Google Lens wieder über die Symbolleiste verwenden.</translation>
 <translation id="475321580758063259">Aktualisiere Chrome, um weiterhin Chrome-Daten in deinem Google-Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
@@ -334,7 +334,7 @@
 <translation id="4793679854893018356">So trägt Chrome zu deinem Schutz bei</translation>
 <translation id="4828579605166583682">Google Chrome versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="4842397268809523050">Chrome OS Flex konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
-<translation id="4851866215237571846"><ph name="EXISTING_USER" /> ist bereits angemeldet.  Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich in Chrome in deinem eigenen Profil als <ph name="USER_EMAIL_ADDRESS" /> an.</translation>
+<translation id="4851866215237571846"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich in Chrome in deinem eigenen Profil als <ph name="USER_EMAIL_ADDRESS" /> an.</translation>
 <translation id="4855026984605187434">Wenn du deinen Bildschirm teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen</translation>
 <translation id="4873783916118289636">Lerne die wichtigsten Datenschutz- und Sicherheitseinstellungen in Chrome kennen</translation>
 <translation id="4885446229353981848">Google Lens-Verknüpfung immer anzeigen</translation>
@@ -386,7 +386,7 @@
 <translation id="5530733413481476019">Chrome noch schneller machen</translation>
 <translation id="5550137307985173298">Wenn du Chrome einen neuen Look geben möchtest, klicke auf der Seite „Neuer Tab“ auf den Button „Chrome anpassen“</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5579324208890605088">Fehler beim Starten: Bitte führe das Installationsprogramm als normaler Nutzer statt als Administrator aus.</translation>
+<translation id="5579324208890605088">Fehler beim Starten: Achte darauf, dass du das Installationsprogramm nicht als Admin ausführst.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5600352656975192682">Du kannst Chrome an die Taskleiste anpinnen, um jederzeit schnell darauf zugreifen zu können</translation>
 <translation id="5602351063754773347">Chrome empfiehlt, sie zu entfernen. <ph name="BEGIN_LINK" />Weitere Informationen zu unterstützten Erweiterungen<ph name="END_LINK" /></translation>
@@ -558,7 +558,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="7308322188646931570">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
-<translation id="7386878009611068389">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, wechsel zu deinem Chrome-Profil, in dem du bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet bist</translation>
+<translation id="7386878009611068389">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, wechsle zu deinem Chrome-Profil, in dem du bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet bist.</translation>
 <translation id="7398801000654795464">Du warst in Chrome als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
 <translation id="7412494426921990001">Klicke auf das Chrome-Menü</translation>
 <translation id="7419819959108735624">Wähle ein beliebiges Element für die Suche mit Google Lens aus</translation>
@@ -701,7 +701,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="8834965163890861871">Google Chrome versucht, Passwörter zu bearbeiten. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8843516219908676469">Chrome erkennt den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome empfiehlt, sie zu entfernen}other{Chrome empfiehlt, sie zu entfernen}}</translation>
-<translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm als Administrator.</translation>
+<translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm noch einmal als Admin.</translation>
 <translation id="8865415417596392024">Chrome-Daten in meinem Konto</translation>
 <translation id="8883862939660515976">Google Lens nach Infos zu diesem Bild fragen</translation>
 <translation id="8914504000324227558">Chrome neu starten</translation>
