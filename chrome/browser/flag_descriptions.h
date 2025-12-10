@@ -2209,10 +2209,6 @@ inline constexpr char kFluentOverlayScrollbarsDescription[] =
     "Stylizes scrollbars with Microsoft Fluent design and makes them overlay "
     "over the web's content.";
 
-inline constexpr char kFluentScrollbarsName[] = "Fluent scrollbars.";
-inline constexpr char kFluentScrollbarsDescription[] =
-    "Stylizes scrollbars with Microsoft Fluent design.";
-
 inline constexpr char kFillOnAccountSelectName[] =
     "Fill passwords on account selection";
 inline constexpr char kFillOnAccountSelectDescription[] =
