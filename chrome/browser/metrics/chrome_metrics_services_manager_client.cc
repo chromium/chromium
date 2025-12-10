@@ -354,8 +354,6 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
   // before tabs get added to the TabModel. This means it may be more
   // conservative in case unused TabModels are not cleaned up, but it seems to
   // work correctly.
-  // TODO(crbug.com/40529753): Check if TabModelList's version can be updated
-  // safely.
   // TODO(crbug.com/40107157): This function should return true for Incognito
   // CCTs.
   for (const TabModel* model : TabModelList::models()) {
