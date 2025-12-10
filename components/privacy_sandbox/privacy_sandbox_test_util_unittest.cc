@@ -177,23 +177,6 @@ TEST_P(PrivacySandboxTestUtilBoolTest, VerifyM1TopicsEnabledStateKeySetsPref) {
       state);
 }
 
-TEST_P(PrivacySandboxTestUtilBoolTest,
-       VerifykBlockAll3pcToggleEnabledStateKeySetsPref) {
-  bool state = GetParam();
-  ApplyTestState(StateKey::kBlockAll3pcToggleEnabledUserPrefValue, state);
-  EXPECT_EQ(prefs()->GetUserPref(prefs::kBlockAll3pcToggleEnabled)->GetBool(),
-            state);
-}
-
-TEST_P(PrivacySandboxTestUtilBoolTest,
-       VerifykTrackingProtection3pcdEnabledStateKeySetsPref) {
-  bool state = GetParam();
-  ApplyTestState(StateKey::kTrackingProtection3pcdEnabledUserPrefValue, state);
-  EXPECT_EQ(
-      prefs()->GetUserPref(prefs::kTrackingProtection3pcdEnabled)->GetBool(),
-      state);
-}
-
 TEST_P(PrivacySandboxTestUtilBoolTest, VerifyM1FledgeEnabledStateKeySetsPref) {
   bool state = GetParam();
   ApplyTestState(StateKey::kM1FledgeEnabledUserPrefValue, state);

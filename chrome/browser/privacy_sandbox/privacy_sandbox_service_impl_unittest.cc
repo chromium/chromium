@@ -2575,21 +2575,6 @@ TEST_F(PrivacySandboxServiceM1PromptTest, NonChromeBuildPrompt) {
 }
 #endif
 
-TEST_F(PrivacySandboxServiceM1PromptTest, ThirdPartyCookiesBlockedPostTP3PC) {
-  // If third party cookies are blocked, set the suppressed reason as
-  // kThirdPartyCookiesBlocked and return kNone.
-  RunTestCase(
-      TestState{{kM1PromptPreviouslySuppressedReason,
-                 static_cast<int>(PromptSuppressedReason::kNone)},
-                {kBlockAll3pcToggleEnabledUserPrefValue, true},
-                {kTrackingProtection3pcdEnabledUserPrefValue, true}},
-      TestInput{{kForceChromeBuild, true}},
-      TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},
-                 {kM1PromptSuppressedReason,
-                  static_cast<int>(
-                      PromptSuppressedReason::kThirdPartyCookiesBlocked)}});
-}
-
 TEST_F(PrivacySandboxServiceM1PromptTest, ThirdPartyCookiesBlockedPreTP3PC) {
   // If third party cookies are blocked, set the suppressed reason as
   // kThirdPartyCookiesBlocked and return kNone.
@@ -2597,8 +2582,7 @@ TEST_F(PrivacySandboxServiceM1PromptTest, ThirdPartyCookiesBlockedPreTP3PC) {
       TestState{{kM1PromptPreviouslySuppressedReason,
                  static_cast<int>(PromptSuppressedReason::kNone)},
                 {kCookieControlsModeUserPrefValue,
-                 content_settings::CookieControlsMode::kBlockThirdParty},
-                {kTrackingProtection3pcdEnabledUserPrefValue, false}},
+                 content_settings::CookieControlsMode::kBlockThirdParty}},
       TestInput{{kForceChromeBuild, true}},
       TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},
                  {kM1PromptSuppressedReason,
