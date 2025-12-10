@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/test/mock_callback.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/grit/components_scaled_resources.h"
@@ -26,6 +27,29 @@ class AutofillMessageModelTest : public testing::Test {
     return AutofillMessageModel::TypeToString(message_type);
   }
 };
+
+TEST_F(AutofillMessageModelTest, VerifyCallbacks) {
+  std::unique_ptr<messages::MessageWrapper> message_wrapper =
+      std::make_unique<messages::MessageWrapper>(
+          messages::MessageIdentifier::SAVE_CARD_FAILURE);
+  base::MockCallback<base::OnceClosure> action_callback;
+  base::MockCallback<messages::MessageWrapper::DismissCallback>
+      dismiss_callback;
+  AutofillMessageModel message_model(
+      std::move(message_wrapper), AutofillMessageModel::Type::kSaveCardFailure,
+      action_callback.Get(), dismiss_callback.Get());
+
+  EXPECT_CALL(action_callback, Run);
+  EXPECT_CALL(dismiss_callback, Run(messages::DismissReason::TIMER));
+
+  // Call `OnActionClicked` twice, the callback should be run only once.
+  message_model.OnActionClicked();
+  message_model.OnActionClicked();
+
+  // Call `OnDismissed` twice, the callback should be run only once.
+  message_model.OnDismissed(messages::DismissReason::TIMER);
+  message_model.OnDismissed(messages::DismissReason::TIMER);
+}
 
 TEST_F(AutofillMessageModelTest, VerifySaveCardFailureAttributes) {
   SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =

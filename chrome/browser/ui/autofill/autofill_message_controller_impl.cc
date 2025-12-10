@@ -51,6 +51,7 @@ void AutofillMessageControllerImpl::OnActionClicked(
     AutofillMessageModel* message_model_ptr) {
   auto message_model_it = message_models_.find(message_model_ptr);
   CHECK(message_model_it != message_models_.end());
+  (*message_model_it)->OnActionClicked();
 
   base::UmaHistogramBoolean(
       base::StrCat({"Autofill.Message.", (*message_model_it)->GetTypeAsString(),
@@ -63,6 +64,7 @@ void AutofillMessageControllerImpl::OnDismissed(
     messages::DismissReason reason) {
   auto message_model_it = message_models_.find(message_model_ptr);
   CHECK(message_model_it != message_models_.end());
+  (*message_model_it)->OnDismissed(reason);
 
   base::UmaHistogramEnumeration(
       base::StrCat({"Autofill.Message.", (*message_model_it)->GetTypeAsString(),

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "components/messages/android/message_wrapper.h"
 
@@ -29,7 +30,13 @@ class AutofillMessageModel {
     kVirtualCardEnrollFailure = 2,
   };
 
-  AutofillMessageModel() = delete;
+  AutofillMessageModel(std::unique_ptr<messages::MessageWrapper> message,
+                       Type type);
+  AutofillMessageModel(
+      std::unique_ptr<messages::MessageWrapper> message,
+      Type type,
+      base::OnceClosure action_callback,
+      messages::MessageWrapper::DismissCallback dismiss_callback);
   ~AutofillMessageModel();
 
   AutofillMessageModel(const AutofillMessageModel&) = delete;
@@ -47,12 +54,11 @@ class AutofillMessageModel {
   const Type& GetType() const;
   std::string_view GetTypeAsString() const;
 
+  void OnActionClicked();
+  void OnDismissed(messages::DismissReason reason);
+
  private:
   friend class AutofillMessageModelTest;
-
-  // Only used by the factory functions.
-  AutofillMessageModel(std::unique_ptr<messages::MessageWrapper> message,
-                       Type type);
 
   // Converts a message model type to a string for debugging and metrics.
   static std::string_view TypeToString(Type message_type);
@@ -62,6 +68,10 @@ class AutofillMessageModel {
   std::unique_ptr<messages::MessageWrapper> message_;
   // The type represents the type of Autofill message this is.
   Type type_;
+  // Action and dismiss callbacks are stored in the `AutofillMessageModel` so
+  // that `AutofillMessageController` can run its own callbacks on top of them.
+  base::OnceClosure action_callback_;
+  messages::MessageWrapper::DismissCallback dismiss_callback_;
 };
 
 }  // namespace autofill
