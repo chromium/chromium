@@ -130,6 +130,9 @@ class ContextualTasksService : public KeyedService {
   virtual void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) = 0;
   virtual void DetachUrlFromTask(const base::Uuid& task_id,
                                  const GURL& url) = 0;
+  virtual void SetUrlResourcesFromServer(
+      const base::Uuid& task_id,
+      std::vector<UrlResource> url_resources) = 0;
 
   // Gets the context for a given task. The `context_callback` will receive the
   // a contextual task. If the `sources` set is empty, all available sources

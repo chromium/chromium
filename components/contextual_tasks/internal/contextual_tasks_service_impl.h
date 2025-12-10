@@ -82,6 +82,9 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       const std::string& server_id) override;
   void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
   void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
+  void SetUrlResourcesFromServer(
+      const base::Uuid& task_id,
+      std::vector<UrlResource> url_resources) override;
   void AssociateTabWithTask(const base::Uuid& task_id,
                             SessionID tab_id) override;
   void DisassociateTabFromTask(const base::Uuid& task_id,

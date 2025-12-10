@@ -28,4 +28,24 @@ TEST(ContextualTaskContextTest, ConstructFromContextualTask) {
   EXPECT_EQ(attachments[1].GetURL(), url2);
 }
 
+TEST(ContextualTaskContextTest, ConstructFromContextualTask_WithMetadata) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  GURL url("https://google.com");
+  UrlResource resource(base::Uuid::GenerateRandomV4(), url);
+  resource.title = "Google";
+  resource.tab_id = SessionID::FromSerializedValue(123);
+  task.AddUrlResource(resource);
+
+  ContextualTaskContext context(task);
+
+  EXPECT_EQ(context.GetTaskId(), task_id);
+  auto& attachments = context.GetUrlAttachments();
+  ASSERT_EQ(attachments.size(), 1u);
+  EXPECT_EQ(attachments[0].GetURL(), url);
+  EXPECT_EQ(attachments[0].GetTitle(), u"Google");
+  EXPECT_EQ(attachments[0].GetTabSessionId(),
+            SessionID::FromSerializedValue(123));
+}
+
 }  // namespace contextual_tasks

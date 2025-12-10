@@ -328,6 +328,20 @@ TEST_F(ContextualTasksContextControllerImplTest, GetFeatureEligibility) {
   EXPECT_EQ(actual_eligibility.aim_eligible, expected_eligibility.aim_eligible);
 }
 
+TEST_F(ContextualTasksContextControllerImplTest,
+       SetUrlResourcesFromServer_CallsService) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  std::vector<UrlResource> url_resources;
+  url_resources.emplace_back(base::Uuid::GenerateRandomV4(),
+                             GURL("https://resource1.com"));
+  url_resources.emplace_back(base::Uuid::GenerateRandomV4(),
+                             GURL("https://resource2.com"));
+
+  EXPECT_CALL(mock_service_, SetUrlResourcesFromServer(task_id, _)).Times(1);
+
+  controller_->SetUrlResourcesFromServer(task_id, url_resources);
+}
+
 TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask_WithParams) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id);

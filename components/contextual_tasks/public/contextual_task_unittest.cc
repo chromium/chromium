@@ -125,4 +125,35 @@ TEST(ContextualTaskTest, SetAndGetTitle) {
   EXPECT_EQ(title, task.GetTitle());
 }
 
+TEST(ContextualTaskTest, SetUrlResourcesFromServer) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+
+  // Add some initial resources
+  task.AddUrlResource(UrlResource(GURL("https://initial1.com")));
+  task.AddUrlResource(UrlResource(GURL("https://initial2.com")));
+  EXPECT_EQ(2u, task.GetUrlResources().size());
+
+  // Set new resources
+  std::vector<UrlResource> new_resources;
+  new_resources.emplace_back(base::Uuid::GenerateRandomV4(),
+                             GURL("https://new1.com"));
+  new_resources.emplace_back(base::Uuid::GenerateRandomV4(),
+                             GURL("https://new2.com"));
+  new_resources.emplace_back(base::Uuid::GenerateRandomV4(),
+                             GURL("https://new3.com"));
+
+  task.SetUrlResourcesFromServer(new_resources);
+
+  EXPECT_EQ(3u, task.GetUrlResources().size());
+  EXPECT_EQ(task.GetUrlResources()[0].url, GURL("https://new1.com"));
+  EXPECT_EQ(task.GetUrlResources()[1].url, GURL("https://new2.com"));
+  EXPECT_EQ(task.GetUrlResources()[2].url, GURL("https://new3.com"));
+
+  // Set with an empty vector
+  std::vector<UrlResource> empty_resources;
+  task.SetUrlResourcesFromServer(empty_resources);
+  EXPECT_EQ(0u, task.GetUrlResources().size());
+}
+
 }  // namespace contextual_tasks
