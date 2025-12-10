@@ -786,6 +786,24 @@ gfx::Vector2dF MathUtil::ProjectVector(const gfx::Vector2dF& source,
                         projected_length * destination.y());
 }
 
+gfx::PointF MathUtil::ScalePointByInverse(const gfx::PointF& point,
+                                          float scale) {
+  DCHECK_GT(std::abs(scale), std::numeric_limits<float>::epsilon());
+  const float inv_scale_magnitude =
+      1.f / std::max(std::numeric_limits<float>::epsilon(), std::abs(scale));
+  gfx::PointF result = point;
+  result.Scale(std::copysign(inv_scale_magnitude, scale));
+  return result;
+}
+
+gfx::Vector2dF MathUtil::ScaleVectorByInverse(const gfx::Vector2dF& vector,
+                                              float scale) {
+  DCHECK_GT(std::abs(scale), std::numeric_limits<float>::epsilon());
+  const float inv_scale_magnitude =
+      1.f / std::max(std::numeric_limits<float>::epsilon(), std::abs(scale));
+  return gfx::ScaleVector2d(vector, std::copysign(inv_scale_magnitude, scale));
+}
+
 bool MathUtil::FromValue(const base::Value* raw_value, gfx::Rect* out_rect) {
   if (!raw_value->is_list())
     return false;

@@ -694,7 +694,7 @@ void TransformTree::UndoOverscroll(
     return;
 
   position_adjustment +=
-      gfx::ScaleVector2d(overscroll_offset, 1.f / page_scale_factor());
+      MathUtil::ScaleVectorByInverse(overscroll_offset, page_scale_factor());
 
   ClipTree& clip_tree = property_trees()->clip_tree_mutable();
   ClipNode* clip_node = clip_tree.Node(clip_id);
@@ -713,51 +713,53 @@ void TransformTree::UndoOverscroll(
 namespace {
 [[maybe_unused]] void ApplyElasticOverscrollStretch(
     const ScrollTree& scroll_tree,
-    std::pair<ElementId, gfx::Vector2dF> elastic_overscroll,
+    float page_scale_factor,
+    const std::pair<ElementId, gfx::Vector2dF>& elastic_overscroll,
     gfx::Transform* transform) {
   const ScrollNode* scroll_node =
       scroll_tree.FindNodeFromElementId(elastic_overscroll.first);
 
-  if (scroll_node && scroll_tree.container_bounds(scroll_node->id).IsEmpty()) {
-    // Avoid divide by 0. Animation should not be visible for an empty viewport
-    // anyway.
+  // Early out if node is invalid, bounds are empty, or there is no overscroll.
+  if (!scroll_node || scroll_tree.container_bounds(scroll_node->id).IsEmpty() ||
+      elastic_overscroll.second.IsZero()) {
     return;
   }
 
-  // On android, elastic overscroll is implemented by stretching the content
-  // from the overscrolled edge by applying a stretch transform
-  gfx::Transform elasticity_transform;
-  elasticity_transform.MakeIdentity();
+  // The inner viewport container size takes into account the size change as a
+  // result of the top controls, see ScrollTree::container_bounds.
+  const gfx::Size scroller_size = scroll_tree.container_bounds(scroll_node->id);
 
-  gfx::Vector2dF origin;
+  // On Android, elastic overscroll is implemented by stretching the content
+  // from the overscrolled edge by applying a stretch transform.
+  const gfx::Vector2dF scale_factor(
+      1.f + std::abs(elastic_overscroll.second.x()) / scroller_size.width(),
+      1.f + std::abs(elastic_overscroll.second.y()) / scroller_size.height());
 
-  if (!elastic_overscroll.second.IsZero() && scroll_node) {
-    // The inner viewport container size takes into account the size change as a
-    // result of the top controls, see ScrollTree::container_bounds.
-    gfx::Size scroller_size = scroll_tree.container_bounds(scroll_node->id);
-
-    const gfx::Vector2dF scale_factor{
-        1.f + std::abs(elastic_overscroll.second.x()) / scroller_size.width(),
-        1.f + std::abs(elastic_overscroll.second.y()) / scroller_size.height()};
-    elasticity_transform.Scale(scale_factor.x(), scale_factor.y());
-
-    // If overscrolling to the right, stretch from right.
-    if (elastic_overscroll.second.x() > 0.f) {
-      origin.set_x(scroller_size.width());
-    }
-
-    // If overscrolling off the bottom, stretch from bottom.
-    if (elastic_overscroll.second.y() > 0.f) {
-      origin.set_y(scroller_size.height());
-    }
-    transform->Translate(origin);
-    transform->PreConcat(elasticity_transform);
-    transform->Translate(-origin);
+  // If overscrolling to the right, stretch from right.
+  gfx::PointF pivot;
+  if (elastic_overscroll.second.x() > 0.f) {
+    pivot.set_x(scroller_size.width());
   }
+
+  // If overscrolling off the bottom, stretch from bottom.
+  if (elastic_overscroll.second.y() > 0.f) {
+    pivot.set_y(scroller_size.height());
+  }
+
+  // Convert pivot to content space if this is the inner viewport.
+  if (scroll_node->scrolls_inner_viewport) {
+    pivot = MathUtil::ScalePointByInverse(pivot, page_scale_factor);
+  }
+
+  // Apply transform: Translate(Pivot) -> Scale -> Translate(-Pivot).
+  transform->Translate(pivot.OffsetFromOrigin());
+  transform->Scale(scale_factor.x(), scale_factor.y());
+  transform->Translate(-pivot.OffsetFromOrigin());
 }
 [[maybe_unused]] void ApplyElasticOverscrollTranslate(
     const ScrollTree&,
-    std::pair<ElementId, gfx::Vector2dF> elastic_overscroll,
+    float,
+    const std::pair<ElementId, gfx::Vector2dF>& elastic_overscroll,
     gfx::Transform* transform) {
   transform->Translate(-elastic_overscroll.second.x(),
                        -elastic_overscroll.second.y());
@@ -801,10 +803,12 @@ void TransformTree::UpdateLocalTransform(
   if (!elastic_overscroll.second.IsZero()) {
     const auto& scroll_tree = property_trees()->scroll_tree();
 #if BUILDFLAG(IS_ANDROID)
-    ApplyElasticOverscrollStretch(scroll_tree, elastic_overscroll, &transform);
+
+    ApplyElasticOverscrollStretch(scroll_tree, page_scale_factor(),
+                                  elastic_overscroll, &transform);
 #else
-    ApplyElasticOverscrollTranslate(scroll_tree, elastic_overscroll,
-                                    &transform);
+    ApplyElasticOverscrollTranslate(scroll_tree, page_scale_factor(),
+                                    elastic_overscroll, &transform);
 #endif
   }
 
