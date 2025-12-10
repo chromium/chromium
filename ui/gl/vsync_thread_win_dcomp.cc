@@ -43,7 +43,7 @@ bool VSyncThreadWinDComp::WaitForVSyncImpl(base::TimeDelta* vsync_interval) {
       gl::DCompositionWaitForCompositorClock(0, nullptr, INFINITE);
 
   if (wait_result != WAIT_OBJECT_0) {
-    TRACE_EVENT1("gpu", "WaitForVSyncImpl", "wait result", wait_result);
+    TRACE_EVENT("gpu", "WaitForVSyncImpl", "wait result", wait_result);
     return false;
   }
 
