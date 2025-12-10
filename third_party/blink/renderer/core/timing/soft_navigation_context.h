@@ -65,12 +65,8 @@ class CORE_EXPORT SoftNavigationContext
     navigation_id_ = navigation_id;
   }
 
-  base::TimeTicks UserInteractionTimestamp() const {
-    return user_interaction_timestamp_;
-  }
-  void SetUserInteractionTimestamp(base::TimeTicks value) {
-    user_interaction_timestamp_ = value;
-  }
+  base::TimeTicks TimeOrigin() const { return time_origin_; }
+  void SetTimeOrigin(base::TimeTicks value) { time_origin_ = value; }
 
   bool HasFirstContentfulPaint() const {
     return first_image_or_text_ && first_image_or_text_->HasPaintTime();
@@ -84,15 +80,17 @@ class CORE_EXPORT SoftNavigationContext
     return first_image_or_text_->PaintTimingInfo();
   }
 
-  // First Url and Last Url help for cases with multiple client-side redirects.
-  const String& InitialUrl() const { return initial_url_; }
+  // A single interaction / navigation may change URLs multiple times.
+  // For now, we use the initial URL value as the URL to attribute the
+  // performance data to-- but it is reasonable to evaluate using the final URL
+  // as an alternative.
+  const String& AttributionUrl() const { return initial_url_; }
   void AddUrl(const String& url,
               base::UnguessableToken same_document_metrics_token) {
     if (initial_url_.empty()) {
       initial_url_ = url;
       same_document_metrics_token_ = same_document_metrics_token;
     }
-    most_recent_url_ = url;
   }
   bool HasUrl() const { return !initial_url_.empty(); }
   base::UnguessableToken SameDocumentMetricsToken() const {
@@ -140,12 +138,11 @@ class CORE_EXPORT SoftNavigationContext
   uint32_t navigation_id_ = kNavigationIdAbsentValue;
   bool was_emitted_ = false;
 
-  base::TimeTicks user_interaction_timestamp_;
+  base::TimeTicks time_origin_;
   base::TimeTicks first_input_or_scroll_time_;
 
   String initial_url_;
   base::UnguessableToken same_document_metrics_token_;
-  String most_recent_url_;
 
   Member<LocalDOMWindow> window_;
   Member<LargestContentfulPaintCalculator> lcp_calculator_;

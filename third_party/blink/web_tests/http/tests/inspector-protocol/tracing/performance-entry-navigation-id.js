@@ -188,7 +188,7 @@
         name: 'LCP candidate (trace)'
       });
     } else if (
-        event.name === 'SoftNavigationHeuristics::EmitSoftNavigationEntry') {
+      event.name === 'SoftNavigationStart') {
       traceEntries.push({
         navigationId: event.args.context.performanceTimelineNavigationId,
         name: 'Soft navigation (trace)'

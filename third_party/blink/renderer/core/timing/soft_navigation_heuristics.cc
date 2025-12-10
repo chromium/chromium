@@ -387,14 +387,6 @@ void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigationEntry(
   // We must *not* wait on this presentation time callback, because all other
   // new performance entries created need to use this new navigation id, in
   // order to match with the eventual soft-nav entry.
-  //
-  // TODO(crbug.com/424448145): Ideally, we should carefully ensure that this
-  // happens exactly where we want our timeOrigin, and also ensure that all
-  // performance entries are created at the time of the measurement they are
-  // reporting, rather than some time later, which risks assigning the wrong
-  // navigationId-- but this might be impossible.  Instead, we might need to
-  // re-write history when we get a new navigationId with a timeOrigin in the
-  // past.
   ++soft_navigation_count_;
 
   WindowPerformance* performance = GlobalPerformance::performance(*window_);
@@ -420,15 +412,14 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntry(
   WindowPerformance* performance = GlobalPerformance::performance(*window_);
   CHECK(performance);
   performance->AddSoftNavigationEntry(
-      AtomicString(context->InitialUrl()), context->UserInteractionTimestamp(),
+      AtomicString(context->AttributionUrl()), context->TimeOrigin(),
       context->FirstContentfulPaintTimingInfo(), context->NavigationId());
   ReportSoftNavigationToMetrics(context);
 
-  TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
-                      "SoftNavigationHeuristics::EmitSoftNavigationEntry",
-                      perfetto::Track::FromPointer(context),
-                      context->FirstContentfulPaint(), "context", *context,
-                      "frame", GetFrameIdForTracing(window_->GetFrame()));
+  TRACE_EVENT_INSTANT(
+      "scheduler,devtools.timeline,loading", "SoftNavigationStart",
+      perfetto::Track::FromPointer(context), context->TimeOrigin(), "context",
+      *context, "frame", GetFrameIdForTracing(window_->GetFrame()));
 
   // LCP calculation is now unblocked, so update/emit the buffered LCP
   // candidate, if possible.
@@ -525,7 +516,7 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
     blink::SoftNavigationMetricsForReporting metrics = {
         .count = soft_navigation_count_,
         .start_time = loader->GetTiming().MonotonicTimeToPseudoWallTime(
-            context->UserInteractionTimestamp()),
+            context->TimeOrigin()),
         .first_contentful_paint =
             loader->GetTiming().MonotonicTimeToPseudoWallTime(
                 context->FirstContentfulPaint()),
@@ -651,9 +642,8 @@ void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed(
   // scopes, we want this to be the end of the nested `navigate()` event
   // handler.
   CHECK(active_interaction_context_);
-  if (active_interaction_context_->UserInteractionTimestamp().is_null()) {
-    active_interaction_context_->SetUserInteractionTimestamp(
-        base::TimeTicks::Now());
+  if (active_interaction_context_->TimeOrigin().is_null()) {
+    active_interaction_context_->SetTimeOrigin(base::TimeTicks::Now());
   }
 
   has_active_event_scope_ = event_scope.is_nested_;

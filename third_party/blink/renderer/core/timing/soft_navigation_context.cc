@@ -89,8 +89,7 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
 }
 
 bool SoftNavigationContext::SatisfiesSoftNavNonPaintCriteria() const {
-  return HasDomModification() && HasUrl() &&
-         !user_interaction_timestamp_.is_null();
+  return HasDomModification() && HasUrl() && !time_origin_.is_null();
 }
 
 bool SoftNavigationContext::SatisfiesSoftNavPaintCriteria(
@@ -209,10 +208,9 @@ void SoftNavigationContext::WriteIntoTrace(
 
   dict.Add("softNavContextId", context_id_);
   dict.Add("performanceTimelineNavigationId", navigation_id_);
-  dict.Add("initialURL", initial_url_);
-  dict.Add("mostRecentURL", most_recent_url_);
 
-  dict.Add("interactionTimestamp", user_interaction_timestamp_);
+  dict.Add("URL", AttributionUrl());
+  dict.Add("timeOrigin", time_origin_);
   dict.Add("firstContentfulPaint", FirstContentfulPaint());
 
   dict.Add("domModifications", num_modified_dom_nodes_);
