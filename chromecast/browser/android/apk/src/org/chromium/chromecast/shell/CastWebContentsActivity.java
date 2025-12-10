@@ -137,17 +137,6 @@ public class CastWebContentsActivity extends Activity {
                 mIsFinishingState.andThen(mGotIntentState).map(Both::getSecond);
         Observable<?> createdAndNotTestingState = mCreatedState.and(not(mIsTestingState));
         createdAndNotTestingState.subscribe(
-                x -> {
-                    // Register handler for web content stopped event while we have an Intent.
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction(CastIntents.ACTION_ON_WEB_CONTENT_STOPPED);
-                    return new LocalBroadcastReceiverScope(
-                            filter,
-                            (Intent intent) -> {
-                                mIsFinishingState.set("Stopped by intent: " + intent.getAction());
-                            });
-                });
-        createdAndNotTestingState.subscribe(
                 Observer.onOpen(
                         x -> {
                             // Abort if the browser process has not been initialized. This can

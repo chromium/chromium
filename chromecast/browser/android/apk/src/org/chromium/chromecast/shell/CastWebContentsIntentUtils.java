@@ -251,13 +251,6 @@ public class CastWebContentsIntentUtils {
         return intent;
     }
 
-    // CastWebContentsSurfaceHelper -> CastWebContentsActivity
-    public static Intent onWebContentStopped(Uri uri) {
-        Intent intent = new Intent(CastIntents.ACTION_ON_WEB_CONTENT_STOPPED);
-        intent.putExtra(INTENT_EXTRA_URI, uri.toString());
-        return intent;
-    }
-
     public static Uri getInstanceUri(String instanceId) {
         Uri instanceUri =
                 new Uri.Builder()

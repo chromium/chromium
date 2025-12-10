@@ -5,7 +5,6 @@
 package org.chromium.chromecast.shell;
 
 import android.content.Intent;
-import android.net.Uri;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -110,13 +109,5 @@ public class CastWebContentsIntentUtilsTest {
                 CastWebContentsIntentUtils.requestStartCastActivity(
                         mWebContents, true, false, false, false, SESSION_ID);
         Assert.assertFalse(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
-    }
-
-    @Test
-    public void testOnWebContentStopped() {
-        Intent in = CastWebContentsIntentUtils.onWebContentStopped(Uri.parse(EXPECTED_URI));
-        String uri = CastWebContentsIntentUtils.getUriString(in);
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
     }
 }
