@@ -82,7 +82,8 @@ public class RwsCookieSettings extends BaseSiteSettingsFragment
             mBulletTwo.setIcon(
                     SettingsUtils.getTintedIcon(getContext(), R.drawable.permission_cookie));
             mBulletThree.setSummary(getContext().getString(bulletThreeId));
-            mBulletThree.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.broken_24));
+            mBulletThree.setIcon(
+                    SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_broken_24dp));
         } else if (pageState == CookieControlsMode.INCOGNITO_ONLY) {
             mSubtitle.setTitle(
                     R.string.website_settings_category_cookie_allow_third_party_subtitle);
