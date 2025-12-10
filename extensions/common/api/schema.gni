@@ -85,7 +85,7 @@ if (enable_extensions) {
     "sockets_udp.idl",
     "system_display.webidl",
     "system_storage.webidl",
-    "usb.idl",
+    "usb.webidl",
     "virtual_keyboard_private.json",
     "virtual_keyboard.webidl",
     "web_view_internal.json",
@@ -109,7 +109,7 @@ if (enable_desktop_android_extensions) {
     "clipboard.webidl",
     "scripts_internal.idl",
     "system_display.webidl",
-    "usb.idl",
+    "usb.webidl",
     "virtual_keyboard_private.json",
     "virtual_keyboard.webidl",
   ]
