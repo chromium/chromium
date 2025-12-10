@@ -162,11 +162,11 @@ constexpr auto kTwoPageVerticalLayoutHorzLinePage1Inputs =
 // brushes and "Light Yellow" for highlighter brushes.
 constexpr SkColor kYellow = SkColorSetRGB(0xFD, 0xD6, 0x63);
 
-// Commonly used test brush message params. The color corresponds to "Red 1" for
-// pen brushes and "Light Red" for highlighter brushes.
-constexpr TestAnnotationBrushMessageParams kRedBrushParams{
-    SkColorSetRGB(0xF2, 0x8B, 0x82),
-    /*size=*/6.0};
+// Commonly used test brush color and message params. The color corresponds to
+// "Red 1" for pen brushes and "Light Red" for highlighter brushes.
+constexpr SkColor kRedColor = SkColorSetRGB(0xF2, 0x8B, 0x82);
+constexpr TestAnnotationBrushMessageParams kRedBrushParams{kRedColor,
+                                                           /*size=*/6.0};
 
 // Matcher for ink::Stroke objects against their expected brush and inputs.
 MATCHER_P(InkStrokeEq, expected_brush, "") {
@@ -2223,9 +2223,8 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
 
   // While the stroke is still in progress, change the pen color.  This has no
   // immediate effect on the in-progress stroke.
-  TestAnnotationBrushMessageParams red_pen_message_params{
-      SkColorSetRGB(0xF2, 0x8B, 0x82),
-      /*size=*/3.0};
+  TestAnnotationBrushMessageParams red_pen_message_params{kRedColor,
+                                                          /*size=*/3.0};
   SelectBrushTool(PdfInkBrush::Type::kPen, red_pen_message_params);
   VerifyAndClearExpectations();
 
@@ -2244,10 +2243,8 @@ TEST_P(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
 
   // Do another stroke.  Notice that the changed pen color is in effect for
   // the new stroke that is added.
-  EXPECT_CALL(
-      client(),
-      StrokeAdded(kPageIndex, InkStrokeId(1),
-                  InkStrokeBrushColorEq(SkColorSetRGB(0xF2, 0x8B, 0x82))));
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1),
+                                    InkStrokeBrushColorEq(kRedColor)));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
@@ -3150,7 +3147,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizePen) {
   histograms().ExpectUniqueSample(kPenSizeMetric,
                                   StrokeMetricBrushSize::kMedium, 1);
 
-  TestAnnotationBrushMessageParams params = {SkColorSetRGB(0xF2, 0x8B, 0x82),
+  TestAnnotationBrushMessageParams params = {kRedColor,
                                              /*size=*/1.0};
   SelectBrushTool(PdfInkBrush::Type::kPen, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
@@ -3174,7 +3171,7 @@ TEST_P(PdfInkModuleMetricsTest, StrokeBrushSizeHighlighter) {
   InitializeSimpleSinglePageBasicLayout();
 
   // Draw a stroke with medium size.
-  TestAnnotationBrushMessageParams params = {SkColorSetRGB(0xF2, 0x8B, 0x82),
+  TestAnnotationBrushMessageParams params = {kRedColor,
                                              /*size=*/8.0};
   SelectBrushTool(PdfInkBrush::Type::kHighlighter, params);
   ApplyStrokeWithMouseAtMouseDownPoint();
@@ -4294,6 +4291,123 @@ TEST_P(PdfInkModuleTextHighlightTest,
                      /*unmodified_finished=*/0);
 }
 
+class PdfInkModuleTextHighlightToolChangeTest
+    : public PdfInkModuleTextHighlightTest {
+ protected:
+  static constexpr int kPageIndex = 0;
+
+  void StartOrangeTextHighlight() {
+    SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+    SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
+    SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+    EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                                /*click_count=*/1));
+    EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+    EXPECT_TRUE(ink_module().HandleInputEvent(
+        CreateLeftClickWebMouseEventAtPosition(kStartPointInsidePage0)));
+    EXPECT_TRUE(ink_module().HandleInputEvent(
+        CreateLeftClickWebMouseMoveEventAtPosition(kEndPointInsidePage0)));
+    VerifyAndClearExpectations();
+  }
+
+  void FinishOrangeTextHighlight() {
+    constexpr gfx::PointF kNoTextPointInsidePage0{15.0f, 15.0f};
+    EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                      InkStrokeBrushColorEq(kOrangeColor)));
+    EXPECT_CALL(client(), ExtendSelectionByPoint(kNoTextPointInsidePage0));
+    EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+    EXPECT_TRUE(ink_module().HandleInputEvent(
+        CreateLeftClickWebMouseMoveEventAtPosition(kNoTextPointInsidePage0)));
+    EXPECT_TRUE(ink_module().HandleInputEvent(
+        CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0)));
+    VerifyAndClearExpectations();
+  }
+};
+
+TEST_P(PdfInkModuleTextHighlightToolChangeTest,
+       ChangeBrushParamsDuringHighlight) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  StartOrangeTextHighlight();
+
+  // While the text highlight is still in progress, change the color to red.
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kRedBrushParams);
+
+  FinishOrangeTextHighlight();
+
+  // Do another text highlight. The color should be red.
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1),
+                                    InkStrokeBrushColorEq(kRedColor)));
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1));
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+}
+
+TEST_P(PdfInkModuleTextHighlightToolChangeTest,
+       ChangeBrushToPenDuringHighlight) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  StartOrangeTextHighlight();
+
+  // While the text highlight is still in progress, change to a pen.
+  SelectBrushTool(PdfInkBrush::Type::kPen, kRedBrushParams);
+
+  FinishOrangeTextHighlight();
+
+  // Do a stroke. The brush type should be a pen.
+  EXPECT_CALL(
+      client(),
+      StrokeAdded(kPageIndex, InkStrokeId(1),
+                  InkStrokeDrawingBrushTypeEq(PdfInkBrush::Type::kPen)));
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+}
+
+TEST_P(PdfInkModuleTextHighlightToolChangeTest,
+       ChangeBrushToEraserDuringHighlight) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  StartOrangeTextHighlight();
+
+  // While the text highlight is still in progress, change to an eraser. The
+  // text highlight will end.
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                    InkStrokeBrushColorEq(kOrangeColor)));
+  SelectEraserTool();
+
+  constexpr gfx::PointF kStartStrokeInputPoint{15.0f, 20.0f};
+  constexpr gfx::PointF kEndStrokeInputPoint{35.0f, 20.0f};
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(
+                  0, ElementsAre(ElementsAreArray(
+                         {kStartStrokeInputPoint, kEndStrokeInputPoint})))));
+  ExpectStrokeCounts(/*started=*/1, /*modified_finished=*/1,
+                     /*unmodified_finished=*/0);
+
+  // Mousemove and mouseup events are ignored.
+  EXPECT_FALSE(ink_module().HandleInputEvent(
+      CreateLeftClickWebMouseMoveEventAtPosition(kStartPointInsidePage0)));
+  EXPECT_FALSE(ink_module().HandleInputEvent(
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPointInsidePage0)));
+
+  // Do a stroke. The brush type should be an eraser.
+  ApplyStrokeWithMouseAtPoints(kStartStrokeInputPoint, {kEndStrokeInputPoint},
+                               kEndStrokeInputPoint);
+
+  EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  ExpectStrokeCounts(/*started=*/2, /*modified_finished=*/2,
+                     /*unmodified_finished=*/0);
+}
+
 class PdfInkModuleTextHighlightCaretTest
     : public PdfInkModuleTextHighlightTest {
  protected:
@@ -5004,6 +5118,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(
     All,
     PdfInkModuleTextHighlightTest,
+    testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PdfInkModuleTextHighlightToolChangeTest,
     testing::ValuesIn(GetInkTestVariationsWithTextHighlighting()));
 INSTANTIATE_TEST_SUITE_P(
     All,

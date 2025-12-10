@@ -1141,8 +1141,10 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
   // check for selectable text or link area first.
   const bool is_text_or_link_area =
       client_->IsSelectableTextOrLinkArea(position);
-  current_tool_state_.emplace<DrawingStrokeState>();
-  drawing_stroke_state().brush_type = PdfInkBrush::Type::kHighlighter;
+  if (!MaybeSetDrawingBrush()) {
+    current_tool_state_.emplace<DrawingStrokeState>();
+    drawing_stroke_state().brush_type = PdfInkBrush::Type::kHighlighter;
+  }
 
   if (!is_text_or_link_area) {
     MaybeSetCursor();
@@ -1335,7 +1337,6 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
-    // TODO(crbug.com/342445982): Handle tool changes during text highlighting.
     if (is_drawing_stroke()) {
       DrawingStrokeState& state = drawing_stroke_state();
       if (state.start_time.has_value()) {
@@ -1346,15 +1347,18 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
         FinishStroke(input_last_event.position, input_last_event.timestamp,
                      input_last_event.tool_type, /*properties=*/nullptr);
       }
+    } else if (is_text_highlighting()) {
+      const EventDetails& input_last_event =
+          text_highlight_state().input_last_event;
+      FinishTextHighlight(input_last_event.position, /*is_multi_click=*/false,
+                          input_last_event.tool_type);
+    }
 
+    // Do not adjust `current_tool_state_` if an erase stroke is already
+    // in-progress.  Changes to the tool state will only apply to subsequent
+    // strokes.
+    if (!is_erasing_stroke() || !erasing_stroke_state().erasing) {
       current_tool_state_.emplace<EraserState>();
-    } else {
-      // Do not adjust `current_tool_state_` if an erase stroke is already
-      // in-progress.  Changes to the tool state will only apply to subsequent
-      // strokes.
-      if (!erasing_stroke_state().erasing) {
-        current_tool_state_.emplace<EraserState>();
-      }
     }
 
     MaybeSetCursor();
@@ -1376,7 +1380,6 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   }
 
   // All brush types except the eraser should have a color and size.
-  // TODO(crbug.com/342445982): Handle tool changes during text highlighting.
   const base::Value::Dict* color = data->FindDict("color");
   CHECK(color);
 
@@ -1397,7 +1400,8 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   // Do not adjust current tool state if a drawing stroke is already
   // in-progress.  Changes to the tool state will only apply to subsequent
   // strokes.
-  if (is_drawing_stroke() && drawing_stroke_state().start_time.has_value()) {
+  if ((is_drawing_stroke() && drawing_stroke_state().start_time.has_value()) ||
+      is_text_highlighting()) {
     return;
   }
 
