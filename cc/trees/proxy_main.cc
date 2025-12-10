@@ -514,11 +514,11 @@ void ProxyMain::BeginMainFrame(
 
 void ProxyMain::DidChangeBeginFrameSourcePaused(bool paused) {
   DCHECK(IsMainThread());
-  if (paused_ == paused) {
+  if (begin_frame_source_paused_ == paused) {
     return;
   }
-  paused_ = paused;
-  if (paused_) {
+  begin_frame_source_paused_ = paused;
+  if (begin_frame_source_paused_) {
     TRACE_EVENT_BEGIN("cc", "ProxyMain::SetBeginFrameSourcePaused",
                       perfetto::Track::FromPointer(this));
   } else {
@@ -923,7 +923,7 @@ bool ProxyMain::ShouldBeginMainFrameNotExpectedUntil() const {
   if (!layer_tree_host_->IsVisible()) {
     return false;
   }
-  if (paused_) {
+  if (begin_frame_source_paused_) {
     return false;
   }
   // If we've gone idle and have stopped getting BeginFrames, we should send
@@ -1047,7 +1047,7 @@ double ProxyMain::GetAverageThroughput() const {
 }
 
 bool ProxyMain::IsRenderingPaused() const {
-  return pause_rendering_ || paused_;
+  return pause_rendering_ || begin_frame_source_paused_;
 }
 
 void ProxyMain::NotifyNewLocalSurfaceIdExpectedWhilePaused() {
