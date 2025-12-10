@@ -235,7 +235,16 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
     return lens::ClientToAimMessage();
   }
 
-  create_client_to_aim_request_info->file_tokens = uploaded_context_tokens_;
+  // Move the uploaded tokens to the request's file_tokens.
+  create_client_to_aim_request_info->file_tokens =
+      std::exchange(uploaded_context_tokens_, {});
+
+  // Copy the tokens from this request to the list of all submitted tokens.
+  submitted_context_tokens_.insert(
+      submitted_context_tokens_.end(),
+      create_client_to_aim_request_info->file_tokens.begin(),
+      create_client_to_aim_request_info->file_tokens.end());
+
   // TODO(crbug.com/463705266): Add metrics recording.
 
   return context_controller->CreateClientToAimRequest(
@@ -245,6 +254,15 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
 std::vector<base::UnguessableToken>
 ContextualSearchSessionHandle::GetUploadedContextTokens() const {
   return uploaded_context_tokens_;
+}
+
+std::vector<base::UnguessableToken>
+ContextualSearchSessionHandle::GetSubmittedContextTokens() const {
+  return submitted_context_tokens_;
+}
+
+void ContextualSearchSessionHandle::ClearSubmittedContextTokens() {
+  submitted_context_tokens_.clear();
 }
 
 base::WeakPtr<ContextualSearchSessionHandle>

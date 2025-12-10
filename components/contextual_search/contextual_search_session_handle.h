@@ -121,6 +121,16 @@ class ContextualSearchSessionHandle {
     return uploaded_context_tokens_;
   }
 
+  // Returns the list of submitted context tokens for this particular instance
+  // of the session. These are uploaded and submitted, but we have not received
+  // confirmation that they are available on the server.
+  std::vector<base::UnguessableToken> GetSubmittedContextTokens() const;
+
+  // Clears the list of submitted context tokens for this particular instance of
+  // the session. This is intended to be invoked when the server has responded
+  // that it has received the submitted context.
+  void ClearSubmittedContextTokens();
+
  private:
   friend class ContextualSearchService;
 
@@ -132,6 +142,12 @@ class ContextualSearchSessionHandle {
   // the session handle, meaning that it is unique per instance of the
   // contextual tasks ui.
   std::vector<base::UnguessableToken> uploaded_context_tokens_;
+
+  // The list of uploaded and submitted, but not yet committed context tokens
+  // for this particular instance of the session. This list is unique to this
+  // instance of the session handle, meaning that it is unique per instance of
+  // the contextual tasks ui.
+  std::vector<base::UnguessableToken> submitted_context_tokens_;
 
   // The service that vended this handle. This is a weak pointer because a
   // handle may outlive the service.
