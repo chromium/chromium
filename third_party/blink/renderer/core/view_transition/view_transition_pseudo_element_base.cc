@@ -45,7 +45,7 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
   }
 }
 
-const Vector<AtomicString>&
+const Vector<AtomicString>
 ViewTransitionPseudoElementBase::ViewTransitionClassList() const {
   return style_tracker_->GetViewTransitionClassList(view_transition_name());
 }

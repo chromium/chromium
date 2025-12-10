@@ -1096,10 +1096,12 @@ VectorOf<Element> ViewTransitionStyleTracker::GetTransitioningElements() const {
   return result;
 }
 
-const Vector<AtomicString>&
+const Vector<AtomicString>
 ViewTransitionStyleTracker::GetViewTransitionClassList(
     const AtomicString& name) const {
-  CHECK(element_data_map_.Contains(name));
+  if (!element_data_map_.Contains(name)) {
+    return Vector<AtomicString>();
+  }
   return element_data_map_.at(name)->class_list;
 }
 

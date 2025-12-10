@@ -222,7 +222,7 @@ class ViewTransitionStyleTracker
 
   // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
   // Returns the class list for a captured element by name.
-  const Vector<AtomicString>& GetViewTransitionClassList(
+  const Vector<AtomicString> GetViewTransitionClassList(
       const AtomicString& name) const;
 
   const Vector<AtomicString>& GetViewTransitionNames() const {
