@@ -143,6 +143,8 @@ const CGFloat kSnackbarBottomMargin = 10;
   query_controller_config_params->send_lns_surface = false;
   query_controller_config_params->enable_multi_context_input_flow = true;
   query_controller_config_params->enable_viewport_images = true;
+  query_controller_config_params
+      ->prioritize_suggestions_for_the_first_attached_document = true;
 
   _contextualService =
       ContextualSearchServiceFactory::GetForProfile(self.profile);
