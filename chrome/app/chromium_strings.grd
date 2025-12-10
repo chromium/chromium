@@ -1183,6 +1183,9 @@ Chromium is unable to recover your settings.
 
       <!-- New Tab Page browser feature promotions. -->
       <if expr="not is_android">
+        <message name="IDS_NTP_CUSTOMIZATION_PROMO" desc="The text shown in the body of the New Tab Page browser customization promotion">
+          Customize Chromium to give your browser a new look
+        </message>
         <message name="IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS" desc="The text shown in the body of the New Tab Page sign in promotion">
           Sign in to Chromium to get your passwords, bookmarks, and more on all your devices
         </message>
