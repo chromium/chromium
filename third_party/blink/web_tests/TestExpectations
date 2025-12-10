@@ -6597,7 +6597,6 @@ crbug.com/1446014 external/wpt/html/rendering/non-replaced-elements/tables/table
 
 # Sheriff 2021-06-03
 crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Failure Pass ]
-crbug.com/40747768 http/tests/devtools/screen-orientation-override.js [ Failure Pass ]
 crbug.com/1215949 external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html [ Pass Timeout ]
 crbug.com/40770317 http/tests/devtools/bfcache/bfcache-elements-update.js [ Failure Pass ]
 

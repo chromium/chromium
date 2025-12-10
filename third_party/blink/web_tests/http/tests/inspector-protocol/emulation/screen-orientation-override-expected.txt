@@ -1,0 +1,12 @@
+Test screen orientation override.
+Initial state: angle: 0; type: portrait-primary
+Caught expected error: Screen orientation angle must be non-negative, less than 360
+Caught expected error: Screen orientation angle must be non-negative, less than 360
+Caught expected error: Invalid screen orientation type value
+angle: 180; type: portrait-secondary
+angle: 90; type: landscape-primary
+angle: 0; type: portrait-primary
+Restoring after reload
+angle: 270; type: landscape-secondary
+angle: 0; type: landscape-primary
+
