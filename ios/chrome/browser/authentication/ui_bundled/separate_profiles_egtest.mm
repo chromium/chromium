@@ -117,7 +117,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account
 // shows the enterprise onboarding only the first time and that by default
 // existing browsing data is kept separate from the managed profile.
-// TODO(crbug.com/433320893): Re-enable this test.
+// TODO(crbug.com/411035267): Re-enable this test.
 - (void)DISABLED_testSigninWithManagedAccountFromUnsignedStateSeparateData {
   NSString* originalProfileName = [ChromeEarlGrey currentProfileName];
 
@@ -213,8 +213,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // shows the enterprise onboarding only the first time. And if the user
 // decides to keep their existing data into the managed profile, the existing
 // profile is converted.
-// TODO(crbug.com/411035267): The test fails flakily on simulator.
-// TODO(crbug.com/433320893): And on device.
+// TODO(crbug.com/411035267): The test fails flakily.
 - (void)DISABLED_testSigninWithManagedAccountFromUnsignedStateConvertsProfile {
   NSString* originalProfileName = [ChromeEarlGrey currentProfileName];
 
@@ -312,7 +311,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account shows
 // the enterprise onboarding only the first time. And the user cannot merge
 // existing browsing data because it is disabled by policy.
-// TODO(crbug.com/433320893): Re-enable this test.
+// TODO(crbug.com/411035267): Re-enable this test.
 - (void)
     DISABLED_testSigninWithManagedAccountFromUnsignedStateWithDataMigrationDisabled {
   NSString* originalProfileName = [ChromeEarlGrey currentProfileName];
@@ -438,8 +437,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 // Tests that signing in from a signed out state with a managed account
 // shows the enterprise onboarding only the first time and merging browsing data
 // is suggested by policy.
-// TODO(crbug.com/411035267): The test fails flakily on simulator.
-// TODO(crbug.com/433320893): And on device.
+// TODO(crbug.com/411035267): The test fails flakily.
 - (void)
     DISABLED_testSigninWithManagedAccountFromUnsignedStateWithDataMergingSuggested {
   NSString* originalProfileName = [ChromeEarlGrey currentProfileName];
@@ -598,7 +596,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
 // Tests switching to a managed account (and thus managed profile) and back via
 // the account menu.
-// TODO(crbug.com/433320893): Re-enable this test on device.
+// TODO(crbug.com/411035267): Re-enable this test on device.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testSwitchFromPersonalToManagedAndBack \
   DISABLED_testSwitchFromPersonalToManagedAndBack
@@ -679,7 +677,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
 // Tests switching to a managed account (and thus managed profile) and the
 // managed account is removed while the enterprise onboarding is shown.
-// TODO(crbug.com/433320893): Re-enable this test on device.
+// TODO(crbug.com/411035267): Re-enable this test on device.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testSwitchFromPersonalToManagedAndManagedAccountRemovedFromDevice \
   DISABLED_testSwitchFromPersonalToManagedAndManagedAccountRemovedFromDevice
@@ -730,7 +728,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
 // Tests switching to a managed account but refusing the enterprise onboarding
 // screen.
-// TODO(crbug.com/433320893): Re-enable this test on device.
+// TODO(crbug.com/411035267): Re-enable this test on device.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testRefuseToSwitchToManageAccount \
   DISABLED_testRefuseToSwitchToManageAccount
@@ -924,7 +922,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should have been switched back to personal");
 }
 
-// TODO(crbug.com/433320893): Re-enable this test on device.
+// TODO(crbug.com/411035267): Re-enable this test on device.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testProfileDeletedOnManagedAccountGone \
   DISABLED_testProfileDeletedOnManagedAccountGone
@@ -1054,7 +1052,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
 // Tests signing in with a managed account during the FRE. This should convert
 // the existing profile to a managed profile.
-// TODO(crbug.com/433320893): Re-enable this test on device.
+// TODO(crbug.com/411035267): Re-enable this test on device.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testSignInWithManagedAccount DISABLED_testSignInWithManagedAccount
 #else
