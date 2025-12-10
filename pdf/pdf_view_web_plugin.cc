@@ -1984,13 +1984,13 @@ void PdfViewWebPlugin::HandleRotateCounterclockwiseMessage(
 void PdfViewWebPlugin::HandleSaveAttachmentMessage(
     const base::Value::Dict& message) {
   const int index = message.FindInt("attachmentIndex").value();
+  CHECK_GE(index, 0);
 
   const std::vector<DocumentAttachmentInfo>& list =
       engine_->GetDocumentAttachmentInfoList();
-  DCHECK_GE(index, 0);
-  DCHECK_LT(static_cast<size_t>(index), list.size());
-  DCHECK(list[index].is_readable);
-  DCHECK(IsSaveDataSizeValid(list[index].size_bytes));
+  CHECK_LT(static_cast<size_t>(index), list.size());
+  CHECK(list[index].is_readable);
+  CHECK(IsSaveDataSizeValid(list[index].size_bytes));
 
   std::vector<uint8_t> data = engine_->GetAttachmentData(index);
   base::Value data_to_save(

@@ -2752,18 +2752,18 @@ PDFiumEngine::GetDocumentAttachmentInfoList() const {
 }
 
 std::vector<uint8_t> PDFiumEngine::GetAttachmentData(size_t index) {
-  DCHECK_LT(index, doc_attachment_info_list_.size());
-  DCHECK(doc_attachment_info_list_[index].is_readable);
+  CHECK_LT(index, doc_attachment_info_list_.size());
+  CHECK(doc_attachment_info_list_[index].is_readable);
   unsigned long length_bytes = doc_attachment_info_list_[index].size_bytes;
-  DCHECK_NE(length_bytes, 0u);
+  CHECK_NE(length_bytes, 0u);
 
   FPDF_ATTACHMENT attachment = FPDFDoc_GetAttachment(doc(), index);
   std::vector<uint8_t> content_buf(length_bytes);
   unsigned long data_size_bytes;
   bool is_attachment_readable = FPDFAttachment_GetFile(
       attachment, content_buf.data(), length_bytes, &data_size_bytes);
-  DCHECK(is_attachment_readable);
-  DCHECK_EQ(length_bytes, data_size_bytes);
+  CHECK(is_attachment_readable);
+  CHECK_EQ(length_bytes, data_size_bytes);
 
   return content_buf;
 }
