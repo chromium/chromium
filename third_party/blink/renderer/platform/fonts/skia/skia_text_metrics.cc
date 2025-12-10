@@ -58,23 +58,26 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
   // Batch the call to getWidths because its function entry cost is not
   // cheap. getWidths accepts multiple glyphd ID, but not from a sparse
   // array that copy them to a regular array.
-  Vector<Glyph, 256> glyph_array(count);
+  Vector<Glyph, 256> glyph_array;
+  glyph_array.ReserveInitialCapacity(count);
   for (unsigned i = 0; i < count;
        i++, glyphs = advance_by_byte_size(glyphs, glyph_stride)) {
-    glyph_array[i] = *glyphs;
+    glyph_array.push_back(*glyphs);
   }
   Vector<SkScalar, 256> sk_width_array(count);
   font.getWidths(glyph_array, sk_width_array);
 
-  if (!font.isSubpixel()) {
-    for (unsigned i = 0; i < count; i++)
-      sk_width_array[i] = SkScalarRoundToInt(sk_width_array[i]);
-  }
-
-  // Copy the results back to the sparse array.
-  for (unsigned i = 0; i < count;
-       i++, advances = advance_by_byte_size(advances, advance_stride)) {
-    *advances = SkiaScalarToHarfBuzzPosition(sk_width_array[i]);
+  if (font.isSubpixel()) {
+    for (unsigned i = 0; i < count;
+         i++, advances = advance_by_byte_size(advances, advance_stride)) {
+      *advances = SkiaScalarToHarfBuzzPosition(sk_width_array[i]);
+    }
+  } else {
+    for (unsigned i = 0; i < count;
+         i++, advances = advance_by_byte_size(advances, advance_stride)) {
+      *advances =
+          SkiaScalarToHarfBuzzPosition(SkScalarRoundToInt(sk_width_array[i]));
+    }
   }
 }
 
