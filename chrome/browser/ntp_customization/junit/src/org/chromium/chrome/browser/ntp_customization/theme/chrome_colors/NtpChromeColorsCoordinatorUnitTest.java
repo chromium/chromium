@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -396,6 +397,17 @@ public class NtpChromeColorsCoordinatorUnitTest {
         // color value.
         colorHex = "FF0000";
         assertEquals(color, mCoordinator.getColorFromHex(colorHex).intValue());
+    }
+
+    @Test
+    public void testsGetColorFromHex_ThrowsException_ForInvalidStringExplicitly() {
+        String invalidColorInput = "invalid color string with spaces";
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    Color.parseColor(invalidColorInput);
+                });
     }
 
     @Test

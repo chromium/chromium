@@ -19,6 +19,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,6 +42,7 @@ public class NtpChromeColorsCoordinator {
     // TODO(crbug.com/423579377): Update the url for learn more button.
     private static final String LEARN_MORE_CLICK_URL =
             "https://support.google.com/chrome/?p=new_tab";
+    private static final String TAG = "NtpChromeColor";
     private static final int MAX_NUMBER_OF_COLORS_PER_ROW = 7;
 
     private final List<NtpThemeColorInfo> mChromeColorsList = new ArrayList<>();
@@ -265,7 +267,13 @@ public class NtpChromeColorsCoordinator {
             colorString = "#" + colorString;
         }
 
-        return Color.parseColor(colorString);
+        @ColorInt Integer colorInt = null;
+        try {
+            colorInt = Color.parseColor(colorString);
+        } catch (IllegalArgumentException e) {
+            Log.i(TAG, "Unknown color: " + colorString, e);
+        }
+        return colorInt;
     }
 
     /**
