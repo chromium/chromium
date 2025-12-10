@@ -81,7 +81,7 @@ class ContextualSearchMetricsRecorder {
   // session state metrics. Virtual for testing.
   virtual void NotifySessionStateChanged(SessionState session_state);
 
-  void OnFileUploadStatusChanged(
+  virtual void OnFileUploadStatusChanged(
       lens::MimeType file_mime_type,
       FileUploadStatus file_upload_status,
       const std::optional<FileUploadErrorType>& error_type);
