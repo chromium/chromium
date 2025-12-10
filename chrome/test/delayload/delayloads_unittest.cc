@@ -242,19 +242,12 @@ TEST_F(DelayloadsTest, ChromeDllDelayloadsCheck) {
          "target was built, instead of delayloads_unittests.exe";
 
   static const char* const kValidFilePatterns[] = {
-      "KERNEL32.dll",
       "chrome_elf.dll",
-      "DWrite.dll",
       "CRYPT32.dll",
-      "dhcpcsvc.DLL",
-      "IPHLPAPI.DLL",
+      "DWrite.dll",
+      "KERNEL32.dll",
       "ntdll.dll",
-      "Secur32.dll",
-      "USERENV.dll",
-      "WINHTTP.dll",
       "WINMM.dll",
-      "WINSPOOL.DRV",
-      "WINTRUST.dll",
       "WS2_32.dll",
       // On 64 bit the Version API's like VerQueryValue come from VERSION.dll.
       // It depends on kernel32, advapi32 and api-ms-win-crt*.dll. This should
