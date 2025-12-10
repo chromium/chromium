@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_running_positions.h"
 #include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
-#include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
 #include "third_party/blink/renderer/core/layout/masonry/stacking_baseline_accumulator.h"
 
 namespace blink {
@@ -85,7 +85,7 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
         return BorderScrollbarPadding().InlineSum();
       }
 
-      MasonryRunningPositions running_positions(
+      GridLanesRunningPositions running_positions(
           track_collection, style,
           ResolveItemToleranceForMasonry(style, masonry_available_size_),
           collapsed_track_indexes);
@@ -156,7 +156,7 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   }
 
   if (!masonry_items.IsEmpty()) {
-    MasonryRunningPositions running_positions(
+    GridLanesRunningPositions running_positions(
         track_collection, Style(),
         ResolveItemToleranceForMasonry(Style(), masonry_available_size_),
         collapsed_track_indexes);
@@ -288,7 +288,7 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     GridSizingTrackCollection& track_collection,
     GridItems& masonry_items,
     wtf_size_t start_offset,
-    MasonryRunningPositions& running_positions,
+    GridLanesRunningPositions& running_positions,
     std::optional<SizingConstraint> sizing_constraint) {
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
   const auto& container_space = GetConstraintSpace();
@@ -385,7 +385,7 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     bool item_moved_to_earlier_opening = false;
     if (is_dense_packing) {
       LayoutUnit updated_item_start_offset =
-          running_positions.GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
+          running_positions.GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
               start_offset, masonry_item,
               /*item_stacking_axis_contribution=*/fragment_size +
                   stacking_axis_gap,

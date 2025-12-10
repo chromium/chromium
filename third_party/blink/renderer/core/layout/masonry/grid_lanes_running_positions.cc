@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
+#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_running_positions.h"
 
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
@@ -95,7 +95,7 @@ class RunningPositionsIterator {
 // https://github.com/w3c/csswg-drafts/issues/12803 resolves, we may want to
 // update how we place explicitly-placed items when we are performing reverse
 // placement.
-GridSpan MasonryRunningPositions::GetFirstEligibleLine(
+GridSpan GridLanesRunningPositions::GetFirstEligibleLine(
     wtf_size_t span_size,
     LayoutUnit& max_running_position) const {
   DCHECK_LE(span_size, running_positions_.size());
@@ -134,7 +134,7 @@ GridSpan MasonryRunningPositions::GetFirstEligibleLine(
                                               first_eligible_line + span_size);
 }
 
-void MasonryRunningPositions::UpdateRunningPositionsForSpan(
+void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
     const GridSpan& span,
     LayoutUnit new_running_position,
     std::optional<LayoutUnit> max_running_position_for_span) {
@@ -161,7 +161,7 @@ void MasonryRunningPositions::UpdateRunningPositionsForSpan(
   }
 }
 
-void MasonryRunningPositions::UpdateAutoPlacementCursor(
+void GridLanesRunningPositions::UpdateAutoPlacementCursor(
     const GridArea& resolved_position,
     const GridTrackSizingDirection grid_axis_direction) {
   auto_placement_cursor_ =
@@ -169,7 +169,7 @@ void MasonryRunningPositions::UpdateAutoPlacementCursor(
                             : resolved_position.EndLine(grid_axis_direction);
 }
 
-LayoutUnit MasonryRunningPositions::GetMaxPositionForSpan(
+LayoutUnit GridLanesRunningPositions::GetMaxPositionForSpan(
     const GridSpan& span) const {
   DCHECK_LE(span.EndLine(), running_positions_.size());
 
@@ -180,7 +180,7 @@ LayoutUnit MasonryRunningPositions::GetMaxPositionForSpan(
                             running_positions_for_span.end()));
 }
 
-LayoutUnit MasonryRunningPositions::CalculateUsedTrackSize(
+LayoutUnit GridLanesRunningPositions::CalculateUsedTrackSize(
     const GridSpan& span) const {
   LayoutUnit used_track_size;
   const auto end_line = span.EndLine();
@@ -203,7 +203,7 @@ LayoutUnit MasonryRunningPositions::CalculateUsedTrackSize(
 // If we are placing a 2-span item with inline size of 30px, then we should be
 // able to place the item laid out across Track 1 and Track 2, even though Track
 // 1 doesn't technically have any track openings.
-bool MasonryRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
+bool GridLanesRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
     LayoutUnit item_stacking_axis_contribution,
     LayoutUnit previous_track_opening_start_position,
     LayoutUnit previous_track_opening_end_position,
@@ -261,16 +261,16 @@ bool MasonryRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
 }
 
 LayoutUnit
-MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
+GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
     wtf_size_t start_offset,
-    GridItemData& masonry_item,
+    GridItemData& grid_lanes_item,
     const LayoutUnit item_stacking_axis_contribution,
     const GridLayoutTrackCollection& track_collection) {
   DCHECK(is_dense_packing_);
 
   const auto grid_axis_direction = track_collection.Direction();
   const GridSpan& initial_span =
-      masonry_item.resolved_position.Span(grid_axis_direction);
+      grid_lanes_item.resolved_position.Span(grid_axis_direction);
   const wtf_size_t span_size = initial_span.SpanSize();
   const LayoutUnit used_track_size = CalculateUsedTrackSize(initial_span);
 
@@ -287,14 +287,14 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
       running_positions_);
   do {
     GridSpan item_span =
-        masonry_item.is_auto_placed
+        grid_lanes_item.is_auto_placed
             ? GridSpan::TranslatedDefiniteGridSpan(
                   iterator.CurrentIndex(), iterator.CurrentIndex() + span_size)
             : initial_span;
     // If the item we are attempting to place has a user-specified
     // position that doesn't match the current span, there is no reason to
     // continue iterating through the rest of the spans.
-    if (!masonry_item.is_auto_placed && item_span != initial_span) {
+    if (!grid_lanes_item.is_auto_placed && item_span != initial_span) {
       break;
     }
 
@@ -383,23 +383,23 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
       }
     }
 
-    // Set the span of `masonry_item` to the span of the highest eligible
+    // Set the span of `grid_lanes_item` to the span of the highest eligible
     // opening found.
     GridSpan highest_eligible_opening_span =
         GridSpan::TranslatedDefiniteGridSpan(
             highest_eligible_track_opening_result.starting_track_index,
             highest_eligible_track_opening_result.starting_track_index +
                 span_size);
-    DCHECK_EQ(masonry_item.resolved_position.SpanSize(grid_axis_direction),
+    DCHECK_EQ(grid_lanes_item.resolved_position.SpanSize(grid_axis_direction),
               highest_eligible_opening_span.SpanSize());
-    masonry_item.UpdateSpan(highest_eligible_opening_span, grid_axis_direction,
+    grid_lanes_item.UpdateSpan(highest_eligible_opening_span, grid_axis_direction,
                             start_offset, track_collection);
   }
 
   return highest_eligible_track_opening_result.start_position;
 }
 
-void MasonryRunningPositions::CalculateAndCacheTrackSizes(
+void GridLanesRunningPositions::CalculateAndCacheTrackSizes(
     const GridLayoutTrackCollection& track_collection) {
   Vector<LayoutUnit> line_positions =
       LayoutGrid::ComputeExpandedPositions(track_collection);
@@ -422,7 +422,7 @@ void MasonryRunningPositions::CalculateAndCacheTrackSizes(
   }
 }
 
-Vector<LayoutUnit> MasonryRunningPositions::GetMaxPositionsForAllTracks(
+Vector<LayoutUnit> GridLanesRunningPositions::GetMaxPositionsForAllTracks(
     wtf_size_t span_size) const {
   if (span_size == 1) {
     return running_positions_;
@@ -451,16 +451,16 @@ Vector<LayoutUnit> MasonryRunningPositions::GetMaxPositionsForAllTracks(
   return max_running_positions;
 }
 
-LayoutUnit MasonryRunningPositions::FinalizeItemSpanAndGetMaxPosition(
+LayoutUnit GridLanesRunningPositions::FinalizeItemSpanAndGetMaxPosition(
     wtf_size_t start_offset,
-    GridItemData& masonry_item,
+    GridItemData& grid_lanes_item,
     const GridLayoutTrackCollection& track_collection) {
   LayoutUnit max_running_position;
   const auto grid_axis_direction = track_collection.Direction();
   const GridSpan item_span =
-      masonry_item.MaybeTranslateSpan(start_offset, grid_axis_direction);
+      grid_lanes_item.MaybeTranslateSpan(start_offset, grid_axis_direction);
   if (item_span.IsIndefinite()) {
-    masonry_item.resolved_position.SetSpan(
+    grid_lanes_item.resolved_position.SetSpan(
         GetFirstEligibleLine(item_span.IndefiniteSpanSize(),
                              max_running_position),
         grid_axis_direction);
@@ -468,7 +468,7 @@ LayoutUnit MasonryRunningPositions::FinalizeItemSpanAndGetMaxPosition(
     max_running_position = GetMaxPositionForSpan(item_span);
   }
 
-  masonry_item.ComputeSetIndices(track_collection);
+  grid_lanes_item.ComputeSetIndices(track_collection);
 
   return max_running_position;
 }

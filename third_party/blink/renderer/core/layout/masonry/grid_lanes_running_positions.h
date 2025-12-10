@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_MASONRY_RUNNING_POSITIONS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_MASONRY_RUNNING_POSITIONS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_RUNNING_POSITIONS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_RUNNING_POSITIONS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
@@ -24,9 +24,9 @@ class GridLayoutTrackCollection;
 //
 // This class holds a list of running positions for each track. This will be
 // used to calculate the next position that an item should be placed.
-class CORE_EXPORT MasonryRunningPositions {
+class CORE_EXPORT GridLanesRunningPositions {
  public:
-  MasonryRunningPositions(const GridLayoutTrackCollection& track_collection,
+  GridLanesRunningPositions(const GridLayoutTrackCollection& track_collection,
                           const ComputedStyle& style,
                           LayoutUnit tie_threshold,
                           const Vector<wtf_size_t>& collapsed_track_indexes)
@@ -70,7 +70,7 @@ class CORE_EXPORT MasonryRunningPositions {
   };
 
   // Return the first span within `tie_threshold_` of the minimum max-position
-  // that comes after the auto-placement cursor in masonry's flow.
+  // that comes after the auto-placement cursor in grid-lanes' flow.
   GridSpan GetFirstEligibleLine(wtf_size_t span_size,
                                 LayoutUnit& max_running_position) const;
 
@@ -116,22 +116,22 @@ class CORE_EXPORT MasonryRunningPositions {
       const GridTrackSizingDirection grid_axis_direction);
 
   // If we can find an eligible track opening to fit the item, set
-  // `masonry_item` to have the updated span location, adjust the track opening
+  // `grid_lanes_item` to have the updated span location, adjust the track opening
   // as needed (either erasing it or reducing the size), and return the running
   // position at which the item will be placed. This method is only used when
   // dense-packing is set.
-  LayoutUnit GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
+  LayoutUnit GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
       wtf_size_t start_offset,
-      GridItemData& masonry_item,
+      GridItemData& grid_lanes_item,
       const LayoutUnit item_height,
       const GridLayoutTrackCollection& track_collection);
 
-  // If the span of `masonry_item` is indefinite this method will find and set
+  // If the span of `grid_lanes_item` is indefinite this method will find and set
   // the span where the item should be placed. Then, this method will return the
   // maximum running position of the span where the item will be placed.
   LayoutUnit FinalizeItemSpanAndGetMaxPosition(
       wtf_size_t start_offset,
-      GridItemData& masonry_item,
+      GridItemData& grid_lanes_item,
       const GridLayoutTrackCollection& track_collection);
 
  private:
@@ -167,7 +167,7 @@ class CORE_EXPORT MasonryRunningPositions {
   };
 
   // For testing only.
-  MasonryRunningPositions(const Vector<LayoutUnit>& running_positions,
+  GridLanesRunningPositions(const Vector<LayoutUnit>& running_positions,
                           LayoutUnit tie_threshold,
                           const Vector<wtf_size_t>& collapsed_track_indexes)
       : running_positions_(running_positions), tie_threshold_(tie_threshold) {
@@ -233,4 +233,4 @@ class CORE_EXPORT MasonryRunningPositions {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_MASONRY_RUNNING_POSITIONS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_RUNNING_POSITIONS_H_

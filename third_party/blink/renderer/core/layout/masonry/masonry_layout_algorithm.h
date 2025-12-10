@@ -17,7 +17,7 @@ class GridItems;
 class GridLayoutData;
 class GridLineResolver;
 class GridSizingTrackCollection;
-class MasonryRunningPositions;
+class GridLanesRunningPositions;
 enum class GridItemContributionType;
 enum class SizingConstraint;
 struct BoxStrut;
@@ -57,7 +57,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       GridSizingTrackCollection& track_collection,
       GridItems& masonry_items,
       wtf_size_t start_offset,
-      MasonryRunningPositions& running_positions,
+      GridLanesRunningPositions& running_positions,
       std::optional<SizingConstraint> sizing_constraint = std::nullopt);
 
   // Places all out-of-flow (OOF) masonry items. For each item, this method

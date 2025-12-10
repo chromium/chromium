@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
-#include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
+#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_running_positions.h"
 
 namespace blink {
 
@@ -100,25 +100,25 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   const Vector<LayoutUnit>& GetRunningPositions(
-      const MasonryRunningPositions& running_positions) {
+      const GridLanesRunningPositions& running_positions) {
     return running_positions.running_positions_;
   }
 
   Vector<LayoutUnit> GetMaxPositionsForAllTracks(
-      const MasonryRunningPositions& running_positions,
+      const GridLanesRunningPositions& running_positions,
       wtf_size_t span_size) {
     return running_positions.GetMaxPositionsForAllTracks(span_size);
   }
 
-  MasonryRunningPositions InitializeMasonryRunningPositions(
+  GridLanesRunningPositions InitializeGridLanesRunningPositions(
       const Vector<LayoutUnit>& running_positions,
       LayoutUnit tie_threshold) {
-    return MasonryRunningPositions(running_positions, tie_threshold,
-                                   collapsed_track_indexes_);
+    return GridLanesRunningPositions(running_positions, tie_threshold,
+                                     collapsed_track_indexes_);
   }
 
   void SetAutoPlacementCursor(wtf_size_t cursor,
-                              MasonryRunningPositions& running_positions) {
+                              GridLanesRunningPositions& running_positions) {
     running_positions.SetAutoPlacementCursorForTesting(cursor);
   }
 
@@ -1238,9 +1238,10 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoNoCollapse) {
 
 TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
   Vector<wtf_size_t> collapsed_track_indexes;
-  MasonryRunningPositions running_positions = InitializeMasonryRunningPositions(
-      {LayoutUnit(), LayoutUnit(), LayoutUnit(), LayoutUnit()},
-      /*tie_threshold=*/LayoutUnit());
+  GridLanesRunningPositions running_positions =
+      InitializeGridLanesRunningPositions(
+          {LayoutUnit(), LayoutUnit(), LayoutUnit(), LayoutUnit()},
+          /*tie_threshold=*/LayoutUnit());
 
   Vector<LayoutUnit> expected_running_positions = {
       LayoutUnit(0), LayoutUnit(3), LayoutUnit(3), LayoutUnit(0)};
@@ -1262,7 +1263,7 @@ TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, GetFirstEligibleLine) {
-  auto running_positions = InitializeMasonryRunningPositions(
+  auto running_positions = InitializeGridLanesRunningPositions(
       {LayoutUnit(2.0), LayoutUnit(3.0), LayoutUnit(3.5), LayoutUnit(2.5)},
       /*tie_threshold=*/LayoutUnit(0.5));
 
@@ -1303,7 +1304,7 @@ TEST_F(MasonryLayoutAlgorithmTest, GetFirstEligibleLine) {
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, GetMaxPositionsForAllTracks) {
-  auto running_positions = InitializeMasonryRunningPositions(
+  auto running_positions = InitializeGridLanesRunningPositions(
       {LayoutUnit(2.0), LayoutUnit(3.0), LayoutUnit(3.5), LayoutUnit(2.5)},
       /*tie_threshold=*/LayoutUnit());
 
