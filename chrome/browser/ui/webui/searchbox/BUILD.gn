@@ -6,8 +6,6 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("searchbox") {
   sources = [
-    "composebox_handler.cc",
-    "composebox_handler.h",
     "lens_searchbox_client.h",
     "lens_searchbox_handler.cc",
     "lens_searchbox_handler.h",
@@ -57,6 +55,7 @@ source_set("searchbox") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/cr_components/composebox",
     "//chrome/browser/ui/webui/cr_components/searchbox",
     "//chrome/browser/ui/webui/metrics_reporter",
     "//chrome/browser/ui/webui/omnibox_popup/mojom",
