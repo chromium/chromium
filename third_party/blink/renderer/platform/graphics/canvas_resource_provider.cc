@@ -226,10 +226,6 @@ CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
 
     skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());
 
-    // Images are locked for the duration of the rasterization, in case they get
-    // used multiple times. We can unlock them once the rasterization is
-    // complete.
-    canvas_image_provider_->ReleaseLockedImages();
     last_recording_ = std::nullopt;
   }
 
