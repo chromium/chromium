@@ -39,6 +39,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
@@ -266,6 +267,21 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
   }
   UpdateOpenState(/*is_open=*/true);
   UpdateWebContentsForActiveTab();
+}
+
+void ContextualTasksSidePanelCoordinator::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (navigation_handle->HasUserGesture() &&
+      ui::PageTransitionTypeIncludingQualifiersIs(
+          navigation_handle->GetPageTransition(), ui::PAGE_TRANSITION_LINK)) {
+    RecordUserActionAndHistogram(
+        "ContextualTasks.ActiveTab.UserAction.LinkClicked");
+  }
 }
 
 void ContextualTasksSidePanelCoordinator::PrimaryPageChanged(
