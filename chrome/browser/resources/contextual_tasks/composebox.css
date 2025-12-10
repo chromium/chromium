@@ -12,6 +12,8 @@
 
 :host {
   --aim-header-height: 66px;
+  --cancel-button-inline-end: 16px;
+  --cancel-button-top: 12px;
   --composebox-collapsed-height: 90px;
   --composebox-margin-bottom: 30px;
   --context-carousel-inline-end-spacing: 24px;
@@ -20,9 +22,20 @@
     calc(var(--composebox-height) + var(--composebox-dropdown-height)
       + var(--composebox-margin-bottom)
     );
-  --composebox-container-width: calc(100% - 15px); /* 15px on the right side */
+  /* Max width for tab and side-panel mode (from Figma) */
+  --composebox-container-max-width: 691px;
+  /* Shared sizing between voice cancel and regular cancel buttons. */
+  --composebox-cancel-button-size: 40px;
+  --composebox-icon-menu-bottom: 12px;
+  --composebox-submit-container-size: 48px;
+  --composebox-submit-container-inline-end:
+      var(--composebox-last-icon-inline-end);
+  --composebox-last-icon-inline-end: 12px;
   --cr-searchbox-height: 52px;
   --cr-searchbox-min-width: min(calc(100%), 1100px);
+  --icon-menu-spacing: 6px;
+  --icon-menu-icon-size: 24px;
+  --icon-menu-button-size: 40px;
 }
 
 /* Light mode */
@@ -72,10 +85,12 @@
   height: calc(var(--composebox-container-height) + 36px);
   inset-block-end: 0;
   justify-content: flex-end;
+  max-width: var(--composebox-container-max-width);
   min-height: var(--composebox-collapsed-height);
-  pointer-events: none;
-  position: absolute;
-  width: var(--composebox-container-width);
+  /* Do not set pointer-events to none; is inherited by
+   * whole composebox + buttons. Width var taken from parent.
+   */
+  width: var(--composebox-container-width, 100%);
 }
 
 /* When the composebox is focused, make the background color
@@ -111,7 +126,7 @@
   display: none;
 }
 
-#composebox::part( g-container) {
+#composebox::part(g-container) {
   max-height: 40vh;
   padding: 0;
 }
@@ -159,19 +174,42 @@
   display: none;
 }
 
+/* Controls cancel and submit buttons. */
 #composebox::part(action-icon) {
   --cr-icon-button-hover-background-color: var(--color-composebox-hover);
 }
 
 #composebox::part(cancel-icon) {
   --cr-icon-button-fill-color: var(--color-composebox-cancel-button);
-  --cr-icon-button-icon-size: 24px;
+  /*
+   * Inner icon size of cancel button == cancel button size,
+   * unlike other buttons.
+   */
+  --cr-icon-button-size: var(--composebox-cancel-button-size);
+  display: none;
+  inset-inline-end: var(--cancel-button-inline-end);
+  top: var(--cancel-button-top);
+}
+
+/* Only show when text is in there (when can submit). */
+#composebox[submit-enabled_]::part(cancel-icon) {
+  display: block;
 }
 
 #composebox::part(lens-icon) {
   --cr-icon-button-fill-color: var(--color-composebox-lens-button);
-  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-icon-size: var(--icon-menu-icon-size);
+  --cr-icon-button-size: var(--icon-menu-button-size);
+  bottom: var(--composebox-icon-menu-bottom);
   display: block;
+  inset-inline-end: var(--composebox-last-icon-inline-end);
+  position: absolute;
+}
+
+#composebox[show-submit_][submit-enabled_]::part(lens-icon) {
+ inset-inline-end: calc(var(--composebox-submit-container-size)
+     + var(--icon-menu-spacing)
+     + var(--composebox-submit-container-inline-end));
 }
 
 #composebox:not([expanding_])::part(cancel),
@@ -183,9 +221,57 @@
   display: none;
 }
 
+/* icon-fade class; applies to submit and cancel. */
+#composebox::part(cancel),
+#composebox::part(submit) {
+  --icon-entry-transition: opacity 100ms linear 40ms;
+  --icon-exit-transition: opacity 100ms
+}
+
+#composebox::part(submit) {
+  /* --cr-icon-button-icon-size changes arrow size;
+   * --cr-icon-button-size here changes
+   * blue part of submit button. Container-size changes
+   * wrapper size around submit button.
+   */
+  --cr-composebox-submit-container-size:
+      var(--composebox-submit-container-size);
+  --cr-icon-button-icon-size: 18px;
+}
+
+#composebox::part(submit-icon),
+#composebox::part(submit-overlay) {
+  /* Inline-end to center the button (+ its overlay)
+   * (icon size: 40px; button size: 48px. 4px on each side.
+   * Bottom 0px since wrapper is aligned at the
+   * bottom with other icons (like voice). This,
+   * to be aligned, must also be at the bottom.)
+   * Position absolute is also from action-icon.
+   */
+  --cr-icon-button-size: 40px;
+  bottom: 0;
+  inset-inline-end: 4px;
+  inset-inline-start: auto;
+  position: absolute;
+  top: auto;
+}
+
+#composebox[show-submit_][submit-enabled_]::part(submit) {
+  bottom: var(--composebox-icon-menu-bottom);
+  display: block;
+  inset-inline-end: var(--composebox-submit-container-inline-end);
+  inset-inline-start: auto;
+  position: absolute;
+  top: auto;
+}
+
 /* TODO(crbug.com/454388827: - Color the tab chips to spec. */
 #composebox::part(context-entrypoint) {
   transition-delay: 0ms;
+}
+
+#composebox::part(label) {
+  display: none;
 }
 
 #composebox::part(dropdown) {

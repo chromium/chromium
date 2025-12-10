@@ -60,6 +60,10 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       });
       this.eventTracker_.add(composebox, 'composebox-focus-out', () => {
         this.isComposeboxFocused_ = false;
+        if (composebox.animationState === GlowAnimationState.SUBMITTING ||
+            composebox.animationState === GlowAnimationState.LISTENING) {
+          return;
+        }
         composebox.animationState = GlowAnimationState.NONE;
       });
       this.eventTracker_.add(composebox, 'composebox-submit', () => {
