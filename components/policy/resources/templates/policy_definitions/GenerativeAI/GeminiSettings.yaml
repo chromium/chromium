@@ -17,7 +17,6 @@ example_value: 1
 future_on:
 - android
 - chrome.linux
-- chrome_os
 features:
   dynamic_refresh: true
   per_profile: true
@@ -39,4 +38,5 @@ supported_on:
 - chrome.win:137-
 - chrome.mac:137-
 - ios:139-
+- chrome_os:144-
 tags: []
