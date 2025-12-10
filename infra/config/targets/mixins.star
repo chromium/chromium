@@ -1762,7 +1762,7 @@ targets.mixin(
             "cpu": "arm64",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-15.5",
+            "os": "Mac-15.7",
             "pool": "chromium.tests",
             "display_attached": "1",
         },
