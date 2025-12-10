@@ -134,6 +134,8 @@ void VpnServiceForExtension::DispatchEvent(
 
 VpnService::VpnService(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
+  GetVpnService()->SetController(this);
+
   auto* registry = extensions::ExtensionRegistry::Get(browser_context);
   extension_registry_observer_.Observe(registry);
 
@@ -143,7 +145,10 @@ VpnService::VpnService(content::BrowserContext* browser_context)
   }
 }
 
-VpnService::~VpnService() = default;
+VpnService::~VpnService() {
+  key_to_configuration_map_.clear();
+  GetVpnService()->Reset();
+}
 
 void VpnService::SendShowAddDialogToExtension(const std::string& extension_id) {
   SendToExtension(

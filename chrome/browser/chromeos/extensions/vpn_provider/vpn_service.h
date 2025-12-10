@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_interface.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "extensions/browser/event_router.h"
@@ -123,6 +124,14 @@ class VpnService : public extensions::api::VpnServiceInterface,
 
   // EventRouter::Observer:
   void OnListenerAdded(const extensions::EventListenerInfo&) override;
+
+  // Owns all configurations. Key is a hash of |extension_id| and
+  // |configuration_name|. This is public temporarily while we are dismantling
+  // the crosapi VpnService (crbug.com/365902693).
+  using StringToOwnedConfigurationMap = std::map<
+      std::string,
+      std::unique_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration>>;
+  StringToOwnedConfigurationMap key_to_configuration_map_;
 
  private:
   friend class VpnProviderApiTest;
