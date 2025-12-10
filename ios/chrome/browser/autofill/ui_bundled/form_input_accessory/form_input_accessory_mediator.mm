@@ -249,10 +249,6 @@ bool IsStateless() {
 
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     [defaultCenter addObserver:self
-                      selector:@selector(applicationDidEnterBackground:)
-                          name:UIApplicationDidEnterBackgroundNotification
-                        object:nil];
-    [defaultCenter addObserver:self
                       selector:@selector(keyboardWillShow:)
                           name:UIKeyboardWillShowNotification
                         object:nil];
@@ -773,11 +769,6 @@ bool IsStateless() {
       }
     }
   }
-}
-
-// Handle applicationDidEnterBackground NSNotification.
-- (void)applicationDidEnterBackground:(NSNotification*)notification {
-  [self.handler resetFormInputView];
 }
 
 // Logs information about what type of suggestion the user selected.
