@@ -8605,7 +8605,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.Startup.ChromiumInitTime.WallClockTime{StartupMode}"
-    units="ms" expires_after="2025-12-31">
+    units="ms" expires_after="2026-06-30">
   <owner>colibie@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
