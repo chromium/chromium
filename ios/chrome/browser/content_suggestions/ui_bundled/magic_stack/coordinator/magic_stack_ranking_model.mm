@@ -82,7 +82,6 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
-#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -468,7 +467,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   inputContext->metadata_args.emplace(
       segmentation_platform::kIsNewUser,
       segmentation_platform::processing::ProcessedValue::FromFloat(
-          IsFirstRunRecent(set_up_list::SetUpListDurationPastFirstRun())));
+          IsFirstRunRecent(
+              set_up_list_utils::SetUpListDurationPastFirstRun())));
 
   inputContext->metadata_args.emplace(
       segmentation_platform::kIsSynced,

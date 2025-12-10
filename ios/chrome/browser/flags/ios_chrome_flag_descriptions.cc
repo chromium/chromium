@@ -1541,10 +1541,6 @@ const char kSendTabToSelfIOSPushNotificationsDescription[] =
     "Feature to allow users to send tabs to their iOS device through a system "
     "push notitification.";
 
-const char kSetUpListShortenedDurationName[] = "Set Up List Shortened Duration";
-const char kSetUpListShortenedDurationDescription[] =
-    "Reduces the Set Up List duration in the NTP to the selected parameter.";
-
 const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "

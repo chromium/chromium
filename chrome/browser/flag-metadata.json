@@ -9327,11 +9327,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "set-up-list-shortened-duration",
-    "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "set-up-list-without-sign-in-item",
     "owners": [ "hiramahmood@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 135

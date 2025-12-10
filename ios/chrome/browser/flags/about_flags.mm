@@ -107,7 +107,6 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/features.h"
-#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -999,21 +998,6 @@ const FeatureEntry::FeatureVariation
          std::size(
              kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefreshArm),
          nullptr}};
-
-const FeatureEntry::FeatureParam kSetUpListDuration3Days[] = {
-    {set_up_list::kSetUpListDurationParam, "2"}};
-const FeatureEntry::FeatureParam kSetUpListDuration5Days[] = {
-    {set_up_list::kSetUpListDurationParam, "4"}};
-const FeatureEntry::FeatureParam kSetUpListDuration7Days[] = {
-    {set_up_list::kSetUpListDurationParam, "6"}};
-
-const FeatureEntry::FeatureVariation kSetUpListDurationVariations[] = {
-    {" - 3 Days", kSetUpListDuration3Days, std::size(kSetUpListDuration3Days),
-     nullptr},
-    {" - 5 Days", kSetUpListDuration5Days, std::size(kSetUpListDuration5Days),
-     nullptr},
-    {" - 7 Days", kSetUpListDuration7Days, std::size(kSetUpListDuration7Days),
-     nullptr}};
 
 const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm1[] = {
     {first_run::kUpdatedFirstRunSequenceParam, "1"}};
@@ -2221,13 +2205,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kLensUnaryHttpTransportEnabledName,
      flag_descriptions::kLensUnaryHttpTransportEnabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensUnaryHttpTransportEnabled)},
-    {"set-up-list-shortened-duration",
-     flag_descriptions::kSetUpListShortenedDurationName,
-     flag_descriptions::kSetUpListShortenedDurationDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(set_up_list::kSetUpListShortenedDuration,
-                                    kSetUpListDurationVariations,
-                                    "SetUpListShortenedDuration")},
     {"collaboration-messaging", flag_descriptions::kCollaborationMessagingName,
      flag_descriptions::kCollaborationMessagingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(collaboration::features::kCollaborationMessaging)},

@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_metrics.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"

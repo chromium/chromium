@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_PUBLIC_SET_UP_LIST_UTILS_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SET_UP_LIST_PUBLIC_SET_UP_LIST_UTILS_H_
 
+#import "base/time/time.h"
+
 class PrefService;
 
 namespace set_up_list_utils {
@@ -23,6 +25,11 @@ bool IsSetUpListActive(PrefService* local_prefs,
 // true if the Set Up List should be shown in a compacted layout in the Magic
 // Stack.
 bool ShouldShowCompactedSetUpListModule();
+
+// Duration of the Set Up List past the first run.
+// So if the function returns 1 day, that means the Set Up List will appear one
+// day past the First Run.
+base::TimeDelta SetUpListDurationPastFirstRun();
 
 }  // namespace set_up_list_utils
 

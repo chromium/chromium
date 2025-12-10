@@ -4,14 +4,17 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_utils.h"
 
-#import "base/time/time.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+
+namespace {
+// The number of days after the first run that the Set Up List can be active.
+constexpr int kSetUpListDurationDays = 14;
+}  // namespace
 
 namespace set_up_list_utils {
 
@@ -28,7 +31,7 @@ bool IsSetUpListActive(PrefService* local_prefs,
     // have been completed yet. In this case, we will wait until the next run.
     return false;
   }
-  if (!IsFirstRunRecent(set_up_list::SetUpListDurationPastFirstRun())) {
+  if (!IsFirstRunRecent(SetUpListDurationPastFirstRun())) {
     // It is past the max duration of the Set Up List, but if user has
     // interacted in the last day the time will be extended.
     base::Time last_interaction =
@@ -43,6 +46,10 @@ bool IsSetUpListActive(PrefService* local_prefs,
 
 bool ShouldShowCompactedSetUpListModule() {
   return !IsFirstRun();
+}
+
+base::TimeDelta SetUpListDurationPastFirstRun() {
+  return base::Days(kSetUpListDurationDays);
 }
 
 }  // namespace set_up_list_utils

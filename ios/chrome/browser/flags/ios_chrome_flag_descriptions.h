@@ -923,9 +923,6 @@ extern const char kSegmentationPlatformTipsEphemeralCardDescription[];
 extern const char kSendTabToSelfIOSPushNotificationsName[];
 extern const char kSendTabToSelfIOSPushNotificationsDescription[];
 
-extern const char kSetUpListShortenedDurationName[];
-extern const char kSetUpListShortenedDurationDescription[];
-
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
 
