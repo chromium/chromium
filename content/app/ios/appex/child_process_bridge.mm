@@ -23,15 +23,12 @@
 #include "gpu/ipc/common/ios/be_layer_hierarchy_transport.h"
 #include "sandbox/policy/switches.h"
 
-class GPUProcessTransport;
-
 // Leaked variables for now.
 static size_t g_argc = 0;
 static const char** g_argv = nullptr;
 static pthread_t g_main_thread;
 static id<ChildProcessExtension> g_swift_process;
 static xpc_connection_t g_connection;
-static std::unique_ptr<GPUProcessTransport> g_gpu_transport;
 
 #define IOS_INIT_EXPORT __attribute__((visibility("default")))
 
@@ -55,6 +52,8 @@ class GPUProcessTransport : public gpu::BELayerHierarchyTransport {
     xpc_connection_send_message(g_connection, message);
   }
 };
+
+static std::unique_ptr<GPUProcessTransport> g_gpu_transport;
 
 extern "C" IOS_INIT_EXPORT void GpuProcessInit() {
   g_gpu_transport = std::make_unique<GPUProcessTransport>();
