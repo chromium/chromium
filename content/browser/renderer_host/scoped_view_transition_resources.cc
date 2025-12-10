@@ -13,9 +13,12 @@ namespace content {
 
 ScopedViewTransitionResources::ScopedViewTransitionResources(
     const blink::ViewTransitionToken& transition_token,
-    RenderProcessHost& render_process_host)
+    RenderProcessHost& render_process_host,
+    bool delay_layer_tree_view_deletion)
     : transition_token_(transition_token),
-      render_process_host_id_(render_process_host.GetID()) {
+      render_process_host_id_(render_process_host.GetID()),
+      delay_layer_tree_view_deletion_(
+          std::move(delay_layer_tree_view_deletion)) {
   GetHostFrameSinkManager()->SetViewTransitionResourcesCapturedCallback(
       transition_token,
       base::BindOnce(

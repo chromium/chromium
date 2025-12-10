@@ -290,6 +290,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
     // navigation commit flow in Navigator::DidNavigate, ensuring the pointer
     // remains valid for the duration of its use.
     raw_ptr<ScopedViewTransitionResources> view_transition_resources;
+    bool delay_layer_tree_view_deletion = false;
   };
 
   // The delegate pointer must be non-null and is not owned by this class. It

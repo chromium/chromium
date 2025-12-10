@@ -1620,4 +1620,57 @@ TEST_P(ViewTransitionTest, ReplaceBody) {
       document->IsUseCounted(WebFeature::kViewTransitionChangeRootElement));
 }
 
+TEST_P(ViewTransitionTest, ViewTransitionDelayLayerTreeViewDeletion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kDelayLayerTreeViewDeletionOnLocalSwap);
+
+  bool callback_ran = false;
+  ViewTransition::ViewTransitionStateCallback callback = base::BindOnce(
+      [](bool* callback_ran, const ViewTransitionState& state) {
+        EXPECT_TRUE(state.IsDelayLayerTreeViewDeletionEnabled());
+        *callback_ran = true;
+      },
+      &callback_ran);
+
+  auto page_swap_params = mojom::blink::PageSwapEventParams::New();
+  page_swap_params->url = KURL("http://test.com");
+  page_swap_params->navigation_type =
+      mojom::blink::NavigationTypeForNavigationApi::kPush;
+  ViewTransitionSupplement::SnapshotDocumentForNavigation(
+      GetDocument(), blink::ViewTransitionToken(), std::move(page_swap_params),
+      std::move(callback));
+  ASSERT_TRUE(GetDocument().GetViewTransitions().GetTransition());
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  EXPECT_TRUE(callback_ran);
+}
+
+TEST_P(ViewTransitionTest,
+       ViewTransitionDelayLayerTreeViewDeletion_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kDelayLayerTreeViewDeletionOnLocalSwap);
+
+  bool callback_ran = false;
+  ViewTransition::ViewTransitionStateCallback callback = base::BindOnce(
+      [](bool* callback_ran, const ViewTransitionState& state) {
+        EXPECT_FALSE(state.IsDelayLayerTreeViewDeletionEnabled());
+        *callback_ran = true;
+      },
+      &callback_ran);
+
+  auto page_swap_params = mojom::blink::PageSwapEventParams::New();
+  page_swap_params->url = KURL("http://test.com");
+  page_swap_params->navigation_type =
+      mojom::blink::NavigationTypeForNavigationApi::kPush;
+  ViewTransitionSupplement::SnapshotDocumentForNavigation(
+      GetDocument(), blink::ViewTransitionToken(), std::move(page_swap_params),
+      std::move(callback));
+  ASSERT_TRUE(GetDocument().GetViewTransitions().GetTransition());
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  EXPECT_TRUE(callback_ran);
+}
+
 }  // namespace blink

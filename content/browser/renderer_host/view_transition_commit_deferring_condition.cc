@@ -152,7 +152,8 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
 
   blink::ViewTransitionToken transition_token;
   resources_ = std::make_unique<ScopedViewTransitionResources>(
-      transition_token, *render_process_host);
+      transition_token, *render_process_host,
+      /*delay_layer_tree_view_deletion=*/false);
   resume_navigation_ = std::move(resume);
   old_rfh_ = render_frame_host->GetWeakPtr();
 
@@ -227,6 +228,8 @@ void ViewTransitionCommitDeferringCondition::OnSnapshotAckFromRenderer(
   }
 
   if (view_transition_state.IsValid()) {
+    resources_->set_delay_layer_tree_view_deletion(
+        view_transition_state.IsDelayLayerTreeViewDeletionEnabled());
     NavigationRequest::From(&GetNavigationHandle())
         ->SetViewTransitionState(std::move(resources_),
                                  std::move(view_transition_state));

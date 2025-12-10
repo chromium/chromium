@@ -26,11 +26,20 @@ class CONTENT_EXPORT ScopedViewTransitionResources {
  public:
   explicit ScopedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token,
-      RenderProcessHost& render_process_host);
+      RenderProcessHost& render_process_host,
+      bool delay_layer_tree_view_deletion);
   ~ScopedViewTransitionResources();
 
   const blink::ViewTransitionToken& transition_token() const {
     return transition_token_;
+  }
+
+  bool delay_layer_tree_view_deletion() const {
+    return delay_layer_tree_view_deletion_;
+  }
+
+  void set_delay_layer_tree_view_deletion(bool delay_layer_tree_view_deletion) {
+    delay_layer_tree_view_deletion_ = delay_layer_tree_view_deletion;
   }
 
   void MaybeDelayProcessShutdown(const base::TimeDelta& shutdown_delay,
@@ -43,6 +52,7 @@ class CONTENT_EXPORT ScopedViewTransitionResources {
   const blink::ViewTransitionToken transition_token_;
   bool is_resources_captured_ = false;
   ChildProcessId render_process_host_id_;
+  bool delay_layer_tree_view_deletion_;
   base::ScopedClosureRunner process_shutdown_delay_runner_;
   base::WeakPtrFactory<ScopedViewTransitionResources> weak_factory_{this};
 };

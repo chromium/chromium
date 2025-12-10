@@ -1345,7 +1345,8 @@ void RenderFrameHostManager::UnloadOldFrame(
   // which has security implications if exceeded (https://crbug.com/1177674).
   if (features::ShouldAckCOREarlyForViewTransition() &&
       !old_render_frame_host->GetParentOrOuterDocument() &&
-      view_transition_commit_info.HasViewTransitionResources()) {
+      view_transition_commit_info.HasViewTransitionResources() &&
+      view_transition_commit_info.delay_layer_tree_view_deletion) {
     view_transition_commit_info.view_transition_resources
         ->MaybeDelayProcessShutdown(base::Seconds(4), *old_render_frame_host);
   }
@@ -1740,8 +1741,10 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
   }
 
   const RenderFrameHostManager::ViewTransitionCommitInfo
-      view_transition_commit_info{.view_transition_resources =
-                                      request->GetViewTransitionResources()};
+      view_transition_commit_info{
+          .view_transition_resources = request->GetViewTransitionResources(),
+          .delay_layer_tree_view_deletion =
+              request->HasViewTransitionDelayLayerTreeViewDeletion()};
   CommitPending(
       std::move(speculative_render_frame_host_),
       /*pending_stored_page=*/nullptr,
@@ -5890,7 +5893,8 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   // WebContents::AttachToOuterWebContentsFrame is called.
   speculative_render_frame_host_->SwapIn();
   const RenderFrameHostManager::ViewTransitionCommitInfo
-      view_transition_commit_info{.view_transition_resources = nullptr};
+      view_transition_commit_info{.view_transition_resources = nullptr,
+                                  .delay_layer_tree_view_deletion = false};
   CommitPending(std::move(speculative_render_frame_host_),
                 /*pending_stored_page=*/nullptr,
                 /*clear_proxies_on_commit=*/false,

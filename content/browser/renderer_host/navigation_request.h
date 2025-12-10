@@ -1695,6 +1695,11 @@ class CONTENT_EXPORT NavigationRequest
     return view_transition_resources_.get();
   }
 
+  bool HasViewTransitionDelayLayerTreeViewDeletion() const {
+    return view_transition_resources_ &&
+           view_transition_resources_->delay_layer_tree_view_deletion();
+  }
+
   bool HasCookieChangeListener() const {
     return !!cookie_change_listener_.get();
   }

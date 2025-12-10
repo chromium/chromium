@@ -151,6 +151,11 @@ struct BLINK_COMMON_EXPORT
     return r.id_to_auto_name_map;
   }
 
+  static bool delay_layer_tree_view_deletion(
+      const blink::ViewTransitionState& r) {
+    return r.IsDelayLayerTreeViewDeletionEnabled();
+  }
+
   static bool Read(blink::mojom::ViewTransitionStateDataView r,
                    blink::ViewTransitionState* out);
 };

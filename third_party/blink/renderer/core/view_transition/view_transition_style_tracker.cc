@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "cc/base/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
@@ -2100,6 +2101,10 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
 
   // TODO(khushalsagar): Need to send offsets to retain positioning of
   // ::view-transition.
+
+  transition_state.delay_layer_tree_view_deletion_ =
+      base::FeatureList::IsEnabled(
+          blink::features::kDelayLayerTreeViewDeletionOnLocalSwap);
 
   return transition_state;
 }
