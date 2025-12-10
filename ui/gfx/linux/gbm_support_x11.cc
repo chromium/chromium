@@ -76,13 +76,13 @@ GBMSupportX11* GBMSupportX11::GetInstance() {
 }
 
 // static
-std::vector<GBMSupportX11::BufferUsageAndFormat>
+std::vector<GBMSupportX11::BufferUsageAndSIFormat>
 GBMSupportX11::CreateSupportedConfigList(ui::GbmDevice* device) {
   if (!device) {
     return {};
   }
 
-  std::vector<BufferUsageAndFormat> configs;
+  std::vector<BufferUsageAndSIFormat> configs;
   for (gfx::BufferUsage usage : {
            gfx::BufferUsage::GPU_READ,
            gfx::BufferUsage::SCANOUT,
@@ -113,7 +113,8 @@ GBMSupportX11::CreateSupportedConfigList(ui::GbmDevice* device) {
       // YUV420 formats get properly tested.
       if (device->CreateBuffer(GetFourCCFormatFromBufferFormat(format),
                                gfx::Size(2, 2), BufferUsageToGbmFlags(usage))) {
-        configs.push_back(BufferUsageAndFormat(usage, format));
+        configs.push_back(
+            BufferUsageAndSIFormat(usage, viz::GetSharedImageFormat(format)));
       }
     }
   }
@@ -134,10 +135,8 @@ std::unique_ptr<GbmBuffer> GBMSupportX11::CreateBuffer(
     LOG(ERROR) << "Can't create buffer -- gbm  device is missing.";
     return nullptr;
   }
-  if (!base::Contains(
-          supported_configs_,
-          BufferUsageAndFormat(usage,
-                               viz::SharedImageFormatToBufferFormat(format)))) {
+  if (!base::Contains(supported_configs_,
+                      BufferUsageAndSIFormat(usage, format))) {
     LOG(ERROR) << "Can't create buffer -- unsupported config: usage="
                << gfx::BufferUsageToString(usage)
                << ", format=" << format.ToString();
