@@ -52,6 +52,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Event;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -76,6 +77,10 @@ import java.util.concurrent.atomic.AtomicReference;
 @Batch(Batch.PER_CLASS)
 public class SeamlessSigninTest {
     private static final String TEST_DOMAIN = "test.com";
+    private static final String TIMESTAMP_MANAGEMENT_STATUS_LOADED =
+            "Signin.SignIn.Timestamps." + FlowVariant.OTHER + "." + Event.MANAGEMENT_STATUS_LOADED;
+    private static final String TIMESTAMP_SIGNIN_ABORTED =
+            "Signin.SignIn.Timestamps." + FlowVariant.OTHER + "." + Event.SIGNIN_ABORTED;
 
     @Rule
     public final AutoResetCtaTransitTestRule mActivityTestRule =
@@ -152,17 +157,17 @@ public class SeamlessSigninTest {
         }
     }
 
-    /**
-     * TODO(crbug.com/437038737): Add coverage for for |Event.SIGNIN_COMPLETED| and
-     * |Event.MANAGEMENT_STATUS_LOADED|
-     */
     @Test
     @MediumTest
     public void testDefaultAccountSuccessfulSignIn_neverOpensBottomSheet() {
         var accountConsistencyHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.AccountConsistencyPromoAction",
-                        AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
+                        .build();
         mIsAccountManaged = false;
         createCoordinatorAndLaunchSigninFlow();
 
@@ -184,6 +189,8 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsAccountManaged = true;
         createCoordinatorAndLaunchSigninFlow();
@@ -219,8 +226,8 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
                                 AccountConsistencyPromoAction.DISMISSED_BACK)
-                        .expectNoRecords(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsAccountManaged = true;
         createCoordinatorAndLaunchSigninFlow();
@@ -243,8 +250,8 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
                                 AccountConsistencyPromoAction.DISMISSED_BUTTON)
-                        .expectNoRecords(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsAccountManaged = true;
         createCoordinatorAndLaunchSigninFlow();
@@ -267,8 +274,8 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
                                 AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN)
-                        .expectNoRecords(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsAccountManaged = true;
         createCoordinatorAndLaunchSigninFlow();
@@ -285,9 +292,13 @@ public class SeamlessSigninTest {
     @MediumTest
     public void testAutomativeDevice_signInDefaultAccount() {
         var accountConsistencyHistogram =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.AccountConsistencyPromoAction",
-                        AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
+                        .build();
         mAutoTestRule.setIsAutomotive(true);
         createCoordinatorAndLaunchSigninFlow();
 
@@ -309,6 +320,8 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsAccountManaged = true;
         mAutoTestRule.setIsAutomotive(true);
@@ -345,8 +358,8 @@ public class SeamlessSigninTest {
                         .expectIntRecord(
                                 "Signin.AccountConsistencyPromoAction",
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
-                        .expectNoRecords(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
         createCoordinatorAndLaunchSigninFlow();
@@ -367,8 +380,8 @@ public class SeamlessSigninTest {
                                 "Signin.AccountConsistencyPromoAction",
                                 AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
-                        .expectAnyRecord(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectAnyRecord(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsNextSigninSuccessful.set(false);
 
@@ -389,8 +402,8 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
                                 AccountConsistencyPromoAction.DISMISSED_BACK)
-                        .expectAnyRecord(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectAnyRecord(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsNextSigninSuccessful.set(false);
         createCoordinatorAndLaunchSigninFlow();
@@ -413,8 +426,8 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
                                 AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN)
-                        .expectAnyRecord(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectAnyRecord(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsNextSigninSuccessful.set(false);
         createCoordinatorAndLaunchSigninFlow();
@@ -438,8 +451,8 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
-                        .expectAnyRecord(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectAnyRecord(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsAccountManaged = true;
         mIsNextSigninSuccessful.set(false);
@@ -465,8 +478,8 @@ public class SeamlessSigninTest {
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
                                 AccountConsistencyPromoAction.DISMISSED_BACK)
-                        .expectAnyRecord(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectAnyRecord(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsAccountManaged = true;
         mIsNextSigninSuccessful.set(false);
@@ -492,8 +505,8 @@ public class SeamlessSigninTest {
                         .expectIntRecord(
                                 "Signin.AccountConsistencyPromoAction",
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
-                        .expectAnyRecord(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectAnyRecord(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         emulateLongSignin();
         createCoordinatorAndLaunchSigninFlow();
@@ -516,9 +529,8 @@ public class SeamlessSigninTest {
                                 "Signin.AccountConsistencyPromoAction",
                                 AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
-                        .expectAnyRecordTimes(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted",
-                                2)
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectAnyRecordTimes(TIMESTAMP_SIGNIN_ABORTED, 2)
                         .build();
         mIsNextSigninSuccessful.set(false);
         createCoordinatorAndLaunchSigninFlow();
@@ -542,8 +554,8 @@ public class SeamlessSigninTest {
                                 "Signin.AccountConsistencyPromoAction",
                                 AccountConsistencyPromoAction.SHOWN,
                                 AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN)
-                        .expectAnyRecord(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectAnyRecord(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsAccountManaged = true;
         createCoordinatorAndLaunchSigninFlow();
@@ -564,8 +576,8 @@ public class SeamlessSigninTest {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Signin.AccountConsistencyPromoAction")
-                        .expectNoRecords(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectNoRecords(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mAutoTestRule.setIsAutomotive(true);
         createCoordinatorAndLaunchSigninFlow();
@@ -605,8 +617,8 @@ public class SeamlessSigninTest {
                                 "Signin.AccountConsistencyPromoAction",
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
                                 2)
-                        .expectAnyRecord(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecordTimes(TIMESTAMP_MANAGEMENT_STATUS_LOADED, 2)
+                        .expectAnyRecord(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsNextSigninSuccessful.set(false);
         createCoordinatorAndLaunchSigninFlow();
@@ -652,8 +664,8 @@ public class SeamlessSigninTest {
                                 "Signin.AccountConsistencyPromoAction",
                                 AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
                                 2)
-                        .expectAnyRecord(
-                                "Signin.SignIn.Timestamps." + FlowVariant.OTHER + ".SigninAborted")
+                        .expectAnyRecord(TIMESTAMP_MANAGEMENT_STATUS_LOADED)
+                        .expectAnyRecord(TIMESTAMP_SIGNIN_ABORTED)
                         .build();
         mIsAccountManaged = true;
         mIsNextSigninSuccessful.set(false);

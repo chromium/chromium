@@ -104,7 +104,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
             Listener listener,
             SigninAndHistorySyncCoordinator.Result result) {
         if (snackbarManager == null) {
-            // TODO(crbug.com/437038737): Once SnackbarManager configuration is hardened and always
+            // TODO(crbug.com/437039311): Once SnackbarManager configuration is hardened and always
             // non-null, remove @Nullable and null check.
             Log.e(TAG, "SnackbarManager for displaying sign-in confirmation snackbar is null");
             return;

@@ -139,7 +139,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                         ScrimClient.SIGNIN_ACCOUNT_PICKER_COORDINATOR);
         mScrimManager.getStatusBarColorSupplier().addObserver(mDelegate::setStatusBarColor);
 
-        // TODO(crbug.com/437038737): Lazy load BottomSheetController in case of seamless sign-in
+        // TODO(crbug.com/467282600): Lazy load BottomSheetController in case of seamless sign-in
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> mScrimManager,
