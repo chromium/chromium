@@ -30,7 +30,7 @@ struct WaylandOverlayConfig {
   gfx.mojom.ColorSpace? color_space;
 
   // Optional: specifies the HDR metadata of the wayland config.
-  gfx.mojom.HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata hdr_metadata;
 
   // Specifies how the buffer is to be transformed during composition.
   TransformUnion transform;

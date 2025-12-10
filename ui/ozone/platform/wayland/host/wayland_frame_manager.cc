@@ -427,7 +427,7 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
       config.priority_hint == gfx::OverlayPriorityHint::kVideo);
   surface->SetImageDescription(
       config.color_space.value_or(gfx::ColorSpace::CreateSRGB()),
-      config.hdr_metadata.value_or(gfx::HDRMetadata()));
+      config.hdr_metadata);
   if (set_opaque_region) {
     auto region_px =
         config.enable_blend

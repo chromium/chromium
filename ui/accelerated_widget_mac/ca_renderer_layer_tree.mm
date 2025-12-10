@@ -135,7 +135,7 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     AVSampleBufferDisplayLayer* av_layer,
     IOSurfaceRef io_surface,
     const gfx::ColorSpace& io_surface_color_space,
-    std::optional<gfx::HDRMetadata> hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata) {
   CVReturn cv_return = kCVReturnSuccess;
 
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;

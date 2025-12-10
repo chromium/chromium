@@ -53,7 +53,7 @@ struct StructTraits<wl::mojom::WaylandOverlayConfigDataView,
     return input.color_space;
   }
 
-  static const std::optional<gfx::HDRMetadata>& hdr_metadata(
+  static const gfx::HDRMetadata& hdr_metadata(
       const wl::WaylandOverlayConfig& input) {
     return input.hdr_metadata;
   }

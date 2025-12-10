@@ -536,8 +536,8 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
                              : hdr_metadata.smpte_st_2086->luminance_max;
     }
     float sdr_white_nits = ColorSpace::kDefaultSDRWhiteLevel;
-    if (options.src_hdr_metadata && options.src_hdr_metadata->ndwl) {
-      sdr_white_nits = options.src_hdr_metadata->ndwl->nits;
+    if (options.src_hdr_metadata.ndwl) {
+      sdr_white_nits = options.src_hdr_metadata.ndwl->nits;
     }
     return src_max_lum_nits / sdr_white_nits;
   }
@@ -586,8 +586,8 @@ class ColorTransformSrcNitsToSdrRelative : public ColorTransformStep {
     float sdr_white_nits = options.dst_sdr_max_luminance_nits;
     if (use_src_sdr_white_) {
       sdr_white_nits = ColorSpace::kDefaultSDRWhiteLevel;
-      if (options.src_hdr_metadata && options.src_hdr_metadata->ndwl) {
-        sdr_white_nits = options.src_hdr_metadata->ndwl->nits;
+      if (options.src_hdr_metadata.ndwl) {
+        sdr_white_nits = options.src_hdr_metadata.ndwl->nits;
       }
     }
     return unity_nits_ / sdr_white_nits;

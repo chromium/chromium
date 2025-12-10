@@ -11,10 +11,10 @@
 namespace gfx {
 
 base::apple::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
-  if (!hdr_metadata || !hdr_metadata->cta_861_3 ||
-      hdr_metadata->cta_861_3->max_content_light_level == 0.f ||
-      hdr_metadata->cta_861_3->max_frame_average_light_level == 0.f) {
+    const gfx::HDRMetadata& hdr_metadata) {
+  if (!hdr_metadata.cta_861_3 ||
+      hdr_metadata.cta_861_3->max_content_light_level == 0.f ||
+      hdr_metadata.cta_861_3->max_frame_average_light_level == 0.f) {
     return base::apple::ScopedCFTypeRef<CFDataRef>();
   }
 
@@ -28,16 +28,16 @@ base::apple::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
   // Values are stored in big-endian...
   ContentLightLevelInfoSEI sei;
   sei.max_content_light_level =
-      __builtin_bswap16(hdr_metadata->cta_861_3->max_content_light_level);
+      __builtin_bswap16(hdr_metadata.cta_861_3->max_content_light_level);
   sei.max_frame_average_light_level =
-      __builtin_bswap16(hdr_metadata->cta_861_3->max_frame_average_light_level);
+      __builtin_bswap16(hdr_metadata.cta_861_3->max_frame_average_light_level);
 
   return base::apple::ScopedCFTypeRef<CFDataRef>(
       CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 4));
 }
 
 base::apple::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata) {
   // This is a SMPTEST2086 Mastering Display Color Volume box.
   struct MasteringDisplayColorVolumeSEI {
     vector_ushort2 primaries[3];  // GBR

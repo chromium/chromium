@@ -41,7 +41,7 @@ UpdateHDRCopierLayer(CALayer* layer,
                      id<MTLDevice> device,
                      float screen_hdr_headroom,
                      const gfx::ColorSpace& color_space,
-                     const std::optional<gfx::HDRMetadata>& hdr_metadata);
+                     const gfx::HDRMetadata& hdr_metadata);
 
 }  // namespace metal
 

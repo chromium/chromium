@@ -1696,7 +1696,7 @@ bool SwapChainPresenter::SetupPresentToSwapChain(
     // crashes.
     if (!IsCompatibleHDRMetadata(hdr_metadata)) {
       hdr_metadata = gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
-          std::make_optional(params.video_params.hdr_metadata));
+          params.video_params.hdr_metadata);
     }
     stream_metadata = HDRMetadataHelperWin::HDRMetadataToDXGI(hdr_metadata);
   }

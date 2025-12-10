@@ -279,7 +279,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
                 device:(id<MTLDevice>)device
      screenHdrHeadroom:(float)screenHdrHeadroom
             colorSpace:(gfx::ColorSpace)colorSpace
-              metadata:(std::optional<gfx::HDRMetadata>)hdrMetadata;
+              metadata:(gfx::HDRMetadata)hdrMetadata;
 @end
 
 @implementation HDRCopierLayer {
@@ -288,7 +288,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
   id<MTLDevice> _device;
   float _screenHdrHeadroom;
   gfx::ColorSpace _colorSpace;
-  std::optional<gfx::HDRMetadata> _hdrMetadata;
+  gfx::HDRMetadata _hdrMetadata;
 }
 - (id)init {
   if ((self = [super init])) {
@@ -313,7 +313,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
                 device:(id<MTLDevice>)device
      screenHdrHeadroom:(float)screenHdrHeadroom
             colorSpace:(gfx::ColorSpace)colorSpace
-              metadata:(std::optional<gfx::HDRMetadata>)hdrMetadata {
+              metadata:(gfx::HDRMetadata)hdrMetadata {
   // HLG does not use the OS-provided tone mapping, so it will need to be
   // re-drawn whenever the HDR headroom changes.
   // https://crbug.com/343249142
@@ -526,7 +526,7 @@ void UpdateHDRCopierLayer(CALayer* layer,
                           id<MTLDevice> device,
                           float screen_hdr_headroom,
                           const gfx::ColorSpace& color_space,
-                          const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+                          const gfx::HDRMetadata& hdr_metadata) {
   if (auto* hdr_copier_layer = base::apple::ObjCCast<HDRCopierLayer>(layer)) {
     [hdr_copier_layer setHDRContents:buffer
                               device:device

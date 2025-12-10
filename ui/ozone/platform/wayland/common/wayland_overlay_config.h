@@ -81,7 +81,7 @@ struct WaylandOverlayConfig {
 
   // Specifies the color space data and HDR metadata of the wayland config.
   std::optional<gfx::ColorSpace> color_space;
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
 };
 
 }  // namespace wl

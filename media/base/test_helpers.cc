@@ -444,7 +444,7 @@ VideoDecoderConfig TestVideoConfig::NormalHdr(VideoCodec codec) {
   config.set_color_space_info(
       VideoColorSpace::FromGfxColorSpace(gfx::ColorSpace::CreateHDR10()));
   config.set_hdr_metadata(
-      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(std::nullopt));
+      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(gfx::HDRMetadata()));
   return config;
 }
 
@@ -453,7 +453,7 @@ VideoDecoderConfig TestVideoConfig::NormalHdrEncrypted(VideoCodec codec) {
   config.set_color_space_info(
       VideoColorSpace::FromGfxColorSpace(gfx::ColorSpace::CreateHDR10()));
   config.set_hdr_metadata(
-      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(std::nullopt));
+      gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(gfx::HDRMetadata()));
   return config;
 }
 

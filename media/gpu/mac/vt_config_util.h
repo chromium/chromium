@@ -24,7 +24,7 @@ CreateFormatExtensions(CMVideoCodecType codec_type,
                        VideoCodecProfile profile,
                        int bit_depth,
                        const VideoColorSpace& color_space,
-                       std::optional<gfx::HDRMetadata> hdr_metadata,
+                       const gfx::HDRMetadata& hdr_metadata,
                        std::optional<base::span<const uint8_t>> csd_box);
 
 }  // namespace media

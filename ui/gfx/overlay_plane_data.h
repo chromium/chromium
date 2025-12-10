@@ -34,7 +34,7 @@ struct COMPONENT_EXPORT(GFX) OverlayPlaneData {
       float opacity,
       OverlayPriorityHint priority_hint,
       const gfx::RRectF& rounded_corners,
-      const gfx::ColorSpace& color_space,
+      const ColorSpace& color_space,
       const std::optional<HDRMetadata>& hdr_metadata,
       std::optional<SkColor4f> color = std::nullopt,
       bool is_solid_color = false,
@@ -80,10 +80,10 @@ struct COMPONENT_EXPORT(GFX) OverlayPlaneData {
   RRectF rounded_corners;
 
   // ColorSpace for this overlay.
-  gfx::ColorSpace color_space;
+  ColorSpace color_space;
 
   // Optional HDR meta data required to display this overlay.
-  std::optional<HDRMetadata> hdr_metadata;
+  HDRMetadata hdr_metadata;
 
   // Represents either a background of this overlay or a color of a solid color
   // quad, which can be checked via the |is_solid_color|.

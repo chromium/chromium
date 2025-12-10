@@ -254,7 +254,7 @@ void GbmPixmapWayland::CreateDmabufBasedWlBuffer(
   buffer_manager_->CreateDmabufBasedBuffer(
       std::move(fd), visible_area_size_, strides, offsets, modifiers,
       gbm_bo_->GetFormat(), plane_count, overlay_plane_data.color_space,
-      overlay_plane_data.hdr_metadata.value_or(gfx::HDRMetadata()), buffer_id_);
+      overlay_plane_data.hdr_metadata, buffer_id_);
 }
 
 }  // namespace ui

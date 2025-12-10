@@ -139,32 +139,29 @@ HDRMetadata& HDRMetadata::operator=(const HDRMetadata& rhs) = default;
 HDRMetadata::~HDRMetadata() = default;
 
 // static
-float HDRMetadata::GetContentMaxLuminance(
-    const std::optional<gfx::HDRMetadata>& metadata) {
-  if (metadata.has_value()) {
-    if (metadata->cta_861_3.has_value() &&
-        metadata->cta_861_3->max_content_light_level > 0.f) {
-      return metadata->cta_861_3->max_content_light_level;
-    }
-    if (metadata->smpte_st_2086.has_value() &&
-        metadata->smpte_st_2086->luminance_max > 0.f) {
-      return metadata->smpte_st_2086->luminance_max;
-    }
+float HDRMetadata::GetContentMaxLuminance(const gfx::HDRMetadata& metadata) {
+  if (metadata.cta_861_3.has_value() &&
+      metadata.cta_861_3->max_content_light_level > 0.f) {
+    return metadata.cta_861_3->max_content_light_level;
+  }
+  if (metadata.smpte_st_2086.has_value() &&
+      metadata.smpte_st_2086->luminance_max > 0.f) {
+    return metadata.smpte_st_2086->luminance_max;
   }
   return 1000.f;
 }
 
 // static
 HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata) {
   constexpr HdrMetadataSmpteSt2086 kDefaults2086(SkNamedPrimaries::kRec2020,
                                                  1000.f, 0.f);
 
-  if (!hdr_metadata) {
+  if (hdr_metadata.IsEmpty()) {
     return HDRMetadata(kDefaults2086);
   }
 
-  HDRMetadata result = *hdr_metadata;
+  HDRMetadata result = hdr_metadata;
   if (!result.smpte_st_2086) {
     result.smpte_st_2086 = kDefaults2086;
     return result;
