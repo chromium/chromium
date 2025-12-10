@@ -39,7 +39,8 @@
           "project": "chromium-m142"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-win11-arm64-deps-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/dawn-win11-arm64-deps-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

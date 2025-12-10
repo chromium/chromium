@@ -164,6 +164,7 @@ chromium_luci.configure_project(
     is_main = settings.is_main,
     platforms = settings.platforms,
     experiments = [
+        "builder_config.targets_spec_directory_relative_to_source_dir",
         "targets.module_name_without_slash",
         "targets.module_scheme_junit_tests",
         "targets.module_scheme_script_tests",

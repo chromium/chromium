@@ -45,7 +45,8 @@
           "project": "chromium-m142"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/android-12l-x64-rel-cq/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/android-12l-x64-rel-cq/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
