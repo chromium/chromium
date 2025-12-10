@@ -99,7 +99,7 @@ struct NET_EXPORT SessionError {
     kFailedToUnwrapKey = 80,
     kMaxValue = kFailedToUnwrapKey,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionError)
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeviceBoundSessionError,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionError)
 
   using enum ErrorType;
 
