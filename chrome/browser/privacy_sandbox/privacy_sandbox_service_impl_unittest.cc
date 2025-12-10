@@ -457,7 +457,7 @@ class PrivacySandboxServiceTest : public testing::Test {
     privacy_sandbox_settings_ =
         std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
             std::move(mock_delegate), host_content_settings_map(),
-            cookie_settings(), tracking_protection_settings(), prefs());
+            cookie_settings(), prefs());
 
     privacy_sandbox_service_ =
         PrivacySandboxServiceFactory::GetInstance()

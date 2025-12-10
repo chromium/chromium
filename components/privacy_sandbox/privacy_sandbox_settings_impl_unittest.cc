@@ -117,7 +117,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettingsImpl>(
         std::move(mock_delegate), host_content_settings_map(), cookie_settings_,
-        tracking_protection_settings_.get(), prefs());
+        prefs());
   }
 
   virtual void InitializePrefsBeforeStart() {}
@@ -164,7 +164,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
     mock_delegate_ = mock_delegate.get();
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettingsImpl>(
         std::move(mock_delegate), host_content_settings_map(), cookie_settings_,
-        tracking_protection_settings_.get(), prefs());
+        prefs());
 
     disabled_topics_feature_list_.Reset();
     disabled_topics_feature_list_.InitAndEnableFeatureWithParameters(
@@ -306,23 +306,6 @@ TEST_F(PrivacySandboxSettingsTest, OnRelatedWebsiteSetsEnabledChanged) {
 
   EXPECT_CALL(observer, OnRelatedWebsiteSetsEnabledChanged(/*enabled=*/false));
   prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(PrivacySandboxSettingsTest, OnRelatedWebsiteSetsEnabledChanged3pcd) {
-  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
-  privacy_sandbox_settings()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnRelatedWebsiteSetsEnabledChanged(/*enabled=*/false));
-  prefs()->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, OnRelatedWebsiteSetsEnabledChanged(/*enabled=*/true));
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, OnRelatedWebsiteSetsEnabledChanged(/*enabled=*/false));
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
