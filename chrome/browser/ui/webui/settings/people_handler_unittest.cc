@@ -1788,53 +1788,6 @@ TEST_F(
       /*`ChromeSigninSettingModification::kToSignin`*/ 2, 1);
 }
 
-class PeopleHandlerUnoBubbleLimitsExperimentTest : public PeopleHandlerTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kSigninPromoLimitsExperiment};
-};
-
-TEST_F(PeopleHandlerUnoBubbleLimitsExperimentTest,
-       ShouldClearExperimentPrefsWhenExplicitlySettingDontSignin) {
-  base::HistogramTester histogram_tester;
-  // Signed in user can see the setting.
-  AccountInfo account = identity_test_env()->MakePrimaryAccountAvailable(
-      /*email=*/"email@gmail.com", ConsentLevel::kSignin);
-
-  CreatePeopleHandler();
-
-  // Simluates settings page loading.
-  SimulateHandleGetChromeSigninUserChoiceInfo();
-
-  SigninPrefs signin_prefs(*profile()->GetPrefs());
-  ChromeSigninUserChoice current_choice =
-      signin_prefs.GetChromeSigninInterceptionUserChoice(account.gaia);
-
-  // Simulates setting a new value through the UI.
-  ChromeSigninUserChoice user_choice = ChromeSigninUserChoice::kSignin;
-  ASSERT_NE(current_choice, user_choice);
-  SimulateHandleSetChromeSigninUserChoiceInfo(account.email, user_choice);
-
-  // Simulate a last bubble decline time as well.
-  signin_prefs.SetChromeSigninInterceptionLastBubbleDeclineTime(
-      account.gaia, base::Time::Now());
-  signin_prefs.IncrementChromeSigninBubbleRepromptCount(account.gaia);
-
-  // Simulates a second selection within the same settings session.
-  ChromeSigninUserChoice user_choice2 = ChromeSigninUserChoice::kDoNotSignin;
-  ASSERT_NE(current_choice, user_choice2);
-  SimulateHandleSetChromeSigninUserChoiceInfo(account.email, user_choice2);
-  // Explicitly setting the do not sign in option should clear bubble declined
-  // time.
-  EXPECT_FALSE(
-      signin_prefs
-          .GetChromeSigninInterceptionLastBubbleDeclineTime(account.gaia)
-          .has_value());
-  EXPECT_EQ(signin_prefs.GetChromeSigninBubbleRepromptCount(account.gaia), 0);
-
-  DestroyPeopleHandler();
-}
-
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

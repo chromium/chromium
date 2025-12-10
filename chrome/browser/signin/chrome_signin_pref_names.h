@@ -38,6 +38,24 @@ inline constexpr char kHistoryPageHistorySyncPromoShownCountPerProfile[] =
 inline constexpr char kAutofillSignInPromoDismissCountPerProfile[] =
     "signin.AutofillSignInPromoDismissCount";
 
+// Integer pref to store the number of times any address bubble signin promo
+// has been dismissed per profile while the user is signed out.
+inline constexpr char
+    kAddressSignInPromoDismissCountPerProfileForLimitsExperiment[] =
+        "signin.AddressSignInPromoDismissCountForLimitsExperiment";
+
+// Integer pref to store the number of times the password bubble signin promo
+// has been dismissed per profile while the user is signed out.
+inline constexpr char
+    kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment[] =
+        "signin.PasswordSignInPromoDismissCountForLimitsExperiment";
+
+// Integer pref to store the number of times the bookmark bubble signin promo
+// has been dismissed per profile while the user is signed out.
+inline constexpr char
+    kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment[] =
+        "signin.BookmarkSignInPromoDismissCountForLimitsExperiment";
+
 }  // namespace prefs
 
 #endif  // CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_PREF_NAMES_H_
