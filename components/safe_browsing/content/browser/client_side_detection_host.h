@@ -209,9 +209,9 @@ class ClientSideDetectionHost
   void RegisterAsyncCheckTracker();
 
   // autofill::AutofillManager::Observer method:
-  void OnBeforeFocusOnFormField(autofill::AutofillManager& manager,
-                                autofill::FormGlobalId form_id,
-                                autofill::FieldGlobalId field_id) override;
+  void OnAfterFocusOnFormField(autofill::AutofillManager& manager,
+                               autofill::FormGlobalId form_id,
+                               autofill::FieldGlobalId field_id) override;
 
   // history::HistoryServiceObserver method:
   void HistoryServiceBeingDeleted(

@@ -966,9 +966,9 @@ void ClientSideDetectionHost::OnAsyncSafeBrowsingCheckTrackerDestructed() {
   async_check_observation_.Reset();
 }
 
-// OnBeforeFocusOnFormField is an Autofill observer callback that triggers a CSD
+// OnAfterFocusOnFormField is an Autofill observer callback that triggers a CSD
 // ping when the user interacts with a credit card form field.
-void ClientSideDetectionHost::OnBeforeFocusOnFormField(
+void ClientSideDetectionHost::OnAfterFocusOnFormField(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
     autofill::FieldGlobalId field_id) {
@@ -1016,14 +1016,14 @@ void ClientSideDetectionHost::OnBeforeFocusOnFormField(
     history_service_->GetVisibleVisitCountToHost(
         url,
         base::BindOnce(&ClientSideDetectionHost::OnCreditCardFormVisitCount,
-                       weak_factory_.GetWeakPtr(), "OnBeforeFocusOnFormField",
+                       weak_factory_.GetWeakPtr(), "OnAfterFocusOnFormField",
                        base::TimeTicks::Now(), field_heuristic),
         &task_tracker_);
   } else {
     history::VisibleVisitCountToHostResult history_result =
         cached_history_result.value_or(
             history::VisibleVisitCountToHostResult{/*success=*/false});
-    OnCreditCardFormVisitCount("OnBeforeFocusOnFormField", std::nullopt,
+    OnCreditCardFormVisitCount("OnAfterFocusOnFormField", std::nullopt,
                                field_heuristic, history_result);
   }
 }

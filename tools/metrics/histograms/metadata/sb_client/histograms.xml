@@ -616,8 +616,8 @@ useful for Chirp alerts (go/crca-alerts). -->
     classification attempt, after checking for ESB.
   </summary>
   <token key="EventName">
-    <variant name="OnBeforeFocusOnFormField"
-        summary="Autofill OnBeforeFocusOnFormField"/>
+    <variant name="OnAfterFocusOnFormField"
+        summary="Autofill OnAfterFocusOnFormField"/>
     <variant name="OnFieldTypesDetermined"
         summary="Autofill OnFieldTypesDetermined"/>
   </token>
