@@ -468,7 +468,7 @@ linux_memory_builder(
             "interactive_ui_tests": targets.mixin(
                 # These are slow on the ASan trybot for some reason, crbug.com/1257927
                 swarming = targets.swarming(
-                    shards = 15,
+                    shards = 30,
                 ),
             ),
             "net_unittests": targets.mixin(
