@@ -133,7 +133,7 @@ const ActionChipPtr& GetStaticDeepSearchChip() {
 
 const ActionChipPtr& GetStaticImageGenerationChip() {
   static const base::NoDestructor<ActionChipPtr> kInstance(ActionChip::New(
-      /*title=*/"Create image",
+      /*title=*/"Create images",
       /*suggestion=*/"Add an image and reimagine it",
       /*type=*/ChipType::kImage, /*tab=*/nullptr));
   return *kInstance;
