@@ -40,6 +40,8 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_test_suite",
+        "module_scheme": "flat",
         "name": "performance_test_suite",
         "resultdb": {
           "enable": true
@@ -288,6 +290,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_test_suite",
+        "module_scheme": "flat",
         "name": "performance_test_suite",
         "resultdb": {
           "enable": true
@@ -336,6 +340,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_test_suite",
+        "module_scheme": "flat",
         "name": "performance_test_suite",
         "resultdb": {
           "enable": true
