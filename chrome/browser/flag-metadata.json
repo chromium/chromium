@@ -916,11 +916,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "autofill-enable-email-or-loyalty-cards-filling",
-    "owners": [ "vizcay@google.com", "tchudakov@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "autofill-enable-flat-rate-card-benefits-from-curinos",
     "owners": [ "ferny@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
@@ -939,11 +934,6 @@
     "name": "autofill-enable-keyboard-accessory-chip-width-adjustment",
     "owners": [ "tchudakov@google.com", "jkeitel@google.com"],
     "expiry_milestone": 150
-  },
-  {
-    "name": "autofill-enable-loyalty-cards-filling",
-    "owners": [ "vizcay@google.com", "tchudakov@google.com"],
-    "expiry_milestone": 145
   },
   {
     "name": "autofill-enable-multiple-request-in-virtual-card-downstream-enrollment",
@@ -1013,11 +1003,6 @@
     "name": "autofill-enable-support-for-name-and-email-profile",
     "owners": ["sygiet@google.com", "fleimgruber@google.com"],
     "expiry_milestone": 147
-  },
-  {
-    "name": "autofill-enable-syncing-of-loyalty-cards",
-    "owners": [ "piotrwrotniak@google.com",  "vizcay@google.com", "autofill-squad-muc@google.com" ],
-    "expiry_milestone": 145
   },
   { "name": "autofill-enable-touch-to-fill-reshow-for-bnpl",
     "owners": [ "ferny@google.com", "payments-autofill-team@google.com"],

@@ -8238,8 +8238,6 @@ from previous Chrome versions.
       label="SeparateLocalAndAccountSearchEngines:disabled"/>
   <int value="-2084849051" label="TabGroupsCollapseFreezing:disabled"/>
   <int value="-2083998415" label="VrLaunchIntent:enabled"/>
-  <int value="-2083610793"
-      label="AutofillEnableEmailOrLoyaltyCardsFilling:enabled"/>
   <int value="-2083195884" label="enable-firewall-hole-punching"/>
   <int value="-2082462043" label="ViewPasswords:disabled"/>
   <int value="-2082411152" label="PasswordsGrouping:disabled"/>
@@ -8830,8 +8828,6 @@ from previous Chrome versions.
   <int value="-1887053262"
       label="enable-zero-suggest-most-visited-without-serp"/>
   <int value="-1886997564" label="EnableSwitchAccessPointScanning:enabled"/>
-  <int value="-1886813894"
-      label="AutofillEnableEmailOrLoyaltyCardsFilling:disabled"/>
   <int value="-1886760950" label="ImprovedScreenCaptureSettings:enabled"/>
   <int value="-1886713568"
       label="AutofillGetPaymentsIdentityFromSync:disabled"/>
@@ -9221,7 +9217,6 @@ from previous Chrome versions.
   <int value="-1750008152" label="UsernameFirstFlow:enabled"/>
   <int value="-1749689559" label="SelectToSpeakNavigationControl:disabled"/>
   <int value="-1749176684" label="PauseBackgroundTabs:disabled"/>
-  <int value="-1748128041" label="AutofillEnableLoyaltyCardsFilling:enabled"/>
   <int value="-1747383699" label="QueryTilesInNTP:disabled"/>
   <int value="-1746767834" label="ssl-interstitial-v2-gray"/>
   <int value="-1746708491" label="RemoteCopyPersistentNotification:disabled"/>
@@ -10266,7 +10261,6 @@ from previous Chrome versions.
   <int value="-1396348326" label="DarkLightModeKMeansColor:enabled"/>
   <int value="-1395598866" label="SidePanelResizing:disabled"/>
   <int value="-1395162885" label="enable-search-engine-choice:disabled"/>
-  <int value="-1394834134" label="SyncAutofillLoyaltyCard:enabled"/>
   <int value="-1394600460" label="BrowsingHistoryActorIntegrationM2:disabled"/>
   <int value="-1392689905" label="ServiceWorkerLongRunningMessage:enabled"/>
   <int value="-1392673888"
@@ -15933,7 +15927,6 @@ from previous Chrome versions.
   <int value="605150752" label="WebUSB:disabled"/>
   <int value="605332010" label="SidePanelBorder:disabled"/>
   <int value="605712166" label="DevToolsWellKnown:enabled"/>
-  <int value="606137477" label="SyncAutofillLoyaltyCard:disabled"/>
   <int value="606288133" label="enable-print-preview-register-promos"/>
   <int value="606512202" label="AutofillCreditCardPopupLayout:enabled"/>
   <int value="606611135" label="ContextMenuTranslateWithGoogleLens:disabled"/>
@@ -18216,7 +18209,6 @@ from previous Chrome versions.
   <int value="1385846825" label="TabHoverCardImageSettings:disabled"/>
   <int value="1386300777"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:disabled"/>
-  <int value="1387103674" label="AutofillEnableLoyaltyCardsFilling:disabled"/>
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>
   <int value="1387497264" label="AutofillEnableLocalIban:enabled"/>
   <int value="1387796442"

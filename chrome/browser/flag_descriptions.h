@@ -859,12 +859,6 @@ inline constexpr char kAutofillEnableDownstreamCardAwarenessIphDescription[] =
     "When enabled, in-product help UI will be shown the first time a card "
     "added outside of Chrome appears in Autofill card suggestions.";
 
-inline constexpr char kAutofillEnableEmailOrLoyaltyCardsFillingName[] =
-    "Enable Autofill support for filling email or loyalty card fields";
-inline constexpr char kAutofillEnableEmailOrLoyaltyCardsFillingDescription[] =
-    "When enabled, Autofill will offer support for filling the user's loyalty "
-    "cards on email or loyalty card fields.";
-
 inline constexpr char kAutofillEnableFlatRateCardBenefitsFromCurinosName[] =
     "Enable showing flat rate card benefits sourced from Curinos";
 inline constexpr char
@@ -889,17 +883,6 @@ inline constexpr char
         "When enabled, Keyboard accessory limits the width of the first chip "
         "or "
         "the first 2 chips to display a part of the next chip.";
-
-inline constexpr char kAutofillEnableLoyaltyCardsFillingName[] =
-    "Enable Autofill support for filling loyalty cards";
-inline constexpr char kAutofillEnableLoyaltyCardsFillingDescription[] =
-    "When enabled, Autofill will offer support for filling the user's loyalty "
-    "cards stored in Google Wallet.";
-
-inline constexpr char kAutofillEnableLoyaltyCardSyncName[] =
-    "Sync Autofill Loyalty Cards";
-inline constexpr char kAutofillEnableLoyaltyCardSyncDescription[] =
-    "When enabled, allows syncing of Google Wallet loyalty cards.";
 
 inline constexpr char
     kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollmentName[] =
