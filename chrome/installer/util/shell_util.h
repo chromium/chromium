@@ -75,7 +75,6 @@ class ShellUtil {
     SHORTCUT_LOCATION_DESKTOP = SHORTCUT_LOCATION_FIRST,
     SHORTCUT_LOCATION_QUICK_LAUNCH,
     SHORTCUT_LOCATION_START_MENU_ROOT,
-    SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,  // now placed in root
     SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
     SHORTCUT_LOCATION_TASKBAR_PINS,   // base::win::Version::WIN7 +
     SHORTCUT_LOCATION_APP_SHORTCUTS,  // base::win::Version::WIN8 +
@@ -392,13 +391,6 @@ class ShellUtil {
   // Populates the uninitialized members of |properties| with default values.
   static void AddDefaultShortcutProperties(const base::FilePath& target_exe,
                                            ShortcutProperties* properties);
-
-  // Move an existing shortcut from |old_location| to |new_location| for the
-  // set |shortcut_level|.  If the folder containing |old_location| is then
-  // empty, it will be removed.
-  static bool MoveExistingShortcut(ShortcutLocation old_location,
-                                   ShortcutLocation new_location,
-                                   const ShortcutProperties& properties);
 
   // This converts ShellUtil's `location`, `properties`, and `operation` into
   // their base::win equivalents so callers can get the behavior of

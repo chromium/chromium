@@ -169,11 +169,6 @@ class InstallUtil {
   // places).
   static std::wstring GetShortcutName();
 
-  // Returns the name of the subdirectory in which Chrome's Start Menu shortcut
-  // was once placed. This remains purely to migrate old installs to the new
-  // style.
-  static std::wstring GetChromeShortcutDirNameDeprecated();
-
   // Returns the name of the subdirectory in the Start Menu in which Chrome
   // apps' shortcuts are placed.
   static std::wstring GetChromeAppsShortcutDirName();

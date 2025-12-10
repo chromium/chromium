@@ -86,8 +86,6 @@ void LogShortcutOperation(ShellUtil::ShortcutLocation location,
     case ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT:
       message.append("Start menu ");
       break;
-    case ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED:
-      NOTREACHED();
     case ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR:
       message.append(
           "Start menu/" +
@@ -452,22 +450,6 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
   const CLSID toast_activator_clsid = install_static::GetToastActivatorClsid();
   if (toast_activator_clsid != CLSID_NULL)
     start_menu_properties.set_toast_activator_clsid(toast_activator_clsid);
-
-  // The attempt below to update the stortcut will fail if it does not already
-  // exist at the expected location on disk.  First check if it exists in the
-  // previous location (under a subdirectory) and, if so, move it to the new
-  // location.
-  base::FilePath old_shortcut_path;
-  if (!ShellUtil::GetShortcutPath(
-          ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
-          shortcut_level, &old_shortcut_path)) {
-    return;
-  }
-  if (base::PathExists(old_shortcut_path)) {
-    ShellUtil::MoveExistingShortcut(
-        ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
-        ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT, start_menu_properties);
-  }
 
   ExecuteAndLogShortcutOperation(ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT,
                                  start_menu_properties, shortcut_operation);
