@@ -26,7 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -146,7 +146,7 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
 
   // Returns true if this platform has expensive database commits.
   static bool HasExpensiveCommits() {
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
     // Commits are slow on macOS 12. Speculation: perhaps it does not benefit
     // from F_BARRIERFSYNC.
     return base::mac::MacOSMajorVersion() < 13;
