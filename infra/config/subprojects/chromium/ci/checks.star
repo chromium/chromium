@@ -36,6 +36,9 @@ ci.builder(
     ),
     contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "presubmit.resultdb_module": 100,
+    },
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
@@ -61,6 +64,9 @@ ci.builder(
     ),
     contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = 6 * time.hour,
+    experiments = {
+        "presubmit.resultdb_module": 100,
+    },
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
