@@ -75,15 +75,13 @@ void AppendQuad(const viz::TransferableResource& resource,
   viz::TextureDrawQuad* texture_quad =
       render_pass_out.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
 
-  gfx::RectF uv_crop(quad_rect);
-  uv_crop.Scale(1.f / buffer_size.width(), 1.f / buffer_size.height());
-
-  texture_quad->SetNew(quad_state, quad_rect, quad_rect,
-                       /*needs_blending=*/true, resource.id, uv_crop.origin(),
-                       uv_crop.bottom_right(), SkColors::kTransparent,
-                       /*nearest=*/false,
-                       /*secure_output=*/false,
-                       gfx::ProtectedVideoType::kClear);
+  texture_quad->SetNew(
+      quad_state, quad_rect, quad_rect,
+      /*needs_blending=*/true, resource.id, gfx::PointF(quad_rect.origin()),
+      gfx::PointF(quad_rect.bottom_right()), SkColors::kTransparent,
+      /*nearest=*/false,
+      /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+      /*is_tex_coords_normalized=*/false);
 }
 
 }  // namespace
