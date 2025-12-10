@@ -138,6 +138,10 @@ class TabUnderlineViewControllerImpl
 
   void AddReasonForDebugging(UpdateUnderlineReason reason);
 
+  // Helper methods to check feature flags for Glic and contextual tasks.
+  bool ShouldUseSignalsForGlicUnderlines();
+  bool ShouldUseSignalsForContextualTasks();
+
   std::string UpdateReasonsToString() const;
 
   // Back pointer to the owner. Guaranteed to outlive `this`.
@@ -147,7 +151,9 @@ class TabUnderlineViewControllerImpl
   // underline view.
   raw_ptr<Browser> browser_;
 
-  // The Glic keyed service.
+  // The Glic keyed service. This is only assigned if
+  // ShouldUseSignalsForGlicUnderlines() returns true. Otherwise, it will stay
+  // null.
   raw_ptr<GlicKeyedService> glic_service_;
 
   // Tracked states and their subscriptions.
@@ -157,6 +163,11 @@ class TabUnderlineViewControllerImpl
   base::CallbackListSubscription indicator_change_subscription_;
   base::CallbackListSubscription pinned_tabs_change_subscription_;
   base::CallbackListSubscription user_input_submitted_subscription_;
+
+  // Subscription for contextual tasks backend.
+  base::ScopedObservation<contextual_tasks::ActiveTaskContextProvider,
+                          contextual_tasks::ActiveTaskContextProvider::Observer>
+      contextual_task_observation_{this};
 
   static constexpr size_t kNumReasonsToKeep = 10u;
   std::list<std::string> underline_update_reasons_;

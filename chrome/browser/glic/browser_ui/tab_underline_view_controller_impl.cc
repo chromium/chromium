@@ -13,8 +13,10 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -42,45 +44,57 @@ void TabUnderlineViewControllerImpl::Initialize(
     Browser* browser) {
   underline_view_ = underline_view;
   browser_ = browser;
-  glic_service_ =
-      GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
 
-  GlicSharingManager& sharing_manager = glic_service_->sharing_manager();
+  if (ShouldUseSignalsForGlicUnderlines()) {
+    glic_service_ =
+        GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
 
-  if (!GlicEnabling::IsMultiInstanceEnabled()) {
-    // Subscribe to changes in the focused tab.
-    focus_change_subscription_ =
-        sharing_manager.AddFocusedTabChangedCallback(base::BindRepeating(
-            &TabUnderlineViewControllerImpl::OnFocusedTabChanged,
+    GlicSharingManager& sharing_manager = glic_service_->sharing_manager();
+
+    if (!GlicEnabling::IsMultiInstanceEnabled()) {
+      // Subscribe to changes in the focused tab.
+      focus_change_subscription_ =
+          sharing_manager.AddFocusedTabChangedCallback(base::BindRepeating(
+              &TabUnderlineViewControllerImpl::OnFocusedTabChanged,
+              base::Unretained(this)));
+      // Subscribe to changes in the context access indicator status.
+      indicator_change_subscription_ =
+          glic_service_->AddContextAccessIndicatorStatusChangedCallback(
+              base::BindRepeating(
+                  &TabUnderlineViewControllerImpl::OnIndicatorStatusChanged,
+                  base::Unretained(this)));
+
+      // Observe changes in the floaty state.
+      glic_service_->GetSingleInstanceWindowController().AddStateObserver(this);
+    }
+
+    // Subscribe to changes in the set of pinned tabs.
+    pinned_tabs_change_subscription_ =
+        sharing_manager.AddPinnedTabsChangedCallback(base::BindRepeating(
+            &TabUnderlineViewControllerImpl::OnPinnedTabsChanged,
             base::Unretained(this)));
-    // Subscribe to changes in the context access indicator status.
-    indicator_change_subscription_ =
-        glic_service_->AddContextAccessIndicatorStatusChangedCallback(
-            base::BindRepeating(
-                &TabUnderlineViewControllerImpl::OnIndicatorStatusChanged,
-                base::Unretained(this)));
 
-    // Observe changes in the floaty state.
-    glic_service_->GetSingleInstanceWindowController().AddStateObserver(this);
+    // Subscribe to when new requests are made by glic.
+    user_input_submitted_subscription_ =
+        glic_service_->AddUserInputSubmittedCallback(base::BindRepeating(
+            &TabUnderlineViewControllerImpl::OnUserInputSubmitted,
+            base::Unretained(this)));
   }
 
-  // Subscribe to changes in the set of pinned tabs.
-  pinned_tabs_change_subscription_ =
-      sharing_manager.AddPinnedTabsChangedCallback(base::BindRepeating(
-          &TabUnderlineViewControllerImpl::OnPinnedTabsChanged,
-          base::Unretained(this)));
+  if (ShouldUseSignalsForContextualTasks()) {
+    contextual_tasks::ActiveTaskContextProvider* active_task_context_provider =
+        browser_->browser_window_features()
+            ->contextual_tasks_active_task_context_provider();
+    contextual_task_observation_.Observe(active_task_context_provider);
+  }
 
-  // Subscribe to when new requests are made by glic.
-  user_input_submitted_subscription_ =
-      glic_service_->AddUserInputSubmittedCallback(base::BindRepeating(
-          &TabUnderlineViewControllerImpl::OnUserInputSubmitted,
-          base::Unretained(this)));
-
-  // Fetch the latest context access indicator status from service. We can't
-  // assume the WebApp always updates the status on the service (thus the new
-  // subscribers not getting the latest value).
-  OnIndicatorStatusChanged(
-      glic_service_->is_context_access_indicator_enabled());
+  if (glic_service_) {
+    // Fetch the latest context access indicator status from service. We can't
+    // assume the WebApp always updates the status on the service (thus the new
+    // subscribers not getting the latest value).
+    OnIndicatorStatusChanged(
+        glic_service_->is_context_access_indicator_enabled());
+  }
 }
 
 void TabUnderlineViewControllerImpl::OnFocusedTabChanged(
@@ -200,13 +214,17 @@ TabUnderlineViewControllerImpl::GetTabInterface() {
 
 bool TabUnderlineViewControllerImpl::IsUnderlineTabPinned() {
   if (auto tab_interface = GetTabInterface()) {
-    return glic_service_->sharing_manager().IsTabPinned(
-        tab_interface->GetHandle());
+    return glic_service_ && glic_service_->sharing_manager().IsTabPinned(
+                                tab_interface->GetHandle());
   }
   return false;
 }
 
 bool TabUnderlineViewControllerImpl::IsUnderlineTabSharedThroughActiveFollow() {
+  if (!glic_service_) {
+    return false;
+  }
+
   if (auto tab_interface = GetTabInterface()) {
     return (glic_service_->sharing_manager().GetFocusedTabData().focus() ==
             tab_interface.get()) &&
@@ -226,7 +244,7 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
   SCOPED_CRASH_KEY_BOOL("crbug-398319435", "glic_focused_contents",
                         !!glic_current_focused_contents_);
   SCOPED_CRASH_KEY_BOOL("crbug-398319435", "is_glic_window_showing",
-                        IsGlicWindowShowing());
+                        glic_service_ && IsGlicWindowShowing());
 
   switch (reason) {
     case UpdateUnderlineReason::kContextAccessIndicatorOn: {
@@ -391,7 +409,7 @@ void TabUnderlineViewControllerImpl::ShowOrAnimatePinnedUnderline() {
 }
 
 bool TabUnderlineViewControllerImpl::IsGlicWindowShowing() const {
-  return glic_service_->IsWindowShowing();
+  return glic_service_ && glic_service_->IsWindowShowing();
 }
 
 bool TabUnderlineViewControllerImpl::IsTabInCurrentWindow(
@@ -450,6 +468,15 @@ std::string TabUnderlineViewControllerImpl::UpdateReasonsToString() const {
     oss << r << ",";
   }
   return oss.str();
+}
+
+bool TabUnderlineViewControllerImpl::ShouldUseSignalsForGlicUnderlines() {
+  return base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
+         glic::GlicEnabling::IsProfileEligible(browser_->GetProfile());
+}
+
+bool TabUnderlineViewControllerImpl::ShouldUseSignalsForContextualTasks() {
+  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
 }
 
 }  // namespace glic

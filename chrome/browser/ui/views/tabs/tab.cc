@@ -58,6 +58,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/collaboration/public/messaging/message.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -258,10 +259,11 @@ Tab::Tab(TabSlotController* controller)
       AddChildView(std::make_unique<AlertIndicatorButton>(this));
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
-      controller_->GetBrowser() &&
-      glic::GlicEnabling::IsProfileEligible(
-          controller_->GetBrowser()->GetProfile())) {
+  if (controller_->GetBrowser() &&
+      ((base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
+        glic::GlicEnabling::IsProfileEligible(
+            controller_->GetBrowser()->GetProfile())) ||
+       base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks))) {
     glic_tab_underline_view_ = AddChildView(
         views::Builder<glic::TabUnderlineView>(
             glic::TabUnderlineView::Factory::Create(
