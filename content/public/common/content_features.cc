@@ -448,6 +448,9 @@ BASE_FEATURE(kFedCmLightweightMode, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables FedCM to intercept and potentially cancel certain navigations.
+BASE_FEATURE(kFedCmNavigationCancellation, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Nonce usage in Params
 BASE_FEATURE(kFedCmNonceInParams, base::FEATURE_DISABLED_BY_DEFAULT);
 

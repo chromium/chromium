@@ -100,4 +100,8 @@ bool IsNavigationInterceptionEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmNavigationInterception);
 }
 
+bool IsNavigationCancellationEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNavigationCancellation);
+}
+
 }  // namespace content::webid

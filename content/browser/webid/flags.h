@@ -70,6 +70,9 @@ bool IsFedCmEmbedderCheckEnabled();
 // Whether navigation interception is enabled.
 bool IsNavigationInterceptionEnabled();
 
+// Whethere navigation cancellation is enabled.
+bool IsNavigationCancellationEnabled();
+
 }  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_
