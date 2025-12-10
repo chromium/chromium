@@ -169,6 +169,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.TabAffiliationCount" units="count"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a tab is affiliated with a task. Records the number of
+    tabs that are affiliated with the task that has the new affilation.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.TabChange.UserAction{ActionType}"
     enum="Boolean" expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>

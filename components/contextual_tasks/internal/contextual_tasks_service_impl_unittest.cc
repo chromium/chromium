@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
@@ -1365,9 +1366,24 @@ TEST_F(ContextualTasksServiceImplTest, GetTabsAssociatedWithTask) {
   SessionID tab_id2 = SessionID::FromSerializedValue(2);
   SessionID tab_id3 = SessionID::FromSerializedValue(3);
 
-  service_->AssociateTabWithTask(task1.GetTaskId(), tab_id1);
-  service_->AssociateTabWithTask(task1.GetTaskId(), tab_id2);
-  service_->AssociateTabWithTask(task2.GetTaskId(), tab_id3);
+  {
+    base::HistogramTester histogram_tester;
+    service_->AssociateTabWithTask(task1.GetTaskId(), tab_id1);
+    histogram_tester.ExpectUniqueSample("ContextualTasks.TabAffiliationCount",
+                                        1, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    service_->AssociateTabWithTask(task1.GetTaskId(), tab_id2);
+    histogram_tester.ExpectUniqueSample("ContextualTasks.TabAffiliationCount",
+                                        2, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    service_->AssociateTabWithTask(task2.GetTaskId(), tab_id3);
+    histogram_tester.ExpectUniqueSample("ContextualTasks.TabAffiliationCount",
+                                        1, 1);
+  }
 
   std::vector<SessionID> tabs_for_task1 =
       service_->GetTabsAssociatedWithTask(task1.GetTaskId());

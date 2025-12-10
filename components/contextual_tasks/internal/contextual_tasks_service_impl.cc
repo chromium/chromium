@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -245,6 +246,9 @@ void ContextualTasksServiceImpl::AssociateTabWithTask(const base::Uuid& task_id,
 
   tab_to_task_[tab_id] = task_id;
   it->second.AddTabId(tab_id);
+
+  base::UmaHistogramCounts100("ContextualTasks.TabAffiliationCount",
+                              GetTabsAssociatedWithTask(task_id).size());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAssociatedToTab,
