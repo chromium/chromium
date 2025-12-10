@@ -180,3 +180,15 @@ TEST_F(NewTabPageUITest, ShowAllMostVisitedTilesPref_Set_True) {
   // Check that the pref is set to true
   EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles));
 }
+
+TEST_F(NewTabPageUITest, ShortcutsAutoRemovalDisabledPref_Set_True) {
+  PrefService* prefs = profile().GetPrefs();
+  // Ensure the pref has its default value as false.
+  bool init_value =
+      prefs->GetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled);
+  ASSERT_FALSE(init_value);
+
+  // Set the pref to true.
+  prefs->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled, true);
+  EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled));
+}

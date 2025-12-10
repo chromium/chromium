@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -100,6 +101,7 @@ void MostVisitedHandler::AddMostVisitedTile(
     const GURL& url,
     const std::string& title,
     AddMostVisitedTileCallback callback) {
+  DisableShortcutsAutoRemoval(profile_);
   if (most_visited_sites_->IsCustomLinksEnabled()) {
     bool success =
         most_visited_sites_->AddCustomLink(url, base::UTF8ToUTF16(title));
@@ -111,6 +113,7 @@ void MostVisitedHandler::AddMostVisitedTile(
 
 void MostVisitedHandler::DeleteMostVisitedTile(
     most_visited::mojom::MostVisitedTilePtr tile) {
+  DisableShortcutsAutoRemoval(profile_);
   if (IsFromEnterpriseShortcut(tile->source)) {
     CHECK(most_visited_sites_->IsEnterpriseShortcutsEnabled());
     most_visited_sites_->DeleteEnterpriseShortcut(tile->url);
@@ -151,6 +154,7 @@ void MostVisitedHandler::RestoreMostVisitedDefaults(
 void MostVisitedHandler::ReorderMostVisitedTile(
     most_visited::mojom::MostVisitedTilePtr tile,
     uint8_t new_pos) {
+  DisableShortcutsAutoRemoval(profile_);
   if (IsFromEnterpriseShortcut(tile->source)) {
     CHECK(most_visited_sites_->IsEnterpriseShortcutsEnabled());
     most_visited_sites_->ReorderEnterpriseShortcut(tile->url, new_pos);
@@ -188,6 +192,7 @@ void MostVisitedHandler::UpdateMostVisitedTile(
     const GURL& new_url,
     const std::string& new_title,
     UpdateMostVisitedTileCallback callback) {
+  DisableShortcutsAutoRemoval(profile_);
   if (IsFromEnterpriseShortcut(tile->source)) {
     CHECK(most_visited_sites_->IsEnterpriseShortcutsEnabled());
     bool success = most_visited_sites_->UpdateEnterpriseShortcut(
@@ -230,6 +235,7 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
     bool ctrl_key,
     bool meta_key,
     bool shift_key) {
+  DisableShortcutsAutoRemoval(profile_);
   logger_.LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
 
   WindowOpenDisposition disposition = ui::DispositionFromClick(
@@ -263,6 +269,7 @@ void MostVisitedHandler::GetMostVisitedExpandedState(
 }
 
 void MostVisitedHandler::SetMostVisitedExpandedState(bool is_expanded) {
+  DisableShortcutsAutoRemoval(profile_);
   profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles,
                                    is_expanded);
 }
