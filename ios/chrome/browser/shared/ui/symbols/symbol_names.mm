@@ -7,7 +7,7 @@
 // ****************************************************************************
 // Branded symbol names.
 // ****************************************************************************
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 NSString* const kGeminiFullSymbol = @"gemini_full";
 NSString* const kGeminiBrandedLogoSymbol = @"gemini_logo";
 NSString* const kGoogleDriveSymbol = @"google_drive";
@@ -21,7 +21,7 @@ NSString* const kMulticolorChromeballSymbol = @"multicolor_chromeball";
 NSString* const kPageInsightsSymbol = @"page_insights";
 #else
 NSString* const kGeminiNonBrandedLogoSymbol = @"sparkle";
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
 // ****************************************************************************
 // Custom symbol names.

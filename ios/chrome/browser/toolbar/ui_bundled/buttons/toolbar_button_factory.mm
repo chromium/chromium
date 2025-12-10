@@ -331,7 +331,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
   CHECK(IsDiamondPrototypeEnabled());
 
   auto loadImageBlock = ^UIImage* {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     return MakeSymbolMonochrome(
         CustomSymbolWithPointSize(kCameraLensSymbol, kDiamondSymbolSize));
 #endif

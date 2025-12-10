@@ -79,12 +79,12 @@ const CGFloat kTableViewSectionFooterHeight = 3;
   self.headerImageType = PromoStyleImageType::kImageWithShadow;
   self.headerViewForceStyleLight = YES;
   self.headerImageBottomMargin = kHeaderBottomMargin;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logo = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
 #else
   UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   self.headerImage = logo;
 
   self.titleText = l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_TITLE);

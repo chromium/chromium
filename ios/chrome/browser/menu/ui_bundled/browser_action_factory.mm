@@ -266,7 +266,7 @@
                                                 referrer:referrer
                                                 webState:webState];
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* image =
       CustomSymbolWithPointSize(kGooglePhotosSymbol, kSymbolActionPointSize);
 #else

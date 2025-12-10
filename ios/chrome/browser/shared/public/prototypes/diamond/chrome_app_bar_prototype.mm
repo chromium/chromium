@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/diamond_grid_button.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
-#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -147,13 +147,13 @@ void ConfigureButtonShadow(UIButton* button) {
     [self updateMask];
 
     UIButtonConfiguration* askGeminiConfiguration = ButtonConfiguration();
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     askGeminiConfiguration.image =
         GetCustomAppBarSymbol(kGeminiBrandedLogoSymbol);
 #else
     askGeminiConfiguration.image =
         GetDefaultAppBarSymbol(kGeminiNonBrandedLogoSymbol);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
     askGeminiConfiguration.title =
         l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_ASK_GEMINI);

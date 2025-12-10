@@ -125,7 +125,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
@@ -170,7 +170,7 @@ NSString* const kDevViewSourceKey = @"DevViewSource";
 
 // Returns the branded version of the Google Services symbol.
 UIImage* GetBrandedGoogleServicesSymbol() {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return CustomSettingsRootMulticolorSymbol(kGoogleIconSymbol);
 #else
   return DefaultSettingsRootSymbol(kGearshape2Symbol);
@@ -179,7 +179,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Returns the branded version of the Gemini symbol.
 UIImage* GetBrandedGeminiSymbol() {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return CustomSettingsRootSymbol(kGeminiBrandedLogoSymbol);
 #else
   return DefaultSettingsRootSymbol(kGeminiNonBrandedLogoSymbol);

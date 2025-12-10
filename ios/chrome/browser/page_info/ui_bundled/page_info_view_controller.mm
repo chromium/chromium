@@ -415,13 +415,13 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       ColorfulSymbolContentConfiguration* iconConfiguration =
           [[ColorfulSymbolContentConfiguration alloc] init];
       UIImage* icon =
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
           CustomSymbolTemplateWithPointSize(kPageInsightsSymbol,
                                             kPageInfoSymbolPointSize);
 #else
           DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
                                              kPageInfoSymbolPointSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS),
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS),
       iconConfiguration.symbolImage = icon;
       iconConfiguration.symbolBackgroundColor =
           [UIColor colorNamed:kPurple500Color];

@@ -85,7 +85,7 @@ class PlaceholderServiceTest : public PlatformTest {
 
 // Test that a bundled icon is returned for Google.
 TEST_F(PlaceholderServiceTest, TestFetchingBundledIcon) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   const CGFloat icon_size = kDesiredSmallFaviconSizePt;
   TemplateURLData google_data;
   google_data.SetShortName(u"Google");

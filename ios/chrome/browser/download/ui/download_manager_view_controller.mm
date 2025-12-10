@@ -28,7 +28,7 @@
 
 namespace {
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 // Names of icons used in Download buttons or as leading icon.
 NSString* const kFilesAppWithBackgroundImage =
     @"apple_files_app_with_background";
@@ -66,7 +66,7 @@ const CGFloat kAnimationMinScale = 0.75;
 UIImage* GetDownloadFileDestinationImage(DownloadFileDestination destination) {
   UIImage* destination_image = nil;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   static dispatch_once_t once_token;
   static UIImage* files_image;
   static UIImage* drive_image;
@@ -790,7 +790,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
   self.leadingIconNotStarted.hidden = !taskNotStarted;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   self.leadingIcon.hidden = taskNotStarted;
 #else
   self.leadingIcon.hidden = YES;

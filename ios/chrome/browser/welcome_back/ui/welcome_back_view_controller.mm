@@ -92,12 +92,12 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
   if (_userAvatar) {
     self.aboveTitleView = [self createCompositeAvatarImage];
   } else {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     UIImage* logo = MakeSymbolMulticolor(
         CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kIconSize));
 #else
     UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kIconSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     self.image = logo;
     self.imageBackgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.imageEnclosedWithShadowWithoutBadge = YES;

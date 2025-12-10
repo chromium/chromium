@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/shared/ui/image/image_names.h"
 
 // Branded image names.
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 NSString* const kChromeAIHubHeaderImage = @"chrome_ai_hub_header";
 NSString* const kChromeDefaultBrowserIllustrationImage =
     @"chrome_default_browser_illustration";
@@ -53,7 +53,7 @@ NSString* const kChromiumSettingsPasswordsInOtherAppsBannerImage =
 NSString* const kChromiumSigninBannerImage = @"chromium_signin_banner";
 NSString* const kChromiumSigninPromoLogoImage = @"chromium_signin_promo_logo";
 
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
 // Custom image names.
 NSString* const kPasswordManagerTrustedVaultWidgetPromoImage =

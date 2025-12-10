@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 
 // All available icons for autocomplete suggestions in the popup.
 enum class OmniboxSuggestionIconType {
@@ -35,9 +35,9 @@ NSString* GetOmniboxSuggestionIconTypeAssetName(OmniboxSuggestionIconType icon);
 // Returns the asset with "always template" rendering mode.
 UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon);
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 // Returns the branded Google icon.
 UIImage* GetBrandedGoogleIconForOmnibox();
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_SUGGESTION_ICON_UTIL_H_

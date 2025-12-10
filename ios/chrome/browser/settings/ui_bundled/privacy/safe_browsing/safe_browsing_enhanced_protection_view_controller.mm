@@ -104,7 +104,7 @@ const CGFloat kImageCenterMargin = 14;
                         image:DefaultSymbolWithPointSize(kSaveImageActionSymbol,
                                                          kSymbolSize)
                   toStackView:_stackView];
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* gIcon = CustomSymbolWithPointSize(kGoogleShieldSymbol, kSymbolSize);
 #else
   UIImage* gIcon = DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolSize);

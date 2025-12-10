@@ -593,7 +593,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   if (!search::DefaultSearchProviderIsGoogle(_templateURLService)) {
     return nil;
   }
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImageSymbolConfiguration* config =
       self.usesMonochromeLogo
           ? [UIImageSymbolConfiguration configurationPreferringMonochrome]

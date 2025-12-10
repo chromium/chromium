@@ -80,12 +80,12 @@ constexpr const CGFloat kSubtitleBottomMargin = 17;
   self.headerImageShadowInset = kHeaderShadowInset;
   self.noBackgroundHeaderImageTopMarginPercentage = kHeaderTopMarginPercentage;
   self.headerImageBottomMargin = kHeaderBottomMargin;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logo = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
 #else
   UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   self.headerImage = logo;
 
   self.titleHorizontalMargin = 0;

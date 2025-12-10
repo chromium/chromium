@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "build/build_config.h"
-#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 
 /// ****************************************************************************
 /// Import `symbols.h` and not this file directly.
@@ -17,7 +17,7 @@
 // ****************************************************************************
 // Branded symbol names.
 // ****************************************************************************
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 extern NSString* const kGeminiFullSymbol;
 extern NSString* const kGeminiBrandedLogoSymbol;
 extern NSString* const kGoogleDriveSymbol;
@@ -31,7 +31,7 @@ extern NSString* const kMulticolorChromeballSymbol;
 extern NSString* const kPageInsightsSymbol;
 #else
 extern NSString* const kGeminiNonBrandedLogoSymbol;
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
 // ****************************************************************************
 // Custom symbol names.

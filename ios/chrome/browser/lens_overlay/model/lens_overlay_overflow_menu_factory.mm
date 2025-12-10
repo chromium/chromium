@@ -15,7 +15,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 namespace {
 
 const CGFloat kMenuSymbolSize = 18;
@@ -48,7 +48,7 @@ const CGFloat kMenuSymbolSize = 18;
   NSString* title = l10n_util::GetNSString(IDS_IOS_MY_ACTIVITY_TITLE);
   UIImage* image;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMonochrome(
       CustomSymbolWithPointSize(kGoogleIconSymbol, kMenuSymbolSize));
 #endif
@@ -62,7 +62,7 @@ const CGFloat kMenuSymbolSize = 18;
   NSString* title = l10n_util::GetNSString(IDS_IOS_LENS_LEARN_MORE);
   UIImage* image;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMonochrome(
       DefaultSymbolWithPointSize(kInfoCircleSymbol, kMenuSymbolSize));
 #endif
@@ -99,7 +99,7 @@ const CGFloat kMenuSymbolSize = 18;
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA);
   UIImage* image;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMonochrome(
       CustomSymbolWithPointSize(kCameraLensSymbol, kMenuSymbolSize));
 #endif

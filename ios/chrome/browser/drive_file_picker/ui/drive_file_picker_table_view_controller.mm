@@ -40,7 +40,7 @@ constexpr CGFloat kCellVerticalMarginsText = 12.0;
 constexpr CGFloat kCellVerticalMarginsTextAndSecondaryText = 8.0;
 constexpr CGFloat kCellTextToSecondaryTextVerticalPadding = 4.0;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 constexpr CGFloat kTitleLogoSpacing = 3.0;
 constexpr CGFloat kLogoTitleFontMultiplier = 1.75;
 
@@ -750,7 +750,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setRootTitle {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   BOOL darkModeEnabled =
       (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
   self.navigationItem.titleView = CreateGoogleDriveImageView(darkModeEnabled);

@@ -8,10 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import "build/build_config.h"
-#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 
 // Branded image names.
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 extern NSString* const kChromeAIHubHeaderImage;
 extern NSString* const kChromeDefaultBrowserIllustrationImage;
 extern NSString* const kChromeDefaultBrowserScreenBannerImage;
@@ -42,7 +42,7 @@ extern NSString* const kChromiumSearchEngineChoiceIcon;
 extern NSString* const kChromiumSettingsPasswordsInOtherAppsBannerImage;
 extern NSString* const kChromiumSigninBannerImage;
 extern NSString* const kChromiumSigninPromoLogoImage;
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
 // Custom image names.
 extern NSString* const kPasswordManagerTrustedVaultWidgetPromoImage;

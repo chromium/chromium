@@ -42,7 +42,7 @@ constexpr CGFloat kSymbolsPointSize = 24;
 
 // Returns the branded version of the Google Services symbol.
 UIImage* GetBrandedGoogleServicesSymbol() {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kGoogleIconSymbol, kSymbolsPointSize));
 #else

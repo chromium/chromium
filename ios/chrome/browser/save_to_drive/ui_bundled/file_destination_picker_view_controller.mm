@@ -19,7 +19,7 @@
 
 namespace {
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 // Names of icons used for items in the file destination picker.
 NSString* const kFilesAppWithBackgroundImage =
     @"apple_files_app_with_background";
@@ -194,7 +194,7 @@ void SetUnhighlightedBackgroundColorForCell(UITableViewCell* cell) {
   FileDestination destination = ItemFileDestination(itemIdentifier);
   TableViewCellContentConfiguration* configuration =
       [[TableViewCellContentConfiguration alloc] init];
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   ColorfulSymbolContentConfiguration* imageConfiguration =
       [[ColorfulSymbolContentConfiguration alloc] init];
   imageConfiguration.symbolImage =

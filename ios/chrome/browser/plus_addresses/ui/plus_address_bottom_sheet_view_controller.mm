@@ -107,7 +107,7 @@ NSAttributedString* DescriptionMessageWithEmail(NSString* originForDisplay,
 
 // Returns the image view with the branding image.
 UIImageView* BrandingImageView() {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   // Branding icon inside the container with the white background.
   return [[UIImageView alloc]
       initWithImage:MakeSymbolMulticolor(CustomSymbolWithPointSize(
@@ -116,7 +116,7 @@ UIImageView* BrandingImageView() {
   return [[UIImageView alloc]
       initWithImage:DefaultSymbolTemplateWithPointSize(
                         kMailFillSymbol, kPlusAddressSheetBrandingIconSize)];
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 }
 
 }  // namespace

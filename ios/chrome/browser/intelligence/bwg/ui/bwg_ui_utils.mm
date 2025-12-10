@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
 
-#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
+#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -12,7 +12,7 @@
 @implementation BWGUIUtils
 
 + (UIImage*)brandedGeminiSymbolWithPointSize:(CGFloat)pointSize {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol, pointSize);
 #else
   return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoSymbol, pointSize);

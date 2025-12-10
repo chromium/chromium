@@ -264,7 +264,7 @@ CGFloat GetSubtitleMarginDistance() {
   // Add logo image.
   // Need to use a regular png instead of custom symbol to have a better control
   // on the size and the margin of the logo.
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logoImage = [UIImage imageNamed:kChromeSearchEngineChoiceIcon];
 #else
   UIImage* logoImage = [UIImage imageNamed:kChromiumSearchEngineChoiceIcon];

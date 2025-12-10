@@ -9,8 +9,9 @@ source_set("image") {
   ]
   deps = [
     "//build:branding_buildflags",
+    "//ios/chrome/browser/shared/ui:branded_assets",
+    "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/image/resources",
     "//ios/chrome/browser/shared/ui/image/resources:branded_assets",
-    "//ios/chrome/browser/shared/ui/symbols:buildflags",
   ]
 }

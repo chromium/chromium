@@ -297,14 +297,14 @@ CGFloat const kTitleLogoHeight = 32;
 // `showGooglePayLogo` value is YES otherwise the Chrome logo is shown.
 - (UIImage*)titleImage {
   UIImage* image;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
       self.showGooglePayLogo ? kGooglePaySymbol : kMulticolorChromeballSymbol,
       kTitleLogoHeight));
 #else
   image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                              kTitleLogoHeight);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   return image;
 }

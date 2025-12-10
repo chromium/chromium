@@ -133,13 +133,13 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
       [_logoView.widthAnchor constraintEqualToAnchor:_logoView.heightAnchor],
     ]];
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     UIImage* logo = MakeSymbolMulticolor(
         CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoPointSize));
 #else
     UIImage* logo =
         CustomSymbolWithPointSize(kChromeProductSymbol, kLogoPointSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logo];
     logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
     [_logoView addSubview:logoImageView];

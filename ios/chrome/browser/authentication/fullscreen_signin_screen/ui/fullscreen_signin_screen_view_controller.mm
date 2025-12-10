@@ -35,7 +35,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
 // Only relevant for certain `_contextStyle` values.
 constexpr CGFloat kHeaderBottomMargin = 32;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 // The size of the logo image.
 // Only relevant for certain `_contextStyle` values.
 constexpr CGFloat kHeaderImageSize = 39.2;
@@ -92,7 +92,7 @@ NSString* const kCollaborationSigninHeaderBackground =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
 
   // Set banner.
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   self.bannerName = kChromeSigninBannerImage;
   self.headerImage = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kHeaderImageSize));

@@ -44,7 +44,7 @@ CGFloat const kTitleHorizontalMargin = 25.0;
 
 // Returns the name of the banner image above the title.
 NSString* BannerImageName(bool landscape) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return landscape ? kChromeNotificationsOptInBannerLandscapeImage
                    : kChromeNotificationsOptInBannerImage;
 #else

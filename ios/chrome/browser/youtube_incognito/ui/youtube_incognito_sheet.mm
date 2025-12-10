@@ -319,13 +319,13 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   chromeIconView.translatesAutoresizingMaskIntoConstraints = NO;
   chromeIconView.layer.cornerRadius = kTitleContainerCornerRadius;
   chromeIconView.backgroundColor = [UIColor whiteColor];
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* chromeLogo = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kChromeLogoSize));
 #else
   UIImage* chromeLogo =
       CustomSymbolWithPointSize(kChromeProductSymbol, kChromeLogoSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   UIImageView* chromeLogoView = [[UIImageView alloc] initWithImage:chromeLogo];
   chromeLogoView.translatesAutoresizingMaskIntoConstraints = NO;

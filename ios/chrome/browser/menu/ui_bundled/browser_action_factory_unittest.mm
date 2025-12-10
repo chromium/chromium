@@ -443,7 +443,7 @@ TEST_F(BrowserActionFactoryTest, SaveImageInGooglePhotosAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* expectedImage =
       CustomSymbolWithPointSize(kGooglePhotosSymbol, kSymbolActionPointSize);
 #else

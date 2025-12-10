@@ -552,7 +552,7 @@ const CGFloat kDividerWidth = 1.0;
 
 // Returns the symbol for the Ask Gemini button.
 - (UIImage*)askGeminiIcon {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol,
                                    kSmallButtonIconSize);
 #else

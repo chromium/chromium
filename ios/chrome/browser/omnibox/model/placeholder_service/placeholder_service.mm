@@ -182,7 +182,7 @@ UIImage* PlaceholderService::GetBundledIconForTemplateURL(
   // Google bundled icon.
   if (template_url->GetEngineType(template_url_service_->search_terms_data()) ==
       SEARCH_ENGINE_GOOGLE) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     return MakeSymbolMulticolor(
         CustomSymbolWithPointSize(kGoogleIconSymbol, icon_point_size));
 #endif

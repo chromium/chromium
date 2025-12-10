@@ -22,7 +22,7 @@ constexpr CGFloat kSymbolImagePointSize = 18.;
 
 // Returns the branded version of the Google shield symbol.
 UIImage* GetBrandedGoogleShieldSymbol() {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return CustomSymbolWithPointSize(kGoogleShieldSymbol, kSymbolImagePointSize);
 #else
   return CustomSymbolWithPointSize(kShieldSymbol, kSymbolImagePointSize);

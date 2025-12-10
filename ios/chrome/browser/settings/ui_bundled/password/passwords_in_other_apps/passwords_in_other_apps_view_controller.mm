@@ -120,7 +120,7 @@ NSString* GetTurnOffCaptionTitleString() {
     _subtitleText = l10n_util::GetNSString(
         IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE);
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     _bannerName = kGoogleSettingsPasswordsInOtherAppsBannerImage;
 #else
     _bannerName = kChromiumSettingsPasswordsInOtherAppsBannerImage;

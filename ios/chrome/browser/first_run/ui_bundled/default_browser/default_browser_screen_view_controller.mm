@@ -28,7 +28,7 @@
   self.view.accessibilityIdentifier =
       first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
   self.bannerSize = BannerImageSizeType::kStandard;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   self.bannerName = kChromeDefaultBrowserScreenBannerImage;
 #else
   self.bannerName = kChromiumDefaultBrowserScreenBannerImage;

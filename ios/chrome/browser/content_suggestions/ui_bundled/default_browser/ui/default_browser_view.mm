@@ -77,11 +77,11 @@ constexpr CGFloat kIconSize = 40;
   IconDetailViewConfiguration* viewConfig = [IconDetailViewConfiguration
       configurationWithTitleText:[self titleText]
                  descriptionText:[self descriptionText]];
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   viewConfig.iconName = kMulticolorChromeballSymbol;
 #else
   viewConfig.iconName = kChromeProductSymbol;
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   viewConfig.iconSource = IconViewSourceType::kSymbol;
   viewConfig.symbolColorPalette = nil;
   viewConfig.symbolBackgroundColor = [UIColor clearColor];

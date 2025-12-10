@@ -414,13 +414,13 @@ CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
 
 // Creates and configures the Chrome logo.
 - (UIImageView*)createChromeLogo {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
       kMulticolorChromeballSymbol, GetChromeLogoSize()));
 #else
   UIImage* image =
       CustomSymbolWithPointSize(kChromeProductSymbol, GetChromeLogoSize());
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImageView* chromeLogo = [[UIImageView alloc] initWithImage:image];
   chromeLogo.translatesAutoresizingMaskIntoConstraints = NO;
   chromeLogo.contentMode = UIViewContentModeCenter;

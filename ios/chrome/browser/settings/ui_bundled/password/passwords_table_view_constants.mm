@@ -40,7 +40,7 @@ NSString* const kDeleteButtonForPasswordDetailsID =
 NSString* const kLocalOnlyPasswordIconID = @"kLocalOnlyPasswordIconID";
 
 NSString* WidgetPromoImageName() {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return kGooglePasswordManagerWidgetPromoImage;
 #else
   return kChromiumPasswordManagerWidgetPromoImage;
@@ -48,7 +48,7 @@ NSString* WidgetPromoImageName() {
 }
 
 NSString* WidgetPromoDisabledImageName() {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return kGooglePasswordManagerWidgetPromoDisabledImage;
 #else
   return kChromiumPasswordManagerWidgetPromoDisabledImage;

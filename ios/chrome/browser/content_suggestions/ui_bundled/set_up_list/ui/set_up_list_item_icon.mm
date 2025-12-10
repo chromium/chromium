@@ -78,7 +78,7 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* color) {
 }
 
 UIImageView* DefaultBrowserIcon(BOOL compact_layout) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* image = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kSymbolPointSize));
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];

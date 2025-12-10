@@ -21,11 +21,11 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 24;
 
 - (void)viewDidLoad {
   self.bannerSize = BannerImageSizeType::kTall;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   self.bannerName = kChromeGuidedTourBannerImage;
 #else
   self.bannerName = kChromiumGuidedTourBannerImage;
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   self.shouldBannerFillTopSpace = YES;
   self.titleTopMarginWhenNoHeaderImage = kTitleTopMarginWhenNoHeaderImage;

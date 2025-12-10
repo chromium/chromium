@@ -197,13 +197,13 @@ UIImage* CloseButtonImage(BOOL highlighted) {
                        constant:kDragHandleTopMargin],
   ]];
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logoImage = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
 #else
   UIImage* logoImage =
       CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logoImage];
   logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
