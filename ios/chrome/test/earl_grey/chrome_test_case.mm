@@ -314,6 +314,7 @@ void ResetAuthentication() {
     [EarlGrey rotateInterfaceToOrientation:_originalOrientation error:nil];
   }
   _executedTestMethodSetUp = NO;
+  _testServer = nil;
   [super tearDown];
 }
 
