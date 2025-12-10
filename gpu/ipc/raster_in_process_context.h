@@ -33,7 +33,6 @@ class RasterInProcessContext {
   ~RasterInProcessContext();
 
   ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
-                           bool enable_gpu_rasterization,
                            gpu::raster::GrShaderCache* gr_shader_cache,
                            GpuProcessShmCount* use_shader_cache_shm_count);
 

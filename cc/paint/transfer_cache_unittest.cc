@@ -35,8 +35,8 @@ class TransferCacheTest : public testing::Test {
   void SetUp() override {
     context_ = std::make_unique<gpu::RasterInProcessContext>();
     auto result = context_->Initialize(
-        viz::TestGpuServiceHolder::GetInstance()->task_executor(),
-        /*enable_gpu_rasterization=*/true, nullptr, nullptr);
+        viz::TestGpuServiceHolder::GetInstance()->task_executor(), nullptr,
+        nullptr);
 
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
   }
