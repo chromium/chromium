@@ -164,9 +164,9 @@ def get_simulator_runtime_by_platform_and_version(simulators,
     if version_found:
       LOGGER.error('Version found, but not platform.')
     if attempt + 1 < max_retries:
-      # try again by listing available runtimes with a different command
+      # try again after sleeping
       time.sleep(5)
-      runtimes = get_simulator_runtime_list().values()
+      runtimes = get_simulator_list().get('runtimes', [])
   # TODO(crbug.com/454911750): remove debugging after bug is resolved
   debug_missing_simulator(runtimes, out_dir)
   raise test_runner.SimulatorNotFoundError('Not found "%s" SDK in runtimes %s' %
