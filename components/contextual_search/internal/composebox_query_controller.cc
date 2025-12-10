@@ -923,8 +923,9 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
   cluster_info_->set_server_session_id(server_response.server_session_id());
   cluster_info_->set_search_session_id(server_response.search_session_id());
-  if (server_response.has_routing_info() &&
-      !request_id_generator_.HasRoutingInfo()) {
+  if (server_response.has_routing_info()) {
+    cluster_info_->mutable_routing_info()->CopyFrom(
+        server_response.routing_info());
     std::unique_ptr<lens::LensOverlayRequestId> request_id =
         request_id_generator_.SetRoutingInfo(server_response.routing_info());
 
@@ -1363,6 +1364,26 @@ void ComposeboxQueryController::PerformFetchRequest(
     UploadProgressCallback upload_progress_callback) {
   CHECK_EQ(query_controller_state_, QueryControllerState::kClusterInfoReceived);
   CHECK(cluster_info_.has_value());
+
+  // If the cluster info has routing info, update the request to use it.
+  // This ensures that the latest routing info that corresponds with the
+  // server session id is used for the request, even if the cluster info
+  // has been updated since the request was created.
+  if (cluster_info_->has_routing_info()) {
+    if (request->has_objects_request()) {
+      request->mutable_objects_request()
+          ->mutable_request_context()
+          ->mutable_request_id()
+          ->mutable_routing_info()
+          ->CopyFrom(cluster_info_->routing_info());
+    } else if (request->has_interaction_request()) {
+      request->mutable_interaction_request()
+          ->mutable_request_context()
+          ->mutable_request_id()
+          ->mutable_routing_info()
+          ->CopyFrom(cluster_info_->routing_info());
+    }
+  }
 
   // Get client experiment variations to include in the request.
   std::vector<std::string> cors_exempt_headers =
