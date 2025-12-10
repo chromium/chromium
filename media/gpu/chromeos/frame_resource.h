@@ -101,6 +101,8 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   virtual std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImageDEPRECATED()
       const = 0;
 
+  virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const = 0;
+
   virtual const VideoFrameLayout& layout() const = 0;
 
   virtual VideoPixelFormat format() const = 0;

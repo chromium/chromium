@@ -87,6 +87,11 @@ VideoFrameResource::MapSharedImageDEPRECATED() const {
   return frame_->MapSharedImageDEPRECATED();
 }
 
+scoped_refptr<gpu::ClientSharedImage> VideoFrameResource::GetSharedImage()
+    const {
+  return frame_->shared_image();
+}
+
 const VideoFrameLayout& VideoFrameResource::layout() const {
   return frame_->layout();
 }

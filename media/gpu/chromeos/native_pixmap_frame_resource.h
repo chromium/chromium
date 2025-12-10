@@ -95,6 +95,8 @@ class NativePixmapFrameResource : public FrameResource {
   // Always returns nullptr.
   std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImageDEPRECATED()
       const override;
+  // Always returns nullptr.
+  scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const override;
   const VideoFrameLayout& layout() const override;
   VideoPixelFormat format() const override;
   int stride(size_t plane) const override;

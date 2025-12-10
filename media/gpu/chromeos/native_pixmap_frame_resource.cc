@@ -306,6 +306,12 @@ NativePixmapFrameResource::MapSharedImageDEPRECATED() const {
   return nullptr;
 }
 
+scoped_refptr<gpu::ClientSharedImage>
+NativePixmapFrameResource::GetSharedImage() const {
+  // This class does not hold a ClientSharedImage internally.
+  return nullptr;
+}
+
 const VideoFrameLayout& NativePixmapFrameResource::layout() const {
   return layout_;
 }
