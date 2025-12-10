@@ -249,7 +249,7 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
 
 void RegisterSodaLanguageComponent(
     ComponentUpdateService* cus,
-    const std::string& language,
+    std::string_view language,
     OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

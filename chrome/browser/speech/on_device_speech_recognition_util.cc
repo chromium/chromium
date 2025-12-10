@@ -27,7 +27,7 @@ namespace speech {
 
 media::mojom::AvailabilityStatus GetOnDeviceSpeechRecognitionAvailabilityStatus(
     content::BrowserContext* context,
-    const std::string& language) {
+    std::string_view language) {
 #if BUILDFLAG(IS_ANDROID)
   return media::mojom::AvailabilityStatus::kUnavailable;
 #else

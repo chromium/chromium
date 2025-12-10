@@ -22,7 +22,7 @@ bool IsOnDeviceSpeechRecognitionSupported();
 // corresponding language is installed. This utility function must be run in the
 // browser process.
 media::mojom::AvailabilityStatus GetSodaAvailabilityStatus(
-    const std::string& language);
+    std::string_view language);
 
 }  // namespace speech
 

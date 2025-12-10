@@ -171,17 +171,17 @@ BocaManager::BocaManager(Profile* profile,
             IdentityManagerFactory::GetForProfile(profile)));
   }
   if (ash::features::IsBabelOrcaAvailable()) {
-    const std::string caption_language = speech::GetDefaultLiveCaptionLanguage(
+    std::string_view caption_language = speech::GetDefaultLiveCaptionLanguage(
         application_locale, profile->GetPrefs());
     if (!is_consumer && base::FeatureList::IsEnabled(
                             ash::features::kOnDeviceSpeechRecognition)) {
       soda_installer_ = std::make_unique<babelorca::SodaInstaller>(
-          global_prefs, profile->GetPrefs(), caption_language);
+          global_prefs, profile->GetPrefs(), std::string(caption_language));
     }
     babel_orca_manager_ = CreateBabelOrcaManager(
         boca_session_manager_.get(), profile, global_prefs,
-        soda_installer_.get(), application_locale, caption_language,
-        is_consumer);
+        soda_installer_.get(), application_locale,
+        std::string(caption_language), is_consumer);
   }
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(

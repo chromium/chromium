@@ -122,7 +122,7 @@ void SodaInstaller::InitLanguages(PrefService* profile_prefs,
 }
 
 void SodaInstaller::SetUninstallTimer(PrefService* global_prefs,
-                                      const std::string& language) {
+                                      std::string_view language) {
   const auto config = GetLanguageComponentConfig(language);
   if (!config.has_value()) {
     return;
@@ -135,7 +135,7 @@ void SodaInstaller::SetUninstallTimer(PrefService* global_prefs,
 }
 
 std::string SodaInstaller::GetLanguageDlcNameForLocale(
-    const std::string& locale) const {
+    std::string_view locale) const {
   return std::string();
 }
 
@@ -261,7 +261,7 @@ void SodaInstaller::NotifyOnSodaProgress(LanguageCode language_code,
     observer.OnSodaProgress(language_code, progress);
 }
 
-void SodaInstaller::RegisterLanguage(const std::string& language,
+void SodaInstaller::RegisterLanguage(std::string_view language,
                                      PrefService* global_prefs) {
   ScopedListPrefUpdate update(global_prefs,
                               prefs::kSodaRegisteredLanguagePacks);
@@ -272,7 +272,7 @@ void SodaInstaller::RegisterLanguage(const std::string& language,
   SetUninstallTimer(global_prefs, language);
 }
 
-void SodaInstaller::UnregisterLanguage(const std::string& language,
+void SodaInstaller::UnregisterLanguage(std::string_view language,
                                        PrefService* global_prefs) {
   ScopedListPrefUpdate update(global_prefs,
                               prefs::kSodaRegisteredLanguagePacks);
@@ -287,7 +287,7 @@ void SodaInstaller::UnregisterLanguages(PrefService* global_prefs) {
   update->clear();
 }
 
-bool SodaInstaller::IsLanguageEnabled(const std::string& language) {
+bool SodaInstaller::IsLanguageEnabled(std::string_view language) {
   return base::Contains(GetLiveCaptionEnabledLanguages(), language);
 }
 
@@ -409,7 +409,7 @@ bool SodaInstaller::WasSodaUsedRecently(PrefService* global_prefs) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-bool SodaInstaller::IsLanguageActiveDefault(const std::string& language,
+bool SodaInstaller::IsLanguageActiveDefault(std::string_view language,
                                             PrefService* profile_prefs) const {
   return IsAnyFeatureUsingSodaEnabled(profile_prefs) &&
          profile_prefs->GetString(prefs::kLiveCaptionLanguageCode) == language;

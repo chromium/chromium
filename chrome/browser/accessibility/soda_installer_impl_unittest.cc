@@ -39,7 +39,7 @@ class MockSodaInstallerImpl : public SodaInstallerImpl {
     OnSodaBinaryInstalled();
   }
 
-  void InstallLanguage(const std::string& language,
+  void InstallLanguage(std::string_view language,
                        PrefService* global_prefs) override {
     SodaInstaller::RegisterLanguage(language, global_prefs);
     OnSodaLanguagePackInstalled(speech::GetLanguageCode(language));

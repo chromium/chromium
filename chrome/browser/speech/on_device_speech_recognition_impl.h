@@ -78,19 +78,19 @@ class OnDeviceSpeechRecognitionImpl
   void InstallLanguageInternal(
       const std::vector<std::string>& languages,
       OnDeviceSpeechRecognitionImpl::InstallCallback callback);
-  void ProcessLanguageInstallationUpdate(const std::string& language,
+  void ProcessLanguageInstallationUpdate(std::string_view language,
                                          bool installation_success);
   base::Value GetOnDeviceLanguagesDownloadedValue();
   void SetOnDeviceLanguagesDownloadedContentSetting(
       base::Value on_device_languages_downloaded);
-  bool HasOnDeviceLanguageDownloaded(const std::string& language);
-  void SetOnDeviceLanguageDownloaded(const std::string&);
+  bool HasOnDeviceLanguageDownloaded(std::string_view language);
+  void SetOnDeviceLanguageDownloaded(std::string_view);
 
   // Mask on-device speech recognition availability by requiring a call to
   // installOnDevice() for a language before the language is available to the
   // origin.
   media::mojom::AvailabilityStatus GetMaskedAvailabilityStatus(
-      const std::string& language);
+      std::string_view language);
 
   // Returns a delay when installing on-device speech recognition language packs
   // to safeguard against fingerprinting resulting from timing the installation.

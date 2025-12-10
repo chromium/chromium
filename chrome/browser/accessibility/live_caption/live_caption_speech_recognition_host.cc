@@ -80,7 +80,7 @@ std::string RemoveLastKWords(const std::string& input) {
 
 // Returns a boolean indicating whether the language is both enabled and not
 // already installed.
-bool IsLanguageInstallable(const std::string& language_code) {
+bool IsLanguageInstallable(std::string_view language_code) {
   for (const auto& language : g_browser_process->local_state()->GetList(
            prefs::kSodaRegisteredLanguagePacks)) {
     if (language.GetString() == language_code) {

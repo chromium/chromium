@@ -40,14 +40,14 @@ const char kOnDeviceLanguagesDownloadedKey[] = "ondevice-languages-downloaded";
 const char kEnglishLanguageCodeKey[] = "en-US";
 
 // Returns a boolean indicating whether the language is enabled.
-bool IsLanguageInstallable(const std::string& language_code,
+bool IsLanguageInstallable(std::string_view language_code,
                            bool is_soda_binary_installed) {
   return base::Contains(
       speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages(),
       language_code);
 }
 
-bool IsLanguageInstalled(const std::string& language_code) {
+bool IsLanguageInstalled(std::string_view language_code) {
   for (const auto& language : g_browser_process->local_state()->GetList(
            prefs::kSodaRegisteredLanguagePacks)) {
     if (language.GetString() == language_code) {
@@ -98,7 +98,7 @@ void OnDeviceSpeechRecognitionImpl::Available(
 
   media::mojom::AvailabilityStatus overall_status =
       media::mojom::AvailabilityStatus::kAvailable;
-  for (const std::string& language : languages) {
+  for (std::string_view language : languages) {
     std::optional<speech::SodaLanguagePackComponentConfig> language_config =
         speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
     if (!language_config.has_value()) {
@@ -134,7 +134,7 @@ void OnDeviceSpeechRecognitionImpl::Install(
     return;
   }
 
-  for (const std::string& language : languages) {
+  for (std::string_view language : languages) {
     std::optional<speech::SodaLanguagePackComponentConfig> language_config =
         speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
 
@@ -197,11 +197,11 @@ void OnDeviceSpeechRecognitionImpl::InstallLanguageInternal(
     const std::vector<std::string>& languages,
     OnDeviceSpeechRecognitionImpl::InstallCallback callback) {
   std::set<std::string> language_names_key;
-  for (const std::string& subtag : languages) {
+  for (std::string_view subtag : languages) {
     std::optional<speech::SodaLanguagePackComponentConfig> lang_config =
         speech::GetLanguageComponentConfigMatchingLanguageSubtag(subtag);
     if (lang_config.has_value()) {
-      language_names_key.insert(lang_config.value().language_name);
+      language_names_key.insert(std::string(lang_config.value().language_name));
     }
   }
 
@@ -246,25 +246,25 @@ void OnDeviceSpeechRecognitionImpl::InstallLanguageInternal(
 
     // `InstallLanguage` will only install languages that are not already
     // installed.
-    for (const std::string& language : language_names_key) {
+    for (std::string_view language : language_names_key) {
       speech::SodaInstaller::GetInstance()->InstallLanguage(
           language, g_browser_process->local_state());
     }
   }
 
-  for (const std::string& language : language_names_key) {
+  for (std::string_view language : language_names_key) {
     SetOnDeviceLanguageDownloaded(language);
   }
 }
 
 void OnDeviceSpeechRecognitionImpl::ProcessLanguageInstallationUpdate(
-    const std::string& language,
+    std::string_view language,
     bool installation_success) {
   for (auto it = language_installation_callbacks_.begin();
        it != language_installation_callbacks_.end();) {
     std::set<std::string> pending_languages_key = it->first;
 
-    if (pending_languages_key.count(language)) {
+    if (pending_languages_key.count(std::string(language))) {
       // This callback group was waiting for the processed `language`.
       std::list<InstallCallback> moved_callbacks = std::move(it->second);
       it = language_installation_callbacks_.erase(it);
@@ -279,7 +279,7 @@ void OnDeviceSpeechRecognitionImpl::ProcessLanguageInstallationUpdate(
         // Installation succeeded for this language.
         // Remove it from the pending set for this group.
         std::set<std::string> updated_key = pending_languages_key;
-        updated_key.erase(language);
+        updated_key.erase(std::string(language));
 
         if (updated_key.empty()) {
           // All languages for this group are now installed.
@@ -330,7 +330,7 @@ void OnDeviceSpeechRecognitionImpl::
 
 media::mojom::AvailabilityStatus
 OnDeviceSpeechRecognitionImpl::GetMaskedAvailabilityStatus(
-    const std::string& language) {
+    std::string_view language) {
   media::mojom::AvailabilityStatus availability_status =
       GetOnDeviceSpeechRecognitionAvailabilityStatus(
           render_frame_host().GetBrowserContext(), language);
@@ -343,10 +343,11 @@ OnDeviceSpeechRecognitionImpl::GetMaskedAvailabilityStatus(
 }
 
 bool OnDeviceSpeechRecognitionImpl::HasOnDeviceLanguageDownloaded(
-    const std::string& language) {
+    std::string_view language) {
   const GURL url = render_frame_host().GetLastCommittedOrigin().GetURL();
   if (!url.is_valid() || url.SchemeIsFile()) {
-    return transient_on_device_languages_downloaded_.contains(language);
+    return transient_on_device_languages_downloaded_.contains(
+        std::string(language));
   }
 
   base::Value on_device_languages_downloaded_value =
@@ -361,10 +362,10 @@ bool OnDeviceSpeechRecognitionImpl::HasOnDeviceLanguageDownloaded(
 }
 
 void OnDeviceSpeechRecognitionImpl::SetOnDeviceLanguageDownloaded(
-    const std::string& language) {
+    std::string_view language) {
   const GURL url = render_frame_host().GetLastCommittedOrigin().GetURL();
   if (!url.is_valid() || url.SchemeIsFile()) {
-    transient_on_device_languages_downloaded_.insert(language);
+    transient_on_device_languages_downloaded_.insert(std::string(language));
     return;
   }
 
@@ -390,7 +391,7 @@ void OnDeviceSpeechRecognitionImpl::SetOnDeviceLanguageDownloaded(
 
 base::TimeDelta OnDeviceSpeechRecognitionImpl::GetDownloadDelay(
     const std::vector<std::string>& languages) {
-  for (const std::string& language_subtag : languages) {
+  for (std::string_view language_subtag : languages) {
     std::optional<speech::SodaLanguagePackComponentConfig> lang_config =
         speech::GetLanguageComponentConfigMatchingLanguageSubtag(
             language_subtag);
@@ -399,7 +400,7 @@ base::TimeDelta OnDeviceSpeechRecognitionImpl::GetDownloadDelay(
       // skip it for delay calculation.
       continue;
     }
-    const std::string& soda_language_name = lang_config.value().language_name;
+    std::string_view soda_language_name = lang_config.value().language_name;
 
     // Check if SODA is already installed for the given language. If it is and
     // the origin isn't supposed to know that, then add a delay to simulate a

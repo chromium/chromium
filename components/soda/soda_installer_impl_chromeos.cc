@@ -35,7 +35,7 @@ constexpr char kSodaDlcName[] = "libsoda";
 constexpr float kInitialSodaRetryTimeSeconds = 1.0;
 constexpr float kMaxSodaRetryTimeSeconds = 32.0;
 
-SodaInstaller::ErrorCode DlcCodeToSodaErrorCode(const std::string& code) {
+SodaInstaller::ErrorCode DlcCodeToSodaErrorCode(std::string_view code) {
   return (code == dlcservice::kErrorNeedReboot)
              ? SodaInstaller::ErrorCode::kNeedsReboot
              : SodaInstaller::ErrorCode::kUnspecifiedError;
@@ -209,7 +209,7 @@ base::FilePath SodaInstallerImplChromeOS::GetSodaBinaryPath() const {
 }
 
 base::FilePath SodaInstallerImplChromeOS::GetLanguagePath(
-    const std::string& language) const {
+    std::string_view language) const {
   auto available_it =
       available_languages_.find(MaybeMapToChineseLocale(language));
   if (available_it == available_languages_.end()) {
@@ -266,7 +266,7 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
                           base::Unretained(this)));
 }
 
-void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
+void SodaInstallerImplChromeOS::InstallLanguage(std::string_view language,
                                                 PrefService* global_prefs) {
   if (never_download_soda_for_testing_)
     return;
@@ -276,7 +276,7 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
   InstallLanguageInternal(language);
 }
 void SodaInstallerImplChromeOS::InstallLanguageInternal(
-    const std::string& language) {
+    std::string_view language) {
   auto language_info =
       available_languages_.find(MaybeMapToChineseLocale(language));
   if (language_info == available_languages_.end()) {
@@ -295,14 +295,14 @@ void SodaInstallerImplChromeOS::InstallLanguageInternal(
       install_request,
       base::BindOnce(&SodaInstallerImplChromeOS::OnLanguageInstalled,
                      base::Unretained(this),
-                     language_info->second.language_code, language,
+                     language_info->second.language_code, std::string(language),
                      base::Time::Now()),
       base::BindRepeating(&SodaInstallerImplChromeOS::OnLanguageProgress,
                           base::Unretained(this),
                           language_info->second.language_code));
 }
 
-void SodaInstallerImplChromeOS::UninstallLanguage(const std::string& language,
+void SodaInstallerImplChromeOS::UninstallLanguage(std::string_view language,
                                                   PrefService* global_prefs) {
   SodaInstaller::UnregisterLanguage(language, global_prefs);
   const auto& language_info =
@@ -348,9 +348,9 @@ SodaInstallerImplChromeOS::GetLiveCaptionEnabledLanguages() const {
 }
 
 std::string SodaInstallerImplChromeOS::GetLanguageDlcNameForLocale(
-    const std::string& locale) const {
+    std::string_view locale) const {
   const auto& language_info =
-      available_languages_.find(MaybeMapToChineseLocale(locale));
+      available_languages_.find((MaybeMapToChineseLocale(locale)));
   if (language_info == available_languages_.end()) {
     LOG(DFATAL) << "Asked for unavailable language " << locale;
     return std::string();

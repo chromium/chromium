@@ -83,7 +83,7 @@ bool IsOnDeviceSpeechRecognitionSupported() {
 }
 
 media::mojom::AvailabilityStatus GetSodaAvailabilityStatus(
-    const std::string& language) {
+    std::string_view language) {
   if (!base::FeatureList::IsEnabled(media::kOnDeviceWebSpeech) ||
       !IsOnDeviceSpeechRecognitionSupported()) {
     return media::mojom::AvailabilityStatus::kUnavailable;

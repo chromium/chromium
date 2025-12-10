@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "components/soda/pref_names.h"
@@ -77,13 +78,13 @@ struct SodaLanguagePackComponentConfig {
   LanguageCode language_code = LanguageCode::kNone;
 
   // The language name for the language component (e.g. "en-US").
-  const char* language_name = nullptr;
+  std::string_view language_name;
 
   // The name of the config file path pref for the language pack.
-  const char* config_path_pref = nullptr;
+  std::string_view config_path_pref;
 
   // The scheduled deletion time pref for the language pack.
-  const char* scheduled_deletion_time_pref = nullptr;
+  std::string_view scheduled_deletion_time_pref;
 
   // The SHA256 of the SubjectPublicKeyInfo used to sign the language pack
   // component.
@@ -279,7 +280,7 @@ const base::FilePath GetSodaTestResourcesDirectory();
 // Get the absolute path of the latest SODA language pack for a given language
 // (e.g. en-US).
 const base::FilePath GetLatestSodaLanguagePackDirectory(
-    const std::string& language);
+    std::string_view language);
 
 // Get the directory containing the latest version of SODA. In most cases
 // there will only be one version of SODA, but it is possible for there to be
@@ -300,55 +301,55 @@ std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     LanguageCode language_code);
 
 std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
-    const std::string& language_name);
+    std::string_view language_name);
 
 // Get the language component config matching a given language subtag. For
 // example, the "fr-CA" language name will return the language component config
 // for "fr-FR".
 std::optional<SodaLanguagePackComponentConfig>
 GetLanguageComponentConfigMatchingLanguageSubtag(
-    const std::string& language_name);
+    std::string_view language_name);
 
-LanguageCode GetLanguageCodeByComponentId(const std::string& component_id);
+LanguageCode GetLanguageCodeByComponentId(std::string_view component_id);
 
 std::string GetLanguageName(LanguageCode language_code);
 
-LanguageCode GetLanguageCode(const std::string& language_name);
+LanguageCode GetLanguageCode(std::string_view language_name);
 
-const std::u16string GetLanguageDisplayName(const std::string& language_name,
-                                            const std::string& display_locale);
+const std::u16string GetLanguageDisplayName(std::string_view language_name,
+                                            std::string_view display_locale);
 
 // Returns the `SodaInstaller.Language.{language}.InstallationSuccessTime` uma
 // metric string for the language code.
 const std::string GetInstallationSuccessTimeMetricForLanguagePack(
     const LanguageCode& language_code);
 const std::string GetInstallationSuccessTimeMetricForLanguage(
-    const std::string& language);
+    std::string_view language);
 
 // Returns the `SodaInstaller.Language.{language}.InstallationFailureTime` uma
 // metric string for the language code.
 const std::string GetInstallationFailureTimeMetricForLanguagePack(
     const LanguageCode& language_code);
 const std::string GetInstallationFailureTimeMetricForLanguage(
-    const std::string& language);
+    std::string_view language);
 
 // Returns the `SodaInstaller.Language.{language}.InstallationResult` uma
 // metric string for the language code..
 const std::string GetInstallationResultMetricForLanguagePack(
     const LanguageCode& language_code);
 const std::string GetInstallationResultMetricForLanguage(
-    const std::string& language);
+    std::string_view language);
 
 // Returns the available Live Caption language best matching the
 // application locale, one of the user's preferred languages, or en-US if none
 // of the other languages match.
-const std::string GetDefaultLiveCaptionLanguage(
-    const std::string& application_locale,
+std::string_view GetDefaultLiveCaptionLanguage(
+    std::string_view application_locale,
     PrefService* profile_prefs);
 
 // If `language_name` is Chinese variant, then return the master locale.
 // Otherwise, return `language_name`.
-const std::string MaybeMapToChineseLocale(const std::string& language_name);
+const std::string MaybeMapToChineseLocale(std::string_view language_name);
 
 }  // namespace speech
 

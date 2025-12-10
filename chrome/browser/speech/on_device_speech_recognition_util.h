@@ -22,7 +22,7 @@ namespace speech {
 // process.
 media::mojom::AvailabilityStatus GetOnDeviceSpeechRecognitionAvailabilityStatus(
     content::BrowserContext* context,
-    const std::string& language);
+    std::string_view language);
 
 }  // namespace speech
 

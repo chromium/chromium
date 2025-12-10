@@ -511,9 +511,10 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
                                   base::PathExists(config_file_path));
           },
           language),
-      base::BindOnce(&SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage,
-                     weak_factory_.GetWeakPtr(),
-                     language_component_config.value().language_name));
+      base::BindOnce(
+          &SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage,
+          weak_factory_.GetWeakPtr(),
+          std::string(language_component_config.value().language_name)));
 }
 
 void SpeechRecognitionRecognizerImpl::OnMaskOffensiveWordsChanged(
@@ -562,9 +563,6 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   std::optional<speech::SodaLanguagePackComponentConfig> language_config =
       speech::GetLanguageComponentConfigMatchingLanguageSubtag(
           primary_language_name_);
-  auto primary_language_name = language_config.has_value()
-                                   ? language_config.value().language_name
-                                   : primary_language_name_;
   std::string language_pack_directory =
       config_paths_[language_config.has_value()
                         ? language_config.value().language_name

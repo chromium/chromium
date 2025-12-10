@@ -44,7 +44,7 @@ base::FilePath SodaInstallerImpl::GetSodaBinaryPath() const {
 }
 
 base::FilePath SodaInstallerImpl::GetLanguagePath(
-    const std::string& language) const {
+    std::string_view language) const {
   std::optional<speech::SodaLanguagePackComponentConfig> config =
       speech::GetLanguageComponentConfig(language);
   if (config.has_value() &&
@@ -76,7 +76,7 @@ void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
   }
 }
 
-void SodaInstallerImpl::InstallLanguage(const std::string& language,
+void SodaInstallerImpl::InstallLanguage(std::string_view language,
                                         PrefService* global_prefs) {
   if (never_download_soda_for_testing_)
     return;
@@ -97,7 +97,7 @@ void SodaInstallerImpl::InstallLanguage(const std::string& language,
   }
 }
 
-void SodaInstallerImpl::UninstallLanguage(const std::string& language,
+void SodaInstallerImpl::UninstallLanguage(std::string_view language,
                                           PrefService* global_prefs) {
   speech::LanguageCode language_code = speech::GetLanguageCode(language);
   if (language_code != speech::LanguageCode::kNone) {

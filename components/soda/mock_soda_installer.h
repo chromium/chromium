@@ -20,15 +20,15 @@ class MockSodaInstaller : public speech::SodaInstaller {
   MOCK_METHOD(base::FilePath, GetSodaBinaryPath, (), (const, override));
   MOCK_METHOD(base::FilePath,
               GetLanguagePath,
-              (const std::string&),
+              (std::string_view),
               (const, override));
   MOCK_METHOD(void,
               InstallLanguage,
-              (const std::string&, PrefService*),
+              (std::string_view, PrefService*),
               (override));
   MOCK_METHOD(void,
               UninstallLanguage,
-              (const std::string&, PrefService*),
+              (std::string_view, PrefService*),
               (override));
   MOCK_METHOD(std::vector<std::string>,
               GetAvailableLanguages,
@@ -39,11 +39,11 @@ class MockSodaInstaller : public speech::SodaInstaller {
   MOCK_METHOD(void, Init, (PrefService*, PrefService*), (override));
   MOCK_METHOD(void,
               RegisterLanguage,
-              (const std::string& language, PrefService* global_prefs),
+              (std::string_view language, PrefService* global_prefs),
               (override));
   MOCK_METHOD(void,
               UnregisterLanguage,
-              (const std::string& language, PrefService* global_prefs),
+              (std::string_view language, PrefService* global_prefs),
               (override));
 };
 

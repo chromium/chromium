@@ -88,11 +88,11 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
     soda_installer_impl_->Init(pref_service_.get(), pref_service_.get());
   }
 
-  void InstallLanguage(const std::string& language) {
+  void InstallLanguage(std::string_view language) {
     soda_installer_impl_->InstallLanguage(language, pref_service_.get());
   }
 
-  void UninstallLanguage(const std::string& language) {
+  void UninstallLanguage(std::string_view language) {
     soda_installer_impl_->UninstallLanguage(language, pref_service_.get());
   }
 
@@ -102,7 +102,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
     fake_dlcservice_client_.set_install_error(dlcservice::kErrorNeedReboot);
   }
 
-  void SetDlcInstallRootPath(const std::string& path) {
+  void SetDlcInstallRootPath(std::string_view path) {
     fake_dlcservice_client_.set_install_root_path(path);
   }
 
