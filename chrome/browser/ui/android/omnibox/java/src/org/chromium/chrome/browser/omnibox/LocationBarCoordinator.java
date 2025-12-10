@@ -244,10 +244,11 @@ public class LocationBarCoordinator
                 new OneshotSupplierImpl<>();
         mDeferredIMEWindowInsetApplicationCallback =
                 new DeferredIMEWindowInsetApplicationCallback(
-                        () -> {
-                            mOmniboxDropdownEmbedderImpl.recalculateOmniboxAlignment();
-                            updateBottomContainerPosition();
-                        });
+                        mCallbackController.makeCancelable(
+                                () -> {
+                                    mOmniboxDropdownEmbedderImpl.recalculateOmniboxAlignment();
+                                    updateBottomContainerPosition();
+                                }));
         mOmniboxDropdownEmbedderImpl =
                 new OmniboxSuggestionsDropdownEmbedderImpl(
                         mWindowAndroid,
