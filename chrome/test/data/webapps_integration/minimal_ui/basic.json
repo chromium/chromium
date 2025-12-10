@@ -12,6 +12,7 @@
       "type": "image/png"
     }
   ],
+  "id": "/webapps_integration/minimal_ui/basic.html",
   "start_url": "/webapps_integration/minimal_ui/basic.html",
   "scope": "/webapps_integration/minimal_ui/",
   "display": "minimal-ui",
