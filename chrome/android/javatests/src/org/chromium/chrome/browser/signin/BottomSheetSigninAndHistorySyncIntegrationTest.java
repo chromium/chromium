@@ -749,6 +749,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testSeamlessSignin() {
         HistogramWatcher signinHistogramWatcher =
                 HistogramWatcher.newBuilder()

@@ -501,8 +501,6 @@ public class BottomSheetSigninAndHistorySyncCoordinator
 
     private void onFlowComplete(SigninAndHistorySyncCoordinator.Result result) {
         if (mConfig.shouldShowSigninSnackbar) {
-            // TODO(crbug.com/437039311): Verify that the user went through a seamless sign-in
-            // before showing, add a new field to {WithAccountSigninMode}
             SigninSnackbarController.showUndoSnackbarIfNeeded(
                     mActivity,
                     assertNonNull(mProfileSupplier.get()),
