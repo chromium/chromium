@@ -188,8 +188,15 @@ BASE_FEATURE(kEsbAsASyncedSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtendedReportingRemovePrefDependency,
              "ExtendedReportingRemovePrefDependency",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
+// TODO(crbug.com/448895753): Enable ExtendedReportingRemovePrefDependency on
+// iOS when this feature is fully launched.
 BASE_FEATURE(kExtendedReportingRemovePrefDependencyIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
