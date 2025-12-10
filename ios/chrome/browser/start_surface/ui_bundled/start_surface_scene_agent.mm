@@ -198,7 +198,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     // Iterate through the WebStateList and activate the existing NTP tab for
     // the Start surface (if any).
     for (int i = webStateList->count() - 1; i >= 0; --i) {
-      if ([self activateNTPForWebStateList:webStateList atIndex:i]) {
+      if ([self activateUngroupedNTPForWebStateList:webStateList atIndex:i]) {
         return;
       }
     }
@@ -210,10 +210,9 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     int knownNTPWebStateIndex =
         prefService->GetInteger(prefs::kIOSLastKnownNTPWebStateIndex);
     prefService->ClearPref(prefs::kIOSLastKnownNTPWebStateIndex);
-    if (webStateList->ContainsIndex(knownNTPWebStateIndex) &&
-        !webStateList->GetGroupOfWebStateAt(knownNTPWebStateIndex)) {
-      if ([self activateNTPForWebStateList:webStateList
-                                   atIndex:knownNTPWebStateIndex]) {
+    if (webStateList->ContainsIndex(knownNTPWebStateIndex)) {
+      if ([self activateUngroupedNTPForWebStateList:webStateList
+                                            atIndex:knownNTPWebStateIndex]) {
         return;
       }
     }
@@ -375,9 +374,12 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 }
 
 // Returns YES if the WebState at the given index has been activated. Only
-// activates NTPs.
-- (BOOL)activateNTPForWebStateList:(WebStateList*)webStateList
-                           atIndex:(int)index {
+// activates NTPs that are not in a group.
+- (BOOL)activateUngroupedNTPForWebStateList:(WebStateList*)webStateList
+                                    atIndex:(int)index {
+  if (webStateList->GetGroupOfWebStateAt(index)) {
+    return NO;
+  }
   web::WebState* lastKnownWebState = webStateList->GetWebStateAt(index);
   if (IsUrlNtp(lastKnownWebState->GetVisibleURL())) {
     webStateList->ActivateWebStateAt(index);
