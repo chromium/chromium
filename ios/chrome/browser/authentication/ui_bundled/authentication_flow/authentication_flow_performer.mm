@@ -334,11 +334,9 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 - (void)managedConfirmationAlertAccepted:(BOOL)accepted {
   CHECK(_managedConfirmationAlertCoordinator);
   CHECK(!_managedConfirmationScreenCoordinator);
-  Browser* browser = _managedConfirmationAlertCoordinator.browser;
   [_managedConfirmationAlertCoordinator stop];
   _managedConfirmationAlertCoordinator = nil;
   [self managedConfirmationDidAccept:accepted
-                             browser:browser
                 browsingDataSeparate:
                     AreSeparateProfilesForManagedAccountsEnabled()];
 }
@@ -359,7 +357,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 // current profile. If AreSeparateProfilesForManagedAccountsEnabled() is true,
 // this involves converting the current profile into a work profile.
 - (void)managedConfirmationDidAccept:(BOOL)accepted
-                             browser:(Browser*)browser
                 browsingDataSeparate:(BOOL)browsingDataSeparate {
   if (!accepted) {
     base::RecordAction(
@@ -436,11 +433,9 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                      browsingDataSeparate:(BOOL)browsingDataSeparate {
   CHECK(!_managedConfirmationAlertCoordinator);
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
-  Browser* browser = _managedConfirmationScreenCoordinator.browser;
   [_managedConfirmationScreenCoordinator stop];
   _managedConfirmationScreenCoordinator = nil;
   [self managedConfirmationDidAccept:accepted
-                             browser:browser
                 browsingDataSeparate:browsingDataSeparate];
 }
 
