@@ -31,6 +31,7 @@ namespace media {
 
 class MediaLog;
 class MojoDecoderBufferWriter;
+class OOPVideoFrameHandleReleaser;
 
 // Proxy video decoder that connects with an out-of-process
 // video decoder via Mojo. This class should be operated and
@@ -138,8 +139,6 @@ class OOPVideoDecoder : public VideoDecoderMixin,
 
   void Stop();
 
-  void ReleaseVideoFrame(const base::UnguessableToken& release_token);
-
   InitCB init_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   PipelineOutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   WaitingCB waiting_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -213,8 +212,8 @@ class OOPVideoDecoder : public VideoDecoderMixin,
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  mojo::Remote<mojom::VideoFrameHandleReleaser>
-      video_frame_handle_releaser_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
+  scoped_refptr<OOPVideoFrameHandleReleaser> video_frame_handle_releaser_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_
       GUARDED_BY_CONTEXT(sequence_checker_);
