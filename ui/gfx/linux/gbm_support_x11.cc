@@ -90,31 +90,30 @@ GBMSupportX11::CreateSupportedConfigList(ui::GbmDevice* device) {
            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
            gfx::BufferUsage::SCANOUT_VDA_WRITE,
        }) {
-    for (gfx::BufferFormat format : {
-             gfx::BufferFormat::R_8,
-             gfx::BufferFormat::RG_88,
-             gfx::BufferFormat::RGBA_8888,
-             gfx::BufferFormat::RGBX_8888,
-             gfx::BufferFormat::BGRA_8888,
-             gfx::BufferFormat::BGRX_8888,
-             gfx::BufferFormat::BGRA_1010102,
+    for (viz::SharedImageFormat format : {
+             viz::SinglePlaneFormat::kR_8,
+             viz::SinglePlaneFormat::kRG_88,
+             viz::SinglePlaneFormat::kRGBA_8888,
+             viz::SinglePlaneFormat::kRGBX_8888,
+             viz::SinglePlaneFormat::kBGRA_8888,
+             viz::SinglePlaneFormat::kBGRX_8888,
+             viz::SinglePlaneFormat::kBGRA_1010102,
 
              // On some Intel setups calling gbm_bo_create() with this format
              // results in a crash caused by an integer-divide-by-zero.
              // TODO(thomasanderson): Enable this format.
-             // gfx::BufferFormat::RGBA_1010102,
-             gfx::BufferFormat::BGR_565,
-             gfx::BufferFormat::YUV_420_BIPLANAR,
-             gfx::BufferFormat::YVU_420,
-             gfx::BufferFormat::P010,
+             // viz::SinglePlaneFormat::kRGBA_1010102,
+             viz::SinglePlaneFormat::kBGR_565,
+             viz::MultiPlaneFormat::kNV12,
+             viz::MultiPlaneFormat::kYV12,
+             viz::MultiPlaneFormat::kP010,
          }) {
       // At least on mesa/amdgpu, gbm_device_is_format_supported() lies.  Test
       // format support by creating a buffer directly.  Use a 2x2 buffer so that
-      // YUV420 formats get properly tested.
-      if (device->CreateBuffer(GetFourCCFormatFromBufferFormat(format),
+      // NV12 formats get properly tested.
+      if (device->CreateBuffer(GetFourCCFormatFromSharedImageFormat(format),
                                gfx::Size(2, 2), BufferUsageToGbmFlags(usage))) {
-        configs.push_back(
-            BufferUsageAndSIFormat(usage, viz::GetSharedImageFormat(format)));
+        configs.push_back(BufferUsageAndSIFormat(usage, format));
       }
     }
   }
