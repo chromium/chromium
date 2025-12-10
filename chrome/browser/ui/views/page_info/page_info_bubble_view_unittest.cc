@@ -1012,7 +1012,6 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   PageInfoUI::CookiesInfo cookies;
   cookies.allowed_sites_count = 10;
   cookies.enforcement = CookieControlsEnforcement::kNoEnforcement;
-  cookies.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   // Update the cookies info.
   api_->SetCookieInfo(cookies);
@@ -1247,24 +1246,17 @@ class PageInfoBubbleViewCookiesSubpageTitleTest
     : public PageInfoBubbleViewTest,
       public testing::WithParamInterface<
           testing::tuple<CookieControlsState,
-                         CookieBlocking3pcdStatus,
                          /*is_otr*/ bool>> {
  public:
   PageInfoBubbleViewCookiesSubpageTitleTest() {
-    feature_list_.InitWithFeatures(
-        {content_settings::features::kTrackingProtection3pcd}, {});
-    off_the_record_ = testing::get<2>(GetParam());
+    off_the_record_ = testing::get<1>(GetParam());
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(PageInfoBubbleViewCookiesSubpageTitleTest,
        DisplaysCookiesAndSiteDataTitle) {
   PageInfoUI::CookiesInfo cookie_info;
   cookie_info.controls_state = testing::get<0>(GetParam());
-  cookie_info.blocking_status = testing::get<1>(GetParam());
   api_->SetCookieInfo(cookie_info);
   EXPECT_EQ(api_->GetCookiesSubpageTitle(),
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER));
@@ -1275,8 +1267,6 @@ INSTANTIATE_TEST_SUITE_P(
     PageInfoBubbleViewCookiesSubpageTitleTest,
     testing::Combine(testing::Values(CookieControlsState::kAllowed3pc,
                                      CookieControlsState::kBlocked3pc),
-                     testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
-                                     CookieBlocking3pcdStatus::kAll),
                      /*is_otr*/ testing::Bool()));
 
 class PageInfoBubbleViewAutoPipTest : public PageInfoBubbleViewTest {

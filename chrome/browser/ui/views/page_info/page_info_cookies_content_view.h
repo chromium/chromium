@@ -79,15 +79,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void SetThirdPartyCookiesToggle(CookieControlsState controls_state,
                                   CookieBlocking3pcdStatus blocking_status);
 
-  // Sets `cookie_description_label_` text and style using:
-  // `blocking_status`: label for the status of 3PCs (e.g. allowed,
-  // limited, blocked)
-  // `enforcement`: type of enforcement on 3PCs (e.g. by policy, user
-  // setting)
-  // `is_otr: whether the current profile is "off the record"
-  void SetCookiesDescription(CookieBlocking3pcdStatus blocking_status,
-                             CookieControlsEnforcement enforcement,
-                             bool is_otr);
+  // Sets `cookie_description_label_` text and style.
+  void SetCookiesDescription();
 
   // Updates the new third-party cookies section using:
   // `controls_state`: state of controls to display

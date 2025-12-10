@@ -236,8 +236,7 @@ void PageInfoCookiesContentView::SyncSettingsLinkClicked(
 }
 
 void PageInfoCookiesContentView::SetCookieInfo(const CookiesInfo& cookie_info) {
-  SetCookiesDescription(cookie_info.blocking_status, cookie_info.enforcement,
-                        cookie_info.is_incognito);
+  SetCookiesDescription();
   SetThirdPartyCookiesInfo(cookie_info.controls_state, cookie_info.enforcement,
                            cookie_info.blocking_status, cookie_info.expiration);
 
@@ -324,40 +323,22 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
   third_party_cookies_toggle_subtitle_->SetText(subtitle);
 }
 
-void PageInfoCookiesContentView::SetCookiesDescription(
-    CookieBlocking3pcdStatus blocking_status,
-    CookieControlsEnforcement enforcement,
-    bool is_incognito) {
+void PageInfoCookiesContentView::SetCookiesDescription() {
   // Text on cookies description label has an embedded link to cookies settings.
-  std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
-      IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK);
-
   size_t offset;
-  int description;
-  if (blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd) {
-    description = IDS_PAGE_INFO_COOKIES_DESCRIPTION;
-    settings_text_for_link =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
-  } else if (enforcement == CookieControlsEnforcement::kEnforcedByTpcdGrant) {
-    description = IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION;
-  } else if (blocking_status == CookieBlocking3pcdStatus::kLimited) {
-    description = IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION;
-  } else {
-    description =
-        is_incognito
-            ? IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION
-            : IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION;
-  }
-  cookies_description_label_->SetText(
-      l10n_util::GetStringFUTF16(description, settings_text_for_link, &offset));
+  cookies_description_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK), &offset));
 
-  gfx::Range link_range(offset, offset + settings_text_for_link.length());
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &PageInfoCookiesContentView::CookiesSettingsLinkClicked,
           base::Unretained(this)));
   link_style.text_style = views::style::STYLE_LINK_3;
-  cookies_description_label_->AddStyleRange(link_range, link_style);
+  size_t link_text_length =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK).length();
+  cookies_description_label_->AddStyleRange(
+      gfx::Range(offset, offset + link_text_length), link_style);
 }
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
@@ -381,18 +362,14 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   third_party_cookies_row_->SetVisible(true);
   third_party_cookies_container_->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
-  bool show_controls_description =
-      enforcement == CookieControlsEnforcement::kNoEnforcement ||
-      (blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd &&
-       enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting);
-  third_party_cookies_label_wrapper_->SetVisible(show_controls_description);
 
   if (enforcement == CookieControlsEnforcement::kNoEnforcement) {
+    third_party_cookies_label_wrapper_->SetVisible(true);
     third_party_cookies_toggle_->SetVisible(true);
     third_party_cookies_enforced_icon_->SetVisible(false);
   } else {
-    // In the enforced state, the toggle button is hidden; enforced icon is
-    // shown instead of the toggle button.
+    // Show icon but no toggle or description.
+    third_party_cookies_label_wrapper_->SetVisible(false);
     third_party_cookies_toggle_->SetVisible(false);
     third_party_cookies_enforced_icon_->SetVisible(true);
     third_party_cookies_enforced_icon_->SetImage(
