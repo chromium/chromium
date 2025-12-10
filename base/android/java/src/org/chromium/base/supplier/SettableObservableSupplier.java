@@ -25,4 +25,14 @@ public interface SettableObservableSupplier<T> extends ObservableSupplier<T>, De
     /** Clears observers and sets value to null. */
     @Override
     void destroy();
+
+    /**
+     * @return A {@link NonNullObservableSupplier} if the supplied value is not null.
+     */
+    @SuppressWarnings("Unchecked")
+    @Override
+    default SettableNonNullObservableSupplier<T> asNonNull() {
+        // Cast from monotonic non-null -> non-null.
+        return (SettableNonNullObservableSupplier<T>) ObservableSupplier.super.asNonNull();
+    }
 }

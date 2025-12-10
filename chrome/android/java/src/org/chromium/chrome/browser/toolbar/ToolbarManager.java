@@ -44,12 +44,14 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -274,7 +276,19 @@ public class ToolbarManager
             new ObservableSupplierImpl<>(false);
     private final ObservableSupplierImpl<Boolean> mIsTabSwitcherFinishedShowingSupplier =
             new ObservableSupplierImpl<>();
-    private final ConstraintsProxy mConstraintsProxy = new ConstraintsProxy();
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
+
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1373
+    private final SettableNullableObservableSupplier<@BrowserControlsState Integer>
+            mConstraintsSupplier =
+                    mCurrentTabSupplier.createTransitiveNullable(
+                            tab ->
+                                    tab == null
+                                            ? null
+                                            : TabBrowserControlsConstraintsHelper
+                                                    .getObservableConstraints(tab));
+
     private ObservableSupplierImpl<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
@@ -458,45 +472,6 @@ public class ToolbarManager
                     mTabObscuringToken = null;
                 }
             }
-        }
-    }
-
-    /** An {@link ObservableSupplier<Integer>} for the browser constraints of the current tab. */
-    private static class ConstraintsProxy extends ObservableSupplierImpl<@Nullable Integer>
-            implements Callback<Integer> {
-        private @Nullable ObservableSupplier<Integer> mCurrentConstraintDelegate;
-
-        void onTabSwitched(@Nullable Tab newTab) {
-            if (mCurrentConstraintDelegate != null) {
-                mCurrentConstraintDelegate.removeObserver(this);
-                mCurrentConstraintDelegate = null;
-            }
-            if (newTab != null) {
-                ObservableSupplier<Integer> newDelegate =
-                        TabBrowserControlsConstraintsHelper.getObservableConstraints(newTab);
-                if (newDelegate != null) {
-                    Integer currentValue = newDelegate.addObserver(this);
-                    mCurrentConstraintDelegate = newDelegate;
-
-                    // While addObserver will call onResult for us, it posts a task for that. We
-                    // want to be up to date right now. So manually call set.
-                    set(currentValue);
-                }
-            }
-        }
-
-        @Override
-        public void destroy() {
-            if (mCurrentConstraintDelegate != null) {
-                mCurrentConstraintDelegate.removeObserver(this);
-                mCurrentConstraintDelegate = null;
-            }
-            super.destroy();
-        }
-
-        @Override
-        public void onResult(Integer result) {
-            set(result);
         }
     }
 
@@ -1203,7 +1178,7 @@ public class ToolbarManager
                         browsingModeThemeColorProviderWithAdjustableTint,
                         mIncognitoStateProvider,
                         initializeWithIncognitoColors,
-                        mConstraintsProxy,
+                        mConstraintsSupplier,
                         onLongClickListener,
                         progressBar,
                         historyDelegate,
@@ -1863,7 +1838,6 @@ public class ToolbarManager
     private void initializeToolbarPositionController() {
         if (!ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                 mActivity, mIsCustomTab)) {
-            mToolbarPositionSupplier.set(mBrowserControlsSizer.getControlsPosition());
             return;
         }
 
@@ -1974,7 +1948,7 @@ public class ToolbarManager
             ThemeColorProvider browsingModeThemeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             boolean initializeWithIncognitoColors,
-            ObservableSupplier<@Nullable Integer> constraintsSupplier,
+            NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
             NavigationPopup.HistoryDelegate historyDelegate,
@@ -2267,7 +2241,6 @@ public class ToolbarManager
         assert mTabGroupUiOneshotSupplier == null;
         assert mUndoBarThrottle != null;
         assert mLayoutManager != null;
-        assert mConstraintsProxy != null;
         assert mTabModelSelector != null;
         ThemeColorProvider bottomUiThemeColorProvider =
                 new BottomUiThemeColorProvider(
@@ -2312,7 +2285,7 @@ public class ToolbarManager
                         bottomControlsContentDelegateSupplier,
                         mTabObscuringHandler,
                         mOverlayPanelVisibilitySupplier,
-                        mConstraintsProxy,
+                        mConstraintsSupplier,
                         /* readAloudRestoringSupplier= */ () -> {
                             final var readAloud = mReadAloudControllerSupplier.get();
                             return readAloud != null && readAloud.isRestoringPlayer();
@@ -2750,7 +2723,7 @@ public class ToolbarManager
         mComponentCallbacks = null;
 
         mControlContainer.destroy();
-        mConstraintsProxy.destroy();
+        mConstraintsSupplier.destroy();
         mLocationBarFocusHandler.destroy();
 
         mWindowAndroid.setProgressBarConfigProvider(null);
@@ -3188,7 +3161,7 @@ public class ToolbarManager
         }
 
         updateButtonStatus();
-        mConstraintsProxy.onTabSwitched(tab);
+        mCurrentTabSupplier.set(tab);
         mFormFieldFocusedSupplier.onWebContentsChanged(tab == null ? null : tab.getWebContents());
     }
 

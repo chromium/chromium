@@ -34,12 +34,14 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -435,7 +437,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             Toolbar toolbar,
             ViewGroup toolbarView,
             boolean isIncognito,
-            ObservableSupplier<@Nullable Integer> constraintsSupplier,
+            NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             Supplier<@Nullable Tab> tabSupplier,
             ObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
@@ -574,7 +576,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         @Initializer
         public void setPostInitializationDependencies(
                 Toolbar toolbar,
-                ObservableSupplier<@Nullable Integer> constraintsSupplier,
+                NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
                 ObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
@@ -683,7 +685,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         @Initializer
         public void setPostInitializationDependencies(
                 Toolbar toolbar,
-                ObservableSupplier<@Nullable Integer> constraintsSupplier,
+                NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
                 ObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate

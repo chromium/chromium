@@ -24,6 +24,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -195,7 +196,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             Supplier<ResourceManager> resourceManagerSupplier,
             HistoryDelegate historyDelegate,
             boolean initializeWithIncognitoColors,
-            ObservableSupplier<@Nullable Integer> constraintsSupplier,
+            NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             ObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,

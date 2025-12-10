@@ -79,7 +79,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
                     ChildT,
                     FuncT extends @Nullable T,
                     FuncSup extends @Nullable NullableObservableSupplier<ChildT>>
-            NullableObservableSupplier<ChildT> createTransitiveNullable(
+            SettableNullableObservableSupplier<ChildT> createTransitiveNullable(
                     Function<FuncT, FuncSup> unwrapFunction) {
         return new TransitiveObservableSupplier<>(
                 (NullableObservableSupplier) this,
@@ -91,7 +91,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     /** Creates an ObservableSupplier that tracks a value derived from this ObservableSupplier. */
     @SuppressWarnings("Unchecked")
     default <ChildT, FuncT extends @Nullable T>
-            NullableObservableSupplier<ChildT> createDerivedNullable(
+            SettableNullableObservableSupplier<ChildT> createDerivedNullable(
                     Function<FuncT, @Nullable ChildT> unwrapFunction) {
         return new UnwrapObservableSupplier<>(
                 (NullableObservableSupplier) this, unwrapFunction, /* allowSetToNull= */ true);
@@ -100,7 +100,7 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     /** Creates an ObservableSupplier that tracks a value derived from this ObservableSupplier. */
     @SuppressWarnings("Unchecked")
     default <ChildT, FuncT extends @Nullable T>
-            NonNullObservableSupplier<ChildT> createDerivedNonNull(
+            SettableNonNullObservableSupplier<ChildT> createDerivedNonNull(
                     Function<FuncT, ChildT> unwrapFunction) {
         return new UnwrapObservableSupplier<>(
                         (NullableObservableSupplier) this,

@@ -73,7 +73,6 @@ public interface ObservableSupplier<T extends @Nullable Object>
      * @return A {@link NonNullObservableSupplier} if the supplied value is not null.
      */
     @SuppressWarnings("Unchecked")
-    // Should be able to use "@NonNull E": https://github.com/uber/NullAway/issues/1354
     default NonNullObservableSupplier<T> asNonNull() {
         // Cast from monotonic non-null -> non-null.
         assert !Boolean.TRUE.equals(((BaseObservableSupplierImpl<?>) this).mAllowSetToNull)
@@ -87,7 +86,7 @@ public interface ObservableSupplier<T extends @Nullable Object>
      */
     @SuppressWarnings("Unchecked")
     default <ChildT, FuncT extends ObservableSupplier<ChildT>>
-            ObservableSupplier<ChildT> createTransitiveMonotonic(
+            SettableObservableSupplier<ChildT> createTransitiveMonotonic(
                     Function<T, FuncT> unwrapFunction) {
         return new TransitiveObservableSupplier<>(
                 this,
@@ -101,7 +100,7 @@ public interface ObservableSupplier<T extends @Nullable Object>
      * The current and transitive suppliers must both be non-null or monotonic.
      */
     @SuppressWarnings("Unchecked")
-    default <ChildT> NonNullObservableSupplier<ChildT> createTransitiveNonNull(
+    default <ChildT> SettableNonNullObservableSupplier<ChildT> createTransitiveNonNull(
             Function<T, NonNullObservableSupplier<ChildT>> unwrapFunction) {
         // asNonNull() will call get(), which will update the initial value to be non-null.
         return new TransitiveObservableSupplier<>(
@@ -118,7 +117,7 @@ public interface ObservableSupplier<T extends @Nullable Object>
      * and transitive suppliers must both be non-null or monotonic.
      */
     @SuppressWarnings("Unchecked")
-    default <ChildT> NonNullObservableSupplier<ChildT> createTransitiveNonNull(
+    default <ChildT> SettableNonNullObservableSupplier<ChildT> createTransitiveNonNull(
             ChildT initialValue, Function<T, NonNullObservableSupplier<ChildT>> unwrapFunction) {
         return new TransitiveObservableSupplier<>(
                 (NullableObservableSupplier) this,

@@ -8,9 +8,10 @@ import android.os.Handler;
 import android.os.Looper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
@@ -20,7 +21,7 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 @NullMarked
 public class ConstraintsChecker implements Callback<@Nullable Integer> {
     private final ViewResourceAdapter mViewResourceAdapter;
-    private final ObservableSupplier<@Nullable Integer> mConstraintsSupplier;
+    private final NullableObservableSupplier<@BrowserControlsState Integer> mConstraintsSupplier;
     private final Handler mHandler;
 
     /**
@@ -30,7 +31,7 @@ public class ConstraintsChecker implements Callback<@Nullable Integer> {
      */
     public ConstraintsChecker(
             ViewResourceAdapter viewResourceAdapter,
-            ObservableSupplier<@Nullable Integer> constraintsSupplier,
+            NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             Looper looper) {
         mViewResourceAdapter = viewResourceAdapter;
         mConstraintsSupplier = constraintsSupplier;
