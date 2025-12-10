@@ -852,9 +852,9 @@ void CreditCardSaveManager::OfferCardLocalSave() {
               base::UTF16ToUTF8(card_save_candidate_.LastFourDigits())))
           .with_card_save_type(card_save_type);
 
-  // If |show_save_prompt_|'s value is false, desktop builds will still offer
-  // save in the omnibox without popping-up the bubble. Mobile builds,
-  // however, should not display the offer-to-save infobar at all.
+  // If `show_save_prompt_` is false: 1) desktop builds will still offer save in
+  // the omnibox but won't pop up the bubble, and 2) mobile builds will not show
+  // any offer to save prompt at all.
   if (!is_mobile_build || show_save_prompt_.value_or(true)) {
     if (observer_for_testing_) {
       observer_for_testing_->OnOfferLocalSave();
