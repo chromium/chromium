@@ -51,6 +51,13 @@
     border-bottom: var(--cr-separator-line);
   }
 
+   #bundlesRadioGroup controlled-radio-button {
+     align-content: flex-start;
+     display: flex;
+     flex-wrap: wrap;
+     gap: 10px;
+   }
+
   #bundlesRadioGroup controlled-radio-button::part(labelWrapper) {
     align-items: center;
     display: flex;
@@ -62,12 +69,20 @@
 
   ul.icon-bulleted-list {
     --cr-icon-size: 20px;
+    flex-basis: 100%;
     list-style-type: none;
+    margin-bottom: 0;
+    margin-top: 0;
     padding-inline-start: 0;
   }
 
   ul.icon-bulleted-list li {
     margin-bottom: 10px;
+    margin-top: 0;
+  }
+
+  #bundlesRadioGroup ul.icon-bulleted-list li:last-child {
+    margin-bottom: 0;
   }
 
   ul.icon-bulleted-list cr-icon {
@@ -139,28 +154,27 @@
             hidden$="[[!isResetStandardBundleToDefaultsButtonVisible_]]">
           $i18n{securityBundleResetToDefaultsButtonLabel}
         </cr-button>
+        <ul class="icon-bulleted-list" slot="additional-content">
+          <li>
+            <cr-icon icon="settings20:computer"></cr-icon>
+            <span class="cr-secondary-text">
+              $i18n{securityBundleStandardBulletOne}
+            </span>
+          </li>
+          <li>
+            <cr-icon icon="settings20:local-cafe"></cr-icon>
+            <span class="cr-secondary-text">
+              $i18n{securityBundleStandardBulletTwo}
+            </span>
+          </li>
+          <li>
+            <cr-icon icon="settings20:sprint"></cr-icon>
+            <span class="cr-secondary-text">
+              $i18n{securityBundleStandardBulletThree}
+            </span>
+          </li>
+        </ul>
       </controlled-radio-button>
-      <!-- TODO(crbug.com/460826064): Fix styling before enabling feature. -->
-      <ul class="icon-bulleted-list">
-        <li>
-          <cr-icon icon="settings20:computer"></cr-icon>
-          <span class="cr-secondary-text">
-            $i18n{securityBundleStandardBulletOne}
-          </span>
-        </li>
-        <li>
-          <cr-icon icon="settings20:local-cafe"></cr-icon>
-          <span class="cr-secondary-text">
-            $i18n{securityBundleStandardBulletTwo}
-          </span>
-        </li>
-        <li>
-          <cr-icon icon="settings20:sprint"></cr-icon>
-          <span class="cr-secondary-text">
-            $i18n{securityBundleStandardBulletThree}
-          </span>
-        </li>
-      </ul>
     </div>
     <div class="box card card-end">
       <controlled-radio-button
@@ -173,28 +187,27 @@
             hidden$="[[!isResetEnhancedBundleToDefaultsButtonVisible_]]">
           $i18n{securityBundleResetToDefaultsButtonLabel}
         </cr-button>
+        <ul class="icon-bulleted-list" slot="additional-content">
+          <li>
+            <cr-icon icon="settings20:center-focus-strong"></cr-icon>
+            <span class="cr-secondary-text">
+              $i18n{securityBundleEnhancedBulletOne}
+            </span>
+          </li>
+          <li>
+            <cr-icon icon="settings20:e911-emergency"></cr-icon>
+            <span class="cr-secondary-text">
+              $i18n{securityBundleEnhancedBulletTwo}
+            </span>
+          </li>
+          <li>
+            <cr-icon icon="settings20:front-hand"></cr-icon>
+            <span class="cr-secondary-text">
+              $i18n{securityBundleEnhancedBulletThree}
+            </span>
+          </li>
+        </ul>
       </controlled-radio-button>
-      <!-- TODO(crbug.com/460826064): Fix styling before enabling feature. -->
-      <ul class="icon-bulleted-list">
-        <li>
-          <cr-icon icon="settings20:center-focus-strong"></cr-icon>
-          <span class="cr-secondary-text">
-            $i18n{securityBundleEnhancedBulletOne}
-          </span>
-        </li>
-        <li>
-          <cr-icon icon="settings20:e911-emergency"></cr-icon>
-          <span class="cr-secondary-text">
-            $i18n{securityBundleEnhancedBulletTwo}
-          </span>
-        </li>
-        <li>
-          <cr-icon icon="settings20:front-hand"></cr-icon>
-          <span class="cr-secondary-text">
-            $i18n{securityBundleEnhancedBulletThree}
-          </span>
-        </li>
-      </ul>
     </div>
   </settings-radio-group>
   <security-page-feature-row id="safeBrowsingRow"
