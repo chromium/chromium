@@ -128,8 +128,8 @@ MessageMetadata GetMessageMetadata(v8::Local<v8::Context> context) {
     blink::WebLocalFrame* web_frame =
         script_context ? script_context->web_frame() : nullptr;
     // The message should carry user activation information only if the last
-    // activation in |web_frame| was triggered by a real user interaction.  See
-    // |UserActivationState::LastActivationWasRestricted()|.
+    // activation in `web_frame` was triggered by a real user interaction.  See
+    // `UserActivationState::LastActivationWasRestricted()`.
     has_unrestricted_user_activation =
         web_frame && web_frame->HasTransientUserActivation() &&
         !web_frame->LastActivationWasRestricted();
