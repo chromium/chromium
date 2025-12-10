@@ -10,6 +10,8 @@
 #import "components/search_provider_logos/logo_common.h"
 #import "ios/chrome/browser/google/model/google_logo_service.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_container_view.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -234,6 +236,46 @@ TEST_F(SearchEngineLogoMediatorTest, TestDisconnectMediatorWhileFetching) {
   search_provider_logos::Logo logo;
   std::move(logo_callback)
       .Run(search_provider_logos::LogoCallbackReason::DETERMINED, logo);
+}
+
+// Verifies that an empty cache result does not reset the logo.
+TEST_F(SearchEngineLogoMediatorTest, TestEmptyCacheDoesNotResetLogo) {
+  // Switch to Google search engine to trigger a doodle fetch.
+  search_provider_logos::LogoCallback cached_logo_callback;
+  search_provider_logos::LogoCallback fresh_logo_callback;
+
+  EXPECT_CALL(*logo_service_, GetLogo(_, false))
+      .WillOnce(
+          [&cached_logo_callback, &fresh_logo_callback](
+              search_provider_logos::LogoCallbacks callbacks, bool for_doodle) {
+            cached_logo_callback =
+                std::move(callbacks.on_cached_decoded_logo_available);
+            fresh_logo_callback =
+                std::move(callbacks.on_fresh_decoded_logo_available);
+          });
+
+  SelectSearchEngineWithKeyword(google_keyword_);
+
+  SearchEngineLogoContainerView* containerView =
+      (SearchEngineLogoContainerView*)[mediator_ view];
+
+  // The default state for Google DSE is kLogo.
+  EXPECT_EQ(SearchEngineLogoState::kLogo, containerView.logoState);
+
+  // Run the CACHED callback with no logo (cache miss).
+  // This should NOT change the state.
+  std::move(cached_logo_callback)
+      .Run(search_provider_logos::LogoCallbackReason::DETERMINED, std::nullopt);
+
+  // Verify state is still kLogo.
+  EXPECT_EQ(SearchEngineLogoState::kLogo, containerView.logoState);
+
+  // Run the FRESH callback with no logo. This SHOULD reset it.
+  std::move(fresh_logo_callback)
+      .Run(search_provider_logos::LogoCallbackReason::DETERMINED, std::nullopt);
+
+  // Now it should be kNone.
+  EXPECT_EQ(SearchEngineLogoState::kNone, containerView.logoState);
 }
 
 }  // anonymous namespace

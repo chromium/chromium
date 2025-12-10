@@ -41,6 +41,7 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/search_provider_logos",
     "//ios/chrome/browser/google/model:google_logo",
+    "//ios/chrome/browser/ntp/search_engine_logo/ui",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
