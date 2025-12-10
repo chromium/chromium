@@ -8,6 +8,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+
+class TabAndroid;
 
 namespace content {
 class WebContents;
@@ -20,6 +23,8 @@ class FaviconDriver;
 // Native Favicon provider for Tab. Managed by Java layer.
 class TabFavicon : public favicon::FaviconDriverObserver {
  public:
+  static SkBitmap GetBitmapForTab(TabAndroid* tab_android);
+
   TabFavicon(JNIEnv* env,
              const base::android::JavaRef<jobject>& obj,
              int navigation_transition_favicon_size);

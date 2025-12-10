@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/tab_favicon.h"
 
+#include "chrome/browser/android/tab_android.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -37,6 +38,20 @@ SkBitmap RescaleSkBitmap(const SkBitmap& original, int new_size_dip) {
 }
 
 }  // namespace
+
+// static
+SkBitmap TabFavicon::GetBitmapForTab(TabAndroid* tab_android) {
+  if (!tab_android) {
+    return SkBitmap();
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> bitmap =
+      Java_TabFavicon_getBitmap(env, tab_android->GetJavaObject());
+  if (bitmap.is_null()) {
+    return SkBitmap();
+  }
+  return gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(bitmap));
+}
 
 TabFavicon::TabFavicon(JNIEnv* env,
                        const JavaRef<jobject>& obj,

@@ -69,6 +69,7 @@ public class TabFavicon extends TabWebContentsUserData {
      * @param tab Tab containing the web contents's favicon.
      * @return {@link Bitmap} of the favicon.
      */
+    @CalledByNative
     public static @Nullable Bitmap getBitmap(Tab tab) {
         TabFavicon tabFavicon = get(tab);
         return tabFavicon != null ? tabFavicon.getFavicon() : null;
