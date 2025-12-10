@@ -3126,27 +3126,38 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
 class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
  public:
   GlicGetHostCapabilityApiTest() {
-    CHECK(!(GetParam().trust_first_onboarding_arm1 &&
-            GetParam().trust_first_onboarding_arm2));
     std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
     if (GetParam().enable_scroll_to_pdf) {
       enabled_features.push_back(
           {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}});
       enabled_features.push_back(
           {features::kGlicPanelResetSizeAndLocationOnOpen, {}});
+    } else {
+      disabled_features.push_back(features::kGlicScrollTo);
+      disabled_features.push_back(
+          features::kGlicPanelResetSizeAndLocationOnOpen);
     }
+
+    CHECK(!(GetParam().trust_first_onboarding_arm1 &&
+            GetParam().trust_first_onboarding_arm2));
     if (GetParam().trust_first_onboarding_arm1) {
       enabled_features.push_back(
           {features::kGlicTrustFirstOnboarding,
            {{features::kGlicTrustFirstOnboardingArmParam.name, "1"}}});
-    }
-    if (GetParam().trust_first_onboarding_arm2) {
+    } else if (GetParam().trust_first_onboarding_arm2) {
       enabled_features.push_back(
           {features::kGlicTrustFirstOnboarding,
            {{features::kGlicTrustFirstOnboardingArmParam.name, "2"}}});
+    } else {
+      disabled_features.push_back(features::kGlicTrustFirstOnboarding);
     }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
+
   ~GlicGetHostCapabilityApiTest() override = default;
 
  private:
