@@ -1131,6 +1131,8 @@
                     "enable_features": [
                         "AndroidWarmUpSpareRendererWithTimeout",
                         "OverrideAndroidOmniboxSpareRendererDelay",
+                        "ReportStuckThrottle",
+                        "ResumeNavigationWithSpeculativeRFHProcessGone",
                         "SpareRendererProcessPriority"
                     ]
                 }
@@ -21376,7 +21378,6 @@
     "ResumeNavigationWithSpeculativeRFHProcessGone": [
         {
             "platforms": [
-                "android",
                 "android_webview",
                 "chromeos",
                 "linux",
