@@ -19522,29 +19522,6 @@
             ]
         }
     ],
-    "PrefetchScheduler": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "kPrefetchSchedulerProgressSyncBestEffort": "true"
-                    },
-                    "enable_features": [
-                        "PrefetchScheduler"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrefetchServiceWorkerNoFetchHandlerFix": [
         {
             "platforms": [
