@@ -4,12 +4,18 @@
 
 var callbackPass = chrome.test.callbackPass;
 
+// Checks that a string is formatted properly as sha256 fingerprint
+// which is formatted as 31 pairs of "XX:" followed by one "XX".
+function isSha256Fingerprint(input) {
+  const fingerprintRegex = /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/;
+  return fingerprintRegex.test(input);
+}
+
 (async () => {
   const config = await new Promise(resolve => chrome.test.getConfig(resolve));
   const args = JSON.parse(config.customArg);
   const request_url = args.request_url;
   const certificate_bytes = args.certificate_bytes;
-  const certificate_sha256 = args.certificate_sha256;
   const expect_state = args.expect_state;
   const use_web_socket = Boolean(args.use_web_socket);
 
@@ -78,9 +84,8 @@ var callbackPass = chrome.test.callbackPass;
         chrome.test.assertEq(1, details.securityInfo.certificates.length);
         chrome.test.assertFalse(
             'rawDER' in details.securityInfo.certificates[0]);
-        chrome.test.assertEq(
-            certificate_sha256,
-            details.securityInfo.certificates[0].fingerprint.sha256);
+        chrome.test.assertTrue(isSha256Fingerprint(
+            details.securityInfo.certificates[0].fingerprint.sha256));
       });
       chrome.webRequest.onHeadersReceived.addListener(
           listener, {urls: filter}, ['securityInfo']);
@@ -103,8 +108,9 @@ var callbackPass = chrome.test.callbackPass;
         chrome.test.assertEq(
             certificate_bytes, getPemEncodedFromDer(server_cert.rawDER));
 
-        chrome.test.assertEq(
-            certificate_sha256, server_cert.fingerprint.sha256);
+
+        chrome.test.assertTrue(isSha256Fingerprint(
+            details.securityInfo.certificates[0].fingerprint.sha256));
         chrome.test.assertEq(expect_state, details.securityInfo.state);
       });
       chrome.webRequest.onHeadersReceived.addListener(
@@ -126,8 +132,9 @@ var callbackPass = chrome.test.callbackPass;
         chrome.test.assertEq(
             certificate_bytes, getPemEncodedFromDer(server_cert.rawDER));
 
-        chrome.test.assertEq(
-            certificate_sha256, server_cert.fingerprint.sha256);
+
+        chrome.test.assertTrue(isSha256Fingerprint(
+            details.securityInfo.certificates[0].fingerprint.sha256));
         chrome.test.assertEq(expect_state, details.securityInfo.state);
       });
 

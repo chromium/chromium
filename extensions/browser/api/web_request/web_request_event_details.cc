@@ -4,12 +4,15 @@
 
 #include "extensions/browser/api/web_request/web_request_event_details.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -68,6 +71,23 @@ void FilterSecurityInfo(base::Value::Dict& result, int extra_info_spec) {
       certificates->front().GetDict().Remove(keys::kRawDerKey);
     }
   }
+}
+
+std::string StringifyCertificateFingerprintBytes(
+    base::span<uint8_t, 32> bytes) {
+  // Reserve memory for 32 bytes * 3 chars - 1 = 95.
+  std::string fingerprint_str;
+  fingerprint_str.reserve(95);
+
+  for (size_t i = 0; i < bytes.size(); ++i) {
+    if (i > 0) {
+      fingerprint_str.push_back(':');
+    }
+    // %02X ensures uppercase hex with leading zero padding
+    base::StringAppendF(&fingerprint_str, "%02X", bytes[i]);
+  }
+
+  return fingerprint_str;
 }
 
 }  // namespace
@@ -200,7 +220,8 @@ void WebRequestEventDetails::SetSecurityInfo(const WebRequestInfo& request) {
     std::array<uint8_t, 32> sha256_bytes =
         net::X509Certificate::CalculateFingerprint256(
             request.ssl_info->cert->cert_buffer());
-    fingerprint.Set(keys::kSha256Key, base::HexEncode(sha256_bytes));
+    fingerprint.Set(keys::kSha256Key,
+                    StringifyCertificateFingerprintBytes(sha256_bytes));
 
     leaf_cert.Set(keys::kFingerprintKey, std::move(fingerprint));
 

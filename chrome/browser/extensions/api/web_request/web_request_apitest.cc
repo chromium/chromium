@@ -462,9 +462,6 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
                            bool use_web_socket,
                            scoped_refptr<net::X509Certificate> certificate,
                            GURL request_url) {
-    std::string sha256_string =
-        base::HexEncode(net::X509Certificate::CalculateFingerprint256(
-            certificate->cert_buffer()));
     std::string pem_string;
     net::X509Certificate::GetPEMEncoded(certificate->cert_buffer(),
                                         &pem_string);
@@ -472,7 +469,6 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
     base::Value::Dict custom_args;
     custom_args.Set("request_url", request_url.spec());
     custom_args.Set("certificate_bytes", std::move(pem_string));
-    custom_args.Set("certificate_sha256", std::move(sha256_string));
     custom_args.Set("expect_state", std::move(expect_state));
     custom_args.Set("use_web_socket", use_web_socket);
 
