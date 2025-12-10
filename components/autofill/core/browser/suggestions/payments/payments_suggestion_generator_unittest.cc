@@ -314,6 +314,9 @@ class CreditCardSuggestionGeneratorTest
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
             &autofill_manager());
+    // We need to explicitly initialize four_digit_combination_dom_ since
+    // in CCSG it's a raw_ref, so it needs to outlive the CCSG class.
+    four_digit_combination_in_dom_ = std::vector<std::string>{};
     suggestion_generator_ = std::make_unique<CreditCardSuggestionGenerator>(
         autofill_client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
         credit_card_form_event_logger_.get(),
@@ -333,11 +336,12 @@ class CreditCardSuggestionGeneratorTest
   void CreateNewSuggestionGenerator(
       const std::vector<std::string>& four_digit_combinations_in_dom) {
     suggestion_generator_.reset();
+    four_digit_combination_in_dom_ = four_digit_combinations_in_dom;
     suggestion_generator_ = std::make_unique<CreditCardSuggestionGenerator>(
         autofill_client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
         credit_card_form_event_logger_.get(),
         AutofillMetrics::PaymentsSigninState::kSignedIn,
-        four_digit_combinations_in_dom);
+        four_digit_combination_in_dom_);
   }
 
   MockCreditCardFormEventLogger& credit_card_form_event_logger() {
@@ -486,6 +490,7 @@ class CreditCardSuggestionGeneratorTest
   syncer::TestSyncService sync_service_;
   std::unique_ptr<MockCreditCardFormEventLogger> credit_card_form_event_logger_;
   std::unique_ptr<CreditCardSuggestionGenerator> suggestion_generator_;
+  std::vector<std::string> four_digit_combination_in_dom_;
 };
 
 // The card benefits label generation currently varies across operating systems.
@@ -4905,7 +4910,7 @@ TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
 // are no card number last four digits found in the DOM.
 // TODO(crbug.com/467575628): Test fails sanity checker.
 TEST_P(CvcStorageAndFillingStandaloneFormEnhancementTest,
-       DISABLED_GetSuggestionsForCreditCards_NoDomLastFour) {
+       GetSuggestionsForCreditCards_NoDomLastFour) {
   // Create 2 local cards and 2 server cards.
   payments_data().ClearCreditCards();
   CreditCard local_card_1 =
