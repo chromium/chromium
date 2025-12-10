@@ -235,11 +235,13 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
       raster_context_provider.get());
 
+  // NV12 textures shouldn't be readback via conversion to NV12.
   if (!disable_gmb_frames_ &&
       CanUseGpuMemoryBufferReadback(
           source_frame->format(),
           raster_context_provider->SharedImageInterface(),
-          raster_context_provider->ContextCapabilities())) {
+          raster_context_provider->ContextCapabilities()) &&
+      source_frame->format() != media::PIXEL_FORMAT_NV12) {
     if (!accelerated_frame_pool_) {
       accelerated_frame_pool_ =
           media::RenderableGpuMemoryBufferVideoFramePool::Create(
