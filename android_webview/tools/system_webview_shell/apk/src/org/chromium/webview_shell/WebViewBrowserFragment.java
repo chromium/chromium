@@ -244,28 +244,29 @@ public class WebViewBrowserFragment extends Fragment {
                         NetworkTrafficAnnotationTag.createComplete(
                                 "android_webview_shell",
                                 """
-                    semantics {
-                      sender: "WebViewBrowserFragment (Android)"
-                      description:
-                        "Downloads files as specified by the shell browser."
-                      trigger: "User interations within the browser, causing a download"
-                      data: "No additional data."
-                      destination: LOCAL
-                      internal {
-                        contacts {
-                          email: "avvall@chromium.org"
-                        }
-                      }
-                      user_data {
-                        type: NONE
-                      }
-                      last_reviewed: "2024-07-25"
-                    }
-                    policy {
-                      cookies_allowed: NO
-                      setting: "This feature can not be disabled."
-                      policy_exception_justification: "Not implemented."
-                    }""");
+                                semantics {
+                                  sender: "WebViewBrowserFragment (Android)"
+                                  description:
+                                    "Downloads files as specified by the shell browser."
+                                  trigger: "User interations within the browser, causing a download"
+                                  data: "No additional data."
+                                  destination: LOCAL
+                                  internal {
+                                    contacts {
+                                      email: "avvall@chromium.org"
+                                    }
+                                  }
+                                  user_data {
+                                    type: NONE
+                                  }
+                                  last_reviewed: "2024-07-25"
+                                }
+                                policy {
+                                  cookies_allowed: NO
+                                  setting: "This feature can not be disabled."
+                                  policy_exception_justification: "Not implemented."
+                                }\
+                                """);
                 URL url = new URL(mFileUrl);
                 URLConnection connection = ChromiumNetworkAdapter.openConnection(url, annotation);
                 connection.connect();
@@ -422,7 +423,7 @@ public class WebViewBrowserFragment extends Fragment {
                     }
                 };
         WebSettings settings = webview.getSettings();
-        initializeSettings(settings);
+        initializeSettings(settings, requireContext());
         // Third party cookies are off by default on L+;
         // turn them on for consistency with normal browsers.
         CookieManager.getInstance().setAcceptThirdPartyCookies(webview, true);
@@ -674,10 +675,11 @@ public class WebViewBrowserFragment extends Fragment {
     // setGeolocationDatabasePath deprecated in api level 24,
     // but we still use it because we support api level 19 and up.
     @SuppressWarnings("deprecation")
-    private void initializeSettings(WebSettings settings) {
+    // This is public and static so it can be reused between activities for consistent settings.
+    public static void initializeSettings(WebSettings settings, Context context) {
         File geolocation = null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            geolocation = requireContext().getDir("geolocation", 0);
+            geolocation = context.getDir("geolocation", 0);
         }
 
         settings.setJavaScriptEnabled(true);
