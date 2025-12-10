@@ -14,13 +14,32 @@
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace {
+
+bool IsNTPUrl(const GURL& url) {
+  if (!url.SchemeIs(content::kChromeUIScheme)) {
+    // NTP starts with chrome:// scheme.
+    return false;
+  }
+  return url.host() == chrome::kChromeUINewTabURL ||
+         url.host() == chrome::kChromeUINewTabPageURL;
+}
+
+}  // namespace
 
 DEFINE_USER_DATA(BookmarkPageActionController);
 
@@ -85,6 +104,15 @@ void BookmarkPageActionController::ObserveBookmarkTabHelper(
   }
 }
 
+void BookmarkPageActionController::PrimaryPageChanged(content::Page& page) {
+  UpdatePageActionVisibility();
+}
+
+void BookmarkPageActionController::OnVisibilityChanged(
+    content::Visibility visibility) {
+  UpdatePageActionVisibility();
+}
+
 void BookmarkPageActionController::OnDiscardContents(
     tabs::TabInterface* tab,
     content::WebContents* old_contents,
@@ -95,12 +123,17 @@ void BookmarkPageActionController::OnDiscardContents(
 }
 
 void BookmarkPageActionController::UpdatePageActionVisibility() {
-  if (browser_defaults::bookmarks_enabled &&
-      edit_bookmarks_enabled_.GetValue()) {
+  if (ShouldShowPageAction()) {
     page_action_controller_->Show(kActionBookmarkThisTab);
   } else {
     page_action_controller_->Hide(kActionBookmarkThisTab);
   }
+}
+
+bool BookmarkPageActionController::ShouldShowPageAction() const {
+  return browser_defaults::bookmarks_enabled &&
+         edit_bookmarks_enabled_.GetValue() &&
+         !IsNTPUrl(tab().GetContents()->GetLastCommittedURL());
 }
 
 void BookmarkPageActionController::SetStarred(bool starred) {

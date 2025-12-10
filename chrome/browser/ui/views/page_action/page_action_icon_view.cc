@@ -57,7 +57,7 @@ bool PageActionIconView::Delegate::ShouldHidePageActionIcons() const {
 }
 
 bool PageActionIconView::Delegate::ShouldHidePageActionIcon(
-    PageActionIconView* icon_view) const {
+    const PageActionIconView* icon_view) const {
   return false;
 }
 

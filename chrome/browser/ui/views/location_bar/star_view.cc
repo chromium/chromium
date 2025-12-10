@@ -16,6 +16,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -53,6 +54,8 @@ StarView::StarView(CommandUpdater* command_updater,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "BookmarksStar",
+                         kActionBookmarkThisTab,
+                         nullptr,
                          false) {
   DCHECK(browser);
 
@@ -100,8 +103,9 @@ void StarView::OnBubbleWidgetChanged(views::Widget* widget) {
 }
 
 void StarView::UpdateImpl() {
-  SetVisible(browser_defaults::bookmarks_enabled &&
-             edit_bookmarks_enabled_.GetValue());
+  bool enabled =
+      browser_defaults::bookmarks_enabled && edit_bookmarks_enabled_.GetValue();
+  SetVisible(enabled && !delegate()->ShouldHidePageActionIcon(this));
 }
 
 void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
