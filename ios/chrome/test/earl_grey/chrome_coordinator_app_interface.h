@@ -44,6 +44,7 @@
 + (void)startEnhancedSafeBrowsingPromoCoordinator;
 + (void)startLensPromoCoordinator;
 + (void)startHistoryCoordinator;
++ (void)startNewTabPageCoordinator;
 + (void)startPopupMenuCoordinator;
 + (void)startOmniboxCoordinator;
 + (void)startSearchWhatYouSeePromoCoordinator;

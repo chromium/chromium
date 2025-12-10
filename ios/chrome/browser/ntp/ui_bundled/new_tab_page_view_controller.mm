@@ -1807,6 +1807,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       minimumHeight +=
           content_suggestions::HeaderBottomPadding(self.traitCollection) / 2;
     }
+  } else {
+    // Ensure that the header can be scrolled off screen on iPad.
+    minimumHeight +=
+        content_suggestions::HeaderBottomPadding(self.traitCollection) / 2;
   }
 
   return minimumHeight;

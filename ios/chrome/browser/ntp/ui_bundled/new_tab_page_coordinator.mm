@@ -319,7 +319,6 @@
   }
 
   DCHECK(self.browser);
-  DCHECK(self.toolbarDelegate);
   DCHECK(!self.contentSuggestionsCoordinator);
 
   self.webState = self.browser->GetWebStateList()->GetActiveWebState();

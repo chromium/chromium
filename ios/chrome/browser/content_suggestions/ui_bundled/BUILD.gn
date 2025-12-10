@@ -397,6 +397,7 @@ source_set("eg2_tests") {
     "//components/ntp_tiles:pref_names",
     "//components/omnibox/browser:aim_eligibility_service_features",
     "//components/regional_capabilities",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safety_check:pref_names",
     "//components/search_engines",
     "//components/segmentation_platform/public",

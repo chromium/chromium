@@ -13,6 +13,7 @@
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safety_check/safety_check_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/segmentation_platform/public/features.h"
@@ -49,6 +50,7 @@
 #import "ios/chrome/browser/whats_new/public/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -170,9 +172,22 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   }
 }
 
-+ (void)tearDown {
-  [self closeAllTabs];
-  [super tearDown];
+- (BOOL)shouldLoadMinimalAppUI {
+  std::vector<SEL> minimalAppUITests = {
+      @selector(testOmniboxWidthRotation),
+      @selector(testMinimumHeight),
+      @selector(testInitialPositionAndOrientationChange),
+      @selector(testMagicStack),
+      @selector(testToggleModuleVisiblityInCustomizationMenu),
+      @selector(testNavigateInCustomizationMenu),
+  };
+
+  for (SEL test : minimalAppUITests) {
+    if ([self isRunningTest:test]) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -180,6 +195,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // Make sure the search engine country is set, for `testFavicons` test.
   config.additional_args.push_back(
       std::string("--") + switches::kSearchEngineChoiceCountry + "=US");
+  if ([self shouldLoadMinimalAppUI]) {
+    config.additional_args.push_back(std::string("-load-minimal-app-ui"));
+  }
+
   if ([self isRunningTest:@selector(testPositionRestoredWithShiftingOffset)] ||
       [self
           isRunningTest:@selector(testPositionRestoredWithoutShiftingOffset)]) {
@@ -221,6 +240,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
             (testSignInSignOutScrolledToTop_AccountMenu)]) {
     config.features_enabled.push_back(
         switches::kEnableErrorBadgeOnIdentityDisc);
+  }
+
+  if ([self isRunningTest:@selector(testMagicStack)]) {
+    config.additional_args.push_back("--test-ios-module-ranker=safety_check");
   }
 
   return config;
@@ -432,6 +455,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that the fake omnibox width is correctly updated after a rotation.
 - (void)testOmniboxWidthRotation {
+  [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   [ChromeEarlGreyUI waitForAppToIdle];
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
   UIEdgeInsets safeArea = collectionView.safeAreaInsets;
@@ -1026,26 +1050,15 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                     kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
-
-  // Change the Search Engine to Google.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:grey_accessibilityID(kSettingsSearchEngineCellId)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Google")]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
 }
 
 - (void)testMinimumHeight {
+  [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   GREYWaitForAppToIdle(@"App failed to idle");
 
   // Ensures that tiles are still all visible with feed turned off after
@@ -1086,6 +1099,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Test to ensure that initial position and content are maintained when rotating
 // the device back and forth.
 - (void)testInitialPositionAndOrientationChange {
+  [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
+
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
   [self testNTPInitialPositionAndContent:collectionView];
@@ -1138,23 +1153,18 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that the Magic Stack feature swipeable when there are multiple modules.
 - (void)testMagicStack {
-  [[self class] closeAllTabs];
-  [ChromeEarlGrey openNewTab];
-
   // Enable relevant preferences for the test, and intentionally forces a Safety
   // Check error to ensure module visibility in the Magic Stack.
   [ChromeEarlGrey
       setBoolValue:YES
        forUserPref:safety_check::prefs::kSafetyCheckHomeModuleEnabled];
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSafeBrowsingEnabled];
   [ChromeEarlGrey
          setStringValue:NameForSafetyCheckState(
                             SafeBrowsingSafetyCheckState::kUnsafe)
       forLocalStatePref:prefs::kIosSafetyCheckManagerSafeBrowsingCheckResult];
 
-  AppLaunchConfiguration config = self.appConfigurationForTestCase;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back("--test-ios-module-ranker=safety_check");
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
 
   id<GREYMatcher> magicStackScrollView =
       grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier);
@@ -1363,11 +1373,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Home surface modules.
 - (void)testToggleModuleVisiblityInCustomizationMenu {
   // Tests most visited tiles visibility separately.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   [self resetCustomizationPrefs];
+  [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
 
   // Open the Home customization menu.
   [[EarlGrey
@@ -1464,11 +1471,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // to navigate to their respective submenus.
 - (void)testNavigateInCustomizationMenu {
   // Tests most visited tiles visibility separately.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   [self resetCustomizationPrefs];
+  [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
 
   // Open the Home customization menu.
   [[EarlGrey
