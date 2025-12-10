@@ -2504,6 +2504,25 @@
             ]
         }
     ],
+    "AutofillEnableBuyNowPayLaterAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableAmountExtraction",
+                        "AutofillEnableBuyNowPayLater",
+                        "AutofillEnableBuyNowPayLaterForExternallyLinked",
+                        "AutofillEnableBuyNowPayLaterForKlarna",
+                        "AutofillEnableTouchToFillReshowForBnpl"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableBuyNowPayLaterDesktop": [
         {
             "platforms": [
