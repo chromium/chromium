@@ -11390,15 +11390,12 @@ TEST_P(LayerTreeHostImplTest, ScrollInvisibleScroller) {
 
 // Make sure LatencyInfo carried by LatencyInfoSwapPromise are passed
 // in viz::CompositorFrameMetadata.
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
        LatencyInfoPassedToCompositorFrameMetadata) {
   CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
   SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
                                       gfx::Size(10, 10));
   UpdateDrawProperties(host_impl_->active_tree());
-
-  auto* fake_layer_tree_frame_sink =
-      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
 
   ui::LatencyInfo latency_info;
   latency_info.set_trace_id(5);
@@ -11412,22 +11409,25 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
                              /*skip_if_inside_draw=*/false);
   DrawFrame();
 
-  const auto& metadata_latency_after =
-      fake_layer_tree_frame_sink->last_sent_frame()->metadata.latency_info;
-  EXPECT_EQ(1u, metadata_latency_after.size());
-  EXPECT_TRUE(metadata_latency_after[0].FindLatency(
-      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+  auto* fake_layer_tree_frame_sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+  const auto* frame = fake_layer_tree_frame_sink->last_sent_frame();
+  EXPECT_NE(frame, nullptr);
+  if (frame) {
+    const auto& metadata_latency_after = frame->metadata.latency_info;
+    EXPECT_EQ(1u, metadata_latency_after.size());
+    EXPECT_TRUE(metadata_latency_after[0].FindLatency(
+        ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
+  }
 }
 
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
        CompositorFrameMetadataFrameIntervalInputs) {
   CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
   SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
                                       gfx::Size(10, 10));
   UpdateDrawProperties(host_impl_->active_tree());
 
-  auto* fake_layer_tree_frame_sink =
-      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
   host_impl_->NotifyInputEvent(/*is_fling=*/false);
   host_impl_->SetFullViewportDamage();
   host_impl_->SetNeedsRedraw(/*animation_only=*/false,
@@ -11437,11 +11437,15 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
       base::TimeTicks() + base::Milliseconds(1234));
   DrawFrameWithArgs(args);
 
-  const auto& frame_interval_inputs =
-      fake_layer_tree_frame_sink->last_sent_frame()
-          ->metadata.frame_interval_inputs;
-  EXPECT_TRUE(frame_interval_inputs.has_input);
-  EXPECT_EQ(args.frame_time, frame_interval_inputs.frame_time);
+  auto* fake_layer_tree_frame_sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+  const auto* frame = fake_layer_tree_frame_sink->last_sent_frame();
+  EXPECT_NE(frame, nullptr);
+  if (frame) {
+    const auto& frame_interval_inputs = frame->metadata.frame_interval_inputs;
+    EXPECT_TRUE(frame_interval_inputs.has_input);
+    EXPECT_EQ(args.frame_time, frame_interval_inputs.frame_time);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

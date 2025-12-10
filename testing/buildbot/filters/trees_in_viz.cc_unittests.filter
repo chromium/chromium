@@ -5,9 +5,6 @@
 -LayerTreeHostImplViewportCoveredTest.ActiveTreeShrinkViewportInvalid
 -LayerTreeHostImplViewportCoveredTest.ViewportCovered
 -LayerTreeHostImplViewportCoveredTest.ViewportCoveredScaled
-# These tests use FakeLayerTreeFrameSink properties that are not set in TreesInViz.
--CommitToPendingTreeLayerTreeHostImplTest.CompositorFrameMetadataFrameIntervalInputs
--CommitToPendingTreeLayerTreeHostImplTest.LatencyInfoPassedToCompositorFrameMetadata
 
 # These tests directly append quads to FrameData, which isn't
 # a meaningful test for TreesInViz mode.
