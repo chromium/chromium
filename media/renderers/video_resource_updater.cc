@@ -563,15 +563,9 @@ void VideoResourceUpdater::AppendQuad(
   bool needs_blending = !contents_opaque;
 
   gfx::Rect visible_rect = frame->visible_rect();
-  gfx::Size coded_size = frame->coded_size();
 
-  const gfx::PointF uv_top_left(
-      static_cast<float>(visible_rect.x()) / coded_size.width(),
-      static_cast<float>(visible_rect.y()) / coded_size.height());
-
-  const gfx::PointF uv_bottom_right(
-      static_cast<float>(visible_rect.right()) / coded_size.width(),
-      static_cast<float>(visible_rect.bottom()) / coded_size.height());
+  const gfx::PointF uv_top_left(visible_rect.origin());
+  const gfx::PointF uv_bottom_right(visible_rect.bottom_right());
 
   switch (frame_resource_type_) {
     case VideoFrameResourceType::VIDEO_HOLE: {
@@ -595,7 +589,8 @@ void VideoResourceUpdater::AppendQuad(
       texture_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
                            needs_blending, frame_resource_id_, uv_top_left,
                            uv_bottom_right, SkColors::kTransparent,
-                           nearest_neighbor, false, protected_video_type);
+                           nearest_neighbor, false, protected_video_type,
+                           /*is_tex_coords_normalized=*/false);
 #if BUILDFLAG(IS_WIN)
       // Windows uses DComp surfaces to e.g. hold MediaFoundation videos, which
       // must be promoted to overlay to be composited correctly.
