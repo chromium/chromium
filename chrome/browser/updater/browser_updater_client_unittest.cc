@@ -16,27 +16,24 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/browser/updater/browser_updater_client_testutils.h"
-#include "chrome/browser/updater/updater.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace updater {
-
 TEST(BrowserUpdaterClientTest, Reuse) {
   scoped_refptr<BrowserUpdaterClient> user1 = BrowserUpdaterClient::Create(
-      MakeFakeService(UpdateService::Result::kSuccess, {}),
-      UpdaterScope::kUser);
+      updater::MakeFakeService(updater::UpdateService::Result::kSuccess, {}),
+      updater::UpdaterScope::kUser);
   scoped_refptr<BrowserUpdaterClient> user2 = BrowserUpdaterClient::Create(
-      MakeFakeService(UpdateService::Result::kSuccess, {}),
-      UpdaterScope::kUser);
+      updater::MakeFakeService(updater::UpdateService::Result::kSuccess, {}),
+      updater::UpdaterScope::kUser);
   scoped_refptr<BrowserUpdaterClient> system1 = BrowserUpdaterClient::Create(
-      MakeFakeService(UpdateService::Result::kSuccess, {}),
-      UpdaterScope::kSystem);
+      updater::MakeFakeService(updater::UpdateService::Result::kSuccess, {}),
+      updater::UpdaterScope::kSystem);
   scoped_refptr<BrowserUpdaterClient> system2 = BrowserUpdaterClient::Create(
-      MakeFakeService(UpdateService::Result::kSuccess, {}),
-      UpdaterScope::kSystem);
+      updater::MakeFakeService(updater::UpdateService::Result::kSuccess, {}),
+      updater::UpdaterScope::kSystem);
   EXPECT_EQ(user1, user2);
   EXPECT_EQ(system1, system2);
   EXPECT_NE(system1, user1);
@@ -52,10 +49,10 @@ TEST(BrowserUpdaterClientTest, CallbackNumber) {
     int num_called = 0;
     base::RunLoop loop;
     BrowserUpdaterClient::Create(
-        MakeFakeService(UpdateService::Result::kSuccess, {}),
-        UpdaterScope::kUser)
+        updater::MakeFakeService(updater::UpdateService::Result::kSuccess, {}),
+        updater::UpdaterScope::kUser)
         ->CheckForUpdate(base::BindLambdaForTesting(
-            [&](const UpdateService::UpdateState& status) {
+            [&](const updater::UpdateService::UpdateState& status) {
               num_called++;
               loop.QuitWhenIdle();
             }));
@@ -67,10 +64,11 @@ TEST(BrowserUpdaterClientTest, CallbackNumber) {
     int num_called = 0;
     base::RunLoop loop;
     BrowserUpdaterClient::Create(
-        MakeFakeService(UpdateService::Result::kUpdateCheckFailed, {}),
-        UpdaterScope::kUser)
+        updater::MakeFakeService(
+            updater::UpdateService::Result::kUpdateCheckFailed, {}),
+        updater::UpdaterScope::kUser)
         ->CheckForUpdate(base::BindLambdaForTesting(
-            [&](const UpdateService::UpdateState& status) {
+            [&](const updater::UpdateService::UpdateState& status) {
               num_called++;
               loop.QuitWhenIdle();
             }));
@@ -82,10 +80,11 @@ TEST(BrowserUpdaterClientTest, CallbackNumber) {
     int num_called = 0;
     base::RunLoop loop;
     BrowserUpdaterClient::Create(
-        MakeFakeService(UpdateService::Result::kIPCConnectionFailed, {}),
-        UpdaterScope::kUser)
+        updater::MakeFakeService(
+            updater::UpdateService::Result::kIPCConnectionFailed, {}),
+        updater::UpdaterScope::kUser)
         ->CheckForUpdate(base::BindLambdaForTesting(
-            [&](const UpdateService::UpdateState& status) {
+            [&](const updater::UpdateService::UpdateState& status) {
               num_called++;
               loop.QuitWhenIdle();
             }));
@@ -99,36 +98,36 @@ TEST(BrowserUpdaterClientTest, StoreRetrieveLastUpdateState) {
   {
     base::RunLoop loop;
     BrowserUpdaterClient::Create(
-        MakeFakeService(UpdateService::Result::kSuccess, {}),
-        UpdaterScope::kUser)
+        updater::MakeFakeService(updater::UpdateService::Result::kSuccess, {}),
+        updater::UpdaterScope::kUser)
         ->CheckForUpdate(base::BindLambdaForTesting(
-            [&](const UpdateService::UpdateState& status) {
+            [&](const updater::UpdateService::UpdateState& status) {
               loop.QuitWhenIdle();
             }));
     loop.Run();
   }
-  EXPECT_TRUE(GetLastOnDemandUpdateState());
-  EXPECT_EQ(GetLastOnDemandUpdateState()->state,
-            UpdateService::UpdateState::State::kNoUpdate);
+  EXPECT_TRUE(BrowserUpdaterClient::GetLastOnDemandUpdateState());
+  EXPECT_EQ(BrowserUpdaterClient::GetLastOnDemandUpdateState()->state,
+            updater::UpdateService::UpdateState::State::kNoUpdate);
 }
 
 TEST(BrowserUpdaterClientTest, StoreRetrieveLastAppState) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  UpdateService::AppState app1;
-  app1.app_id = kUpdaterAppId;
-  UpdateService::AppState app2;
+  updater::UpdateService::AppState app1;
+  app1.app_id = updater::kUpdaterAppId;
+  updater::UpdateService::AppState app2;
   app2.app_id = BrowserUpdaterClient::GetAppId();
   app2.ecp = BrowserUpdaterClient::GetExpectedEcp();
   {
     base::RunLoop loop;
     bool is_registered = false;
     BrowserUpdaterClient::Create(
-        MakeFakeService(UpdateService::Result::kSuccess,
-                        {
-                            app1,
-                            app2,
-                        }),
-        UpdaterScope::kUser)
+        updater::MakeFakeService(updater::UpdateService::Result::kSuccess,
+                                 {
+                                     app1,
+                                     app2,
+                                 }),
+        updater::UpdaterScope::kUser)
         ->IsBrowserRegistered(base::BindLambdaForTesting([&](bool registered) {
           is_registered = registered;
           loop.QuitWhenIdle();
@@ -136,8 +135,6 @@ TEST(BrowserUpdaterClientTest, StoreRetrieveLastAppState) {
     loop.Run();
     EXPECT_TRUE(is_registered);
   }
-  EXPECT_TRUE(GetLastKnownBrowserRegistration());
-  EXPECT_TRUE(GetLastKnownUpdaterRegistration());
+  EXPECT_TRUE(BrowserUpdaterClient::GetLastKnownBrowserRegistration());
+  EXPECT_TRUE(BrowserUpdaterClient::GetLastKnownUpdaterRegistration());
 }
-
-}  // namespace updater

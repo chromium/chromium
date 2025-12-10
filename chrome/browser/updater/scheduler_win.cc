@@ -16,8 +16,7 @@
 
 namespace updater {
 
-void DoPeriodicTasks(base::RepeatingClosure /*prompt*/,
-                     base::OnceClosure callback) {
+void DoPeriodicTasks(base::OnceClosure callback) {
   base::MakeRefCounted<CheckUpdaterHealthTask>(GetBrowserUpdaterScope())
       ->Run(base::BindOnce(
           [](base::OnceClosure callback) {

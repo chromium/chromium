@@ -7067,7 +7067,6 @@ test("unit_tests") {
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
-    "//chrome/browser/updater",
     "//chrome/browser/updates/announcement_notification:unit_tests",
     "//chrome/browser/upgrade_detector:unit_tests",
     "//chrome/browser/vr:unit_tests",
@@ -7516,21 +7515,17 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/platform_auth/platform_auth_navigation_throttle_unittest.cc",
       "../browser/enterprise/platform_auth/platform_auth_provider_manager_unittest.cc",
+      "../browser/updater/browser_updater_client_testutils.cc",
+      "../browser/updater/browser_updater_client_testutils.h",
+      "../browser/updater/browser_updater_client_unittest.cc",
     ]
     deps += [
       "//chrome/browser/enterprise/platform_auth:test_utils",
       "//chrome/browser/ui/pdf/infobar:unit_tests",
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:unit_tests",
+      "//chrome/browser/updater:browser_updater_client",
+      "//chrome/updater:browser_sources",
     ]
-  }
-
-  if (enable_updater && (is_win || is_mac)) {
-    sources += [
-      "../browser/updater/browser_updater_client_testutils.cc",
-      "../browser/updater/browser_updater_client_testutils.h",
-      "../browser/updater/browser_updater_client_unittest.cc",
-    ]
-    deps += [ "//chrome/updater:browser_sources" ]
   }
 
   if (is_win || is_mac || is_linux) {
@@ -7623,6 +7618,7 @@ test("unit_tests") {
       "//chrome/installer/util:strings",
       "//chrome/installer/util:with_no_strings",
       "//chrome/services/util_win:lib",
+      "//chrome/updater:browser_sources",
       "//chrome/windows_services/elevated_tracing_service:tracing_service_idl",
       "//components/performance_manager/scenario_api",
       "//third_party/iaccessible2",
@@ -7724,11 +7720,13 @@ test("unit_tests") {
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/renderer_host:history_swiper",
+      "//chrome/browser/updater:browser_updater_client",
       "//chrome/common/notifications",
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/common/safe_browsing:disk_image_type_sniffer_mac",
       "//chrome/services/mac_notifications:unit_tests",
       "//chrome/services/mac_notifications/public/mojom",
+      "//chrome/updater:browser_sources",
       "//chrome/utility/safe_browsing",
       "//chrome/utility/safe_browsing/mac:dmg_common",
       "//components/power_metrics",
@@ -10374,7 +10372,6 @@ test("unit_tests") {
   }
   if (is_win || is_mac) {
     sources += [ "../browser/component_updater/updater_state_unittest.cc" ]
-    deps += [ "//chrome/updater:browser_sources" ]
   }
   if (is_win || is_mac || is_chromeos) {
     deps += [ "//chrome/common/notifications:unit_tests" ]

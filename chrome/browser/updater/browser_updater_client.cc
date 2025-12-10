@@ -24,30 +24,37 @@
 #include "base/version.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "components/version_info/version_info.h"
 
-namespace updater {
+namespace {
 
-std::optional<mojom::AppState>& GetLastKnownBrowserRegistrationStorage() {
-  static base::NoDestructor<std::optional<mojom::AppState>> storage;
-  return *storage;
+std::optional<updater::UpdateService::AppState>*
+GetLastKnownBrowserRegistrationStorage() {
+  static base::NoDestructor<std::optional<updater::UpdateService::AppState>>
+      storage;
+  return storage.get();
 }
 
-std::optional<mojom::AppState>& GetLastKnownUpdaterRegistrationStorage() {
-  static base::NoDestructor<std::optional<mojom::AppState>> storage;
-  return *storage;
+std::optional<updater::UpdateService::AppState>*
+GetLastKnownUpdaterRegistrationStorage() {
+  static base::NoDestructor<std::optional<updater::UpdateService::AppState>>
+      storage;
+  return storage.get();
 }
 
-std::optional<mojom::UpdateState>& GetLastOnDemandUpdateStateStorage() {
-  static base::NoDestructor<std::optional<mojom::UpdateState>> storage;
-  return *storage;
+std::optional<updater::UpdateService::UpdateState>*
+GetLastOnDemandUpdateStateStorage() {
+  static base::NoDestructor<std::optional<updater::UpdateService::UpdateState>>
+      storage;
+  return storage.get();
 }
+
+}  // namespace
 
 BrowserUpdaterClient::BrowserUpdaterClient(
-    scoped_refptr<UpdateService> update_service)
+    scoped_refptr<updater::UpdateService> update_service)
     : update_service_(update_service) {}
 
 BrowserUpdaterClient::~BrowserUpdaterClient() {
@@ -62,8 +69,8 @@ void BrowserUpdaterClient::Register(base::OnceClosure complete) {
       base::BindOnce(&BrowserUpdaterClient::GetRegistrationRequest, this),
       base::BindOnce(
           [](base::OnceCallback<void(int)> callback,
-             scoped_refptr<UpdateService> update_service,
-             const RegistrationRequest& request) {
+             scoped_refptr<updater::UpdateService> update_service,
+             const updater::RegistrationRequest& request) {
             update_service->RegisterApp(request, std::move(callback));
           },
           base::BindPostTaskToCurrentDefault(
@@ -75,7 +82,7 @@ void BrowserUpdaterClient::Register(base::OnceClosure complete) {
 void BrowserUpdaterClient::RegistrationCompleted(base::OnceClosure complete,
                                                  int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (result != kRegistrationSuccess) {
+  if (result != updater::kRegistrationSuccess) {
     VLOG(1) << "Updater registration error: " << result;
   }
   std::move(complete).Run();
@@ -98,19 +105,21 @@ void BrowserUpdaterClient::GetUpdaterVersionCompleted(
 }
 
 void BrowserUpdaterClient::CheckForUpdate(
-    base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+    base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
         version_updater_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  UpdateService::UpdateState update_state;
-  update_state.state = UpdateService::UpdateState::State::kCheckingForUpdates;
+  updater::UpdateService::UpdateState update_state;
+  update_state.state =
+      updater::UpdateService::UpdateState::State::kCheckingForUpdates;
   version_updater_callback.Run(update_state);
   update_service_->Update(
-      GetAppId(), {}, UpdateService::Priority::kForeground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      GetAppId(), {}, updater::UpdateService::Priority::kForeground,
+      updater::UpdateService::PolicySameVersionUpdate::kNotAllowed,
       /*language=*/{},
       base::BindPostTaskToCurrentDefault(
-          base::BindRepeating([](const UpdateService::UpdateState& state) {
+          base::BindRepeating([](const updater::UpdateService::UpdateState&
+                                     state) {
             *GetLastOnDemandUpdateStateStorage() = state;
             return state;
           }).Then(version_updater_callback)),
@@ -120,20 +129,22 @@ void BrowserUpdaterClient::CheckForUpdate(
 }
 
 void BrowserUpdaterClient::UpdateCompleted(
-    base::RepeatingCallback<void(const UpdateService::UpdateState&)> callback,
-    UpdateService::Result result) {
+    base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>
+        callback,
+    updater::UpdateService::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Result of update was: " << result;
 
-  if (result == UpdateService::Result::kSuccess ||
-      result == UpdateService::Result::kUpdateCheckFailed) {
+  if (result == updater::UpdateService::Result::kSuccess ||
+      result == updater::UpdateService::Result::kUpdateCheckFailed) {
     // These statuses will have sent more descriptive information in the status
     // callback, don't overwrite it.
     return;
   }
-  UpdateService::UpdateState update_state;
-  update_state.state = UpdateService::UpdateState::State::kUpdateError;
-  update_state.error_category = UpdateService::ErrorCategory::kUpdateCheck;
+  updater::UpdateService::UpdateState update_state;
+  update_state.state = updater::UpdateService::UpdateState::State::kUpdateError;
+  update_state.error_category =
+      updater::UpdateService::ErrorCategory::kUpdateCheck;
   update_state.error_code = static_cast<int>(result);
   callback.Run(update_state);
 }
@@ -161,28 +172,30 @@ void BrowserUpdaterClient::IsBrowserRegistered(
 
 void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
     base::OnceCallback<void(bool)> callback,
-    const std::vector<UpdateService::AppState>& apps) {
+    const std::vector<updater::UpdateService::AppState>& apps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto updater =
-      std::ranges::find_if(apps, [](const UpdateService::AppState& state) {
-        return base::EqualsCaseInsensitiveASCII(state.app_id, kUpdaterAppId);
+  const auto updater = std::ranges::find_if(
+      apps, [](const updater::UpdateService::AppState& state) {
+        return base::EqualsCaseInsensitiveASCII(state.app_id,
+                                                updater::kUpdaterAppId);
       });
   if (updater != apps.end()) {
-    GetLastKnownUpdaterRegistrationStorage() = *updater;
+    *GetLastKnownUpdaterRegistrationStorage() = *updater;
   }
   const auto app =
       std::ranges::find_if(apps, &BrowserUpdaterClient::AppMatches);
   if (app != apps.end()) {
-    GetLastKnownBrowserRegistrationStorage() = *app;
+    *GetLastKnownBrowserRegistrationStorage() = *app;
   }
   std::move(callback).Run(app != apps.end());
 }
 
 // User and System BrowserUpdaterClients must be kept separate - the template
 // function causes there to be two static variables instead of one.
-template <UpdaterScope scope>
+template <updater::UpdaterScope scope>
 scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::GetClient(
-    base::RepeatingCallback<scoped_refptr<UpdateService>()> proxy_provider) {
+    base::RepeatingCallback<scoped_refptr<updater::UpdateService>()>
+        proxy_provider) {
   // Multiple UpdateServiceProxies interfere with each other. Reuse a current
   // BrowserUpdaterClient if possible. BrowserUpdaterClients are refcounted, but
   // bad to keep around indefinitely since they can hold the RPC server open.
@@ -206,18 +219,32 @@ scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::GetClient(
 }
 
 scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create(
-    UpdaterScope scope) {
-  return Create(
-      base::BindRepeating(&CreateUpdateServiceProxy, scope, base::Seconds(15)),
-      scope);
+    updater::UpdaterScope scope) {
+  return Create(base::BindRepeating(&updater::CreateUpdateServiceProxy, scope,
+                                    base::Seconds(15)),
+                scope);
 }
 
 scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create(
-    base::RepeatingCallback<scoped_refptr<UpdateService>()> proxy_provider,
-    UpdaterScope scope) {
-  return scope == UpdaterScope::kSystem
-             ? GetClient<UpdaterScope::kSystem>(proxy_provider)
-             : GetClient<UpdaterScope::kUser>(proxy_provider);
+    base::RepeatingCallback<scoped_refptr<updater::UpdateService>()>
+        proxy_provider,
+    updater::UpdaterScope scope) {
+  return scope == updater::UpdaterScope::kSystem
+             ? GetClient<updater::UpdaterScope::kSystem>(proxy_provider)
+             : GetClient<updater::UpdaterScope::kUser>(proxy_provider);
 }
 
-}  // namespace updater
+std::optional<updater::UpdateService::UpdateState>
+BrowserUpdaterClient::GetLastOnDemandUpdateState() {
+  return *GetLastOnDemandUpdateStateStorage();
+}
+
+std::optional<updater::UpdateService::AppState>
+BrowserUpdaterClient::GetLastKnownBrowserRegistration() {
+  return *GetLastKnownBrowserRegistrationStorage();
+}
+
+std::optional<updater::UpdateService::AppState>
+BrowserUpdaterClient::GetLastKnownUpdaterRegistration() {
+  return *GetLastKnownUpdaterRegistrationStorage();
+}
