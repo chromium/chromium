@@ -104,6 +104,19 @@ class WebUIDataSource {
   // Sets the resource to returned when no other paths match.
   virtual void SetDefaultResource(int resource_id) = 0;
 
+  // Adds a mapping between a path name and a response string.
+  // This is used for resources that are generated in the browser process and
+  // passed to the renderer via LocalResourceLoaderConfig, avoiding an IPC
+  // round-trip.
+  virtual void SetResourcePathToResponse(std::string_view path,
+                                         std::string_view content) = 0;
+
+  // Adds resources to the given map. This includes resources set via
+  // SetResourcePathToResponse() and, if UseStringsJs() is enabled, the
+  // generated strings.m.js.
+  virtual void PopulateWebUIResources(
+      base::flat_map<std::string, std::string>& resource_map) const = 0;
+
   // Used as a parameter to GotDataCallback. The caller has to run this callback
   // with the result for the path that they filtered, passing ownership of the
   // memory.

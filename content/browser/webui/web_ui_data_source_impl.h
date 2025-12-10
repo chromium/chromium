@@ -46,6 +46,10 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void AddResourcePath(std::string_view path, int resource_id) override;
   void AddResourcePaths(base::span<const webui::ResourcePath> paths) override;
   void SetDefaultResource(int resource_id) override;
+  void SetResourcePathToResponse(std::string_view path,
+                                 std::string_view content) override;
+  void PopulateWebUIResources(
+      base::flat_map<std::string, std::string>& map) const override;
   void SetRequestFilter(const WebUIDataSource::ShouldHandleRequestCallback&
                             should_handle_request_callback,
                         const WebUIDataSource::HandleRequestCallback&
@@ -73,6 +77,10 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
     return path_to_idr_map_;
   }
 
+  const std::map<std::string, std::string>& path_to_response_map() const {
+    return path_to_response_map_;
+  }
+
  protected:
   explicit WebUIDataSourceImpl(const std::string& source_name);
   ~WebUIDataSourceImpl() override;
@@ -94,7 +102,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   friend class URLDataManagerBackendTest;
   friend class WebUIDataSource;
   friend class WebUIDataSourceTest;
-  friend class WebUIImplTest;
+  friend class WebUIImplTestBase;
 
   // Methods that match URLDataSource which are called by
   // InternalDataSource.
@@ -117,6 +125,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   int default_resource_;
   bool use_strings_js_ = false;
   std::map<std::string, int> path_to_idr_map_;
+  std::map<std::string, std::string> path_to_response_map_;
 #if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
   std::map<int, std::string> idr_to_file_map_;
   bool load_from_disk_ = false;
