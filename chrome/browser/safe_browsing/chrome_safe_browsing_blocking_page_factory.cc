@@ -78,7 +78,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
           BaseBlockingPage::IsMainPageResourceLoadPending(unsafe_resources),
           is_extended_reporting_opt_in_allowed,
           web_contents->GetBrowserContext()->IsOffTheRecord(),
-          IsExtendedReportingEnabledBypassDeprecationFlag(*prefs),
+          IsExtendedReportingEnabled(*prefs),
           IsExtendedReportingPolicyManaged(*prefs),
           IsEnhancedProtectionEnabled(*prefs), is_proceed_anyway_disabled,
           false,  // should_open_links_in_new_tab
