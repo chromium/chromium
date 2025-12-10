@@ -3853,6 +3853,12 @@
       public: true,
     },
     {
+      // Sends custom user timing events in subframes to the browser process.
+      // crbug.com/467177770 for more details.
+      name: "PerformanceMarkCustomUserTimingFromSubframe",
+      status: "experimental"
+    },
+    {
       // Enables performance.mark('mark_feature_usage'): crbug.com/1517170
       name: "PerformanceMarkFeatureUsage",
       status: "experimental"
