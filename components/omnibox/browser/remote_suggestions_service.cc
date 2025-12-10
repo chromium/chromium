@@ -318,6 +318,7 @@ GURL RemoteSuggestionsService::EndpointUrl(
     }
     case metrics::OmniboxEventProto::NTP_REALBOX:
     case metrics::OmniboxEventProto::NTP_COMPOSEBOX:
+    case metrics::OmniboxEventProto::CO_BROWSING_COMPOSEBOX:
     case metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX:
     case metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX:
     case metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX:

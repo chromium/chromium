@@ -90,6 +90,7 @@ bool IsOmniboxComposebox(OEP::PageClassification classification) {
 bool IsComposebox(OEP::PageClassification classification) {
   return classification == OEP::NTP_COMPOSEBOX ||
          classification == OEP::LENS_SIDE_PANEL_COMPOSEBOX ||
+         classification == OEP::CO_BROWSING_COMPOSEBOX ||
          IsOmniboxComposebox(classification);
 }
 

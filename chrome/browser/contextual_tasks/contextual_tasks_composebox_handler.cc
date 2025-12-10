@@ -29,13 +29,24 @@ class ContextualTasksOmniboxClient : public ContextualOmniboxClient {
   // OmniboxClient:
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override {
-    // TODO(crbug.com/461890985): We should use something contextual-tasks
-    // specific rather than reuse the Lens one.
-    return metrics::OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX;
+    return metrics::OmniboxEventProto::CO_BROWSING_COMPOSEBOX;
   }
 
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
+
+  void OnAutocompleteAccept(
+      const GURL& destination_url,
+      TemplateURLRef::PostContent* post_content,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      AutocompleteMatchType::Type match_type,
+      base::TimeTicks match_selection_timestamp,
+      bool destination_url_entered_without_scheme,
+      bool destination_url_entered_with_http_scheme,
+      const std::u16string& text,
+      const AutocompleteMatch& match,
+      const AutocompleteMatch& alternative_nav_match) override;
 
  private:
   raw_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
@@ -51,6 +62,23 @@ ContextualTasksOmniboxClient::GetLensOverlaySuggestInputs() const {
   return SearchboxOmniboxClient::GetLensOverlaySuggestInputs();
 }
 
+void ContextualTasksOmniboxClient::OnAutocompleteAccept(
+    const GURL& destination_url,
+    TemplateURLRef::PostContent* post_content,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    AutocompleteMatchType::Type match_type,
+    base::TimeTicks match_selection_timestamp,
+    bool destination_url_entered_without_scheme,
+    bool destination_url_entered_with_http_scheme,
+    const std::u16string& text,
+    const AutocompleteMatch& match,
+    const AutocompleteMatch& alternative_nav_match) {
+  std::string query_text;
+  net::GetValueForKeyInQuery(destination_url, "q", &query_text);
+  composebox_handler_->CreateAndSendQueryMessage(query_text);
+}
+
 }  // namespace
 
 ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
@@ -61,11 +89,16 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler)
-    : ComposeboxHandler(std::move(pending_handler),
-                        std::move(pending_page),
-                        std::move(pending_searchbox_handler),
-                        profile,
-                        web_contents),
+    : ComposeboxHandler(
+          std::move(pending_handler),
+          std::move(pending_page),
+          std::move(pending_searchbox_handler),
+          profile,
+          web_contents,
+          std::make_unique<OmniboxController>(
+              std::make_unique<ContextualTasksOmniboxClient>(profile,
+                                                             web_contents,
+                                                             this))),
       web_ui_controller_(ui_controller) {}
 
 ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() = default;
@@ -78,20 +111,6 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
     bool meta_key,
     bool shift_key) {
   CreateAndSendQueryMessage(query_text);
-}
-
-void ContextualTasksComposeboxHandler::OpenAutocompleteMatch(
-    uint8_t line,
-    const GURL& url,
-    bool are_matches_showing,
-    uint8_t mouse_button,
-    bool alt_key,
-    bool ctrl_key,
-    bool meta_key,
-    bool shift_key) {
-  std::string query_text;
-  net::GetValueForKeyInQuery(url, "q", &query_text);
-  SubmitQuery(query_text, mouse_button, alt_key, ctrl_key, meta_key, shift_key);
 }
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
