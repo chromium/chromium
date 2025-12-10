@@ -935,6 +935,23 @@ TEST_F(WebstorePrivateLogEnterprisePromoShownFunctionTest,
       static_cast<int>(enterprise::CwsPromotionBannerEvent::kDisplayed), 1);
 }
 
+class WebstorePrivateOnEnterprisePromoClickFunctionTest
+    : public WebstorePrivateApiTestBase {
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(WebstorePrivateOnEnterprisePromoClickFunctionTest,
+       HistogramRecordedClick) {
+  auto function =
+      base::MakeRefCounted<WebstorePrivateOnEnterprisePromoClickFunction>();
+
+  api_test_utils::RunFunction(function.get(), "[]", profile());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.CwsPromotionBannerEvent",
+      static_cast<int>(enterprise::CwsPromotionBannerEvent::kClicked), 1);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

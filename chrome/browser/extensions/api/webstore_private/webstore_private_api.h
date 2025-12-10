@@ -462,6 +462,24 @@ class WebstorePrivateLogEnterprisePromoShownFunction
   ResponseAction Run() override;
 };
 
+class WebstorePrivateOnEnterprisePromoClickFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("webstorePrivate.onEnterprisePromoClick",
+                             WEBSTOREPRIVATE_ONENTERPRISEPROMOCLICK)
+
+  WebstorePrivateOnEnterprisePromoClickFunction();
+
+  WebstorePrivateOnEnterprisePromoClickFunction(
+      const WebstorePrivateOnEnterprisePromoClickFunction&) = delete;
+  WebstorePrivateOnEnterprisePromoClickFunction& operator=(
+      const WebstorePrivateOnEnterprisePromoClickFunction&) = delete;
+
+ protected:
+  ~WebstorePrivateOnEnterprisePromoClickFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

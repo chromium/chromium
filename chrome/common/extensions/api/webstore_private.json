@@ -433,6 +433,12 @@
         "description": "Logs number of times the enterprise promotion banner was displayed.",
         "platforms": ["chromeos", "linux", "mac", "win"],
         "parameters": []
+      },
+      {
+        "name": "onEnterprisePromoClick",
+        "description": "Sets the promotion preference to dismissed and records UMA histogram on promotion click.",
+        "platforms": ["chromeos", "linux", "mac", "win"],
+        "parameters": []
       }
     ]
   }

@@ -1508,6 +1508,17 @@ WebstorePrivateLogEnterprisePromoShownFunction::Run() {
 
   return RespondNow(NoArguments());
 }
+
+WebstorePrivateOnEnterprisePromoClickFunction::
+    WebstorePrivateOnEnterprisePromoClickFunction() = default;
+
+ExtensionFunction::ResponseAction
+WebstorePrivateOnEnterprisePromoClickFunction::Run() {
+  base::UmaHistogramEnumeration("Enterprise.CwsPromotionBannerEvent",
+                                enterprise::CwsPromotionBannerEvent::kClicked);
+  // TODO(crbug.com/465701760) Add logic for kHasDismissedEnterprisePromotion.
+  return RespondNow(NoArguments());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
