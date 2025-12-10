@@ -22,10 +22,6 @@
 #include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/fre/glic_fre.mojom.h"
-#endif
-
 class Browser;
 class BrowserWindow;
 class BrowserWindowInterface;
@@ -33,6 +29,10 @@ class Profile;
 
 namespace input {
 struct NativeWebKeyboardEvent;
+}
+
+namespace glic::mojom {
+enum class FreWebUiState;
 }
 
 namespace chrome {
