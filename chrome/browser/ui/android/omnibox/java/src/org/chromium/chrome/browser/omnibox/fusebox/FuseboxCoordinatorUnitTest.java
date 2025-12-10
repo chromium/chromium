@@ -35,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -411,6 +412,24 @@ public class FuseboxCoordinatorUnitTest {
                 mCoordinator
                         .getModelForTesting()
                         .get(FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    public void testWrappingChange() {
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
+        mCoordinator.onFuseboxTextWrappingChanged(true);
+        verify(mMediator).setUseCompactUi(false);
+
+        mCoordinator.onFuseboxTextWrappingChanged(false);
+        verify(mMediator).setUseCompactUi(true);
+
+        mCoordinator.onFuseboxTextWrappingChanged(true);
+        Mockito.clearInvocations(mMediator);
+
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        mCoordinator.onFuseboxTextWrappingChanged(false);
+        verify(mMediator).setUseCompactUi(false);
     }
 
     @Test
