@@ -321,7 +321,7 @@ class JsonUtil:
     merged_results = collections.defaultdict(list)
     guid_to_values = collections.defaultdict(str)
     for item in self._result2_jsons:
-      if (item.get("type") == json_constants.GENERIC_SET
+      if (item.get(json_constants.TYPE) == json_constants.GENERIC_SET
           and json_constants.GUID in item and json_constants.VALUES in item):
         guid_to_values[item[json_constants.GUID]] = item[json_constants.VALUES]
       if json_constants.DIAGNOSTICS in item:
@@ -334,35 +334,50 @@ class JsonUtil:
         stories = []
         story_tags = []
         for diagnostic_type, guid in item[json_constants.DIAGNOSTICS].items():
-          if not isinstance(guid, str) or not isinstance(
-              guid_to_values[guid], list):
-            # guid is expected to be a hashable string.
+          if isinstance(guid, str):
+            if guid not in guid_to_values:
+              logging.warning(
+                  'Expected guid "%s" for diagnostic type "%s" in metric "%s", '
+                  'but it is not in the guid_to_values. Skipping.',
+                  guid, diagnostic_type,
+                  item.get(json_constants.NAME, "UnknownMetric"))
+              continue
+            values = guid_to_values[guid]
+          elif isinstance(guid, dict):
+            # The value of a diagnostic is usually a string GUID, but in some
+            # cases it can also be a dict, e.g., in the results for
+            # components_perftests.
+            values = guid.get(json_constants.VALUES)
+          else:
             logging.warning(
-                'Expected string or list for diagnostic type "%s" in metric ' \
-                '"%s"but got type %s: %s. Skipping.',
+                'Expected string or dict for diagnostic type "%s" in metric ' \
+                '"%s" but got type %s: %s. Skipping.',
                 diagnostic_type, item.get(json_constants.NAME, "UnknownMetric"),
                 type(guid).__name__,
                 str(guid)[:200])
             continue
-          if guid not in guid_to_values:
+
+          if not isinstance(values, list):
             logging.warning(
-                'Expected guid "%s" for diagnostic type "%s" in metric "%s", ' \
-                'but it is not in the guid_to_values. Skipping.', guid,
-                diagnostic_type, item.get(json_constants.NAME, "UnknownMetric"))
+                'Expected list for diagnostic type "%s" in metric ' \
+                '"%s" but got type %s: %s. Skipping.',
+                diagnostic_type, item.get(json_constants.NAME, "UnknownMetric"),
+                type(values).__name__,
+                str(values)[:200])
             continue
 
           if diagnostic_type == json_constants.BOT_ID:
-            bot_ids.update(guid_to_values[guid])
+            bot_ids.update(values)
           elif diagnostic_type == json_constants.OS_DETAILED_VERSIONS:
-            os_versions.update(guid_to_values[guid])
+            os_versions.update(values)
           elif diagnostic_type == json_constants.BENCHMARKS:
-            benchmark_key = str(guid_to_values[guid][0])
+            benchmark_key = str(values[0])
           elif diagnostic_type == json_constants.STORIES:
-            stories.extend(guid_to_values[guid])
+            stories.extend(values)
           elif diagnostic_type == json_constants.STORY_TAGS:
-            story_tags.extend(guid_to_values[guid])
+            story_tags.extend(values)
           elif diagnostic_type == json_constants.TRACE_URLS:
-            trace_urls.update(guid_to_values[guid])
+            trace_urls.update(values)
 
         try:
           if json_constants.SAMPLE_VALUES in item:

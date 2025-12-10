@@ -489,6 +489,20 @@ class JsonUtilTest(unittest.TestCase):
       got = agent.process(details, benchmark_name='speedometer3_modified')
       self.assertDictEqual(got, expected2)
 
+    with self.subTest(name='non_guid_diagnostics'):
+      input_json = [copy.deepcopy(result2_json[-1])]
+      input_json[0]['diagnostics'] = {
+          'stories': {
+              'type': 'GenericSet',
+              'values': ['stories_value'],
+          }
+      }
+      agent = json_util.JsonUtil(generate_synthetic_measurements=False)
+      agent.add(input_json)
+      got = agent.process(details)
+      self.assertEqual(len(got['results']), 1)
+      self.assertEqual(got['results'][0]['key']['subtest_1'], 'stories_value')
+
     with self.subTest(name='generate_synthetic_measurements'):
       mock_hist_helpers.ShouldGenerateStatistics.return_value = True
       agent = json_util.JsonUtil(generate_synthetic_measurements=True)
