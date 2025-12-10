@@ -6,7 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -97,8 +97,8 @@ TEST_F(BWGSessionHandlerTest, TestSessionDurationRecorded) {
   [session_handler_ UIDidDisappearWithClientID:client_id
                                       serverID:kTestServerID];
 
-  histogram_tester_.ExpectTotalCount(kBWGSessionTimeHistogram, 1);
-  histogram_tester_.ExpectTimeBucketCount(kBWGSessionTimeHistogram,
+  histogram_tester_.ExpectTotalCount(kGeminiSessionTimeHistogram, 1);
+  histogram_tester_.ExpectTimeBucketCount(kGeminiSessionTimeHistogram,
                                           kTestSessionDuration, 1);
 }
 
@@ -151,7 +151,7 @@ TEST_F(BWGSessionHandlerTest, TestFirstRunFlag) {
   EXPECT_FALSE(tab_helper->GetIsFirstRun());
 
   // Session metrics should reflect first session.
-  histogram_tester_.ExpectTotalCount(kBWGSessionTimeHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kGeminiSessionTimeHistogram, 1);
 }
 
 // Tests handling unrealized web states.

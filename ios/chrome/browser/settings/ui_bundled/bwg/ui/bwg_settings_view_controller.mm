@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
@@ -79,7 +79,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kBWGSettingsViewTableIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_TITLE);
-  RecordBWGSettingsOpened();
+  RecordGeminiSettingsOpened();
   [self loadModel];
 }
 
@@ -150,11 +150,11 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  RecordBWGSettingsClose();
+  RecordGeminiSettingsClose();
 }
 
 - (void)reportBackUserAction {
-  RecordBWGSettingsBack();
+  RecordGeminiSettingsBack();
 }
 
 #pragma mark - Private
@@ -263,13 +263,13 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeAppActivity) {
-    RecordBWGSettingsAppActivity();
+    RecordGeminiSettingsAppActivity();
     [self.mutator openNewTabWithURL:GURL(kBWGAppActivityURL)];
   }
 
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeExtensions) {
-    RecordBWGSettingsExtensions();
+    RecordGeminiSettingsExtensions();
     [self.mutator openNewTabWithURL:GURL(kBWGExtensionsURL)];
   }
 

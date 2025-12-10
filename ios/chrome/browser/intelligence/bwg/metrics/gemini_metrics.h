@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, BWGInputType);
+typedef NS_ENUM(NSInteger, GeminiInputType);
 
 namespace base {
 class TimeDelta;
@@ -62,19 +62,19 @@ extern const char kStartupTimeWithFREHistogram[];
 extern const char kStartupTimeNoFREHistogram[];
 
 // UMA histogram key for IOS.Gemini.Session.Time.
-extern const char kBWGSessionTimeHistogram[];
+extern const char kGeminiSessionTimeHistogram[];
 
 // UMA histogram key for IOS.Gemini.SessionLength.WithPrompt.
-extern const char kBWGSessionLengthWithPromptHistogram[];
+extern const char kGeminiSessionLengthWithPromptHistogram[];
 
 // UMA histogram key for IOS.Gemini.SessionLength.Abandoned.
-extern const char kBWGSessionLengthAbandonedHistogram[];
+extern const char kGeminiSessionLengthAbandonedHistogram[];
 
 // UMA histogram key for IOS.Gemini.SessionLength.FRE.WithPrompt.
-extern const char kBWGSessionLengthFREWithPromptHistogram[];
+extern const char kGeminiSessionLengthFREWithPromptHistogram[];
 
 // UMA histogram key for IOS.Gemini.SessionLength.FRE.Abandoned.
-extern const char kBWGSessionLengthFREWithAbandonedHistogram[];
+extern const char kGeminiSessionLengthFREWithAbandonedHistogram[];
 
 // Enum for the IOS.Gemini.FirstPrompt.SubmissionMethod histogram.
 // LINT.IfChange(IOSGeminiFirstPromptSubmissionMethod)
@@ -114,18 +114,18 @@ enum class IOSGeminiSessionType {
 };
 
 // Records the duration of a Gemini session.
-void RecordBWGSessionTime(base::TimeDelta session_duration);
+void RecordGeminiSessionTime(base::TimeDelta session_duration);
 
 // Records the duration of a Gemini session by type of session.
-void RecordBWGSessionLengthByType(base::TimeDelta session_duration,
-                                  bool is_first_run,
-                                  IOSGeminiSessionType session_type);
+void RecordGeminiSessionLengthByType(base::TimeDelta session_duration,
+                                     bool is_first_run,
+                                     IOSGeminiSessionType session_type);
 
 // Records when user sees the Gemini entry point impression.
 // Can be called once every 10 minutes to avoid spam logging.
 void RecordGeminiEntryPointImpression();
 
-// Records that the BWG FRE was shown.
+// Records that the Gemini FRE was shown.
 void RecordFREShown();
 
 // Records user action for first response received.
@@ -134,23 +134,24 @@ void RecordFirstResponseReceived();
 // Records that the user submitted their first prompt and how it was submitted.
 void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method);
 
-// Records that the user received any response from BWG.
-void RecordBWGResponseReceived();
+// Records that the user received any response from Gemini.
+void RecordGeminiResponseReceived();
 
-// Records that the user tapped the "Get Started" button on the BWG FRE promo
+// Records that the user tapped the "Get Started" button on the Gemini FRE promo
 // screen.
 void RecordFREPromoAccept();
 
-// Records that the user tapped the "Cancel" button on the BWG FRE promo screen.
+// Records that the user tapped the "Cancel" button on the Gemini FRE promo
+// screen.
 void RecordFREPromoDismiss();
 
-// Records that the user accepted the BWG FRE consent.
+// Records that the user accepted the Gemini FRE consent.
 void RecordFREConsentAccept();
 
-// Records that the user dismissed the BWG FRE consent.
+// Records that the user dismissed the Gemini FRE consent.
 void RecordFREConsentDismiss();
 
-// Records that the user clicked a link on the BWG FRE consent screen.
+// Records that the user clicked a link on the Gemini FRE consent screen.
 void RecordFREConsentLinkClick();
 
 // Records prompt context attachment metrics.
@@ -159,20 +160,20 @@ void RecordPromptContextAttachment(bool has_page_context);
 // Records the latency from prompt submission to response received.
 void RecordResponseLatency(base::TimeDelta latency, bool had_page_context);
 
-// Records the total number of prompts sent in a BWG session.
+// Records the total number of prompts sent in a Gemini session.
 void RecordSessionPromptCount(int prompt_count);
 
-// Records if a first prompt was sent in a BWG session.
+// Records if a first prompt was sent in a Gemini session.
 void RecordSessionFirstPrompt(bool had_first_prompt);
 
-// Records that the user clicked a URL in a BWG session.
+// Records that the user clicked a URL in a Gemini session.
 void RecordURLOpened();
 
 // Records entry point metrics with context about whether FRE is shown.
-void RecordBWGEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow);
+void RecordGeminiEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow);
 
-// Records that the user tapped the new chat button in a BWG session.
-void RecordBWGNewChatButtonTapped();
+// Records that the user tapped the new chat button in a Gemini session.
+void RecordGeminiNewChatButtonTapped();
 
 // Records that the AI Hub new badge was tapped.
 void RecordAIHubNewBadgeTapped();
@@ -180,22 +181,22 @@ void RecordAIHubNewBadgeTapped();
 // Records that the AI Hub icon was tapped.
 void RecordAIHubIconTapped();
 
-// Records that the user sent a prompt in a BWG session.
-void RecordBWGPromptSent();
+// Records that the user sent a prompt in a Gemini session.
+void RecordGeminiPromptSent();
 
-// Records that the user opened the BWG settings page.
-void RecordBWGSettingsOpened();
+// Records that the user opened the Gemini settings page.
+void RecordGeminiSettingsOpened();
 
-// Records that the user tapped the close button on the BWG settings page.
-void RecordBWGSettingsClose();
+// Records that the user tapped the close button on the Gemini settings page.
+void RecordGeminiSettingsClose();
 
-// Records that the user tapped the back button on the BWG settings page.
-void RecordBWGSettingsBack();
+// Records that the user tapped the back button on the Gemini settings page.
+void RecordGeminiSettingsBack();
 
-// Records that the user tapped on the BWG App Activity link.
-void RecordBWGSettingsAppActivity();
+// Records that the user tapped on the Gemini App Activity link.
+void RecordGeminiSettingsAppActivity();
 
-// Records that the user tapped on the BWG Extensions link.
-void RecordBWGSettingsExtensions();
+// Records that the user tapped on the Gemini Extensions link.
+void RecordGeminiSettingsExtensions();
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_

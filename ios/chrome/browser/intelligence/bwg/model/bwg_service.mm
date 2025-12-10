@@ -11,7 +11,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"

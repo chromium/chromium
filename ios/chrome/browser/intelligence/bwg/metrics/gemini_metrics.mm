@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -35,19 +35,19 @@ const char kStartupTimeWithFREHistogram[] = "IOS.Gemini.StartupTime.FirstRun";
 
 const char kStartupTimeNoFREHistogram[] = "IOS.Gemini.StartupTime.NotFirstRun";
 
-const char kBWGSessionLengthWithPromptHistogram[] =
+const char kGeminiSessionLengthWithPromptHistogram[] =
     "IOS.Gemini.SessionLength.WithPrompt";
 
-const char kBWGSessionLengthAbandonedHistogram[] =
+const char kGeminiSessionLengthAbandonedHistogram[] =
     "IOS.Gemini.SessionLength.Abandoned";
 
-const char kBWGSessionLengthFREWithPromptHistogram[] =
+const char kGeminiSessionLengthFREWithPromptHistogram[] =
     "IOS.Gemini.SessionLength.FRE.WithPrompt";
 
-const char kBWGSessionLengthFREAbandonedHistogram[] =
+const char kGeminiSessionLengthFREAbandonedHistogram[] =
     "IOS.Gemini.SessionLength.FRE.Abandoned";
 
-const char kBWGSessionTimeHistogram[] = "IOS.Gemini.Session.Time";
+const char kGeminiSessionTimeHistogram[] = "IOS.Gemini.Session.Time";
 
 const char kFirstPromptSubmissionMethodHistogram[] =
     "IOS.Gemini.FirstPrompt.SubmissionMethod";
@@ -96,22 +96,22 @@ void RecordFREConsentAction(IOSGeminiFREAction action) {
   base::UmaHistogramEnumeration(kConsentActionHistogram, action);
 }
 
-void RecordBWGSessionTime(base::TimeDelta session_duration) {
-  base::UmaHistogramLongTimes100(kBWGSessionTimeHistogram, session_duration);
+void RecordGeminiSessionTime(base::TimeDelta session_duration) {
+  base::UmaHistogramLongTimes100(kGeminiSessionTimeHistogram, session_duration);
 }
 
-void RecordBWGSessionLengthByType(base::TimeDelta session_duration,
-                                  bool is_first_run,
-                                  IOSGeminiSessionType session_type) {
+void RecordGeminiSessionLengthByType(base::TimeDelta session_duration,
+                                     bool is_first_run,
+                                     IOSGeminiSessionType session_type) {
   if (is_first_run) {
     switch (session_type) {
       case IOSGeminiSessionType::kWithPrompt:
-        base::UmaHistogramLongTimes100(kBWGSessionLengthFREWithPromptHistogram,
-                                       session_duration);
+        base::UmaHistogramLongTimes100(
+            kGeminiSessionLengthFREWithPromptHistogram, session_duration);
         break;
       case IOSGeminiSessionType::kAbandoned:
-        base::UmaHistogramLongTimes100(kBWGSessionLengthFREAbandonedHistogram,
-                                       session_duration);
+        base::UmaHistogramLongTimes100(
+            kGeminiSessionLengthFREAbandonedHistogram, session_duration);
         break;
       case IOSGeminiSessionType::kUnknown:
         break;
@@ -119,11 +119,11 @@ void RecordBWGSessionLengthByType(base::TimeDelta session_duration,
   } else {
     switch (session_type) {
       case IOSGeminiSessionType::kWithPrompt:
-        base::UmaHistogramLongTimes100(kBWGSessionLengthWithPromptHistogram,
+        base::UmaHistogramLongTimes100(kGeminiSessionLengthWithPromptHistogram,
                                        session_duration);
         break;
       case IOSGeminiSessionType::kAbandoned:
-        base::UmaHistogramLongTimes100(kBWGSessionLengthAbandonedHistogram,
+        base::UmaHistogramLongTimes100(kGeminiSessionLengthAbandonedHistogram,
                                        session_duration);
         break;
       case IOSGeminiSessionType::kUnknown:
@@ -160,7 +160,7 @@ void RecordFirstPromptSubmission(IOSGeminiFirstPromptSubmissionMethod method) {
   base::UmaHistogramEnumeration(kFirstPromptSubmissionMethodHistogram, method);
 }
 
-void RecordBWGResponseReceived() {
+void RecordGeminiResponseReceived() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiResponseReceived"));
 }
 
@@ -212,7 +212,8 @@ void RecordURLOpened() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiURLOpened"));
 }
 
-void RecordBWGEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow) {
+void RecordGeminiEntryPointClick(bwg::EntryPoint entry_point,
+                                 bool is_fre_flow) {
   if (entry_point == bwg::EntryPoint::Promo) {
     base::RecordAction(
         base::UserMetricsAction("MobileGeminiEntryPointAutomatic"));
@@ -225,7 +226,7 @@ void RecordBWGEntryPointClick(bwg::EntryPoint entry_point, bool is_fre_flow) {
   }
 }
 
-void RecordBWGNewChatButtonTapped() {
+void RecordGeminiNewChatButtonTapped() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiNewChatTapped"));
 }
 
@@ -237,28 +238,28 @@ void RecordAIHubIconTapped() {
   base::RecordAction(base::UserMetricsAction("MobileAIHubIconTapped"));
 }
 
-void RecordBWGPromptSent() {
+void RecordGeminiPromptSent() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiPromptSent"));
 }
 
-void RecordBWGSettingsOpened() {
+void RecordGeminiSettingsOpened() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsOpened"));
 }
 
-void RecordBWGSettingsClose() {
+void RecordGeminiSettingsClose() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsClose"));
 }
 
-void RecordBWGSettingsBack() {
+void RecordGeminiSettingsBack() {
   base::RecordAction(base::UserMetricsAction("MobileGeminiSettingsBack"));
 }
 
-void RecordBWGSettingsAppActivity() {
+void RecordGeminiSettingsAppActivity() {
   base::RecordAction(
       base::UserMetricsAction("Settings.BWGSettings.BWGAppActivity"));
 }
 
-void RecordBWGSettingsExtensions() {
+void RecordGeminiSettingsExtensions() {
   base::RecordAction(
       base::UserMetricsAction("Settings.BWGSettings.BWGExtensions"));
 }

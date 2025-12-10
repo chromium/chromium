@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Discovery Card"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h:IOSGeminiFirstPromptSubmissionMethod) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFirstPromptSubmissionMethod) -->
 
 <!-- LINT.IfChange(IOSGeminiFREAction) -->
 
@@ -715,7 +715,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Link Click"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h:IOSGeminiFREAction) -->
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFREAction) -->
 
 <enum name="IOSHomeActionType">
   <int value="0" label="Most Visited Tiles"/>

@@ -4,8 +4,8 @@
 
 source_set("metrics") {
   sources = [
-    "bwg_metrics.h",
-    "bwg_metrics.mm",
+    "gemini_metrics.h",
+    "gemini_metrics.mm",
   ]
   deps = [
     "//base",

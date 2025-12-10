@@ -7,7 +7,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -128,9 +128,9 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
       session_type = IOSGeminiSessionType::kAbandoned;
     }
 
-    RecordBWGSessionLengthByType(session_duration, isFirstSession,
-                                 session_type);
-    RecordBWGSessionTime(session_duration);
+    RecordGeminiSessionLengthByType(session_duration, isFirstSession,
+                                    session_type);
+    RecordGeminiSessionTime(session_duration);
     _sessionStartTime = base::TimeTicks();
   }
   // Reset latency tracking on session end.
@@ -162,7 +162,7 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
     RecordFirstResponseReceived();
   }
   // Track all responses for conversation engagement.
-  RecordBWGResponseReceived();
+  RecordGeminiResponseReceived();
 }
 
 - (void)didTapBWGSettingsButton {
@@ -174,7 +174,7 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   _totalPromptsInSession++;
 
   // Record user action for prompt sent.
-  RecordBWGPromptSent();
+  RecordGeminiPromptSent();
 
   // Check if this is the user's first prompt.
   if (!_hasSubmittedFirstPrompt) {
@@ -201,7 +201,7 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
   BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
   BWGTabHelper->DeleteBwgSessionInStorage();
   // Record the new chat metric.
-  RecordBWGNewChatButtonTapped();
+  RecordGeminiNewChatButtonTapped();
 }
 
 #pragma mark - Private

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
 
-#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"

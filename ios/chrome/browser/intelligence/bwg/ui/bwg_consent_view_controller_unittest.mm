@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_view_controller.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
