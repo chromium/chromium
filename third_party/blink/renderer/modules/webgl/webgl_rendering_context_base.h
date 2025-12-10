@@ -912,14 +912,14 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   Vector<GLenum> compressed_texture_formats_;
 
-  // Fixed-size cache of reusable resource providers for image and video
+  // Fixed-size cache of reusable snapshot providers for image and video
   // texImage2D calls.
-  class LRUCanvasResourceProviderCache {
+  class LRUCanvasSnapshotProviderCache {
    public:
     enum class CacheType { kImage, kVideo };
-    LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type);
+    LRUCanvasSnapshotProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
-    CanvasSnapshotProvider* GetCanvasResourceProvider(
+    CanvasSnapshotProvider* GetCanvasSnapshotProvider(
         gfx::Size size,
         viz::SharedImageFormat format,
         SkAlphaType alpha_type,
@@ -929,16 +929,16 @@ class MODULES_EXPORT WebGLRenderingContextBase
     void BubbleToFront(wtf_size_t idx);
     const wtf_size_t capacity_;
     const CacheType type_;
-    Vector<std::unique_ptr<CanvasSnapshotProvider>> resource_providers_;
-    // The returned CanvasResourceProvider may have a different format from the
+    Vector<std::unique_ptr<CanvasSnapshotProvider>> snapshot_providers_;
+    // The returned CanvasSnapshotProvider may have a different format from the
     // one requested (e.g, BGRA vs RGBA). Ensure this doesn't cause cache
     // misses by recording also the requested format.
     Vector<viz::SharedImageFormat> requested_formats_;
   };
-  LRUCanvasResourceProviderCache generated_image_cache_{
-      4, LRUCanvasResourceProviderCache::CacheType::kImage};
-  LRUCanvasResourceProviderCache generated_video_cache_{
-      4, LRUCanvasResourceProviderCache::CacheType::kVideo};
+  LRUCanvasSnapshotProviderCache generated_image_cache_{
+      4, LRUCanvasSnapshotProviderCache::CacheType::kImage};
+  LRUCanvasSnapshotProviderCache generated_video_cache_{
+      4, LRUCanvasSnapshotProviderCache::CacheType::kVideo};
 
   GLint max_texture_size_;
   GLint max_cube_map_texture_size_;
