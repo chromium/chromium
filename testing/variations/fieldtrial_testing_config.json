@@ -25050,13 +25050,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20250430",
+                    "name": "Enabled",
                     "params": {
                         "consecutive_computation_delay_sec": "0",
                         "create_suggestions_promotion_ui": "false",
                         "group_suggestion_enable_similar_source": "true",
                         "group_suggestion_enable_switch_between": "true",
-                        "group_suggestion_trigger_calculation_on_page_load": "false"
+                        "group_suggestion_enable_tab_switcher_only": "false",
+                        "group_suggestion_trigger_calculation_on_page_load": "false",
+                        "show_when_not_clicked_in_last_day": "false",
+                        "throttle_on_new_tab": "false"
                     },
                     "enable_features": [
                         "ContextualPageActionTabGrouping",
