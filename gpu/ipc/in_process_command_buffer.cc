@@ -97,13 +97,11 @@ class ScopedEvent {
 
 InProcessCommandBuffer::InitializeOnGpuThreadParams::
     InitializeOnGpuThreadParams(mojom::ContextCreationAttribsPtr attribs,
-                                bool enable_gpu_rasterization,
                                 Capabilities* capabilities,
                                 GLCapabilities* gl_capabilities,
                                 gpu::raster::GrShaderCache* gr_shader_cache,
                                 GpuProcessShmCount* use_shader_cache_shm_count)
     : attribs(std::move(attribs)),
-      enable_gpu_rasterization(enable_gpu_rasterization),
       capabilities(capabilities),
       gl_capabilities(gl_capabilities),
       gr_shader_cache(gr_shader_cache),
@@ -205,9 +203,9 @@ gpu::ContextResult InProcessCommandBuffer::Initialize(
 
   Capabilities capabilities;
   GLCapabilities gl_capabilities;
-  InitializeOnGpuThreadParams params(
-      std::move(attribs), enable_gpu_rasterization, &capabilities,
-      &gl_capabilities, gr_shader_cache, use_shader_cache_shm_count);
+  InitializeOnGpuThreadParams params(std::move(attribs), &capabilities,
+                                     &gl_capabilities, gr_shader_cache,
+                                     use_shader_cache_shm_count);
 
   base::OnceCallback<gpu::ContextResult(void)> init_task =
       base::BindOnce(&InProcessCommandBuffer::InitializeOnGpuThread,
