@@ -23,6 +23,8 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   OmniboxPopupPresenter& operator=(const OmniboxPopupPresenter&) = delete;
   ~OmniboxPopupPresenter() override;
 
+  void Hide() override;
+
  protected:
   // OmniboxPopupPresenterBase overrides:
   void WidgetDestroyed() override;

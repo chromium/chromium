@@ -24,6 +24,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -93,9 +94,11 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
   // This is a signal from the WebUIContentsWrapper::Host. We use this signal to
   // check if the renderer crashes. If the renderer process has crashed, reset
   // the content URL and create a new renderer.
-  if (GetWebContents() && GetWebContents()->IsCrashed()) {
+  if (contents_wrapper_->web_contents() &&
+      contents_wrapper_->web_contents()->IsCrashed()) {
     LoadContent();
   }
+  SetWebContents(contents_wrapper_->web_contents());
 
   is_shown_ = true;
 }
@@ -108,7 +111,7 @@ void OmniboxPopupWebUIBaseContent::ShowCustomContextMenu(
       GetWidget(), location_bar_view_->GetOmniboxPopupFileSelector(),
       location_bar_view_->GetOmniboxPopupAimPresenter()
           ->GetWebUIContent()
-          ->GetWebContents(),
+          ->GetWrappedWebContents(),
       base::BindRepeating(&OmniboxPopupWebUIBaseContent::OnMenuClosed,
                           base::Unretained(this)));
   context_menu_->RunMenuAt(point, ui::mojom::MenuSourceType::kMouse);
@@ -182,6 +185,23 @@ bool OmniboxPopupWebUIBaseContent::PreHandleGestureEvent(
   }
 #endif
   return false;
+}
+
+void OmniboxPopupWebUIBaseContent::OnWidgetClosed() {
+  // This removes the content from being considered for rendering by the
+  // compositor while the popup is closed. The content is re-inserted right
+  // before the view is displayed. This has the effect of tossing out old,
+  // stale content in order to eliminiate it from being briefly displayed
+  // while the new content is rendered. This improves visual performance
+  // by eliminating that jank and stutter.
+  // Under the hood, this forces the contents to clear the SurfaceId to keep
+  // the GPU from embedding the content. By not deleting the contents we keep
+  // the renderer alive, so when it is re-displayed it is much faster.
+  SetWebContents(nullptr);
+}
+
+content::WebContents* OmniboxPopupWebUIBaseContent::GetWrappedWebContents() {
+  return contents_wrapper_->web_contents();
 }
 
 void OmniboxPopupWebUIBaseContent::OnMenuClosed() {

@@ -31,14 +31,14 @@ extern const void* kOmniboxWebUIPopupWidgetId;
 // this class is presentation only, i.e. Views and Widgets.  For omnibox logic
 // concerns and communication between native omnibox code and the WebUI code,
 // work with OmniboxPopupViewWebUI directly.
-class OmniboxPopupPresenterBase : public content::WebContentsObserver {
+class OmniboxPopupPresenterBase {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRoundedResultsFrame);
   explicit OmniboxPopupPresenterBase(LocationBarView* location_bar_view);
   OmniboxPopupPresenterBase(const OmniboxPopupPresenterBase&) = delete;
   OmniboxPopupPresenterBase& operator=(const OmniboxPopupPresenterBase&) =
       delete;
-  ~OmniboxPopupPresenterBase() override;
+  virtual ~OmniboxPopupPresenterBase();
 
   // Show or hide the popup widget with web view.
   virtual void Show();
@@ -80,6 +80,9 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver {
 
   views::Widget* GetWidget() const { return widget_.get(); }
 
+  // The height of the popup content. Can be 0 if not specified.
+  int content_height_ = 0;
+
  private:
   friend class OmniboxPopupViewWebUITest;
   friend class OmniboxWebUiInteractiveTest;
@@ -96,14 +99,8 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver {
   // created
   RoundedOmniboxResultsFrame* GetResultsFrame() const;
 
-  // WebContentsObserver overrides:
-  void OnVisibilityChanged(content::Visibility visibility) override;
-
   // The location bar view that owns `this`.
   const raw_ptr<LocationBarView> location_bar_view_;
-
-  // The height of the popup content. Can be 0 if not specified.
-  int content_height_ = 0;
 
   // The container for both the WebUI suggestions list and other WebUI
   // containers

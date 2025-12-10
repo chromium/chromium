@@ -41,9 +41,11 @@ void OmniboxPopupPresenterBase::Show() {
   EnsureWidgetCreated();
   SynchronizePopupBounds();
 
-  widget_->ShowInactive();
-
   if (auto* content = GetWebUIContent()) {
+    content->ShowUI();
+
+    widget_->ShowInactive();
+
     content->GetWebContents()->UpdateWebContentsVisibility(
         content::Visibility::VISIBLE);
     content->GetWebContents()->WasShown();
@@ -52,7 +54,6 @@ void OmniboxPopupPresenterBase::Show() {
       content->RequestFocus();
       content->GetWebContents()->Focus();
     }
-    content->ShowUI();
   }
 }
 
@@ -109,7 +110,6 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
     std::unique_ptr<OmniboxPopupWebUIBaseContent> webui_content) {
   omnibox_popup_webui_content_ =
       GetUIContainer()->AddChildView(std::move(webui_content));
-  Observe(omnibox_popup_webui_content_->GetWebContents());
   EnsureWidgetCreated();
 }
 
@@ -179,16 +179,4 @@ RoundedOmniboxResultsFrame* OmniboxPopupPresenterBase::GetResultsFrame() const {
   CHECK(widget_);
   return views::AsViewClass<RoundedOmniboxResultsFrame>(
       widget_->GetContentsView());
-}
-
-void OmniboxPopupPresenterBase::OnVisibilityChanged(
-    content::Visibility visibility) {
-  // Keep the WebContents visible at all times, even when the widget is no
-  // longer visible. This ensures the renderer continues to paint the contents
-  // as the autocomplete results update asynchronously and independently of the
-  // widget visibility.
-  if (visibility != content::Visibility::VISIBLE) {
-    GetWebUIContent()->GetWebContents()->UpdateWebContentsVisibility(
-        content::Visibility::VISIBLE);
-  }
 }
