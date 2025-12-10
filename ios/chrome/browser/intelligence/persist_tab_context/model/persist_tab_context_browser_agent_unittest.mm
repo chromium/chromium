@@ -12,6 +12,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -20,6 +21,7 @@
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -154,6 +156,7 @@ class PersistTabContextBrowserAgentTest
   raw_ptr<PersistTabContextBrowserAgent> agent_;
   web::WebStateID test_web_state_id_ = web::WebStateID::FromSerializedValue(1);
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Instantiate the test suite for both FileSystem and SQLite configurations.
@@ -161,6 +164,14 @@ INSTANTIATE_TEST_SUITE_P(PersistTabContextStorageTests,
                          PersistTabContextBrowserAgentTest,
                          testing::Values(PersistTabStorageType::kFileSystem,
                                          PersistTabStorageType::kSQLite));
+
+TEST_P(PersistTabContextBrowserAgentTest, TestStorageDifferenceHistogram) {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester_
+               .GetAllSamples(kPersistTabContextStorageDifferenceHistogram)
+               .size() > 0;
+  }));
+}
 
 TEST_P(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_NotFound) {
   base::RunLoop run_loop;
@@ -175,6 +186,11 @@ TEST_P(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_NotFound) {
           },
           &run_loop));
   run_loop.Run();
+
+  // Verify result metric: FileNotFound.
+  histogram_tester_.ExpectBucketCount(
+      kReadTabContextResultHistogram,
+      IOSPersistTabContextReadResult::kFileNotFound, 1);
 }
 
 TEST_P(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_Found) {
@@ -193,6 +209,14 @@ TEST_P(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_Found) {
           },
           &run_loop));
   run_loop.Run();
+
+  // Verify result metric: Success.
+  histogram_tester_.ExpectBucketCount(kReadTabContextResultHistogram,
+                                      IOSPersistTabContextReadResult::kSuccess,
+                                      1);
+
+  // Verify time metric.
+  histogram_tester_.ExpectTotalCount(kPersistTabContextReadTimeHistogram, 1);
 }
 
 TEST_P(PersistTabContextBrowserAgentTest, TestGetMultipleContextsAsync) {
@@ -217,6 +241,17 @@ TEST_P(PersistTabContextBrowserAgentTest, TestGetMultipleContextsAsync) {
           },
           &run_loop));
   run_loop.Run();
+
+  // Total reads = 3.
+  histogram_tester_.ExpectTotalCount(kReadTabContextResultHistogram, 3);
+  // 2 Success.
+  histogram_tester_.ExpectBucketCount(kReadTabContextResultHistogram,
+                                      IOSPersistTabContextReadResult::kSuccess,
+                                      2);
+  // 1 FileNotFound.
+  histogram_tester_.ExpectBucketCount(
+      kReadTabContextResultHistogram,
+      IOSPersistTabContextReadResult::kFileNotFound, 1);
 }
 
 TEST_P(PersistTabContextBrowserAgentTest, TestPurgeExpiredContexts) {
