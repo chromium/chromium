@@ -42,26 +42,23 @@ class BorrowedFixupBuffer {
   int* sizes() const { return sizes_; }
 
  private:
+  struct FixupStackBuffer;
+
   uintptr_t* frames_;
   int* sizes_;
 
-  // Have we borrowed a pre-existing buffer (vs. allocated our own)?
-  bool borrowed_;
+  // The borrowed pre-existing buffer, if any (if we haven't allocated our own)
+  FixupStackBuffer* const borrowed_;
 
-  struct FixupStackBuffer;
-
-  void InitViaBorrow(FixupStackBuffer* borrowed_buffer);
+  void InitViaBorrow();
   void InitViaAllocation(size_t length);
-
-  // Returns a non-null pointer to a buffer that could be potentially borrowed.
-  FixupStackBuffer* Find();
 
   // Attempts to opportunistically borrow a small buffer in a thread- and
   // signal-safe manner. Returns nullptr on failure.
   [[nodiscard]] FixupStackBuffer* TryLock();
 
   // Returns the borrowed buffer.
-  void Unlock();
+  void Unlock() &&;
 
   BorrowedFixupBuffer(const BorrowedFixupBuffer&) = delete;
   BorrowedFixupBuffer& operator=(const BorrowedFixupBuffer&) = delete;

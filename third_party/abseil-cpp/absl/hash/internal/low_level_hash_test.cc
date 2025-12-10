@@ -442,7 +442,7 @@ TEST(LowLevelHashTest, VerifyGolden) {
 
   auto hash_fn = [](absl::string_view s, uint64_t state) {
     return absl::hash_internal::CombineLargeContiguousImplOn64BitLengthGt32(
-        reinterpret_cast<const unsigned char*>(s.data()), s.size(), state);
+        state, reinterpret_cast<const unsigned char*>(s.data()), s.size());
   };
 
 #if UPDATE_GOLDEN

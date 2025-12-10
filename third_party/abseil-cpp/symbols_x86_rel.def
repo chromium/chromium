@@ -486,8 +486,8 @@ EXPORTS
     ?CloneAndUnref@StatusRep@status_internal@absl@@QBEPAV123@XZ
     ?CombineContiguousImpl@hash_internal@absl@@YA_K_KPBEIU?$integral_constant@H$03@__Cr@std@@@Z
     ?CombineContiguousImpl@hash_internal@absl@@YA_K_KPBEIU?$integral_constant@H$07@__Cr@std@@@Z
-    ?CombineLargeContiguousImplOn32BitLengthGt8@hash_internal@absl@@YA_KPBEI_K@Z
-    ?CombineLargeContiguousImplOn64BitLengthGt32@hash_internal@absl@@YA_KPBEI_K@Z
+    ?CombineLargeContiguousImplOn32BitLengthGt8@hash_internal@absl@@YA_K_KPBEI@Z
+    ?CombineLargeContiguousImplOn64BitLengthGt32@hash_internal@absl@@YA_K_KPBEI@Z
     ?Compare@Cord@absl@@QBEHV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?CompareImpl@Cord@absl@@ABEHABV12@@Z
     ?CompareSlowPath@Cord@absl@@ABEHABV12@II@Z
@@ -629,7 +629,6 @@ EXPORTS
     ?FillZeroesTable@CRCImpl@crc_internal@absl@@SAHIPAY0BAA@I@Z
     ?FinalizeEncodingAndFormat@LogMessageData@LogMessage@log_internal@absl@@QAEXXZ
     ?FinalizeRegistry@flags_internal@absl@@YAXXZ
-    ?Find@BorrowedFixupBuffer@internal_stacktrace@absl@@AAEPAUFixupStackBuffer@123@XZ
     ?Find@ByAnyChar@absl@@QBE?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@V345@I@Z
     ?Find@ByAsciiWhitespace@absl@@QBE?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@V345@I@Z
     ?Find@ByChar@absl@@QBE?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@V345@I@Z
@@ -795,7 +794,7 @@ EXPORTS
     ?InitTables@CRC32@crc_internal@absl@@UAEXXZ
     ?InitTree@ChunkIterator@Cord@absl@@AAEXPAUCordRep@cord_internal@3@@Z
     ?InitViaAllocation@BorrowedFixupBuffer@internal_stacktrace@absl@@AAEXI@Z
-    ?InitViaBorrow@BorrowedFixupBuffer@internal_stacktrace@absl@@AAEXPAUFixupStackBuffer@123@@Z
+    ?InitViaBorrow@BorrowedFixupBuffer@internal_stacktrace@absl@@AAEXXZ
     ?InitWhat@BadStatusOrAccess@absl@@ABEXXZ
     ?Initialize@ExponentialBiased@profiling_internal@absl@@AAEXXZ
     ?InitializeCordRepExternal@cord_internal@absl@@YAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAUCordRepExternal@12@@Z
@@ -1247,7 +1246,7 @@ EXPORTS
     ?UnextendCrc32cByZeroes@crc_internal@absl@@YA?AVcrc32c_t@2@V32@I@Z
     ?UnimplementedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?UnknownError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
-    ?Unlock@BorrowedFixupBuffer@internal_stacktrace@absl@@AAEXXZ
+    ?Unlock@BorrowedFixupBuffer@internal_stacktrace@absl@@AHAEXXZ
     ?Unlock@CordzInfo@cord_internal@absl@@QAEXXZ
     ?UnlockSlow@Mutex@absl@@AAEXPAUSynchWaitParams@2@@Z
     ?Unparse@flags_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@F@Z

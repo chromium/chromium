@@ -21,6 +21,7 @@
 
 #include <atomic>
 #include <iterator>
+#include <utility>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -46,28 +47,27 @@ ABSL_CONST_INIT BorrowedFixupBuffer::FixupStackBuffer
 
 BorrowedFixupBuffer::~BorrowedFixupBuffer() {
   if (borrowed_) {
-    Unlock();
+    std::move(*this).Unlock();
   } else {
     base_internal::LowLevelAlloc::Free(frames_);
   }
 }
 
-BorrowedFixupBuffer::BorrowedFixupBuffer(size_t length) {
-  FixupStackBuffer* fixup_buffer =
-      0 < length && length <= FixupStackBuffer::kMaxStackElements ? TryLock()
-                                                                  : nullptr;
-  borrowed_ = fixup_buffer != nullptr;
+BorrowedFixupBuffer::BorrowedFixupBuffer(size_t length)
+    : borrowed_(0 < length && length <= FixupStackBuffer::kMaxStackElements
+                    ? TryLock()
+                    : nullptr) {
   if (borrowed_) {
-    InitViaBorrow(fixup_buffer);
+    InitViaBorrow();
   } else {
     InitViaAllocation(length);
   }
 }
 
-void BorrowedFixupBuffer::InitViaBorrow(FixupStackBuffer* borrowed_buffer) {
+void BorrowedFixupBuffer::InitViaBorrow() {
   assert(borrowed_);
-  frames_ = borrowed_buffer->frames;
-  sizes_ = borrowed_buffer->sizes;
+  frames_ = borrowed_->frames;
+  sizes_ = borrowed_->sizes;
 }
 
 void BorrowedFixupBuffer::InitViaAllocation(size_t length) {
@@ -92,25 +92,25 @@ void BorrowedFixupBuffer::InitViaAllocation(size_t length) {
                                    length * sizeof(*frames_))) int[length];
 }
 
-BorrowedFixupBuffer::FixupStackBuffer* BorrowedFixupBuffer::Find() {
-  size_t i = absl::Hash<const void*>()(this) %
-             std::size(FixupStackBuffer::g_instances);
-  return &FixupStackBuffer::g_instances[i];
-}
-
 [[nodiscard]] BorrowedFixupBuffer::FixupStackBuffer*
 BorrowedFixupBuffer::TryLock() {
-  FixupStackBuffer* instance = Find();
-  // Use memory_order_acquire to ensure that no reads and writes on the borrowed
-  // buffer are reordered before the borrowing.
-  return !instance->in_use.test_and_set(std::memory_order_acquire) ? instance
-                                                                   : nullptr;
+  constexpr size_t kNumSlots = std::size(FixupStackBuffer::g_instances);
+  const size_t i = absl::Hash<const void*>()(this) % kNumSlots;
+  for (size_t k = 0; k < kNumSlots; ++k) {
+    auto* instance = &FixupStackBuffer::g_instances[(i + k) % kNumSlots];
+    // Use memory_order_acquire to ensure that no reads and writes on the
+    // borrowed buffer are reordered before the borrowing.
+    if (!instance->in_use.test_and_set(std::memory_order_acquire)) {
+      return instance;
+    }
+  }
+  return nullptr;
 }
 
-void BorrowedFixupBuffer::Unlock() {
+void BorrowedFixupBuffer::Unlock() && {
   // Use memory_order_release to ensure that no reads and writes on the borrowed
   // buffer are reordered after the borrowing.
-  Find()->in_use.clear(std::memory_order_release);
+  borrowed_->in_use.clear(std::memory_order_release);
 }
 
 }  // namespace internal_stacktrace
