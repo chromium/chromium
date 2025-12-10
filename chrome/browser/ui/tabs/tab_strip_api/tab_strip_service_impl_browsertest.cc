@@ -138,8 +138,7 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
   using TabStripExperimentService = tabs_api::mojom::TabStripExperimentService;
 
   TabStripServiceImplBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kTabStripBrowserApi, features::kSideBySide}, {});
+    feature_list_.InitWithFeatures({features::kTabStripBrowserApi}, {});
   }
 
   void SetUpOnMainThread() override {

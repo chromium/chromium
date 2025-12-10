@@ -40,7 +40,6 @@ class TabSharingMultiContentsViewTest
     InteractiveBrowserTest::SetUpCommandLine(command_line);
     scoped_feature_list_.InitWithFeatures(
         {
-            features::kSideBySide,
 #if BUILDFLAG(IS_CHROMEOS)
             features::kTabCaptureBlueBorderCrOS,
 #endif

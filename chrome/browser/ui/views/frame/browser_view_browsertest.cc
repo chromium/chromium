@@ -97,9 +97,7 @@
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
-  BrowserViewTest() : devtools_(nullptr) {
-    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
+  BrowserViewTest() : devtools_(nullptr) {}
 
   BrowserViewTest(const BrowserViewTest&) = delete;
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
@@ -156,8 +154,6 @@ class BrowserViewTest : public InProcessBrowserTest {
   }
 
   raw_ptr<DevToolsWindow> devtools_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class BrowserViewWithoutSideBySideTest : public BrowserViewTest {
@@ -1061,9 +1057,7 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
  public:
   BrowserViewDataProtectionTest()
       : scoped_prewarm_feature_list_(test::ScopedPrewarmFeatureList::
-                                         PrewarmState::kEnabledWithNoTrigger) {
-    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
+                                         PrewarmState::kEnabledWithNoTrigger) {}
   BrowserViewDataProtectionTest(const BrowserViewDataProtectionTest&) = delete;
   BrowserViewDataProtectionTest& operator=(
       const BrowserViewDataProtectionTest&) = delete;
@@ -1117,7 +1111,6 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
   // Investigate details, and fix it to remove this workaround so that
   // DC_Screenshot test can pass stably.
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

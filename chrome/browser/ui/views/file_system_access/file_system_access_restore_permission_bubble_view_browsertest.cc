@@ -39,6 +39,16 @@ class FileSystemAccessRestorePermissionBubbleViewTest
     return browser()->tab_strip_model()->GetWebContentsAt(0);
   }
 
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  GURL GetURL(const char* hostname) const {
+    return embedded_test_server()->GetURL(hostname, "/title1.html");
+  }
+
  protected:
   const RequestData kRequestData =
       RequestData(RequestType::kRestorePermissions,
@@ -120,29 +130,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
   EXPECT_EQ(callback_result, permissions::PermissionAction::DISMISSED);
 }
 
-class FileSystemAccessBubbleSplitViewTest
-    : public FileSystemAccessRestorePermissionBubbleViewTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
-    FileSystemAccessRestorePermissionBubbleViewTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
-    InProcessBrowserTest::SetUpOnMainThread();
-  }
-
-  GURL GetURL(const char* hostname) const {
-    return embedded_test_server()->GetURL(hostname, "/title1.html");
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessBubbleSplitViewTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
                        ShowFileSystemAccessDialog) {
   ASSERT_TRUE(AddTabAtIndex(0, GetURL("example.com"),
                             ui::PageTransition::PAGE_TRANSITION_TYPED));

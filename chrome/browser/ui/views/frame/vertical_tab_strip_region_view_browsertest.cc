@@ -179,8 +179,7 @@ class VerticalTabStripRegionViewWithSplitTabTest
   VerticalTabStripRegionViewWithSplitTabTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {tabs::kVerticalTabs, features::kSideBySide}, {});
+    scoped_feature_list_.InitWithFeatures({tabs::kVerticalTabs}, {});
     InProcessBrowserTest::SetUp();
   }
 };

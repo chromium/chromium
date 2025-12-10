@@ -6,12 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
@@ -255,18 +253,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   EXPECT_EQ(group_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 }
 
-class TabCollectionNodeWithSplitTabBrowserTest
-    : public TabCollectionNodeBrowserTest {
- public:
-  TabCollectionNodeWithSplitTabBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_SplitTab) {
   AppendSplitTab();
   auto parent_view = std::make_unique<views::View>();
@@ -298,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   EXPECT_EQ(split_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_PinnedSplitTab) {
   AppendPinnedSplitTab();
   auto parent_view = std::make_unique<views::View>();
@@ -330,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
                        RootNodePopulatesWithTabs_ViewClasses) {
   AppendPinnedTab();
   AppendTabToNewGroup();

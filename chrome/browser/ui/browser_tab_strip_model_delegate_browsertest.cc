@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -331,18 +330,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
   EXPECT_TRUE(groups.at(1).local_group_id().has_value());
 }
 
-class BrowserTabStripModelDelegateWithSideBySide
-    : public BrowserTabStripModelDelegateTest {
- public:
-  BrowserTabStripModelDelegateWithSideBySide() {
-    feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
+IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
                        NewSplitTabWithActiveTabPinned) {
   std::unique_ptr<TabStripModelDelegate> delegate =
       std::make_unique<BrowserTabStripModelDelegate>(browser());
@@ -358,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
   ASSERT_TRUE(browser()->tab_strip_model()->IsTabPinned(1));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
+IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
                        NewSplitTabWithActiveTabGroupped) {
   std::unique_ptr<TabStripModelDelegate> delegate =
       std::make_unique<BrowserTabStripModelDelegate>(browser());
@@ -377,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
             group_id);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
+IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
                        NewSplitTabFromIncognito) {
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
 
@@ -394,8 +382,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
             chrome::kChromeUINewTabURL);
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithSideBySide,
-                       DuplicateSplitTab) {
+IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest, DuplicateSplitTab) {
   std::unique_ptr<TabStripModelDelegate> delegate =
       std::make_unique<BrowserTabStripModelDelegate>(browser());
 

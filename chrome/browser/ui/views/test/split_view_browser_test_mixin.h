@@ -63,8 +63,7 @@ class SplitViewBrowserTestMixin : public T {
 
   virtual const std::vector<base::test::FeatureRefAndParams>
   GetEnabledFeatures() {
-    return {{features::kSideBySide, {}},
-            {features::kSideBySideKeyboardShortcut, {}}};
+    return {};
   }
 
  private:

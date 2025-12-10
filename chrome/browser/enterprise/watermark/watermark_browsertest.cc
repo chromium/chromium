@@ -227,9 +227,7 @@ class FakeRealTimeUrlLookupService
 
 class WatermarkBrowserNavigationTest : public InProcessBrowserTest {
  public:
-  WatermarkBrowserNavigationTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
+  WatermarkBrowserNavigationTest() = default;
   WatermarkBrowserNavigationTest(const WatermarkBrowserNavigationTest&) =
       delete;
   WatermarkBrowserNavigationTest& operator=(
@@ -282,7 +280,6 @@ class WatermarkBrowserNavigationTest : public InProcessBrowserTest {
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::CallbackListSubscription create_services_subscription_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WatermarkBrowserNavigationTest, Apply_NoWatermark) {

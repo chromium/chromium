@@ -59,7 +59,6 @@ class BrowserCommandsTest : public InProcessBrowserTest {
             features::kTabstripDeclutter,
             toast_features::kReadingListToast,
             toast_features::kLinkCopiedToast,
-            features::kSideBySide,
         },
         {
             features::kReloadSelectionModel,
@@ -291,7 +290,6 @@ class BrowserCommandsWithCloseHotkeySplitViewTest : public BrowserCommandsTest {
     feature_list_.InitWithFeatures(
         {
             features::kCloseActiveTabInSplitViewViaHotkey,
-            features::kSideBySide,
         },
         {});
   }

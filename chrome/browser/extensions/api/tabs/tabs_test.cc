@@ -1874,18 +1874,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
                              api::tabs::OnUpdated::kEventName));
 }
 
-class ExtensionTabsWithSplitViewTest : public ExtensionTabsTest {
- public:
-  ExtensionTabsWithSplitViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ExtensionTabsWithSplitViewTest,
-                       SplitViewAddedAndRemoved) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, SplitViewAddedAndRemoved) {
   // Create the `TabsEventRouter`, which is required to get a tab update event.
   TabsWindowsAPI::Get(profile())->InitTabsEventRouter();
 

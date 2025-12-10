@@ -63,8 +63,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
  public:
   BookmarkContextMenuControllerTest() : model_(nullptr) {
     feature_list_.InitWithFeatures(
-        {switches::kSyncEnableBookmarksInTransportMode, features::kSideBySide},
-        {});
+        {switches::kSyncEnableBookmarksInTransportMode}, {});
   }
 
   void SetUp() override {

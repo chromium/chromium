@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -53,12 +51,7 @@ using bookmarks::BookmarkModel;
 
 class ToolbarViewTest : public InteractiveBrowserTest {
  public:
-  ToolbarViewTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /* enabled_features =*/{features::kSideBySide},
-        /* disabled_features =*/
-        {});
-  }
+  ToolbarViewTest() = default;
   ToolbarViewTest(const ToolbarViewTest&) = delete;
   ToolbarViewTest& operator=(const ToolbarViewTest&) = delete;
 
@@ -90,9 +83,6 @@ class ToolbarViewTest : public InteractiveBrowserTest {
                      ClickMouse(ui_controls::RIGHT),
                      SelectMenuItem(TabMenuModel::kSplitTabsMenuItem)));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {

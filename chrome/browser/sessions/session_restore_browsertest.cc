@@ -1322,21 +1322,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAfterDelete) {
             new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-class SplitTabSessionRestoreTest : public SessionRestoreTest {
- public:
-  SplitTabSessionRestoreTest() {
-    feature_list_.InitWithFeatures(
-        {features::kSideBySide, features::kSideBySideSessionRestore}, {});
-  }
-  SplitTabSessionRestoreTest(const SplitTabSessionRestoreTest&) = delete;
-  SplitTabSessionRestoreTest& operator=(const SplitTabSessionRestoreTest&) =
-      delete;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SplitTabSessionRestoreTest, TabsWithSplits) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TabsWithSplits) {
   constexpr int kNumTabs = 8;
 
   // Open |kNumTabs| tabs.
@@ -1414,7 +1400,7 @@ IN_PROC_BROWSER_TEST_F(SplitTabSessionRestoreTest, TabsWithSplits) {
             2u);
 }
 
-IN_PROC_BROWSER_TEST_F(SplitTabSessionRestoreTest, SplitVisualDataRestored) {
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SplitVisualDataRestored) {
   constexpr int kNumTabs = 8;
 
   // Open |kNumTabs| tabs.

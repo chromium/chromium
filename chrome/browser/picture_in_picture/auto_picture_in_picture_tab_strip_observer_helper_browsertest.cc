@@ -7,7 +7,6 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -21,9 +20,7 @@ using testing::_;
 class AutoPictureInPictureTabStripObserverHelperBrowserTest
     : public InProcessBrowserTest {
  public:
-  AutoPictureInPictureTabStripObserverHelperBrowserTest() {
-    feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
+  AutoPictureInPictureTabStripObserverHelperBrowserTest() = default;
 
  protected:
   void OpenNewForegroundTab(Browser* browser) {
@@ -39,9 +36,6 @@ class AutoPictureInPictureTabStripObserverHelperBrowserTest
         WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabStripObserverHelperBrowserTest,

@@ -8873,8 +8873,7 @@ class LensOverlayControllerSideBySideBrowserTest
  protected:
   void SetupFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{lens::features::kLensOverlay, {{"use-blur", "true"}}},
-         {features::kSideBySide, {}}},
+        {{lens::features::kLensOverlay, {{"use-blur", "true"}}}},
         {lens::features::kLensSearchZeroStateCsb});
   }
 

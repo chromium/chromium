@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -35,7 +34,6 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -75,10 +73,7 @@ using sessions::SerializedNavigationEntryTestHelper;
 
 class SessionServiceTest : public BrowserWithTestWindowTest {
  public:
-  SessionServiceTest() : window_bounds(0, 1, 2, 3) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kSideBySide, features::kSideBySideSessionRestore}, {});
-  }
+  SessionServiceTest() : window_bounds(0, 1, 2, 3) {}
 
  protected:
   void SetUp() override {
@@ -222,7 +217,6 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<SessionService> session_service_;
   SessionServiceTestHelper helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MockSessionServiceBaseObserver : public SessionServiceBaseObserver {

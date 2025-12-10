@@ -453,7 +453,6 @@ class TabStripModelTest : public testing::TestWithParam<bool> {
 
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kSideBySide, features::kSideBySideSessionRestore,
         features::kTabGroupsFocusing};
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam()) {

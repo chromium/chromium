@@ -106,8 +106,7 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
 
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSideBySide, {}},
-         {contextual_tasks::kContextualTasks,
+        {{contextual_tasks::kContextualTasks,
           {{"ContextualTasksEntryPoint", "toolbar-permanent"}}}},
         {});
 

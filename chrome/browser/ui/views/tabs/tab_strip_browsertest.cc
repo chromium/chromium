@@ -1487,17 +1487,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ExtendTabSelection) {
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_strip()->tab_at(3)));
 }
 
-class TabStripSplitViewBrowsertest : public TabStripBrowsertest {
- public:
-  TabStripSplitViewBrowsertest() {
-    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest, CreateSplitUKMLogged) {
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, CreateSplitUKMLogged) {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_ =
       std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
@@ -1525,8 +1515,7 @@ IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest, CreateSplitUKMLogged) {
           entries[1], ukm::builders::SplitView_Created::kSplitEventIdName));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest,
-                       SwapTabIntoSplitUKMLogged) {
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, SwapTabIntoSplitUKMLogged) {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_ =
       std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
@@ -1561,8 +1550,7 @@ IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest,
           entries[1], ukm::builders::SplitView_Updated::kSplitEventIdName));
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripSplitViewBrowsertest,
-                       NavigateSplitTabUKMLogged) {
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, NavigateSplitTabUKMLogged) {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_ =
       std::make_unique<ukm::TestAutoSetUkmRecorder>();
 

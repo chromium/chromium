@@ -182,8 +182,7 @@ class TabStripModelBrowserTest : public InProcessBrowserTest,
                                  public TabStripModelObserver {
  public:
   TabStripModelBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kSideBySide}, {});
+    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
   }
 
   void TearDownOnMainThread() override { observer_.Reset(); }

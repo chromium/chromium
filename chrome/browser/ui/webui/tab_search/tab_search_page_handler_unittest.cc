@@ -224,9 +224,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
         page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
     EXPECT_CALL(page_, HostWindowChanged()).Times(1);
     feature_list_.InitWithFeatures(
-        {features::kTabstripDeclutter, features::kTabstripDedupe,
-         features::kSideBySide},
-        {});
+        {features::kTabstripDeclutter, features::kTabstripDedupe}, {});
 
     // Wait for the TabGroupSyncService to properly initialize before making any
     // changes to tab groups.

@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -65,9 +63,7 @@ class BookmarkContextMenuTest : public testing::Test,
  public:
   BookmarkContextMenuTest()
       : base::test::WithFeatureOverride(
-            switches::kSyncEnableBookmarksInTransportMode) {
-    feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
+            switches::kSyncEnableBookmarksInTransportMode) {}
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -112,7 +108,6 @@ class BookmarkContextMenuTest : public testing::Test,
 
   content::BrowserTaskEnvironment task_environment_;
   views::ScopedViewsTestHelper views_test_helper_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<BookmarkModel> model_;
   TestingBookmarkNavigationWrapper wrapper_;

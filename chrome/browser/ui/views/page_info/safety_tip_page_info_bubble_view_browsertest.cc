@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -31,7 +30,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
@@ -1773,19 +1771,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewDialogTest,
   ShowAndVerifyUi();
 }
 
-class SafetyTipPageInfoBubbleSplitViewTest
-    : public SafetyTipPageInfoBubbleViewBrowserTest {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
-    SafetyTipPageInfoBubbleViewBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleSplitViewTest,
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        ShowLookalikeDialog) {
   // Create a split tab.
   ASSERT_TRUE(AddTabAtIndex(0, GetURL("example.com"),

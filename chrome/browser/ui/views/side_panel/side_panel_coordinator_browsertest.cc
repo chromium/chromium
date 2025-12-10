@@ -304,16 +304,6 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
       contextual_registries_;
 };
 
-class SidePanelCoordinatorWithSideBySideTest : public SidePanelCoordinatorTest {
- public:
-  SidePanelCoordinatorWithSideBySideTest() {
-    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
   Init();
   coordinator()->DisableAnimationsForTesting();
@@ -653,8 +643,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
             web_contents_width);
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorWithSideBySideTest,
-                       ChangeSidePanelWidthMaxMin) {
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
+                       ChangeSidePanelWidthMaxMinWithSplitView) {
   Init();
 
   // Create split view.

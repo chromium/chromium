@@ -224,9 +224,7 @@ struct FencedFrameContextMenuTestCase {
 // Kombucha framework.
 class ContextMenuFencedFrameTest : public ContextMenuUiTest {
  public:
-  ContextMenuFencedFrameTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
+  ContextMenuFencedFrameTest() = default;
   ~ContextMenuFencedFrameTest() override = default;
   ContextMenuFencedFrameTest(const ContextMenuFencedFrameTest&) = delete;
   ContextMenuFencedFrameTest& operator=(const ContextMenuFencedFrameTest&) =
@@ -514,7 +512,6 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
 
  private:
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   // OS integration is needed to be able to launch web applications. This
   // override ensures OS integration doesn't leave any traces.
   std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>

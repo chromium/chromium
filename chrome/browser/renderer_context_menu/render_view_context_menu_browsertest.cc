@@ -224,8 +224,7 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
         {media::kContextMenuSaveVideoFrameAs,
          media::kContextMenuSearchForVideoFrame,
          toast_features::kLinkCopiedToast, toast_features::kImageCopiedToast,
-         toast_features::kVideoFrameCopiedToast, features::kSideBySide,
-         features::kSideBySideLinkMenuNewBadge},
+         toast_features::kVideoFrameCopiedToast},
         {});
   }
 

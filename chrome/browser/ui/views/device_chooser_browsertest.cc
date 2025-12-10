@@ -251,11 +251,6 @@ IN_PROC_BROWSER_TEST_F(BluetoothChooserBrowserTest, InvokeUi_PairedModal) {
 
 class DeviceChooserBubbleSplitViewTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSideBySide);
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -265,9 +260,6 @@ class DeviceChooserBubbleSplitViewTest : public InProcessBrowserTest {
   GURL GetURL(const char* hostname) const {
     return embedded_test_server()->GetURL(hostname, "/title1.html");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleSplitViewTest,

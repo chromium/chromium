@@ -9,13 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -117,10 +115,7 @@ std::unique_ptr<views::Widget> CreateWidgetWithDialogModel() {
 
 class TabDialogManagerBrowserTest : public InteractiveBrowserTest {
  public:
-  TabDialogManagerBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSideBySide, {}}}, {});
-  }
+  TabDialogManagerBrowserTest() = default;
   ~TabDialogManagerBrowserTest() override = default;
 
   TabDialogManagerBrowserTest(const TabDialogManagerBrowserTest&) = delete;
@@ -140,9 +135,6 @@ class TabDialogManagerBrowserTest : public InteractiveBrowserTest {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     embedded_test_server()->StartAcceptingConnections();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that a widget that does not have a non-client view can be shown without

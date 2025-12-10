@@ -57,9 +57,7 @@ namespace {
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
-  BrowserViewTest() : ax_observer_(views::AXUpdateNotifier::Get()) {
-    feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
+  BrowserViewTest() : ax_observer_(views::AXUpdateNotifier::Get()) {}
   ~BrowserViewTest() override = default;
   BrowserViewTest(const BrowserViewTest&) = delete;
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
@@ -86,7 +84,6 @@ class BrowserViewTest : public InProcessBrowserTest {
 
  protected:
   views::test::AXEventCounter ax_observer_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace

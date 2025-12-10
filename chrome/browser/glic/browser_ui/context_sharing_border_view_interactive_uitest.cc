@@ -1401,20 +1401,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, MinimizeRestore) {
   EXPECT_TRUE(border->IsShowing());
 }
 
-class ContextSharingBorderViewSideBySideUiTest
-    : public ContextSharingBorderViewUiTest {
- public:
-  ContextSharingBorderViewSideBySideUiTest() {
-    feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
-  ~ContextSharingBorderViewSideBySideUiTest() override = default;
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewSideBySideUiTest,
-                       BasicVisiblity) {
+IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, BasicVisiblity) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";

@@ -5,10 +5,8 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -17,9 +15,7 @@
 
 class TabModelBrowserTest : public InProcessBrowserTest {
  public:
-  TabModelBrowserTest() {
-    feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
+  TabModelBrowserTest() = default;
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
@@ -58,7 +54,6 @@ class TabModelBrowserTest : public InProcessBrowserTest {
 
  private:
   std::vector<std::unique_ptr<MockCallbackOwner>> callbacks_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabModelBrowserTest, VisibilityCallbacks) {
