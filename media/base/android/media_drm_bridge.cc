@@ -460,9 +460,6 @@ MediaDrmBridge::CdmCreationResult MediaDrmBridge::CreateInternal(
   // All paths requires the MediaDrmApis.
   DCHECK(!scheme_uuid.empty());
 
-  // TODO(crbug.com/41433110): Check that |origin_id| is specified on devices
-  // that support it.
-
   auto media_drm_bridge = base::MakeRefCounted<MediaDrmBridge>(
       base::PassKey<MediaDrmBridge>(), scheme_uuid, origin_id, security_level,
       message, requires_media_crypto, std::move(storage),
