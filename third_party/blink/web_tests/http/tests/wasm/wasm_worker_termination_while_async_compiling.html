@@ -4,7 +4,7 @@
 <script src="resources/wasm-module-builder.js"></script>
 <script>
 
-const test = async_test("TestWasmWorkerTerminationWhileCompiling");
+const test = async_test("TestWasmWorkerTerminationWhileAsyncCompiling");
 
 const kNumWorkers = 8;
 const kNumFunctions = 5000;
@@ -19,7 +19,7 @@ function workerFunction() {
   };
 }
 
-// Build a wasm module with a number of function, such that the workers need
+// Build a wasm module with a number of functions, such that the workers need
 // some time compiling it.
 const builder = new WasmModuleBuilder();
 for (var i = 0; i < kNumFunctions; ++i) {
