@@ -310,6 +310,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
                             DIALOG_RESULT_COUNT);
                     break;
                 case AppType.WEBAPK:
+                case AppType.TWA:
                     mInstallCallback.run();
                     RecordHistogram.recordEnumeratedHistogram(
                             "WebApk.UniversalInstall.DialogAction",
