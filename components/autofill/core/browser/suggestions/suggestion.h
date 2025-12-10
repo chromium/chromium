@@ -541,7 +541,11 @@ struct Suggestion {
   std::optional<std::u16string> voice_over;
 
   // If specified, this text will be played back if the user accepts this
-  // suggestion.
+  // suggestion. Announcing messages in response to user actions is discouraged
+  // on Android, this message has no effect on that platform.
+  // TODO: crbug.com/467577615 - Redesign accessibility labels on Android so
+  // that they better reflect the information that's going to be filled in the
+  // form.
   std::optional<std::u16string> acceptance_a11y_announcement;
 
   // When `type` is

@@ -146,10 +146,6 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
           env, bounds.x(), bounds.y(), bounds.right(), bounds.bottom()));
 }
 
-void AutofillKeyboardAccessoryViewImpl::AxAnnounce(const std::u16string& text) {
-  AutofillAccessibilityHelper::GetInstance()->AnnounceTextForA11y(text);
-}
-
 void AutofillKeyboardAccessoryViewImpl::ConfirmDeletion(
     const std::u16string& confirmation_title,
     const std::u16string& confirmation_body,

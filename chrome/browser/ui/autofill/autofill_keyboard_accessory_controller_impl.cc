@@ -428,9 +428,6 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
   }
 
   NotifyUserEducationAboutAcceptedSuggestion(web_contents_.get(), suggestion);
-  if (suggestion.acceptance_a11y_announcement && view_) {
-    view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
-  }
 
   base::UmaHistogramEnumeration("Autofill.SuggestionAccepted.Method",
                                 accept_method);

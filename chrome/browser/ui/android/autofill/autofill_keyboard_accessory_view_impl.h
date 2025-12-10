@@ -39,7 +39,6 @@ class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
   bool Initialize() override;
   void Hide() override;
   void Show() override;
-  void AxAnnounce(const std::u16string& text) override;
   void ConfirmDeletion(
       const std::u16string& confirmation_title,
       const std::u16string& confirmation_body,
