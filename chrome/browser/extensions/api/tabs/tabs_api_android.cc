@@ -27,7 +27,6 @@ namespace {
 constexpr char kNoActiveTab[] = "No active tab";
 constexpr char kInvalidArguments[] = "Invalid arguments";
 constexpr char kTabsNotImplemented[] = "chrome.tabs not implemented";
-constexpr char kWindowsNotImplemented[] = "chrome.windows not implemented";
 
 content::WebContents* GetActiveWebContents() {
   for (TabModel* tab_model : TabModelList::models()) {
@@ -52,15 +51,6 @@ api::tabs::Tab CreateTabObjectHelper(content::WebContents* contents,
       ExtensionTabUtil::GetScrubTabBehavior(extension, context, contents);
   return ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior,
                                            extension);
-}
-
-// Windows ---------------------------------------------------------------------
-
-ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
-  std::optional<windows::Create::Params> params =
-      windows::Create::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kWindowsNotImplemented));
 }
 
 // Tabs ------------------------------------------------------------------------
