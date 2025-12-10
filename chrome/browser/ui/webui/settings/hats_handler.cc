@@ -29,6 +29,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 
 using safe_browsing::SafeBrowsingState;
+using safe_browsing::SecuritySettingsBundleSetting;
 
 namespace {
 

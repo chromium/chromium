@@ -248,8 +248,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, false);
   // TODO(crbug.com/422747384): Implement correct logic to set bundle level
   // based on user's safe browsing status.
-  registry->RegisterIntegerPref(prefs::kSecuritySettingsBundle,
-                                SecuritySettingsBundleLevel::STANDARD);
+  registry->RegisterIntegerPref(
+      prefs::kSecuritySettingsBundle,
+      static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
   registry->RegisterListPref(prefs::kSafeBrowsingCsdPingTimestamps);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingScoutReportingEnabled,
                                 false);

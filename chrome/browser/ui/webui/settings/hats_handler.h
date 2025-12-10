@@ -78,15 +78,6 @@ class HatsHandler : public SettingsPageUIHandler {
     STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK = 3,
     ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK = 4,
   };
-  /**
-   * Enumeration of all security settings bundle modes. Must be kept in sync
-   * with the enum of the same name located in:
-   * chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h
-   */
-  enum class SecuritySettingsBundleSetting {
-    STANDARD = 0,
-    ENHANCED = 1,
-  };
 
   // Requests the appropriate HaTS survey, which may be none, for |interaction|.
   void RequestHatsSurvey(TrustSafetyInteraction interaction);

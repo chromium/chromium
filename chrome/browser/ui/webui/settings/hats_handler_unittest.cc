@@ -36,6 +36,7 @@ using ::testing::_;
 class Profile;
 
 using safe_browsing::SafeBrowsingState;
+using safe_browsing::SecuritySettingsBundleSetting;
 
 namespace settings {
 
@@ -161,8 +162,7 @@ TEST_F(HatsHandlerTest,
   // Set the time spent on the page to 20,000 milliseconds, which is longer than
   // the configured value from Finch, 15,000 milliseconds.
   args.Append(20000);
-  args.Append(
-      static_cast<int>(HatsHandler::SecuritySettingsBundleSetting::STANDARD));
+  args.Append(static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
 
   handler()->HandleSecurityPageHatsRequest(args);
   task_environment()->RunUntilIdle();
@@ -185,8 +185,7 @@ TEST_F(HatsHandlerTest,
   // Set the time spent on the page to 10,000 milliseconds, which is shorter
   // than the configured value from Finch, 15,000 milliseconds.
   args.Append(10000);
-  args.Append(
-      static_cast<int>(HatsHandler::SecuritySettingsBundleSetting::STANDARD));
+  args.Append(static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
 
   handler()->HandleSecurityPageHatsRequest(args);
   task_environment()->RunUntilIdle();
@@ -240,15 +239,14 @@ TEST_F(HatsHandlerTest,
   // Set the time spent on the page to 20,000 milliseconds, which is longer than
   // the configured value from Finch, 15,000 milliseconds.
   args.Append(20000);
-  args.Append(
-      static_cast<int>(HatsHandler::SecuritySettingsBundleSetting::STANDARD));
+  args.Append(static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
 
   // The "current" settings prefs are read by the handler to determine the state
   // of the page when the survey is requested.
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   profile()->GetPrefs()->SetInteger(
       prefs::kSecuritySettingsBundle,
-      static_cast<int>(HatsHandler::SecuritySettingsBundleSetting::ENHANCED));
+      static_cast<int>(SecuritySettingsBundleSetting::ENHANCED));
 
   handler()->HandleSecurityPageHatsRequest(args);
   task_environment()->RunUntilIdle();
