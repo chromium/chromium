@@ -183,7 +183,8 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   base::Value::List args;
   args.Append(command);
 
-// TODO(crbug.com/406136564): Support tab parameter for commands.onCommand.
+// TODO(crbug.com/406136564): Support tab parameter for commands.onCommand
+// on desktop Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   base::Value tab_value;
   if (delegate_) {
