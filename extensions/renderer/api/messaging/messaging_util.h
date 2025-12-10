@@ -70,11 +70,6 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
 // `value` is either an int32 or -0.
 int ExtractIntegerId(v8::Local<v8::Value> value);
 
-// Returns the preferred serialization format for the given `context`. Note
-// extension native messaging clients shouldn't call this as they should always
-// use JSON.
-mojom::SerializationFormat GetSerializationFormat(const ScriptContext& context);
-
 // Flags for ParseMessageOptions().
 enum ParseOptionsFlags {
   NO_FLAGS = 0,

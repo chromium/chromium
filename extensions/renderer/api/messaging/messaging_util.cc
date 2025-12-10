@@ -291,18 +291,6 @@ int ExtractIntegerId(v8::Local<v8::Value> value) {
   return 0;
 }
 
-mojom::SerializationFormat GetSerializationFormat(
-    const ScriptContext& script_context) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kStructuredCloningForMessaging)) {
-    return mojom::SerializationFormat::kJson;
-  }
-
-  return script_context.extension()
-             ? mojom::SerializationFormat::kStructuredCloned
-             : mojom::SerializationFormat::kJson;
-}
-
 MessageOptions ParseMessageOptions(v8::Local<v8::Context> context,
                                    v8::Local<v8::Object> v8_options,
                                    int flags) {

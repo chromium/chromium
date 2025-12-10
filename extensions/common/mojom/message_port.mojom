@@ -11,6 +11,8 @@ import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // The serialization format of the message.
+// NOTE: To obtain this for message sending purposes use
+// `messaging_util::GetSerializationFormat()`.
 enum SerializationFormat {
   kStructuredCloned,
   kJson
