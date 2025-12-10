@@ -9469,6 +9469,7 @@ test("unit_tests") {
       "//components/value_store:test_support",
       "//extensions/browser/api/content_settings",
       "//extensions/browser/updater",
+      "//extensions/strings",
     ]
   }
 

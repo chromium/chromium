@@ -294,4 +294,8 @@ bool ExtensionsBrowserClient::HasBeenBlocked(
   return false;
 }
 
+void ExtensionsBrowserClient::ShowWarningMessageBox(
+    const std::u16string& title,
+    const std::u16string& message) {}
+
 }  // namespace extensions

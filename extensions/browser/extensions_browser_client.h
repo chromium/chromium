@@ -602,6 +602,10 @@ class ExtensionsBrowserClient {
   virtual bool HasBeenBlocked(const Extension& extension,
                               content::WebContents* web_contents) const;
 
+  // Shows a dialog box with the given |title| and |message|.
+  virtual void ShowWarningMessageBox(const std::u16string& title,
+                                     const std::u16string& message);
+
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
 };

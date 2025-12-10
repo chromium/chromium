@@ -12,7 +12,6 @@
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
@@ -28,6 +27,7 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/load_error_reporter.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

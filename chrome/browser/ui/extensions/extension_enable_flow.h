@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/extension_id.h"
 

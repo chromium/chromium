@@ -277,6 +277,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::WebContents* web_contents) override;
   bool HasBeenBlocked(const Extension& extension,
                       content::WebContents* web_contents) const override;
+  void ShowWarningMessageBox(const std::u16string& title,
+                             const std::u16string& message) override;
 
   static void set_did_chrome_update_for_testing(bool did_update);
 

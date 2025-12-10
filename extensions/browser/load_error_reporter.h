@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_LOAD_ERROR_REPORTER_H_
-#define CHROME_BROWSER_EXTENSIONS_LOAD_ERROR_REPORTER_H_
+#ifndef EXTENSIONS_BROWSER_LOAD_ERROR_REPORTER_H_
+#define EXTENSIONS_BROWSER_LOAD_ERROR_REPORTER_H_
 
 #include <string>
 #include <vector>
@@ -91,4 +91,4 @@ class LoadErrorReporter {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_LOAD_ERROR_REPORTER_H_
+#endif  // EXTENSIONS_BROWSER_LOAD_ERROR_REPORTER_H_

@@ -431,6 +431,8 @@ source_set("browser_sources") {
     "lazy_context_task_queue.h",
     "load_and_localize_file.cc",
     "load_and_localize_file.h",
+    "load_error_reporter.cc",
+    "load_error_reporter.h",
     "management_policy.cc",
     "management_policy.h",
     "manifest_check_level.h",
