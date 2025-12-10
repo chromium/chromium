@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/route_matching/route_event.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -78,10 +77,6 @@ bool Route::UpdateMatchStatus(const KURL& previous_url, const KURL& next_url) {
   }
 
   matches_at_ = matches_at;
-  AtomicString type(matches_at_ ? "activate" : "deactivate");
-  auto* event = MakeGarbageCollected<RouteEvent>(type);
-  event->SetTarget(this);
-  DispatchEvent(*event);
   return true;
 }
 

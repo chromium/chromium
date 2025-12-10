@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -19,6 +20,7 @@
 namespace blink {
 
 class Document;
+class JSONValue;
 class Route;
 class URLPattern;
 
@@ -77,8 +79,6 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
 
   ParseResult ParseAndApplyRoutes(const String& route_map_text);
 
-  ParseResult ParseRoutes(const String& route_map_text);
-
   void AddAnonymousRoute(URLPattern*);
 
   const Route* FindRoute(const String& route_name) const;
@@ -108,6 +108,10 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   }
 
  private:
+  ParseResult AddPatternToRoute(Route&, const JSONValue&);
+  bool UpdateMatchStatus(Route&,
+                         HeapVector<Member<Route>>* routes_needing_event);
+
   Member<Document> document_;
 
   HeapHashMap<String, Member<Route>> routes_;
@@ -116,6 +120,10 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // Only set while navigating from one URL to another one.
   KURL previous_url_;
   KURL next_url_;
+
+#if DCHECK_IS_ON()
+  bool is_updating_active_routes_ = false;
+#endif
 };
 
 }  // namespace blink
