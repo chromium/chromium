@@ -26,10 +26,6 @@
 namespace privacy_sandbox {
 namespace {
 
-MATCHER_P(IsSameSite, site, "") {
-  return net::SchemefulSite::IsSameSite(site, arg);
-}
-
 class MockTrackingProtectionSettingsObserver
     : public TrackingProtectionSettingsObserver {
  public:
@@ -74,33 +70,6 @@ class TrackingProtectionSettingsTest : public testing::Test {
   std::unique_ptr<TrackingProtectionSettings> tracking_protection_settings_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
-
-// Gets prefs
-
-TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
-  EXPECT_FALSE(
-      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  EXPECT_TRUE(
-      tracking_protection_settings()->IsTrackingProtection3pcdEnabled());
-}
-
-TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedTrueInIncognito) {
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  EXPECT_TRUE(TrackingProtectionSettings(prefs(),
-                                         /*is_incognito=*/true)
-                  .AreAllThirdPartyCookiesBlocked());
-  EXPECT_FALSE(TrackingProtectionSettings(prefs(),
-                                          /*is_incognito=*/false)
-                   .AreAllThirdPartyCookiesBlocked());
-}
-
-TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedFalseOutside3pcd) {
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
-  prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
-  EXPECT_FALSE(
-      tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
-}
 
 // Calls observers
 

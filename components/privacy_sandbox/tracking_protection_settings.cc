@@ -56,10 +56,8 @@ void TrackingProtectionSettings::Shutdown() {
 }
 
 bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
-  // True if either debug flag or pref is enabled.
   return base::FeatureList::IsEnabled(
-             content_settings::features::kTrackingProtection3pcd) ||
-         pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled);
+      content_settings::features::kTrackingProtection3pcd);
 }
 
 bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
