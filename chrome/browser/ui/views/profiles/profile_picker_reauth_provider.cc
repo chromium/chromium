@@ -108,11 +108,17 @@ void ProfilePickerReauthProvider::OnRefreshTokensLoaded() {
 }
 
 void ProfilePickerReauthProvider::OnForceSigninVerifierTimeOut() {
+  if (force_signin_verifier_) {
+    // Clear any on going request related to the `force_signin_verifier_`.
+    force_signin_verifier_->Cancel();
+    force_signin_verifier_.reset();
+  }
+
+  std::move(step_switch_callback_.value()).Run(false);
   // TODO(crbug.com/40280498): Improve the error message if this timeout
   // occurs. Currently the error that will be displayed is the one that is shown
   // if the wrong account is being reauth-ed.
   Finish(false, ProfilePickerReauthResult::kTimeoutForceSigninVerifierCheck);
-  std::move(step_switch_callback_.value()).Run(false);
 }
 
 void ProfilePickerReauthProvider::TryCreateForceSigninVerifier() {
@@ -131,8 +137,8 @@ void ProfilePickerReauthProvider::OnTokenFetchComplete(bool token_is_valid) {
   // If the token is valid, we do not need to reauth and proceed to finish
   // with success directly.
   if (token_is_valid) {
-    Finish(true, ProfilePickerReauthResult::kSuccessTokenAlreadyValid);
     std::move(step_switch_callback_.value()).Run(false);
+    Finish(true, ProfilePickerReauthResult::kSuccessTokenAlreadyValid);
     return;
   }
 

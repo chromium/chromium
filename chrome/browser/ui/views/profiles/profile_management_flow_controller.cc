@@ -239,12 +239,9 @@ void ProfileManagementFlowController::FlowTracker::EnteredNewStep(Step step) {
 void ProfileManagementFlowController::FlowTracker::FinishedStepSwitch(
     Step step,
     bool success) {
-  if (tracked_step_ != step) {
-    NOTREACHED(base::NotFatalUntil::M143)
-        << "Step switch callback should run while the step is still the "
-           "current step being tracked.";
-    return;
-  }
+  CHECK_EQ(tracked_step_, step)
+      << "Step switch callback should run while the step is still the "
+         "current step being tracked.";
 
   if (!success) {
     base::UmaHistogramEnumeration(
