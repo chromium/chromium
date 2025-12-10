@@ -238,7 +238,9 @@ WindowTreeHostPlatform::CreatePlatformWindow(
   return ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
       this, std::move(properties));
 #elif BUILDFLAG(IS_WIN)
-  return std::make_unique<ui::WinWindow>(this, properties.bounds);
+  auto window = std::make_unique<ui::WinWindow>(this, properties.bounds);
+  window->SetInputMethod(GetInputMethod());
+  return window;
 #else
   NOTIMPLEMENTED();
   return nullptr;
