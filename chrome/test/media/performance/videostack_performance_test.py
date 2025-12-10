@@ -126,18 +126,12 @@ def run_performance_test(video_file: str, framerate: int, driver: webdriver):
     output_file = os.path.join(common.RECORDINGS_DIR,
                                video_file.replace('.webm', '.mp4'))
 
-    width, height, fps = common._query_v4l2_device('/dev/video1')
-
     host_recording_cmd = [
         'ffmpeg',
         # Overwrite output files without asking.
         '-y',
         # Set the input format to Video4Linux2.
         '-f', 'video4linux2',
-        # Set the capturing frame rate.
-        '-framerate', str(fps),
-        # Set the video size of the captured video.
-        '-video_size', f'{width}x{height}',
         # Set the input pixel format.
         '-input_format', 'yuyv422',
         # Specify the input file (video device).

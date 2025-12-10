@@ -135,42 +135,6 @@ class StartProcess(AbstractContextManager):
       assert self._proc.exitcode == 0
 
 
-# TODO: b/463482240
-# Currently we rely on brittle string-matching to properly set v4l2 device
-# dimensions. This should be removed as soon as we have a more robust option.
-def _query_v4l2_device(device_path) -> tuple[int, int, int]:
-  """Queries a video device using v4l2-ctl and returns its metrics."""
-  logging.info('Querying video device status with v4l2-ctl for %s...',
-               device_path)
-  device_status_cmd = [
-      'v4l2-ctl',
-      f'--device={device_path}',
-      '--all'
-  ]
-  try:
-    result = subprocess.run(device_status_cmd, check=True,
-                            capture_output=True, text=True)
-    logging.info('v4l2-ctl output:\n%s', result.stdout)
-
-    width, height, fps = 0, 0, 0
-    for line in result.stdout.splitlines():
-      if 'Width/Height' in line:
-        parts = line.split(':')[-1].strip().split('/')
-        width = int(parts[0])
-        height = int(parts[1])
-      elif 'Frames per second' in line:
-        fps = int(float(line.split(':')[1].strip().split(' ')[0]))
-    if not (width and height and fps):
-      raise RuntimeError(f'Could not parse width, height, or fps from '
-                         f'v4l2-ctl output:\n{result.stdout}')
-    return width, height, fps
-  except (subprocess.CalledProcessError, FileNotFoundError) as e:
-    stderr = e.stderr if hasattr(e, 'stderr') else '(no stderr)'
-    stdout = e.stdout if hasattr(e, 'stdout') else '(no stdout)'
-    raise RuntimeError(f'Could not query device status for {device_path}. '
-                       f'Stdout: {stdout}\nStderr: {stderr}') from e
-
-
 def send_ssh_command(hostname, username, command, blocking=False):
   """
     Sends a command to a remote host via SSH.
