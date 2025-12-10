@@ -9246,11 +9246,6 @@
     "expiry_milestone": 134
   },
   {
-    "name": "segmented-default-browser-promo",
-    "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "send-tab-ios-push-notifications",
     "owners": ["hiramahmood@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 137
