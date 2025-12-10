@@ -62,12 +62,17 @@ class BLINK_EXPORT WebSerializedScriptValue {
   static WebSerializedScriptValue Create(base::span<const uint8_t> data);
 
   // Create a WebSerializedScriptValue that represents a serialization error.
+  // Use `!IsValid()` to check for this state.
   static WebSerializedScriptValue CreateInvalid();
 
   void Reset();
   void Assign(const WebSerializedScriptValue&);
 
   bool IsNull() const { return private_.IsNull(); }
+
+  // Returns true if the value is valid. Valid means that a
+  // `SerializedScriptValue` has been assigned and has wire data.
+  bool IsValid() const;
 
   base::span<const uint8_t> WireData() const;
 

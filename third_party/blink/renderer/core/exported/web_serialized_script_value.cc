@@ -67,6 +67,18 @@ void WebSerializedScriptValue::Assign(const WebSerializedScriptValue& other) {
   private_ = other.private_;
 }
 
+bool WebSerializedScriptValue::IsValid() const {
+  // Must have an underlying SerializedScriptValue object.
+  if (private_.IsNull()) {
+    return false;
+  }
+
+  // That object must have wire data. `CreateInvalid()` produces an empty
+  // buffer, whereas any valid serialization (even of JS `null`, `undefined`, or
+  // an empty string) always has a header.
+  return !private_->GetWireData().empty();
+}
+
 base::span<const uint8_t> WebSerializedScriptValue::WireData() const {
   return private_->GetWireData();
 }
