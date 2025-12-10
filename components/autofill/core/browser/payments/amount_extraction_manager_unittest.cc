@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
+#include "components/autofill/core/browser/metrics/payments/ai_amount_extraction_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager_test_api.h"
@@ -849,6 +850,209 @@ TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Timeout) {
   EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
             static_cast<uint8_t>(
                 autofill::autofill_metrics::AmountExtractionResult::kTimeout));
+}
+
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_ResultMetrics_Success) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+
+  ApcFetchCallback fetch_callback;
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(1234);
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+  ASSERT_TRUE(fetch_callback);
+
+  ModelExecutionCallback model_callback;
+  EXPECT_CALL(*model_executor(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&model_callback));
+
+  std::move(fetch_callback).Run(std::make_optional(test_proto));
+  ASSERT_TRUE(model_callback);
+
+  optimization_guide::proto::AmountExtractionResponse response;
+  response.set_final_checkout_amount(100.00);
+  response.set_currency("USD");
+  response.set_is_successful(true);
+
+  std::move(model_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               optimization_guide::AnyWrapProto(response),
+               /*execution_info=*/nullptr),
+           /*model_quality_log_entry=*/nullptr);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AiAmountExtraction.Result",
+      autofill_metrics::AiAmountExtractionResult::kSuccess,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ResultMetrics_ModelFailure) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce([](base::OnceCallback<void(
+                       std::optional<
+                           optimization_guide::proto::AnnotatedPageContent>)>
+                       callback) {
+        optimization_guide::proto::AnnotatedPageContent test_proto;
+        test_proto.set_tab_id(123);
+        std::move(callback).Run(std::make_optional(test_proto));
+      });
+
+  EXPECT_CALL(autofill_client(), GetRemoteModelExecutor())
+      .WillOnce(Return(model_executor()));
+
+  EXPECT_CALL(*model_executor(), ExecuteModel)
+      .WillOnce(testing::WithArg<3>([](ModelExecutionCallback callback) {
+        std::move(callback).Run(
+            // Inject an invalid result by passing an empty model execution
+            // result.
+            optimization_guide::OptimizationGuideModelExecutionResult(),
+            /*model_quality_log_entry=*/nullptr);
+      }));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AiAmountExtraction.Result",
+      autofill_metrics::AiAmountExtractionResult::kFailed,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ResultMetrics_ParsingFailure) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent).WillOnce([](auto callback) {
+    optimization_guide::proto::AnnotatedPageContent test_proto;
+    test_proto.set_tab_id(123);
+    std::move(callback).Run(std::make_optional(test_proto));
+  });
+
+  EXPECT_CALL(autofill_client(), GetRemoteModelExecutor())
+      .WillOnce(Return(model_executor()));
+
+  EXPECT_CALL(*model_executor(), ExecuteModel)
+      .WillOnce(testing::WithArg<3>([](ModelExecutionCallback callback) {
+        optimization_guide::proto::AnnotatedPageContent wrong_proto;
+        std::move(callback).Run(
+            // Create a proto parsing failure case by passing a different proto
+            // type(AnnotatedPageContent).
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                optimization_guide::AnyWrapProto(wrong_proto),
+                /*execution_info=*/nullptr),
+            /*model_quality_log_entry=*/nullptr);
+      }));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AiAmountExtraction.Result",
+      autofill_metrics::AiAmountExtractionResult::kFailed,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ResultMetrics_InvalidResponse) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+
+  ApcFetchCallback fetch_callback;
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce(MoveArg<0>(&fetch_callback));
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  EXPECT_CALL(autofill_client(), GetRemoteModelExecutor())
+      .WillOnce(Return(model_executor()));
+
+  ModelExecutionCallback model_callback;
+  EXPECT_CALL(*model_executor(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&model_callback));
+
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(123);
+  std::move(fetch_callback).Run(std::make_optional(test_proto));
+
+  ASSERT_TRUE(model_callback);
+
+  optimization_guide::proto::AmountExtractionResponse response;
+  // Inject an invalid response by adding a negative checkout amount.
+  response.set_final_checkout_amount(-50.00);
+  response.set_currency("USD");
+
+  std::move(model_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               optimization_guide::AnyWrapProto(response),
+               /*execution_info=*/nullptr),
+           /*model_quality_log_entry=*/nullptr);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AiAmountExtraction.Result",
+      autofill_metrics::AiAmountExtractionResult::kInvalidResponse,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_ResultMetrics_Timeout) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent);
+
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  task_environment_.FastForwardBy(
+      AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
+      base::Seconds(1));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AiAmountExtraction.Result",
+      autofill_metrics::AiAmountExtractionResult::kTimeout,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_ResultMetrics_LoggedOnlyOnce) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableAiBasedAmountExtraction};
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent);
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  task_environment_.FastForwardBy(
+      AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
+      base::Seconds(1));
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.AiAmountExtraction.Result",
+      autofill_metrics::AiAmountExtractionResult::kTimeout,
+      /*expected_count=*/1);
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent);
+  amount_extraction_manager_->TriggerCheckoutAmountExtractionWithAi();
+
+  task_environment_.FastForwardBy(
+      AmountExtractionManager::kAiBasedAmountExtractionWaitTime +
+      base::Seconds(1));
+
+  // The result is not logged for the second time on the same page load.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.AiAmountExtraction.Result",
+      autofill_metrics::AiAmountExtractionResult::kTimeout,
+      /*expected_count=*/1);
 }
 
 TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {

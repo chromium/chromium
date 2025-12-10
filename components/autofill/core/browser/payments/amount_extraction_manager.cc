@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/metrics/payments/ai_amount_extraction_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
@@ -284,6 +285,8 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
 
   if (!result.response.has_value()) {
     Reset();
+    LogAiAmountExtractionResultIfApplicable(
+        autofill_metrics::AiAmountExtractionResult::kFailed);
     return;
   }
 
@@ -294,6 +297,8 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
 
   if (!response) {
     Reset();
+    LogAiAmountExtractionResultIfApplicable(
+        autofill_metrics::AiAmountExtractionResult::kFailed);
     return;
   }
 
@@ -308,6 +313,8 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
     bnpl_manager->OnAmountExtractionReturnedFromAi(std::nullopt,
                                                    /*timeout_reached=*/false);
     Reset();
+    LogAiAmountExtractionResultIfApplicable(
+        autofill_metrics::AiAmountExtractionResult::kInvalidResponse);
     return;
   }
 
@@ -316,6 +323,8 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
 
   bnpl_manager->OnAmountExtractionReturnedFromAi(parsed_extracted_amount,
                                                  /*timeout_reached=*/false);
+  LogAiAmountExtractionResultIfApplicable(
+      autofill_metrics::AiAmountExtractionResult::kSuccess);
 
   Reset();
 }
@@ -332,8 +341,8 @@ void AmountExtractionManager::OnTimeoutReached() {
           /*extracted_amount_in_micros=*/std::nullopt,
           /*timeout_reached=*/true);
     }
-    // TODO(crbug.com/444683986): Log the metric for the timeout event in
-    // AI-based amount extraction.
+    LogAiAmountExtractionResultIfApplicable(
+        autofill_metrics::AiAmountExtractionResult::kTimeout);
   } else {
     // If the amount is found, ignore this callback.
     if (!search_request_pending_) {
@@ -397,6 +406,14 @@ void AmountExtractionManager::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   timeout_timer_.Stop();
   search_request_pending_ = false;
+}
+
+void AmountExtractionManager::LogAiAmountExtractionResultIfApplicable(
+    autofill_metrics::AiAmountExtractionResult result) {
+  if (!has_logged_amount_extraction_result_) {
+    LogAiAmountExtractionResult(result);
+    has_logged_amount_extraction_result_ = true;
+  }
 }
 
 }  // namespace autofill::payments

@@ -21,6 +21,11 @@
 namespace autofill {
 class AutofillDriver;
 class BrowserAutofillManager;
+
+namespace autofill_metrics {
+enum class AiAmountExtractionResult;
+}  // namespace autofill_metrics
+
 }  // namespace autofill
 
 namespace optimization_guide {
@@ -158,11 +163,17 @@ class AmountExtractionManager {
   // `AmountExtractionManager` weak pointers from the factory.
   void Reset();
 
+  // Logs the result of the AI-based amount extraction, but only if a result
+  // has not been logged already.
+  void LogAiAmountExtractionResultIfApplicable(
+      autofill_metrics::AiAmountExtractionResult result);
+
   // The owning BrowserAutofillManager.
   raw_ref<BrowserAutofillManager> autofill_manager_;
 
-  // If Once it is set, it can not be reset, as it should be set for the
-  // lifetime of `this`.
+  // Once it is set, it can not be reset, as it should be set for the
+  // lifetime of `this`. This ensures the amount extraction result metric is
+  // logged once per page load.
   bool has_logged_amount_extraction_result_ = false;
 
   // Indicates whether there is an amount search ongoing or not. If set, do not

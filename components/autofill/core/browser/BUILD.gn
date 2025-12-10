@@ -485,6 +485,8 @@ static_library("browser") {
     "metrics/log_event.h",
     "metrics/loyalty_cards_metrics.cc",
     "metrics/loyalty_cards_metrics.h",
+    "metrics/payments/ai_amount_extraction_metrics.cc",
+    "metrics/payments/ai_amount_extraction_metrics.h",
     "metrics/payments/amount_extraction_metrics.cc",
     "metrics/payments/amount_extraction_metrics.h",
     "metrics/payments/better_auth_metrics.cc",

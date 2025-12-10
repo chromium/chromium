@@ -263,6 +263,13 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="kOverlayPopupAd"/>
 </enum>
 
+<enum name="AiAmountExtractionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to find checkout amount"/>
+  <int value="2" label="Invalid response"/>
+  <int value="3" label="Timed out"/>
+</enum>
+
 <enum name="AllowedUsersPoliciesInvalidState">
   <summary>
     For recording which of the 4 disallowed combinations of allow_new_users and
