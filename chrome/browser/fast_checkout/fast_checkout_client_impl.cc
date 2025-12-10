@@ -95,21 +95,19 @@ bool IsEmailForm(const autofill::FormStructure& form) {
 }
 
 // Returns `true` if `form_signature`'s form is in `forms` and is an email form.
-bool ContainsEmailFormWithSignature(
-    const std::map<autofill::FormGlobalId,
-                   std::unique_ptr<autofill::FormStructure>>& forms,
-    autofill::FormSignature form_signature) {
-  for (auto& [_, form] : forms) {
-    // It is possible to have multiple forms with the same form signature on the
-    // same page where only some are visible to the user. An example could be
-    // shipping and billing address forms. For that reason the `IsEmailForm`
-    // check must not be returned directly to avoid a premature return as we
-    // don't have any control over the order of `forms`.
-    if (form->form_signature() == form_signature && IsEmailForm(*form)) {
-      return true;
-    }
-  }
-  return false;
+bool ContainsEmailFormWithSignature(const autofill::AutofillManager& manager,
+                                    autofill::FormSignature form_signature) {
+  // It is possible to have multiple forms with the same form signature on the
+  // same page where only some are visible to the user. An example could be
+  // shipping and billing address forms. For that reason the `IsEmailForm`
+  // check must not be returned directly to avoid a premature return as we
+  // don't have any control over the order of `forms`.
+  bool success = false;
+  manager.ForEachCachedForm([&](const autofill::FormStructure& form) {
+    success = success ||
+              (form.form_signature() == form_signature && IsEmailForm(form));
+  });
+  return success;
 }
 
 FastCheckoutDelegateImpl* GetDelegate(autofill::AutofillManager& manager) {
@@ -403,39 +401,39 @@ void FastCheckoutClientImpl::TryToFillForms() {
     return;
   }
   SetFormFillingStates();
-  for (const auto& [form_global_id, form] :
-       autofill_manager_->form_structures()) {
-    if (ShouldFillForm(*form, autofill::FormType::kAddressForm)) {
+  autofill_manager_->ForEachCachedForm([&](const autofill::FormStructure&
+                                               form) {
+    if (ShouldFillForm(form, autofill::FormType::kAddressForm)) {
       const autofill::AutofillField* field =
-          GetFieldToFill(form->fields(), /*is_credit_card_form=*/false);
+          GetFieldToFill(form.fields(), /*is_credit_card_form=*/false);
       const autofill::AutofillProfile* autofill_profile =
           GetSelectedAutofillProfile();
       if (field && autofill_profile) {
-        form_filling_states_[std::make_pair(form->form_signature(),
+        form_filling_states_[std::make_pair(form.form_signature(),
                                             autofill::FormType::kAddressForm)] =
             FillingState::kFilling;
         auto* bam = static_cast<autofill::BrowserAutofillManager*>(
             autofill_manager_.get());
         bam->SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress, run_id_);
         bam->FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill,
-                               form->ToFormData(), field->global_id(),
+                               form.ToFormData(), field->global_id(),
                                autofill_profile,
                                autofill::AutofillTriggerSource::kFastCheckout);
       }
     }
 
-    if (ShouldFillForm(*form, autofill::FormType::kCreditCardForm)) {
+    if (ShouldFillForm(form, autofill::FormType::kCreditCardForm)) {
       const autofill::AutofillField* field =
-          GetFieldToFill(form->fields(), /*is_credit_card_form=*/true);
+          GetFieldToFill(form.fields(), /*is_credit_card_form=*/true);
       const autofill::CreditCard* credit_card = GetSelectedCreditCard();
       if (field && !credit_card_form_global_id_ && credit_card) {
         if (autofill::CreditCard::IsLocalCard(credit_card)) {
-          FillCreditCardForm(*form, field->global_id(), *credit_card);
+          FillCreditCardForm(form, field->global_id(), *credit_card);
         } else {
           autofill::CreditCardCvcAuthenticator& cvc_authenticator =
               autofill_client_->GetPaymentsAutofillClient()
                   ->GetCvcAuthenticator();
-          credit_card_form_global_id_ = form_global_id;
+          credit_card_form_global_id_ = form.global_id();
           cvc_authenticator.GetFullCardRequest()->GetFullCard(
               *credit_card,
               autofill::payments::PaymentsAutofillClient::UnmaskCardReason::
@@ -445,7 +443,7 @@ void FastCheckoutClientImpl::TryToFillForms() {
         }
       }
     }
-  }
+  });
 }
 
 void FastCheckoutClientImpl::FillCreditCardForm(
@@ -494,24 +492,25 @@ const autofill::CreditCard* FastCheckoutClientImpl::GetSelectedCreditCard() {
 }
 
 void FastCheckoutClientImpl::SetFormFillingStates() {
-  for (const auto& [_, form] : autofill_manager_->form_structures()) {
-    // Only attempt to fill forms that were provided by the
-    // `FastCheckoutCapabilitiesFetcher`.
-    if (!form_signatures_to_fill_.contains(form->form_signature())) {
-      continue;
-    }
-    autofill::DenseSet<autofill::FormType> form_types = form->GetFormTypes();
-    for (autofill::FormType form_type : kSupportedFormTypes) {
-      // Only attempt to fill forms if they match `form_type`.
-      if (!form_types.contains(form_type)) {
-        continue;
-      }
-      auto form_id = std::make_pair(form->form_signature(), form_type);
-      if (!form_filling_states_.contains(form_id)) {
-        form_filling_states_[form_id] = FillingState::kNotFilled;
-      }
-    }
-  }
+  autofill_manager_->ForEachCachedForm(
+      [&](const autofill::FormStructure& form) {
+        // Only attempt to fill forms that were provided by the
+        // `FastCheckoutCapabilitiesFetcher`.
+        if (!form_signatures_to_fill_.contains(form.form_signature())) {
+          return;
+        }
+        autofill::DenseSet<autofill::FormType> form_types = form.GetFormTypes();
+        for (autofill::FormType form_type : kSupportedFormTypes) {
+          // Only attempt to fill forms if they match `form_type`.
+          if (!form_types.contains(form_type)) {
+            return;
+          }
+          auto form_id = std::make_pair(form.form_signature(), form_type);
+          if (!form_filling_states_.contains(form_id)) {
+            form_filling_states_[form_id] = FillingState::kNotFilled;
+          }
+        }
+      });
 }
 
 void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
@@ -609,8 +608,7 @@ void FastCheckoutClientImpl::A11yAnnounce(
     return;
   }
 
-  if (ContainsEmailFormWithSignature(autofill_manager_->form_structures(),
-                                     form_signature)) {
+  if (ContainsEmailFormWithSignature(*autofill_manager_, form_signature)) {
     accessibility_service_->Announce(
         l10n_util::GetStringUTF16(IDS_FAST_CHECKOUT_A11Y_EMAIL_FILLED));
   } else if (const autofill::AutofillProfile* autofill_profile =

@@ -533,6 +533,13 @@ FormStructure* AutofillManager::FindCachedFormById(
   return nullptr;
 }
 
+void AutofillManager::ForEachCachedForm(
+    base::FunctionRef<void(const FormStructure&)> fun) const {
+  for (const auto& [form_id, form_structure] : form_structures_) {
+    fun(*form_structure);
+  }
+}
+
 bool AutofillManager::CanShowAutofillUi() const {
   return driver_->CanShowAutofillUi();
 }

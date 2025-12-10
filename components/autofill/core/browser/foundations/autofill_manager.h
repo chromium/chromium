@@ -15,6 +15,7 @@
 #include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -322,6 +323,10 @@ class AutofillManager
   // Runs in linear time.
   std::vector<raw_ref<const FormStructure>> FindCachedFormsBySignature(
       FormSignature form_signature) const;
+
+  // Calls `fun` for each cached FormStructure.
+  void ForEachCachedForm(
+      base::FunctionRef<void(const FormStructure&)> fun) const;
 
   // Forwards call to the same-named `AutofillDriver` function.
   virtual bool CanShowAutofillUi() const;

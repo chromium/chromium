@@ -13,16 +13,18 @@ namespace autofill {
 namespace {
 
 // Returns if `form` in `manager` contains at least one `ONE_TIME_CODE` field.
-[[nodiscard]] bool IsOtpForm(AutofillManager& manager, FormGlobalId form) {
-  const FormStructure* form_structure = manager.FindCachedFormById(form);
-  if (!form_structure) {
-    return false;
-  }
+[[nodiscard]] bool IsOtpForm(const FormStructure& form) {
   return std::ranges::any_of(
-      form_structure->fields(), [](const std::unique_ptr<AutofillField>& f) {
+      form.fields(), [](const std::unique_ptr<AutofillField>& f) {
         return f->Type().GetTypes().contains(ONE_TIME_CODE) &&
                f->is_focusable();
       });
+}
+
+// Returns if `form` in `manager` contains at least one `ONE_TIME_CODE` field.
+[[nodiscard]] bool IsOtpForm(AutofillManager& manager, FormGlobalId form) {
+  const FormStructure* form_structure = manager.FindCachedFormById(form);
+  return form_structure && IsOtpForm(*form_structure);
 }
 
 }  // namespace
@@ -83,15 +85,15 @@ void OtpFieldDetector::OnAutofillManagerStateChanged(
     AutofillDriver::LifecycleState previous,
     AutofillDriver::LifecycleState current) {
   if (current != AutofillDriver::LifecycleState::kActive) {
-    for (const auto& [form_id, form_structure] : manager.form_structures()) {
-      RemoveFormAndNotifyIfNecessary(form_id);
-    }
+    manager.ForEachCachedForm([&](const FormStructure& form) {
+      RemoveFormAndNotifyIfNecessary(form.global_id());
+    });
   } else {
-    for (const auto& [form_id, form_structure] : manager.form_structures()) {
-      if (IsOtpForm(manager, form_id)) {
-        AddFormAndNotifyIfNecessary(form_id);
+    manager.ForEachCachedForm([&](const FormStructure& form) {
+      if (IsOtpForm(manager, form.global_id())) {
+        AddFormAndNotifyIfNecessary(form.global_id());
       }
-    }
+    });
   }
 }
 

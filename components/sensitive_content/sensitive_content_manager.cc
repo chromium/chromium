@@ -163,19 +163,14 @@ void SensitiveContentManager::OnAutofillManagerStateChanged(
   } else if (previous != LifecycleState::kActive &&
              current == LifecycleState::kActive) {
     // The frame became active, so its fields are present in the DOM again.
-    const std::map<FormGlobalId, std::unique_ptr<autofill::FormStructure>>&
-        forms = manager.form_structures();
-
-    for (const auto& [form_id, form_structure] : forms) {
-      const std::vector<std::unique_ptr<AutofillField>>& fields =
-          form_structure->fields();
-      for (const std::unique_ptr<AutofillField>& field : fields) {
+    manager.ForEachCachedForm([&](const autofill::FormStructure& form) {
+      for (const std::unique_ptr<AutofillField>& field : form.fields()) {
         if (std::ranges::any_of(field->Type().GetTypes(),
                                 &IsSensitiveAutofillType)) {
           sensitive_fields_.insert(field->global_id());
         }
       }
-    }
+    });
   }
 
   UpdateContentSensitivity();
