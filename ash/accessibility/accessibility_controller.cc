@@ -3188,7 +3188,7 @@ void AccessibilityController::OnTouchpadConnected(
 }
 
 void AccessibilityController::ExternalDeviceConnected() {
-  if (!disable_touchpad_event_rewriter_) {
+  if (!disable_touchpad_event_rewriter_ || !active_user_prefs_) {
     return;
   }
 
