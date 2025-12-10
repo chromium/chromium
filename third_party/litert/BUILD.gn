@@ -1,0 +1,327 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/android/config.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build_overrides/build.gni")
+import("//third_party/cpuinfo/cpuinfo.gni")
+import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+config("warnings_config") {
+  cflags = [
+    # TODO(crbug.com/463723474): Try to clean/remove these suppressions if possible.
+    "-Wno-mismatched-tags",
+    "-Wno-implicit-const-int-float-conversion",
+    "-Wno-deprecated-declarations",
+    "-Wno-shadow",
+
+    # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
+    "-Wno-sign-compare",
+  ]
+  visibility = [ ":*" ]
+}
+
+# The "public" target for all litert/litert files.
+group("litert") {
+  public_deps = [ ":litert_headers" ]
+  deps = [
+    ":litert_c",
+    ":litert_cc",
+    ":litert_compiler",
+    ":litert_core",
+    ":litert_runtime",
+    ":litert_runtime_accelerators",
+  ]
+
+  # Restrict this group's visibility to the WebNN service for now.
+  # TODO(crbug.com/463784134): Convert litert to a shared library and
+  # expand visibility to other components that depend on it.
+  visibility = [ "//services/webnn/*" ]
+}
+
+config("litert_config") {
+  include_dirs = [
+    "$root_gen_dir/third_party/litert/src",
+    "src",
+  ]
+  defines = [
+    "LITERT_DISABLE_METAL_SUPPORT",
+    "LITERT_DISABLE_OPENCL_SUPPORT",
+    "LITERT_DISABLE_OPENGL_SUPPORT",
+    "LITERT_HAS_OPENCL_SUPPORT=0",
+  ]
+  visibility = [ ":*" ]
+}
+
+flatbuffer("mutable_schema_litert_tflite_path") {
+  sources = [ "src/tflite/converter/schema/schema.fbs" ]
+  flatc_out_dir = "src/tflite/schema/mutable"
+  args = [ "--gen-object-api" ]
+  mutable = true
+}
+
+source_set("mutable_tflite_schema") {
+  public_deps = [ ":mutable_schema_litert_tflite_path" ]
+}
+
+source_set("litert_headers") {
+  public = [
+    "src/litert/c/internal/litert_accelerator.h",
+    "src/litert/c/internal/litert_accelerator_registration.h",
+    "src/litert/c/internal/litert_delegate_wrapper.h",
+    "src/litert/c/internal/litert_logging.h",
+    "src/litert/c/internal/litert_tensor_buffer_registry.h",
+    "src/litert/c/litert_common.h",
+    "src/litert/c/litert_compiled_model.h",
+    "src/litert/c/litert_custom_tensor_buffer.h",
+    "src/litert/c/litert_environment.h",
+    "src/litert/c/litert_event.h",
+    "src/litert/c/litert_event_type.h",
+    "src/litert/c/litert_gl_types.h",
+    "src/litert/c/litert_layout.h",
+    "src/litert/c/litert_metrics.h",
+    "src/litert/c/litert_model.h",
+    "src/litert/c/litert_op_code.h",
+    "src/litert/c/litert_op_options.h",
+    "src/litert/c/litert_opaque_options.h",
+    "src/litert/c/litert_options.h",
+    "src/litert/c/litert_profiler.h",
+    "src/litert/c/litert_tensor_buffer.h",
+    "src/litert/c/litert_tensor_buffer_requirements.h",
+    "src/litert/c/litert_tensor_buffer_types.h",
+    "src/litert/c/options/litert_cpu_options.h",
+    "src/litert/c/options/litert_gpu_options.h",
+    "src/litert/c/options/litert_runtime_options.h",
+    "src/litert/cc/internal/litert_consts.h",
+    "src/litert/cc/internal/litert_detail.h",
+    "src/litert/cc/internal/litert_handle.h",
+    "src/litert/cc/internal/litert_op_options.h",
+    "src/litert/cc/internal/litert_shared_library.h",
+    "src/litert/cc/internal/litert_tensor_buffer_utils.h",
+    "src/litert/cc/litert_buffer_ref.h",
+    "src/litert/cc/litert_compiled_model.h",
+    "src/litert/cc/litert_element_type.h",
+    "src/litert/cc/litert_environment.h",
+    "src/litert/cc/litert_expected.h",
+    "src/litert/cc/litert_layout.h",
+    "src/litert/cc/litert_macros.h",
+    "src/litert/cc/litert_model.h",
+    "src/litert/cc/litert_profiler.h",
+    "src/litert/cc/litert_tensor_buffer.h",
+    "src/litert/cc/options/litert_cpu_options.h",
+    "src/litert/cc/options/litert_gpu_options.h",
+    "src/litert/cc/options/litert_magic_number_options.h",
+    "src/litert/cc/options/litert_runtime_options.h",
+    "src/litert/compiler/plugin/algo.h",
+    "src/litert/compiler/plugin/compiler_plugin.h",
+    "src/litert/core/buffer_error_reporter.h",
+    "src/litert/core/build_stamp.h",
+    "src/litert/core/dispatch_op_schema.h",
+    "src/litert/core/dynamic_loading.h",
+    "src/litert/core/environment_options.h",
+    "src/litert/core/error_reporter.h",
+    "src/litert/core/filesystem.h",
+    "src/litert/core/model/flatbuffer_to_litert.h",
+    "src/litert/core/model/litert_to_flatbuffer.h",
+    "src/litert/core/model/model.h",
+    "src/litert/core/model/model_load.h",
+    "src/litert/core/model/model_serialize.h",
+    "src/litert/core/util/flatbuffer_tools.h",
+    "src/litert/core/util/tensor_type_util.h",
+    "src/litert/runtime/accelerator_registry.h",
+    "src/litert/runtime/accelerators/auto_registration.h",
+    "src/litert/runtime/accelerators/xnnpack/xnnpack_accelerator.h",
+    "src/litert/runtime/ahwb_buffer.h",
+    "src/litert/runtime/compiled_model.h",
+    "src/litert/runtime/custom_buffer.h",
+    "src/litert/runtime/dispatch/dispatch_opaque_options.h",
+    "src/litert/runtime/dmabuf_buffer.h",
+    "src/litert/runtime/event.h",
+    "src/litert/runtime/external_litert_buffer_context.h",
+    "src/litert/runtime/fastrpc_buffer.h",
+    "src/litert/runtime/gl_buffer.h",
+    "src/litert/runtime/gl_texture.h",
+    "src/litert/runtime/gpu_environment.h",
+    "src/litert/runtime/ion_buffer.h",
+    "src/litert/runtime/magic_number_utils.h",
+    "src/litert/runtime/profiler.h",
+    "src/litert/runtime/tensor_buffer.h",
+    "src/litert/runtime/tensor_buffer_registry.h",
+    "src/litert/runtime/tensor_buffer_requirements.h",
+    "src/litert/runtime/tfl_utils.h",
+  ]
+  public_deps = [
+    ":mutable_tflite_schema",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/flatbuffers",
+    "//third_party/zlib",
+  ]
+  public_configs = [ ":litert_config" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":warnings_config",
+  ]
+  deps = [
+    ":litert_build_config",
+    ":mutable_tflite_schema",
+  ]
+  visibility = [
+    ":litert",
+    ":litert_c",
+    ":litert_cc",
+    ":litert_compiler",
+    ":litert_core",
+    ":litert_runtime",
+    ":litert_runtime_accelerators",
+  ]
+}
+
+copy("litert_build_config") {
+  sources = [ "src/litert/build_common/config/build_config_gpu.h" ]
+  outputs = [ "$target_gen_dir/src/litert/build_common/build_config.h" ]
+}
+
+source_set("litert_c") {
+  sources = [
+    "src/litert/c/internal/litert_accelerator.cc",
+    "src/litert/c/internal/litert_accelerator_registration.cc",
+    "src/litert/c/internal/litert_delegate_wrapper.cc",
+    "src/litert/c/internal/litert_logging.cc",
+    "src/litert/c/internal/litert_tensor_buffer_registry.cc",
+    "src/litert/c/litert_common.cc",
+    "src/litert/c/litert_compiled_model.cc",
+    "src/litert/c/litert_environment.cc",
+    "src/litert/c/litert_layout.cc",
+    "src/litert/c/litert_metrics.cc",
+    "src/litert/c/litert_model.cc",
+    "src/litert/c/litert_op_options.cc",
+    "src/litert/c/litert_opaque_options.cc",
+    "src/litert/c/litert_options.cc",
+    "src/litert/c/litert_profiler.cc",
+    "src/litert/c/litert_tensor_buffer.cc",
+    "src/litert/c/litert_tensor_buffer_requirements.cc",
+    "src/litert/c/options/litert_compiler_options.cc",
+    "src/litert/c/options/litert_cpu_options.cc",
+    "src/litert/c/options/litert_gpu_options.cc",
+    "src/litert/c/options/litert_runtime_options.cc",
+  ]
+  deps = [ ":litert_headers" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":litert" ]
+}
+
+source_set("litert_cc") {
+  sources = [
+    "src/litert/cc/internal/litert_op_options.cc",
+    "src/litert/cc/internal/litert_shared_library.cc",
+    "src/litert/cc/internal/litert_tensor_buffer_utils.cc",
+    "src/litert/cc/litert_compiled_model.cc",
+    "src/litert/cc/litert_macros.cc",
+    "src/litert/cc/litert_model.cc",
+    "src/litert/cc/litert_tensor_buffer.cc",
+    "src/litert/cc/options/litert_cpu_options.cc",
+    "src/litert/cc/options/litert_gpu_options.cc",
+    "src/litert/cc/options/litert_magic_number_options.cc",
+    "src/litert/cc/options/litert_runtime_options.cc",
+  ]
+  deps = [ ":litert_headers" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":litert" ]
+}
+
+source_set("litert_compiler") {
+  sources = [
+    "src/litert/compiler/plugin/algo.cc",
+    "src/litert/compiler/plugin/compiler_plugin.cc",
+  ]
+  deps = [
+    ":litert_headers",
+    "//third_party/xnnpack",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":litert" ]
+}
+
+source_set("litert_runtime_accelerators") {
+  sources = [
+    "src/litert/runtime/accelerators/auto_registration.cc",
+    "src/litert/runtime/accelerators/xnnpack/xnnpack_accelerator.cc",
+  ]
+  deps = [ ":litert_headers" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":litert" ]
+}
+
+source_set("litert_core") {
+  sources = [
+    "src/litert/core/buffer_error_reporter.cc",
+    "src/litert/core/build_stamp.cc",
+    "src/litert/core/dispatch_op_schema.cc",
+    "src/litert/core/environment.cc",
+    "src/litert/core/environment_options.cc",
+    "src/litert/core/error_reporter.cc",
+    "src/litert/core/filesystem.cc",
+    "src/litert/core/model/flatbuffer_to_litert.cc",
+    "src/litert/core/model/litert_to_flatbuffer.cc",
+    "src/litert/core/model/model.cc",
+    "src/litert/core/model/model_load.cc",
+    "src/litert/core/model/model_serialize.cc",
+    "src/litert/core/util/flatbuffer_tools.cc",
+    "src/litert/core/util/tensor_type_util.cc",
+  ]
+  if (is_win) {
+    sources += [ "src/litert/core/dynamic_loading_windows.cc" ]
+  } else {
+    sources += [ "src/litert/core/dynamic_loading.cc" ]
+  }
+  deps = [ ":litert_headers" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":litert" ]
+}
+
+source_set("litert_runtime") {
+  sources = [
+    "src/litert/runtime/accelerator_registry.cc",
+    "src/litert/runtime/compiled_model.cc",
+    "src/litert/runtime/custom_buffer.cc",
+    "src/litert/runtime/custom_op_dispatcher.cc",
+    "src/litert/runtime/dispatch/dispatch_opaque_options.cc",
+    "src/litert/runtime/dmabuf_buffer.cc",
+    "src/litert/runtime/event.cc",
+    "src/litert/runtime/external_litert_buffer_context.cc",
+    "src/litert/runtime/fastrpc_buffer.cc",
+    "src/litert/runtime/gl_buffer.cc",
+    "src/litert/runtime/gl_texture.cc",
+    "src/litert/runtime/gpu_environment.cc",
+    "src/litert/runtime/ion_buffer.cc",
+    "src/litert/runtime/magic_number_utils.cc",
+    "src/litert/runtime/profiler.cc",
+    "src/litert/runtime/tensor_buffer.cc",
+    "src/litert/runtime/tensor_buffer_registry.cc",
+    "src/litert/runtime/tensor_buffer_requirements.cc",
+    "src/litert/runtime/tfl_utils.cc",
+  ]
+  if (is_android) {
+    sources += [
+      "src/litert/runtime/ahwb_buffer.cc",
+      "src/litert/runtime/ahwb_wrapper.cc",
+    ]
+  }
+  deps = [
+    ":litert_headers",
+    "//third_party/xnnpack",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":*" ]
+}

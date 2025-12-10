@@ -524,6 +524,9 @@
 [submodule "third_party/tflite/src"]
 	path = third_party/tflite/src
 	url = https://chromium.googlesource.com/external/github.com/tensorflow/tensorflow
+[submodule "third_party/litert/src"]
+	path = third_party/litert/src
+	url = https://chromium.googlesource.com/external/github.com/google-ai-edge/LiteRT
 [submodule "third_party/vulkan-deps"]
 	path = third_party/vulkan-deps
 	url = https://chromium.googlesource.com/vulkan-deps
