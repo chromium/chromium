@@ -621,6 +621,11 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
         .Add<tracked_element::mojom::TrackedElementHandler>();
   }
 
+  if (features::IsWebUIReloadButtonEnabled()) {
+    registry.ForWebUI<ReloadButtonUI>()
+        .Add<reload_button::mojom::PageHandlerFactory>();
+  }
+
   // TODO(crbug.com/452983498): Migrate all remaining
   // RegisterWebUIControllerInterfaceBinder calls to registry.ForWebUI().Add()
   // calls.
@@ -656,11 +661,6 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
   registry.ForWebUI<NtpMicrosoftAuthUntrustedUI>()
       .Add<new_tab_page::mojom::
                MicrosoftAuthUntrustedDocumentInterfacesFactory>();
-
-  if (features::IsWebUIReloadButtonEnabled()) {
-    registry.ForWebUI<ReloadButtonUI>()
-        .Add<reload_button::mojom::PageHandlerFactory>();
-  }
 }
 
 }  // namespace chrome::internal
