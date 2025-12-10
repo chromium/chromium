@@ -2520,8 +2520,7 @@
   {
     "name": "disable-instance-limit",
     "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com", "gurmeetk@google.com" ],
-    // The study is extended and now includes XR devices.
-    "expiry_milestone": 145
+    "expiry_milestone": 147
   },
   {
     "name": "disable-javascript-harmony-shipping",
