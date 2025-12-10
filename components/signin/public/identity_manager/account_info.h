@@ -258,6 +258,7 @@ class AccountInfo::Builder {
   AccountInfo Build();
 
   // Setters for CoreAccountInfo members.
+  Builder& SetEmail(std::string_view email);
   Builder& SetAccountId(const CoreAccountId& account_id);
   Builder& SetIsUnderAdvancedProtection(bool is_under_advanced_protection);
 

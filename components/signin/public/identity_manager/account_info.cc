@@ -301,6 +301,12 @@ AccountInfo AccountInfo::Builder::Build() {
   return std::move(account_info_);
 }
 
+AccountInfo::Builder& AccountInfo::Builder::SetEmail(std::string_view email) {
+  CHECK(!email.empty());
+  account_info_.email = std::string(email);
+  return *this;
+}
+
 AccountInfo::Builder& AccountInfo::Builder::SetAccountId(
     const CoreAccountId& account_id) {
   CHECK(!account_id.empty());
