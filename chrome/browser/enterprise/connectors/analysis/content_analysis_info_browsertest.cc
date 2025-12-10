@@ -131,6 +131,19 @@ std::vector<ActiveUserTestCase> TestCases() {
           .expected_active_email = "",
       },
 
+      // The user specified by "authuser=N" has precedence on the one specified
+      // in "/u/<N>/".
+      ActiveUserTestCase{
+          .url = "https://docs.google.com/abcd/u/1/efgh/?authuser=0",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "foo@gmail.com",
+      },
+      ActiveUserTestCase{
+          .url = "https://docs.google.com/abcd/u/0/efgh/?authuser=1",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "bar@gmail.com",
+      },
+
       // No index in URL test cases:
       ActiveUserTestCase{
           .url = "https://docs.google.com/",
