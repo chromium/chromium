@@ -213,12 +213,12 @@ TEST_F(PriceTrackingPromoMediatorTest, TestPriceTrackingSettings) {
       pref_service()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
 }
 
-TEST_F(PriceTrackingPromoMediatorTest, TestRemovePriceTrackingPromo) {
+TEST_F(PriceTrackingPromoMediatorTest, TestDisableModule) {
   id mockDelegate =
       OCMStrictProtocolMock(@protocol(PriceTrackingPromoMediatorDelegate));
   OCMExpect([mockDelegate removePriceTrackingPromo]);
   mediator().delegate = mockDelegate;
-  [mediator() removePriceTrackingPromo];
+  [mediator() disableModule];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 

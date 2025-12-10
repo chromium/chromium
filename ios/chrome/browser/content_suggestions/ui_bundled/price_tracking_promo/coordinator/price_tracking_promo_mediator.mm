@@ -175,13 +175,6 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   return _priceTrackingPromoItem;
 }
 
-// TODO(crbug.com/371870438) merge disableModule &&
-// removePriceTrackingPromo. They are the same (the price tracking
-// promo can only be displayed once).
-- (void)removePriceTrackingPromo {
-  [self disableModule];
-}
-
 - (void)enablePriceTrackingSettingsAndShowSnackbar {
   [self enablePriceTrackingNotificationsSettings];
   [self.dispatcher showSnackbarMessage:[self snackbarMessage]];

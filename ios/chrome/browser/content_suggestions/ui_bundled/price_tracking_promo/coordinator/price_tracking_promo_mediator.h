@@ -29,7 +29,20 @@ class PrefService;
 class PushNotificationService;
 @protocol SnackbarCommands;
 
+// Mediator for the Price Tracking Promo card in the Magic Stack.
 @interface PriceTrackingPromoMediator : NSObject <PriceTrackingPromoCommands>
+
+// Delegate used to communicate events back to the owner of this class.
+@property(nonatomic, weak) id<PriceTrackingPromoMediatorDelegate> delegate;
+
+// Dispatcher.
+@property(nonatomic, weak) id<ApplicationCommands, SnackbarCommands> dispatcher;
+
+// Delegate to delegate actions to the owner of the PriceTrackingPromoMediator
+@property(nonatomic, weak) id<PriceTrackingPromoActionDelegate> actionDelegate;
+
+// Delegate for reporting content suggestions actions to the NTP.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 // Default initializer.
 - (instancetype)
@@ -46,6 +59,7 @@ class PushNotificationService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects this mediator.
 - (void)disconnect;
 
 // Resets the latest fetched subscriptions and re-fetches if applicable.
@@ -61,24 +75,9 @@ class PushNotificationService;
 // latest subscription to be displayed.
 - (PriceTrackingPromoItem*)priceTrackingPromoItemToShow;
 
-// Remove price tracking promo from magic stack
-- (void)removePriceTrackingPromo;
-
 // Enable price tracking notifications settings and show
 // snackbar giving user the option to manage these settings.
 - (void)enablePriceTrackingSettingsAndShowSnackbar;
-
-// Delegate used to communicate events back to the owner of this class.
-@property(nonatomic, weak) id<PriceTrackingPromoMediatorDelegate> delegate;
-
-// Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands, SnackbarCommands> dispatcher;
-
-// Delegate to delegate actions to the owner of the PriceTrackingPromoMediator
-@property(nonatomic, weak) id<PriceTrackingPromoActionDelegate> actionDelegate;
-
-// Delegate for reporting content suggestions actions to the NTP.
-@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 @end
 

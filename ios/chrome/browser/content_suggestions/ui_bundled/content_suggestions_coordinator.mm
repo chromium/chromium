@@ -1344,8 +1344,7 @@ using segmentation_platform::TipIdentifier;
                   base::RecordAction(base::UserMetricsAction(
                       "Commerce.PriceTracking.MagicStackPromo.Reenable.Deny"));
                   [strongSelf dismissAlertCoordinator];
-                  [strongSelf->_priceTrackingPromoMediator
-                          removePriceTrackingPromo];
+                  [strongSelf->_priceTrackingPromoMediator disableModule];
                 }
                  style:UIAlertActionStyleCancel];
   [_priceTrackingPromoAlertCoordinator start];
@@ -1360,7 +1359,7 @@ using segmentation_platform::TipIdentifier;
           [self->_priceTrackingPromoMediator
                   enablePriceTrackingSettingsAndShowSnackbar];
         }
-        [self->_priceTrackingPromoMediator removePriceTrackingPromo];
+        [self->_priceTrackingPromoMediator disableModule];
       }];
 }
 
