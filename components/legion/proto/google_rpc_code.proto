@@ -1,0 +1,50 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// This file contains enum code from
+// third_party/oak/src/third_party/google/rpc/code.proto
+edition = "2023";
+
+package legion.rpc;
+
+option optimize_for = LITE_RUNTIME;
+
+// The canonical error codes for Google APIs.
+//
+// LINT.IfChange(GoogleRpcCode)
+enum GoogleRpcCode {
+  OK = 0;
+  // HTTP Mapping: 499 Client Closed Request
+  CANCELLED = 1;
+  // HTTP Mapping: 500 Internal Server Error
+  UNKNOWN = 2;
+  // HTTP Mapping: 400 Bad Request
+  INVALID_ARGUMENT = 3;
+  // HTTP Mapping: 504 Gateway Timeout
+  DEADLINE_EXCEEDED = 4;
+  // HTTP Mapping: 404 Not Found
+  NOT_FOUND = 5;
+  // HTTP Mapping: 409 Conflict
+  ALREADY_EXISTS = 6;
+  // HTTP Mapping: 403 Forbidden
+  PERMISSION_DENIED = 7;
+  // HTTP Mapping: 429 Too Many Requests
+  RESOURCE_EXHAUSTED = 8;
+  // HTTP Mapping: 400 Bad Request
+  FAILED_PRECONDITION = 9;
+  // HTTP Mapping: 409 Conflict
+  ABORTED = 10;
+  // HTTP Mapping: 400 Bad Request
+  OUT_OF_RANGE = 11;
+  // HTTP Mapping: 501 Not Implemented
+  UNIMPLEMENTED = 12;
+  // HTTP Mapping: 500 Internal Server Error
+  INTERNAL = 13;
+  // HTTP Mapping: 503 Service Unavailable
+  UNAVAILABLE = 14;
+  // HTTP Mapping: 500 Internal Server Error
+  DATA_LOSS = 15;
+  // HTTP Mapping: 401 Unauthorized
+  UNAUTHENTICATED = 16;
+}
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:GoogleRpcCode)

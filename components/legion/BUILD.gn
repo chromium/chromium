@@ -7,12 +7,18 @@ import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [ "proto/legion.proto" ]
+  sources = [
+    "proto/google_rpc_code.proto",
+    "proto/legion.proto",
+  ]
 }
 
 # Generate serialization helper.
 proto_extras("proto_extras") {
-  sources = [ "proto/legion.proto" ]
+  sources = [
+    "proto/google_rpc_code.proto",
+    "proto/legion.proto",
+  ]
   deps = [ ":proto" ]
 }
 
@@ -34,6 +40,8 @@ source_set("legion") {
     "client_impl.cc",
     "client_impl.h",
     "error_code.h",
+    "google_rpc_code.cc",
+    "google_rpc_code.h",
     "legion_common.h",
     "secure_channel.h",
     "secure_channel_impl.cc",
@@ -72,6 +80,7 @@ source_set("unit_tests") {
   sources = [
     "attestation_handler_impl_unittest.cc",
     "client_impl_unittest.cc",
+    "google_rpc_code_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
   ]

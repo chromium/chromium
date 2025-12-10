@@ -91,6 +91,21 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Legion.Client.ServerErrorCode" enum="GoogleRpcCode"
+    expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the server-side errors that occur during the request lifecycle.
+    Recorded for every failed request due to a server error. The error codes are
+    based on the canonical Google RPC codes. See
+    components/legion/proto/google_rpc_code.proto for the enum values.
+  </summary>
+</histogram>
+
 <histogram name="Legion.SecureChannel.GetAttestationRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
