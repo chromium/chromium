@@ -485,11 +485,9 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 // have seen a credit card form and the user has an Amex card.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_AmexCategoryBenefits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCardBenefitsSync,
-                            features::kAutofillEnableCardBenefitsSourceSync},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature{
+      features::kAutofillEnableCardBenefitsSync};
+
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -525,6 +523,7 @@ TEST_F(
                             features::
                                 kAutofillEnableFlatRateCardBenefitsBlocklist},
       /*disabled_features=*/{});
+
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -618,9 +617,9 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/
       {features::kAutofillEnableCardBenefitsSync,
-       features::kAutofillEnableAllowlistForBmoCardCategoryBenefits,
-       features::kAutofillEnableCardBenefitsSourceSync},
+       features::kAutofillEnableAllowlistForBmoCardCategoryBenefits},
       /*disabled_features=*/{});
+
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -658,9 +657,8 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_AmexCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCardBenefitsSourceSync},
-      /*disabled_features=*/{features::kAutofillEnableCardBenefitsSync});
+  feature_list.InitAndDisableFeature(features::kAutofillEnableCardBenefitsSync);
+
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -691,10 +689,9 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_BmoCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCardBenefitsSourceSync},
-      /*disabled_features=*/{
-          features::kAutofillEnableAllowlistForBmoCardCategoryBenefits});
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableAllowlistForBmoCardCategoryBenefits);
+
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -1299,8 +1296,6 @@ class BenefitOptimizationToBenefitCategoryTest
 
  private:
   CreditCard card_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillEnableCardBenefitsSourceSync};
 };
 
 // Tests that the correct benefit category is returned when a benefit

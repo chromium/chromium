@@ -501,15 +501,11 @@ class CreditCardSuggestionGeneratorTest
 // setup and parameters. Params:
 // 1. Function reference to call which creates the appropriate credit card
 // benefit for the unittest.
-// 2. Whether the flag to sync benefits source is enabled.
-// 3. Issuer ID which is set for the credit card with benefits.
-// 4. Benefit source which is set for the credit card with benefits.
+// 2. Benefit source which is set for the credit card with benefits.
 class AutofillCreditCardBenefitsLabelTest
     : public CreditCardSuggestionGeneratorTest,
       public ::testing::WithParamInterface<
           std::tuple<base::FunctionRef<CreditCardBenefit()>,
-                     bool,
-                     std::string,
                      std::string>> {
  public:
   void SetUp() override {
@@ -521,9 +517,7 @@ class AutofillCreditCardBenefitsLabelTest
          {features::kAutofillEnableFlatRateCardBenefitsFromCurinos, true},
          {features::kAutofillEnableCardBenefitsIph, true},
          {features::kAutofillEnableNewFopDisplayDesktop, true},
-         {features::kAutofillEnableFlatRateCardBenefitsBlocklist, true},
-         {features::kAutofillEnableCardBenefitsSourceSync,
-          IsCreditCardBenefitsSourceSyncEnabled()}});
+         {features::kAutofillEnableFlatRateCardBenefitsBlocklist, true}});
 
     std::u16string benefit_description;
     int64_t instrument_id;
@@ -577,24 +571,15 @@ class AutofillCreditCardBenefitsLabelTest
         /*guid=*/"00000000-0000-0000-0000-000000000001",
         /*server_id=*/"server_id1",
         /*instrument_id=*/instrument_id);
-    if (IsCreditCardBenefitsSourceSyncEnabled()) {
-      card_.set_benefit_source(GetBenefitSource());
-    } else {
-      card_.set_issuer_id(GetIssuerId());
-    }
+
+    card_.set_benefit_source(GetBenefitSource());
     payments_data().AddServerCreditCard(card_);
   }
 
   CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
 
-  bool IsCreditCardBenefitsSourceSyncEnabled() const {
-    return std::get<1>(GetParam());
-  }
-
-  const std::string& GetIssuerId() const { return std::get<2>(GetParam()); }
-
   const std::string& GetBenefitSource() const {
-    return std::get<3>(GetParam());
+    return std::get<1>(GetParam());
   }
 
   const CreditCard& card() { return card_; }
@@ -633,8 +618,6 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
                                      &test::GetActiveCreditCardCategoryBenefit,
                                      &test::GetActiveCreditCardMerchantBenefit),
-                     ::testing::Bool(),
-                     ::testing::Values("amex", "bmo"),
                      ::testing::Values("amex", "bmo", "curinos")));
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -646,8 +629,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
                                   card(), autofill_client(), CREDIT_CARD_NUMBER,
                                   /*virtual_card_option=*/false,
                                   /*card_linked_offer_available=*/false);
-  if (IsCreditCardBenefitsSourceSyncEnabled() &&
-      GetBenefitSource() == "curinos" &&
+  if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_TRUE(suggestion.labels.empty());
   } else {
@@ -668,8 +650,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                   /*virtual_card_option=*/false,
                                   /*card_linked_offer_available=*/false);
   ASSERT_FALSE(autofill_client().GetAutofillOptimizationGuideDecider());
-  if (IsCreditCardBenefitsSourceSyncEnabled() &&
-      GetBenefitSource() == "curinos" &&
+  if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_TRUE(suggestion.labels.empty());
   } else if (std::holds_alternative<CreditCardCategoryBenefit>(GetBenefit())) {
@@ -690,8 +671,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                   card(), autofill_client(), CREDIT_CARD_NUMBER,
                                   /*virtual_card_option=*/false,
                                   /*card_linked_offer_available=*/false);
-  if (IsCreditCardBenefitsSourceSyncEnabled() &&
-      GetBenefitSource() == "curinos" &&
+  if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_EQ(suggestion.iph_metadata.feature, nullptr);
   } else {
@@ -745,8 +725,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 
   if (std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_EQ(suggestion.iph_metadata.feature, nullptr);
-  } else if (IsCreditCardBenefitsSourceSyncEnabled() &&
-             GetBenefitSource() == "curinos") {
+  } else if (GetBenefitSource() == "curinos") {
     // Currently, Curinos only supports flat rate benefit, so when benefit
     // source is curinos, and the benefit is not a flat rate benefit, no
     // benefit suggestion will be shown.
@@ -766,8 +745,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                   card(), autofill_client(), CREDIT_CARD_NUMBER,
                                   /*virtual_card_option=*/true,
                                   /*card_linked_offer_available=*/false);
-  if (IsCreditCardBenefitsSourceSyncEnabled() &&
-      GetBenefitSource() == "curinos" &&
+  if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_TRUE(suggestion.labels.empty());
   } else {
@@ -879,8 +857,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   // Benefit description is not returned for flat rate benefits.
   if (std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_TRUE(suggestion.labels.empty());
-  } else if ((IsCreditCardBenefitsSourceSyncEnabled() &&
-              GetBenefitSource() == "curinos")) {
+  } else if (GetBenefitSource() == "curinos") {
     // Currently, Curinos only supports flat rate benefit, so when benefit
     // source is curinos, and the beneit is not a flat rate benefit, no
     // benefit suggestion will be shown.
@@ -901,8 +878,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                   card(), autofill_client(), CREDIT_CARD_NUMBER,
                                   /*virtual_card_option=*/false,
                                   /*card_linked_offer_available=*/false);
-  if (IsCreditCardBenefitsSourceSyncEnabled() &&
-      GetBenefitSource() == "curinos" &&
+  if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_THAT(suggestion.labels,
                 ElementsAre(std::vector<Suggestion::Text>{Suggestion::Text(
@@ -931,8 +907,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                   card(), autofill_client(), CREDIT_CARD_NUMBER,
                                   /*virtual_card_option=*/true,
                                   /*card_linked_offer_available=*/false);
-  if (IsCreditCardBenefitsSourceSyncEnabled() &&
-      GetBenefitSource() == "curinos" &&
+  if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_THAT(suggestion.labels,
                 ElementsAre(std::vector<Suggestion::Text>{
@@ -968,8 +943,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                       CREDIT_CARD_NUMBER,
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
-  if (IsCreditCardBenefitsSourceSyncEnabled() &&
-      GetBenefitSource() == "curinos" &&
+  if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_THAT(
         suggestion.labels,
@@ -1098,8 +1072,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
-  if (IsCreditCardBenefitsSourceSyncEnabled() &&
-      GetBenefitSource() == "curinos" &&
+  if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_THAT(suggestions[0],
                 EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
@@ -1136,8 +1109,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kVirtualCreditCardEntry);
-  if (IsCreditCardBenefitsSourceSyncEnabled() &&
-      GetBenefitSource() == "curinos" &&
+  if (GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
     EXPECT_THAT(suggestions[0],
                 EqualLabels({{l10n_util::GetStringUTF16(

@@ -549,14 +549,7 @@ class CreditCard : public FormGroup {
     product_terms_url_ = product_terms_url;
   }
 
-  // TODO(crbug.com/416338314): Remove kAutofillEnableCardBenefitsSourceSync
-  // once this flag is enabled by default and no drawbacks occur.
-  const std::string& benefit_source() const {
-    return base::FeatureList::IsEnabled(
-               features::kAutofillEnableCardBenefitsSourceSync)
-               ? benefit_source_
-               : issuer_id_;
-  }
+  const std::string& benefit_source() const { return benefit_source_; }
 
   void set_benefit_source(std::string_view benefit_source) {
     benefit_source_ = std::string(benefit_source);

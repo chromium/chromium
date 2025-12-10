@@ -835,8 +835,7 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     feature.InitWithFeatureStates(
         {{features::kAutofillEnableCvcStorageAndFilling,
           is_cvc_storage_flag_enabled},
-         {features::kAutofillEnableCardInfoRuntimeRetrieval, true},
-         {features::kAutofillEnableCardBenefitsSourceSync, true}});
+         {features::kAutofillEnableCardInfoRuntimeRetrieval, true}});
 
     std::vector<CreditCard> inputs;
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
@@ -1215,10 +1214,9 @@ TEST_F(PaymentsAutofillTableTest, RemoveWrongServerCardMetadata) {
 TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   // Set a card data.
   base::test::ScopedFeatureList feature;
-  feature.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCardInfoRuntimeRetrieval,
-                            features::kAutofillEnableCardBenefitsSourceSync},
-      /*disabled_features=*/{});
+  feature.InitAndEnableFeature(
+      features::kAutofillEnableCardInfoRuntimeRetrieval);
+
   std::vector<CreditCard> inputs;
   inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "card1");
   inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
@@ -1304,7 +1302,6 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
 TEST_F(PaymentsAutofillTableTest,
        GetServerCreditCards_BenefitSourceOutOfRange) {
   base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillEnableCardBenefitsSourceSync);
 
   std::vector<CreditCard> inputs;
   inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "server id");

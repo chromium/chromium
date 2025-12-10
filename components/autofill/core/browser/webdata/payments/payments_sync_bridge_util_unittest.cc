@@ -120,9 +120,6 @@ class PaymentsSyncBridgeUtilTest : public testing::Test {
 
 // Tests that PopulateWalletTypesFromSyncData behaves as expected.
 TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillEnableCardBenefitsSourceSync);
-
   syncer::EntityChangeList entity_data;
   // Add two credit cards.
   std::string credit_card_id_1 = "credit_card_1";
@@ -502,16 +499,9 @@ INSTANTIATE_TEST_SUITE_P(
 // matching benefit source string.
 class PaymentsSyncBridgeUtilCardBenefitsSourceSyncTest
     : public testing::TestWithParam<
-          std::tuple<bool,
-                     sync_pb::WalletMaskedCreditCard::CardBenefitSource,
+          std::tuple<sync_pb::WalletMaskedCreditCard::CardBenefitSource,
                      std::string_view>> {
  public:
-  PaymentsSyncBridgeUtilCardBenefitsSourceSyncTest() {
-    feature_list_.InitWithFeatureState(
-        features::kAutofillEnableCardBenefitsSourceSync,
-        IsSyncingFlagEnabled());
-  }
-
   syncer::EntityChangeList PrepareSyncDataWithBenefitSource() {
     sync_pb::AutofillWalletSpecifics wallet_specifics_card =
         CreateAutofillWalletSpecificsForCard(
@@ -529,63 +519,40 @@ class PaymentsSyncBridgeUtilCardBenefitsSourceSyncTest
     return entity_data;
   }
 
-  bool IsSyncingFlagEnabled() { return std::get<0>(GetParam()); }
-
   sync_pb::WalletMaskedCreditCard::CardBenefitSource
   GetBenefitSourceForSpecifics() {
-    return std::get<1>(GetParam());
+    return std::get<0>(GetParam());
   }
 
-  std::string_view GetBenefitSourceString() { return std::get<2>(GetParam()); }
+  std::string_view GetBenefitSourceString() { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Initializes the parameterized test suite with a boolean indicate whether the
-// feature flag is enabled,
+// Initializes the parameterized test suite with
 // `sync_pb::WalletMaskedCreditCard::CardBenefitSource` enum and the
 // corresponding benefit source string.
 INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     PaymentsSyncBridgeUtilCardBenefitsSourceSyncTest,
     testing::Values(
-        std::make_tuple(true,
-                        sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN,
-                        ""),
-        std::make_tuple(true,
-                        sync_pb::WalletMaskedCreditCard::SOURCE_AMEX,
+        std::make_tuple(sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN, ""),
+        std::make_tuple(sync_pb::WalletMaskedCreditCard::SOURCE_AMEX,
                         kAmexCardBenefitSource),
-        std::make_tuple(true,
-                        sync_pb::WalletMaskedCreditCard::SOURCE_BMO,
+        std::make_tuple(sync_pb::WalletMaskedCreditCard::SOURCE_BMO,
                         kBmoCardBenefitSource),
-        std::make_tuple(true,
-                        sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS,
-                        kCurinosCardBenefitSource),
-        std::make_tuple(false,
-                        sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN,
-                        ""),
-        std::make_tuple(false,
-                        sync_pb::WalletMaskedCreditCard::SOURCE_AMEX,
-                        kAmexCardBenefitSource),
-        std::make_tuple(false,
-                        sync_pb::WalletMaskedCreditCard::SOURCE_BMO,
-                        kBmoCardBenefitSource),
-        std::make_tuple(false,
-                        sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS,
+        std::make_tuple(sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS,
                         kCurinosCardBenefitSource)),
     [](const testing::TestParamInfo<
         PaymentsSyncBridgeUtilCardBenefitsSourceSyncTest::ParamType>& info) {
-      return base::StrCat({std::get<0>(info.param) ? "BenefitSourceEnabled_"
-                                                   : "BenefitSourceDisabled_",
-                           std::get<2>(info.param).empty()
+      return base::StrCat({std::get<1>(info.param).empty()
                                ? "SourceUnknown"
-                               : std::get<2>(info.param)});
+                               : std::get<1>(info.param)});
     });
 
-// Tests that when `kAutofillEnableCardBenefitsSourceSync` is enabled, benefit
-// source will set based on the benefit source enum from the synced data.
-// When the flag is disabled, benefit source will not be set.
+// Tests that benefit source will set based on the benefit source enum from the
+// synced data.
 TEST_P(PaymentsSyncBridgeUtilCardBenefitsSourceSyncTest, BenefitSourceMapping) {
   // Add a card with benefit source to entity.
   syncer::EntityChangeList entity_data = PrepareSyncDataWithBenefitSource();
@@ -605,8 +572,7 @@ TEST_P(PaymentsSyncBridgeUtilCardBenefitsSourceSyncTest, BenefitSourceMapping) {
                                   payment_instrument_creation_options);
 
   ASSERT_EQ(1U, wallet_cards.size());
-  EXPECT_EQ(test_api(wallet_cards.front()).benefit_source(),
-            IsSyncingFlagEnabled() ? GetBenefitSourceString() : std::string());
+  EXPECT_EQ(wallet_cards.front().benefit_source(), GetBenefitSourceString());
 }
 
 // Verify that the billing address id from the card saved on disk is kept if it

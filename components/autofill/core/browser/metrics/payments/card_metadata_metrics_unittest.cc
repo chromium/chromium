@@ -576,13 +576,10 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Params:
 // 1. Whether card benefit feature flag is enabled.
-// 2. Whether card benefit source sync feature flag is enabled.
-// 3. Issuer id of the card with a benefit available.
-// 4. Benefit source of the card with a benefit available.
+// 2. Benefit source of the card with a benefit available.
 class CardBenefitFormEventMetricsTest
     : public AutofillMetricsBaseTest,
-      public testing::TestWithParam<
-          std::tuple<bool, bool, std::string_view, std::string_view>> {
+      public testing::TestWithParam<std::tuple<bool, std::string_view>> {
  public:
   CardBenefitFormEventMetricsTest() = default;
   ~CardBenefitFormEventMetricsTest() override = default;
@@ -603,15 +600,10 @@ class CardBenefitFormEventMetricsTest
     paydm().AddCreditCard(local_card);
   }
 
-  // Adding an additional card from the same benefit source or issuer with
-  // benefit available.
+  // Adding an additional card from the same benefit source.
   void AddAdditionalCardWithBenefit() {
     CreditCard card = test::GetMaskedServerCard2();
-    if (is_card_benefits_source_sync_enabled()) {
-      card_.set_benefit_source(benefit_source());
-    } else {
-      card_.set_issuer_id(issuer_id());
-    }
+    card_.set_benefit_source(benefit_source());
     AddBenefitToCard(card);
 
     test_paydm().AddServerCreditCard(card);
@@ -665,19 +657,13 @@ class CardBenefitFormEventMetricsTest
 
     // Add a masked server card.
     card_ = test::GetMaskedServerCard();
-    if (is_card_benefits_source_sync_enabled()) {
-      card_.set_benefit_source(benefit_source());
-    } else {
-      card_.set_issuer_id(issuer_id());
-    }
+    card_.set_benefit_source(benefit_source());
     test_paydm().AddServerCreditCard(card_);
 
     // Initialize features based on test params.
     scoped_feature_list_.InitWithFeatureStates(
         /*feature_states=*/
         {{features::kAutofillEnableCardBenefitsSync, true},
-         {features::kAutofillEnableCardBenefitsSourceSync,
-          is_card_benefits_source_sync_enabled()},
          {features::kAutofillEnableCardBenefitsForAmericanExpress,
           card_benefits_are_enabled()},
          {features::kAutofillEnableCardBenefitsForBmo,
@@ -690,14 +676,8 @@ class CardBenefitFormEventMetricsTest
 
   // Return whether the benefit feature flag is enabled.
   bool card_benefits_are_enabled() const { return std::get<0>(GetParam()); }
-  // Returns whether the benefit source sync feature flag is enabled.
-  bool is_card_benefits_source_sync_enabled() const {
-    return std::get<1>(GetParam());
-  }
-  // Return the issuer id of the card saved on the client.
-  std::string_view issuer_id() const { return std::get<2>(GetParam()); }
   // Return the benefit source of the card saved on the client.
-  std::string_view benefit_source() const { return std::get<3>(GetParam()); }
+  std::string_view benefit_source() const { return std::get<1>(GetParam()); }
 
   const FormData& form() const { return form_; }
   CreditCard& card() { return card_; }
@@ -706,25 +686,9 @@ class CardBenefitFormEventMetricsTest
     return credit_card_number_field_index_;
   }
 
-  // Returns the histogram name for benefit source or issuer specific form
-  // events.
-  const std::string GetCardBenefitFormEventHistogram() const {
-    if (is_card_benefits_source_sync_enabled()) {
-      return base::StrCat({"Autofill.FormEvents.CreditCard.WithBenefits.",
-                           GetCardBenefitSourceSuffix(card_.benefit_source())});
-    } else {
-      return base::StrCat({"Autofill.FormEvents.CreditCard.WithBenefits.",
-                           GetCardIssuerIdOrNetworkSuffix(card_.issuer_id())});
-    }
-  }
-
-  // Returns the benefit source, issuer id, or network suffix for benefit
-  // source, issuer id, or network specific form events.
+  // Returns the benefit source for benefit source specific form events.
   const std::string_view GetSuffix() const {
-    if (is_card_benefits_source_sync_enabled()) {
-      return GetCardBenefitSourceSuffix(card_.benefit_source());
-    }
-    return GetCardIssuerIdOrNetworkSuffix(card_.issuer_id());
+    return GetCardBenefitSourceSuffix(card_.benefit_source());
   }
 
  private:
@@ -739,18 +703,13 @@ INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     CardBenefitFormEventMetricsTest,
     testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Values(kAmexCardIssuerId, kBmoCardIssuerId),
                      testing::Values(kAmexCardBenefitSource,
                                      kBmoCardBenefitSource,
                                      kCurinosCardBenefitSource)),
     [](auto& info) {
       return base::StrCat({std::get<0>(info.param) ? "BenefitFeatureEnabled_"
                                                    : "BenefitFeatureDisabled_",
-                           std::get<1>(info.param)
-                               ? "BenefitSourceSyncFeatureEnabled_"
-                               : "BenefitSourceSyncFeatureDisabled_",
-                           std::get<2>(info.param), std::get<3>(info.param)});
+                           std::get<1>(info.param)});
     });
 
 // =============================
@@ -1532,7 +1491,6 @@ class CardBenefitFormEventMetricsInvalidBenefitSourceTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {features::kAutofillEnableCardBenefitsSync,
-         features::kAutofillEnableCardBenefitsSourceSync,
          features::kAutofillEnableCardBenefitsForAmericanExpress,
          features::kAutofillEnableCardBenefitsForBmo,
          features::kAutofillEnableFlatRateCardBenefitsFromCurinos},

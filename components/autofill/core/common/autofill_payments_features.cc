@@ -106,10 +106,6 @@ BASE_FEATURE(kAutofillEnableCardBenefitsForBmo,
 // When enabled, card benefits IPH will be shown in Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardBenefitsIph, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, card benefit source will be synced to Chrome clients.
-BASE_FEATURE(kAutofillEnableCardBenefitsSourceSync,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableCardBenefitsSync,
