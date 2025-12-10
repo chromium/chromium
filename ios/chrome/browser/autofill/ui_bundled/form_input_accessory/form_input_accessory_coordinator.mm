@@ -459,9 +459,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
   }
 
   web::WebState* activeWebState = [self activeWebState];
-  if (!activeWebState) {
-    return;
-  }
 
   id<PasswordGenerationProvider> generationProvider =
       PasswordTabHelper::FromWebState(activeWebState)
@@ -603,9 +600,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
   [self reset];
 
   web::WebState* activeWebState = [self activeWebState];
-  if (!activeWebState) {
-    return;
-  }
 
   __weak __typeof(self) weakSelf = self;
   auto callback = base::BindOnce(^(const std::string& plusAddress) {
@@ -711,17 +705,11 @@ const base::Feature* FetchIPHFeatureFromEnum(
   return overrideModule ? overrideModule : _reauthenticationModule;
 }
 
-// Returns the active web state. May return nil.
+// Returns the active web state.
 - (web::WebState*)activeWebState {
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  if (!webState) {
-    // TODO: b/40940511 - The web state should not be nil, but we have seen
-    // cases of it being nil in the wild, so, for now, we handle the nil case
-    // gracefully, but still dump the information we need to find the root
-    // cause. This can be removed once the root cause has been fixed.
-    base::debug::DumpWithoutCrashing();
-  }
+  CHECK(webState);
   return webState;
 }
 
@@ -755,9 +743,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
 // Shows confirmation dialog before opening Other passwords.
 - (void)showConfirmationDialogToUseOtherPassword {
   web::WebState* activeWebState = [self activeWebState];
-  if (!activeWebState) {
-    return;
-  }
 
   const GURL& URL = activeWebState->GetLastCommittedURL();
   std::u16string origin = base::ASCIIToUTF16(
