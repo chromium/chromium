@@ -5,9 +5,11 @@
 #ifndef CONTENT_BROWSER_PERMISSIONS_PERMISSION_UTIL_H_
 #define CONTENT_BROWSER_PERMISSIONS_PERMISSION_UTIL_H_
 
+#include "components/content_settings/core/common/content_settings.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/origin.h"
 
 class GURL;
@@ -17,6 +19,10 @@ class RenderFrameHost;
 
 class PermissionUtil {
  public:
+  // Converts a PemissionStatus to a PermissionOption.
+  CONTENT_EXPORT static PermissionOption ToPermissionOption(
+      blink::mojom::PermissionStatus permission_status);
+
   // Returns the authoritative `embedding origin`, as a GURL, to be used for
   // permission decisions in `render_frame_host`.
   // TODO(crbug.com/40226169): Remove this method when possible.

@@ -114,6 +114,11 @@ class CONTENT_EXPORT PermissionOverrides {
     blink::PermissionType type_;
   };
 
+  std::optional<blink::mojom::PermissionStatus> GetStatus(
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin,
+      blink::PermissionType permission) const;
+
   base::flat_map<PermissionKey, blink::mojom::PermissionStatus> overrides_;
 };
 
