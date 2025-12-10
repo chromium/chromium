@@ -236,7 +236,7 @@ class RendererPerfTest : public VizPerfTest {
 
     child_context_provider_ =
         base::MakeRefCounted<TestInProcessContextProvider>(
-            TestContextType::kSoftwareRaster, /*support_locking=*/false);
+            TestContextType::kRaster, /*support_locking=*/false);
     child_context_provider_->BindToCurrentSequence();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
 

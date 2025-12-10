@@ -142,7 +142,7 @@ class OopPixelTest : public testing::Test,
 
     raster_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kGpuRaster, /*support_locking=*/false,
+            viz::TestContextType::kRaster, /*support_locking=*/false,
             &gr_shader_cache_, &use_shader_cache_shm_count_);
     gpu::ContextResult result =
         raster_context_provider_->BindToCurrentSequence();

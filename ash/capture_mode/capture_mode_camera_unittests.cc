@@ -4598,7 +4598,7 @@ void WaitForAndVerifyRenderedVideoFrame() {
   // raster to copy the video frame to a bitmap.
   auto context_provider =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kGpuRaster, /*support_locking=*/false);
+          viz::TestContextType::kRaster, /*support_locking=*/false);
   auto result = context_provider->BindToCurrentSequence();
   CHECK_EQ(result, gpu::ContextResult::kSuccess);
 

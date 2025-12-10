@@ -289,7 +289,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   if (!shared_worker_context_provider_ || shared_worker_context_provider_lost) {
     shared_worker_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kGpuRaster, /*support_locking=*/true);
+            viz::TestContextType::kRaster, /*support_locking=*/true);
     auto result = shared_worker_context_provider_->BindToCurrentSequence();
     if (result != gpu::ContextResult::kSuccess) {
       shared_worker_context_provider_ = nullptr;
@@ -365,7 +365,7 @@ InProcessContextFactory::SharedMainThreadRasterContextProvider() {
 
   shared_main_thread_contexts_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
+          viz::TestContextType::kRaster, /*support_locking=*/false);
 
   auto result = shared_main_thread_contexts_->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess) {

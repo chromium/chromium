@@ -33,9 +33,8 @@ namespace viz {
 class GpuServiceImpl;
 
 enum TestContextType {
-  kGLES2,            // Provides GLES2Interface.
-  kSoftwareRaster,   // Provides RasterInterface for software raster.
-  kGpuRaster         // Provides RasterInterface for GPU raster.
+  kGLES2,  // Provides GLES2Interface.
+  kRaster  // Provides RasterInterface.
 };
 
 class TestInProcessContextProvider

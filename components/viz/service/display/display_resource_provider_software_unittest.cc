@@ -66,7 +66,7 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
 
   void InitializeProvider() {
     auto context_provider = base::MakeRefCounted<TestInProcessContextProvider>(
-        TestContextType::kSoftwareRaster, /*support_locking=*/false);
+        TestContextType::kRaster, /*support_locking=*/false);
     gpu::ContextResult result = context_provider->BindToCurrentSequence();
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
     auto* gpu_service = context_provider->GpuService();

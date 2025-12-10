@@ -363,7 +363,7 @@ void PixelTest::FinishSetup() {
 
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kSoftwareRaster, /*support_locking=*/false);
+          viz::TestContextType::kRaster, /*support_locking=*/false);
   gpu::ContextResult result = child_context_provider_->BindToCurrentSequence();
   CHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();

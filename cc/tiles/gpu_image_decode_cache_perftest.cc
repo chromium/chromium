@@ -49,7 +49,7 @@ class GpuImageDecodeCachePerfTest : public testing::Test {
                kTimeCheckInterval),
         context_provider_(
             base::MakeRefCounted<viz::TestInProcessContextProvider>(
-                viz::TestContextType::kGpuRaster,
+                viz::TestContextType::kRaster,
                 /*support_locking=*/false)) {}
 
   void SetUp() override {
