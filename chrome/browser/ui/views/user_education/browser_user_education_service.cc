@@ -592,6 +592,20 @@ void MaybeRegisterChromeFeaturePromos(
                        "Attempts to trigger when user is on NTP to promote "
                        "customization.")));
 
+  // kIPHDesktopRealboxContextualSearchFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHDesktopRealboxContextualSearchFeature,
+          NewTabPageUI::kRealboxContextualEntrypointElementId,
+          IDS_IPH_REALBOX_CONTEXTUAL_ENTRYPOINT,
+          IDS_IPH_REALBOX_CONTEXTUAL_ENTRYPOINT_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetInAnyContext(true)
+          .SetMetadata(144, "romanarora@chromium.org",
+                       "Attempts to trigger when a user is on the NTP and the "
+                       "Realbox contextual entrypoint button is displayed.")));
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // kIPHExtensionsMenuFeature:
   registry.RegisterFeature(std::move(

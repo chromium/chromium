@@ -147,6 +147,9 @@
 using content::BrowserContext;
 using content::WebContents;
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
+                                      kRealboxContextualEntrypointElementId);
+
 bool NewTabPageUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -1211,7 +1214,8 @@ void NewTabPageUI::CreateHelpBubbleHandler(
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client), this,
       std::vector<ui::ElementIdentifier>{
-          CustomizeButtonsHandler::kCustomizeChromeButtonElementId});
+          CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
+          NewTabPageUI::kRealboxContextualEntrypointElementId});
 }
 
 void NewTabPageUI::CreateNtpPromoHandler(
