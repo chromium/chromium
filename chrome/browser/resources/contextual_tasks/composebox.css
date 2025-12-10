@@ -31,6 +31,8 @@
   --composebox-submit-container-inline-end:
       var(--composebox-last-icon-inline-end);
   --composebox-last-icon-inline-end: 12px;
+  --cr-composebox-file-chip-url-text-size: 11px;
+  --cr-composebox-file-chip-title-text-size: 14px;
   --cr-searchbox-height: 52px;
   --cr-searchbox-min-width: min(calc(100%), 1100px);
   --icon-menu-spacing: 6px;
@@ -40,15 +42,34 @@
 
 /* Light mode */
 :host(:not([dark-mode])) {
-  --color-composebox-cancel-button: #0a0a0a;
-  --color-composebox-font: #0a0a0a;
-  --color-composebox-font-dark: #0a0a0a;
-  --color-composebox-font-light: #0a0a0a;
-  --color-composebox-hover: #e9ebf0;
-  --color-composebox-lens-button: #0a0a0a;
-  --cr-composebox-background-color: #f3f5f6;
-  --cr-composebox-submit-button-hover-color: #e9ebf01a;
-  --search-background-color: white;
+  --composebox-context-menu-entrypoint-button-color: rgba(31,31,31, 1);
+  --color-composebox-cancel-button: rgba(10,10,10, 1);
+  --color-composebox-file-carousel-remove-gradient-start: rgba(0, 0, 0, 0.6);
+  --color-composebox-file-carousel-remove-gradient-end: transparent;
+  --color-composebox-file-carousel-url: rgba(91,91,91, 1);
+  /* The top border of matches/tab suggestions dropdown in context menu. */
+  --color-composebox-file-carousel-divider: rgba(255, 255, 255, 1);
+  --color-composebox-file-carousel-remove-button: rgba(255, 255, 255, 1);
+  --color-composebox-file-chip-background: rgba(239, 243, 250, 1);
+  --color-composebox-file-chip-background-hovered: rgba(225, 227, 232, 1);
+  --color-composebox-file-chip-favicon-background: rgba(225 224 238, 1);
+  --color-composebox-file-chip-text: rgba(31, 31, 31, 1);
+
+  --color-composebox-font: rgba(86, 89, 94, 1);
+  --color-composebox-font-dark: rgba(10, 10, 10, 1);
+  /* Used in matches + textbox input (but textbox input overridden
+   * for co-browsing to be color-composebox-font.
+   */
+  --color-composebox-font-light: rgba(31, 31, 31, 1);
+  --color-composebox-hover: rgba(233, 235, 240, 1);
+  --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
+
+  --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
+  --cr-composebox-background-color: rgba(243, 245, 246, 1);
+  --cr-composebox-submit-button-hover-color: rgba(32, 33, 36, .2);
+  /* Dropdown item color in context menu entrypoint. */
+  --cr-primary-text-color: rgba(31, 31, 31, 1);
+  --search-background-color: transparent;
   --search-background-color-rgb: 255, 255, 255;
 }
 
@@ -61,7 +82,7 @@
   --color-composebox-font-light: #e6e8f0;
   --color-composebox-hover: #3e3f43;
   --color-composebox-input-icon: var(--color-searchbox-results-icon);
-  --color-composebox-lens-button: #bfbfbf;
+  --color-composebox-voice-lens-button: #bfbfbf;
   --color-searchbox-results-background-hovered: #3c4043;
   --cr-composebox-background-color: #1d1e26;
   --cr-composebox-submit-button-hover-color: #3e3f431a;
@@ -236,7 +257,7 @@
 }
 
 #composebox::part(lens-icon) {
-  --cr-icon-button-fill-color: var(--color-composebox-lens-button);
+  --cr-icon-button-fill-color: var(--color-composebox-voice-lens-button);
   --cr-icon-button-icon-size: var(--icon-menu-icon-size);
   --cr-icon-button-size: var(--icon-menu-button-size);
   bottom: var(--composebox-icon-menu-bottom);
@@ -246,9 +267,10 @@
 }
 
 #composebox[show-submit_][submit-enabled_]::part(lens-icon) {
- inset-inline-end: calc(var(--composebox-submit-container-size)
+  inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-spacing)
       + var(--composebox-submit-container-inline-end));
+  transition: ease-out 100ms;
 }
 
 #composebox:not([expanding_])::part(cancel),
@@ -263,8 +285,10 @@
 /* icon-fade class; applies to submit and cancel. */
 #composebox::part(cancel),
 #composebox::part(submit) {
-  --icon-entry-transition: opacity 100ms linear 40ms;
-  --icon-exit-transition: opacity 100ms
+  --icon-entry-transition: opacity 600ms
+      var(--emphasized-curve, ease) 200ms;
+  --icon-exit-transition: opacity 600ms
+      var(--emphasized-curve, ease);
 }
 
 #composebox::part(submit) {
@@ -339,9 +363,11 @@
       + var(--icon-menu-button-size)
       + 2 * var(--icon-menu-spacing)
       + var(--composebox-submit-container-inline-end));
+  transition: ease-out 100ms;
 }
 
 #composebox::part(voice-icon) {
+  --cr-icon-button-fill-color: var(--color-composebox-voice-lens-button);
   --cr-icon-button-icon-size: var(--icon-menu-icon-size);
   --cr-icon-button-size: var(--icon-menu-button-size);
   bottom: var(--composebox-icon-menu-bottom);
@@ -350,6 +376,7 @@
       + var(--icon-menu-spacing)
       + var(--composebox-last-icon-inline-end));
   position: absolute;
+  transition: ease-out 100ms;
 }
 
 #composebox::part(voice-close-button) {
@@ -359,7 +386,7 @@
 }
 
 #composebox[in-voice-search-mode_]::part(composebox-background)::before {
- background-color: white;
+ background-color: var(--cr-composebox-background-color);
 }
 
 #composebox::part(composebox-background)::before {
