@@ -266,6 +266,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(userInterfaceStyleChanged)];
+
+  [self.mutator requestUIRefresh];
 }
 
 - (void)viewDidLayoutSubviews {
