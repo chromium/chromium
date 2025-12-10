@@ -1723,6 +1723,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Navigation.OnBeforeUnloadOverheadTime.BeforeUnloadHandlerRegistered"
+    units="ms" expires_after="2026-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Overhead time spent handling the OnBeforeUnload event from the browser
+    standpoint. More precisely, it is the total time between dispatch and
+    acknowledgment of the BeforeUnload event on the browser side, minus the
+    actual time spent executing the BeforeUnload handlers on the renderer side.
+    Recorded only when `for_legacy` is false which means there were mojo calls
+    between the browser process and the renderer process.
+  </summary>
+</histogram>
+
+<histogram
     name="Navigation.OnBeforeUnloadOverheadTime.NoBeforeUnloadHandlerRegistered"
     units="ms" expires_after="2026-04-12">
   <owner>hayato@chromium.org</owner>

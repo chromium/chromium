@@ -6731,6 +6731,17 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
         (renderer_before_unload_end_time - renderer_before_unload_start_time);
     base::UmaHistogramTimes("Navigation.OnBeforeUnloadOverheadTime",
                             on_before_unload_overhead_time);
+    if (for_legacy) {
+      base::UmaHistogramTimes(
+          "Navigation.OnBeforeUnloadOverheadTime."
+          "NoBeforeUnloadHandlerRegistered",
+          on_before_unload_overhead_time);
+    } else {
+      base::UmaHistogramTimes(
+          "Navigation.OnBeforeUnloadOverheadTime."
+          "BeforeUnloadHandlerRegistered",
+          on_before_unload_overhead_time);
+    }
 
     frame_tree_node_->navigator().LogBeforeUnloadTime(
         renderer_before_unload_start_time, renderer_before_unload_end_time,
@@ -16855,15 +16866,18 @@ void RenderFrameHostImpl::SendBeforeUnload(
                 kDumpWithoutCrashing) &&
         frame_tree()->controller().in_navigate_to_pending_entry();
 
-    base::TimeTicks beforeunload_end_time_for_legacy = base::TimeTicks::Now();
+    base::TimeTicks renderer_before_unload_end_time_for_legacy =
+        base::TimeTicks::Now();
 
     if (is_eligible_for_avoid_unnecessary_beforeunload &&
         IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabledFor(
             features::AvoidUnnecessaryBeforeUnloadCheckSyncMode::
                 kWithSendBeforeUnload)) {
       std::move(before_unload_closure)
-          .Run(/*proceed=*/true, send_before_unload_start_time_,
-               beforeunload_end_time_for_legacy);
+          .Run(/*proceed=*/true, /*renderer_before_unload_start_time=*/
+               send_before_unload_start_time_,
+               /*renderer_before_unload_end_time=*/
+               renderer_before_unload_end_time_for_legacy);
       return;
     }
 
@@ -16875,17 +16889,12 @@ void RenderFrameHostImpl::SendBeforeUnload(
             FROM_HERE,
             base::BindOnce(
                 [](blink::mojom::LocalFrame::BeforeUnloadCallback callback,
-                   base::TimeTicks start_time, base::TimeTicks end_time,
+                   base::TimeTicks renderer_before_unload_start_time,
+                   base::TimeTicks renderer_before_unload_end_time,
                    base::WeakPtr<NavigationControllerImpl>
                        navigation_controller,
                    const bool can_be_in_navigate_to_pending_entry,
                    const bool is_renderer_initiated_navigation) {
-                  // Measures the time a posted task spends in the queue before
-                  // execution. Recorded only when `for_legacy` is true.
-                  base::UmaHistogramTimes(
-                      "Navigation.OnBeforeUnloadOverheadTime."
-                      "NoBeforeUnloadHandlerRegistered",
-                      base::TimeTicks::Now() - end_time);
                   if (can_be_in_navigate_to_pending_entry &&
                       navigation_controller) {
                     navigation_controller
@@ -16893,8 +16902,9 @@ void RenderFrameHostImpl::SendBeforeUnload(
                   }
                   SCOPED_CRASH_KEY_BOOL("RFHI", "is_renderer_init_nav",
                                         is_renderer_initiated_navigation);
-                  std::move(callback).Run(/*proceed=*/true, start_time,
-                                          end_time);
+                  std::move(callback).Run(/*proceed=*/true,
+                                          renderer_before_unload_start_time,
+                                          renderer_before_unload_end_time);
                   if (can_be_in_navigate_to_pending_entry &&
                       navigation_controller) {
                     navigation_controller
@@ -16902,8 +16912,10 @@ void RenderFrameHostImpl::SendBeforeUnload(
                   }
                 },
                 std::move(before_unload_closure),
+                /*renderer_before_unload_start_time=*/
                 send_before_unload_start_time_,
-                beforeunload_end_time_for_legacy,
+                /*renderer_before_unload_end_time=*/
+                renderer_before_unload_end_time_for_legacy,
                 frame_tree()->controller().GetWeakPtr(),
                 can_be_in_navigate_to_pending_entry,
                 is_renderer_initiated_navigation));
