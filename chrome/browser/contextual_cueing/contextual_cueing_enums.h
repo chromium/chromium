@@ -51,8 +51,11 @@ enum class NudgeDecision {
   // The page was eligible for the nudge, but the browser actor is active on the
   // tab.
   kNudgeNotShownActorActiveOnTab = 15,
+  // The page was eligible for the nudge, but the contextual tasks side panel is
+  // open for the tab.
+  kNudgeNotShownContextualTasksSidePanelForTabShowing = 16,
   // New values above this line.
-  kMaxValue = kNudgeNotShownActorActiveOnTab,
+  kMaxValue = kNudgeNotShownContextualTasksSidePanelForTabShowing,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:NudgeDecision)
 

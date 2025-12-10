@@ -65,6 +65,9 @@ source_set("impl") {
       "//chrome/browser/glic",
     ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/contextual_tasks:ui" ]
+  }
   if (enable_pdf) {
     deps += [ "//components/pdf/browser" ]
   }

@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -338,6 +339,17 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
   }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
+
+#if !BUILDFLAG(IS_ANDROID)
+  auto* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(
+          browser_window_interface);
+  if (coordinator && coordinator->IsSidePanelOpenForContextualTask()) {
+    recorder->set_nudge_decision(
+        NudgeDecision::kNudgeNotShownContextualTasksSidePanelForTabShowing);
+    return true;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return false;
 }
