@@ -770,12 +770,7 @@ BASE_FEATURE(kFeatureManagementTimeOfDayWallpaper,
 // user first login.
 BASE_FEATURE(kFederatedService, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the federated strings service.
-BASE_FEATURE(kFederatedStringsService, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the federated strings service to schedule tasks.
-BASE_FEATURE(kFederatedStringsServiceScheduleTasks,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables scheduling of launcher query federated analytics version 2 tasks.
 BASE_FEATURE(kFederatedLauncherQueryAnalyticsVersion2Task,
@@ -2665,15 +2660,7 @@ bool IsFastPairSavedDevicesStrictOptInEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSavedDevicesStrictOptIn);
 }
 
-bool IsFederatedStringsServiceEnabled() {
-  return base::FeatureList::IsEnabled(kFederatedService) &&
-         base::FeatureList::IsEnabled(kFederatedStringsService);
-}
 
-bool IsFederatedStringsServiceScheduleTasksEnabled() {
-  return IsFederatedStringsServiceEnabled() &&
-         base::FeatureList::IsEnabled(kFederatedStringsServiceScheduleTasks);
-}
 
 bool IsFileManagerFuseBoxDebugEnabled() {
   return base::FeatureList::IsEnabled(kFuseBoxDebug);
