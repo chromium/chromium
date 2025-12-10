@@ -199,7 +199,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     private void initCookieInUse() {
-        mCookieInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.gm_database_24));
+        mCookieInUse.setIcon(
+                SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_database_fill_24dp));
         mCookieInUse.setImageView(
                 R.drawable.ic_delete_white_24dp, R.string.page_info_cookies_clear, null);
         // Disabling enables passthrough of clicks to the main preference.

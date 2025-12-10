@@ -293,7 +293,7 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.COOKIES:
                 return new ResourceItem(
-                        R.drawable.gm_database_24,
+                        R.drawable.ic_database_fill_24dp,
                         R.string.site_data_page_title,
                         ContentSetting.ALLOW,
                         ContentSetting.BLOCK,
