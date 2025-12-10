@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/barrier_callback.h"
-#include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -1325,8 +1323,6 @@ class ClientSideDetectionHostCreditCardFormTest : public InProcessBrowserTest {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kClientSideDetectionCreditCardForm,
         {
-            {kCsdCreditCardFormPingOnDetection.name, "true"},
-            {kCsdCreditCardFormPingOnInteraction.name, "true"},
             {kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
             {kCsdCreditCardFormSampleRate.name, "1.0"},
         });
@@ -1405,15 +1401,12 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
 
-  // Navigation trigger preclassification on credit card form detection.
   // Form focus will trigger preclassification on credit card form interaction.
   base::RunLoop run_loop;
-  base::RepeatingClosure barrier =
-      base::BarrierClosure(2, run_loop.QuitClosure());
   csd_host->set_preclassification_done_callback_for_testing(
       base::BindLambdaForTesting([&](ClientSideDetectionType detection_type) {
         if (detection_type == ClientSideDetectionType::CREDIT_CARD_FORM) {
-          barrier.Run();
+          run_loop.Quit();
         }
       }));
   NavigateToCreditCardForm();
@@ -1421,7 +1414,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   run_loop.Run();
 
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 2);
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
@@ -1454,20 +1447,20 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.CreditCardForm", 0);
 
-  // Navigate page, expecting to trigger 2 preclassification checks.
-  // (1 TriggerModel, 1 CreditCardForm)
-  // Wait to ensure each has happened since each one will invalidate the host
+  // Navigate page, expecting to trigger 1 TriggerModel preclassification check.
+  // Wait to ensure that it has happened since it will invalidate the host
   // weak pointer and effectively cancel any other pending check. This
   // ensures that the manual preclassification check below won't be clobbered.
-  base::test::TestFuture<std::vector<ClientSideDetectionType>> future;
-  csd_host->set_preclassification_started_callback_for_testing(
-      base::BarrierCallback<ClientSideDetectionType>(2, future.GetCallback()));
+  base::RunLoop nav_run_loop;
+  csd_host->set_preclassification_done_callback_for_testing(
+      base::BindLambdaForTesting([&](ClientSideDetectionType detection_type) {
+        nav_run_loop.Quit();
+      }));
   GURL url = NavigateToCreditCardForm();
-  EXPECT_THAT(future.Take(),
-              testing::Contains(ClientSideDetectionType::CREDIT_CARD_FORM));
+  nav_run_loop.Run();
 
-  base::RunLoop run_loop;
-  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+  base::RunLoop preclass_run_loop;
+  fake_csd_service.SetRequestCallback(preclass_run_loop.QuitClosure());
 
   // Bypass the pre-classification check because it would otherwise return
   // `PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP`.
@@ -1476,7 +1469,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
       /*should_classify=*/true, /*is_sample_ping=*/false,
       /*did_match_high_confidence_allowlist=*/false);
 
-  run_loop.Run();
+  preclass_run_loop.Run();
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PhishingDetectorResult.CreditCardForm", 1);

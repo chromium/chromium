@@ -208,11 +208,7 @@ class ClientSideDetectionHost
 
   void RegisterAsyncCheckTracker();
 
-  // autofill::AutofillManager::Observer methods:
-  void OnFieldTypesDetermined(
-      autofill::AutofillManager& manager,
-      autofill::FormGlobalId formId,
-      autofill::AutofillManager::Observer::FieldTypeSource source) override;
+  // autofill::AutofillManager::Observer method:
   void OnBeforeFocusOnFormField(autofill::AutofillManager& manager,
                                 autofill::FormGlobalId form_id,
                                 autofill::FieldGlobalId field_id) override;
@@ -301,47 +297,30 @@ class ClientSideDetectionHost
                            ClipboardApiClassificationTriggersCSPPPing);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
-      NonCreditCardFormDetectionDoesNotTriggerPreclassificationChecks);
+      NonCreditCardFormDoesNotTriggerPreclassificationChecks);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
-      NonCreditCardFormInteractionDoesNotTriggerPreclassificationChecks);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostCreditCardFormTest,
-      UnclassifiedFormInteractionDoesNotTriggerPreclassificationChecks);
+      UnclassifiedFormDoesNotTriggerPreclassificationChecks);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
       FeatureDisabledDoesNotTriggerPreclassificationChecks);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
-      DetectionWhenESBDisabledDoesNotTriggerPreclassificationChecks);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostCreditCardFormTest,
-      InteractionWhenESBDisabledDoesNotTriggerPreclassificationChecks);
+      WhenESBDisabledDoesNotTriggerPreclassificationChecks);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
       EventDoesNotTriggerPreclassificationChecksWhenESBDisabled);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
-      DetectionDoesNotStartPreclassificationOnRepeatSiteVisit);
+      DoesNotStartPreclassificationOnRepeatSiteVisit);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
-      InteractionDoesNotStartPreclassificationOnRepeatSiteVisit);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostCreditCardFormTest,
-      DetectionDoesNotStartPreclassificationOnServerHeuristic);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostCreditCardFormTest,
-      InteractionDoesNotStartPreclassificationOnServerHeuristic);
+      DoesNotStartPreclassificationOnServerHeuristic);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormReferringAppTest,
-      DetectionDoesNotStartPreclassificationBecauseOfReferringAppFilter);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostCreditCardFormReferringAppTest,
-      InteractionDoesNotStartPreclassificationBecauseOfReferringAppFilter);
+      DoesNotStartPreclassificationBecauseOfReferringAppFilter);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
-                           DetectionPreclassificationIsDedupedByURL);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
-                           InteractionPreclassificationIsDedupedByURL);
+                           PreclassificationIsDedupedByURL);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
                            CreditCardFormTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
@@ -360,9 +339,6 @@ class ClientSideDetectionHost
   // Helper function to create preclassification check once requirements are
   // met.
   void MaybeStartPreClassification(ClientSideDetectionType request_type);
-  void MaybeStartPreClassification(
-      ClientSideDetectionType request_type,
-      std::optional<std::string> credit_card_form_event);
 
   // Called when pre-classification checks are done for the phishing
   // classifiers. |request_type| is passed in to specify the process that
@@ -537,20 +513,12 @@ class ClientSideDetectionHost
       ClientSideDetectionType client_side_detection_type,
       std::optional<std::string> credit_card_form_event);
 
-  // OnCreditCardFormEvent is a common method called by Autofill credit card
-  // form events that may trigger a CSD ping.
-  void OnCreditCardFormEvent(
-      std::string event_name,
-      bool allow_ping,
-      credit_card_form::FieldDetectionHeuristic field_heuristic);
-
   // OnCreditCardFormVisitCount is a callback that is called when site
   // visit count on a credit card form event is complete, at which point
   // it determines whether a credit card from event should trigger a CSD
   // ping.
   void OnCreditCardFormVisitCount(
       std::string event_name,
-      bool allow_ping,
       std::optional<base::TimeTicks> start_time,
       credit_card_form::FieldDetectionHeuristic field_heuristic,
       history::VisibleVisitCountToHostResult history_result);
@@ -638,11 +606,6 @@ class ClientSideDetectionHost
   // ClientSideDetectionType. This is because for some ClientSideDetectionType,
   // it can be triggered at a frequent basis per same URL.
   base::flat_map<ClientSideDetectionType, GURL> last_committed_url_map_;
-
-  // This map is used to track the last committed URL per credit card form
-  // event trigger that may trigger a CREDIT_CARD_FORM ping.
-  base::flat_map<std::string, GURL>
-      last_credit_card_form_event_trigger_url_map_;
 
   base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
       async_check_observation_{this};

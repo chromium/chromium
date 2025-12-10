@@ -866,12 +866,6 @@ void ClientSideDetectionHost::RegisterAutofillManager() {
 
 void ClientSideDetectionHost::MaybeStartPreClassification(
     ClientSideDetectionType request_type) {
-  MaybeStartPreClassification(request_type, std::nullopt);
-}
-
-void ClientSideDetectionHost::MaybeStartPreClassification(
-    ClientSideDetectionType request_type,
-    std::optional<std::string> credit_card_form_event) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;
   }
@@ -894,11 +888,6 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   current_url_ = rfh->GetLastCommittedURL();
   last_committed_url_map_[request_type] = current_url_;
   current_outermost_main_frame_id_ = rfh->GetGlobalId();
-  if (credit_card_form_event) {
-    DCHECK(request_type == ClientSideDetectionType::CREDIT_CARD_FORM);
-    last_credit_card_form_event_trigger_url_map_[credit_card_form_event
-                                                     .value()] = current_url_;
-  }
 
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = std::make_unique<ShouldClassifyUrlRequest>(
@@ -977,12 +966,17 @@ void ClientSideDetectionHost::OnAsyncSafeBrowsingCheckTrackerDestructed() {
   async_check_observation_.Reset();
 }
 
-// OnFieldTypesDetermined is an Autofill observer callback that triggers a CSD
-// ping when the form is categorized as a credit card form.
-void ClientSideDetectionHost::OnFieldTypesDetermined(
+// OnBeforeFocusOnFormField is an Autofill observer callback that triggers a CSD
+// ping when the user interacts with a credit card form field.
+void ClientSideDetectionHost::OnBeforeFocusOnFormField(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
-    autofill::AutofillManager::Observer::FieldTypeSource source) {
+    autofill::FieldGlobalId field_id) {
+  // Early exit if ESB is not enabled.
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return;
+  }
+
   // Do nothing if the form is not a credit card form.
   const autofill::FormStructure* form = manager.FindCachedFormById(form_id);
   if (!form ||
@@ -990,33 +984,10 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
     return;
   }
 
-  const credit_card_form::FieldDetectionHeuristic field_heuristic = [&]() {
-    using enum autofill::AutofillManager::Observer::FieldTypeSource;
-    switch (source) {
-      case kAutofillAiModel:
-      case kAutofillServer:
-        return credit_card_form::FieldDetectionHeuristic::kAutofillServer;
-      case kHeuristicsOrAutocomplete:
-        return credit_card_form::FieldDetectionHeuristic::kAutofillLocal;
-    }
-    NOTREACHED();
-  }();
-
-  OnCreditCardFormEvent("OnFieldTypesDetermined",
-                        kCsdCreditCardFormPingOnDetection.Get(),
-                        field_heuristic);
-}
-
-// OnBeforeFocusOnFormField is an Autofill observer callback that triggers a CSD
-// ping when the user interacts with a credit card form field.
-void ClientSideDetectionHost::OnBeforeFocusOnFormField(
-    autofill::AutofillManager& manager,
-    autofill::FormGlobalId form_id,
-    autofill::FieldGlobalId field_id) {
-  // Do nothing if the form is not a credit card form.
-  const autofill::FormStructure* form = manager.FindCachedFormById(form_id);
-  if (!form ||
-      !form->GetFormTypes().contains(autofill::FormType::kCreditCardForm)) {
+  // Early exit if preclassification has already been done for this
+  // event triggering CREDIT_CARD_FORM and this URL.
+  if (HasDonePreclassificationCheckOnSameURL(
+          ClientSideDetectionType::CREDIT_CARD_FORM)) {
     return;
   }
 
@@ -1032,30 +1003,9 @@ void ClientSideDetectionHost::OnBeforeFocusOnFormField(
     field_heuristic = credit_card_form::kAutofillLocal;
   }
 
-  OnCreditCardFormEvent("OnBeforeFocusOnFormField",
-                        kCsdCreditCardFormPingOnInteraction.Get(),
-                        field_heuristic);
-}
-
-void ClientSideDetectionHost::OnCreditCardFormEvent(
-    std::string event_name,
-    bool allow_ping,
-    credit_card_form::FieldDetectionHeuristic field_heuristic) {
-  // Early exit if ESB is not enabled.
-  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
-    return;
-  }
-
-  // Early exit if preclassification has already been done for this
-  // event triggering CREDIT_CARD_FORM and this URL.
-  if (HasDonePreclassificationCheckOnSameURL(
-          ClientSideDetectionType::CREDIT_CARD_FORM, event_name)) {
-    return;
-  }
-
   // Site visit count is needed as part of determining whether to send
   // a CSD ping, so look that up via HistoryService and delegate
-  // handling the result to OnCreditCardFormEvent.
+  // handling the result to OnCreditCardFormVisitCount.
   GURL url = tab_->GetPrimaryMainFrame()->GetLastCommittedURL();
   std::optional<history::VisibleVisitCountToHostResult> cached_history_result;
   if (url == last_history_url_) {
@@ -1066,21 +1016,20 @@ void ClientSideDetectionHost::OnCreditCardFormEvent(
     history_service_->GetVisibleVisitCountToHost(
         url,
         base::BindOnce(&ClientSideDetectionHost::OnCreditCardFormVisitCount,
-                       weak_factory_.GetWeakPtr(), event_name, allow_ping,
+                       weak_factory_.GetWeakPtr(), "OnBeforeFocusOnFormField",
                        base::TimeTicks::Now(), field_heuristic),
         &task_tracker_);
   } else {
     history::VisibleVisitCountToHostResult history_result =
         cached_history_result.value_or(
             history::VisibleVisitCountToHostResult{/*success=*/false});
-    OnCreditCardFormVisitCount(event_name, allow_ping, std::nullopt,
+    OnCreditCardFormVisitCount("OnBeforeFocusOnFormField", std::nullopt,
                                field_heuristic, history_result);
   }
 }
 
 void ClientSideDetectionHost::OnCreditCardFormVisitCount(
     std::string event_name,
-    bool allow_ping,
     std::optional<base::TimeTicks> start_time,
     credit_card_form::FieldDetectionHeuristic field_heuristic,
     history::VisibleVisitCountToHostResult history_result) {
@@ -1109,12 +1058,6 @@ void ClientSideDetectionHost::OnCreditCardFormVisitCount(
   credit_card_form::LogEvent(event_name, site_visit, field_heuristic);
 #endif
 
-  // After logging, only continue to pre-classification if sending a ping
-  // is allowed.
-  if (!allow_ping) {
-    return;
-  }
-
   // Early exit if the user has visited this site before.
   if (kCsdCreditCardFormEnableNewSiteFilter.Get() &&
       site_visit == credit_card_form::kRepeatSiteVisit) {
@@ -1140,8 +1083,7 @@ void ClientSideDetectionHost::OnCreditCardFormVisitCount(
 #endif
   }
 
-  MaybeStartPreClassification(ClientSideDetectionType::CREDIT_CARD_FORM,
-                              event_name);
+  MaybeStartPreClassification(ClientSideDetectionType::CREDIT_CARD_FORM);
 }
 
 void ClientSideDetectionHost::KeyboardLockRequested() {
@@ -1232,15 +1174,6 @@ bool ClientSideDetectionHost::HasDonePreclassificationCheckOnSameURL(
       last_committed_url_map_.find(client_side_detection_type);
   bool has_done_url = last_committed_url != last_committed_url_map_.end() &&
                       rfh->GetLastCommittedURL() == last_committed_url->second;
-  if (client_side_detection_type == ClientSideDetectionType::CREDIT_CARD_FORM) {
-    DCHECK(credit_card_form_event);
-    auto last_event_url = last_credit_card_form_event_trigger_url_map_.find(
-        credit_card_form_event);
-    bool has_done_event =
-        last_event_url != last_credit_card_form_event_trigger_url_map_.end() &&
-        rfh->GetLastCommittedURL() == last_event_url->second;
-    return has_done_url && has_done_event;
-  }
   return has_done_url;
 }
 

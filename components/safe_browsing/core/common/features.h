@@ -73,12 +73,6 @@ extern const base::FeatureParam<double> kCsdCreditCardFormSampleRate;
 // If the user has visited more times than this max, then the CSD ping is
 // blocked.
 extern const base::FeatureParam<int> kCsdCreditCardFormMaxUserVisit;
-// Specifies whether to allow pre-classification to continue on a credit card
-// form detection event after logging telemetry.
-extern const base::FeatureParam<bool> kCsdCreditCardFormPingOnDetection;
-// Specifies whether to allow pre-classification to continue on a credit card
-// form interaction event after logging telemetry.
-extern const base::FeatureParam<bool> kCsdCreditCardFormPingOnInteraction;
 // Specifies whether to filter credit card CSD pings based on whether the user
 // is on a new site.
 extern const base::FeatureParam<bool> kCsdCreditCardFormEnableNewSiteFilter;
