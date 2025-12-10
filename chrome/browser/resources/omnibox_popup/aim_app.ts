@@ -8,6 +8,7 @@ import '/strings.m.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -47,6 +48,7 @@ export class OmniboxAimAppElement extends CrLitElement {
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
   private listenerIds_: number[] = [];
+  private preserveContextOnClose_: boolean = false;
 
   constructor() {
     super();
@@ -65,6 +67,8 @@ export class OmniboxAimAppElement extends CrLitElement {
       this.callbackRouter_.addContext.addListener(this.addContext_.bind(this)),
       this.callbackRouter_.onWidgetClosed.addListener(
           this.onWidgetClosed_.bind(this)),
+      this.callbackRouter_.setPreserveContextOnClose.addListener(
+          this.setPreserveContextOnClose_.bind(this)),
     ];
 
     this.$.composebox.focusInput();
@@ -114,22 +118,35 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.pageHandler_.requestClose();
   }
 
+  protected setPreserveContextOnClose_(preserveContextOnClose: boolean) {
+    assert(document.visibilityState === 'visible');
+    this.preserveContextOnClose_ = preserveContextOnClose;
+  }
+
   private onWidgetShown_(context: SearchContextStub) {
-    this.$.composebox.playGlowAnimation();
-    this.$.composebox.setSearchContext(context);
+    if (!this.preserveContextOnClose_) {
+      // Avoid showing the glow animation when coming back from a preserved
+      // context on close as this indicates that the user is returning to the
+      // widget after adding context.
+      this.$.composebox.playGlowAnimation();
+    }
+    this.$.composebox.addSearchContext(context);
     this.$.composebox.focusInput();
+    this.preserveContextOnClose_ = false;
   }
 
   private addContext_(context: SearchContextStub) {
-    this.$.composebox.setSearchContext(context);
+    this.$.composebox.addSearchContext(context);
     this.$.composebox.focusInput();
   }
 
   private onWidgetClosed_(): Promise<{input: string}> {
     const input = this.$.composebox.getInputText();
-    this.$.composebox.clearAllInputs();
-    this.$.composebox.clearAutocompleteMatches();
-    this.$.composebox.resetModes();
+    if (!this.preserveContextOnClose_) {
+      this.$.composebox.clearAllInputs();
+      this.$.composebox.clearAutocompleteMatches();
+      this.$.composebox.resetModes();
+    }
     return Promise.resolve({input});
   }
 

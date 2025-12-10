@@ -434,7 +434,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }));
   }
 
-  setStateFromSearchContext(context: SearchContextStub) {
+  addSearchContext(context: SearchContextStub) {
     for (const attachment of context.attachments) {
       if (attachment.fileAttachment) {
         this.addFileFromAttachment_(attachment.fileAttachment);

@@ -293,11 +293,7 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
     context->mode = *tool_mode;
   }
 
-  OmniboxController* omnibox_controller = nullptr;
-  if (auto* helper =
-          OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {
-    omnibox_controller = helper->get_omnibox_controller();
-  }
+  auto omnibox_controller = GetOmniboxController();
 
   if (omnibox_controller &&
       omnibox_controller->popup_state_manager()->popup_state() ==
@@ -321,24 +317,43 @@ OmniboxContextMenuController::GetQueryController() const {
   return helper->session_handle()->GetController();
 }
 
-raw_ptr<OmniboxEditModel> OmniboxContextMenuController::GetEditModel() {
+raw_ptr<OmniboxController> OmniboxContextMenuController::GetOmniboxController()
+    const {
   auto* helper =
       OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get());
-  if (!helper) {
+  return helper->get_omnibox_controller();
+}
+
+raw_ptr<OmniboxEditModel> OmniboxContextMenuController::GetEditModel() {
+  auto omnibox_controller = GetOmniboxController();
+  if (!omnibox_controller) {
     return nullptr;
   }
-  return helper->get_omnibox_controller()->edit_model();
+  return omnibox_controller->edit_model();
 }
 
 raw_ptr<OmniboxPopupUI> OmniboxContextMenuController::GetOmniboxPopupUI()
     const {
   if (auto* webui = web_contents_->GetWebUI()) {
-    auto* omnibox_popup_ui = webui->GetController()->GetAs<OmniboxPopupUI>();
-    if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-      return omnibox_popup_ui;
-    }
+    return webui->GetController()->GetAs<OmniboxPopupUI>();
   }
   return nullptr;
+}
+
+void OmniboxContextMenuController::SetPreserveContextOnCloseIfAimPopupIsOpen(
+    bool preserve_context_on_close) {
+  auto omnibox_controller = GetOmniboxController();
+  if (!omnibox_controller ||
+      omnibox_controller->popup_state_manager()->popup_state() !=
+          OmniboxPopupState::kAim) {
+    return;
+  }
+
+  if (auto omnibox_popup_ui = GetOmniboxPopupUI()) {
+    if (auto* handler = omnibox_popup_ui->popup_aim_handler()) {
+      handler->SetPreserveContextOnClose(preserve_context_on_close);
+    }
+  }
 }
 
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
@@ -354,12 +369,14 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   } else {
     switch (id) {
       case IDC_OMNIBOX_CONTEXT_ADD_IMAGE: {
+        SetPreserveContextOnCloseIfAimPopupIsOpen(true);
         file_selector_->OpenFileUploadDialog(web_contents_.get(),
                                              /*is_image=*/true, GetEditModel(),
                                              CreateImageEncodingOptions());
         break;
       }
       case IDC_OMNIBOX_CONTEXT_ADD_FILE:
+        SetPreserveContextOnCloseIfAimPopupIsOpen(true);
         file_selector_->OpenFileUploadDialog(web_contents_.get(),
                                              /*is_image=*/false, GetEditModel(),
                                              CreateImageEncodingOptions());

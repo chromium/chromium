@@ -60,6 +60,11 @@ void OmniboxPopupAimHandler::OnWidgetShown(
   page_->OnWidgetShown(std::move(page_context));
 }
 
+void OmniboxPopupAimHandler::SetPreserveContextOnClose(
+    bool preserve_context_on_close) {
+  page_->SetPreserveContextOnClose(preserve_context_on_close);
+}
+
 void OmniboxPopupAimHandler::OnWidgetClosed() {
   // Unretained() is safe because `page_` is a mojo remote owned by `this`.
   page_->OnWidgetClosed(base::BindOnce(

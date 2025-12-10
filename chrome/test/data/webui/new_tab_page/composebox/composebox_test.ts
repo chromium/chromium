@@ -2635,7 +2635,7 @@ suite('NewTabPageComposeboxTest', () => {
         attachments: [],
         toolMode: 0,
       };
-      composeboxElement.setSearchContext(context);
+      composeboxElement.addSearchContext(context);
       await microtasksFinished();
 
       // Check that input and lastQueriedInput are set.
