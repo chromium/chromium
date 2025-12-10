@@ -179,4 +179,19 @@ TEST_F(AudioServiceAudioProcessorProxyTest, DoesNotSetNumChannelsIfDecreases) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(AudioServiceAudioProcessorProxyTest,
+       DoesNotSetNumChannelsIfNegativeValue) {
+  scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+  StrictMock<MockAudioProcessorControls> controls;
+  EXPECT_CALL(controls, SetPreferredNumCaptureChannelsCalled(2)).Times(1);
+
+  proxy->SetControls(&controls);
+
+  MaybeSetNumChannelsOnAnotherThread(proxy, -1);
+  MaybeSetNumChannelsOnAnotherThread(proxy, 2);
+  MaybeSetNumChannelsOnAnotherThread(proxy, -1);
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace blink

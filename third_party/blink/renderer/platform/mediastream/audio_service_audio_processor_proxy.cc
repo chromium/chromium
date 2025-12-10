@@ -51,7 +51,7 @@ AudioServiceAudioProcessorProxy::GetStats(bool has_remote_tracks) {
 }
 
 void AudioServiceAudioProcessorProxy::MaybeUpdateNumPreferredCaptureChannels(
-    uint32_t num_channels) {
+    int32_t num_channels) {
   if (num_preferred_capture_channels_ >= num_channels)
     return;
 
@@ -83,9 +83,13 @@ void AudioServiceAudioProcessorProxy::UpdateStats(
 }
 
 void AudioServiceAudioProcessorProxy::
-    SetPreferredNumCaptureChannelsOnMainThread(uint32_t num_channels) {
+    SetPreferredNumCaptureChannelsOnMainThread(int32_t num_channels) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   if (processor_controls_) {
+    // With the current construct, this is never called unless |num_channels| is
+    // 2 or larger. That concept works due to how |AudioProcessor| is designed
+    // to assume a minimum of 1 preferred channels.
+    CHECK_GT(num_channels, 1);
     processor_controls_->SetPreferredNumCaptureChannels(num_channels);
   }
 }
