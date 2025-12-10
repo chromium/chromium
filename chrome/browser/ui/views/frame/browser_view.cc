@@ -2213,11 +2213,21 @@ void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
     return;
   }
 #endif
+  LocationBarView* location_bar = GetLocationBarView();
+
+  // Focusing the omnibox by a user action (e.g. ctrl-l) in immersive mode
+  // should reveal topchrome.  Make sure the omnibox is focusable.
+  if (overlay_view_tracker_ && is_user_initiated) {
+    overlay_view_tracker_.view()->SetVisible(true);
+    toolbar_->SetVisible(true);
+    location_bar->omnibox_view()->SetFocusBehavior(
+        views::View::FocusBehavior::ALWAYS);
+  }
+
   if (!IsLocationBarVisible()) {
     return;
   }
 
-  LocationBarView* location_bar = GetLocationBarView();
   location_bar->FocusLocation(is_user_initiated);
   if (!location_bar->omnibox_view()->HasFocus()) {
     // If none of location bar got focus, then clear focus.

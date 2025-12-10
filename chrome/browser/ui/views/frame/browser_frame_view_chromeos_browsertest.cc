@@ -940,6 +940,27 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasNoToolbar) {
                browser_view->web_app_frame_toolbar_for_testing()->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
+                       FocusOmniboxRevealTopChrome) {
+  EnterImmersiveFullscreenMode(browser());
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
+  EXPECT_TRUE(immersive_mode_controller->IsEnabled());
+  // TODO(crbug.com/463559714): Replace the loop with EXPECT_TRUE, when the
+  // mechanism to disable gfx::Animation is added.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !immersive_mode_controller->IsRevealed(); }));
+
+  ui::test::EventGenerator generator(
+      browser()->window()->GetNativeWindow()->GetRootWindow());
+  // Focus omnibox using shortcut.
+  generator.PressKey(ui::KeyboardCode::VKEY_CONTROL, 0);
+  generator.PressKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
+  generator.ReleaseKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
+  generator.ReleaseKey(ui::KeyboardCode::VKEY_CONTROL, 0);
+  EXPECT_TRUE(immersive_mode_controller->IsRevealed());
+}
+
 // Test the normal type browser's kTopViewInset is always 0.
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, TopViewInset) {
   auto* const immersive_mode_controller =
