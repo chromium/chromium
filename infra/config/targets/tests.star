@@ -2583,6 +2583,24 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.gtest_test(
+    name = "trees_in_viz_blink_platform_unittests",
+    args = [
+        "--enable-features=TreesInViz",
+        "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
+    ],
+    binary = "blink_platform_unittests",
+)
+
+targets.tests.gtest_test(
+    name = "trees_in_viz_cc_unittests",
+    args = [
+        "--enable-features=TreesInViz",
+        "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",
+    ],
+    binary = "cc_unittests",
+)
+
+targets.tests.gtest_test(
     name = "test_cpp_including_rust_unittests",
 )
 

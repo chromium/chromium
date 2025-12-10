@@ -2145,6 +2145,16 @@ targets.bundle(
     ],
 )
 
+# Use this for targets for which we only need the bare minimum coverage on
+# Linux.
+targets.bundle(
+    name = "chromium_linux_gtests_once",
+    targets = [
+        "trees_in_viz_blink_platform_unittests",
+        "trees_in_viz_cc_unittests",
+    ],
+)
+
 targets.bundle(
     name = "chromium_linux_rel_isolated_scripts",
     targets = [

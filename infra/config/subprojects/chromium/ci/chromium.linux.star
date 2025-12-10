@@ -482,6 +482,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "chromium_linux_gtests",
+            "chromium_linux_gtests_once",
             "chromium_linux_rel_isolated_scripts_once",
             "gtests_once",
         ],
