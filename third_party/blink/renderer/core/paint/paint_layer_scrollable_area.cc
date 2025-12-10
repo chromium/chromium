@@ -1723,9 +1723,9 @@ bool PaintLayerScrollableArea::NeedsScrollbarReconstruction() const {
 
 gfx::Size PaintLayerScrollableArea::ComputeScrollbarWidthsForViewportUnits(
     StyleBasedScrollbarData scrollbar_properties) const {
+  DCHECK(!GetLayoutBox()->IsFieldset()) << "root element can't be a fieldset";
+  DCHECK(!GetLayoutBox()->IsFrameSet()) << "root element can't be a frameset";
   DCHECK(GetLayoutBox()->GetFrame()->GetSettings());
-  // TODO(crbug.com/354751900): Check IsFieldset() || IsFrameSet(). They can't
-  // have scrollbars.
   if (VisualViewportSuppliesScrollbars() ||
       GetLayoutBox()->GetFrame()->GetSettings()->GetHideScrollbars() ||
       GetPageScrollbarTheme().UsesOverlayScrollbars() ||
