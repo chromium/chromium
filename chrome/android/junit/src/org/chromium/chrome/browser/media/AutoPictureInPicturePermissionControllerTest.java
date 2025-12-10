@@ -52,6 +52,8 @@ public class AutoPictureInPicturePermissionControllerTest {
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock private Tab mTab;
 
+    private static final Runnable NO_OP_CALLBACK = () -> {};
+
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
     private WebContents mWebContents;
@@ -93,10 +95,11 @@ public class AutoPictureInPicturePermissionControllerTest {
     }
 
     @Test
-    public void testShowPrompt_Ask() {
+    public void testShowPrompt_WhenPermissionIsAsk_DisplaysPrompt() {
         when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
 
-        AutoPictureInPicturePermissionController.showPromptIfNeeded(mActivity, mTab);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
 
         // Verify the prompt is added to the root view.
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
@@ -110,30 +113,33 @@ public class AutoPictureInPicturePermissionControllerTest {
     }
 
     @Test
-    public void testShowPrompt_Allow() {
+    public void testShowPrompt_WhenPermissionIsAllow_DoesNotDisplayPrompt() {
         when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ALLOW);
 
-        AutoPictureInPicturePermissionController.showPromptIfNeeded(mActivity, mTab);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
         Assert.assertEquals(0, rootView.getChildCount());
     }
 
     @Test
-    public void testShowPrompt_Block() {
+    public void testShowPrompt_WhenPermissionIsBlock_DoesNotDisplayPrompt() {
         when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.BLOCK);
 
-        AutoPictureInPicturePermissionController.showPromptIfNeeded(mActivity, mTab);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
         Assert.assertEquals(0, rootView.getChildCount());
     }
 
     @Test
-    public void testShowPrompt_AlreadyAllowedOnce() {
+    public void testShowPrompt_AllowOnce_PreventsSubsequentPrompt() {
         // Show prompt and simulate "Allow Once" click.
         when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
-        AutoPictureInPicturePermissionController.showPromptIfNeeded(mActivity, mTab);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
         AutoPipPermissionDialogView view = (AutoPipPermissionDialogView) rootView.getChildAt(1);
@@ -148,14 +154,16 @@ public class AutoPictureInPicturePermissionControllerTest {
         Assert.assertEquals(0, rootView.getChildCount());
 
         // Should not show prompt.
-        AutoPictureInPicturePermissionController.showPromptIfNeeded(mActivity, mTab);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
         Assert.assertEquals(0, rootView.getChildCount());
     }
 
     @Test
-    public void testShowPrompt_AllowEveryVisit() {
+    public void testShowPrompt_AllowEveryVisit_SetsPermissionToAllow() {
         when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
-        AutoPictureInPicturePermissionController.showPromptIfNeeded(mActivity, mTab);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
         AutoPipPermissionDialogView view = (AutoPipPermissionDialogView) rootView.getChildAt(1);
@@ -170,9 +178,11 @@ public class AutoPictureInPicturePermissionControllerTest {
     }
 
     @Test
-    public void testShowPrompt_BlockClick() {
+    public void testShowPrompt_BlockClick_SetsPermissionToBlockAndClosesPip() {
         when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
-        AutoPictureInPicturePermissionController.showPromptIfNeeded(mActivity, mTab);
+        Runnable closePipCallback = mock(Runnable.class);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, closePipCallback);
 
         ViewGroup rootView = mActivity.findViewById(android.R.id.content);
         AutoPipPermissionDialogView view = (AutoPipPermissionDialogView) rootView.getChildAt(1);
@@ -183,13 +193,15 @@ public class AutoPictureInPicturePermissionControllerTest {
         blockButton.performClick();
 
         verify(mNativeMock).setPermissionStatus(eq(mWebContents), eq(ContentSetting.BLOCK));
+        verify(closePipCallback).run();
         Assert.assertEquals(0, rootView.getChildCount());
     }
 
     @Test
-    public void testDismiss_CleansUpState() {
+    public void testDismiss_CleansUpUIAndHelperState() {
         when(mNativeMock.getPermissionStatus(mWebContents)).thenReturn(ContentSetting.ASK);
-        AutoPictureInPicturePermissionController.showPromptIfNeeded(mActivity, mTab);
+        AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                mActivity, mTab, NO_OP_CALLBACK);
 
         // Capture the controller instance
         AutoPictureInPicturePermissionController controller = mTabHelper.getPermissionController();
@@ -209,7 +221,7 @@ public class AutoPictureInPicturePermissionControllerTest {
     }
 
     @Test
-    public void testIsAutoPictureInPictureInUse() {
+    public void testIsAutoPictureInPictureInUse_ReflectsNativeState() {
         when(mNativeMock.isAutoPictureInPictureInUse(mWebContents)).thenReturn(true);
         Assert.assertTrue(
                 AutoPictureInPicturePermissionController.isAutoPictureInPictureInUse(mWebContents));
@@ -220,7 +232,7 @@ public class AutoPictureInPicturePermissionControllerTest {
     }
 
     @Test
-    public void testPrimaryPageChanged_ClearsAllowOnce() {
+    public void testPrimaryPageChanged_ClearsAllowOnceState() {
         mTabHelper.setHasAllowOnce(true);
 
         // Capture the observer registered by the helper

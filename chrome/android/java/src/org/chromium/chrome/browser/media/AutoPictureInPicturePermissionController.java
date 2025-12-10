@@ -36,6 +36,7 @@ public class AutoPictureInPicturePermissionController {
 
     private final WebContents mWebContents;
     private final GURL mUrl;
+    private final Runnable mClosePipCallback;
     private @Nullable AutoPipPermissionDialogView mView;
     private @Nullable AutoPictureInPicturePrivacyMaskView mMaskView;
 
@@ -44,8 +45,10 @@ public class AutoPictureInPicturePermissionController {
      *
      * @param activity The activity to display the prompt in.
      * @param tab The tab that is entering auto picture-in-picture.
+     * @param closePipCallback A callback to run if the user selects 'Don't Allow' (BLOCK).
      */
-    public static void showPromptIfNeeded(Activity activity, @Nullable Tab tab) {
+    public static void showPromptIfNeeded(
+            Activity activity, @Nullable Tab tab, Runnable closePipCallback) {
         if (tab == null || tab.getWebContents() == null) {
             return;
         }
@@ -73,7 +76,7 @@ public class AutoPictureInPicturePermissionController {
         // Create the controller and register it with the helper. This prevents "fire and forget"
         // by giving the controller a clear owner (the helper attached to the WebContents).
         AutoPictureInPicturePermissionController controller =
-                new AutoPictureInPicturePermissionController(webContents);
+                new AutoPictureInPicturePermissionController(webContents, closePipCallback);
         helper.setPermissionController(controller);
 
         controller.show(activity);
@@ -91,9 +94,11 @@ public class AutoPictureInPicturePermissionController {
                 .isAutoPictureInPictureInUse(webContents);
     }
 
-    private AutoPictureInPicturePermissionController(WebContents webContents) {
+    private AutoPictureInPicturePermissionController(
+            WebContents webContents, Runnable closePipCallback) {
         mWebContents = webContents;
         mUrl = webContents.getLastCommittedUrl();
+        mClosePipCallback = closePipCallback;
     }
 
     private void show(Activity activity) {
@@ -168,7 +173,7 @@ public class AutoPictureInPicturePermissionController {
             case AutoPipPermissionDialogView.UiResult.BLOCK:
                 AutoPictureInPicturePermissionControllerJni.get()
                         .setPermissionStatus(mWebContents, ContentSetting.BLOCK);
-                // TODO(crbug.com/459582604): close the document PiP window.
+                mClosePipCallback.run();
                 break;
             case AutoPipPermissionDialogView.UiResult.ALLOW_ONCE:
                 assertNonNull(AutoPictureInPictureTabHelper.fromWebContents(mWebContents))

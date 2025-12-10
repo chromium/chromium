@@ -143,7 +143,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         .post(
                                 () ->
                                         AutoPictureInPicturePermissionController.showPromptIfNeeded(
-                                                this, mInitiatorTab));
+                                                this, mInitiatorTab, this::finish));
             }
         }
     }
