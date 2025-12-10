@@ -885,6 +885,12 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
     gpu_info->pixel_shader_version = base::StringPrintf(
         "%d.%d", pixel_shader_major_version, pixel_shader_minor_version);
 
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+        gl::QueryD3D11DeviceObjectFromANGLE();
+    if (d3d11_device) {
+      gpu_info->d3d11_feature_level = d3d11_device->GetFeatureLevel();
+    }
+
     DCHECK(!gpu_info->vertex_shader_version.empty());
     // Note: do not reorder, used by UMA_HISTOGRAM below
     enum ShaderModel {

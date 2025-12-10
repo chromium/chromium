@@ -169,6 +169,7 @@ class GPU_CONFIG_EXPORT GpuControlList {
     GLType gl_type;
     Version gl_version;
     Version pixel_shader_version;
+    Version d3d11_feature_level;
     bool in_process_gpu;
     uint32_t gl_reset_notification_strategy;
     Version direct_rendering_version;

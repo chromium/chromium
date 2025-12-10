@@ -12,6 +12,10 @@
 #include "gpu/config/gpu_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <d3dcommon.h>
+#endif
+
 const char kOsVersion[] = "10.6.4";
 const uint32_t kIntelVendorId = 0x8086;
 const uint32_t kNvidiaVendorId = 0x10de;
@@ -247,5 +251,36 @@ TEST_P(GpuControlListTest, AngleVulkan) {
 
   EXPECT_EQ(GpuControlList::kGLTypeGLES, GetGLType("Mali-G52"));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_P(GpuControlListTest, D3DFeatureLevel) {
+  const Entry kEntries[1] = {
+      GetGpuControlListTestingEntries()[kGpuControlListEntryTest_D3DFeatureLevel]};
+  std::unique_ptr<GpuControlList> control_list = Create(kEntries);
+  GPUInfo gpu_info;
+
+  // D3D feature level 11.0. Entry requires < 12.0. So it applies.
+  gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_11_0;
+  std::set<int> features = control_list->MakeDecision(
+      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
+
+  gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_11_1;
+  features = control_list->MakeDecision(
+      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
+
+  // D3D feature level 12.0. Entry requires < 12.0. So it does not apply.
+  gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_12_0;
+  features = control_list->MakeDecision(
+      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  EXPECT_EMPTY_SET(features);
+
+  gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_12_1;
+  features = control_list->MakeDecision(
+      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  EXPECT_EMPTY_SET(features);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace gpu

@@ -1130,6 +1130,20 @@
       "features": [
         "test_feature_0"
       ]
+    },
+    {
+      "id": 88,
+      "description": "GpuControlListEntryTest.D3DFeatureLevel",
+      "os": {
+        "type": "win"
+      },
+      "d3d11_feature_level": {
+        "op": "<",
+        "value": "12.0"
+      },
+      "features": [
+        "test_feature_0"
+      ]
     }
   ]
 }

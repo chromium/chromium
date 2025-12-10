@@ -17,11 +17,11 @@
 
 namespace gpu {
 
-const std::array<GpuControlList::Entry, 87>& GetGpuControlListTestingEntries() {
+const std::array<GpuControlList::Entry, 88>& GetGpuControlListTestingEntries() {
 #include "gpu/config/gpu_control_list_testing_arrays_and_structs_autogen.h"
 #include "gpu/config/gpu_control_list_testing_exceptions_autogen.h"
 
-  static const std::array<GpuControlList::Entry, 87>
+  static const std::array<GpuControlList::Entry, 88>
       kGpuControlListTestingEntries = {{
           {
               1,  // id
@@ -2208,6 +2208,31 @@ const std::array<GpuControlList::Entry, 87>& GetGpuControlListTestingEntries() {
                   nullptr,                                // machine model info
                   nullptr,                                // Intel conditions
                   &kMoreForEntry87_1440601243,            // more data
+              },
+              base::span<const GpuControlList::Conditions>(),  // exceptions
+          },
+          {
+              88,  // id
+              "GpuControlListEntryTest.D3DFeatureLevel",
+              base::span(kFeatureListForGpuControlTestingEntry88),  // features
+              base::span<const char* const>(),  // DisabledExtensions
+              base::span<const char* const>(),  // DisabledWebGLExtensions
+              base::span<const uint32_t>(),     // CrBugs
+              {
+                  GpuControlList::kOsWin,  // os_type
+                  {GpuControlList::kUnknown,
+                   GpuControlList::kVersionStyleNumerical,
+                   GpuControlList::kVersionSchemaCommon, nullptr,
+                   nullptr},                                   // os_version
+                  0x00,                                        // vendor_id
+                  base::span<const GpuControlList::Device>(),  // Devices
+                  GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
+                  GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
+                  nullptr,                                // driver info
+                  nullptr,                                // GL strings
+                  nullptr,                                // machine model info
+                  nullptr,                                // Intel conditions
+                  &kMoreForEntry88_1440601243,            // more data
               },
               base::span<const GpuControlList::Conditions>(),  // exceptions
           },
