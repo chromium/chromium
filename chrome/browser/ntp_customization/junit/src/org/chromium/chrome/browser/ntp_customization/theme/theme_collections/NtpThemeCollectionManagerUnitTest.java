@@ -109,7 +109,7 @@ public class NtpThemeCollectionManagerUnitTest {
                         eq(bitmap), eq(info), any(BackgroundImageInfo.class));
         // Verifying side effects of
         // NtpCustomizationUtils.saveBackgroundInfoForThemeCollectionOrUploadedImage
-        assertTrue(NtpCustomizationUtils.getBackgroundImageFile().exists());
+        assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
         assertEquals(
                 info.collectionId,
                 NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference().collectionId);

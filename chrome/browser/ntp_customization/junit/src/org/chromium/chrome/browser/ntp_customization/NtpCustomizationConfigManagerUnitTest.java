@@ -103,7 +103,8 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         // Removes the newly generated file and cleans up SharedPreference.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        NtpCustomizationUtils.deleteBackgroundImageFileImpl();
+        NtpCustomizationUtils.deleteBackgroundImageFileImpl(
+                NtpCustomizationUtils.createBackgroundImageFile());
         NtpCustomizationConfigManager.setInstanceForTesting(null);
     }
 
@@ -116,7 +117,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verifies that the image file are saved to the disk and matrices are persisted to prefs.
-        assertTrue(NtpCustomizationUtils.getBackgroundImageFile().exists());
+        assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
         assertNotNull(
                 ChromeSharedPreferences.getInstance()
                         .readString(

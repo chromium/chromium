@@ -233,6 +233,31 @@ public final class ChromePreferenceKeys {
     public static final String NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP =
             "Chrome.NtpCustomization.LastDailyRefreshTimestamp";
 
+    /** The primary color prepared for the next daily refresh of a theme collection image. */
+    public static final String NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH =
+            "Chrome.NtpCustomization.NtpCustomizationPrimaryColorForDailyRefresh";
+
+    /**
+     * The transformation matrix for the portrait NTP background image, prepared for the next daily
+     * refresh of a theme collection.
+     */
+    public static final String NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH =
+            "Chrome.NtpCustomization.BackgroundImagePortraitInfoForDailyRefresh";
+
+    /**
+     * The transformation matrix for the landscape NTP background image, prepared for the next daily
+     * refresh of a theme collection.
+     */
+    public static final String NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH =
+            "Chrome.NtpCustomization.BackgroundImageLandscapeInfoForDailyRefresh";
+
+    /**
+     * The {@link CustomBackgroundInfo} prepared for the next daily refreshed theme collection
+     * image.
+     */
+    public static final String NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH =
+            "Chrome.NtpCustomization.BackgroundInfoForDailyRefresh";
+
     public static final String CRASH_UPLOAD_FAILURE_BROWSER = "browser_crash_failure_upload";
     public static final String CRASH_UPLOAD_FAILURE_GPU = "gpu_crash_failure_upload";
     public static final String CRASH_UPLOAD_FAILURE_OTHER = "other_crash_failure_upload";
@@ -1153,6 +1178,10 @@ public final class ChromePreferenceKeys {
                 NTP_CUSTOMIZATION_BACKGROUND_INFO,
                 NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED,
                 NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP,
+                NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH,
+                NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH,
+                NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH,
+                NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH,
                 CUSTOM_TABS_LAST_CLIENT_PACKAGE,
                 CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION,
                 CUSTOM_TABS_LAST_CLOSE_TIMESTAMP,
