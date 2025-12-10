@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 
+#import "base/functional/callback_helpers.h"
+#import "base/task/bind_post_task.h"
 #import "components/password_manager/core/browser/import/import_results.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/webauthn/core/browser/passkey_model.h"
@@ -13,8 +15,15 @@
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
+#import "ios/chrome/browser/data_import/public/password_import_item_favicon_data_source.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ui/gfx/favicon_size.h"
+#import "url/gurl.h"
 
-@interface CredentialImportMediator () <CredentialImporterDelegate>
+@interface CredentialImportMediator () <CredentialImporterDelegate,
+                                        PasswordImportItemFaviconDataSource>
 @end
 
 @implementation CredentialImportMediator {
@@ -30,6 +39,9 @@
   // Used by the `PasswordImporter` class. Needs to be kept alive during import.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
       _savedPasswordsPresenter;
+
+  // Fetches favicons for credentials items.
+  raw_ptr<FaviconLoader> _faviconLoader;
 }
 
 - (instancetype)initWithUUID:(NSUUID*)UUID
@@ -38,7 +50,8 @@
      savedPasswordsPresenter:
          (std::unique_ptr<password_manager::SavedPasswordsPresenter>)
              savedPasswordsPresenter
-                passkeyModel:(webauthn::PasskeyModel*)passkeyModel {
+                passkeyModel:(webauthn::PasskeyModel*)passkeyModel
+               faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
     _savedPasswordsPresenter = std::move(savedPasswordsPresenter);
@@ -50,6 +63,7 @@
     [_credentialImporter prepareImport:UUID];
     _delegate = delegate;
     _userEmail = std::move(userEmail);
+    _faviconLoader = faviconLoader;
   }
   return self;
 }
@@ -97,13 +111,15 @@
                                          passkeys:(NSArray<PasskeyImportItem*>*)
                                                       passkeys {
   CHECK(passwords.count > 0ul || passkeys.count > 0ul);
-  [_delegate showConflictResolutionScreenWithPasswords:passwords
+  [_delegate showConflictResolutionScreenWithPasswords:
+                 [self passwordItemsWithFaviconDataSource:passwords]
                                               passkeys:passkeys];
 }
 
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results {
-  self.invalidPasswords =
-      [PasswordImportItem passwordImportItemsFromImportResults:results];
+  self.invalidPasswords = [self
+      passwordItemsWithFaviconDataSource:
+          [PasswordImportItem passwordImportItemsFromImportResults:results]];
   ImportDataItem* item =
       [[ImportDataItem alloc] initWithType:ImportDataItemType::kPasswords
                                     status:ImportDataItemImportStatus::kImported
@@ -140,6 +156,54 @@
   }
   [_credentialImporter finishImportWithSelectedPasswordIds:selectedPasswordIds
                                         selectedPasskeyIds:selectedPasskeyIds];
+}
+
+#pragma mark - PasswordImportItemFaviconDataSource
+
+- (BOOL)passwordImportItem:(PasswordImportItem*)item
+    loadFaviconAttributesWithUIHandler:(ProceduralBlock)handler {
+  // Make sure `handler` is run on the original sequence.
+  base::OnceClosure faviconLoadClosure = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(), base::BindOnce(handler));
+  ProceduralBlock faviconLoadCompletion =
+      base::CallbackToBlock(std::move(faviconLoadClosure));
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
+    item.faviconAttributes = attributes;
+    faviconLoadCompletion();
+  };
+  if (item.url) {
+    _faviconLoader->FaviconForPageUrlOrHost(item.url.URL, gfx::kFaviconSize,
+                                            faviconLoadedBlock);
+  } else {
+    // If the URL does not exist, return the monogram for the username.
+    CHECK_GT(item.username.length, 0u);
+    NSString* monogram =
+        [[item.username substringToIndex:1] localizedUppercaseString];
+    faviconLoadedBlock(
+        [FaviconAttributes
+            attributesWithMonogram:monogram
+                         textColor:
+                             [UIColor colorWithWhite:
+                                          kFallbackIconDefaultTextColorGrayscale
+                                               alpha:1]
+                   backgroundColor:UIColor.clearColor
+            defaultBackgroundColor:YES],
+        /*cached=*/true);
+  }
+  return YES;
+}
+
+#pragma mark - Private
+
+// Attach favicon loader to each element in `passwords`.
+- (NSArray<PasswordImportItem*>*)passwordItemsWithFaviconDataSource:
+    (NSArray<PasswordImportItem*>*)passwords {
+  NSArray<PasswordImportItem*>* newPasswords =
+      [NSArray arrayWithArray:passwords];
+  for (PasswordImportItem* password in newPasswords) {
+    password.faviconDataSource = self;
+  }
+  return newPasswords;
 }
 
 @end

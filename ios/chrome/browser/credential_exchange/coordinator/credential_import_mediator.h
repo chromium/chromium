@@ -22,6 +22,7 @@ class PasskeyModel;
 
 @protocol CredentialImportConsumer;
 enum class CredentialImportStage;
+class FaviconLoader;
 @class PasskeyImportItem;
 @class PasswordImportItem;
 
@@ -64,6 +65,7 @@ enum class CredentialImportStage;
          (std::unique_ptr<password_manager::SavedPasswordsPresenter>)
              savedPasswordsPresenter
                 passkeyModel:(webauthn::PasskeyModel*)passkeyModel
+               faviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

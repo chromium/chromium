@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller.h"
 #import "ios/chrome/browser/data_import/ui/data_import_invalid_passwords_view_controller.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
@@ -107,7 +108,9 @@
                     userEmail:_userEmail
       savedPasswordsPresenter:std::move(savedPasswordsPresenter)
                  passkeyModel:IOSPasskeyModelFactory::GetForProfile(
-                                  self.profile)];
+                                  self.profile)
+                faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                  profile)];
   _mediator.consumer = _viewController;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
