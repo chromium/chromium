@@ -28,6 +28,8 @@ origin_files = glob([
     "url/**",
     # https://crrev.com/c/5800287
     "components/network_time/**",
+    # https://crrev.com/c/7217451
+    "tools/metrics/**",
   ]) + glob(["base/**"]) - glob([
     # Exclude test files to reduce the number of gn2bp files
     "base/tracing/test/**",

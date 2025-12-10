@@ -1719,6 +1719,15 @@ class WriteBuildDateHeaderSanitizer(BaseActionSanitizer):
     super()._sanitize_args()
 
 
+class WriteGenerateAllowlistFromHistogramsFileSanitizer(BaseActionSanitizer):
+
+  def _sanitize_args(self):
+    self._set_value_arg('--output_dir', '.')
+    self._set_value_arg('--file', '$(out)')
+    self._update_value_arg('--input', self._sanitize_filepath_with_location_tag)
+    super()._sanitize_args()
+
+
 class WriteBuildFlagHeaderSanitizer(BaseActionSanitizer):
 
   def _sanitize_args(self):
@@ -2095,6 +2104,8 @@ def get_action_sanitizer(gn, target, gn_type, arch, is_test_target):
     return PerfettoWriteBuildFlagHeaderSanitizer(target, arch)
   if target.script == "//base/write_build_date_header.py":
     return WriteBuildDateHeaderSanitizer(target, arch)
+  if target.script == "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py":
+    return WriteGenerateAllowlistFromHistogramsFileSanitizer(target, arch)
   if target.script == "//build/util/version.py":
     return VersionSanitizer(target, arch)
   if target.script == "//build/android/gyp/java_cpp_enum.py":
