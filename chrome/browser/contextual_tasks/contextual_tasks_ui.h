@@ -30,12 +30,18 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class BrowserWindowInterface;
+class GoogleServiceAuthError;
 
 namespace content {
 struct OpenURLParams;
 class BrowserContext;
 class WebContentsObserver;
 }  // namespace content
+
+namespace signin {
+class AccessTokenFetcher;
+struct AccessTokenInfo;
+}  // namespace signin
 
 namespace contextual_tasks {
 class ContextualTasksContextController;
@@ -175,6 +181,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
   void TransferNavigationToEmbeddedPage(content::OpenURLParams params);
 
  private:
+  void RequestOAuthToken();
+  void OnOAuthTokenReceived(GoogleServiceAuthError error,
+                            signin::AccessTokenInfo access_token_info);
   // A an observer specifically to watch for the creation of the hosted remote
   // page. This is attached to the WebContents for the WebUI and notifies the
   // WebUI when an inner WebContents is created. The expectation is that there
@@ -198,6 +207,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // the embedded remote page.
   void OnInnerWebContentsCreated(content::WebContents* inner_contents);
 
+  std::unique_ptr<signin::AccessTokenFetcher> oauth_token_fetcher_;
   std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 

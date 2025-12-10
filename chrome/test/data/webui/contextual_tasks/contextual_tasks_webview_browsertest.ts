@@ -29,6 +29,9 @@ suite('ContextualTasksWebviewTest', function() {
             '#threadFrame');
     assertTrue(!!threadFrame, 'Thread frame not found');
 
+    // Simulate the browser pushing the OAuth token to the page.
+    proxy.callbackRouterRemote.setOAuthToken('fake_token');
+    await microtasksFinished();
 
     // Add a promise that will be resolved after the headers contain the OAuth
     // token.

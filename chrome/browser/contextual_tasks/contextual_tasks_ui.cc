@@ -23,6 +23,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -41,6 +42,9 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
@@ -49,6 +53,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -233,6 +238,52 @@ void ContextualTasksUI::CreatePageHandler(
   page_.Bind(std::move(page));
   page_handler_ = std::make_unique<ContextualTasksPageHandler>(
       std::move(page_handler), this, ui_service_, context_controller_);
+  // TODO(crbug.com/461595196): Currently, this grabs the OAuth token once,
+  // but it should be refreshed if it expires.
+  RequestOAuthToken();
+}
+
+void ContextualTasksUI::RequestOAuthToken() {
+  auto* profile = Profile::FromWebUI(web_ui());
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    if (page_) {
+      page_->SetOAuthToken("");
+      return;
+    }
+    return;
+  }
+
+  // TODO(crbug.com/461596823): Currently just grabs the primary account, but
+  // should use the web identity when available. Additionally, the account
+  // should be grabbed once, and used until this WebUI is closed.
+  // TODO(crbug.com/462138963): Add error handling for when the account
+  // identities fail.
+  auto account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  // A previous fetcher for the same owner will be automatically cancelled.
+  oauth_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
+      account.account_id, signin::OAuthConsumerId::kContextualTasks,
+      base::BindOnce(&ContextualTasksUI::OnOAuthTokenReceived,
+                     base::Unretained(this)),
+      signin::AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
+}
+
+void ContextualTasksUI::OnOAuthTokenReceived(
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  oauth_token_fetcher_.reset();
+  if (!page_) {
+    return;
+  }
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    page_->SetOAuthToken("");
+    return;
+  }
+  page_->SetOAuthToken(access_token_info.token);
 }
 
 const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
