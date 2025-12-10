@@ -2,6 +2,13 @@
   :host {
     display: flex;
     flex-direction: column;
+    --security-page-selected-card-background-color: var(--google-blue-50);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+    --security-page-selected-card-background-color: rgba(0, 74, 119, 1);
+    }
   }
 
   .box {
@@ -28,7 +35,7 @@
 
   .card-end:has(controlled-radio-button[checked]),
   .card-start:has(controlled-radio-button[checked]) {
-    background-color: var(--google-blue-50);
+    background-color: var(--security-page-selected-card-background-color);
   }
 
   .section-header {
