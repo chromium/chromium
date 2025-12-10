@@ -89,6 +89,7 @@ public class SettingsSearchCoordinator {
     private @Nullable Runnable mRemoveResultChildViewListener;
     private @Nullable UiConfig mBoxUiConfig;
     private @Nullable UiConfig mQueryUiConfig;
+    private @Nullable Runnable mTurnOffHighlight;
 
     // Whether the back action handler for MultiColumnSettings was set. This is set lazily when
     // search UI gets focus for the first time.
@@ -697,6 +698,10 @@ public class SettingsSearchCoordinator {
             // In single-column mode, search UI is hidden and title is shown instead in the toolbar.
             mActivity.findViewById(R.id.search_query_container).setVisibility(View.GONE);
         }
+        if (mTurnOffHighlight != null) {
+            mTurnOffHighlight.run();
+            mTurnOffHighlight = null;
+        }
     }
 
     private void showResultPreference(PreferenceFragmentCompat fragment, String key) {
@@ -727,6 +732,13 @@ public class SettingsSearchCoordinator {
                                                 view, getHighlightParams(fragment, pos));
                                         listView.removeOnChildAttachStateChangeListener(this);
                                         mRemoveResultChildViewListener = null;
+                                        mHandler.post(
+                                                () -> {
+                                                    mTurnOffHighlight =
+                                                            () ->
+                                                                    ViewHighlighter
+                                                                            .turnOffHighlight(view);
+                                                });
                                     };
                             mHandler.postDelayed(mRemoveResultChildViewListener, 200);
                         }
@@ -747,7 +759,11 @@ public class SettingsSearchCoordinator {
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         fragment.scrollToPreference(key);
-                        listView.removeOnScrollListener(this);
+                        if (mTurnOffHighlight != null) {
+                            mTurnOffHighlight.run();
+                            mTurnOffHighlight = null;
+                            listView.removeOnScrollListener(this);
+                        }
                     }
                 });
     }
