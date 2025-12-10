@@ -740,13 +740,6 @@ inline constexpr char kAutofillEnableAiBasedAmountExtractionDescription[] =
     "When enabled, Chrome will extract the checkout amount from the checkout "
     "page using server-side AI.";
 
-inline constexpr char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[] =
-    "Enable allowlist for showing category benefits for BMO cards";
-inline constexpr char
-    kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[] =
-        "When enabled, card category benefits offered by BMO will be shown in "
-        "Autofill suggestions on the allowlisted merchant websites.";
-
 inline constexpr char kAutofillEnableAmountExtractionName[] =
     "Enable checkout amount extraction.";
 inline constexpr char kAutofillEnableAmountExtractionDescription[] =

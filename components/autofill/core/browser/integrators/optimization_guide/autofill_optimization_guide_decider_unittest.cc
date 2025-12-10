@@ -613,12 +613,8 @@ TEST_F(
 // credit card form is present and the user has an BMO card.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_BmoCategoryBenefits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillEnableCardBenefitsSync,
-       features::kAutofillEnableAllowlistForBmoCardCategoryBenefits},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature{
+      features::kAutofillEnableCardBenefitsSync};
 
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
@@ -679,37 +675,6 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
                   optimization_guide::proto::
                       AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS)))
       .Times(0);
-
-  guide().OnDidParseForm(form_structure, payments_data_manager());
-}
-
-// Test that the BMO category-benefit optimization types are not registered when
-// the `kAutofillEnableAllowlistForBmoCardCategoryBenefits` experiment is
-// disabled.
-TEST_F(AutofillOptimizationGuideDeciderTest,
-       CreditCardFormFound_BmoCategoryBenefits_ExperimentDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableAllowlistForBmoCardCategoryBenefits);
-
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
-  test_api(form_structure)
-      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
-                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
-  payments_data_manager().AddServerCreditCard(GetVcnEnrolledCard(
-      /*network=*/kMasterCard,
-      /*virtual_card_enrollment_type=*/
-      CreditCard::VirtualCardEnrollmentType::kNetwork,
-      /*issuer_id=*/kBmoCardIssuerId,
-      /*benefit_source=*/kBmoCardBenefitSource));
-
-  // Since the experiment is disabled, there should be no benefits-related
-  // optimization types registered.
-  EXPECT_CALL(decider(),
-              RegisterOptimizationTypes(UnorderedElementsAre(
-                  optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)));
 
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }

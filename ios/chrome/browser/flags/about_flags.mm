@@ -2244,14 +2244,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          first_run::kAnimatedDefaultBrowserPromoInFRE,
          kAnimatedDefaultBrowserPromoInFREVariations,
          "AnimatedDBPInFRE-Layout")},
-    {"autofill-enable-allowlist-for-bmo-card-category-benefits",
-     flag_descriptions::kAutofillEnableAllowlistForBmoCardCategoryBenefitsName,
-     flag_descriptions::
-         kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillEnableAllowlistForBmoCardCategoryBenefits)},
     {"fullscreen-transition-speed",
      flag_descriptions::kFullscreenTransitionSpeedName,
      flag_descriptions::kFullscreenTransitionSpeedDescription, flags_ui::kOsIos,

@@ -22,11 +22,6 @@ BASE_FEATURE(kAutofillDisableBnplCountryCheckForTesting,
 BASE_FEATURE(kAutofillEnableAiBasedAmountExtraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, card category benefits offered by BMO will be shown in Autofill
-// suggestions on the allowlisted merchant websites.
-BASE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Chrome will extract the checkout amount from the checkout page
 // of the allowlisted merchant websites.
 BASE_FEATURE(kAutofillEnableAmountExtraction,

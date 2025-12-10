@@ -67,10 +67,7 @@ GetCardBenefitsOptimizationTypesForCard(
     optimization_types.push_back(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
-  } else if (card.benefit_source() == kBmoCardBenefitSource &&
-             base::FeatureList::IsEnabled(
-                 features::
-                     kAutofillEnableAllowlistForBmoCardCategoryBenefits)) {
+  } else if (card.benefit_source() == kBmoCardBenefitSource) {
     optimization_types.push_back(
         optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS);
     optimization_types.push_back(
@@ -332,10 +329,7 @@ AutofillOptimizationGuideDecider::AttemptToGetEligibleCreditCardBenefitCategory(
     issuer_optimization_types.push_back(
         optimization_guide::proto::
             AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS);
-  } else if (benefit_source == kBmoCardBenefitSource &&
-             base::FeatureList::IsEnabled(
-                 features::
-                     kAutofillEnableAllowlistForBmoCardCategoryBenefits)) {
+  } else if (benefit_source == kBmoCardBenefitSource) {
     issuer_optimization_types.push_back(
         optimization_guide::proto::BMO_CREDIT_CARD_AIR_MILES_PARTNER_BENEFITS);
     issuer_optimization_types.push_back(

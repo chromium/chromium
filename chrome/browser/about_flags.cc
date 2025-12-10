@@ -11867,14 +11867,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          blink::features::kSecurePaymentConfirmationAvailabilityAPI)},
 
-    {"autofill-enable-allowlist-for-bmo-card-category-benefits",
-     flag_descriptions::kAutofillEnableAllowlistForBmoCardCategoryBenefitsName,
-     flag_descriptions::
-         kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillEnableAllowlistForBmoCardCategoryBenefits)},
 #if BUILDFLAG(IS_ANDROID)
     {"new-etc1-encoder", flag_descriptions::kNewEtc1EncoderName,
      flag_descriptions::kNewEtc1EncoderDescription, kOsAndroid,

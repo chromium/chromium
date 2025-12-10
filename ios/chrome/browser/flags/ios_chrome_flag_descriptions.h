@@ -65,10 +65,6 @@ extern const char kAutofillDisableProfileUpdatesDescription[];
 extern const char kAutofillDisableSilentProfileUpdatesName[];
 extern const char kAutofillDisableSilentProfileUpdatesDescription[];
 
-extern const char kAutofillEnableAllowlistForBmoCardCategoryBenefitsName[];
-extern const char
-    kAutofillEnableAllowlistForBmoCardCategoryBenefitsDescription[];
-
 extern const char kAutofillEnableCardBenefitsForAmericanExpressName[];
 extern const char kAutofillEnableCardBenefitsForAmericanExpressDescription[];
 
