@@ -407,6 +407,17 @@ void FormStructure::UpdateFormData(const FormData& form_data) {
   // form_data.submission_event();
   // form_data.username_predictions();
 
+  // This map will contain the Autofill[Type|PredictionSource] of the fields
+  // in the outdated version of the form. They need to be cached and retrieved
+  // later (See comment below on usage of the map).
+  auto types_and_sources = base::MakeFlatMap<
+      FieldGlobalId,
+      std::pair<AutofillType, std::optional<AutofillPredictionSource>>>(
+      fields_, /*comp=*/{}, [](const std::unique_ptr<AutofillField>& field) {
+        return std::pair(field->global_id(),
+                         std::pair(field->Type(), field->PredictionSource()));
+      });
+
   std::map<FieldGlobalId, std::unique_ptr<AutofillField>> field_map;
   for (std::unique_ptr<AutofillField>& field : fields_) {
     field_map[field->global_id()] = std::move(field);
@@ -444,6 +455,25 @@ void FormStructure::UpdateFormData(const FormData& form_data) {
   // Do further processing on the fields, as needed.
   SetFieldTypesFromAutocompleteAttribute();
   DetermineFieldRanks();
+
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
+    if (const std::pair<AutofillType, std::optional<AutofillPredictionSource>>*
+            type_and_source =
+                base::FindOrNull(types_and_sources, field->global_id())) {
+      const auto& [type, source] = *type_and_source;
+      // `AutofillField::overall_type_` can become invalidated between the time
+      // of populating fields and reaching this block (e.g.,
+      // `FormStructure::SetFieldTypesFromAutocompleteAttribute()` calls
+      // `AutofillField::SetHtmlType()` and that function resets it).
+      //
+      // Therefore it is important to maintain the same field type that was
+      // present beforehand, otherwise the recomputation of
+      // `AutofillField::overall_type_` would happen at the next call of
+      // `AutofillField::Type()`, which would do so without accounting for
+      // rationalization.
+      field->SetTypeTo(type, source);
+    }
+  }
 }
 
 void FormStructure::RetrieveFromCache(const FormStructure& cached_form,

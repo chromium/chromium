@@ -2364,5 +2364,35 @@ TEST_F(FormStructureTestImpl, UpdateFormData) {
             mojom::SubmissionSource::XHR_SUCCEEDED);
 }
 
+// Tests that `FormStructure::UpdateFormData()` preserves field types that are
+// computed during rationalization. Regression test for crbug.com/467384724.
+TEST_F(FormStructureTestImpl, UpdateFormData_PreservesRationalizedTypes) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NUMBER,
+                                     .autocomplete_attribute = "cc-number"},
+                                    {.role = CREDIT_CARD_EXP_4_DIGIT_YEAR,
+                                     .max_length = 5,
+                                     .autocomplete_attribute = "cc-exp"}}});
+
+  FormStructure form_structure(form);
+  ASSERT_EQ(form_structure.field(1)->Type().GetCreditCardType(),
+            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+
+  // By running rationalization, the `max_length` is taken into account for the
+  // field type of the expiration date field, which fixes the overall
+  // prediction.
+  form_structure.RationalizeAndAssignSections(
+      GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
+  ASSERT_EQ(form_structure.field(1)->Type().GetCreditCardType(),
+            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
+
+  // By updating the `FormData` in `form_structure`, the logic rewrites the
+  // autocomplete attributes of the fields, which can invalidate the
+  // rationalized type. Make sure the rationalized type is preserved.
+  test_api(form_structure).UpdateFormData(form);
+  EXPECT_EQ(form_structure.field(1)->Type().GetCreditCardType(),
+            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
+}
+
 }  // namespace
 }  // namespace autofill
