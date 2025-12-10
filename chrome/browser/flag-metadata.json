@@ -486,7 +486,7 @@
   {
     "name": "app-background-refresh-ios",
     "owners": [ "fedegermi@google.com", "marq@chromium.org" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "app-browser-use-new-layout",
