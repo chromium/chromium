@@ -442,6 +442,26 @@ class WebstorePrivateShouldShowEnterprisePromotionBannerFunction
   std::unique_ptr<enterprise_promotion::PromotionEligibilityChecker>
       promotion_eligibility_checker_;
 };
+
+class WebstorePrivateLogEnterprisePromoShownFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("webstorePrivate.logEnterprisePromoShown",
+                             WEBSTOREPRIVATE_LOGENTERPRISEPROMOSHOWN)
+
+  WebstorePrivateLogEnterprisePromoShownFunction();
+
+  WebstorePrivateLogEnterprisePromoShownFunction(
+      const WebstorePrivateLogEnterprisePromoShownFunction&) = delete;
+  WebstorePrivateLogEnterprisePromoShownFunction& operator=(
+      const WebstorePrivateLogEnterprisePromoShownFunction&) = delete;
+
+ protected:
+  ~WebstorePrivateLogEnterprisePromoShownFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

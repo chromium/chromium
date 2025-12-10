@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version_info/version_info.h"
@@ -47,6 +48,10 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/promotion_types.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -910,5 +915,26 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
   EXPECT_EQ(expected, *response);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !BUILDFLAG(IS_ANDROID)
+class WebstorePrivateLogEnterprisePromoShownFunctionTest
+    : public WebstorePrivateApiTestBase {
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(WebstorePrivateLogEnterprisePromoShownFunctionTest,
+       HistogramRecordedDisplay) {
+  auto function =
+      base::MakeRefCounted<WebstorePrivateLogEnterprisePromoShownFunction>();
+
+  api_test_utils::RunFunction(function.get(), "[]", profile());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.CwsPromotionBannerEvent",
+      static_cast<int>(enterprise::CwsPromotionBannerEvent::kDisplayed), 1);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

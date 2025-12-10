@@ -1496,6 +1496,18 @@ void WebstorePrivateShouldShowEnterprisePromotionBannerFunction::
 
   Respond(WithArguments(api::webstore_private::ToString(api_promotion_type)));
 }
+
+WebstorePrivateLogEnterprisePromoShownFunction::
+    WebstorePrivateLogEnterprisePromoShownFunction() = default;
+
+ExtensionFunction::ResponseAction
+WebstorePrivateLogEnterprisePromoShownFunction::Run() {
+  base::UmaHistogramEnumeration(
+      "Enterprise.CwsPromotionBannerEvent",
+      enterprise::CwsPromotionBannerEvent::kDisplayed);
+
+  return RespondNow(NoArguments());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
