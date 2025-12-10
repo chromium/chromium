@@ -50,7 +50,7 @@ struct COMPONENT_EXPORT(
   // Name of the flag.
   std::string flag;
   // The hashed value of the key.
-  std::string sha1_hashed_key_value;
+  std::string sha256_hashed_key_value;
 };
 
 // This configures the FeatureAccessChecker for different types of common
