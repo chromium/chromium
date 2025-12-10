@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-                       OpenNewTabInheritsOpenerTask) {
+                       OpenNewTabWithoutLinkClick_DoesNotInheritsOpenerTask) {
   SetUpTasks();
   // Set tab1 as active tab and create a new tab. The opener of tab4 is set to
   // tab1.
@@ -512,8 +512,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
   EXPECT_EQ(5, browser()->tab_strip_model()->count());
 
-  // Since tab1 is associated with task1, verify tab 4 is associated with the
-  // same task.
+  // Tab4 will not inherit the task from tab1 as it is not created through link
+  // click.
   ContextualTasksContextController* contextual_tasks_controller =
       ContextualTasksContextControllerFactory::GetForProfile(
           browser()->profile());
@@ -525,6 +525,32 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       contextual_tasks_controller->GetContextualTaskForTab(
           sessions::SessionTabHelper::IdForTab(
               browser()->tab_strip_model()->GetWebContentsAt(4)));
+  ASSERT_TRUE(task1);
+  ASSERT_FALSE(task1_2);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       OpenNewTabWithLinkClick_InheritsOpenerTask) {
+  SetUpTasks();
+  // Set tab1 as active tab and create a new tab through link click.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  chrome::AddSelectedTabWithURL(browser(), GURL(chrome::kChromeUISettingsURL),
+                                ui::PAGE_TRANSITION_LINK);
+  EXPECT_EQ(5, browser()->tab_strip_model()->count());
+
+  // Since tab1 is associated with task1, verify tab 2 is associated with the
+  // same task.
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+  std::optional<ContextualTask> task1 =
+      contextual_tasks_controller->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(
+              browser()->tab_strip_model()->GetWebContentsAt(1)));
+  std::optional<ContextualTask> task1_2 =
+      contextual_tasks_controller->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(
+              browser()->tab_strip_model()->GetWebContentsAt(2)));
   ASSERT_TRUE(task1);
   ASSERT_TRUE(task1_2);
   ASSERT_EQ(task1->GetTaskId(), task1_2->GetTaskId());
