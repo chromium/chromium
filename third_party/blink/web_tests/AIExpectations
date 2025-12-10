@@ -21,8 +21,8 @@ crbug.com/407988949 external/wpt/ai/summarizer/summarizer-iframe.tentative.https
 crbug.com/407988949 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
 crbug.com/407988949 wpt_internal/ai/language-model-api-iframe.tentative.https.html [ Failure Pass ]
 
-# Temporarily disable this test that are failing with ChromeML GPU Validation error.
-crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Failure Pass ]
+# Temporarily disable this test because it is currently flaky (timing out or failing with ChromeML GPU Validation error).
+crbug.com/446717936 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Skip ]
 
 # These tests fail audio input availability preconditions on Mac x64 bots.
 # Disables tests on all platforms, since disabling these tests on Mac x64 only is not supported.
