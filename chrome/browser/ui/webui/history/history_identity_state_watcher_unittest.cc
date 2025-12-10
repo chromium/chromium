@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/history/history_sign_in_state_watcher.h"
+#include "chrome/browser/ui/webui/history/history_identity_state_watcher.h"
 
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
@@ -51,20 +51,25 @@ TEST_P(HistorySignInStateWatcherTest, SignedOut) {
   ASSERT_FALSE(sync_service_.IsSyncFeatureEnabled());
 
   StrictMock<base::MockCallback<base::RepeatingClosure>> callback;
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, callback.Get());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_, callback.Get());
 
-  EXPECT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedOut,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kTurnedOff,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 TEST_P(HistorySignInStateWatcherTest, NullServices) {
   StrictMock<base::MockCallback<base::RepeatingClosure>> callback;
-  HistorySignInStateWatcher watcher(nullptr, nullptr, callback.Get());
+  HistoryIdentityStateWatcher watcher(nullptr, nullptr, callback.Get());
 
   if (GetParam()) {
-    EXPECT_EQ(HistorySignInState::kSyncDisabled, watcher.GetSignInState());
+    EXPECT_EQ(HistoryIdentityState::TabsSync::kDisabled,
+              watcher.GetHistoryIdentityState().tab_sync);
   } else {
-    EXPECT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+    EXPECT_EQ(HistoryIdentityState::SignIn::kSignedOut,
+              watcher.GetHistoryIdentityState().sign_in);
   }
 }
 
@@ -81,9 +86,12 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest, SyncDisabledByPolicy) {
       "test@example.com", signin::ConsentLevel::kSignin);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.SetAllowedByEnterprisePolicy(false);
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, base::DoNothing());
-  ASSERT_EQ(HistorySignInState::kSyncDisabled, watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_, base::DoNothing());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kDisabled,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 // Tabs sync is disabled by policy and there is no account info, should result
@@ -91,22 +99,29 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest, SyncDisabledByPolicy) {
 TEST_F(HistorySignInStateWatcherSyncToSigninTest, TabsSyncDisabled) {
   sync_service_.GetUserSettings()->SetTypeIsManagedByPolicy(
       syncer::UserSelectableType::kTabs, true);
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, base::DoNothing());
-  ASSERT_EQ(HistorySignInState::kSyncDisabled, watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_, base::DoNothing());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedOut,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kDisabled,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 // Signing in to web only, should change the state and trigger a notification.
 TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnWebOnlySignIn) {
   base::test::TestFuture<void> callback;
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_,
-                                    callback.GetRepeatingCallback());
-  ASSERT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_,
+                                      callback.GetRepeatingCallback());
+  ASSERT_EQ(HistoryIdentityState::SignIn::kSignedOut,
+            watcher.GetHistoryIdentityState().sign_in);
   identity_test_env_.MakeAccountAvailable("test@email.com",
                                           {.set_cookie = true});
   ASSERT_TRUE(callback.Wait());
-  EXPECT_EQ(HistorySignInState::kWebOnlySignedIn, watcher.GetSignInState());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kWebOnlySignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kTurnedOff,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 // Signing in to Chrome, but without history and tabs, should change the state
@@ -114,10 +129,11 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnWebOnlySignIn) {
 TEST_F(HistorySignInStateWatcherSyncToSigninTest,
        NotifiesOnChromeSignInWithoutHistoryAndTabsSync) {
   base::test::TestFuture<void> callback;
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_,
-                                    callback.GetRepeatingCallback());
-  ASSERT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_,
+                                      callback.GetRepeatingCallback());
+  ASSERT_EQ(HistoryIdentityState::SignIn::kSignedOut,
+            watcher.GetHistoryIdentityState().sign_in);
   const CoreAccountInfo account_info =
       identity_test_env_.MakePrimaryAccountAvailable(
           "test@example.com", signin::ConsentLevel::kSignin);
@@ -127,8 +143,10 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, false);
   ASSERT_TRUE(callback.Wait());
-  EXPECT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
-            watcher.GetSignInState());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kTurnedOff,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 // Signing in to Chrome, with sync enabled but tabs sync disabled, should
@@ -142,9 +160,12 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, false);
 
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, base::DoNothing());
-  EXPECT_EQ(HistorySignInState::kSyncDisabled, watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_, base::DoNothing());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kDisabled,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 // Opting in to history should not change the state and trigger a notification.
@@ -159,15 +180,19 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, false);
 
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, base::DoNothing());
-  ASSERT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
-            watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_, base::DoNothing());
+  ASSERT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  ASSERT_EQ(HistoryIdentityState::TabsSync::kTurnedOff,
+            watcher.GetHistoryIdentityState().tab_sync);
 
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
-  EXPECT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
-            watcher.GetSignInState());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kTurnedOff,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 // Opting in to tabs should change the state and trigger a notification.
@@ -182,19 +207,25 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnEnablingTabsSync) {
       syncer::UserSelectableType::kTabs, false);
 
   StrictMock<base::MockCallback<base::RepeatingClosure>> callback;
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, callback.Get());
-  ASSERT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
-            watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_, callback.Get());
+  ASSERT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  ASSERT_EQ(HistoryIdentityState::TabsSync::kTurnedOff,
+            watcher.GetHistoryIdentityState().tab_sync);
 
   EXPECT_CALL(callback, Run());
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, true);
   sync_service_.FireStateChanged();
-  EXPECT_EQ(HistorySignInState::kSignedInSyncingTabs, watcher.GetSignInState());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kTurnedOn,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
-// Users with pending sign-in have a separate state.
+// Users with pending sign-in have a separate HistorySignInState. Opting in/out
+// of tabs sync changes only the TabsSyncState.
 TEST_F(HistorySignInStateWatcherSyncToSigninTest,
        SignInPendingCanOptInToTabsSync) {
   const CoreAccountInfo account_info =
@@ -207,15 +238,19 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
       syncer::UserSelectableType::kTabs, false);
   identity_test_env_.SetInvalidRefreshTokenForPrimaryAccount();
 
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, base::DoNothing());
-  EXPECT_EQ(HistorySignInState::kSignInPendingNotSyncingTabs,
-            watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_, base::DoNothing());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignInPending,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kTurnedOff,
+            watcher.GetHistoryIdentityState().tab_sync);
 
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, true);
-  EXPECT_EQ(HistorySignInState::kSignInPendingSyncingTabs,
-            watcher.GetSignInState());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignInPending,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kTurnedOn,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -231,14 +266,21 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnSignOut) {
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, true);
   base::test::TestFuture<void> callback;
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_,
-                                    callback.GetRepeatingCallback());
-  ASSERT_EQ(HistorySignInState::kSignedInSyncingTabs, watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_,
+                                      callback.GetRepeatingCallback());
+  ASSERT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  ASSERT_EQ(HistoryIdentityState::TabsSync::kTurnedOn,
+            watcher.GetHistoryIdentityState().tab_sync);
+
   identity_test_env_.ClearPrimaryAccount();
   sync_service_.SetSignedOut();
   ASSERT_TRUE(callback.Wait());
-  EXPECT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedOut,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kTurnedOff,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 // History sync is disabled by the user using toggles on the settings page,
@@ -248,15 +290,21 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
   CoreAccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, base::DoNothing());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_, base::DoNothing());
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, true);
-  ASSERT_EQ(HistorySignInState::kSignedInSyncingTabs, watcher.GetSignInState());
+  ASSERT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  ASSERT_EQ(HistoryIdentityState::TabsSync::kTurnedOn,
+            watcher.GetHistoryIdentityState().tab_sync);
 
   sync_service_.GetUserSettings()->SetDisabledType(
       syncer::UserSelectableType::kHistory);
-  EXPECT_EQ(HistorySignInState::kSyncDisabled, watcher.GetSignInState());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kDisabled,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -274,15 +322,19 @@ TEST_F(HistorySignInStateWatcherWithoutSyncToSigninTest,
       "test@example.com", signin::ConsentLevel::kSignin);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   base::test::TestFuture<void> callback;
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_,
-                                    callback.GetRepeatingCallback());
-  ASSERT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+  HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
+                                      &sync_service_,
+                                      callback.GetRepeatingCallback());
+  ASSERT_EQ(HistoryIdentityState::SignIn::kSignedOut,
+            watcher.GetHistoryIdentityState().sign_in);
   account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSync);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
   ASSERT_TRUE(callback.Wait());
-  EXPECT_EQ(HistorySignInState::kSignedInSyncingTabs, watcher.GetSignInState());
+  EXPECT_EQ(HistoryIdentityState::SignIn::kSignedIn,
+            watcher.GetHistoryIdentityState().sign_in);
+  EXPECT_EQ(HistoryIdentityState::TabsSync::kTurnedOn,
+            watcher.GetHistoryIdentityState().tab_sync);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

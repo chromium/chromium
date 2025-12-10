@@ -72,7 +72,8 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
         </div>
       ` : ''}
 
-      ${this.isSignInStatePending_() && this.accountInfo_ ? html`
+      ${this.isSignInState_(HistorySignInState.SIGN_IN_PENDING)
+        && this.accountInfo_ ? html`
         <div class="image-container">
           <img class="sync-history-promo-avatar-illustration" alt="">
           <img id="sign-in-pending-avatar" class="avatar"
@@ -80,16 +81,14 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
         </div>
         <h1 class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</h1>
 
-        ${this.isSignInState_(
-          HistorySignInState.SIGN_IN_PENDING_NOT_SYNCING_TABS) ? html`
+        ${!this.isTabsSyncTurnedOn_() ? html`
           <div id="sign-in-pending-sync-history-promo-desc"
               class="sync-history-promo-desc">
             $i18n{syncHistoryPromoBodyPendingSignIn}
           </div>
         ` : ''}
 
-        ${this.isSignInState_(
-          HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS) ? html`
+        ${this.isTabsSyncTurnedOn_() ? html`
           <div id="sign-in-pending-sync-history-promo-desc-sync-history-on"
             class="sync-history-promo-desc">
           $i18n{syncHistoryPromoBodyPendingSignInSyncHistoryOn}
@@ -97,8 +96,8 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
         ` : ''}
       ` : ''}
 
-      ${this.isSignInState_(HistorySignInState.SIGNED_IN_NOT_SYNCING_TABS)
-        && this.accountInfo_ ? html`
+      ${this.isSignInState_(HistorySignInState.SIGNED_IN)
+        && !this.isTabsSyncTurnedOn_() && this.accountInfo_ ? html`
           <div class="image-container">
             <img class="sync-history-promo-avatar-illustration" alt="">
             <img id="signed-in-avatar" class="avatar"
@@ -112,7 +111,8 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
         ` : ''}
 
       <!-- Button -->
-      ${this.isSignInState_(HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS)
+      ${this.isSignInState_(HistorySignInState.SIGN_IN_PENDING) &&
+        this.isTabsSyncTurnedOn_()
         ? html`
           <cr-button id="verify-its-you-button" class="action-button"
               @click="${this.onTurnOnHistorySyncClick_}">$i18n{verifyItsYou}

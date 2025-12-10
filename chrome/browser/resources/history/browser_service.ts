@@ -7,6 +7,7 @@ import {PageCallbackRouter, PageHandler} from 'chrome://resources/cr_components/
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 import type {ForeignSession} from './externs.js';
+import type {HistoryIdentityState} from './externs.js';
 
 export type RemoveVisitsRequest = Array<{
   url: string,
@@ -33,6 +34,7 @@ export interface BrowserService {
   recordSigninPendingOffered(): void;
   navigateToUrl(url: string, target: string, e: MouseEvent): void;
   otherDevicesInitialized(): void;
+  getInitialIdentityState(): Promise<HistoryIdentityState>;
   startTurnOnSyncFlow(): void;
 }
 
@@ -126,6 +128,10 @@ export class BrowserServiceImpl implements BrowserService {
 
   otherDevicesInitialized() {
     chrome.send('otherDevicesInitialized');
+  }
+
+  getInitialIdentityState(): Promise<HistoryIdentityState> {
+    return sendWithPromise('getInitialIdentityState');
   }
 
   startTurnOnSyncFlow() {

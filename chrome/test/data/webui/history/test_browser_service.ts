@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BrowserService, ForeignSession} from 'chrome://history/history.js';
+import type {BrowserService, ForeignSession, HistoryIdentityState} from 'chrome://history/history.js';
+import {HistorySignInState, TabsSyncState} from 'chrome://history/history.js';
 import {
   PageCallbackRouter,
   PageHandlerRemote,
@@ -22,11 +23,13 @@ export class TestBrowserService extends TestBrowserProxy implements
   histogramMap: {[key: string]: {[key: string]: number}} = {};
   actionMap: {[key: string]: number} = {};
   private foreignSessions_: ForeignSession[] = [];
+  private initialIdentityState_: HistoryIdentityState;
 
   constructor() {
     super([
       'deleteForeignSession',
       'getForeignSessions',
+      'getInitialIdentityState',
       'historyLoaded',
       'navigateToUrl',
       'openForeignSessionTab',
@@ -41,6 +44,11 @@ export class TestBrowserService extends TestBrowserProxy implements
     this.handler = TestMock.fromClass(PageHandlerRemote);
     this.callbackRouter = new PageCallbackRouter();
     this.pageRemote = this.callbackRouter.$.bindNewPipeAndPassRemote();
+
+    this.initialIdentityState_ = {
+      signIn: HistorySignInState.SIGNED_OUT,
+      tabsSync: TabsSyncState.TURNED_OFF,
+    };
 
     this.handler.setResultFor('queryHistory', Promise.resolve({
       results: {
@@ -73,6 +81,15 @@ export class TestBrowserService extends TestBrowserProxy implements
   getForeignSessions() {
     this.methodCalled('getForeignSessions');
     return Promise.resolve(this.foreignSessions_);
+  }
+
+  getInitialIdentityState(): Promise<HistoryIdentityState> {
+    this.methodCalled('getInitialIdentityState');
+    return Promise.resolve(this.initialIdentityState_);
+  }
+
+  setInitialIdentityState(identityState: HistoryIdentityState) {
+    this.initialIdentityState_ = identityState;
   }
 
   setForeignSessions(sessions: ForeignSession[]) {

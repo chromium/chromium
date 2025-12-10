@@ -10,21 +10,28 @@ export const RESULTS_PER_PAGE = 150;
  */
 export const BROWSING_GAP_TIME = 15 * 60 * 1000;
 
-/**
- * This enum is used to differentiate all the relevant sign-in/history-sync
- * states.
- */
+// This enum is used to differentiate all the relevant sign-in/history-sync
+// states.
 // LINT.IfChange(HistorySignInState)
 export enum HistorySignInState {
   SIGNED_OUT = 0,
+  // The user is signed in only in web.
   WEB_ONLY_SIGNED_IN = 1,
-  SIGNED_IN_NOT_SYNCING_TABS = 2,
-  SIGNED_IN_SYNCING_TABS = 3,
-  SIGN_IN_PENDING_NOT_SYNCING_TABS = 4,
-  SIGN_IN_PENDING_SYNCING_TABS = 5,
-  SYNC_DISABLED = 6,
+  // The user is signed in.
+  SIGNED_IN = 2,
+  // The user is pending sign-in.
+  SIGN_IN_PENDING = 3,
 }
-// LINT.ThenChange(/chrome/browser/ui/webui/history/history_sign_in_state_watcher.h:HistorySignInState)
+// LINT.ThenChange(/chrome/browser/ui/webui/history/history_identity_state_watcher.h:HistoryIdentityState.SignIn)
+
+// This enum is used to differentiate all the relevant history-sync states.
+// LINT.IfChange(TabsSyncState)
+export enum TabsSyncState {
+  TURNED_OFF = 0,
+  TURNED_ON = 1,
+  DISABLED = 2,
+}
+// LINT.ThenChange(/chrome/browser/ui/webui/history/history_identity_state_watcher.h:HistoryIdentityState.TabsSync)
 
 /**
  * Histogram buckets for UMA tracking of which view is being shown to the user.
