@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -39,6 +41,10 @@ class ContextualTasksEphemeralButtonController
       const base::Uuid& task_id,
       contextual_tasks::ContextualTasksService::TriggerSource source) override;
   void OnWillBeDestroyed() override;
+  void OnTaskAssociatedToTab(const base::Uuid& task_id,
+                             SessionID tab_id) override;
+  void OnTaskDisassociatedFromTab(const base::Uuid& task_id,
+                                  SessionID tab_id) override;
 
   using ShouldUpdateVisibilityCallbackList =
       base::RepeatingCallbackList<void(bool)>;
@@ -47,8 +53,9 @@ class ContextualTasksEphemeralButtonController
 
  private:
   contextual_tasks::ContextualTasksService* GetContextualTasksService();
-  SessionID GetCurrentTabSessionId();
+  std::optional<SessionID> GetCurrentTabSessionId();
   void OnActiveTabChange(BrowserWindowInterface* browser_window_interface);
+  void MaybeNotifyVisibilityShouldChange();
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 

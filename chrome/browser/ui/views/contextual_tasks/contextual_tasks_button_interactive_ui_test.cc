@@ -113,6 +113,20 @@ class ContextualTasksEphemeralButtonInteractiveTest
     });
   }
 
+  auto RemoveTaskFromTab(int tab_index) {
+    return Do([&, tab_index] {
+      content::WebContents* const web_contents =
+          browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+      SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
+      std::optional<contextual_tasks::ContextualTask> task =
+          GetContextualTasksController()->GetContextualTaskForTab(session_id);
+      if (task.has_value()) {
+        GetContextualTasksController()->DisassociateTabFromTask(
+            task.value().GetTaskId(), session_id);
+      }
+    });
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -121,11 +135,25 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        EphemeralButtonUpdatesVisibility) {
   RunTestSequence(
       InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
-      SelectTab(kTabStripElementId, 1),
+      SelectTab(kTabStripElementId, 0),
       EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
-      CreateTaskForTab(0), SelectTab(kTabStripElementId, 0),
+      CreateTaskForTab(0),
       WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
       SelectTab(kTabStripElementId, 1),
+      WaitForHide(ContextualTasksButton::kContextualTasksToolbarButton),
+      SelectTab(kTabStripElementId, 0),
+      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
+                       HideEphemeralButtonWhenNotAssociatedToTask) {
+  RunTestSequence(
+      InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      CreateTaskForTab(0),
+      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
+      RemoveTaskFromTab(0),
       WaitForHide(ContextualTasksButton::kContextualTasksToolbarButton));
 }
 

@@ -74,9 +74,19 @@ class ContextualTasksService : public KeyedService {
     virtual void OnTaskUpdated(const ContextualTask& group,
                                TriggerSource source) {}
 
-    // A task identifierd by `task_id` was removed.
+    // A task identified by `task_id` was removed.
     virtual void OnTaskRemoved(const base::Uuid& task_id,
                                TriggerSource source) {}
+
+    // A task identified by `task_id` is now associated to the tab corresponding
+    // to `tab_id`.
+    virtual void OnTaskAssociatedToTab(const base::Uuid& task_id,
+                                       SessionID tab_id) {}
+
+    // A task identified by `task_id` is no longer associated to the tab
+    // corresponding to `tab_id`.
+    virtual void OnTaskDisassociatedFromTab(const base::Uuid& task_id,
+                                            SessionID tab_id) {}
   };
 
   ContextualTasksService();
