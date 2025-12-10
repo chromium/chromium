@@ -43,20 +43,13 @@ class ClientImpl : public Client {
   void EstablishSession(OnEstablishSessionCompletedCallback callback) override;
   void SendTextRequest(proto::FeatureName feature_name,
                        const std::string& text,
-                       OnTextRequestCompletedCallback callback) override;
-  void SendTextRequest(proto::FeatureName feature_name,
-                       const std::string& text,
                        OnTextRequestCompletedCallback callback,
-                       base::TimeDelta timeout) override;
-  void SendGenerateContentRequest(
-      proto::FeatureName feature_name,
-      const proto::GenerateContentRequest& request,
-      OnGenerateContentRequestCompletedCallback callback) override;
+                       const RequestOptions& options) override;
   void SendGenerateContentRequest(
       proto::FeatureName feature_name,
       const proto::GenerateContentRequest& request,
       OnGenerateContentRequestCompletedCallback callback,
-      base::TimeDelta timeout) override;
+      const RequestOptions& options) override;
 
  private:
   friend class ClientImplTest;

@@ -30,6 +30,10 @@ class Client {
 
   static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
 
+  struct RequestOptions {
+    base::TimeDelta timeout = kDefaultTimeout;
+  };
+
   // Callback for when a `SendRequest` operation completes.
   // If the operation is successful, the result will contain the server's
   // response. Otherwise, it will contain an `ErrorCode` error.
@@ -69,23 +73,16 @@ class Client {
   // Sends a request with a single text content.
   virtual void SendTextRequest(proto::FeatureName feature_name,
                                const std::string& text,
-                               OnTextRequestCompletedCallback callback) = 0;
-  virtual void SendTextRequest(proto::FeatureName feature_name,
-                               const std::string& text,
                                OnTextRequestCompletedCallback callback,
-                               base::TimeDelta timeout) = 0;
+                               const RequestOptions& options) = 0;
 
   // Sends a `GenerateContentRequest`. The caller is responsible for populating
   // the `request` proto, including setting the content's role to "user".
   virtual void SendGenerateContentRequest(
       proto::FeatureName feature_name,
       const proto::GenerateContentRequest& request,
-      OnGenerateContentRequestCompletedCallback callback) = 0;
-  virtual void SendGenerateContentRequest(
-      proto::FeatureName feature_name,
-      const proto::GenerateContentRequest& request,
       OnGenerateContentRequestCompletedCallback callback,
-      base::TimeDelta timeout) = 0;
+      const RequestOptions& options) = 0;
 };
 
 }  // namespace legion

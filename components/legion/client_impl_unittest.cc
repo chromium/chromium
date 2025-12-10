@@ -147,7 +147,7 @@ TEST_F(ClientImplTest, SendTextRequestSuccess) {
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-                           "some text", future.GetCallback());
+                           "some text", future.GetCallback(), /*options=*/{});
 
   const auto& result = future.Get();
   ASSERT_TRUE(result.has_value());
@@ -170,7 +170,7 @@ TEST_F(ClientImplTest, SendTextRequestWriteFails) {
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-                           "some text", future.GetCallback());
+                           "some text", future.GetCallback(), /*options=*/{});
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -212,7 +212,7 @@ TEST_F(ClientImplTest, IgnoresResponseWithUnknownRequestId) {
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-                           "some text", future.GetCallback());
+                           "some text", future.GetCallback(), /*options=*/{});
 
   // Run all pending tasks. The response callback in the client should have been
   // called, but it should have done nothing.
@@ -238,7 +238,7 @@ TEST_F(ClientImplTest, SecureChannelRecreation) {
   // Send a request that will fail.
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-                           "some text", future.GetCallback());
+                           "some text", future.GetCallback(), /*options=*/{});
 
   // Simulate a network error from the secure channel. This should trigger a
   // channel recreation.
@@ -279,7 +279,8 @@ TEST_F(ClientImplTest, SecureChannelRecreation) {
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> second_future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-                           "some other text", second_future.GetCallback());
+                           "some other text", second_future.GetCallback(),
+                           /*options=*/{});
 
   const auto& second_result = second_future.Get();
   ASSERT_TRUE(second_result.has_value());
@@ -302,7 +303,7 @@ TEST_F(ClientImplTest, SendTextRequestTimeout) {
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(),
-                           base::Seconds(10));
+                           /*options=*/{.timeout = base::Seconds(10)});
 
   // The request is sent but no response is received yet.
   ASSERT_FALSE(future.IsReady());
@@ -334,7 +335,7 @@ TEST_F(ClientImplTest, SendTextRequestResponseAfterTimeout) {
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(),
-                           base::Seconds(10));
+                           /*options=*/{.timeout = base::Seconds(10)});
 
   // The request is sent but no response is received yet.
   ASSERT_FALSE(future.IsReady());
@@ -397,7 +398,7 @@ TEST_P(ClientImplSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-                           "some text", future.GetCallback());
+                           "some text", future.GetCallback(), /*options=*/{});
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -433,7 +434,7 @@ TEST_P(ClientImplSendTextRequestResponseErrorTest, SendTextRequestError) {
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-                           "some text", future.GetCallback());
+                           "some text", future.GetCallback(), /*options=*/{});
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -507,7 +508,7 @@ TEST_P(ClientImplSendGenerateContentRequestErrorTest,
       future;
   client_->SendGenerateContentRequest(
       proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
-      proto::GenerateContentRequest(), future.GetCallback());
+      proto::GenerateContentRequest(), future.GetCallback(), /*options=*/{});
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -581,7 +582,7 @@ TEST_F(ClientImplTest, EstablishSessionFailureFailsPendingRequests) {
   base::test::TestFuture<base::expected<std::string, ErrorCode>> text_future;
   client_->SendTextRequest(
       proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT,
-      "some text", text_future.GetCallback());
+      "some text", text_future.GetCallback(), /*options=*/{});
 
   // Attempt to establish the session, which will fail.
   base::test::TestFuture<base::expected<void, ErrorCode>> establish_future;

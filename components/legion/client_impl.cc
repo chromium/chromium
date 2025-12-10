@@ -112,14 +112,8 @@ void ClientImpl::SendRequest(int32_t request_id,
 
 void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
                                  const std::string& text,
-                                 OnTextRequestCompletedCallback callback) {
-  SendTextRequest(feature_name, text, std::move(callback), kDefaultTimeout);
-}
-
-void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
-                                 const std::string& text,
                                  OnTextRequestCompletedCallback callback,
-                                 base::TimeDelta timeout) {
+                                 const RequestOptions& options) {
   proto::GenerateContentRequest request;
   if (feature_name ==
       proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT) {
@@ -134,22 +128,14 @@ void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
       base::BindOnce(&OnGenerateContentRequestCompleted, std::move(callback));
 
   SendGenerateContentRequest(feature_name, request,
-                             std::move(text_response_callback), timeout);
-}
-
-void ClientImpl::SendGenerateContentRequest(
-    proto::FeatureName feature_name,
-    const proto::GenerateContentRequest& request,
-    OnGenerateContentRequestCompletedCallback callback) {
-  SendGenerateContentRequest(feature_name, request, std::move(callback),
-                             kDefaultTimeout);
+                             std::move(text_response_callback), options);
 }
 
 void ClientImpl::SendGenerateContentRequest(
     proto::FeatureName feature_name,
     const proto::GenerateContentRequest& request,
     OnGenerateContentRequestCompletedCallback callback,
-    base::TimeDelta timeout) {
+    const RequestOptions& options) {
   int32_t request_id = next_request_id_;
   next_request_id_++;
 
@@ -171,7 +157,7 @@ void ClientImpl::SendGenerateContentRequest(
       base::BindOnce(&OnRequestSent, std::move(callback));
 
   SendRequest(request_id, std::move(binary_encoded_proto_request),
-              std::move(response_parsing_callback), timeout);
+              std::move(response_parsing_callback), options.timeout);
 }
 
 void ClientImpl::FailAllPendingRequests(ErrorCode error_code) {

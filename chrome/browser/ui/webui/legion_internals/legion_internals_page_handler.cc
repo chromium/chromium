@@ -71,5 +71,6 @@ void LegionInternalsPageHandler::SendRequest(const std::string& feature_name,
             }
             std::move(callback).Run(std::move(result));
           },
-          std::move(callback)));
+          std::move(callback)),
+      /*options=*/{});
 }

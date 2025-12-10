@@ -99,6 +99,11 @@ void LegionModelExecutionFetcher::ExecuteModel(
   auto legion_feature_name = ToLegionFeatureName(feature);
   auto request = ToLegionRequest(feature, request_metadata);
 
+  legion::Client::RequestOptions options;
+  if (timeout) {
+    options.timeout = *timeout;
+  }
+
   legion_client_->SendTextRequest(
       legion_feature_name, request,
       base::BindOnce(
@@ -122,7 +127,8 @@ void LegionModelExecutionFetcher::ExecuteModel(
             }
             std::move(callback).Run(base::ok(response));
           },
-          feature, std::move(callback)));
+          feature, std::move(callback)),
+      options);
 }
 
 }  // namespace optimization_guide

@@ -20,33 +20,21 @@ class MockLegionClient : public legion::Client {
  public:
   MOCK_METHOD(void,
               EstablishSession,
-              (legion::Client::OnEstablishSessionCompletedCallback),
+              (OnEstablishSessionCompletedCallback callback),
               (override));
   MOCK_METHOD(void,
               SendTextRequest,
-              (legion::proto::FeatureName,
-               const std::string&,
-               legion::Client::OnTextRequestCompletedCallback),
-              (override));
-  MOCK_METHOD(void,
-              SendTextRequest,
-              (legion::proto::FeatureName,
-               const std::string&,
-               legion::Client::OnTextRequestCompletedCallback,
-               base::TimeDelta),
+              (legion::proto::FeatureName feature_name,
+               const std::string& text,
+               OnTextRequestCompletedCallback callback,
+               const RequestOptions& options),
               (override));
   MOCK_METHOD(void,
               SendGenerateContentRequest,
-              (legion::proto::FeatureName,
-               const legion::proto::GenerateContentRequest&,
-               legion::Client::OnGenerateContentRequestCompletedCallback),
-              (override));
-  MOCK_METHOD(void,
-              SendGenerateContentRequest,
-              (legion::proto::FeatureName,
-               const legion::proto::GenerateContentRequest&,
-               legion::Client::OnGenerateContentRequestCompletedCallback,
-               base::TimeDelta),
+              (legion::proto::FeatureName feature_name,
+               const legion::proto::GenerateContentRequest& request,
+               OnGenerateContentRequestCompletedCallback callback,
+               const RequestOptions& options),
               (override));
 };
 
@@ -81,10 +69,13 @@ TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsRequest) {
       mock_legion_client_,
       SendTextRequest(
           testing::Eq(legion::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
-          testing::Eq(expected_prompt), testing::_))
+          testing::Eq(expected_prompt), testing::_,
+          testing::Field(&legion::Client::RequestOptions::timeout,
+                         legion::Client::kDefaultTimeout)))
       .WillOnce([](legion::proto::FeatureName feature_name,
                    const std::string& request,
-                   legion::Client::OnTextRequestCompletedCallback callback) {});
+                   legion::Client::OnTextRequestCompletedCallback callback,
+                   const legion::Client::RequestOptions& options) {});
 
   fetcher_->ExecuteModel(ModelBasedCapabilityKey::kZeroStateSuggestions,
                          /*identity_manager=*/nullptr, request,
@@ -115,10 +106,13 @@ TEST_F(LegionModelExecutionFetcherTest,
       mock_legion_client_,
       SendTextRequest(
           testing::Eq(legion::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
-          testing::Eq(expected_prompt), testing::_))
+          testing::Eq(expected_prompt), testing::_,
+          testing::Field(&legion::Client::RequestOptions::timeout,
+                         legion::Client::kDefaultTimeout)))
       .WillOnce([](legion::proto::FeatureName feature_name,
                    const std::string& request,
-                   legion::Client::OnTextRequestCompletedCallback callback) {});
+                   legion::Client::OnTextRequestCompletedCallback callback,
+                   const legion::Client::RequestOptions& options) {});
 
   fetcher_->ExecuteModel(ModelBasedCapabilityKey::kZeroStateSuggestions,
                          /*identity_manager=*/nullptr, request,
@@ -132,10 +126,13 @@ TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsResponse) {
       mock_legion_client_,
       SendTextRequest(
           testing::Eq(legion::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
-          testing::_, testing::_))
+          testing::_, testing::_,
+          testing::Field(&legion::Client::RequestOptions::timeout,
+                         legion::Client::kDefaultTimeout)))
       .WillOnce([&](legion::proto::FeatureName feature_name,
                     const std::string& request,
-                    legion::Client::OnTextRequestCompletedCallback callback) {
+                    legion::Client::OnTextRequestCompletedCallback callback,
+                    const legion::Client::RequestOptions& options) {
         std::move(callback).Run(base::ok(legion_response));
       });
 
