@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -164,6 +165,11 @@ void NavigationThrottleRunner::ProcessInternal() {
   int64_t local_navigation_id = navigation_id_;
 
   auto& throttles = registry_->GetThrottles();
+  if (registry_->GetNavigationHandle().IsInitialWebUINavigation()) {
+    // We've skipped adding throttles for navigations to the initial WebUI.
+    // TODO(crbug.com/457618572): Remove the cast to NavigationRequest.
+    CHECK_EQ(throttles.size(), 0u);
+  }
   for (size_t i = next_index_; i < throttles.size(); ++i) {
     TRACE_EVENT0("navigation",
                  "NavigationThrottleRunner::ProcessInternal.loop");
