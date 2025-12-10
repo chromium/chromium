@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRADIENT_GENERATED_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRADIENT_GENERATED_IMAGE_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
@@ -35,7 +37,7 @@ namespace blink {
 class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
  public:
   static scoped_refptr<GradientGeneratedImage> Create(
-      scoped_refptr<Gradient> generator,
+      std::unique_ptr<Gradient> generator,
       const gfx::SizeF& size) {
     return base::AdoptRef(
         new GradientGeneratedImage(std::move(generator), size));
@@ -58,11 +60,11 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
                 const gfx::RectF&,
                 const ImageDrawOptions& draw_options) override;
 
-  GradientGeneratedImage(scoped_refptr<Gradient> generator,
+  GradientGeneratedImage(std::unique_ptr<Gradient> generator,
                          const gfx::SizeF& size)
       : GeneratedImage(size), gradient_(std::move(generator)) {}
 
-  scoped_refptr<Gradient> gradient_;
+  std::unique_ptr<Gradient> gradient_;
 };
 
 }  // namespace blink

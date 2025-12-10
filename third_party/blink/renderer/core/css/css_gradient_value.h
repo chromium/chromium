@@ -26,7 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GRADIENT_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GRADIENT_VALUE_H_
 
-#include "base/memory/scoped_refptr.h"
+#include <memory>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -193,10 +194,10 @@ class CSSLinearGradientValue final : public CSSGradientValue {
   String CustomCSSText() const;
 
   // Create the gradient for a given size.
-  scoped_refptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
-                                         const gfx::SizeF&,
-                                         const Document&,
-                                         const ComputedStyle&) const;
+  std::unique_ptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
+                                           const gfx::SizeF&,
+                                           const Document&,
+                                           const ComputedStyle&) const;
 
   bool Equals(const CSSLinearGradientValue&) const;
 
@@ -297,10 +298,10 @@ class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
   void SetEndVerticalSize(CSSPrimitiveValue* val) { end_vertical_size_ = val; }
 
   // Create the gradient for a given size.
-  scoped_refptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
-                                         const gfx::SizeF&,
-                                         const Document&,
-                                         const ComputedStyle&) const;
+  std::unique_ptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
+                                           const gfx::SizeF&,
+                                           const Document&,
+                                           const ComputedStyle&) const;
 
   bool Equals(const CSSRadialGradientValue&) const;
 
@@ -349,10 +350,10 @@ class CSSConicGradientValue final : public CSSGradientValue {
   String CustomCSSText() const;
 
   // Create the gradient for a given size.
-  scoped_refptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
-                                         const gfx::SizeF&,
-                                         const Document&,
-                                         const ComputedStyle&) const;
+  std::unique_ptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
+                                           const gfx::SizeF&,
+                                           const Document&,
+                                           const ComputedStyle&) const;
 
   bool Equals(const CSSConicGradientValue&) const;
 
@@ -390,10 +391,10 @@ class CSSConstantGradientValue final : public CSSGradientValue {
   String CustomCSSText() const { return color_->CssText(); }
 
   // Create the gradient for a given size.
-  scoped_refptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
-                                         const gfx::SizeF&,
-                                         const Document&,
-                                         const ComputedStyle&) const;
+  std::unique_ptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
+                                           const gfx::SizeF&,
+                                           const Document&,
+                                           const ComputedStyle&) const;
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
   bool Equals(const CSSConstantGradientValue&) const;

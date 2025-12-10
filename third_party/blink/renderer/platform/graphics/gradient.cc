@@ -534,17 +534,17 @@ class ConicGradient final : public Gradient {
 
 }  // namespace
 
-scoped_refptr<Gradient> Gradient::CreateLinear(
+std::unique_ptr<Gradient> Gradient::CreateLinear(
     const gfx::PointF& p0,
     const gfx::PointF& p1,
     SpreadMethod spread_method,
     PremultipliedAlpha premultiplied_alpha,
     DegenerateHandling degenerate_handling) {
-  return base::AdoptRef(new LinearGradient(
-      p0, p1, spread_method, premultiplied_alpha, degenerate_handling));
+  return std::make_unique<LinearGradient>(
+      p0, p1, spread_method, premultiplied_alpha, degenerate_handling);
 }
 
-scoped_refptr<Gradient> Gradient::CreateRadial(
+std::unique_ptr<Gradient> Gradient::CreateRadial(
     const gfx::PointF& p0,
     float r0,
     const gfx::PointF& p1,
@@ -553,12 +553,12 @@ scoped_refptr<Gradient> Gradient::CreateRadial(
     SpreadMethod spread_method,
     PremultipliedAlpha premultiplied_alpha,
     DegenerateHandling degenerate_handling) {
-  return base::AdoptRef(new RadialGradient(p0, r0, p1, r1, aspect_ratio,
-                                           spread_method, premultiplied_alpha,
-                                           degenerate_handling));
+  return std::make_unique<RadialGradient>(p0, r0, p1, r1, aspect_ratio,
+                                          spread_method, premultiplied_alpha,
+                                          degenerate_handling);
 }
 
-scoped_refptr<Gradient> Gradient::CreateConic(
+std::unique_ptr<Gradient> Gradient::CreateConic(
     const gfx::PointF& position,
     float rotation,
     float start_angle,
@@ -566,9 +566,9 @@ scoped_refptr<Gradient> Gradient::CreateConic(
     SpreadMethod spread_method,
     PremultipliedAlpha premultiplied_alpha,
     DegenerateHandling degenerate_handling) {
-  return base::AdoptRef(new ConicGradient(
+  return std::make_unique<ConicGradient>(
       position, rotation, start_angle, end_angle, spread_method,
-      premultiplied_alpha, degenerate_handling));
+      premultiplied_alpha, degenerate_handling);
 }
 
 }  // namespace blink

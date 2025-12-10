@@ -27,16 +27,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_GRADIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_GRADIENT_H_
 
-#include "base/memory/scoped_refptr.h"
+#include <memory>
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_color_interpolation_method.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hue_interpolation_method.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
-#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace gfx {
 class PointF;
@@ -83,7 +81,7 @@ class MODULES_EXPORT CanvasGradient final : public ScriptWrappable {
   }
 
  private:
-  scoped_refptr<Gradient> gradient_;
+  std::unique_ptr<Gradient> gradient_;
 
   V8ColorInterpolationMethod color_interpolation_method_{
       V8ColorInterpolationMethod::Enum::kSRGB};

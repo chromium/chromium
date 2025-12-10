@@ -66,7 +66,7 @@ struct GradientData {
   USING_FAST_MALLOC(GradientData);
 
  public:
-  scoped_refptr<Gradient> gradient;
+  std::unique_ptr<Gradient> gradient;
   AffineTransform userspace_transform;
 };
 

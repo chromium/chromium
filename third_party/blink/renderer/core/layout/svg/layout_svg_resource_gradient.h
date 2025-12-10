@@ -53,7 +53,7 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
 
  protected:
   virtual const GradientAttributes& EnsureAttributes() const = 0;
-  virtual scoped_refptr<Gradient> BuildGradient() const = 0;
+  virtual std::unique_ptr<Gradient> BuildGradient() const = 0;
 
   gfx::PointF ResolvePoint(SVGUnitTypes::SVGUnitType,
                            const SVGLength& x,

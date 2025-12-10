@@ -182,7 +182,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
       container_sizes, CSSToLengthConversionData::AnchorData(),
       style.EffectiveZoom(), ignored_flags, element);
 
-  scoped_refptr<Gradient> gradient;
+  std::unique_ptr<Gradient> gradient;
   switch (GetClassType()) {
     case kLinearGradientClass:
       gradient = To<CSSLinearGradientValue>(this)->CreateGradient(
@@ -205,7 +205,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
   }
 
   scoped_refptr<Image> new_image =
-      GradientGeneratedImage::Create(gradient, size);
+      GradientGeneratedImage::Create(std::move(gradient), size);
   if (is_cacheable_) {
     PutImage(size, new_image);
   }
@@ -1304,7 +1304,7 @@ static void CountUseOfRainbowGradientPattern(
   }
 }
 
-scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
+std::unique_ptr<Gradient> CSSLinearGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
     const gfx::SizeF& size,
     const Document& document,
@@ -1387,7 +1387,7 @@ scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
                                : Gradient::SpreadMethod::kPad);
   AddStops(desc, conversion_data, document, style);
 
-  scoped_refptr<Gradient> gradient =
+  std::unique_ptr<Gradient> gradient =
       Gradient::CreateLinear(desc.p0, desc.p1, desc.spread_method,
                              Gradient::PremultipliedAlpha::kPremultiplied);
 
@@ -1810,7 +1810,7 @@ gfx::SizeF RadiusToCorner(const gfx::PointF& point,
 
 }  // anonymous namespace
 
-scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
+std::unique_ptr<Gradient> CSSRadialGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
     const gfx::SizeF& size,
     const Document& document,
@@ -1895,7 +1895,7 @@ scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
                                : Gradient::SpreadMethod::kPad);
   AddStops(desc, conversion_data, document, style);
 
-  scoped_refptr<Gradient> gradient = Gradient::CreateRadial(
+  std::unique_ptr<Gradient> gradient = Gradient::CreateRadial(
       desc.p0, desc.r0, desc.p1, desc.r1,
       is_degenerate ? 1 : second_radius.AspectRatio(), desc.spread_method,
       Gradient::PremultipliedAlpha::kPremultiplied);
@@ -2104,7 +2104,7 @@ String CSSConicGradientValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
-scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
+std::unique_ptr<Gradient> CSSConicGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
     const gfx::SizeF& size,
     const Document& document,
@@ -2125,7 +2125,7 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
                                : Gradient::SpreadMethod::kPad);
   AddStops(desc, conversion_data, document, style);
 
-  scoped_refptr<Gradient> gradient = Gradient::CreateConic(
+  std::unique_ptr<Gradient> gradient = Gradient::CreateConic(
       position, angle, desc.start_angle, desc.end_angle, desc.spread_method,
       Gradient::PremultipliedAlpha::kPremultiplied);
 
@@ -2227,7 +2227,7 @@ bool CSSConstantGradientValue::KnownToBeOpaque(
       .IsOpaque();
 }
 
-scoped_refptr<Gradient> CSSConstantGradientValue::CreateGradient(
+std::unique_ptr<Gradient> CSSConstantGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
     const gfx::SizeF& size,
     const Document& document,
@@ -2240,7 +2240,7 @@ scoped_refptr<Gradient> CSSConstantGradientValue::CreateGradient(
   desc.stops.emplace_back(0.0f, color);
   desc.stops.emplace_back(1.0f, color);
 
-  scoped_refptr<Gradient> gradient =
+  std::unique_ptr<Gradient> gradient =
       Gradient::CreateLinear(desc.p0, desc.p1, desc.spread_method,
                              Gradient::PremultipliedAlpha::kPremultiplied);
 
