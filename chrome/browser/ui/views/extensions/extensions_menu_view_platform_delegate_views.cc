@@ -456,9 +456,9 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
   CHECK(web_contents);
 
   // Update site settings.
-  ExtensionsMenuViewModel::SiteSettings site_settings =
-      menu_model_->GetSiteSettings();
-  main_page->UpdateSiteSettings(site_settings);
+  ExtensionsMenuViewModel::SiteSettingsState site_settings_state =
+      menu_model_->GetSiteSettingsState();
+  main_page->UpdateSiteSettings(site_settings_state);
 
   // Update the optional section.
   ExtensionsMenuViewModel::OptionalSection optional_section =

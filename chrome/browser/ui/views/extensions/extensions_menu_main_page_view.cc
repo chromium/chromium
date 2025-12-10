@@ -70,13 +70,6 @@ constexpr int kRequestEntryIconIndex = 0;
 // requests container.
 constexpr int kRequestEntryLabelIndex = 1;
 
-// Updates the `toggle_button` text based on its state.
-std::u16string GetSiteSettingToggleText(bool is_on) {
-  int label_id = is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
-                       : IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP;
-  return l10n_util::GetStringUTF16(label_id);
-}
-
 // Converts a view to a ExtensionMenuItemView. This cannot be used to
 // *determine* if a view is an ExtensionMenuItemView (it should only be used
 // when the view is known to be one). It is only used as an extra measure to
@@ -242,14 +235,15 @@ void ExtensionsMenuMainPageView::RemoveMenuItem(
 }
 
 void ExtensionsMenuMainPageView::UpdateSiteSettings(
-    ExtensionsMenuViewModel::SiteSettings site_settings) {
-  site_settings_label_->SetText(l10n_util::GetStringFUTF16(
-      site_settings.label_id, site_settings.current_site));
-  site_settings_tooltip_->SetVisible(site_settings.is_tooltip_visible);
-  site_settings_toggle_->SetVisible(site_settings.is_toggle_visible);
-  site_settings_toggle_->SetIsOn(site_settings.is_toggle_on);
+    ExtensionsMenuViewModel::SiteSettingsState site_settings_state) {
+  site_settings_label_->SetText(site_settings_state.label);
+  site_settings_tooltip_->SetVisible(site_settings_state.has_tooltip);
+  site_settings_toggle_->SetVisible(
+      site_settings_state.toggle.status !=
+      ExtensionsMenuViewModel::ControlState::Status::kHidden);
+  site_settings_toggle_->SetIsOn(site_settings_state.toggle.is_on);
   site_settings_toggle_->SetTooltipText(
-      GetSiteSettingToggleText(site_settings.is_toggle_on));
+      site_settings_state.toggle.tooltip_text);
 }
 
 void ExtensionsMenuMainPageView::ShowReloadSection() {

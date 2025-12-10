@@ -29,22 +29,6 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
                                 public TabListInterfaceObserver,
                                 public content::WebContentsObserver {
  public:
-  // Holds the information for the site settings in the extension's menu. This
-  // will be used by the platform delegate as needed.
-  struct SiteSettings {
-    // The text to display for the current site (e.g. "example.com").
-    std::u16string current_site;
-    // The resource ID for the text label.
-    int label_id;
-    // Whether the toggle to block all extensions on this site is visible.
-    bool is_toggle_visible;
-    // The state of the toggle (false if extensions are blocked).
-    bool is_toggle_on;
-    // Whether to show a tooltip explaining why the setting is in its current
-    // state (e.g. if controlled by enterprise policy).
-    bool is_tooltip_visible;
-  };
-
   // Holds the information about how the extension's menu item should look like.
   // This will be used by the platform delegate as needed.
   struct MenuItemInfo {
@@ -108,12 +92,19 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
       kEnabled
     };
 
+    ControlState();
+    ControlState(const ControlState&);
+    ControlState& operator=(const ControlState&);
+    ~ControlState();
+
     // The interactivity status of the control.
     Status status = Status::kHidden;
     // The text label to display. Empty if not applicable.
     std::u16string text;
     // The accessible name. Empty if not applicable.
     std::u16string accessible_name;
+    // The tooltip text label. Empty if not applicable.
+    std::u16string tooltip_text;
     // The checked/toggled state. False for buttons with no on/off state.
     bool is_on = false;
   };
@@ -127,6 +118,18 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     ControlState on_site_option;
     // The state for the 'on all sites' site access option.
     ControlState on_all_sites_option;
+  };
+
+  // Holds the information for the site settings in the extension's menu. This
+  // will be used by the platform delegate as needed.
+  struct SiteSettingsState {
+    // The resource ID for the text label.
+    std::u16string label;
+    // Whether to show a tooltip explaining why the setting is in its current
+    // state (e.g. if controlled by enterprise policy).
+    bool has_tooltip;
+    // The state of the site settings toggle.
+    ControlState toggle;
   };
 
   ExtensionsMenuViewModel(
@@ -159,15 +162,12 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Revokes the extension's site access from the current site.
   void RevokeSiteAccess(const extensions::ExtensionId& extension_id);
 
-  // Update the extension's site setting for the current site.
+  // Update the site setting's for the current site.
   void UpdateSiteSetting(
       extensions::PermissionsManager::UserSiteSetting site_setting);
 
   // Reloads the current web contents.
   void ReloadWebContents();
-
-  // Returns the site settings for the current web contents.
-  SiteSettings GetSiteSettings();
 
   // Returns the menu item info for an extension.
   MenuItemInfo GetMenuItemInfo(const extensions::ExtensionId& extension_id);
@@ -184,6 +184,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // Returns the optional section to display in the menu.
   OptionalSection GetOptionalSection();
+
+  // Returns the site settings for the current web contents.
+  SiteSettingsState GetSiteSettingsState();
 
   // PermissionsManager::Observer:
   void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,

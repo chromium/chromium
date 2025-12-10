@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 
+#include <string>
+
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -263,6 +265,13 @@ std::u16string GetShowRequestsToggleAccessibleName(bool is_toggle_on) {
   return l10n_util::GetStringUTF16(label_id);
 }
 
+// Updates the site settings toggle text based on its state.
+std::u16string GetSiteSettingToggleText(bool is_on) {
+  int label_id = is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
+                       : IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP;
+  return l10n_util::GetStringUTF16(label_id);
+}
+
 void LogShowHostAccessRequestInToolbar(bool show) {
   if (show) {
     base::RecordAction(base::UserMetricsAction(
@@ -432,6 +441,13 @@ class ScopedGrantSiteAccessCrashKeys {
 };
 
 }  // namespace debug
+
+ExtensionsMenuViewModel::ControlState::ControlState() = default;
+ExtensionsMenuViewModel::ControlState::ControlState(const ControlState&) =
+    default;
+ExtensionsMenuViewModel::ControlState&
+ExtensionsMenuViewModel::ControlState::operator=(const ControlState&) = default;
+ExtensionsMenuViewModel::ControlState::~ControlState() = default;
 
 ExtensionsMenuViewModel::ExtensionsMenuViewModel(
     BrowserWindowInterface* browser,
@@ -620,59 +636,6 @@ void ExtensionsMenuViewModel::ReloadWebContents() {
                                                  false);
 }
 
-ExtensionsMenuViewModel::SiteSettings
-ExtensionsMenuViewModel::GetSiteSettings() {
-  content::WebContents* web_contents = GetActiveWebContents();
-  Profile* profile = browser_->GetProfile();
-  auto has_enterprise_extensions = [&]() {
-    return std::any_of(
-        toolbar_model_->action_ids().begin(),
-        toolbar_model_->action_ids().end(),
-        [profile](const ToolbarActionsModel::ActionId extension_id) {
-          auto* extension = GetExtension(*profile, extension_id);
-          return extensions::ExtensionSystem::Get(profile)
-              ->management_policy()
-              ->HasEnterpriseForcedAccess(*extension);
-        });
-  };
-
-  ExtensionsMenuViewModel::SiteSettings site_settings;
-  site_settings.current_site =
-      extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
-
-  MainPageState state =
-      GetMainPageState(*profile, *toolbar_model_, *web_contents);
-  switch (state) {
-    case MainPageState::kRestrictedSite:
-      site_settings.label_id =
-          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
-      site_settings.is_toggle_visible = false;
-      site_settings.is_toggle_on = false;
-      site_settings.is_tooltip_visible = false;
-      break;
-    case MainPageState::kPolicyBlockedSite:
-      site_settings.label_id =
-          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
-      site_settings.is_toggle_visible = false;
-      site_settings.is_toggle_on = false;
-      site_settings.is_tooltip_visible = has_enterprise_extensions();
-      break;
-    case MainPageState::kUserBlockedSite:
-      site_settings.label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
-      site_settings.is_toggle_visible = true;
-      site_settings.is_toggle_on = false;
-      site_settings.is_tooltip_visible = has_enterprise_extensions();
-      break;
-    case MainPageState::kUserCustomizedSite:
-      site_settings.label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
-      site_settings.is_toggle_visible = true;
-      site_settings.is_toggle_on = true;
-      site_settings.is_tooltip_visible = false;
-      break;
-  }
-  return site_settings;
-}
-
 ExtensionsMenuViewModel::MenuItemInfo ExtensionsMenuViewModel::GetMenuItemInfo(
     const extensions::ExtensionId& extension_id) {
   Profile* profile = browser_->GetProfile();
@@ -800,6 +763,69 @@ ExtensionsMenuViewModel::GetOptionalSection() {
   }
 
   return ExtensionsMenuViewModel::OptionalSection::kNone;
+}
+
+ExtensionsMenuViewModel::SiteSettingsState
+ExtensionsMenuViewModel::GetSiteSettingsState() {
+  content::WebContents* web_contents = GetActiveWebContents();
+  Profile* profile = browser_->GetProfile();
+  auto has_enterprise_extensions = [&]() {
+    return std::any_of(
+        toolbar_model_->action_ids().begin(),
+        toolbar_model_->action_ids().end(),
+        [profile](const ToolbarActionsModel::ActionId extension_id) {
+          auto* extension = GetExtension(*profile, extension_id);
+          return extensions::ExtensionSystem::Get(profile)
+              ->management_policy()
+              ->HasEnterpriseForcedAccess(*extension);
+        });
+  };
+
+  ExtensionsMenuViewModel::SiteSettingsState site_settings;
+  std::u16string current_site =
+      extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
+
+  MainPageState state =
+      GetMainPageState(*profile, *toolbar_model_, *web_contents);
+  switch (state) {
+    case MainPageState::kRestrictedSite:
+      site_settings.label = l10n_util::GetStringFUTF16(
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL, current_site);
+      site_settings.has_tooltip = false;
+      site_settings.toggle.status = ControlState::Status::kHidden;
+      site_settings.toggle.is_on = false;
+
+      break;
+    case MainPageState::kPolicyBlockedSite:
+      site_settings.label = l10n_util::GetStringFUTF16(
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL, current_site);
+      site_settings.has_tooltip = has_enterprise_extensions();
+      site_settings.toggle.status = ControlState::Status::kHidden;
+      site_settings.toggle.is_on = false;
+
+      break;
+    case MainPageState::kUserBlockedSite:
+      site_settings.label = l10n_util::GetStringFUTF16(
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL, current_site);
+      site_settings.has_tooltip = has_enterprise_extensions();
+      site_settings.toggle.status = ControlState::Status::kEnabled;
+      site_settings.toggle.is_on = false;
+      site_settings.toggle.tooltip_text =
+          GetSiteSettingToggleText(/*is_on=*/false);
+
+      break;
+    case MainPageState::kUserCustomizedSite:
+      site_settings.label = l10n_util::GetStringFUTF16(
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL, current_site);
+      site_settings.has_tooltip = false;
+      site_settings.toggle.status = ControlState::Status::kEnabled;
+      site_settings.toggle.is_on = true;
+      site_settings.toggle.tooltip_text =
+          GetSiteSettingToggleText(/*is_on=*/true);
+
+      break;
+  }
+  return site_settings;
 }
 
 void ExtensionsMenuViewModel::OnHostAccessRequestAdded(

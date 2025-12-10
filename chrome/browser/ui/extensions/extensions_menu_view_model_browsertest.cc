@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 
+#include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -83,12 +85,19 @@ class ExtensionsMenuViewModelBrowserTest
   scoped_refptr<const extensions::Extension> AddActiveTabExtension(
       const std::string& name);
 
+  // Adds an enterprise-installed extension.
+  scoped_refptr<const extensions::Extension> AddEnterpriseExtension(
+      const std::string& name,
+      const std::vector<std::string>& host_permissions);
+
   // Adds an `extension` with the given `host_permissions`,
   // `permissions` and `location`.
   scoped_refptr<const extensions::Extension> AddExtension(
       const std::string& name,
       const std::vector<std::string>& permissions,
-      const std::vector<std::string>& host_permissions);
+      const std::vector<std::string>& host_permissions,
+      extensions::mojom::ManifestLocation location =
+          extensions::mojom::ManifestLocation::kUnpacked);
 
   // Adds a policy restriction blocking access to sites matching `pattern`.
   void AddPolicyBlockedSite(std::string_view pattern);
@@ -127,14 +136,24 @@ ExtensionsMenuViewModelBrowserTest::AddActiveTabExtension(
 }
 
 scoped_refptr<const extensions::Extension>
+ExtensionsMenuViewModelBrowserTest::AddEnterpriseExtension(
+    const std::string& name,
+    const std::vector<std::string>& host_permissions) {
+  return AddExtension(name, /*permissions=*/{}, host_permissions,
+                      extensions::mojom::ManifestLocation::kExternalPolicy);
+}
+
+scoped_refptr<const extensions::Extension>
 ExtensionsMenuViewModelBrowserTest::AddExtension(
     const std::string& name,
     const std::vector<std::string>& permissions,
-    const std::vector<std::string>& host_permissions) {
+    const std::vector<std::string>& host_permissions,
+    extensions::mojom::ManifestLocation location) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .AddAPIPermissions(permissions)
           .AddHostPermissions(host_permissions)
+          .SetLocation(location)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
   extension_registrar()->AddExtension(extension.get());
@@ -463,9 +482,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
       permissions_helper()->ShowAccessRequestsInToolbar(extension->id()));
 }
 
-// Tests that the extensions menu view model correctly gets the site setting for
-// the current site.
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetSiteSettings) {
+// Tests that the extensions menu view model correctly gets the site settings
+// for the current site.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       GetSiteSettingsState) {
   // Add an extension that requests host permissions.
   AddExtensionWithHostPermission("Extension", "<all_urls>");
 
@@ -473,12 +493,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetSiteSettings) {
   NavigateTo("example.com");
 
   // Verify the site settings when the user can customize the site's access.
-  ExtensionsMenuViewModel::SiteSettings site_settings =
-      menu_model()->GetSiteSettings();
-  EXPECT_EQ(site_settings.label_id, IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL);
-  EXPECT_TRUE(site_settings.is_toggle_visible);
-  EXPECT_TRUE(site_settings.is_toggle_on);
-  EXPECT_FALSE(site_settings.is_tooltip_visible);
+  ExtensionsMenuViewModel::SiteSettingsState site_settings_state =
+      menu_model()->GetSiteSettingsState();
+  EXPECT_FALSE(site_settings_state.has_tooltip);
+  EXPECT_EQ(site_settings_state.toggle.status,
+            ExtensionsMenuViewModel::ControlState::Status::kEnabled);
+  EXPECT_TRUE(site_settings_state.toggle.is_on);
+  EXPECT_EQ(site_settings_state.toggle.tooltip_text,
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP));
 
   // Update the user site setting to block all extensions on the current site.
   menu_model()->UpdateSiteSetting(
@@ -486,35 +509,45 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetSiteSettings) {
 
   // Verify the site settings when the user has blocked access to the current
   // site.
-  site_settings = menu_model()->GetSiteSettings();
-  EXPECT_EQ(site_settings.label_id, IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL);
-  EXPECT_TRUE(site_settings.is_toggle_visible);
-  EXPECT_FALSE(site_settings.is_toggle_on);
-  EXPECT_FALSE(site_settings.is_tooltip_visible);
+  site_settings_state = menu_model()->GetSiteSettingsState();
+  EXPECT_FALSE(site_settings_state.has_tooltip);
+  EXPECT_EQ(site_settings_state.toggle.status,
+            ExtensionsMenuViewModel::ControlState::Status::kEnabled);
+  EXPECT_FALSE(site_settings_state.toggle.is_on);
+  EXPECT_EQ(site_settings_state.toggle.tooltip_text,
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP));
 
   // Navigate to restricted site.
-  const GURL restricted_url("chrome://extensions");
+  std::u16string restricted_site = u"chrome://extensions";
+  const GURL restricted_url(restricted_site);
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), restricted_url));
 
   // Verify the site setting when the site is restricted
-  site_settings = menu_model()->GetSiteSettings();
-  EXPECT_EQ(site_settings.label_id,
-            IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL);
-  EXPECT_FALSE(site_settings.is_toggle_visible);
-  EXPECT_FALSE(site_settings.is_toggle_on);
-  EXPECT_FALSE(site_settings.is_tooltip_visible);
+  site_settings_state = menu_model()->GetSiteSettingsState();
+  EXPECT_FALSE(site_settings_state.has_tooltip);
+  EXPECT_EQ(site_settings_state.toggle.status,
+            ExtensionsMenuViewModel::ControlState::Status::kHidden);
+  EXPECT_FALSE(site_settings_state.toggle.is_on);
+  EXPECT_EQ(site_settings_state.toggle.tooltip_text, std::u16string());
 
   // Navigate to a policy blocked site.
   AddPolicyBlockedSite("*://*.policy-blocked.com/*");
   NavigateTo("policy-blocked.com");
 
   // Verify the site setting when the site is policy blocked.
-  site_settings = menu_model()->GetSiteSettings();
-  EXPECT_EQ(site_settings.label_id,
-            IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL);
-  EXPECT_FALSE(site_settings.is_toggle_visible);
-  EXPECT_FALSE(site_settings.is_toggle_on);
-  EXPECT_FALSE(site_settings.is_tooltip_visible);
+  site_settings_state = menu_model()->GetSiteSettingsState();
+  EXPECT_FALSE(site_settings_state.has_tooltip);
+  EXPECT_EQ(site_settings_state.toggle.status,
+            ExtensionsMenuViewModel::ControlState::Status::kHidden);
+  EXPECT_FALSE(site_settings_state.toggle.is_on);
+  EXPECT_EQ(site_settings_state.toggle.tooltip_text, std::u16string());
+
+  // Verify site settings has a tooltip when the site is policy blocked but
+  // there is an enterprise-installed extension with site access.
+  AddEnterpriseExtension("Enterprise extension", {"all_urls"});
+  site_settings_state = menu_model()->GetSiteSettingsState();
+  EXPECT_TRUE(site_settings_state.has_tooltip);
 }
 
 // Tests that the extensions menu view model correctly returns the extension's
