@@ -61,6 +61,9 @@ BASE_FEATURE(kGlicRemoveBlankInstancesOnClose,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicAlwaysBindOnPin, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicAvoidReactivatingActiveEmbedder,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kRemoveBlankInstanceDelay{
     &kGlicRemoveBlankInstancesOnClose, "delay", base::Seconds(1)};
 
@@ -272,7 +275,12 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 
   if (active_embedder_key_.has_value() &&
       active_embedder_key_.value() == new_key) {
-    embedder_to_show = GetActiveEmbedder();
+    if (base::FeatureList::IsEnabled(kGlicAvoidReactivatingActiveEmbedder) &&
+        !options.reinitialize_if_already_active) {
+      return;
+    } else {
+      embedder_to_show = GetActiveEmbedder();
+    }
   } else {
     DeactivateCurrentEmbedder();
     // Ensure that there is a WebContents for the embedder to use.
