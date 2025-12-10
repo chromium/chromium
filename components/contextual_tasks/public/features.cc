@@ -89,7 +89,7 @@ const base::FeatureParam<bool> kEnableLensInContextualTasks(
 // is allowlisted. This is a temporary workaround to unblock the
 // authentication flow.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "user-agent-suffix", "WGA/1.0"};
+    &kContextualTasks, "user-agent-suffix", "WGA/1.0 Cobrowsing/1.0"};
 
 std::string GetContextualTasksAiPageUrl() {
   return kContextualTasksAiPageUrl.Get();
