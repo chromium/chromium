@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -134,6 +135,7 @@ public class ThemeSettingsFragmentTest {
                             mPreference.getSetting(),
                             ChromeSharedPreferences.getInstance().readInt(UI_THEME_SETTING));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Test
@@ -218,6 +220,7 @@ public class ThemeSettingsFragmentTest {
                             .setContentSettingEnabled(
                                     any(), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), eq(true));
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Test
@@ -239,6 +242,7 @@ public class ThemeSettingsFragmentTest {
                 (RadioButtonGroupThemePreference)
                         mFragment.findPreference(ThemeSettingsFragment.PREF_UI_THEME_PREF);
         assertThemeSettingsEntryRecorded(settingsEntry);
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private RadioButtonWithDescription getButton(int index) {

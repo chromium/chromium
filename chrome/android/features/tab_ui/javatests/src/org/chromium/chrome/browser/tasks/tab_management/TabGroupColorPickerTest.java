@@ -118,6 +118,8 @@ public class TabGroupColorPickerTest {
                     mRootView = new FrameLayout(activity);
                     activity.setContentView(mRootView);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Test

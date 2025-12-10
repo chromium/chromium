@@ -24,6 +24,7 @@ import org.chromium.base.AndroidInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -37,6 +38,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.net.test.util.WebServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -48,6 +50,7 @@ import java.util.concurrent.TimeoutException;
 })
 // TODO(crbug.com/441339044): Re-enable the integration test for proto-based reporting.
 @DisableFeatures("UploadRealtimeReportingEventsUsingProto")
+@DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/463649037
 @Batch(Batch.PER_CLASS)
 public class EnterpriseReportingIntegrationTest {
     @Rule
