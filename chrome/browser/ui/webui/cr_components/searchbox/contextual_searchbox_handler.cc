@@ -417,8 +417,11 @@ void ContextualSearchboxHandler::RecordTabClickedMetric(
 void ContextualSearchboxHandler::DeleteContext(
     const base::UnguessableToken& context_token) {
   auto* contextual_session_handle = GetSessionHandle(web_contents_);
+  int num_files = 0;
   if (contextual_session_handle) {
     contextual_session_handle->DeleteFile(context_token);
+    num_files =
+        contextual_session_handle->GetController()->GetFileInfoList().size();
   }
 
   // If the context token matches the cached tab context, we clear the snapshot.
@@ -426,6 +429,8 @@ void ContextualSearchboxHandler::DeleteContext(
       tab_context_snapshot_.value().first == context_token) {
     tab_context_snapshot_.reset();
     context_input_data_ = std::nullopt;
+  } else if (num_files == 0 && tab_context_snapshot_.has_value()) {
+    context_input_data_ = std::optional(*tab_context_snapshot_.value().second);
   }
 }
 
@@ -552,7 +557,13 @@ void ContextualSearchboxHandler::OnGetTabPageContext(
 void ContextualSearchboxHandler::SnapshotTabContext(
     const base::UnguessableToken& context_token,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  context_input_data_ = *page_content_data;
+  auto* contextual_session_handle = GetSessionHandle(web_contents_);
+  if (contextual_session_handle) {
+    context_input_data_ =
+        contextual_session_handle->GetController()->GetFileInfoList().size() > 0
+            ? std::nullopt
+            : std::optional(*page_content_data);
+  }
   tab_context_snapshot_.emplace(context_token, std::move(page_content_data));
 
   page_->OnContextualInputStatusChanged(
