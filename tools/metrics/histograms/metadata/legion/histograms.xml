@@ -106,6 +106,20 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Legion.Client.WebSocketCloseCode" enum="WebSocketCloseCode"
+    expires_after="2026-12-10">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the WebSocket close code when the connection is dropped. This helps
+    diagnose connection issues. See RFC 6455, Section 7.4.1 for a list of
+    defined status codes. Recorded every time the WebSocket channel is dropped.
+  </summary>
+</histogram>
+
 <histogram name="Legion.SecureChannel.GetAttestationRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>

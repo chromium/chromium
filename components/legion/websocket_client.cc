@@ -278,6 +278,8 @@ void WebSocketClient::OnDropChannel(bool was_clean,
   CHECK(state_ == State::kOpen || state_ == State::kConnecting);
   LOG(ERROR) << "OnDropChannel: " << code << " - " << reason;
 
+  base::UmaHistogramSparse("Legion.Client.WebSocketCloseCode", code);
+
   // If there is a reason, it indicates an error from the server.
   if (!reason.empty()) {
     base::UmaHistogramEnumeration(

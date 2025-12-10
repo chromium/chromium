@@ -26990,6 +26990,23 @@ This is true even if the type has been removed from the mojom file.
 
 <!--LINT.ThenChange(//components/page_info/core/page_info_action.h:PageInfoAction) -->
 
+<enum name="WebSocketCloseCode">
+<!-- See https://datatracker.ietf.org/doc/html/rfc6455#section-7.4 for status codes. -->
+
+  <int value="1000" label="Normal closure"/>
+  <int value="1001" label="Going away"/>
+  <int value="1002" label="Protocol error"/>
+  <int value="1003" label="Unsupported data"/>
+  <int value="1005" label="No status received"/>
+  <int value="1006" label="Abnormal closure"/>
+  <int value="1007" label="Invalid frame payload data"/>
+  <int value="1008" label="Policy violation"/>
+  <int value="1009" label="Message too big"/>
+  <int value="1010" label="Mandatory extension"/>
+  <int value="1011" label="Internal server error"/>
+  <int value="1015" label="TLS handshake"/>
+</enum>
+
 <enum name="WebUsbChooserClosed">
   <int value="0" label="User cancelled"/>
   <int value="1" label="User cancelled, no devices available"/>
