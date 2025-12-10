@@ -83,21 +83,20 @@ BrowserDelegate* BrowserControllerImpl::GetLastUsedBrowser() {
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleBrowser() {
   BrowserDelegate* browser_delegate = nullptr;
-  GlobalBrowserCollection::GetInstance()->ForEach(
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
         if (browser->GetWindow()->IsVisible()) {
           browser_delegate = GetDelegate(browser);
           return false;  // stop iterating
         }
         return true;  // continue iterating
-      },
-      BrowserCollection::Order::kActivation);
+      });
   return browser_delegate;
 }
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleOnTheRecordBrowser() {
   BrowserDelegate* browser_delegate = nullptr;
-  GlobalBrowserCollection::GetInstance()->ForEach(
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
         if (!browser->GetProfile()->IsOffTheRecord() &&
             browser->GetWindow()->IsVisible()) {
@@ -105,29 +104,31 @@ BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleOnTheRecordBrowser() {
           return false;  // stop iterating
         }
         return true;  // continue iterating
-      },
-      BrowserCollection::Order::kActivation);
+      });
   return browser_delegate;
 }
 
 void BrowserControllerImpl::ForEachBrowser(
     BrowserOrder order,
     base::FunctionRef<IterationDirective(BrowserDelegate&)> callback) {
-  BrowserCollection::Order collection_order;
   switch (order) {
     case BrowserOrder::kAscendingCreationTime:
-      collection_order = BrowserCollection::Order::kCreation;
+      for (Browser* browser : *BrowserList::GetInstance()) {
+        if (callback(*GetDelegate(browser)) == kBreakIteration) {
+          break;
+        }
+      }
       break;
     case BrowserOrder::kAscendingActivationTime:
-      collection_order = BrowserCollection::Order::kActivation;
+      ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+          [&](BrowserWindowInterface* browser) {
+            if (callback(*GetDelegate(browser)) == kBreakIteration) {
+              return false;  // stop iterating
+            }
+            return true;  // continue iterating
+          });
       break;
   }
-
-  GlobalBrowserCollection::GetInstance()->ForEach(
-      [&](BrowserWindowInterface* browser) {
-        return callback(*GetDelegate(browser)) != kBreakIteration;
-      },
-      collection_order);
 }
 
 BrowserDelegate* BrowserControllerImpl::GetBrowserForWindow(
@@ -160,7 +161,7 @@ BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,
   Browser::Type internal_type = ToInternalBrowserType(browser_type);
 
   BrowserDelegate* browser_delegate = nullptr;
-  GlobalBrowserCollection::GetInstance()->ForEach(
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
         if (!browser->GetBrowserForMigrationOnly()->is_delete_scheduled() &&
             BrowserMatches(browser, profile, app_id, internal_type, url)) {
@@ -168,8 +169,7 @@ BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,
           return false;  // stop iterating
         }
         return true;  // continue iterating
-      },
-      BrowserCollection::Order::kActivation);
+      });
 
   return browser_delegate;
 }
