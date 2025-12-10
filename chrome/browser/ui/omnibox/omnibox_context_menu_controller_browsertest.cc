@@ -39,6 +39,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/menus/simple_menu_model.h"
 
 class MockQueryController
@@ -101,7 +102,8 @@ class MockContextualSearchMetricsRecorder
 // Override `OpenFileUploadDialog` to track calls.
 class TestOmniboxPopupFileSelector : public OmniboxPopupFileSelector {
  public:
-  TestOmniboxPopupFileSelector() = default;
+  explicit TestOmniboxPopupFileSelector(gfx::NativeWindow owning_window)
+      : OmniboxPopupFileSelector(owning_window) {}
   ~TestOmniboxPopupFileSelector() override = default;
 
   void OpenFileUploadDialog(
@@ -225,8 +227,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   auto* web_contents = GetWebContents();
   // TODO(crbug.com/458463536): Use proper web contents for the
   // aim popup.
-  auto omnibox_popup_file_selector =
-      std::make_unique<OmniboxPopupFileSelector>();
+  auto owning_window = gfx::NativeWindow();
+  auto omnibox_popup_file_selector = std::make_unique<OmniboxPopupFileSelector>(
+      owning_window);
   OmniboxContextMenuController base_controller(
       omnibox_popup_file_selector.get(), web_contents);
   ui::SimpleMenuModel* model = base_controller.menu_model();
@@ -260,7 +263,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                        MAYBE_ExecuteCommand) {
   TestingPrefServiceSimple pref_service;
-  TestOmniboxPopupFileSelector file_selector;
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
   OmniboxContextMenuController controller(&file_selector, GetWebContents());
 
   BrowserWindowInterface* browser_window_interface =

@@ -32,7 +32,9 @@ struct FileData {
 
 class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
  public:
-  OmniboxPopupFileSelector();
+  // `owning_window` is the window that will be used to show the file selector
+  // dialog.
+  explicit OmniboxPopupFileSelector(gfx::NativeWindow owning_window);
   OmniboxPopupFileSelector(const OmniboxPopupFileSelector&) = delete;
   OmniboxPopupFileSelector& operator=(const OmniboxPopupFileSelector&) = delete;
   ~OmniboxPopupFileSelector() override;
@@ -66,6 +68,7 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<OmniboxEditModel> edit_model_;
   std::optional<lens::ImageEncodingOptions> image_encoding_options_;
+  gfx::NativeWindow owning_window_;
 
   base::WeakPtrFactory<OmniboxPopupFileSelector> weak_factory_{this};
 };

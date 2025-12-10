@@ -31,7 +31,9 @@
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-OmniboxPopupFileSelector::OmniboxPopupFileSelector() = default;
+OmniboxPopupFileSelector::OmniboxPopupFileSelector(
+    gfx::NativeWindow owning_window)
+    : owning_window_(owning_window) {}
 
 OmniboxPopupFileSelector::~OmniboxPopupFileSelector() = default;
 
@@ -62,7 +64,7 @@ void OmniboxPopupFileSelector::OpenFileUploadDialog(
 
   file_dialog_->SelectFile(dialog_type, /*title=*/u"", base::FilePath(),
                            &file_types, 0, base::FilePath::StringType(),
-                           gfx::NativeWindow());
+                           owning_window_);
 }
 
 std::unique_ptr<FileData> ReadFileAndProcess(const base::FilePath& local_path) {
