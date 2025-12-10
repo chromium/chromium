@@ -23,6 +23,7 @@
 #include "device/fido/public/public_key_credential_params.h"
 #include "device/fido/public/public_key_credential_rp_entity.h"
 #include "device/fido/public/public_key_credential_user_entity.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace cbor {
 class Value;
@@ -206,7 +207,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOptions {
 
   // The set of hints passed by the relying party.
   // https://w3c.github.io/webauthn/#enum-hints.
-  std::vector<FidoTransportProtocol> hints;
+  std::vector<blink::mojom::Hint> hints;
 };
 
 // Serializes MakeCredential request parameter into CBOR encoded map with

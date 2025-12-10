@@ -19,6 +19,7 @@
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
@@ -90,7 +91,7 @@ uint32_t ToWinTransportsMask(
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::vector<const wchar_t*> ToWinCredentialHints(
-    base::span<const FidoTransportProtocol> hints);
+    base::span<const blink::mojom::Hint> hints);
 
 }  // namespace device
 

@@ -510,16 +510,6 @@ device::FidoTransportProtocol HintToTransport(blink::mojom::Hint hint) {
   }
 }
 
-std::vector<device::FidoTransportProtocol> HintsToTransports(
-    base::span<blink::mojom::Hint> hints) {
-  std::vector<device::FidoTransportProtocol> ret;
-  ret.reserve(hints.size());
-  for (const auto hint : hints) {
-    ret.push_back(HintToTransport(hint));
-  }
-  return ret;
-}
-
 void SetHints(AuthenticatorRequestClientDelegate* request_delegate,
               base::span<const blink::mojom::Hint> hints) {
   if (hints.empty()) {
@@ -1407,7 +1397,7 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
   ctap_make_credential_request->app_id_exclude = std::move(appid_exclude);
   make_credential_options->is_off_the_record_context =
       GetBrowserContext()->IsOffTheRecord();
-  make_credential_options->hints = HintsToTransports(options->hints);
+  make_credential_options->hints = std::move(options->hints);
 
   // Compute the effective attestation conveyance preference.
   device::AttestationConveyancePreference attestation = options->attestation;
@@ -1856,8 +1846,7 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
       public_key_options->extensions->large_blob_read;
   ctap_get_assertion_options->large_blob_write =
       public_key_options->extensions->large_blob_write;
-  ctap_get_assertion_options->hints =
-      HintsToTransports(public_key_options->hints);
+  ctap_get_assertion_options->hints = std::move(public_key_options->hints);
   GetWebAuthenticationDelegate()->BrowserProvidedPasskeysAvailable(
       GetBrowserContext(),
       base::BindOnce(
