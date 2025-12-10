@@ -41,3 +41,16 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_one_time_token_service.cc",
+    "mock_one_time_token_service.h",
+  ]
+  public_deps = [
+    ":browser",
+    "//base",
+    "//testing/gmock",
+  ]
+}

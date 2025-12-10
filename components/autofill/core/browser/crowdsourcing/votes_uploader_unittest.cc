@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/language_code.h"
+#include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,19 +39,6 @@ using one_time_tokens::OneTimeTokenType;
 
 namespace {
 
-class MockOneTimeTokenService : public one_time_tokens::OneTimeTokenService {
- public:
-  MOCK_METHOD(void, GetRecentOneTimeTokens, (Callback callback), (override));
-  MOCK_METHOD(std::vector<OneTimeToken>,
-              GetCachedOneTimeTokens,
-              (),
-              (const override));
-  MOCK_METHOD(one_time_tokens::ExpiringSubscription,
-              Subscribe,
-              (base::Time expiration, Callback callback),
-              (override));
-};
-
 class AutofillVotesUploaderTest : public testing::Test,
                                   public WithTestAutofillClientDriverManager<> {
  public:
@@ -63,8 +51,8 @@ class AutofillVotesUploaderTest : public testing::Test,
     AddTestProfile();
     feature_list_.InitAndEnableFeature(features::kAutofillSmsOtpCrowdsourcing);
 
-    std::unique_ptr<MockOneTimeTokenService> mock_service =
-        std::make_unique<MockOneTimeTokenService>();
+    std::unique_ptr<one_time_tokens::MockOneTimeTokenService> mock_service =
+        std::make_unique<one_time_tokens::MockOneTimeTokenService>();
     autofill_client().set_one_time_token_service(std::move(mock_service));
   }
 
@@ -103,8 +91,8 @@ class AutofillVotesUploaderTest : public testing::Test,
         autofill_client().GetCrowdsourcingManager());
   }
 
-  MockOneTimeTokenService& GetMockOneTimeTokenService() {
-    return *static_cast<MockOneTimeTokenService*>(
+  one_time_tokens::MockOneTimeTokenService& GetMockOneTimeTokenService() {
+    return *static_cast<one_time_tokens::MockOneTimeTokenService*>(
         autofill_client().GetOneTimeTokenService());
   }
 
