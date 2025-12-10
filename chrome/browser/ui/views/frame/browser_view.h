@@ -1324,6 +1324,9 @@ class BrowserView : public BrowserWindow,
   // True if we have already been initialized.
   bool initialized_ = false;
 
+  // True if layout should be suppressed (used during teardown).
+  bool suppress_layout_for_teardown_ = false;
+
   // True if (as of the last time it was checked) the frame type is native.
   bool using_native_frame_ = true;
 
