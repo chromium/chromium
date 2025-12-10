@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.hardware.HardwareBuffer;
 import android.hardware.display.DisplayManager;
 import android.view.Display;
 import android.view.Surface;
@@ -71,7 +72,11 @@ public abstract class VideoCapture {
     // Allocate necessary resources for capture.
     @CalledByNative
     public abstract boolean allocate(
-            int width, int height, int frameRate, boolean enableFaceDetection);
+            int width,
+            int height,
+            int frameRate,
+            boolean enableFaceDetection,
+            boolean useHardwareBuffers);
 
     // Success is indicated by returning true and a callback to
     // VideoCaptureJni.get().onStarted(,  VideoCapture.this), which may occur synchronously or
@@ -333,6 +338,20 @@ public abstract class VideoCapture {
         }
     }
 
+    protected void onHardwareBufferAvailable(
+            HardwareBuffer hardwareBuffer, int rotation, long timestamp) {
+        synchronized (mNativeVideoCaptureLock) {
+            if (mNativeVideoCaptureDeviceAndroid != 0) {
+                VideoCaptureJni.get()
+                        .onHardwareBufferAvailable(
+                                mNativeVideoCaptureDeviceAndroid,
+                                hardwareBuffer,
+                                rotation,
+                                timestamp);
+            }
+        }
+    }
+
     protected void onError(int androidVideoCaptureError, String message) {
         synchronized (mNativeVideoCaptureLock) {
             if (mNativeVideoCaptureDeviceAndroid != 0) {
@@ -410,6 +429,12 @@ public abstract class VideoCapture {
                 int uvPixelStride,
                 int width,
                 int height,
+                int rotation,
+                long timestamp);
+
+        void onHardwareBufferAvailable(
+                long nativeVideoCaptureDeviceAndroid,
+                HardwareBuffer hardwareBuffer,
                 int rotation,
                 long timestamp);
 

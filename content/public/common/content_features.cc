@@ -14,6 +14,7 @@
 #include "content/common/buildflags.h"
 #include "content/public/common/btm_utils.h"
 #include "content/public/common/buildflags.h"
+#include "media/base/media_switches.h"
 
 namespace features {
 
@@ -1400,7 +1401,12 @@ enum class VideoCaptureServiceConfiguration {
 };
 
 VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(media::kAndroidZeroCopyVideoCapture)) {
+    return VideoCaptureServiceConfiguration::kEnabledForOutOfProcess;
+  }
+  return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
+#elif BUILDFLAG(IS_IOS)
   return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
 #else
   return base::FeatureList::IsEnabled(

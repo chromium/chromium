@@ -25,7 +25,9 @@ source_set("android") {
   configs += [ "//media:media_config" ]
   deps = [
     ":capture_jni_headers",
+    "//media/base",
     "//media/capture:capture_device_specific",
+    "//media/capture:capture_gpu_channel",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:image_capture_types",
     "//third_party/libyuv",

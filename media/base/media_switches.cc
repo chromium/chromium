@@ -1023,6 +1023,9 @@ BASE_FEATURE(kContextMenuPictureInPictureAndroid,
 // NdkVideoEncodeAccelerator on Android.
 BASE_FEATURE(kSurfaceInputForAndroidVEA, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables zero-copy video capture on Android.
+BASE_FEATURE(kAndroidZeroCopyVideoCapture, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables block model (LinearBlock) on supported devices.
 // TODO(crbug.com/327625558): Currently block model is buggy and can't be
 // enabled, we need to test it again when Android 17 is released.
