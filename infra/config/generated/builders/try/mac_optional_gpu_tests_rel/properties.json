@@ -39,7 +39,8 @@
           "project": "chromium-m144"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/mac_optional_gpu_tests_rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/mac_optional_gpu_tests_rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/flakiness": {
