@@ -6387,6 +6387,23 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5744" label="ContainerTimingObserverRegistered"/>
   <int value="5745" label="ContainerTimingObserverReportedEntries"/>
   <int value="5746" label="CookieStoreMaxAge"/>
+  <int value="5747" label="SVGFEBlendElement"/>
+  <int value="5748" label="SVGFEColorMatrixElement"/>
+  <int value="5749" label="SVGFEComponentTransferElement"/>
+  <int value="5750" label="SVGFECompositeElement"/>
+  <int value="5751" label="SVGFEConvolveMatrixElement"/>
+  <int value="5752" label="SVGFEDiffuseLightingElement"/>
+  <int value="5753" label="SVGFEDisplacementMapElement"/>
+  <int value="5754" label="SVGFEDropShadowElement"/>
+  <int value="5755" label="SVGFEFloodElement"/>
+  <int value="5756" label="SVGFEGaussianBlurElement"/>
+  <int value="5757" label="SVGFEImageElement"/>
+  <int value="5758" label="SVGFEMergeElement"/>
+  <int value="5759" label="SVGFEMorphologyElement"/>
+  <int value="5760" label="SVGFEOffsetElement"/>
+  <int value="5761" label="SVGFESpecularLightingElement"/>
+  <int value="5762" label="SVGFETileElement"/>
+  <int value="5763" label="SVGFETurbulenceElement"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_fe_image.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -166,6 +168,7 @@ const SVGElement* SVGFEImageElement::TargetElement() const {
 }
 
 FilterEffect* SVGFEImageElement::Build(SVGFilterBuilder*, Filter* filter) {
+  UseCounter::Count(GetDocument(), WebFeature::kSVGFEImageElement);
   if (cached_image_) {
     // Don't use the broken image icon on image loading errors.
     scoped_refptr<Image> image =

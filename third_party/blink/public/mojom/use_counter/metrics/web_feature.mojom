@@ -5060,6 +5060,23 @@ enum WebFeature {
   kContainerTimingObserverRegistered = 5744,
   kContainerTimingObserverReportedEntries = 5745,
   kCookieStoreMaxAge = 5746,
+  kSVGFEBlendElement = 5747,
+  kSVGFEColorMatrixElement = 5748,
+  kSVGFEComponentTransferElement = 5749,
+  kSVGFECompositeElement = 5750,
+  kSVGFEConvolveMatrixElement = 5751,
+  kSVGFEDiffuseLightingElement = 5752,
+  kSVGFEDisplacementMapElement = 5753,
+  kSVGFEDropShadowElement = 5754,
+  kSVGFEFloodElement = 5755,
+  kSVGFEGaussianBlurElement = 5756,
+  kSVGFEImageElement = 5757,
+  kSVGFEMergeElement = 5758,
+  kSVGFEMorphologyElement = 5759,
+  kSVGFEOffsetElement = 5760,
+  kSVGFESpecularLightingElement = 5761,
+  kSVGFETileElement = 5762,
+  kSVGFETurbulenceElement = 5763,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

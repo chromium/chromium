@@ -21,10 +21,13 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_flood_element.h"
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_flood.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -51,6 +54,7 @@ bool SVGFEFloodElement::SetFilterEffectAttribute(
 }
 
 FilterEffect* SVGFEFloodElement::Build(SVGFilterBuilder*, Filter* filter) {
+  UseCounter::Count(GetDocument(), WebFeature::kSVGFEFloodElement);
   const ComputedStyle* style = GetComputedStyle();
   if (!style)
     return nullptr;

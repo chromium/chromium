@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_drop_shadow_element.h"
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
@@ -28,6 +30,7 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_drop_shadow.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -98,6 +101,7 @@ void SVGFEDropShadowElement::SvgAttributeChanged(
 
 FilterEffect* SVGFEDropShadowElement::Build(SVGFilterBuilder* filter_builder,
                                             Filter* filter) {
+  UseCounter::Count(GetDocument(), WebFeature::kSVGFEDropShadowElement);
   const ComputedStyle* style = GetComputedStyle();
   if (!style)
     return nullptr;

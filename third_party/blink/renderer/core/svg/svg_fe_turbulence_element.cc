@@ -20,12 +20,16 @@
 
 #include "third_party/blink/renderer/core/svg/svg_fe_turbulence_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_integer.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -132,6 +136,7 @@ void SVGFETurbulenceElement::SvgAttributeChanged(
 }
 
 FilterEffect* SVGFETurbulenceElement::Build(SVGFilterBuilder*, Filter* filter) {
+  UseCounter::Count(GetDocument(), WebFeature::kSVGFETurbulenceElement);
   return MakeGarbageCollected<FETurbulence>(
       filter, type_->CurrentEnumValue(),
       baseFrequencyX()->CurrentValue()->Value(),
