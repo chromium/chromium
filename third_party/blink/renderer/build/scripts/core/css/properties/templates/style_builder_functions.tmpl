@@ -352,13 +352,15 @@ state.GetFontBuilder().{{property.setter}}
     AtomicString identifier(To<CSSCustomIdentValue>(counter_data.Identifier())->Value());
     CounterDirectives& directives =
         map.insert(identifier, CounterDirectives()).stored_value->value;
+        {% if action == 'Reset' %}
+    if (counter_data.IsReversed()) {
+      directives.SetIsResetReversed();
+    }
+        {% endif %}
     if (const CSSPrimitiveValue* counter_data_value = counter_data.Value()) {
       int counter_value = counter_data_value->ComputeInteger(state.CssToLengthConversionData());
           {% if action == 'Reset' %}
       directives.SetResetValue(counter_value);
-      if (counter_data.IsReversed()) {
-        directives.SetIsResetReversed();
-      }
           {% elif action == 'Increment' %}
       directives.AddIncrementValue(counter_value);
           {% else %}
