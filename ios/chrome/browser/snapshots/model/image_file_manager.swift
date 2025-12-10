@@ -44,9 +44,6 @@ let kJPEGImageQuality: CGFloat = 1.0
     super.init()
 
     createStorageDirectory(directory: storageDirectoryUrl)
-
-    // TODO(crbug.com/40279302): Delete this logic after a few milestones.
-    deleteAllGreyImages(directory: storageDirectoryUrl)
   }
 
   // Waits until all tasks are completed. This is used for tests.
@@ -254,41 +251,6 @@ let kJPEGImageQuality: CGFloat = 1.0
         print("Failed to create a snapshot storage: \(error)")
       }
 
-      backgroundTaskGroup.leave()
-    }
-  }
-
-  // Frees up disk by deleting all grey snapshots if they exist in `directory` because grey
-  // snapshots are not stored anymore when `kGreySnapshotOptimization` feature is enabled.
-  // TODO(crbug.com/40279302): This function should be removed in a few milestones
-  // after `kGreySnapshotOptimization` feature is enabled by default.
-  private func deleteAllGreyImages(directory: URL) {
-    backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
-      guard let self = self else { return }
-      guard FileManager.default.fileExists(atPath: storageDirectory.path) else {
-        backgroundTaskGroup.leave()
-        return
-      }
-
-      guard
-        let enumerator = FileManager.default.enumerator(
-          at: storageDirectory, includingPropertiesForKeys: nil)
-      else {
-        backgroundTaskGroup.leave()
-        return
-      }
-      for case let fileUrl as URL in enumerator {
-        do {
-          if fileUrl.absoluteString.contains(
-            suffixForImageType(imageType: ImageType.kImageTypeGrey))
-          {
-            try FileManager.default.removeItem(at: fileUrl)
-          }
-        } catch {
-          print("Failed to delete all grey images: \(error)")
-        }
-      }
       backgroundTaskGroup.leave()
     }
   }

@@ -243,30 +243,6 @@ void CopyImageFile(const base::FilePath& old_image_path,
   }
 }
 
-// Frees up disk by deleting all grey snapshots if they exist in `directory`
-// because grey snapshots are not stored anymore when
-// `kGreySnapshotOptimization` feature is enabled.
-// TODO(crbug.com/40279302): This function should be removed in a few milestones
-// after `kGreySnapshotOptimization` feature is enabled by default.
-void DeleteAllGreyImages(const base::FilePath& directory) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  if (!base::DirectoryExists(directory)) {
-    return;
-  }
-
-  base::FileEnumerator iter(directory, /*recursive=*/false,
-                            base::FileEnumerator::FILES);
-
-  for (base::FilePath item = iter.Next(); !item.empty(); item = iter.Next()) {
-    if (item.BaseName().value().find(
-            SuffixForImageType(IMAGE_TYPE_GREYSCALE)) != std::string::npos) {
-      base::DeleteFile(item);
-    }
-  }
-}
-
 }  // anonymous namespace
 
 @implementation LegacyImageFileManager {
@@ -297,10 +273,6 @@ void DeleteAllGreyImages(const base::FilePath& directory) {
 
     _taskRunner->PostTask(
         FROM_HERE, base::BindOnce(CreateStorageDirectory, _storageDirectory));
-
-    // TODO(crbug.com/40279302): Delete this logic after a few milestones.
-    _taskRunner->PostTask(
-        FROM_HERE, base::BindOnce(DeleteAllGreyImages, _storageDirectory));
   }
   return self;
 }
