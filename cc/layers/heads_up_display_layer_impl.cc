@@ -397,22 +397,17 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       // The acquired resource's size could be bigger than actually needed due
       // to reuse. In this case, only use the part of the texture that is within
       // the bounds.
-      gfx::PointF uv_bottom_right(1.f, 1.f);
-      if (in_flight_resource_.size() != internal_content_bounds_) {
-        uv_bottom_right.set_x(
-            static_cast<double>(internal_content_bounds_.width()) /
-            static_cast<double>(in_flight_resource_.size().width()));
-        uv_bottom_right.set_y(
-            static_cast<double>(internal_content_bounds_.height()) /
-            static_cast<double>(in_flight_resource_.size().height()));
-      }
+      gfx::PointF uv_bottom_right(internal_content_bounds_.width(),
+                                  internal_content_bounds_.height());
+
       quad->SetNew(sqs, quad_rect, visible_rect, /*needs_blending=*/true,
                    resource_id,
-                   /*uv_top_left=*/gfx::PointF(),
-                   /*uv_bottom_right=*/uv_bottom_right,
-                   /*background_color=*/SkColors::kTransparent,
-                   /*nearest_neighbor=*/false, /*secure_output_only=*/false,
-                   gfx::ProtectedVideoType::kClear);
+                   /*top_left=*/gfx::PointF(),
+                   /*bottom_right=*/uv_bottom_right,
+                   /*background=*/SkColors::kTransparent,
+                   /*nearest=*/false, /*secure_output=*/false,
+                   gfx::ProtectedVideoType::kClear,
+                   /*is_tex_coords_normalized=*/false);
       ValidateQuadResources(quad);
       break;
     }
