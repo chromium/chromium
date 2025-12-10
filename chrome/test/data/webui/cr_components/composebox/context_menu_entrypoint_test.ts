@@ -45,6 +45,7 @@ suite('ContextMenuEntrypoint', () => {
     loadTimeData.overrideValues({
       composeboxShowContextMenuTabPreviews: true,
       composeboxFileMaxCount: 10,
+      composeboxShowPdfUpload: true,
     });
 
     searchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
