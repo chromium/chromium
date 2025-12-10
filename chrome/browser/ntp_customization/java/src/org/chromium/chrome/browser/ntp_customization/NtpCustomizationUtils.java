@@ -683,12 +683,19 @@ public class NtpCustomizationUtils {
      * @param bitmap The bitmap from which to extract and save the primary color.
      */
     static void pickAndSaveDailyRefreshPrimaryColor(Bitmap bitmap) {
-        @ColorInt Integer primaryColor = getContentBasedSeedColor(bitmap);
-        if (primaryColor != null) {
-            setDailyRefreshCustomizedPrimaryColorToSharedPreference(primaryColor.intValue());
-        } else {
-            removeDailyRefreshCustomizedPrimaryColorFromSharedPreference();
-        }
+        new BackgroundOnlyAsyncTask<Void>() {
+            @Override
+            protected Void doInBackground() {
+                @ColorInt Integer primaryColor = getContentBasedSeedColor(bitmap);
+                if (primaryColor != null) {
+                    setDailyRefreshCustomizedPrimaryColorToSharedPreference(
+                            primaryColor.intValue());
+                } else {
+                    removeDailyRefreshCustomizedPrimaryColorFromSharedPreference();
+                }
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /**
