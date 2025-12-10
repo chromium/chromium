@@ -1207,3 +1207,9 @@ BASE_FEATURE(kIOSWebContextMenuNewTitle, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsIOSWebContextMenuNewTitleEnabled() {
   return base::FeatureList::IsEnabled(kIOSWebContextMenuNewTitle);
 }
+
+BASE_FEATURE(kCloseOtherTabs, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsCloseOtherTabsEnabled() {
+  return base::FeatureList::IsEnabled(kCloseOtherTabs);
+}

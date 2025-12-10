@@ -293,6 +293,9 @@ const char kChromeStartupParametersAsyncDescription[] =
     "When enabled the async version of the chrome startup method is used. This "
     "method is used to parse the startup parameters.";
 
+const char kCloseOtherTabsName[] = "CloseOtherTabs";
+const char kCloseOtherTabsDescription[] = "Enables the CloseOtherTabs feature.";
+
 const char kCollaborationMessagingName[] = "Collaboration Messaging";
 const char kCollaborationMessagingDescription[] =
     "Enables the messaging framework within the collaboration feature, "

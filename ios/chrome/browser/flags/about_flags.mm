@@ -2908,6 +2908,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kPasswordRemovalFromDeleteBrowsingDataDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kPasswordRemovalFromDeleteBrowsingData)},
+    {"close-other-tabs", flag_descriptions::kCloseOtherTabsName,
+     flag_descriptions::kCloseOtherTabsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kCloseOtherTabs)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

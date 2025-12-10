@@ -175,6 +175,9 @@ extern const char kCacheIdentityListInChromeDescription[];
 extern const char kChromeStartupParametersAsyncName[];
 extern const char kChromeStartupParametersAsyncDescription[];
 
+extern const char kCloseOtherTabsName[];
+extern const char kCloseOtherTabsDescription[];
+
 extern const char kCollaborationMessagingName[];
 extern const char kCollaborationMessagingDescription[];
 

@@ -1133,4 +1133,10 @@ BASE_DECLARE_FEATURE(kIOSWebContextMenuNewTitle);
 // Returns true if the IOSWebContextMenuNewTitle feature is enabled.
 bool IsIOSWebContextMenuNewTitleEnabled();
 
+// Enables the CloseOtherTabs feature.
+BASE_DECLARE_FEATURE(kCloseOtherTabs);
+
+// Returns true if the CloseOtherTabs feature is enabled.
+bool IsCloseOtherTabsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
