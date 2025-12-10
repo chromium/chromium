@@ -133,6 +133,10 @@ public final class SearchIndexProviderRegistry {
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment
                             .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.download.settings.DownloadSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.tracing.settings.DeveloperSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.tracing.settings.TracingSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings
