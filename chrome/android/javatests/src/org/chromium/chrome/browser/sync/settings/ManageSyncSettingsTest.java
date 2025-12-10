@@ -827,6 +827,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
+    @DisableIf.Build(sdk_equals = 35, message = "crbug.com/465817909")
     public void testBottomOfAccountSyncSettingsPage() throws Exception {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         final ManageSyncSettings fragment = startManageSyncPreferences();
