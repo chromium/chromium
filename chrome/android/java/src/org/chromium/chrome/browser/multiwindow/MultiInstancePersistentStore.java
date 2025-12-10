@@ -75,7 +75,7 @@ class MultiInstancePersistentStore {
         removeIncognitoSelected(instanceId);
         removeLastAccessedTime(instanceId);
         removeProfileType(instanceId);
-        removeClosedByUser(instanceId);
+        removeMarkedForDeletion(instanceId);
     }
 
     static long readLastAccessedTime(int instanceId) {
@@ -169,12 +169,12 @@ class MultiInstancePersistentStore {
         getManager().writeBoolean(incognitoSelectedKey(instanceId), incognitoSelected);
     }
 
-    static boolean readClosedByUser(int instanceId) {
-        return getManager().readBoolean(closedByUserKey(instanceId), false);
+    static boolean readMarkedForDeletion(int instanceId) {
+        return getManager().readBoolean(markedForDeletionKey(instanceId), false);
     }
 
-    static void writeClosedByUser(int instanceId, boolean closedByUser) {
-        getManager().writeBoolean(closedByUserKey(instanceId), closedByUser);
+    static void writeMarkedForDeletion(int instanceId, boolean markedForDeletion) {
+        getManager().writeBoolean(markedForDeletionKey(instanceId), markedForDeletion);
     }
 
     private static void removeLastAccessedTime(int instanceId) {
@@ -207,8 +207,8 @@ class MultiInstancePersistentStore {
         getManager().removeKey(incognitoSelectedKey(instanceId));
     }
 
-    private static void removeClosedByUser(int instanceId) {
-        getManager().removeKey(closedByUserKey(instanceId));
+    private static void removeMarkedForDeletion(int instanceId) {
+        getManager().removeKey(markedForDeletionKey(instanceId));
     }
 
     private static String lastAccessedTimeKey(int instanceId) {
@@ -257,8 +257,8 @@ class MultiInstancePersistentStore {
                 String.valueOf(instanceId));
     }
 
-    private static String closedByUserKey(int instanceId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_CLOSED_BY_USER.createKey(
+    private static String markedForDeletionKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_MARKED_FOR_DELETION.createKey(
                 String.valueOf(instanceId));
     }
 }

@@ -1089,7 +1089,7 @@ public class TabWindowManagerImplUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closedByUser= */ false));
+                        /* markedForDeletion= */ false));
         instanceInfoList.add(
                 new InstanceInfo(
                         /* instanceId= */ 1,
@@ -1102,7 +1102,7 @@ public class TabWindowManagerImplUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closedByUser= */ false));
+                        /* markedForDeletion= */ false));
         instanceInfoList.add(
                 new InstanceInfo(
                         /* instanceId= */ 2,
@@ -1115,7 +1115,7 @@ public class TabWindowManagerImplUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closedByUser= */ false));
+                        /* markedForDeletion= */ false));
         when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY))
                 .thenReturn(instanceInfoList);
 
@@ -1175,7 +1175,7 @@ public class TabWindowManagerImplUnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closedByUser= */ false));
+                        /* markedForDeletion= */ false));
         when(mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY))
                 .thenReturn(instanceInfoList);
 

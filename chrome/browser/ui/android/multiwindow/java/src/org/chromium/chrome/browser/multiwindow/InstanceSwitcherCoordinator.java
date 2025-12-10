@@ -331,7 +331,7 @@ public class InstanceSwitcherCoordinator {
         for (int i = 0; i < items.size(); ++i) {
             InstanceInfo instanceInfo = items.get(i);
             // Do not show instances that are closed by user.
-            if (instanceInfo.closedByUser) continue;
+            if (instanceInfo.markedForDeletion) continue;
             // An active instance should have an associated live task.
             boolean isActiveInstance = instanceInfo.taskId != INVALID_TASK_ID;
             PropertyModel itemModel = generateListItem(items.get(i));

@@ -702,7 +702,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             MultiInstancePersistentStore.readIncognitoTabCount(i),
                             MultiInstancePersistentStore.readIncognitoSelected(i),
                             lastAccessedTime,
-                            MultiInstancePersistentStore.readClosedByUser(i)));
+                            MultiInstancePersistentStore.readMarkedForDeletion(i)));
         }
         // Move the current instance always to the top of the list for favorable display on the UI.
         // It is possible that |currentItemPos| is invalid if this method is invoked early during
@@ -1373,7 +1373,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             }
             mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         } else {
-            MultiInstancePersistentStore.writeClosedByUser(instanceId, /* closedByUser= */ true);
+            MultiInstancePersistentStore.writeMarkedForDeletion(
+                    instanceId, /* markedForDeletion= */ true);
         }
         Activity activity = getActivityById(instanceId);
         if (activity != null) activity.finishAndRemoveTask();
@@ -1463,7 +1464,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         int count = 0;
         for (Integer id : persistedIds) {
             // Exclude instances closed by the user.
-            if (MultiInstancePersistentStore.readClosedByUser(id)) continue;
+            if (MultiInstancePersistentStore.readMarkedForDeletion(id)) continue;
             if (!isRestorableInstance(id)) continue;
             count++;
         }

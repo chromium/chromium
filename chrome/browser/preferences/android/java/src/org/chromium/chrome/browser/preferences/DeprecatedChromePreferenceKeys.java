@@ -44,6 +44,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.Flags.SafeString.*",
                 "Chrome.Flags.SafeValuesVersion",
                 "Chrome.IsolatedSplits.VersionCode",
+                "Chrome.MultiInstance.ClosedByUser.*",
                 "Chrome.NtpCustomization.BackgroundImageLandscapeMatrix",
                 "Chrome.NtpCustomization.BackgroundImagePortraitMatrix",
                 "Chrome.OfflineMeasurements.HttpProbeResultsList",

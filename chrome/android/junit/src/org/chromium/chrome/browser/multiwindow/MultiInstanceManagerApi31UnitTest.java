@@ -309,7 +309,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 /* incognitoTabCount= */ 0,
                                 /* isIncognitoSelected= */ false,
                                 MultiInstancePersistentStore.readLastAccessedTime(instanceId),
-                                /* closedByUser= */ false));
+                                /* markedForDeletion= */ false));
             }
         }
 
@@ -839,7 +839,7 @@ public class MultiInstanceManagerApi31UnitTest {
         for (InstanceInfo instanceInfo :
                 mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY)) {
             if (instanceInfo.instanceId == 1) {
-                assertTrue(instanceInfo.closedByUser);
+                assertTrue(instanceInfo.markedForDeletion);
                 break;
             }
         }
@@ -1288,7 +1288,7 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiInstancePersistentStore.writeLastAccessedTime(index);
         MultiInstancePersistentStore.writeProfileType(
                 index, /* profileType= */ SupportedProfileType.MIXED);
-        MultiInstancePersistentStore.writeClosedByUser(index, /* closedByUser= */ true);
+        MultiInstancePersistentStore.writeMarkedForDeletion(index, /* markedForDeletion= */ true);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1333,7 +1333,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 MultiInstancePersistentStore.readProfileType(index));
         assertFalse(
                 "Persistent store should be updated.",
-                MultiInstancePersistentStore.readClosedByUser(index));
+                MultiInstancePersistentStore.readMarkedForDeletion(index));
     }
 
     private void triggerSelectTab(TabModelObserver tabModelObserver, Tab tab) {
@@ -1823,7 +1823,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closedByUser= */ false);
+                        /* markedForDeletion= */ false);
         mMultiInstanceManager.moveTabsToWindow(
                 info,
                 Collections.singletonList(mTab1),
@@ -1864,7 +1864,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closedByUser= */ false);
+                        /* markedForDeletion= */ false);
         mMultiInstanceManager.moveTabsToWindow(
                 info, tabs, /* tabAtIndex= */ 0, NewWindowAppSource.OTHER);
 
@@ -1898,7 +1898,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         /* incognitoTabCount= */ 0,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closedByUser= */ false);
+                        /* markedForDeletion= */ false);
         mMultiInstanceManager.moveTabGroupToWindow(
                 info, mTabGroupMetadata, /* startIndex= */ 0, NewWindowAppSource.OTHER);
 

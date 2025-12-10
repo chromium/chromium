@@ -521,8 +521,8 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix MULTI_INSTANCE_LAST_ACCESSED_TIME =
             new KeyPrefix("Chrome.MultiInstance.LastAccessedTime.*");
     public static final KeyPrefix MULTI_INSTANCE_URL = new KeyPrefix("Chrome.MultiInstance.Url.*");
-    public static final KeyPrefix MULTI_INSTANCE_CLOSED_BY_USER =
-            new KeyPrefix("Chrome.MultiInstance.ClosedByUser.*");
+    public static final KeyPrefix MULTI_INSTANCE_MARKED_FOR_DELETION =
+            new KeyPrefix("Chrome.MultiInstance.MarkedForDeletion.*");
 
     // Start timestamp of 1-day period for measuring the duration of disjoint time spent in various
     // windowing modes.
@@ -1219,7 +1219,7 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_TITLE.pattern(),
                 MULTI_INSTANCE_CUSTOM_TITLE.pattern(),
                 MULTI_INSTANCE_URL.pattern(),
-                MULTI_INSTANCE_CLOSED_BY_USER.pattern(),
+                MULTI_INSTANCE_MARKED_FOR_DELETION.pattern(),
                 MULTI_WINDOW_MODE_ACTIVITY_COUNT.pattern(),
                 MULTI_WINDOW_MODE_CYCLE_START_TIME,
                 MULTI_WINDOW_MODE_DURATION_MS.pattern(),

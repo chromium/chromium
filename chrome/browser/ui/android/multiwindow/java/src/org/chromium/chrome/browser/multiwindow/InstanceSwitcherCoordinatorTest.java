@@ -906,7 +906,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 0,
-                            /* closedByUser= */ false),
+                            /* markedForDeletion= */ false),
                     new InstanceInfo(
                             /* instanceId= */ 1,
                             /* taskId= */ 58,
@@ -918,7 +918,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 0,
-                            /* closedByUser= */ false),
+                            /* markedForDeletion= */ false),
                     new InstanceInfo(
                             /* instanceId= */ 2,
                             /* taskId= */ 59,
@@ -930,7 +930,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 0,
-                            /* closedByUser= */ false)
+                            /* markedForDeletion= */ false)
                 };
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
         Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
@@ -1503,7 +1503,7 @@ public class InstanceSwitcherCoordinatorTest {
                         /* incognitoTabCount= */ 1,
                         /* isIncognitoSelected= */ false,
                         /* lastAccessedTime= */ 0,
-                        /* closedByUser= */ false);
+                        /* markedForDeletion= */ false);
 
         // Create other active instances.
         for (int i = 1; i < numActiveInstances; i++) {
@@ -1519,7 +1519,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ getDaysAgoMillis(i),
-                            /* closedByUser= */ false);
+                            /* markedForDeletion= */ false);
         }
 
         // Create inactive instances.
@@ -1536,7 +1536,7 @@ public class InstanceSwitcherCoordinatorTest {
                             /* incognitoTabCount= */ 0,
                             /* isIncognitoSelected= */ false,
                             /* lastAccessedTime= */ 0,
-                            /* closedByUser= */ false);
+                            /* markedForDeletion= */ false);
         }
 
         return instances;
