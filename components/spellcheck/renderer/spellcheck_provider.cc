@@ -42,11 +42,11 @@ using blink::WebTextCheckingCompletion;
 using blink::WebTextCheckingResult;
 using blink::WebTextDecorationType;
 
-static_assert(int(blink::kWebTextDecorationTypeSpelling) ==
-                  int(SpellCheckResult::SPELLING),
+static_assert(static_cast<int>(blink::kWebTextDecorationTypeSpelling) ==
+                  static_cast<int>(SpellCheckResult::SPELLING),
               "mismatching enums");
-static_assert(int(blink::kWebTextDecorationTypeGrammar) ==
-                  int(SpellCheckResult::GRAMMAR),
+static_assert(static_cast<int>(blink::kWebTextDecorationTypeGrammar) ==
+                  static_cast<int>(SpellCheckResult::GRAMMAR),
               "mismatching enums");
 
 class SpellCheckProvider::DictionaryUpdateObserverImpl
