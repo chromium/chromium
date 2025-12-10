@@ -77,7 +77,8 @@
           "project": "chromium-m143"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/linux_chromium_tsan_rel_ng/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/linux_chromium_tsan_rel_ng/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

@@ -91,7 +91,8 @@
         }
       ],
       "retry_failed_shards": false,
-      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-cq-android-arm64/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/gpu-fyi-cq-android-arm64/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/flakiness": {
