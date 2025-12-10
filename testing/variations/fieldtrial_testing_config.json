@@ -12589,7 +12589,14 @@
                     "//0": "Gathers metrics on the Heap Profiler, which has known overhead that affects benchmarks.",
                     "//1": "HeapProfilerReporting is an existing feature that forces the profiler on/off.",
                     "//2": "UseLockFreeBloomFilter is a new feature that modifies the profiler behaviour, so needs it to be on.",
-                    "//3": "HeapProfilerReporting will never go beyond 1% stable.",
+                    "//3": "HeapProfilerReporting will never go beyond 1% stable, so the control group should come first.",
+                    "name": "DisabledControl_20251203",
+                    "disable_features": [
+                        "HeapProfilerReporting",
+                        "UseLockFreeBloomFilter"
+                    ]
+                },
+                {
                     "name": "EnabledBloomFilter_20251203",
                     "params": {
                         "nonstable-probability": "1.0",
@@ -12597,6 +12604,20 @@
                     },
                     "enable_features": [
                         "HeapProfilerReporting",
+                        "UseLockFreeBloomFilter"
+                    ],
+                    "disable_benchmarking": "true"
+                },
+                {
+                    "name": "EnabledNoBloomFilter_20251203",
+                    "params": {
+                        "nonstable-probability": "1.0",
+                        "stable-probability": "1.0"
+                    },
+                    "enable_features": [
+                        "HeapProfilerReporting"
+                    ],
+                    "disable_features": [
                         "UseLockFreeBloomFilter"
                     ],
                     "disable_benchmarking": "true"
