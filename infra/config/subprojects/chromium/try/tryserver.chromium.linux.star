@@ -135,20 +135,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-trees-in-viz-rel",
-    mirrors = ["ci/linux-trees-in-viz-rel"],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-trees-in-viz-rel",
-            "try_builder",
-            "no_symbols",
-        ],
-    ),
-    contact_team_email = "chrome-compositor@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux-annotator-rel",
     mirrors = ["ci/linux-annotator-rel"],
     gn_args = gn_args.config(
