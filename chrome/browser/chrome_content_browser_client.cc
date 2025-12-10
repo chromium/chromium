@@ -135,7 +135,6 @@
 #include "chrome/browser/preloading/prerender/prerender_web_contents_delegate.h"
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -279,7 +278,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
@@ -7468,20 +7466,13 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
   url::Origin top_frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
   content::BrowserContext* browser_context = rfh->GetBrowserContext();
 
-  // Persistent MediaDevice IDs are allowed if cookies are allowed or if the
-  // user is in the default state in 3PCD.
+  // Persistent MediaDevice IDs are allowed iff cookies are allowed.
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection =
-      TrackingProtectionSettingsFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-  bool allowed =
-      cookie_settings->IsFullCookieAccessAllowed(
-          url, site_for_cookies, top_frame_origin,
-          net::CookieSettingOverrides(), storage_key.ToCookiePartitionKey()) ||
-      (tracking_protection->IsTrackingProtection3pcdEnabled() &&
-       !tracking_protection->AreAllThirdPartyCookiesBlocked());
+  bool allowed = cookie_settings->IsFullCookieAccessAllowed(
+      url, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
+      storage_key.ToCookiePartitionKey());
   ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
       rfh, storage_key,
       ChromeBrowsingDataModelDelegate::StorageType::kMediaDeviceSalt, !allowed);
