@@ -225,6 +225,11 @@ mojom("mojom") {
           move_only = true
         },
         {
+          mojom = "extensions.mojom.MessageData"
+          cpp = "::extensions::MessageData"
+          move_only = true
+        },
+        {
           mojom = "extensions.mojom.PortId"
           cpp = "::extensions::PortId"
         },
