@@ -1,4 +1,0 @@
-Tests that nodes can be copied in ElementsTreeOutline.
-
-<span id="node-to-copy">This should be <b>copied</b>.</span>
-
