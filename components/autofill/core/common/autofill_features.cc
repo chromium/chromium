@@ -644,6 +644,12 @@ BASE_FEATURE(kAutofillFixFormTracking, base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(crbug.com/445863287): Cleanup when launched.
 BASE_FEATURE(kAutofillFixRewriterRules, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the rationalization engine will fix misclassifications where
+// a field is detected as a COUNTRY when it should be a STATE or vice versa.
+// TODO(crbug.com/444180493): Cleanup when launched.
+BASE_FEATURE(kAutofillFixStateCountryMisclassification,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Greek regexes are used for parsing in branded builds.
 BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);
 
