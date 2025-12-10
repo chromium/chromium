@@ -1217,7 +1217,8 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL canSend = hasContent && !compactMode;
   BOOL showShortcuts = !hasContent && !canSend;
   BOOL showLeadingImage = !compactMode || !allowsMultimodalActions;
-  BOOL shouldPersistAIMButton = IsComposeboxAIMNudgeEnabled() && !compactMode;
+  BOOL shouldPersistAIMButton =
+      IsComposeboxAIMNudgeEnabled() && !compactMode && allowsMultimodalActions;
 
   ComposeboxInputPlateControls leadingAction =
       allowsMultimodalActions ? ComposeboxInputPlateControls::kPlus
