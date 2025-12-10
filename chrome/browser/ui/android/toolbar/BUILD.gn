@@ -404,6 +404,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/MiniOriginBarControllerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarLongPressMenuHandlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarPositionControllerTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarLayerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveButtonActionMenuCoordinatorTest.java",
