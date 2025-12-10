@@ -30,6 +30,7 @@
 #include "remoting/signaling/ftl_message_channel_strategy.h"
 #include "remoting/signaling/ftl_services_context.h"
 #include "remoting/signaling/registration_manager.h"
+#include "remoting/signaling/signaling_address.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -108,10 +109,10 @@ class MockRegistrationManager : public RegistrationManager {
   MOCK_CONST_METHOD0(GetFtlAuthToken, std::string());
 };
 
-decltype(auto) StanzaTextMatches(const std::string& expected_stanza) {
-  return Truly([=](const ftl::ChromotingMessage& message) {
-    return expected_stanza == message.xmpp().stanza();
-  });
+MATCHER_P(SignalingMessageMatches, expected_stanza_text, "") {
+  const ftl::ChromotingMessage* ftl_message =
+      std::get_if<ftl::ChromotingMessage>(&arg);
+  return ftl_message && ftl_message->xmpp().stanza() == expected_stanza_text;
 }
 
 }  // namespace
@@ -151,7 +152,8 @@ void FtlMessagingClientTest::TearDown() {
 TEST_F(FtlMessagingClientTest, TestSendMessage_Unauthenticated) {
   base::RunLoop run_loop;
   messaging_client_->SendMessage(
-      kFakeReceiverId, kFakeSenderRegId, CreateXmppMessage(kMessage1Text),
+      SignalingAddress::CreateFtlSignalingAddress(kFakeReceiverId, ""),
+      SignalingMessage{CreateXmppMessage(kMessage1Text)},
       CheckStatusThenQuitRunLoopCallback(
           FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
   test_responder_.AddErrorToMostRecentRequestUrl(
@@ -162,7 +164,8 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_Unauthenticated) {
 TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithoutRegId) {
   base::RunLoop run_loop;
   messaging_client_->SendMessage(
-      kFakeReceiverId, "", CreateXmppMessage(kMessage1Text),
+      SignalingAddress::CreateFtlSignalingAddress(kFakeReceiverId, ""),
+      SignalingMessage{CreateXmppMessage(kMessage1Text)},
       CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
                                          &run_loop));
 
@@ -181,7 +184,9 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithoutRegId) {
 TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithRegId) {
   base::RunLoop run_loop;
   messaging_client_->SendMessage(
-      kFakeReceiverId, kFakeSenderRegId, CreateXmppMessage(kMessage1Text),
+      SignalingAddress::CreateFtlSignalingAddress(kFakeReceiverId,
+                                                  kFakeSenderRegId),
+      SignalingMessage{CreateXmppMessage(kMessage1Text)},
       CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
                                          &run_loop));
 
@@ -223,14 +228,18 @@ TEST_F(FtlMessagingClientTest,
   base::RunLoop run_loop;
 
   base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
-  EXPECT_CALL(mock_on_incoming_msg, Run(_, _, _))
-      .WillOnce([&](const ftl::Id&, const std::string&,
-                    const ftl::ChromotingMessage& message) {
-        EXPECT_EQ(message.xmpp().stanza(), kMessage1Text);
+  EXPECT_CALL(mock_on_incoming_msg, Run(_, _))
+      .WillOnce([&](const SignalingAddress&, const SignalingMessage& message) {
+        const ftl::ChromotingMessage* ftl_message =
+            std::get_if<ftl::ChromotingMessage>(&message);
+        ASSERT_NE(ftl_message, nullptr);
+        ASSERT_EQ(ftl_message->xmpp().stanza(), kMessage1Text);
       })
-      .WillOnce([&](const ftl::Id&, const std::string&,
-                    const ftl::ChromotingMessage& message) {
-        EXPECT_EQ(message.xmpp().stanza(), kMessage2Text);
+      .WillOnce([&](const SignalingAddress&, const SignalingMessage& message) {
+        const ftl::ChromotingMessage* ftl_message =
+            std::get_if<ftl::ChromotingMessage>(&message);
+        ASSERT_NE(ftl_message, nullptr);
+        ASSERT_EQ(ftl_message->xmpp().stanza(), kMessage2Text);
         run_loop.Quit();
       });
 
@@ -262,8 +271,11 @@ TEST_F(FtlMessagingClientTest,
   base::RunLoop run_loop;
 
   base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
-  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId,
-                                        StanzaTextMatches(kMessage1Text)))
+  EXPECT_CALL(
+      mock_on_incoming_msg,
+      Run(Property(&SignalingAddress::id,
+                   "fake_sender@gmail.com/chromoting_ftl_fake_sender_reg_id"),
+          SignalingMessageMatches(kMessage1Text)))
       .WillOnce(Return());
 
   base::CallbackListSubscription subscription =
@@ -301,14 +313,22 @@ TEST_F(FtlMessagingClientTest, ReceivedDuplicatedMessage_AckAndDrop) {
   base::RunLoop run_loop;
 
   base::MockCallback<FtlMessagingClient::MessageCallback> mock_on_incoming_msg;
-  EXPECT_CALL(mock_on_incoming_msg, Run(IsFakeSenderId(), kFakeSenderRegId, _))
-      .WillOnce([](const ftl::Id&, const std::string&,
-                   const ftl::ChromotingMessage& message) {
-        EXPECT_EQ(message.xmpp().stanza(), kMessage1Text);
+  EXPECT_CALL(
+      mock_on_incoming_msg,
+      Run(Property(&SignalingAddress::id,
+                   "fake_sender@gmail.com/chromoting_ftl_fake_sender_reg_id"),
+          _))
+      .WillOnce([&](const SignalingAddress&, const SignalingMessage& message) {
+        const ftl::ChromotingMessage* ftl_message =
+            std::get_if<ftl::ChromotingMessage>(&message);
+        ASSERT_NE(ftl_message, nullptr);
+        ASSERT_EQ(ftl_message->xmpp().stanza(), kMessage1Text);
       })
-      .WillOnce([](const ftl::Id&, const std::string&,
-                   const ftl::ChromotingMessage& message) {
-        EXPECT_EQ(message.xmpp().stanza(), kMessage2Text);
+      .WillOnce([&](const SignalingAddress&, const SignalingMessage& message) {
+        const ftl::ChromotingMessage* ftl_message =
+            std::get_if<ftl::ChromotingMessage>(&message);
+        ASSERT_NE(ftl_message, nullptr);
+        ASSERT_EQ(ftl_message->xmpp().stanza(), kMessage2Text);
       });
 
   int ack_count = 0;

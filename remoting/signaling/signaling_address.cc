@@ -39,6 +39,11 @@ SignalingAddress::Channel GetChannelType(std::string address) {
     if (resource.find(kFtlResourcePrefix) == 0) {
       return SignalingAddress::Channel::FTL;
     }
+    return SignalingAddress::Channel::XMPP;
+  }
+  // No resource. It can be an XMPP JID (user@domain.com) or a corp token.
+  if (address.find('@') == std::string::npos) {
+    return SignalingAddress::Channel::CORP;
   }
   return SignalingAddress::Channel::XMPP;
 }
@@ -54,6 +59,10 @@ SignalingAddress::SignalingAddress(const std::string& address) {
     case Channel::XMPP:
     case Channel::FTL:
       id_ = NormalizeSignalingId(address);
+      DCHECK(!id_.empty()) << "Missing signaling ID.";
+      break;
+    case Channel::CORP:
+      id_ = address;
       DCHECK(!id_.empty()) << "Missing signaling ID.";
       break;
     default:
@@ -113,7 +122,7 @@ bool SignalingAddress::GetFtlInfo(std::string* email,
   bool has_resource = SplitSignalingIdResource(id_, email, &resource);
   DCHECK(has_resource);
   size_t ftl_resource_prefix_length = strlen(kFtlResourcePrefix);
-  DCHECK_LT(ftl_resource_prefix_length, resource.length());
+  DCHECK_GE(resource.length(), ftl_resource_prefix_length);
   *registration_id = resource.substr(ftl_resource_prefix_length);
   return true;
 }

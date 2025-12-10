@@ -14,15 +14,19 @@
 #include "base/timer/timer.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/signaling_message.h"
 
 namespace base {
 class RunLoop;
 }  // namespace base
+
 namespace network {
 class TransitionalURLLoaderFactoryOwner;
 }  // namespace network
 
 namespace remoting {
+
 class CorpMessagingClient;
 class HttpStatus;
 
@@ -41,7 +45,8 @@ class CorpMessagingPlayground {
 
   void OnStreamOpened();
   void OnStreamClosed(const HttpStatus& status);
-  void OnPeerMessageReceived(const internal::PeerMessageStruct& message);
+  void OnPeerMessageReceived(const SignalingAddress& sender_address,
+                             const SignalingMessage& message);
   void OnCharacterInput(char c);
   void SendMessage(int count = 1);
   void StartPingPongRally();

@@ -19,6 +19,7 @@ class SignalingAddress {
   enum class Channel {
     XMPP,
     FTL,
+    CORP,
   };
   enum Direction { TO, FROM };
   // Creates an empty SignalingAddress.

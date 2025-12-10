@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/proto/messaging_service.h"
+#include "remoting/signaling/signaling_message.h"
 
 namespace jingle_xmpp {
 class XmlElement;
@@ -20,9 +21,6 @@ class XmlElement;
 namespace remoting {
 
 class SignalingAddress;
-
-using SignalingMessage =
-    std::variant<ftl::ChromotingMessage, internal::PeerMessageStruct>;
 
 class SignalStrategy {
  public:

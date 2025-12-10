@@ -60,12 +60,11 @@ class FtlSignalStrategy::Core {
   void StartReceivingMessages();
   void OnReceiveMessagesStreamStarted();
   void OnReceiveMessagesStreamClosed(const HttpStatus& status);
-  void OnMessageReceived(const ftl::Id& sender_id,
-                         const std::string& sender_registration_id,
-                         const ftl::ChromotingMessage& message);
+  void OnMessageReceived(const SignalingAddress& sender_address,
+                         const SignalingMessage& message);
 
   void SendMessageImpl(const SignalingAddress& receiver,
-                       const ftl::ChromotingMessage& message,
+                       SignalingMessage&& message,
                        MessagingClient::DoneCallback callback);
   void OnSendMessageResponse(const SignalingAddress& receiver,
                              const std::string& stanza_id,
@@ -228,7 +227,7 @@ bool FtlSignalStrategy::Core::SendMessage(
   }
 
   SendMessageImpl(
-      destination_address, message,
+      destination_address, SignalingMessage(message),
       base::BindOnce(&Core::OnSendMessageResponse, weak_factory_.GetWeakPtr(),
                      destination_address, std::string()));
 
@@ -323,29 +322,31 @@ void FtlSignalStrategy::Core::OnReceiveMessagesStreamClosed(
 }
 
 void FtlSignalStrategy::Core::OnMessageReceived(
-    const ftl::Id& sender_id,
-    const std::string& sender_registration_id,
-    const ftl::ChromotingMessage& message) {
-  auto sender_address = SignalingAddress::CreateFtlSignalingAddress(
-      sender_id.id(), sender_registration_id);
-  SignalingMessage signaling_message{message};
+    const SignalingAddress& sender_address,
+    const SignalingMessage& message) {
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingMessage(sender_address,
-                                                 signaling_message)) {
+    if (listener.OnSignalStrategyIncomingMessage(sender_address, message)) {
       return;
     }
   }
 
-  if (!message.has_xmpp()) {
+  const ftl::ChromotingMessage* ftl_message =
+      std::get_if<ftl::ChromotingMessage>(&message);
+  if (!ftl_message) {
+    LOG(WARNING) << "Ignoring non-FTL message.";
+    return;
+  }
+
+  if (!ftl_message->has_xmpp()) {
     LOG(WARNING) << "Ignoring message that doesn't have XMPP field.";
     return;
   }
 
-  DCHECK(message.xmpp().has_stanza());
+  DCHECK(ftl_message->xmpp().has_stanza());
   auto stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
-      jingle_xmpp::XmlElement::ForStr(message.xmpp().stanza()));
+      jingle_xmpp::XmlElement::ForStr(ftl_message->xmpp().stanza()));
   if (!stanza) {
-    LOG(WARNING) << "Failed to parse XMPP: " << message.xmpp().stanza();
+    LOG(WARNING) << "Failed to parse XMPP: " << ftl_message->xmpp().stanza();
     return;
   }
   OnStanza(sender_address, std::move(stanza));
@@ -353,7 +354,7 @@ void FtlSignalStrategy::Core::OnMessageReceived(
 
 void FtlSignalStrategy::Core::SendMessageImpl(
     const SignalingAddress& receiver,
-    const ftl::ChromotingMessage& message,
+    SignalingMessage&& message,
     MessagingClient::DoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -367,10 +368,16 @@ void FtlSignalStrategy::Core::SendMessageImpl(
   }
 
   std::string message_payload;
-  if (message.has_xmpp()) {
-    message_payload = message.xmpp().stanza();
-  } else if (message.has_echo()) {
-    message_payload = message.echo().message();
+  const ftl::ChromotingMessage* ftl_message =
+      std::get_if<ftl::ChromotingMessage>(&message);
+  if (ftl_message) {
+    if (ftl_message->has_xmpp()) {
+      message_payload = ftl_message->xmpp().stanza();
+    } else if (ftl_message->has_echo()) {
+      message_payload = ftl_message->echo().message();
+    } else {
+      message_payload = "Error displaying message due to unknown format.";
+    }
   } else {
     message_payload = "Error displaying message due to unknown format.";
   }
@@ -381,8 +388,8 @@ void FtlSignalStrategy::Core::SendMessageImpl(
            << message_payload
            << "\n=========================================================";
 
-  messaging_client_->SendMessage(receiver_username, receiver_registration_id,
-                                 message, std::move(callback));
+  messaging_client_->SendMessage(receiver, std::move(message),
+                                 std::move(callback));
 }
 
 void FtlSignalStrategy::Core::OnSendMessageResponse(

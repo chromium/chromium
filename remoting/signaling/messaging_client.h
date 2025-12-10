@@ -5,27 +5,24 @@
 #ifndef REMOTING_SIGNALING_MESSAGING_CLIENT_H_
 #define REMOTING_SIGNALING_MESSAGING_CLIENT_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
-#include "remoting/proto/ftl/v1/chromoting_message.pb.h"
-#include "remoting/proto/ftl/v1/ftl_messages.pb.h"
+#include "remoting/signaling/signaling_message.h"
 
 namespace remoting {
 
 class HttpStatus;
+class SignalingAddress;
 
-// An interface to send messages and receive messages from FTL messaging
-// service.
+// An interface to send messages and receive messages from a messaging service.
 class MessagingClient {
  public:
   using MessageCallback =
-      base::RepeatingCallback<void(const ftl::Id& sender_id,
-                                   const std::string& sender_registration_id,
-                                   const ftl::ChromotingMessage& message)>;
-  using MessageCallbackList = base::RepeatingCallbackList<
-      void(const ftl::Id&, const std::string&, const ftl::ChromotingMessage&)>;
+      base::RepeatingCallback<void(const SignalingAddress& sender_address,
+                                   const SignalingMessage& message)>;
+  using MessageCallbackList =
+      base::RepeatingCallbackList<void(const SignalingAddress&,
+                                       const SignalingMessage&)>;
   using DoneCallback = base::OnceCallback<void(const HttpStatus& status)>;
 
   virtual ~MessagingClient() = default;
@@ -36,9 +33,10 @@ class MessagingClient {
   virtual base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback) = 0;
 
-  virtual void SendMessage(const std::string& destination,
-                           const std::string& destination_registration_id,
-                           const ftl::ChromotingMessage& message,
+  // Sends |message| to |destination_address| and then calls |on_done| with the
+  // result of the operation.
+  virtual void SendMessage(const SignalingAddress& destination_address,
+                           SignalingMessage&& message,
                            DoneCallback on_done) = 0;
 
   // Opens a stream to continuously receive new messages from the server and

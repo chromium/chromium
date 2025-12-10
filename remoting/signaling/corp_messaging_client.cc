@@ -22,6 +22,7 @@
 #include "remoting/base/service_urls.h"
 #include "remoting/signaling/corp_message_channel_strategy.h"
 #include "remoting/signaling/message_channel.h"
+#include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting {
@@ -121,38 +122,22 @@ base::CallbackListSubscription CorpMessagingClient::RegisterMessageCallback(
   return callback_list_.Add(callback);
 }
 
-void CorpMessagingClient::SendTestMessage(
-    const std::string& messaging_authz_token,
-    internal::SystemTestStruct system_test_struct,
-    StatusCallback on_done) {
+void CorpMessagingClient::SendMessage(
+    const SignalingAddress& destination_address,
+    SignalingMessage&& message,
+    DoneCallback on_done) {
   internal::HostSendMessageRequestStruct request;
-  request.messaging_authz_token = messaging_authz_token;
+  CHECK_EQ(destination_address.channel(), SignalingAddress::Channel::CORP);
+  request.messaging_authz_token = destination_address.id();
+
+  CHECK(std::holds_alternative<internal::PeerMessageStruct>(message));
+  request.peer_message =
+      std::get<internal::PeerMessageStruct>(std::move(message));
+  LOG_IF(WARNING, !request.peer_message.message_id.empty())
+      << "Overwriting existing message_id value: "
+      << request.peer_message.message_id;
   request.peer_message.message_id =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
-  request.peer_message.payload = std::move(system_test_struct);
-
-  // SendHostMessage is non-idempotent (potentially duplicate messages will be
-  // sent), so retries may not be safe.
-  ExecuteRequest(
-      kSendMessageTrafficAnnotation,
-      std::string(internal::GetHostSendMessagePath()),
-      /*enable_retries=*/false, internal::GetHostSendMessageRequest(request),
-      &CorpMessagingClient::OnSendMessageResponse, std::move(on_done));
-}
-
-void CorpMessagingClient::SendMessage(const std::string& messaging_authz_token,
-                                      const std::string& payload,
-                                      StatusCallback on_done) {
-  internal::HostSendMessageRequestStruct request;
-  request.messaging_authz_token = messaging_authz_token;
-  request.peer_message.message_id =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
-
-  internal::SystemTestStruct system_test_struct;
-  internal::SimpleStruct simple_struct;
-  simple_struct.payload = payload;
-  system_test_struct.test_message = std::move(simple_struct);
-  request.peer_message.payload = std::move(system_test_struct);
 
   // SendHostMessage is non-idempotent (potentially duplicate messages will be
   // sent), so retries may not be safe.
@@ -164,7 +149,7 @@ void CorpMessagingClient::SendMessage(const std::string& messaging_authz_token,
 }
 
 void CorpMessagingClient::StartReceivingMessages(base::OnceClosure on_ready,
-                                                 StatusCallback on_closed) {
+                                                 DoneCallback on_closed) {
   message_channel_->StartReceivingMessages(std::move(on_ready),
                                            std::move(on_closed));
 }
@@ -184,7 +169,7 @@ void CorpMessagingClient::ExecuteRequest(
     bool enable_retries,
     std::unique_ptr<google::protobuf::MessageLite> request,
     CallbackFunctor callback_functor,
-    StatusCallback on_done) {
+    DoneCallback on_done) {
   auto config = std::make_unique<ProtobufHttpRequestConfig>(tag);
   config->request_message = std::move(request);
   config->path = path;
@@ -202,7 +187,7 @@ void CorpMessagingClient::ExecuteRequest(
 }
 
 void CorpMessagingClient::OnSendMessageResponse(
-    StatusCallback on_done,
+    DoneCallback on_done,
     const HttpStatus& status,
     std::unique_ptr<internal::HostSendMessageResponse> response) {
   std::move(on_done).Run(status);
@@ -212,7 +197,7 @@ std::unique_ptr<ScopedProtobufHttpRequest>
 CorpMessagingClient::OpenReceiveMessagesStream(
     base::OnceClosure on_channel_ready,
     const CorpMessageChannelStrategy::MessageReceivedCallback& on_message,
-    base::OnceCallback<void(const HttpStatus&)> on_channel_closed) {
+    DoneCallback on_channel_closed) {
   auto config = std::make_unique<ProtobufHttpRequestConfig>(
       kReceiveMessagesTrafficAnnotation);
   internal::HostOpenChannelRequestStruct request;
@@ -248,7 +233,8 @@ CorpMessagingClient::OpenReceiveMessagesStream(
 
 void CorpMessagingClient::OnMessageReceived(
     const internal::PeerMessageStruct& message) {
-  callback_list_.Notify(message);
+  // TODO: joedow - Provide a valid signaling address.
+  callback_list_.Notify(SignalingAddress(), message);
 }
 
 }  // namespace remoting

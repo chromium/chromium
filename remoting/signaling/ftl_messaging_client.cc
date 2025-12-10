@@ -21,6 +21,7 @@
 #include "remoting/signaling/ftl_services_context.h"
 #include "remoting/signaling/message_channel.h"
 #include "remoting/signaling/registration_manager.h"
+#include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting {
@@ -206,19 +207,28 @@ base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
 }
 
 void FtlMessagingClient::SendMessage(
-    const std::string& destination,
-    const std::string& destination_registration_id,
-    const ftl::ChromotingMessage& message,
+    const SignalingAddress& destination_address,
+    SignalingMessage&& message,
     DoneCallback on_done) {
+  std::string user_email;
+  std::string registration_id;
+  if (!destination_address.GetFtlInfo(&user_email, &registration_id)) {
+    LOG(DFATAL) << "Can't get FTL info from signaling address: "
+                << destination_address.id();
+    return;
+  }
+  CHECK(std::holds_alternative<ftl::ChromotingMessage>(message));
+  auto chromoting_message = std::get<ftl::ChromotingMessage>(message);
+
   auto request = std::make_unique<ftl::InboxSendRequest>();
   *request->mutable_header() = FtlServicesContext::CreateRequestHeader(
       registration_manager_->GetFtlAuthToken());
   request->set_time_to_live(kInboxMessageTtl.InMicroseconds());
   *request->mutable_dest_id() =
-      FtlServicesContext::CreateIdFromString(destination);
+      FtlServicesContext::CreateIdFromString(user_email);
 
   std::string serialized_message;
-  bool succeeded = message.SerializeToString(&serialized_message);
+  bool succeeded = chromoting_message.SerializeToString(&serialized_message);
   DCHECK(succeeded);
 
   request->mutable_message()->set_message(serialized_message);
@@ -228,8 +238,8 @@ void FtlMessagingClient::SendMessage(
       ftl::InboxMessage_MessageType_CHROMOTING_MESSAGE);
   request->mutable_message()->set_message_class(
       ftl::InboxMessage_MessageClass_STATUS);
-  if (!destination_registration_id.empty()) {
-    request->add_dest_registration_ids(destination_registration_id);
+  if (!registration_id.empty()) {
+    request->add_dest_registration_ids(registration_id);
   }
 
   // SendMessage is non-idempotent (potentially duplicate messages will be
@@ -354,8 +364,10 @@ void FtlMessagingClient::RunMessageCallbacks(const ftl::InboxMessage& message) {
 
   ftl::ChromotingMessage chromoting_message;
   chromoting_message.ParseFromString(message.message());
-  callback_list_.Notify(message.sender_id(), message.sender_registration_id(),
-                        chromoting_message);
+  callback_list_.Notify(
+      SignalingAddress::CreateFtlSignalingAddress(
+          message.sender_id().id(), message.sender_registration_id()),
+      chromoting_message);
 }
 
 void FtlMessagingClient::OnMessageReceived(const ftl::InboxMessage& message) {

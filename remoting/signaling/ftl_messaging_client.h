@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/message_tracker.h"
 #include "remoting/signaling/messaging_client.h"
 
@@ -56,9 +57,8 @@ class FtlMessagingClient final : public MessagingClient {
   // MessagingClient implementations.
   base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback) override;
-  void SendMessage(const std::string& destination,
-                   const std::string& destination_registration_id,
-                   const ftl::ChromotingMessage& message,
+  void SendMessage(const SignalingAddress& destination_address,
+                   SignalingMessage&& message,
                    DoneCallback on_done) override;
   void StartReceivingMessages(base::OnceClosure on_ready,
                               DoneCallback on_closed) override;

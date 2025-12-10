@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/base/internal_headers.h"
-#include "remoting/proto/messaging_service.h"
 #include "remoting/signaling/corp_message_channel_strategy.h"
+#include "remoting/signaling/messaging_client.h"
 
 namespace google::protobuf {
 class MessageLite;
@@ -38,14 +38,8 @@ class ProtobufHttpClient;
 class ScopedProtobufHttpRequest;
 
 // A class for sending and receiving messages via the Corp messaging API.
-class CorpMessagingClient final {
+class CorpMessagingClient final : public MessagingClient {
  public:
-  using MessageCallback =
-      base::RepeatingCallback<void(const internal::PeerMessageStruct& message)>;
-  using MessageCallbackList = base::RepeatingCallbackList<void(
-      const internal::PeerMessageStruct& message)>;
-  using StatusCallback = base::OnceCallback<void(const HttpStatus& status)>;
-
   CorpMessagingClient(
       const std::string& username,
       const std::string& public_key,
@@ -55,25 +49,18 @@ class CorpMessagingClient final {
   CorpMessagingClient(const CorpMessagingClient&) = delete;
   CorpMessagingClient& operator=(const CorpMessagingClient&) = delete;
 
-  ~CorpMessagingClient();
+  ~CorpMessagingClient() override;
 
+  // MessagingClient overrides.
   base::CallbackListSubscription RegisterMessageCallback(
-      const MessageCallback& callback);
-
-  void SendMessage(const std::string& messaging_authz_token,
-                   const std::string& payload,
-                   StatusCallback on_done);
-
-  void SendTestMessage(const std::string& messaging_authz_token,
-                       internal::SystemTestStruct system_test_struct,
-                       StatusCallback on_done);
-
+      const MessageCallback& callback) override;
+  void SendMessage(const SignalingAddress& destination_address,
+                   SignalingMessage&& message,
+                   DoneCallback on_done) override;
   void StartReceivingMessages(base::OnceClosure on_ready,
-                              StatusCallback on_closed);
-
-  void StopReceivingMessages();
-
-  bool IsReceivingMessages() const;
+                              DoneCallback on_closed) override;
+  void StopReceivingMessages() override;
+  bool IsReceivingMessages() const override;
 
  private:
   template <typename CallbackFunctor>
@@ -82,17 +69,17 @@ class CorpMessagingClient final {
                       bool enable_retries,
                       std::unique_ptr<google::protobuf::MessageLite> request,
                       CallbackFunctor callback_functor,
-                      StatusCallback on_done);
+                      DoneCallback on_done);
 
   void OnSendMessageResponse(
-      StatusCallback on_done,
+      DoneCallback on_done,
       const HttpStatus& status,
       std::unique_ptr<internal::HostSendMessageResponse> response);
 
   std::unique_ptr<ScopedProtobufHttpRequest> OpenReceiveMessagesStream(
       base::OnceClosure on_channel_ready,
       const CorpMessageChannelStrategy::MessageReceivedCallback& on_message,
-      StatusCallback on_channel_closed);
+      DoneCallback on_channel_closed);
 
   void OnMessageReceived(const internal::PeerMessageStruct& message);
 
