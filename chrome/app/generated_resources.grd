@@ -11012,17 +11012,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Try using the side panel for bookmarks, journeys, and more
       </message>
 
-      <!-- Customize Chrome Refresh IPH Strings -->
-      <message name="IDS_IPH_CUSTOMIZE_CHROME_REFRESH_BODY" desc="The description of the body in the customize chrome refresh IPH">
-        Chrome theme colors have been refreshed to work better for everyone, whether you’re in dark or light mode
-      </message>
-      <message name="IDS_IPH_CUSTOMIZE_CHROME_REFRESH_POINTER_BODY" desc="The description of the body in the customize chrome refresh IPH pointer">
-        Customize the appearance of Chrome and this page
-      </message>
-      <message name="IDS_IPH_CUSTOMIZE_CHROME_REFRESH_CUSTOM_ACTION" desc="The description of the button to show the refresh IPH">
-        Customize themes
-      </message>
-
       <!-- Customize Chrome Tutorial Strings -->
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH" desc="The description of the IPH to start the customize chrome tutorial">
         Customize Chrome to give your browser a new look
