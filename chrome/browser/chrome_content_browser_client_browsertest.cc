@@ -1099,7 +1099,7 @@ class ClipboardTestContentAnalysisDelegate
   void FakeUploadFileForDeepScanning(
       enterprise_connectors::ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request,
       enterprise_connectors::test::FakeFilesRequestHandler::
           FakeFileRequestCallback callback) override {
     ASSERT_EQ(request->reason(),

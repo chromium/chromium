@@ -172,7 +172,7 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   signin::IdentityManager* identity_manager() const override { return nullptr; }
 
-  // These methods correspond to fields in `BinaryUploadService::Request`.
+  // These methods correspond to fields in `BinaryUploadRequest`.
   int user_action_requests_count() const override {
     return user_action_requests_count_;
   }
@@ -368,7 +368,7 @@ class FilesRequestHandlerTest : public BaseTest {
       bool is_cloud_analysis,
       ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      std::unique_ptr<BinaryUploadRequest> request,
       test::FakeFilesRequestHandler::FakeFileRequestCallback callback) {
     EXPECT_FALSE(path.empty());
     if (is_cloud_analysis) {

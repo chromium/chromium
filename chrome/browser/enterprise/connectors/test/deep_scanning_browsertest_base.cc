@@ -60,8 +60,7 @@ class UnresponsiveFilesRequestHandler : public FilesRequestHandler {
   void UploadFileForDeepScanning(
       enterprise_connectors::ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override {
+      std::unique_ptr<BinaryUploadRequest> request) override {
     // Do nothing.
   }
 };

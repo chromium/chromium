@@ -236,10 +236,10 @@ safe_browsing::FileAnalysisRequest* FilesRequestHandler::PrepareFileRequest(
 }
 
 void FilesRequestHandler::OnGotFileInfo(
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    std::unique_ptr<BinaryUploadRequest> request,
     size_t index,
     ScanRequestUploadResult result,
-    safe_browsing::BinaryUploadService::Request::Data data) {
+    BinaryUploadRequest::Data data) {
   DCHECK_LT(index, paths_.size());
   DCHECK_EQ(paths_.size(), file_info_.size());
 
@@ -279,7 +279,7 @@ void FilesRequestHandler::OnGotFileInfo(
 }
 
 void FilesRequestHandler::FinishRequestEarly(
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    std::unique_ptr<BinaryUploadRequest> request,
     ScanRequestUploadResult result) {
   // We add the request here in case we never actually uploaded anything, so it
   // wasn't added in OnGetRequestData
@@ -300,7 +300,7 @@ void FilesRequestHandler::FinishRequestEarly(
 void FilesRequestHandler::UploadFileForDeepScanning(
     ScanRequestUploadResult result,
     const base::FilePath& path,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   safe_browsing::BinaryUploadService* upload_service = GetBinaryUploadService();
   if (upload_service)
     upload_service->MaybeUploadForDeepScanning(std::move(request));

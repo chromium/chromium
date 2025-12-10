@@ -74,10 +74,10 @@ class TestDragDropRequestHandler
     ASSERT_EQ(request->reason(),
               enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP);
 
-    safe_browsing::BinaryUploadService::Request::Data data;
+    enterprise_connectors::BinaryUploadRequest::Data data;
     request->GetRequestData(base::BindLambdaForTesting(
         [&data](enterprise_connectors::ScanRequestUploadResult,
-                safe_browsing::BinaryUploadService::Request::Data data_arg) {
+                enterprise_connectors::BinaryUploadRequest::Data data_arg) {
           data = std::move(data_arg);
         }));
 
@@ -131,7 +131,7 @@ class DragDropTestContentAnalysisDelegate
   void FakeUploadFileForDeepScanning(
       enterprise_connectors::ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request,
       enterprise_connectors::test::FakeFilesRequestHandler::
           FakeFileRequestCallback callback) override {
     ASSERT_EQ(request->reason(),
