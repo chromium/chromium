@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -21,6 +24,7 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFac
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -28,6 +32,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -79,13 +84,13 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
 
     private void configureAutoOpenSyncedTabGroupsSwitch() {
         ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
-        boolean isTabGroupSyncAutoOpenConfigurable =
-                TabGroupSyncFeatures.isTabGroupSyncEnabled(getProfile());
-        if (!isTabGroupSyncAutoOpenConfigurable) {
+                assertNonNull(findPreference(PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH));
+        // LINT.IfChange(isTabGroupSyncAutoOpenConfigurable)
+        if (!isTabGroupSyncAutoOpenConfigurable(getProfile())) {
             autoOpenSyncedTabGroupsSwitch.setVisible(false);
             return;
         }
+        // LINT.ThenChange(:isTabGroupSyncAutoOpenConfigurableIndex)
 
         PrefService prefService = UserPrefs.get(getProfile());
         boolean isEnabled = prefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS);
@@ -127,11 +132,13 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                 (TextMessagePreference)
                         findPreference(PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
 
-        if (!AuxiliarySearchControllerFactory.getInstance().isEnabledAndDeviceCompatible()) {
+        // LINT.IfChange(isShareTitlesAndUrlsEnabled)
+        if (!isShareTitlesAndUrlsEnabled()) {
             shareTitlesAndUrlsWithOsSwitch.setVisible(false);
             learnMoreTextMessagePreference.setVisible(false);
             return;
         }
+        // LINT.ThenChange(:isShareTitlesAndUrlsEnabledIndex)
 
         boolean isEnabled = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
         shareTitlesAndUrlsWithOsSwitch.setChecked(isEnabled);
@@ -169,7 +176,34 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
         return "tabs";
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    private static boolean isTabGroupSyncAutoOpenConfigurable(Profile profile) {
+        return TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+    }
+
+    private static boolean isShareTitlesAndUrlsEnabled() {
+        return AuxiliarySearchControllerFactory.getInstance().isEnabledAndDeviceCompatible();
+    }
+
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(TabsSettings.class.getName(), R.xml.tabs_settings);
+            new ChromeBaseSearchIndexProvider(TabsSettings.class.getName(), R.xml.tabs_settings) {
+
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    // LINT.IfChange(isTabGroupSyncAutoOpenConfigurableIndex)
+                    if (!isTabGroupSyncAutoOpenConfigurable(profile)) {
+                        indexData.removeEntry(PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+                    }
+                    // LINT.ThenChange(:isTabGroupSyncAutoOpenConfigurable)
+
+                    // LINT.IfChange(isShareTitlesAndUrlsEnabledIndex)
+                    if (!isShareTitlesAndUrlsEnabled()) {
+                        indexData.removeEntry(PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH);
+                    }
+
+                    // It's not useful for "Learn more" text pref to be searchable.
+                    indexData.removeEntry(PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
+                    // LINT.ThenChange(:isShareTitlesAndUrlsEnabled)
+                }
+            };
 }
