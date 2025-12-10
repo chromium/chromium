@@ -85,6 +85,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -186,7 +187,14 @@ class TouchToFillPaymentMethodViewBinder {
     static View createCardItemView(ViewGroup parent) {
         View cardItem =
                 LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.touch_to_fill_credit_card_sheet_item, parent, false);
+                        .inflate(
+                                ChromeFeatureList.isEnabled(
+                                                ChromeFeatureList
+                                                        .AUTOFILL_ENABLE_NEW_FOP_DISPLAY_ANDROID)
+                                        ? R.layout.touch_to_fill_credit_card_sheet_item_v2
+                                        : R.layout.touch_to_fill_credit_card_sheet_item,
+                                parent,
+                                false);
         AutofillUiUtils.setFilterTouchForSecurity(cardItem);
         return cardItem;
     }
