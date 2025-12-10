@@ -96,6 +96,16 @@ void SystemMetricsSampler::SystemSampler::SampleSystemMetrics() {
                   cpu_throughput->estimated_frequency);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  auto frequencies = cpu_frequency_monitor_.GetCoreFrequencies();
+  for (const auto& freq : frequencies) {
+    TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("system_metrics"),
+                  perfetto::CounterTrack("CpuFrequency", freq.core_id.value(),
+                                         perfetto::Track::Global(0)),
+                  freq.freq);
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN)
   base::CpuFrequencyInfo cpu_info = base::GetCpuFrequencyInfo();
   TRACE_COUNTER(

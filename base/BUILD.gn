@@ -2518,8 +2518,6 @@ component("base") {
     sources += [
       "trace_event/application_state_proto_android.cc",
       "trace_event/application_state_proto_android.h",
-      "trace_event/cpufreq_monitor_android.cc",
-      "trace_event/cpufreq_monitor_android.h",
       "trace_event/java_heap_dump_provider_android.cc",
       "trace_event/java_heap_dump_provider_android.h",
     ]
@@ -4366,10 +4364,7 @@ test("base_unittests") {
   ]
 
   if (is_android) {
-    sources += [
-      "trace_event/cpufreq_monitor_android_unittest.cc",
-      "trace_event/java_heap_dump_provider_android_unittest.cc",
-    ]
+    sources += [ "trace_event/java_heap_dump_provider_android_unittest.cc" ]
   }
 
   if (is_win) {

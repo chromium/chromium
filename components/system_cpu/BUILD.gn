@@ -37,6 +37,13 @@ source_set("system_cpu") {
     ]
   }
 
+  if (is_android) {
+    sources += [
+      "cpu_freq_android.cc",
+      "cpu_freq_android.h",
+    ]
+  }
+
   if (is_win) {
     sources += [
       "cpu_probe_win.cc",
@@ -65,6 +72,10 @@ source_set("unit_tests") {
       "cpu_probe_linux_unittest.cc",
       "procfs_stat_cpu_parser_unittest.cc",
     ]
+  }
+
+  if (is_android) {
+    sources += [ "cpu_freq_android_unittest.cc" ]
   }
 
   if (is_mac) {
