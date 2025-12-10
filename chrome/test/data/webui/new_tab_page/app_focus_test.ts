@@ -36,6 +36,8 @@ suite('NewTabPageAppFocusTest', () => {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
+      searchboxShowComposeEntrypoint: true,
+      searchboxShowComposebox: true,
       ntpRealboxNextEnabled: true,
     });
   });
