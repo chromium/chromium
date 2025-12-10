@@ -63,6 +63,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
@@ -947,6 +948,11 @@ void FileSystemAccessManagerImpl::BindObserverHost(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessObserverHost>
         host_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!base::FeatureList::IsEnabled(blink::features::kFileSystemObserver)) {
+    receivers_.ReportBadMessage("FileSystemAccessObserver not available");
+    return;
+  }
 
   const BindingContext& context = receivers_.current_context();
   watcher_manager().BindObserverHost(context, std::move(host_receiver));

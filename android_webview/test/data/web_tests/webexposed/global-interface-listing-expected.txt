@@ -2910,12 +2910,6 @@ interface FileSystemHandle
     method queryPermission
     method remove
     method requestPermission
-interface FileSystemObserver
-    attribute @@toStringTag
-    method constructor
-    method disconnect
-    method observe
-    method unobserve
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
     getter mode
@@ -12615,4 +12609,3 @@ namespace console
     setter toolbar
     setter visualViewport
 TEST FINISHED
-

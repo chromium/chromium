@@ -1571,7 +1571,6 @@ test("content_browsertests") {
     "../browser/file_system_access/file_system_access_file_writer_impl_browsertest.cc",
     "../browser/file_system_access/file_system_access_handle_impl_browsertest_util.cc",
     "../browser/file_system_access/file_system_access_handle_impl_browsertest_util.h",
-    "../browser/file_system_access/file_system_access_observer_browsertest.cc",
     "../browser/file_system_access/file_system_chooser_browsertest.cc",
     "../browser/find_request_manager_browsertest.cc",
     "../browser/first_party_sets/first_party_sets_handler_impl_browsertest.cc",
@@ -2078,8 +2077,10 @@ test("content_browsertests") {
     "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
   ]
 
-  # Add Material Design components for accessibility tests on desktop platforms
   if (!is_ios && !is_android) {
+    sources += [ "../browser/file_system_access/file_system_access_observer_browsertest.cc" ]
+
+    # Add Material Design components for accessibility tests on desktop platforms
     data += [ "//third_party/material_web_components/" ]
   }
 

@@ -2472,8 +2472,8 @@
       name: "FileSystemObserver",
       depends_on: ["FileSystemAccess"],
       status: {
-        "Android": "experimental",
-        "iOS": "experimental",
+        "Android": "",
+        "iOS": "",
         "default": "stable",
       },
     },
