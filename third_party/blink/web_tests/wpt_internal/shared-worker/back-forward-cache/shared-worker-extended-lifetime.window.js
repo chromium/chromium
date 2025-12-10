@@ -14,24 +14,29 @@ promise_test(async t => {
 
   const rc1 = await rcHelper.addWindow(
       /*config=*/ {}, /*options=*/ {features: 'noopener'});
+  const bc = new BroadcastChannel('shared-worker-bfcache-test');
 
-  await rc1.executeScript((workerUrl, dbName, storeName) => {
+  await rc1.executeScript((workerUrl) => {
     window.worker = new SharedWorker(workerUrl, {extendedLifetime: true});
-    window.addEventListener('pagehide', () => {
-      // Send a message to the worker to write to the DB.
-      window.worker.port.postMessage(
-          {command: 'try_to_write', dbName: dbName, storeName: storeName});
-    });
-  }, [workerUrl, DB_NAME, STORE_NAME]);
+  }, [workerUrl]);
 
   // Navigate away to a different page to fire the pagehide event.
   await prepareForBFCache(rc1);
   const rc1Away = await rc1.navigateToNew();
   await assertSimplestScriptRuns(rc1Away);
 
-  // Wait and get the value written to the DB.
-  async function checkValueInDB() {
-    const result = await new Promise((resolve, reject) => {
+  // Try to write to the DB from the worker.
+  bc.postMessage(
+      {command: 'try_to_write', dbName: DB_NAME, storeName: STORE_NAME});
+  await new Promise((resolve) => {
+    bc.onmessage = e => {
+      if (e.data === 'wrote_to_db')
+        resolve();
+    };
+  });
+
+  // Get the value written to the DB.
+  const result = await new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, 1);
       request.onsuccess = e => {
         const db = e.target.result;
@@ -41,13 +46,7 @@ promise_test(async t => {
       };
       request.onerror = e => reject(e.target.error);
     });
-    return result === 'value';
-  }
-  await t.step_wait(
-      checkValueInDB, 'Worker should have successfully written to DB.',
-      30000, /* timeout */
-      100    /* interval */
-  );
+  assert_equals(result, 'value');
 
   // Navigate back to restore the page with the worker from BFCache.
   await rc1Away.historyBack();
