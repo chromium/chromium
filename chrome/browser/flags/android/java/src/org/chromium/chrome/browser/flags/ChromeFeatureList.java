@@ -546,6 +546,7 @@ public abstract class ChromeFeatureList {
     // supervised_user::UseLocalSupervision() instead. Exposed only for testing.
     public static final String PROPAGATE_DEVICE_CONTENT_FILTERS_TO_SUPERVISED_USER =
             "PropagateDeviceContentFiltersToSupervisedUser";
+    public static final String PROTECT_RECENTLY_VISIBLE_TAB = "ProtectRecentlyVisibleTab";
     public static final String PUSH_MESSAGING_DISALLOW_SENDER_IDS =
             "PushMessagingDisallowSenderIDs";
     public static final String PWA_RESTORE_UI = "PwaRestoreUi";
@@ -991,6 +992,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sPowerSavingModeBroadcastReceiverInBackground =
             newCachedFlag(POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
+    public static final CachedFlag sProtectRecentlyVisibleTab =
+            newCachedFlag(PROTECT_RECENTLY_VISIBLE_TAB, false);
     public static final CachedFlag sReportNotificationContentDetectionData =
             newCachedFlag(
                     REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
@@ -1220,6 +1223,7 @@ public abstract class ChromeFeatureList {
                     sPostGetMyMemoryStateToBackground,
                     sPowerSavingModeBroadcastReceiverInBackground,
                     sPriceChangeModule,
+                    sProtectRecentlyVisibleTab,
                     sReportNotificationContentDetectionData,
                     sRightEdgeGoesForwardGestureNav,
                     sSafetyHubWeakAndReusedPasswords,

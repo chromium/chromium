@@ -982,8 +982,11 @@ public class ProcessInitializationHandler {
     }
 
     private void startBindingManagementIfNeeded() {
+        ChildProcessLauncherHelper.initialize();
         // Moderate binding doesn't apply to low end devices.
-        if (SysUtils.isLowEndDevice()) return;
+        if (SysUtils.isLowEndDevice() || ChromeFeatureList.sProtectRecentlyVisibleTab.isEnabled()) {
+            return;
+        }
         ChildProcessLauncherHelper.startBindingManagement(ContextUtils.getApplicationContext());
     }
 

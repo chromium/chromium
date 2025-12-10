@@ -480,14 +480,21 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     /**
+     * @see {@link ChildProcessLauncherHelper#initilize()}.
+     */
+    public static void initialize() {
+        assert ThreadUtils.runningOnUiThread();
+        // initialize() is safe to check feature flags because it is executed after C++
+        // native context is initialized.
+        boolean activated = ScopedServiceBindingBatch.tryActivate(LauncherThread.getHandler());
+        Log.i(TAG, "ScopedServiceBindingBatch.tryActivate: %b", activated);
+    }
+
+    /**
      * @see {@link ChildProcessLauncherHelper#startBindingManagement(Context)}.
      */
     public static void startBindingManagement(final Context context) {
         assert ThreadUtils.runningOnUiThread();
-        // startBindingManagement() is safe to check feature flags because it is executed after C++
-        // native context is initialized.
-        boolean activated = ScopedServiceBindingBatch.tryActivate(LauncherThread.getHandler());
-        Log.i(TAG, "ScopedServiceBindingBatch.tryActivate: %b", activated);
         LauncherThread.post(
                 new Runnable() {
                     @Override

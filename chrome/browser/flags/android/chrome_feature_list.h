@@ -212,6 +212,7 @@ BASE_DECLARE_FEATURE(kPowerSavingModeBroadcastReceiverInBackground);
 BASE_DECLARE_FEATURE(kPreconnectOnTabCreation);
 BASE_DECLARE_FEATURE(kPriceChangeModule);
 BASE_DECLARE_FEATURE(kProcessRankPolicyAndroid);
+BASE_DECLARE_FEATURE(kProtectRecentlyVisibleTab);
 BASE_DECLARE_FEATURE(kProtectedTabsAndroid);
 BASE_DECLARE_FEATURE(kPwaRestoreUi);
 BASE_DECLARE_FEATURE(kPwaRestoreUiAtStartup);
@@ -332,6 +333,11 @@ inline constexpr base::FeatureParam<bool> kFallbackToModerateParam(
     &kProtectedTabsAndroid,
     "fallback_to_moderate",
     /*default_value=*/false);
+
+inline constexpr base::FeatureParam<int> kProtectRecentlyVisibleTabDuration(
+    &kProtectRecentlyVisibleTab,
+    "duration_in_seconds",
+    /*default_value=*/base::Minutes(10).InSeconds());
 
 inline constexpr base::FeatureParam<int>
     kReadAloudAudioOverviewsSpeedAdditionPercentage(

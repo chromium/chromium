@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PROCESS_RANK_POLICY_ANDROID_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PROCESS_RANK_POLICY_ANDROID_H_
 
+#include <map>
+#include <memory>
+
+#include "base/timer/timer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -95,7 +99,14 @@ class ProcessRankPolicyAndroid : public GraphOwned,
  private:
   const bool is_perceptible_importance_supported_;
   void UpdateProcessRank(const PageNode* page_node);
+  void UpdateProcessRankAndClearTimer(const PageNode* page_node);
   content::ChildProcessImportance CalculateRank(const PageNode* page_node);
+
+  // A map from a page node to a timer that will fire to update the process
+  // rank after it has been invisible for a certain amount of time. This is to
+  // downgrade protected pages as CannotDiscardReason::kRecentlyVisible.
+  std::map<const PageNode*, std::unique_ptr<base::OneShotTimer>>
+      visibility_timers_;
 };
 
 }  // namespace performance_manager::policies
