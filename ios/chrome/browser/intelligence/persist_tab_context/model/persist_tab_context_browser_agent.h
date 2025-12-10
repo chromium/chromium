@@ -18,6 +18,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
+class PageContentCacheBridgeService;
 @class PersistTabContextStateObserver;
 
 // PersistTabContextBrowserAgent allows saving and retrieving saved page
@@ -72,11 +73,36 @@ class PersistTabContextBrowserAgent
 
   // WebStateObserver:
   void WasHidden(web::WebState* web_state) override;
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
 
  private:
   friend class BrowserUserData<PersistTabContextBrowserAgent>;
 
   explicit PersistTabContextBrowserAgent(Browser* browser);
+
+  // Type alias for the intermediate result used in the barrier callback. Holds
+  // a Tab ID and it's associated page context.
+  using ContextPair = std::pair<
+      std::string,
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>;
+
+  // Aggregates results from the barrier callback and runs the final callback.
+  void OnAllContextsRetrieved(
+      base::OnceCallback<void(PageContextMap)> final_callback,
+      std::vector<ContextPair> results);
+
+  // Adapts the result of a single fetch to include its ID, then triggers the
+  // barrier callback.
+  void OnSingleContextRetrieved(
+      std::string web_state_id,
+      base::RepeatingCallback<void(ContextPair)> barrier_callback,
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>
+          result);
+
+  // Extracts and stores the page context.
+  void ExtractAndStoreContext(web::WebState* web_state);
 
   // Called whenever scene activation level changed. This is explicitly used to
   // capture the event where a tab is hidden due to the app being backgrounded,
@@ -84,8 +110,23 @@ class PersistTabContextBrowserAgent
   void OnSceneActivationLevelChanged(SceneActivationLevel level);
 
   // Private callback for PageContextWrapper.
-  void OnPageContextExtracted(const std::string& webstate_unique_id,
+  void OnPageContextExtracted(base::WeakPtr<web::WebState>,
                               PageContextWrapperCallbackResponse response);
+
+  // Writes the page context to the PageContentCache.
+  void WriteContextToContentCache(
+      web::WebState* web_state,
+      const PageContextWrapperCallbackResponse& response);
+
+  // Deletes a page context from the PageContentCache.
+  void DeleteContextFromContentCache(int64_t tab_id);
+
+  // Reads and parses a page context from the PageContentCache.
+  void ReadAndParseContextFromContentCache(
+      const std::string& webstate_unique_id,
+      base::OnceCallback<void(std::optional<std::unique_ptr<
+                                  optimization_guide::proto::PageContext>>)>
+          callback);
 
   // The service's PageContext wrapper.
   __strong PageContextWrapper* page_context_wrapper_;
@@ -109,6 +150,18 @@ class PersistTabContextBrowserAgent
   // MayBlock, BEST_EFFORT task priority and SKIP_ON_SHUTDOWN task shutdown
   // behaviour.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // The keyed service used to access the PageContentCache in.
+  raw_ptr<PageContentCacheBridgeService> page_content_cache_service_ = nullptr;
+
+  // Use PageContentCache for storage as opposed to the direct filesystem.
+  const bool use_page_content_cache_;
+
+  // Extract page context on page load (in addition to on page hidden).
+  const bool extract_context_on_page_load_;
+
+  // Store page innerText only; don't store APC.
+  const bool store_inner_text_only_;
 
   base::WeakPtrFactory<PersistTabContextBrowserAgent> weak_factory_{this};
 };
