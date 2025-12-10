@@ -3159,10 +3159,10 @@ TEST_F(LayerContextImplUpdateDisplayTreeNinePatchThumbScrollbarLayerTest,
   ASSERT_NE(nullptr, layer_impl);
   EXPECT_EQ(layer_impl->thumb_thickness(),
             kDefaultNinePatchThumbScrollbarThumbThickness);
-  EXPECT_EQ(layer_impl->thumb_length(),
+  EXPECT_EQ(layer_impl->minimum_thumb_length(),
             kDefaultNinePatchThumbScrollbarThumbLength);
 
-  // Second update: Update thumb_thickness and thumb_length.
+  // Second update: Update thumb_thickness and minimum_thumb_length.
   auto update2 = CreateDefaultUpdate();
   auto layer_props2 = CreateManualLayer(
       kScrollbarLayerId, cc::mojom::LayerType::kNinePatchThumbScrollbar,
@@ -3170,13 +3170,13 @@ TEST_F(LayerContextImplUpdateDisplayTreeNinePatchThumbScrollbarLayerTest,
   auto& scrollbar_extra2 =
       layer_props2->layer_extra->get_nine_patch_thumb_scrollbar_layer_extra();
   scrollbar_extra2->thumb_thickness = 5;
-  scrollbar_extra2->thumb_length = 20;
+  scrollbar_extra2->minimum_thumb_length = 20;
   update2->layers.push_back(std::move(layer_props2));
 
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(layer_impl->thumb_thickness(), 5);
-  EXPECT_EQ(layer_impl->thumb_length(), 20);
+  EXPECT_EQ(layer_impl->minimum_thumb_length(), 20);
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeNinePatchThumbScrollbarLayerTest,
@@ -3361,7 +3361,8 @@ TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
   ASSERT_NE(nullptr, layer_impl);
   EXPECT_EQ(layer_impl->thumb_thickness(),
             kDefaultPaintedScrollbarThumbThickness);
-  EXPECT_EQ(layer_impl->thumb_length(), kDefaultPaintedScrollbarThumbLength);
+  EXPECT_EQ(layer_impl->minimum_thumb_length(),
+            kDefaultPaintedScrollbarThumbLength);
 
   // Second update.
   auto update2 = CreateDefaultUpdate();
@@ -3371,13 +3372,13 @@ TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,
   auto& scrollbar_extra2 =
       layer_props2->layer_extra->get_painted_scrollbar_layer_extra();
   scrollbar_extra2->thumb_thickness = kUpdatedThumbThickness;
-  scrollbar_extra2->thumb_length = kUpdatedThumbLength;
+  scrollbar_extra2->minimum_thumb_length = kUpdatedThumbLength;
   update2->layers.push_back(std::move(layer_props2));
 
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
   EXPECT_EQ(layer_impl->thumb_thickness(), kUpdatedThumbThickness);
-  EXPECT_EQ(layer_impl->thumb_length(), kUpdatedThumbLength);
+  EXPECT_EQ(layer_impl->minimum_thumb_length(), kUpdatedThumbLength);
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreePaintedScrollbarLayerTest,

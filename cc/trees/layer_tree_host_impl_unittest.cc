@@ -265,7 +265,7 @@ class FluentOverlayScrollbarLayerTreeHostImplTest
     // Set up scrollbar layer dimensions.
     scrollbar->SetBounds(gfx::Size(15, 600));
     scrollbar->SetThumbThickness(9);
-    scrollbar->SetThumbLength(50);
+    scrollbar->SetMinimumThumbLength(50);
     scrollbar->SetTrackRect(gfx::Rect(0, 12, 15, 575));
     scrollbar->SetForwardButtonRect(gfx::Rect(0, 584, 15, 16));
     scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
@@ -13361,7 +13361,7 @@ TEST_P(LayerTreeHostImplTest, FadedOutPaintedOverlayScrollbarHitTest) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackStart(0);
   scrollbar->SetTrackLength(575);
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
@@ -13428,7 +13428,7 @@ TEST_P(LayerTreeHostImplTest, ScrollOnLargeThumb) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(575);
+  scrollbar->SetMinimumThumbLength(575);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
 
@@ -13486,7 +13486,7 @@ TEST_P(LayerTreeHostImplTest, AutoscrollOnDeletedScrollbar) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
 
@@ -13585,7 +13585,7 @@ TEST_P(LayerTreeHostImplTest, PointerMoveOutOfSequence) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
   layer_tree_impl->UpdateAllScrollbarGeometriesForTesting();
@@ -13659,7 +13659,7 @@ TEST_P(LayerTreeHostImplTest, FadedOutPaintedScrollbarHitTest) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
   scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
 
@@ -13705,7 +13705,7 @@ TEST_P(LayerTreeHostImplTest, SingleGSUForScrollbarThumbDragPerFrame) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
@@ -13915,7 +13915,7 @@ TEST_P(LayerTreeHostImplTest, AutoscrollTaskAbort) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
@@ -13986,7 +13986,7 @@ TEST_P(LayerTreeHostImplTest, JumpOnScrollbarClick) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
@@ -14000,32 +14000,40 @@ TEST_P(LayerTreeHostImplTest, JumpOnScrollbarClick) {
   TestInputHandlerClient input_handler_client;
   GetInputHandler().BindToClient(&input_handler_client);
 
+  const gfx::PointF click_pos(350, 400);
+
   // Verify all 4 combinations of JumpOnTrackClick and jump_key_modifier.
   {
     // Click on track when JumpOnTrackClick is false and jump_key_modifier is
     // false. Expected to perform a regular track scroll.
     scrollbar->SetJumpOnTrackClick(false);
-    InputHandlerPointerResult result = GetInputHandler().MouseDown(
-        gfx::PointF(350, 400), /*jump_key_modifier*/ false);
+    InputHandlerPointerResult result =
+        GetInputHandler().MouseDown(click_pos, /*jump_key_modifier*/ false);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_delta.y(),
               std::max(viewport_size.height() * kMinFractionToStepWhenPaging,
                        static_cast<float>(viewport_size.height() -
                                           kMaxOverlapBetweenPages)));
-    result = GetInputHandler().MouseUp(gfx::PointF(350, 400));
+    result = GetInputHandler().MouseUp(click_pos);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_delta.y(), 0);
   }
+
+  const int thumb_length = scrollbar->ThumbLength();
+  const float expected_jump_delta =
+      round(click_pos.y() - thumb_length / 2.0f - scrollbar->track_rect().y()) *
+      (scrollbar->scroll_layer_length() - scrollbar->clip_layer_length()) /
+      (scrollbar->track_rect().height() - thumb_length);
 
   {
     // Click on track when JumpOnTrackClick is false and jump_key_modifier is
     // true. Expected to perform scroller jump to the clicked location.
     scrollbar->SetJumpOnTrackClick(false);
-    InputHandlerPointerResult result = GetInputHandler().MouseDown(
-        gfx::PointF(350, 400), /*jump_key_modifier*/ true);
+    InputHandlerPointerResult result =
+        GetInputHandler().MouseDown(click_pos, /*jump_key_modifier*/ true);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
-    EXPECT_FLOAT_EQ(result.scroll_delta.y(), 2194.2856f);
-    result = GetInputHandler().MouseUp(gfx::PointF(350, 400));
+    EXPECT_FLOAT_EQ(result.scroll_delta.y(), expected_jump_delta);
+    result = GetInputHandler().MouseUp(click_pos);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_delta.y(), 0);
   }
@@ -14034,11 +14042,11 @@ TEST_P(LayerTreeHostImplTest, JumpOnScrollbarClick) {
     // Click on track when JumpOnTrackClick is true and jump_key_modifier is
     // false. Expected to perform scroller jump to the clicked location.
     scrollbar->SetJumpOnTrackClick(true);
-    InputHandlerPointerResult result = GetInputHandler().MouseDown(
-        gfx::PointF(350, 400), /*jump_key_modifier*/ false);
+    InputHandlerPointerResult result =
+        GetInputHandler().MouseDown(click_pos, /*jump_key_modifier*/ false);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
-    EXPECT_FLOAT_EQ(result.scroll_delta.y(), 2194.2856f);
-    result = GetInputHandler().MouseUp(gfx::PointF(350, 400));
+    EXPECT_FLOAT_EQ(result.scroll_delta.y(), expected_jump_delta);
+    result = GetInputHandler().MouseUp(click_pos);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_delta.y(), 0);
   }
@@ -14047,14 +14055,14 @@ TEST_P(LayerTreeHostImplTest, JumpOnScrollbarClick) {
     // Click on track when JumpOnTrackClick is true and jump_key_modifier is
     // true. Expected to perform a regular track scroll.
     scrollbar->SetJumpOnTrackClick(true);
-    InputHandlerPointerResult result = GetInputHandler().MouseDown(
-        gfx::PointF(350, 400), /*jump_key_modifier*/ true);
+    InputHandlerPointerResult result =
+        GetInputHandler().MouseDown(click_pos, /*jump_key_modifier*/ true);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_delta.y(),
               std::max(viewport_size.height() * kMinFractionToStepWhenPaging,
                        static_cast<float>(viewport_size.height() -
                                           kMaxOverlapBetweenPages)));
-    result = GetInputHandler().MouseUp(gfx::PointF(350, 400));
+    result = GetInputHandler().MouseUp(click_pos);
     EXPECT_EQ(result.type, PointerResultType::kScrollbarScroll);
     EXPECT_EQ(result.scroll_delta.y(), 0);
   }
@@ -14090,10 +14098,9 @@ TEST_P(LayerTreeHostImplTest, ThumbDragAfterJumpClickOrThumbClick) {
   scrollbar->SetBounds(scrollbar_size);
   host_impl_->set_force_smooth_wheel_scrolling_for_testing(true);
 
-  const int thumb_len = 50;
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(thumb_len);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
@@ -14120,9 +14127,15 @@ TEST_P(LayerTreeHostImplTest, ThumbDragAfterJumpClickOrThumbClick) {
         GetInputHandler().scrollbar_controller_for_testing()->HandlePointerDown(
             gfx::PointF(350, 560), /*jump_key_modifier*/ true);
 
+    const int thumb_length = scrollbar->ThumbLength();
+    const float expected_jump_delta =
+        round(560 - thumb_length / 2.0f - scrollbar->track_rect().y()) *
+        (scrollbar->scroll_layer_length() - scrollbar->clip_layer_length()) /
+        (scrollbar->track_rect().height() - thumb_length);
+
     // This verifies that the jump click took place as expected.
     EXPECT_EQ(0, result.scroll_delta.x());
-    EXPECT_FLOAT_EQ(result.scroll_delta.y(), 3169.5239f);
+    EXPECT_FLOAT_EQ(result.scroll_delta.y(), expected_jump_delta);
 
     // This verifies that the drag_state_ was initialized when a jump click
     // occurred.
@@ -14141,7 +14154,7 @@ TEST_P(LayerTreeHostImplTest, ThumbDragAfterJumpClickOrThumbClick) {
     EXPECT_FLOAT_EQ(GetInputHandler()
                         .scrollbar_controller_for_testing()
                         ->drag_state_->drag_origin.y(),
-                    15.0f + thumb_len / 2.0f);
+                    15.0f + thumb_length / 2.0f);
     GetInputHandler().scrollbar_controller_for_testing()->HandlePointerUp(
         gfx::PointF(350, 560));
   }
@@ -14247,7 +14260,7 @@ TEST_P(LayerTreeHostImplTest, AbortAnimatedScrollBeforeStartingAutoscroll) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
@@ -14335,7 +14348,7 @@ TEST_P(LayerTreeHostImplTest, AnimatedScrollYielding) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
@@ -14438,7 +14451,7 @@ TEST_P(LayerTreeHostImplTest, ThumbDragScrollerLengthIncrease) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.
@@ -14471,7 +14484,10 @@ TEST_P(LayerTreeHostImplTest, ThumbDragScrollerLengthIncrease) {
   host_impl_->WillBeginImplFrame(begin_frame_args);
 
   result = GetInputHandler().MouseMoveAt(gfx::Point(350, 20));
-  EXPECT_FLOAT_EQ(result.scroll_delta.y(), 12.190476f);
+  EXPECT_FLOAT_EQ(
+      result.scroll_delta.y(),
+      2 * (scrollbar->scroll_layer_length() - scrollbar->clip_layer_length()) /
+          (scrollbar->track_rect().height() - scrollbar->ThumbLength()));
 
   // This is intentional. The thumb drags that follow will test the behavior
   // *after* the scroller length expansion.
@@ -14531,7 +14547,7 @@ TEST_P(LayerTreeHostImplTest, MainThreadFallback) {
 
   // Set up the thumb dimensions.
   scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
+  scrollbar->SetMinimumThumbLength(50);
   scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
 
   // Set up scrollbar arrows.

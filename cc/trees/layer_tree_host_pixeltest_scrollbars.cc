@@ -203,6 +203,7 @@ class NinePatchThumbScrollbar : public FakeScrollbar {
     set_orientation(ScrollbarOrientation::kVertical);
     set_is_overlay(true);
     set_thumb_size(gfx::Size(15, 50));
+    set_minimum_thumb_length(50);
     set_track_rect(gfx::Rect(0, 0, 15, 400));
   }
 

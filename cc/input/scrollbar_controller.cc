@@ -167,8 +167,8 @@ gfx::PointF ScrollbarController::DragOriginForJumpClick(
   // as well as for snapping back to origin if the user moves their mouse away.
   gfx::Rect thumb = scrollbar->ComputeThumbQuadRect();
   return scrollbar->orientation() == ScrollbarOrientation::kHorizontal
-             ? gfx::PointF(thumb.x() + thumb.width() / 2, 0)
-             : gfx::PointF(0, thumb.y() + thumb.height() / 2);
+             ? gfx::PointF(thumb.x() + thumb.width() / 2.0f, 0)
+             : gfx::PointF(0, thumb.y() + thumb.height() / 2.0f);
 }
 
 bool ScrollbarController::SnapToDragOrigin(

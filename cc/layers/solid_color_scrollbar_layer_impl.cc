@@ -71,10 +71,8 @@ int SolidColorScrollbarLayerImpl::ThumbThickness() const {
   }
 }
 
-int SolidColorScrollbarLayerImpl::ThumbLength() const {
-  return ScrollUtils::CalculateScrollbarThumbLength(
-      scroll_layer_length(), clip_layer_length(), TrackLength(),
-      ThumbThickness());
+int SolidColorScrollbarLayerImpl::MinimumThumbLength() const {
+  return ThumbThickness();
 }
 
 float SolidColorScrollbarLayerImpl::TrackLength() const {

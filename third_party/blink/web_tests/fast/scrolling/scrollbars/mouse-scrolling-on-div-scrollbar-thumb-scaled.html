@@ -115,14 +115,9 @@ window.onload = () => {
     await mouseMoveTo(x, y + FIRST_DELTA, Buttons.LEFT);
     await mouseUpAt(x, y + FIRST_DELTA);
 
-    var EXPECTED_FIRST_VIEWPORT_DELTA = {linux: 200, win: 200, mac: 192}[platform];
-    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
-      EXPECTED_FIRST_VIEWPORT_DELTA = {linux: 199.5, win: 199.5, mac: 192}[platform];
-    }
-
     assert_equals(document.scrollingElement.scrollTop, 0,
         "Vertical thumb drag downwards on root scrollbars should not scroll layout viewport");
-    assert_approx_equals(visualViewport.pageTop, EXPECTED_FIRST_VIEWPORT_DELTA, 1,
+    assert_approx_equals(visualViewport.pageTop, thumbDragScrollAmount(0, FIRST_DELTA).dy + VISUAL_VIEWPORT_Y_OFFSET, 1,
       "Vertical thumb drag downwards on root scroller did not scroll visual viewport as expected");
 
     await mouseMoveTo(x, y + FIRST_DELTA);

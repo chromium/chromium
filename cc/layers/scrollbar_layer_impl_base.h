@@ -73,7 +73,8 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   virtual LayerTreeSettings::ScrollbarAnimator GetScrollbarAnimator() const;
 
   virtual float TrackLength() const = 0;
-  virtual int ThumbLength() const = 0;
+  int ThumbLength() const;
+  virtual int MinimumThumbLength() const = 0;
   virtual gfx::Rect BackButtonRect() const;
   virtual gfx::Rect ForwardButtonRect() const;
   virtual gfx::Rect BackTrackRect() const;

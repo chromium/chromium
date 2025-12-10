@@ -80,13 +80,8 @@ void PaintedScrollbarLayer::PushDirtyPropertiesTo(
     scrollbar_layer->SetBackButtonRect(back_button_rect_.Read(*this));
     scrollbar_layer->SetForwardButtonRect(forward_button_rect_.Read(*this));
     scrollbar_layer->SetTrackRect(track_rect_.Read(*this));
-    if (orientation() == ScrollbarOrientation::kHorizontal) {
-      scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).height());
-      scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).width());
-    } else {
-      scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).width());
-      scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).height());
-    }
+    scrollbar_layer->SetMinimumThumbLength(minimum_thumb_length_.Read(*this));
+    scrollbar_layer->SetThumbThickness(thumb_thickness_.Read(*this));
 
     if (track_and_buttons_resource_.Read(*this)) {
       scrollbar_layer->set_track_and_buttons_ui_resource_id(
@@ -174,9 +169,18 @@ bool PaintedScrollbarLayer::UpdateGeometry() {
     }
     // Ignore ThumbRect's location because the PaintedScrollbarLayerImpl will
     // compute it from scroll offset.
-    updated |= UpdateProperty(thumb_rect.size(), &thumb_size_.Write(*this));
+    if (orientation() == ScrollbarOrientation::kHorizontal) {
+      updated |= UpdateProperty(thumb_rect.size().height(),
+                                &thumb_thickness_.Write(*this));
+    } else {
+      updated |= UpdateProperty(thumb_rect.size().width(),
+                                &thumb_thickness_.Write(*this));
+    }
+    updated |= UpdateProperty(scrollbar->MinimumThumbLength(),
+                              &minimum_thumb_length_.Write(*this));
   } else {
-    updated |= UpdateProperty(gfx::Size(), &thumb_size_.Write(*this));
+    updated |= UpdateProperty(0, &thumb_thickness_.Write(*this));
+    updated |= UpdateProperty(0, &minimum_thumb_length_.Write(*this));
   }
   return updated;
 }
@@ -294,7 +298,7 @@ bool PaintedScrollbarLayer::UpdateThumbIfNeeded() {
     return updated;
   }
 
-  gfx::Size thumb_size = thumb_size_.Read(*this);
+  gfx::Size thumb_size = scrollbar_.Read(*this)->ThumbRect().size();
   gfx::Size scaled_thumb_size = LayerSizeToContentSize(thumb_size);
   if (has_thumb_.Read(*this) && !scaled_thumb_size.IsEmpty()) {
     if (!thumb_resource_.Read(*this) ||

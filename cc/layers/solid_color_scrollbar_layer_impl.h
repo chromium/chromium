@@ -50,7 +50,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
                                bool is_left_side_vertical_scrollbar);
 
   // ScrollbarLayerImplBase implementation.
-  int ThumbLength() const override;
+  int MinimumThumbLength() const override;
   float TrackLength() const override;
   int TrackStart() const override;
   bool IsThumbResizable() const override;

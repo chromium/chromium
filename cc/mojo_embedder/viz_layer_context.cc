@@ -755,7 +755,7 @@ void SerializeNinePatchThumbScrollbarLayerExtra(
                                    extra->scrollbar_base_extra);
 
   extra->thumb_thickness = layer.thumb_thickness();
-  extra->thumb_length = layer.thumb_length();
+  extra->minimum_thumb_length = layer.minimum_thumb_length();
   extra->track_start = layer.track_start();
   extra->track_length = layer.track_length();
   extra->image_bounds = layer.image_bounds();
@@ -775,7 +775,7 @@ void SerializePaintedScrollbarLayerExtra(
   extra->jump_on_track_click = layer.jump_on_track_click();
   extra->supports_drag_snap_back = layer.supports_drag_snap_back();
   extra->thumb_thickness = layer.thumb_thickness();
-  extra->thumb_length = layer.thumb_length();
+  extra->minimum_thumb_length = layer.minimum_thumb_length();
   extra->back_button_rect = layer.back_button_rect();
   extra->forward_button_rect = layer.forward_button_rect();
   extra->track_rect = layer.track_rect();

@@ -564,6 +564,7 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest,
   // The track_rect should be relative to the scrollbar's origin.
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(10, 10, 50, 10));
   scrollbar_layer->fake_scrollbar()->set_thumb_size(gfx::Size(4, 10));
+  scrollbar_layer->fake_scrollbar()->set_minimum_thumb_length(4);
 
   LayerImpl* root_layer_impl = nullptr;
   PaintedScrollbarLayerImpl* scrollbar_layer_impl = nullptr;
@@ -603,7 +604,7 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, NinePatchThumbRect) {
 
   // The track_rect should be relative to the scrollbar's origin.
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(10, 10, 50, 10));
-  scrollbar_layer->fake_scrollbar()->set_thumb_size(gfx::Size(4, 10));
+  scrollbar_layer->fake_scrollbar()->set_thumb_size(gfx::Size(10, 10));
 
   layer_tree_host_->UpdateLayers();
   LayerImpl* root_layer_impl = nullptr;
@@ -613,14 +614,14 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, NinePatchThumbRect) {
   // the start of the track within the scrollbar layer's
   // position).
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(10, 0, 4, 10).ToString(),
+  EXPECT_EQ(gfx::Rect(10, 0, 10, 10).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Under-scroll (thumb position should clamp and be unchanged).
   scroll_layer->SetScrollOffset(gfx::PointF(-5, 0));
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(10, 0, 4, 10).ToString(),
+  EXPECT_EQ(gfx::Rect(10, 0, 10, 10).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Over-scroll (thumb position should clamp on the far side).
@@ -628,14 +629,14 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, NinePatchThumbRect) {
   layer_tree_host_->UpdateLayers();
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(56, 0, 4, 10).ToString(),
+  EXPECT_EQ(gfx::Rect(50, 0, 10, 10).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
-  // Change thumb thickness and length.
-  scrollbar_layer->fake_scrollbar()->set_thumb_size(gfx::Size(6, 4));
+  // Change thumb thickness.
+  scrollbar_layer->fake_scrollbar()->set_thumb_size(gfx::Size(10, 4));
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(54, 0, 6, 4).ToString(),
+  EXPECT_EQ(gfx::Rect(50, 0, 10, 4).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Shrink the scrollbar layer to cover only the track.
@@ -643,7 +644,7 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, NinePatchThumbRect) {
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 10, 50, 10));
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(44, 0, 6, 4).ToString(),
+  EXPECT_EQ(gfx::Rect(40, 0, 10, 4).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Shrink the track in the non-scrolling dimension so that it only covers the
@@ -652,7 +653,7 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, NinePatchThumbRect) {
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 12, 50, 6));
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(44, 0, 6, 4).ToString(),
+  EXPECT_EQ(gfx::Rect(40, 0, 10, 4).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 }
 
@@ -689,14 +690,14 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, PaintedThumbRect) {
   // the start of the track within the scrollbar layer's
   // position).
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(10, 0, 4, 10).ToString(),
+  EXPECT_EQ(gfx::Rect(10, 0, 10, 10).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Under-scroll (thumb position should clamp and be unchanged).
   scroll_layer->SetScrollOffset(gfx::PointF(-5, 0));
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(10, 0, 4, 10).ToString(),
+  EXPECT_EQ(gfx::Rect(10, 0, 10, 10).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Over-scroll (thumb position should clamp on the far side).
@@ -704,14 +705,14 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, PaintedThumbRect) {
   layer_tree_host_->UpdateLayers();
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(56, 0, 4, 10).ToString(),
+  EXPECT_EQ(gfx::Rect(50, 0, 10, 10).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Change thumb thickness and length.
   scrollbar_layer->fake_scrollbar()->set_thumb_size(gfx::Size(6, 4));
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(54, 3, 6, 4).ToString(),
+  EXPECT_EQ(gfx::Rect(50, 3, 10, 4).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Shrink the scrollbar layer to cover only the track.
@@ -719,7 +720,7 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, PaintedThumbRect) {
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 10, 50, 10));
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(44, 3, 6, 4).ToString(),
+  EXPECT_EQ(gfx::Rect(40, 3, 10, 4).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 
   // Shrink the track in the non-scrolling dimension so that it only covers the
@@ -728,7 +729,7 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest, PaintedThumbRect) {
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 12, 50, 6));
 
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
-  EXPECT_EQ(gfx::Rect(44, 1, 6, 4).ToString(),
+  EXPECT_EQ(gfx::Rect(40, 1, 10, 4).ToString(),
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 }
 
@@ -754,6 +755,7 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest,
   scrollbar_layer->SetBounds(gfx::Size(10, 20));
   scrollbar_layer->fake_scrollbar()->set_track_rect(gfx::Rect(0, 0, 10, 20));
   scrollbar_layer->fake_scrollbar()->set_thumb_size(gfx::Size(10, 4));
+  scrollbar_layer->fake_scrollbar()->set_minimum_thumb_length(4);
   layer_tree_host_->UpdateLayers();
   LayerImpl* root_layer_impl = nullptr;
   NinePatchThumbScrollbarLayerImpl* scrollbar_layer_impl = nullptr;
@@ -775,6 +777,7 @@ TEST_F(CommitToActiveTreeScrollbarLayerTest,
 
   // Change thumb thickness and length.
   scrollbar_layer->fake_scrollbar()->set_thumb_size(gfx::Size(4, 6));
+  scrollbar_layer->fake_scrollbar()->set_minimum_thumb_length(6);
   UPDATE_AND_EXTRACT_LAYER_POINTERS();
   // For left side vertical scrollbars thumb_rect.x = bounds.width() -
   // thumb_thickness.

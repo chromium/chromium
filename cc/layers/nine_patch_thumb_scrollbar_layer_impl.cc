@@ -53,7 +53,7 @@ void NinePatchThumbScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
       static_cast<NinePatchThumbScrollbarLayerImpl*>(layer);
 
   scrollbar_layer->SetThumbThickness(thumb_thickness_);
-  scrollbar_layer->SetThumbLength(thumb_length_);
+  scrollbar_layer->SetMinimumThumbLength(minimum_thumb_length_);
   scrollbar_layer->SetTrackStart(track_start_);
   scrollbar_layer->SetTrackLength(track_length_);
 
@@ -175,15 +175,17 @@ int NinePatchThumbScrollbarLayerImpl::ThumbThickness() const {
   return thumb_thickness_;
 }
 
-void NinePatchThumbScrollbarLayerImpl::SetThumbLength(int thumb_length) {
-  if (thumb_length_ == thumb_length)
+void NinePatchThumbScrollbarLayerImpl::SetMinimumThumbLength(
+    int minimum_thumb_length) {
+  if (minimum_thumb_length_ == minimum_thumb_length) {
     return;
-  thumb_length_ = thumb_length;
+  }
+  minimum_thumb_length_ = minimum_thumb_length;
   NoteLayerPropertyChanged();
 }
 
-int NinePatchThumbScrollbarLayerImpl::ThumbLength() const {
-  return thumb_length_;
+int NinePatchThumbScrollbarLayerImpl::MinimumThumbLength() const {
+  return minimum_thumb_length_;
 }
 
 void NinePatchThumbScrollbarLayerImpl::SetTrackStart(int track_start) {

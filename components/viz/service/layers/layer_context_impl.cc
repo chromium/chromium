@@ -685,7 +685,7 @@ void UpdateNinePatchThumbScrollbarLayerExtra(
       static_cast<cc::ScrollbarLayerImplBase&>(layer));
 
   layer.SetThumbThickness(extra->thumb_thickness);
-  layer.SetThumbLength(extra->thumb_length);
+  layer.SetMinimumThumbLength(extra->minimum_thumb_length);
   layer.SetTrackStart(extra->track_start);
   layer.SetTrackLength(extra->track_length);
   layer.SetImageBounds(extra->image_bounds);
@@ -708,7 +708,7 @@ void UpdatePaintedScrollbarLayerExtra(
   layer.SetJumpOnTrackClick(extra->jump_on_track_click);
   layer.SetSupportsDragSnapBack(extra->supports_drag_snap_back);
   layer.SetThumbThickness(extra->thumb_thickness);
-  layer.SetThumbLength(extra->thumb_length);
+  layer.SetMinimumThumbLength(extra->minimum_thumb_length);
   layer.SetBackButtonRect(extra->back_button_rect);
   layer.SetForwardButtonRect(extra->forward_button_rect);
   layer.SetTrackRect(extra->track_rect);

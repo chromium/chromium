@@ -323,7 +323,7 @@ mojom::LayerExtraPtr LayerContextImplTest::CreateDefaultLayerExtra(
       auto extra = mojom::NinePatchThumbScrollbarLayerExtra::New();
       extra->scrollbar_base_extra = CreateDefaultScrollbarBaseExtra();
       extra->thumb_thickness = kDefaultNinePatchThumbScrollbarThumbThickness;
-      extra->thumb_length = kDefaultNinePatchThumbScrollbarThumbLength;
+      extra->minimum_thumb_length = kDefaultNinePatchThumbScrollbarThumbLength;
       extra->track_start = kDefaultNinePatchThumbScrollbarTrackStart;
       extra->track_length = kDefaultNinePatchThumbScrollbarTrackLength;
       extra->image_bounds = kDefaultNinePatchThumbScrollbarImageBounds;
@@ -363,7 +363,7 @@ mojom::LayerExtraPtr LayerContextImplTest::CreateDefaultLayerExtra(
       extra->supports_drag_snap_back =
           kDefaultPaintedScrollbarSupportsDragSnapBack;
       extra->thumb_thickness = kDefaultPaintedScrollbarThumbThickness;
-      extra->thumb_length = kDefaultPaintedScrollbarThumbLength;
+      extra->minimum_thumb_length = kDefaultPaintedScrollbarThumbLength;
       extra->track_and_buttons_ui_resource_id =
           kDefaultPaintedScrollbarTrackAndButtonsUIResourceId;
       extra->thumb_ui_resource_id = kDefaultPaintedScrollbarThumbUIResourceId;

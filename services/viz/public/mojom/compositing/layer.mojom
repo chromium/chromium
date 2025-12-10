@@ -155,7 +155,7 @@ struct NinePatchThumbScrollbarLayerExtra {
   ScrollbarLayerBaseExtra scrollbar_base_extra;
 
   int32 thumb_thickness;
-  int32 thumb_length;
+  int32 minimum_thumb_length;
   int32 track_start;
   int32 track_length;
   gfx.mojom.Size image_bounds;
@@ -174,7 +174,7 @@ struct PaintedScrollbarLayerExtra {
   bool jump_on_track_click;
   bool supports_drag_snap_back;
   int32 thumb_thickness;
-  int32 thumb_length;
+  int32 minimum_thumb_length;
   gfx.mojom.Rect back_button_rect;
   gfx.mojom.Rect forward_button_rect;
   gfx.mojom.Rect track_rect;

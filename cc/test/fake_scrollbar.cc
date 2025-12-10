@@ -168,4 +168,8 @@ bool FakeScrollbar::IsOpaque() const {
   return !is_overlay_ && is_opaque_;
 }
 
+int FakeScrollbar::MinimumThumbLength() const {
+  return minimum_thumb_length_;
+}
+
 }  // namespace cc

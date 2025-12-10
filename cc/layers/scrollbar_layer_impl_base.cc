@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "cc/base/math_util.h"
+#include "cc/input/scroll_utils.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
@@ -336,6 +337,12 @@ bool ScrollbarLayerImplBase::IsFluentScrollbarEnabled() const {
 
 bool ScrollbarLayerImplBase::IsFluentOverlayScrollbarEnabled() const {
   return layer_tree_impl()->settings().enable_fluent_overlay_scrollbar;
+}
+
+int ScrollbarLayerImplBase::ThumbLength() const {
+  return ScrollUtils::CalculateScrollbarThumbLength(
+      scroll_layer_length(), clip_layer_length(), TrackLength(),
+      MinimumThumbLength());
 }
 
 gfx::Rect ScrollbarLayerImplBase::BackButtonRect() const {

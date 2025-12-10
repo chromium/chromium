@@ -45,12 +45,12 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
                    AppendQuadsData* append_quads_data) override;
 
   void SetThumbThickness(int thumb_thickness);
-  void SetThumbLength(int thumb_length);
+  void SetMinimumThumbLength(int minimum_thumb_length);
   void SetTrackStart(int track_start);
   void SetTrackLength(int track_length);
 
   int thumb_thickness() const { return thumb_thickness_; }
-  int thumb_length() const { return thumb_length_; }
+  int minimum_thumb_length() const { return minimum_thumb_length_; }
   int track_start() const { return track_start_; }
   int track_length() const { return track_length_; }
 
@@ -82,7 +82,7 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
 
   // ScrollbarLayerImplBase implementation.
   int ThumbThickness() const override;
-  int ThumbLength() const override;
+  int MinimumThumbLength() const override;
   float TrackLength() const override;
   int TrackStart() const override;
   bool IsThumbResizable() const override;
@@ -100,7 +100,7 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
   UIResourceId track_and_buttons_ui_resource_id_ = 0;
 
   int thumb_thickness_ = 0;
-  int thumb_length_ = 0;
+  int minimum_thumb_length_ = 0;
   int track_start_ = 0;
   int track_length_ = 0;
 
