@@ -10,6 +10,21 @@ var callbackPass = chrome.test.callbackPass;
   const request_url = args.request_url;
   const use_web_socket = Boolean(args.use_web_socket);
 
+  // The filter is used to prevent flakiness which results in
+  // catching web requests that we are not interested with.
+  let filter;
+  if (use_web_socket) {
+    const urlObj = new URL(request_url);
+    filter = [
+      // Scheme wildcard (*) does not include ws(s).
+      `*://${urlObj.hostname}${urlObj.pathname}`,
+      `ws://${urlObj.hostname}${urlObj.pathname}`,
+      `wss://${urlObj.hostname}${urlObj.pathname}`
+    ];
+  } else {
+    filter = [request_url];
+  }
+
   const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
   await chrome.test.loadScript(scriptUrl);
 
@@ -24,60 +39,64 @@ var callbackPass = chrome.test.callbackPass;
     });
   }
 
-  async function makeRequest(...listeners) {
+  async function makeRequest() {
     try {
       if (use_web_socket) {
         await openWebSocket();
       } else {
-        await fetch(
-            getServerURL(opt_path = 'simple.html', opt_scheme = 'https'));
+        await fetch(request_url);
       }
     } catch (e) {
       chrome.test.fail(`Fetch failed: ${e.message}`);
     }
-    listeners.forEach(listener => {
-      chrome.webRequest.onHeadersReceived.removeListener(listener);
-    });
   }
 
   runTests([
     function testSecurityInfoFlagInsecure() {
-      var listener = callbackPass(function(details) {
+      let listener;
+      listener = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener);
+
         chrome.test.assertTrue('securityInfo' in details);
         chrome.test.assertEq('insecure', details.securityInfo.state);
         chrome.test.assertFalse('certificates' in details.securityInfo);
       });
       chrome.webRequest.onHeadersReceived.addListener(
-          listener, {urls: ['<all_urls>']}, ['securityInfo']);
+          listener, {urls: filter}, ['securityInfo']);
 
-      makeRequest(listener);
+      makeRequest();
     },
 
     function testSecurityInfoRawDerFlagInsecure() {
-      var listener = callbackPass(function(details) {
+      let listener;
+      listener = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener);
+
         chrome.test.assertTrue('securityInfo' in details);
         chrome.test.assertEq('insecure', details.securityInfo.state);
         chrome.test.assertFalse('certificates' in details.securityInfo);
       });
 
       chrome.webRequest.onHeadersReceived.addListener(
-          listener, {urls: ['<all_urls>']}, ['securityInfoRawDer']);
+          listener, {urls: filter}, ['securityInfoRawDer']);
 
-      makeRequest(listener);
+      makeRequest();
     },
 
     function testSecurityInfoBothFlagsInsecure() {
-      var listener = callbackPass(function(details) {
+      let listener;
+      listener = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener);
+
         chrome.test.assertTrue('securityInfo' in details);
         chrome.test.assertEq('insecure', details.securityInfo.state);
         chrome.test.assertFalse('certificates' in details.securityInfo);
       });
 
       chrome.webRequest.onHeadersReceived.addListener(
-          listener, {urls: ['<all_urls>']},
-          ['securityInfo', 'securityInfoRawDer']);
+          listener, {urls: filter}, ['securityInfo', 'securityInfoRawDer']);
 
-      makeRequest(listener);
+      makeRequest();
     },
   ]);
 })();

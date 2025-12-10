@@ -13,6 +13,21 @@ var callbackPass = chrome.test.callbackPass;
   const expect_state = args.expect_state;
   const use_web_socket = Boolean(args.use_web_socket);
 
+  // The filter is used to prevent flakiness which results in
+  // catching web requests that we are not interested with.
+  let filter;
+  if (use_web_socket) {
+    const urlObj = new URL(request_url);
+    filter = [
+      // Scheme wildcard (*) does not include ws(s).
+      `*://${urlObj.hostname}${urlObj.pathname}`,
+      `ws://${urlObj.hostname}${urlObj.pathname}`,
+      `wss://${urlObj.hostname}${urlObj.pathname}`
+    ];
+  } else {
+    filter = [request_url];
+  }
+
   const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
   await chrome.test.loadScript(scriptUrl);
 
@@ -27,7 +42,7 @@ var callbackPass = chrome.test.callbackPass;
     });
   }
 
-  async function makeRequest(...listeners) {
+  async function makeRequest() {
     try {
       if (use_web_socket) {
         await openWebSocket();
@@ -37,24 +52,26 @@ var callbackPass = chrome.test.callbackPass;
     } catch (e) {
       chrome.test.fail(`Fetch failed: ${e.message}`);
     }
-    listeners.forEach(listener => {
-      chrome.webRequest.onHeadersReceived.removeListener(listener);
-    });
   }
 
   runTests([
     function testSecurityInfoAbsentWithoutFlag() {
-      var listener = callbackPass(function(details) {
+      let listener;
+      listener = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener);
         chrome.test.assertFalse('securityInfo' in details);
       });
       chrome.webRequest.onHeadersReceived.addListener(
-          listener, {urls: ['<all_urls>']}, ['extraHeaders']);
+          listener, {urls: filter}, ['extraHeaders']);
 
-      makeRequest(listener);
+      makeRequest();
     },
 
     function testSecurityInfoBasic() {
-      var listener = callbackPass(function(details) {
+      let listener;
+      listener = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener);
+
         chrome.test.assertTrue('securityInfo' in details);
 
         chrome.test.assertEq(expect_state, details.securityInfo.state);
@@ -66,15 +83,18 @@ var callbackPass = chrome.test.callbackPass;
             details.securityInfo.certificates[0].fingerprint.sha256);
       });
       chrome.webRequest.onHeadersReceived.addListener(
-          listener, {urls: ['<all_urls>']}, ['securityInfo']);
+          listener, {urls: filter}, ['securityInfo']);
 
-      makeRequest(listener);
+      makeRequest();
     },
 
     // Using only securityInfoRawDer dictionary member is the same as
     // using two dictionary members: securityInfo, securityInfoRawDer.
     function testSecurityInfoRawDer() {
-      var listener = callbackPass(function(details) {
+      let listener;
+      listener = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener);
+
         chrome.test.assertTrue('securityInfo' in details);
         chrome.test.assertEq(1, details.securityInfo.certificates.length);
 
@@ -88,13 +108,16 @@ var callbackPass = chrome.test.callbackPass;
         chrome.test.assertEq(expect_state, details.securityInfo.state);
       });
       chrome.webRequest.onHeadersReceived.addListener(
-          listener, {urls: ['<all_urls>']}, ['securityInfoRawDer']);
+          listener, {urls: filter}, ['securityInfoRawDer']);
 
-      makeRequest(listener);
+      makeRequest();
     },
 
     function testSecurityInfoBothFlags() {
-      var listener = callbackPass(function(details) {
+      let listener;
+      listener = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener);
+
         chrome.test.assertTrue('securityInfo' in details);
         chrome.test.assertEq(1, details.securityInfo.certificates.length);
 
@@ -109,49 +132,58 @@ var callbackPass = chrome.test.callbackPass;
       });
 
       chrome.webRequest.onHeadersReceived.addListener(
-          listener, {urls: ['<all_urls>']},
-          ['securityInfo', 'securityInfoRawDer']);
+          listener, {urls: filter}, ['securityInfo', 'securityInfoRawDer']);
 
-      makeRequest(listener);
+      makeRequest();
     },
 
     // Test that registered listener without securityInfo dictionary member of
     // ExtraInfoSpec will not receive SecurityInfo object even when there's a
     // second listener with securityInfo.
     function testOnlyOneListenerReceivesSecurityInfo() {
-      var listener1 = callbackPass(function(details) {
+      let listener1;
+      listener1 = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener1);
         chrome.test.assertFalse('securityInfo' in details);
       });
       chrome.webRequest.onHeadersReceived.addListener(
-          listener1, {urls: ['<all_urls>']}, ['extraHeaders']);
+          listener1, {urls: filter}, ['extraHeaders']);
 
-      var listener2 = callbackPass(function(details) {
+      let listener2;
+      listener2 = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener2);
         chrome.test.assertTrue('securityInfo' in details);
       });
 
       chrome.webRequest.onHeadersReceived.addListener(
-          listener2, {urls: ['<all_urls>']}, ['securityInfo']);
+          listener2, {urls: filter}, ['securityInfo']);
 
-      makeRequest(listener1, listener2);
+      makeRequest();
     },
 
     function testOnlyOneListenerReceivesSecurityInfoRawDer() {
-      var listener1 = callbackPass(function(details) {
+      let listener1;
+      listener1 = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener1);
+
         chrome.test.assertFalse(
             'rawDER' in details.securityInfo.certificates[0]);
       });
       chrome.webRequest.onHeadersReceived.addListener(
-          listener1, {urls: ['<all_urls>']}, ['securityInfo']);
+          listener1, {urls: filter}, ['securityInfo']);
 
-      var listener2 = callbackPass(function(details) {
+      let listener2;
+      listener2 = callbackPass(function(details) {
+        chrome.webRequest.onHeadersReceived.removeListener(listener2);
+
         chrome.test.assertTrue(
             'rawDER' in details.securityInfo.certificates[0]);
       });
 
       chrome.webRequest.onHeadersReceived.addListener(
-          listener2, {urls: ['<all_urls>']}, ['securityInfoRawDer']);
+          listener2, {urls: filter}, ['securityInfoRawDer']);
 
-      makeRequest(listener1, listener2);
+      makeRequest();
     },
   ]);
 })();

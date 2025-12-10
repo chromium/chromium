@@ -1317,10 +1317,11 @@ class ControlledFrameSecurityInfoApiTest : public ControlledFrameApiTest {
             return reject('controlled frame element is not found');
           }
 
+          const requestUrl = $1;
           const useRawDer = $2;
 
           frame.request.createWebRequestInterceptor({
-            urlPatterns: ['*://*/*'],
+            urlPatterns: [requestUrl],
             securityInfo: true,
             securityInfoRawDer: useRawDer
           }).addEventListener('headersreceived', (details) => {
@@ -1351,7 +1352,7 @@ class ControlledFrameSecurityInfoApiTest : public ControlledFrameApiTest {
             resolve(true);
           });
 
-          frame.src = $1;
+          frame.src = requestUrl;
         });
       )";
 
