@@ -638,8 +638,6 @@ void RecorderAppUI::InstallSoda(const std::string& language,
 
   // Get SODA state directly from SodaInstaller in case the cached state is
   // outdated.
-  // TODO: b/375306309 - Get cached state instead when SODA states are always
-  // consistent after having `OnSodaUninstalled` event.
   auto soda_state = GetSodaState(language_code);
   if (soda_state.type == recorder_app::mojom::ModelStateType::kNotInstalled ||
       soda_state.type == recorder_app::mojom::ModelStateType::kError) {
