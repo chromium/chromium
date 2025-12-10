@@ -390,7 +390,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE,
                 PASSWORDS_SYNC_ERROR_MESSAGE_VERSION_PARAM_NAME,
-                /* defaultValue= */ 0);
+                /* defaultValue= */ 3);
     }
 
     private void openBookmarkLimitHelpPage() {
