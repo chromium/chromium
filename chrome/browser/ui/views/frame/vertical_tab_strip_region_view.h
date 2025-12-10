@@ -65,6 +65,8 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
     return tab_strip_view_->GetUnpinnedTabsContainerForTesting();
   }
 
+  RootTabCollectionNode* root_node_for_testing() { return root_node_.get(); }
+
   VerticalTabStripTopContainer* GetTopContainer() {
     return top_button_container_;
   }

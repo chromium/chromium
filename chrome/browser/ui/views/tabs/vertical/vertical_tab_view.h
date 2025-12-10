@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/context_menu_controller.h"
@@ -80,6 +81,8 @@ class VerticalTabView : public views::View,
 
   void OnDataChanged();
 
+  void UpdateBorder();
+
   void UpdateAlertIndicatorVisibility();
   void UpdateCloseButtonVisibility();
 
@@ -93,6 +96,8 @@ class VerticalTabView : public views::View,
 
   bool IsFrameActive() const;
   TabStyle::TabSelectionState GetSelectionState() const;
+
+  const tabs::TabInterface* GetTabInterface();
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 

@@ -182,8 +182,15 @@ enum LayoutConstant {
   // height side panel.
   TOOLBAR_HEIGHT_SIDE_PANEL_INSET,
 
+  // The corner radius used for borders, fill, and hover targets with vertical
+  // tabs.
+  VERTICAL_TAB_CORNER_RADIUS,
+
   // The height of a vertical tab.
   VERTICAL_TAB_HEIGHT,
+
+  // The width of the border stroke around pinned tabs in a vertical tab strip.
+  VERTICAL_TAB_PINNED_BORDER_THICKNESS,
 
   // The horizontal padding between the sides of the vertical tab strip and its
   // content.

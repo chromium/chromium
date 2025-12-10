@@ -42,7 +42,6 @@ constexpr int kTitleNoCloseButtonRightPadding = 11;
 constexpr int kTitleHeight = 18;
 // TODO(crbug.com/454686636): Determine what this min width should be.
 constexpr int kVerticalTabExpandedMinWidth = 50;
-constexpr int kVerticalTabRoundedCornerRadius = 7;
 
 class VerticalTabTitle : public views::Label {
   METADATA_HEADER(VerticalTabTitle, views::Label)
@@ -88,7 +87,6 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   data_changed_subscription_ =
       collection_node_->RegisterDataChangedCallback(base::BindRepeating(
           &VerticalTabView::OnDataChanged, base::Unretained(this)));
-  // TODO(crbug.com/444283717): Separate pinned and unpinned tabs.
 
   OnDataChanged();
 
@@ -122,6 +120,8 @@ void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
       GetSelectionState(), hovered_, GetHoverAnimationValue(), IsFrameActive(),
       GetColorProvider()));
   canvas->DrawRect(GetLocalBounds(), flags);
+
+  views::View::OnPaint(canvas);
 }
 
 void VerticalTabView::AddedToWidget() {
@@ -279,8 +279,8 @@ void VerticalTabView::ResetCollectionNode() {
 }
 
 void VerticalTabView::OnDataChanged() {
-  const tabs::TabInterface* tab =
-      std::get<const tabs::TabInterface*>(collection_node_->GetNodeData());
+  const tabs::TabInterface* tab = GetTabInterface();
+  CHECK(tab);
 
   active_ = tab->IsActivated();
   selected_ = tab->IsSelected();
@@ -294,7 +294,10 @@ void VerticalTabView::OnDataChanged() {
   icon_->SetActiveState(active_);
   icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
                       active_ && tab_data.blocked);
+
   title_->SetText(tab_data.title);
+  title_->SetVisible(!tab->IsPinned());
+
   alert_indicator_->TransitionToAlertState(
       tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state));
   UpdateAlertIndicatorVisibility();
@@ -304,6 +307,19 @@ void VerticalTabView::OnDataChanged() {
   InvalidateLayout();
 }
 
+void VerticalTabView::UpdateBorder() {
+  const tabs::TabInterface* tab = GetTabInterface();
+  if (tab && tab->IsPinned() && !tab->IsSplit()) {
+    SetBorder(views::CreateRoundedRectBorder(
+        GetLayoutConstant(VERTICAL_TAB_PINNED_BORDER_THICKNESS),
+        GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS),
+        IsFrameActive() ? kColorTabDividerFrameActive
+                        : kColorTabDividerFrameInactive));
+  } else {
+    SetBorder(nullptr);
+  }
+}
+
 void VerticalTabView::UpdateAlertIndicatorVisibility() {
   alert_indicator_->UpdateAlertIndicatorAnimation();
   alert_indicator_->SetVisible(
@@ -311,7 +327,8 @@ void VerticalTabView::UpdateAlertIndicatorVisibility() {
 }
 
 void VerticalTabView::UpdateCloseButtonVisibility() {
-  close_button_->SetVisible(active_ || hovered_);
+  close_button_->SetVisible((active_ || hovered_) &&
+                            !GetTabInterface()->IsPinned());
 }
 
 void VerticalTabView::UpdateColors() {
@@ -322,6 +339,9 @@ void VerticalTabView::UpdateColors() {
   title_->SetEnabledColor(colors.foreground_color);
   close_button_->SetColors(colors);
   alert_indicator_->OnParentTabButtonColorChanged();
+
+  UpdateBorder();
+
   // TODO(crbug.com/465159185): Update focus ring colors.
   SchedulePaint();
 }
@@ -360,8 +380,8 @@ float VerticalTabView::GetHoverOpacity() const {
 }
 
 SkPath VerticalTabView::GetPath() const {
-  SkVector radius = {kVerticalTabRoundedCornerRadius,
-                     kVerticalTabRoundedCornerRadius};
+  const float corner_radius = GetLayoutConstant(VERTICAL_TAB_CORNER_RADIUS);
+  SkVector radius = {corner_radius, corner_radius};
   const SkVector radii[4] = {radius, radius, radius, radius};
   SkPathBuilder path;
   path.addRRect(
@@ -379,5 +399,8 @@ TabStyle::TabSelectionState VerticalTabView::GetSelectionState() const {
                               : TabStyle::TabSelectionState::kInactive);
 }
 
-BEGIN_METADATA(VerticalTabView)
-END_METADATA
+const tabs::TabInterface* VerticalTabView::GetTabInterface() {
+  return std::get<const tabs::TabInterface*>(collection_node_->GetNodeData());
+}
+
+BEGIN_METADATA(VerticalTabView) END_METADATA

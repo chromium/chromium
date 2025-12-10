@@ -23,16 +23,25 @@ class VerticalSplitTabView : public views::View, public views::LayoutDelegate {
   VerticalSplitTabView& operator=(const VerticalSplitTabView&) = delete;
   ~VerticalSplitTabView() override;
 
+  // views::View
+  void OnThemeChanged() override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
  private:
   void ResetCollectionNode();
+  void OnDataChanged();
+  void UpdateBorder();
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
+  base::CallbackListSubscription data_changed_subscription_;
   base::CallbackListSubscription node_destroyed_subscription_;
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_SPLIT_TAB_VIEW_H_

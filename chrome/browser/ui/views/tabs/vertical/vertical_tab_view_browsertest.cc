@@ -48,7 +48,26 @@ class TestWebContentsObserver : public content::WebContentsObserver {
 };
 
 class VerticalTabViewTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {};
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  RootTabCollectionNode* root_node() {
+    VerticalTabStripRegionView* region_view =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->vertical_tab_strip_region_view();
+    return region_view->root_node_for_testing();
+  }
+
+  content::WebContents* AppendPinnedTab() {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser()->profile()));
+    content::WebContents* raw_contents = contents.get();
+    browser()->tab_strip_model()->InsertWebContentsAt(
+        browser()->tab_strip_model()->count(), std::move(contents),
+        ADD_INHERIT_OPENER | ADD_ACTIVE | ADD_PINNED);
+    return raw_contents;
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -217,3 +236,34 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
 
 // TODO(crbug.com/465540287): Determine how to test the background changing
 // based on active/selected/hovered states.
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, PinnedTabsHideCloseButton) {
+  AppendPinnedTab();
+
+  // The initial tab is the first child of the pinned collection which is the
+  // first child of the root node.
+  TabCollectionNode* tab_node = root_node()->children()[0]->children()[0].get();
+  VerticalTabView* tab =
+      static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
+
+  // The favicon should be visible but the close button is not.
+  EXPECT_TRUE(tab->icon_for_testing()->GetVisible());
+  EXPECT_FALSE(tab->alert_indicator_for_testing()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, PinnedTabsRenderBorder) {
+  AppendPinnedTab();
+
+  // The initial tab is the first child of the pinned collection which is the
+  // first child of the root node.
+  TabCollectionNode* tab_node = root_node()->children()[0]->children()[0].get();
+  VerticalTabView* tab =
+      static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
+
+  EXPECT_TRUE(tab->GetBorder());
+
+  // Unpin the tab.
+  browser()->tab_strip_model()->SetTabPinned(0, false);
+
+  EXPECT_FALSE(tab->GetBorder());
+}
