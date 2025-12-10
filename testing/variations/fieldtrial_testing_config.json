@@ -25405,6 +25405,22 @@
             ]
         }
     ],
+    "ThrottleMainFrameTo60HzMacWebView": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThrottleMainFrameTo60HzWebView",
+                        "UrgentMainFrameForInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "TokenHandleRefactoring": [
         {
             "platforms": [

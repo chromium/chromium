@@ -30,25 +30,28 @@ namespace {
 // Surfaces and CompositorTimingHistory don't support more than 1 pending swap.
 const int kMaxPendingSubmitFrames = 1;
 
-bool IsEligibleToThrottleMainFrameRate(const SchedulerSettings& settings) {
+bool IsEligibleToThrottleMainFrameRate() {
 #if BUILDFLAG(IS_ANDROID)
-  // Do not enable throttling for the synchronous compositor, as it hasn't been
-  // evaluated for this use case, as of 09/2025. The aim is to make sure that
-  // this does not get enabled on WebView when the feature is active on Android,
-  // as they share the same binary configuration. Exclude this platform, which
-  // is using the synchronous compositor.
-  bool is_webview = settings.using_synchronous_renderer_compositor;
   // Still requires balancing tradeoffs for desktop Android, not enabled yet.
-  bool is_desktop = base::android::device_info::is_desktop();
-  return !is_webview && !is_desktop;
+  return !base::android::device_info::is_desktop();
 #else
   return true;
 #endif
 }
 
 bool ShouldThrottleMainFrameRate(const SchedulerSettings& settings) {
-  return IsEligibleToThrottleMainFrameRate(settings) &&
-         base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
+  if (!features::IsEligibleForThrottleMainFrameTo60Hz()) {
+    return false;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  bool is_webview = settings.using_synchronous_renderer_compositor;
+  return is_webview
+             ? base::FeatureList::IsEnabled(
+                   features::kThrottleMainFrameTo60HzWebView)
+             : base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
+#else
+  return base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -1577,7 +1580,7 @@ void SchedulerStateMachine::FrameIntervalUpdated(
   constexpr float kSlackFactor = .9;
   bool fast_vsync_interval =
       frame_interval < base::Hertz(120) * (1 / kSlackFactor);
-  if (fast_vsync_interval && IsEligibleToThrottleMainFrameRate(settings_)) {
+  if (fast_vsync_interval && IsEligibleToThrottleMainFrameRate()) {
     features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
   }
   if (fast_vsync_interval && ShouldThrottleMainFrameRate(settings_)) {

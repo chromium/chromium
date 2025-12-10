@@ -154,6 +154,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kInitImageDecodeLastUseTime);
 // frame production to 60Hz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 
+#if BUILDFLAG(IS_ANDROID)
+// Same as above, for WebView.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60HzWebView);
+#endif
+
 // When main frame production is throttled, whether the throttling should be
 // paused for some duration after an urgent main frame request is processed.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBoostFrameRateForUrgentMainFrame);
