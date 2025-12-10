@@ -191,6 +191,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Returns whether the activity should save and restore its state to persist across reboots and
+     * app updates.
+     */
+    protected boolean shouldPersistAcrossReboots() {
+        return false;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         BundleUtils.restoreLoadedSplits(savedInstanceState);

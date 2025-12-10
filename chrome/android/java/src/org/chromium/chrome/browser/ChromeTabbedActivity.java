@@ -2046,6 +2046,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         return (ChromeTabCreator) super.getCurrentTabCreator();
     }
 
+    @Override
+    public boolean shouldPersistAcrossReboots() {
+        return ChromeFeatureList.sPersistAcrossReboots.isEnabled();
+    }
+
     private void handleDebugIntent(Intent intent) {
         if (ACTION_CLOSE_TABS.equals(intent.getAction())) {
             CloseAllTabsHelper.closeAllTabsHidingTabGroups(
