@@ -743,7 +743,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (BOOL)shouldShowAIHubNewFeatureBadge {
-  if (!base::FeatureList::IsEnabled(kAIHubNewBadge)) {
+  if (!IsAIHubNewBadgeEnabled()) {
     return NO;
   }
   return _tracker->ShouldTriggerHelpUI(

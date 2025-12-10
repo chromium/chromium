@@ -30,8 +30,12 @@ bool IsProactiveSuggestionsFrameworkEnabled();
 bool IsProactiveSuggestionsFrameworkPopupBlockerEnabled();
 extern const char kProactiveSuggestionsFrameworkPopupBlocker[];
 
-// Feature flag controlling the page action menu.
+// Page action menu feature flag, used to roll out and toggle in chrome://flags.
 BASE_DECLARE_FEATURE(kPageActionMenu);
+
+// Gemini killswitch, used to disable the feature in any locale, including
+// launched ones.
+BASE_DECLARE_FEATURE(kGeminiKillSwitch);
 
 // Returns true if the page action menu is enabled.
 bool IsPageActionMenuEnabled();
@@ -141,6 +145,7 @@ bool IsGeminiAvailableForManagedAccounts();
 
 // Feature flag to show the AI Hub new badge.
 BASE_DECLARE_FEATURE(kAIHubNewBadge);
+bool IsAIHubNewBadgeEnabled();
 
 // Whether the Gemini consent pref should be deleted on account change.
 bool ShouldDeleteGeminiConsentPref();

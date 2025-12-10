@@ -5,10 +5,15 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 
 #import "base/check.h"
+#import "base/strings/string_util.h"
 #import "base/time/time.h"
+#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "components/prefs/pref_service.h"
+#import "components/variations/service/variations_service.h"
+#import "components/variations/service/variations_service_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 
@@ -18,7 +23,10 @@ bool IsEnhancedCalendarEnabled() {
   return base::FeatureList::IsEnabled(kEnhancedCalendar);
 }
 
+// Launched in en-US, but remains disabled by default for other locales.
 BASE_FEATURE(kPageActionMenu, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGeminiKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kPageActionMenuDirectEntryPointParam[] =
     "PageActionMenuDirectEntryPoint";
@@ -27,6 +35,32 @@ bool IsPageActionMenuEnabled() {
   if (IsDiamondPrototypeEnabled()) {
     return true;
   }
+
+  // Checks the killswtich, allowing to disable the feature for any user
+  // including those in launched locales.
+  bool is_killswitch_enabled = base::FeatureList::IsEnabled(kGeminiKillSwitch);
+  if (is_killswitch_enabled) {
+    return false;
+  }
+
+  // Launched in en-US. Checks for the country (US) and locale (en-US).
+  variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
+  bool is_launched_country =
+      variations_service &&
+      base::ToLowerASCII(variations_service->GetStoredPermanentCountry()) ==
+          "us";
+
+  ApplicationLocaleStorage* locale_storage =
+      GetApplicationContext()->GetApplicationLocaleStorage();
+  bool is_launched_locale =
+      locale_storage && base::ToLowerASCII(locale_storage->Get()) == "en-us";
+
+  if (is_launched_country && is_launched_locale) {
+    return true;
+  }
+
+  // Allows for the feature to be enabled through Finch or chrome://flags.
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
@@ -94,10 +128,7 @@ bool IsAskGeminiChipAllowNonconsentedUsersEnabled() {
 BASE_FEATURE(kGeminiCrossTab, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiCrossTabEnabled() {
-  if (!IsPageActionMenuEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kGeminiCrossTab);
+  return IsPageActionMenuEnabled();
 }
 
 bool IsDirectBWGEntryPoint() {
@@ -179,19 +210,19 @@ bool IsBWGPreciseLocationEnabled() {
 BASE_FEATURE(kPageContextAnchorTags, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPageContextAnchorTagsEnabled() {
-  return base::FeatureList::IsEnabled(kPageContextAnchorTags);
+  return IsPageActionMenuEnabled();
 }
 
 BASE_FEATURE(kGeminiForManagedAccounts, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiAvailableForManagedAccounts() {
-  if (IsGeminiEligibilityAblationEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kGeminiForManagedAccounts);
+  return IsPageActionMenuEnabled();
 }
 
 BASE_FEATURE(kAIHubNewBadge, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAIHubNewBadgeEnabled() {
+  return IsPageActionMenuEnabled();
+}
 
 bool ShouldDeleteGeminiConsentPref() {
   return base::FeatureList::IsEnabled(kDeleteGeminiConsentPref);

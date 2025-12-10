@@ -122,7 +122,7 @@ class PageContextWrapperTest : public PlatformTest,
 
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(kPageContextAnchorTags);
+    enabled_features.push_back(kPageActionMenu);
     if (IsRefactored()) {
       enabled_features.push_back(kPageContextExtractorRefactored);
     } else {
