@@ -4,9 +4,11 @@
 
 #include "extensions/renderer/api/messaging/messaging_util.h"
 
+#include <cstddef>
 #include <string>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -25,6 +27,7 @@
 #include "extensions/renderer/worker_thread_util.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
@@ -49,9 +52,9 @@ constexpr char kErrorMalformedJSONMessage[] =
 // Message object. This also populates user gesture and context privilege
 // information. Returns `nullptr` on failure, and populates `error` with the
 // failure reason.
-std::unique_ptr<Message> MessageFromV8UsingJSON(v8::Local<v8::Context> context,
-                                                v8::Local<v8::Value> value,
-                                                std::string* error) {
+std::string MessageFromV8UsingJSON(v8::Local<v8::Context> context,
+                                   v8::Local<v8::Value> value,
+                                   std::string* error) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   // TODO(devlin): For some reason, we don't use the signature for
   // Port.postMessage when evaluating the parameters. We probably should, but
@@ -74,7 +77,7 @@ std::unique_ptr<Message> MessageFromV8UsingJSON(v8::Local<v8::Context> context,
 
   if (!success) {
     *error = kErrorCouldNotSerialize;
-    return nullptr;
+    return std::string();
   }
 
   std::string message;
@@ -87,22 +90,22 @@ std::unique_ptr<Message> MessageFromV8UsingJSON(v8::Local<v8::Context> context,
   // serialize a value).
   if (message == "undefined") {
     *error = kErrorCouldNotSerialize;
-    return nullptr;
+    return std::string();
   }
 
-  // IPC messages will fail at > 128 MiB. Restrict extension messages to 64 MiB.
-  // A 64 MiB JSON serialized object is scary enough as it is.
-  static constexpr size_t kMaxMessageBytes = 1024 * 1024 * 64;
-  if (message.length() > kMaxMessageBytes) {
-    *error = "Message exceeded maximum allowed size of 64MiB.";
-    return nullptr;
-  }
+  return message;
+}
 
-  // Determine if the message came from a privileged context.
+struct MessageMetadata {
+  bool has_user_gesture;
+  bool is_from_privileged_context;
+};
+
+// Returns metadata about the message, including whether it originated from a
+// privileged context and if there's an active user gesture.
+MessageMetadata GetMessageMetadata(v8::Local<v8::Context> context) {
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
-  blink::WebLocalFrame* web_frame =
-      script_context ? script_context->web_frame() : nullptr;
-  bool is_message_from_privileged_context =
+  bool is_from_privileged_context =
       script_context && script_context->context_type() ==
                             mojom::ContextType::kPrivilegedExtension;
 
@@ -122,6 +125,8 @@ std::unique_ptr<Message> MessageFromV8UsingJSON(v8::Local<v8::Context> context,
     has_unrestricted_user_activation =
         ExtensionInteractionProvider::HasActiveExtensionInteraction(context);
   } else {
+    blink::WebLocalFrame* web_frame =
+        script_context ? script_context->web_frame() : nullptr;
     // The message should carry user activation information only if the last
     // activation in |web_frame| was triggered by a real user interaction.  See
     // |UserActivationState::LastActivationWasRestricted()|.
@@ -129,22 +134,20 @@ std::unique_ptr<Message> MessageFromV8UsingJSON(v8::Local<v8::Context> context,
         web_frame && web_frame->HasTransientUserActivation() &&
         !web_frame->LastActivationWasRestricted();
   }
-  return std::make_unique<Message>(message, mojom::SerializationFormat::kJson,
-                                   has_unrestricted_user_activation,
-                                   is_message_from_privileged_context);
+  return {has_unrestricted_user_activation, is_from_privileged_context};
 }
 
 // Serializes the given `value` using structured cloning and returns it wrapped
 // in a `Message object`. This also populates user gesture and context privilege
 // information. Returns nullptr on failure, and populates `error` with the
 // failure reason
-std::unique_ptr<Message> MessageFromV8UsingStructuredCloning(
+StructureClonedMessageWireData MessageFromV8UsingStructuredCloning(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> value,
     std::string* error) {
   // TODO(crbug.com/40321352): Implement structured cloning from v8.
   NOTIMPLEMENTED();
-  return nullptr;
+  return StructureClonedMessageWireData();
 }
 
 }  // namespace
@@ -168,11 +171,58 @@ std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
                                        std::string* error) {
   DCHECK(!value.IsEmpty());
 
+  if (format == mojom::SerializationFormat::kStructuredCloned) {
+    CHECK(base::FeatureList::IsEnabled(
+        extensions_features::kStructuredCloningForMessaging));
+  }
+
+  size_t message_size = 0;
+  std::string json_message;
+  StructureClonedMessageWireData structured_message;
   switch (format) {
-    case mojom::SerializationFormat::kStructuredCloned:
-      return MessageFromV8UsingStructuredCloning(context, value, error);
-    case mojom::SerializationFormat::kJson:
-      return MessageFromV8UsingJSON(context, value, error);
+    case mojom::SerializationFormat::kJson: {
+      json_message = MessageFromV8UsingJSON(context, value, error);
+      if (!error->empty()) {
+        return nullptr;
+      }
+      message_size = json_message.length();
+      break;
+    }
+    case mojom::SerializationFormat::kStructuredCloned: {
+      structured_message =
+          MessageFromV8UsingStructuredCloning(context, value, error);
+      if (!error->empty()) {
+        return nullptr;
+      }
+      message_size = structured_message.size();
+      break;
+    }
+  }
+
+  // IPC messages will fail at > 128 MiB. Restrict extension messages to 64 MiB.
+  // A 64 MiB JSON serialized object is scary enough as it is.
+  // TODO(crbug.com/40321352): The 64 MiB limit also applies to structured
+  // messages. Can we unrestrict that since it uses `mojom_base::BigBuffer`
+  // which has shared memory benefits for large messages?
+  static constexpr size_t kMaxMessageBytes = 1024 * 1024 * 64;
+  if (message_size > kMaxMessageBytes) {
+    *error = "Message exceeded maximum allowed size of 64MiB.";
+    return nullptr;
+  }
+
+  MessageMetadata metadata = GetMessageMetadata(context);
+  switch (format) {
+    case mojom::SerializationFormat::kJson: {
+      return std::make_unique<Message>(
+          std::move(json_message), mojom::SerializationFormat::kJson,
+          metadata.has_user_gesture, metadata.is_from_privileged_context);
+    }
+    case mojom::SerializationFormat::kStructuredCloned: {
+      return std::make_unique<Message>(
+          std::move(structured_message),
+          mojom::SerializationFormat::kStructuredCloned,
+          metadata.has_user_gesture, metadata.is_from_privileged_context);
+    }
   }
 
   // We only support JSON or structured cloning serialization formats.
