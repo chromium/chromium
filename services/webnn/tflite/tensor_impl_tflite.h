@@ -48,7 +48,7 @@ class TensorImplTflite final : public WebNNTensorImpl {
 
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
-  bool ImportTensorImpl() override;
+  bool ImportTensorImpl(ScopedAccessPtr access) override;
   void ExportTensorImpl(ScopedAccessPtr access,
                         ExportTensorCallback callback) override;
 

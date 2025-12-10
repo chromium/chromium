@@ -66,13 +66,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
     return representation_ && !representation_access_;
   }
 
-  // Called by `ImportTensor()` after WebNN begins access of the
-  // platform-specific tensor as a shared image.
-  // Backend subclasses implement this to perform any necessary
-  // device synchronization and store the access. Returns true on success.
-  // On success, the subclass should assign `representation_access_` to
-  // gpu::WebNNTensorRepresentation::BeginScopedAccess().
-  virtual bool ImportTensorImpl() = 0;
+  // This method will be called by `ImportTensor()` or
+  // `WebNNContext::CreateTensorFromMailbox()` for WebNN to begin access of the
+  // platform-specific tensor as a shared image on the main thread, and then
+  // call `ImportTensorImpl()` with that access. Returns true on success.
+  bool ImportTensorOnMainThread();
 
  protected:
   ~WebNNTensorImpl() override;
@@ -87,12 +85,21 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
       std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess,
                       OnTaskRunnerDeleter>;
 
-  // Called by `ExportTensor()` after WebNN finishes access of the
+  // Called by `ExportTensor()` after WebNN ends access of the
   // platform-specific tensor as a shared image.
   // Backend subclasses implement this to perform any necessary
   // device synchronization.
   virtual void ExportTensorImpl(ScopedAccessPtr access,
                                 ExportTensorCallback callback) = 0;
+
+  // Called by `ImportTensorOnMainThread()` after WebNN begins access of the
+  // platform-specific tensor as a shared image.
+  // Backend subclasses implement this to perform any necessary
+  // device synchronization and store the access. Returns true on success.
+  // On success, the subclass should assign `representation_access_` to
+  // `access`. Must not post tasks itself; all main thread synchronization is
+  // handled by `ImportTensorOnMainThread()`.
+  virtual bool ImportTensorImpl(ScopedAccessPtr access) = 0;
 
   base::WeakPtr<WebNNContextImpl> context_;
 

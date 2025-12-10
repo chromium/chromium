@@ -70,7 +70,7 @@ void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   context_->ReadDataFromBigBufferOrDataPipe(std::move(src_buffer), AsSpan());
 }
 
-bool TensorImplOrt::ImportTensorImpl() {
+bool TensorImplOrt::ImportTensorImpl(ScopedAccessPtr access) {
   NOTIMPLEMENTED();
   return false;
 }

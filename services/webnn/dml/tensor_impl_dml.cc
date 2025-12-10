@@ -110,15 +110,8 @@ void TensorImplDml::ExportTensorImpl(ScopedAccessPtr access,
   std::move(callback).Run(context_->GenVerifiedSyncToken());
 }
 
-bool TensorImplDml::ImportTensorImpl() {
-  CHECK(representation_);
-  // Tensor will own the access.
-  auto access =
-      ScopedAccessPtr(representation_->BeginScopedAccess().release(),
-                      OnTaskRunnerDeleter(context_->main_task_runner()));
-  if (!access) {
-    return false;
-  }
+bool TensorImplDml::ImportTensorImpl(ScopedAccessPtr access) {
+  CHECK(access);
 
   // First access, no fence required.
   auto d3d_write_fence = access->GetAcquireFence();

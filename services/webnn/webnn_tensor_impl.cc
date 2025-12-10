@@ -4,6 +4,7 @@
 
 #include "services/webnn/webnn_tensor_impl.h"
 
+#include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "services/webnn/error.h"
@@ -13,6 +14,33 @@
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn {
+
+namespace {
+
+// Helper that runs a closure synchronously on a different sequence.
+// The caller blocks but the target sequence never blocks.
+// It is important the task does not post back to the current sequence, to
+// prevent deadlocks.
+void RunOrPostTaskAndWaitOnSequence(
+    scoped_refptr<base::SequencedTaskRunner> target,
+    base::OnceClosure task) {
+  if (target->RunsTasksInCurrentSequence()) {
+    std::move(task).Run();
+    return;
+  }
+
+  base::WaitableEvent done;
+  target->PostTask(FROM_HERE, base::BindOnce(
+                                  [](base::OnceClosure inner_callback,
+                                     base::WaitableEvent* done) {
+                                    std::move(inner_callback).Run();
+                                    done->Signal();
+                                  },
+                                  std::move(task), &done));
+  done.Wait();
+}
+
+}  // namespace
 
 WebNNTensorImpl::WebNNTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
@@ -119,6 +147,8 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
 }
 
 void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
+  ScopedTrace scoped_trace("WebNNTensorImpl::ImportTensor");
+
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
@@ -131,7 +161,7 @@ void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
   context_->scheduler_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](WebNNTensorImpl* self,
+          [](WebNNTensorImpl* self, ScopedTrace scoped_trace,
              mojo::ReportBadMessageCallback bad_message_cb) {
             if (!self->is_exported()) {
               LOG(ERROR)
@@ -141,14 +171,15 @@ void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
               return;
             }
 
-            if (!self->ImportTensorImpl()) {
+            if (!self->ImportTensorOnMainThread()) {
               LOG(ERROR)
                   << "[WebNN] Failed to import tensor from shared image.";
               std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
               return;
             }
           },
-          base::RetainedRef(this), GetMojoReceiver().GetBadMessageCallback()));
+          base::RetainedRef(this), std::move(scoped_trace),
+          GetMojoReceiver().GetBadMessageCallback()));
 }
 
 void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
@@ -179,6 +210,50 @@ void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
 
 void WebNNTensorImpl::OnDisconnect() {
   context_->RemoveWebNNTensorImpl(handle());
+}
+
+bool WebNNTensorImpl::ImportTensorOnMainThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+
+  if (!representation_) {
+    LOG(ERROR) << "[WebNN] No representation for tensor to import.";
+    return false;
+  }
+
+  ScopedAccessPtr access(nullptr, OnTaskRunnerDeleter(nullptr));
+
+  // Shared image access must be acquired on the main thread. If WebNN runs on
+  // its own thread, a task is posted to the main thread and waits for
+  // completion. Otherwise, if WebNN is already running on the main thread,
+  // access begins immediately.
+  RunOrPostTaskAndWaitOnSequence(
+      context_->main_task_runner(),
+      base::BindOnce(
+          [](gpu::WebNNTensorRepresentation* representation,
+             scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+             ScopedAccessPtr* out_result) {
+            CHECK(representation);
+            auto access = representation->BeginScopedAccess();
+            if (!access) {
+              return;
+            }
+            // Tensor will own the access.
+            *out_result = ScopedAccessPtr(
+                access.release(),
+                OnTaskRunnerDeleter(std::move(main_task_runner)));
+          },
+          // Safe to use base::Unretained because we must run or wait for the
+          // post task to complete and `this` tensor cannot destruct while the
+          // task is running.
+          base::Unretained(representation_.get()), context_->main_task_runner(),
+          &access));
+
+  // Nothing to import if access failed.
+  if (!access) {
+    return false;
+  }
+
+  return ImportTensorImpl(std::move(access));
 }
 
 }  // namespace webnn

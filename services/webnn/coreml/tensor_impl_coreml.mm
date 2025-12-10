@@ -356,15 +356,8 @@ TensorImplCoreml::GetBufferState() const {
   return buffer_state_;
 }
 
-bool TensorImplCoreml::ImportTensorImpl() {
-  CHECK(representation_);
-  // Tensor will own the access.
-  representation_access_ =
-      ScopedAccessPtr(representation_->BeginScopedAccess().release(),
-                      OnTaskRunnerDeleter(context_->main_task_runner()));
-  if (!representation_access_) {
-    return false;
-  }
+bool TensorImplCoreml::ImportTensorImpl(ScopedAccessPtr access) {
+  representation_access_ = std::move(access);
 
   // Always true since CoreML requires no device synchronization.
   return true;

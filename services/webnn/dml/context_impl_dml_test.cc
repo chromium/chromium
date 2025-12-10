@@ -93,7 +93,7 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
   }
 
   // Interop is not required by tests.
-  bool ImportTensorImpl() override { return false; }
+  bool ImportTensorImpl(ScopedAccessPtr access) override { return false; }
   void ExportTensorImpl(ScopedAccessPtr access,
                         ExportTensorCallback callback) override {}
 };

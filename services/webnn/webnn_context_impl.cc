@@ -308,7 +308,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
               return;
             }
 
-            if (!result.value()->ImportTensorImpl()) {
+            if (!result.value()->ImportTensorOnMainThread()) {
               std::move(callback).Run(ToError<mojom::CreateTensorResult>(
                   mojom::Error::Code::kUnknownError,
                   kWebNNCreateTensorErrorMessage));

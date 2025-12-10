@@ -50,7 +50,7 @@ class API_AVAILABLE(macos(12.3)) TensorImplCoreml final
   // WebNNTensorImpl:
   void ReadTensorImpl(mojom::WebNNTensor::ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
-  bool ImportTensorImpl() override;
+  bool ImportTensorImpl(ScopedAccessPtr access) override;
   void ExportTensorImpl(ScopedAccessPtr access,
                         ExportTensorCallback callback) override;
 

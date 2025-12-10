@@ -134,7 +134,7 @@ void TensorImplTflite::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   task->Enqueue();
 }
 
-bool TensorImplTflite::ImportTensorImpl() {
+bool TensorImplTflite::ImportTensorImpl(ScopedAccessPtr access) {
   NOTIMPLEMENTED();
   return false;
 }

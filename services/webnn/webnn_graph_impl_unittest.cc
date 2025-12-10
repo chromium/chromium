@@ -104,7 +104,7 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
   void ReadTensorImpl(ReadTensorCallback callback) override {}
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override {}
   // Interop is not required by tests.
-  bool ImportTensorImpl() override { return false; }
+  bool ImportTensorImpl(ScopedAccessPtr access) override { return false; }
   void ExportTensorImpl(ScopedAccessPtr access,
                         ExportTensorCallback callback) override {}
 };
