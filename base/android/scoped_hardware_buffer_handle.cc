@@ -70,6 +70,13 @@ ScopedHardwareBufferHandle ScopedHardwareBufferHandle::Clone() const {
   return ScopedHardwareBufferHandle(buffer_);
 }
 
+AHardwareBuffer_Desc ScopedHardwareBufferHandle::Describe() const {
+  DCHECK(buffer_);
+  AHardwareBuffer_Desc desc = {};
+  AHardwareBuffer_describe(buffer_, &desc);
+  return desc;
+}
+
 ScopedFD ScopedHardwareBufferHandle::SerializeAsFileDescriptor() const {
   DCHECK(is_valid());
 

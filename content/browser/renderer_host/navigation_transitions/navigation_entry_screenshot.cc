@@ -102,9 +102,9 @@ SkBitmap PrepareReadBackBitmap(SkImageInfo info) {
   return read_back_bitmap;
 }
 
-gfx::Size GetSizeFromHardwareBuffer(AHardwareBuffer* hardware_buffer) {
-  AHardwareBuffer_Desc desc;
-  AHardwareBuffer_describe(hardware_buffer, &desc);
+gfx::Size GetSizeFromHardwareBuffer(
+    const ScopedHardwareBufferHandle& hardware_buffer) {
+  AHardwareBuffer_Desc desc = hardware_buffer.Describe();
   return gfx::Size(desc.width, desc.height);
 }
 
@@ -292,7 +292,7 @@ NavigationEntryScreenshot::HardwareBufferHolder::HardwareBufferHolder(
     : nav_controller_delegate_(nav_controller_delegate),
       hardware_buffer_(std::move(hardware_buffer)),
       release_callback_(std::move(release_callback)),
-      size_(GetSizeFromHardwareBuffer(hardware_buffer_.get())) {}
+      size_(GetSizeFromHardwareBuffer(hardware_buffer_)) {}
 
 // static
 const void* const NavigationEntryScreenshot::kUserDataKey =

@@ -380,8 +380,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     // NOTE: size() is not guaranteed to match the size of the AHB. The size of
     // the AHB must be used here, as the Dawn texture descriptor's size must
     // match that of the SharedTextureMemory (which comes from the AHB).
-    AHardwareBuffer_Desc ahb_desc = {};
-    AHardwareBuffer_describe(scoped_hardware_buffer_->buffer(), &ahb_desc);
+    AHardwareBuffer_Desc ahb_desc = scoped_hardware_buffer_->Describe();
     texture_descriptor.size = {ahb_desc.width, ahb_desc.height, 1};
 
     texture_descriptor.mipLevelCount = 1;

@@ -24,6 +24,7 @@ class BASE_EXPORT ScopedHardwareBufferFenceSync {
   virtual ~ScopedHardwareBufferFenceSync();
 
   AHardwareBuffer* buffer() const { return handle_.get(); }
+  AHardwareBuffer_Desc Describe() const;
   ScopedHardwareBufferHandle TakeBuffer();
   ScopedFD TakeFence();
   ScopedFD TakeAvailableFence();
