@@ -165,9 +165,10 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   }
 
   const bool has_viewport_dependence =
-      To<SVGForeignObjectElement>(GetElement())->SelfHasRelativeLengths() ||
       (transform_uses_reference_box_ &&
-       StyleRef().TransformBox() == ETransformBox::kViewBox);
+       style.TransformBox() == ETransformBox::kViewBox) ||
+      style.Width().HasPercent() || style.Height().HasPercent() ||
+      style.X().HasPercent() || style.Y().HasPercent();
 
   DCHECK(!needs_transform_update_);
   return SVGLayoutResult(bounds_changed, has_viewport_dependence);
