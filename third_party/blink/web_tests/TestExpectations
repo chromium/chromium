@@ -5823,9 +5823,6 @@ crbug.com/833658 media/video-controls-focus-movement-on-hide.html [ Failure Pass
 # Sheriff 2018-05-22
 crbug.com/845610 [ Win ] http/tests/inspector-protocol/target/target-browser-context.js [ Failure Pass ]
 
-# Sheriff 2018-06-07
-crbug.com/41392978 http/tests/devtools/elements/styles-4/stylesheet-source-url-comment.js [ Failure Pass Timeout ]
-
 # User Activation
 crbug.com/736415 crbug.com/1066190 [ Debug ] external/wpt/html/user-activation/navigation-state-reset-crossorigin.sub.html [ Failure Timeout ]
 crbug.com/736415 crbug.com/1066190 [ Release ] external/wpt/html/user-activation/navigation-state-reset-crossorigin.sub.html [ Failure Timeout ]
