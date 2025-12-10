@@ -72,9 +72,7 @@ export class TopToolbarElement extends CrLitElement {
     this.$.menu.get().showAt(e.target as HTMLElement);
   }
 
-  protected async onSourcesClick_(e: Event) {
-    const {tabs} = await this.browserProxy_.handler.getAttachedTabs();
-    this.attachedTabs_ = tabs;
+  protected onSourcesClick_(e: Event) {
     this.$.sourcesMenu.get().showAt(e.target as HTMLElement);
   }
 
@@ -111,7 +109,7 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected shouldHideSourcesButton_() {
-    return true;
+    return this.attachedTabs_.length === 0;
   }
 }
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
-import type {PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
+import type {PageHandlerInterface, PageInterface, PageRemote, Tab} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {PostMessageHandler} from 'chrome://contextual-tasks/post_message_handler.js';
 import type {PageHandler as ComposeboxPageHandler, PageHandlerFactory as ComposeboxPageHandlerFactory} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -36,6 +36,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'postMessageToWebview',
       'onHandshakeComplete',
       'onSidePanelStateChanged',
+      'onContextUpdated',
     ]);
   }
 
@@ -49,6 +50,11 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   postMessageToWebview(message: number[]) {
     this.methodCalled('postMessageToWebview', message);
+  }
+
+
+  onContextUpdated(message: Tab[]) {
+    this.methodCalled('onContextUpdated', message);
   }
 
   onHandshakeComplete() {
@@ -87,7 +93,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'openHelpUi',
       'moveTaskUiToNewTab',
       'getOAuthToken',
-      'getAttachedTabs',
       'onTabClickedFromSourcesMenu',
       'getSearchUrl',
       'onWebviewMessage',
@@ -158,11 +163,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   getOAuthToken() {
     this.methodCalled('getOAuthToken');
     return Promise.resolve({oauthToken: 'fake_token'});
-  }
-
-  getAttachedTabs() {
-    this.methodCalled('getAttachedTabs');
-    return Promise.resolve({tabs: []});
   }
 
   getRecentTabs() {

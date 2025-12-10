@@ -12,7 +12,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {ContextualTasksComposeboxElement} from './composebox.js';
-import type {Thread} from './contextual_tasks.mojom-webui.js';
+import type {Tab, Thread} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
@@ -42,6 +42,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       threadUrl_: {type: String},
       threadTitle_: {type: String},
       historyThreads_: {type: Array},
+      contextTabs_: {type: Array},
     };
   }
 
@@ -50,6 +51,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor threadUrl_: string = '';
   protected accessor threadTitle_: string = '';
   protected accessor historyThreads_: Thread[] = [];
+  protected accessor contextTabs_: Tab[] = [];
   private listenerIds_: number[] = [];
   private oauthToken_: string = '';
   private postMessageHandler_!: PostMessageHandler;
@@ -99,9 +101,12 @@ export class ContextualTasksAppElement extends CrLitElement {
             }),
         this.browserProxy_.callbackRouter.postMessageToWebview.addListener(
             this.postMessageToWebview.bind(this)),
-        this.listenerIds_.push(
-            this.browserProxy_.callbackRouter.onHandshakeComplete.addListener(
-                this.onHandshakeComplete.bind(this))));
+        this.browserProxy_.callbackRouter.onHandshakeComplete.addListener(
+            this.onHandshakeComplete.bind(this)),
+        this.browserProxy_.callbackRouter.onContextUpdated.addListener(
+            (tabs: Tab[]) => {
+              this.contextTabs_ = tabs;
+            }));
 
     this.updateToolbarVisibility();
 

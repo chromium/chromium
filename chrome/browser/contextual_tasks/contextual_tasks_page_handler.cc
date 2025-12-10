@@ -6,7 +6,9 @@
 
 #include "base/check_deref.h"
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +17,9 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/contextual_tasks/public/context_decoration_params.h"
+#include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -37,16 +42,36 @@ void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
   Navigate(&params);
 }
 
+std::vector<contextual_tasks::mojom::TabPtr> TabsFromContext(
+    std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
+  std::vector<contextual_tasks::mojom::TabPtr> tabs;
+
+  for (const auto& attachment : context->GetUrlAttachments()) {
+    auto tab = contextual_tasks::mojom::Tab::New();
+    tab->tab_id = attachment.GetTabSessionId().id();
+    tab->title = base::UTF16ToUTF8(attachment.GetTitle());
+    tab->url = attachment.GetURL();
+    tabs.push_back(std::move(tab));
+  }
+
+  return tabs;
+}
+
 }  // namespace
 
 ContextualTasksPageHandler::ContextualTasksPageHandler(
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
     ContextualTasksUI* web_ui_controller,
-    contextual_tasks::ContextualTasksUiService* ui_service)
+    contextual_tasks::ContextualTasksUiService* ui_service,
+    contextual_tasks::ContextualTasksContextController* context_controller)
     : receiver_(this, std::move(receiver)),
 
       web_ui_controller_(web_ui_controller),
-      ui_service_(ui_service) {}
+      ui_service_(ui_service),
+      context_controller_(context_controller) {
+  CHECK(context_controller_);
+  context_controller_observation_.Observe(context_controller_);
+}
 
 ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
 
@@ -75,6 +100,9 @@ void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
 
 void ContextualTasksPageHandler::SetTaskId(const base::Uuid& uuid) {
   web_ui_controller_->SetTaskId(uuid);
+
+  // Trigger an update to the UI with the initial set of tabs for this task.
+  UpdateContextForTask(uuid);
 }
 
 void ContextualTasksPageHandler::SetThreadTitle(const std::string& title) {
@@ -155,13 +183,6 @@ void ContextualTasksPageHandler::OnOAuthTokenReceived(
   std::move(callback).Run(access_token_info.token);
 }
 
-void ContextualTasksPageHandler::GetAttachedTabs(
-    GetAttachedTabsCallback callback) {
-  std::vector<contextual_tasks::mojom::TabPtr> tabs;
-  // TODO(crbug.com/460614856): Query backend for attached tabs.
-  std::move(callback).Run(std::move(tabs));
-}
-
 void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
                                                              const GURL& url) {
   if (ui_service_) {
@@ -214,4 +235,35 @@ void ContextualTasksPageHandler::PostMessageToWebview(
   }
 
   web_ui_controller_->page()->PostMessageToWebview(serialized_message);
+}
+
+void ContextualTasksPageHandler::OnTaskUpdated(
+    const contextual_tasks::ContextualTask& task,
+    contextual_tasks::ContextualTasksService::TriggerSource source) {
+  if (!web_ui_controller_->page()) {
+    return;
+  }
+
+  const auto& current_task_id = web_ui_controller_->GetTaskId();
+  if (current_task_id != task.GetTaskId()) {
+    return;
+  }
+
+  UpdateContextForTask(task.GetTaskId());
+}
+
+void ContextualTasksPageHandler::UpdateContextForTask(
+    const base::Uuid& task_id) {
+  context_controller_->GetContextForTask(
+      task_id, {contextual_tasks::ContextualTaskContextSource::kTabStrip},
+      std::make_unique<contextual_tasks::ContextDecorationParams>(),
+      base::BindOnce(
+          [](base::WeakPtr<ContextualTasksPageHandler> self,
+             std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
+            if (self && self->web_ui_controller_->page()) {
+              self->web_ui_controller_->page()->OnContextUpdated(
+                  TabsFromContext(std::move(context)));
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }

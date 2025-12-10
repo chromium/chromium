@@ -74,9 +74,6 @@ interface PageHandler {
   // Gets an OAuth token for the search results for the signed-in user.
   GetOAuthToken() => (string oauth_token);
 
-  // Gets the list of tabs attached to the current task.
-  GetAttachedTabs() => (array<Tab> tabs);
-
   // Called when a tab in the sources menu is clicked. This will first attempt
   // to switch to a tab matching both the provided `tab_id` and `url`. If no
   // such tab is found, it will then try to switch to a tab matching only the
@@ -118,6 +115,11 @@ interface Page {
   // `lens.HandshakeResponse` from the webview to signal that the handshake is
   // complete.
   OnHandshakeComplete();
+
+  // Called by the browser process (C++) when the context associated with the
+  // task is updated (e.g. tabs added/removed). This is used for updating the
+  // icon shown on the sources menu entry point.
+  OnContextUpdated(array<Tab> context_tabs);
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.
