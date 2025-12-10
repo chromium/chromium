@@ -32,6 +32,11 @@ void AppListSyncableServiceTestBase::SetUp() {
   content::RunAllTasksUntilIdle();
 }
 
+void AppListSyncableServiceTestBase::TearDown() {
+  app_list_syncable_service_.reset();
+  AppListTestBase::TearDown();
+}
+
 void AppListSyncableServiceTestBase::RestartSyncableService() {
   app_list_syncable_service_ =
       std::make_unique<app_list::AppListSyncableService>(profile());

@@ -99,17 +99,26 @@ class HelpAppProviderTest : public AppListTestBase {
     auto provider = std::make_unique<HelpAppProvider>(profile());
     provider->MaybeInitialize(&mock_handler_);
     provider_ = provider.get();
-    search_controller_.AddProvider(std::move(provider));
+    search_controller_ = std::make_unique<TestSearchController>();
+    search_controller_->AddProvider(std::move(provider));
+  }
+
+  void TearDown() override {
+    provider_ = nullptr;
+    search_controller_.reset();
+
+    proxy_ = nullptr;
+    AppListTestBase::TearDown();
   }
 
   // Starts a search and waits for the query to be sent.
   void StartSearch(const std::u16string& query) {
-    search_controller_.StartSearch(query);
+    search_controller_->StartSearch(query);
     task_environment()->RunUntilIdle();
   }
 
   const app_list::Results& GetLatestResults() {
-    return search_controller_.last_results();
+    return search_controller_->last_results();
   }
 
   MockSearchHandler* mock_handler() { return &mock_handler_; }
@@ -117,12 +126,12 @@ class HelpAppProviderTest : public AppListTestBase {
  private:
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
-  TestSearchController search_controller_;
   std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
   ash::help_app::SearchTagRegistry search_tag_registry_;
+  raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
   raw_ptr<HelpAppProvider> provider_ = nullptr;
-  raw_ptr<apps::AppServiceProxy> proxy_;
+  std::unique_ptr<TestSearchController> search_controller_;
   MockSearchHandler mock_handler_;
 };
 

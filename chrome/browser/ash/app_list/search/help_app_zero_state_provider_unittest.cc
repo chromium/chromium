@@ -52,15 +52,23 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
     auto provider = std::make_unique<HelpAppZeroStateProvider>(
         profile(), app_list_notifier_.get());
     provider_ = provider.get();
-    search_controller_.AddProvider(std::move(provider));
+    search_controller_ = std::make_unique<TestSearchController>();
+    search_controller_->AddProvider(std::move(provider));
+  }
+
+  void TearDown() override {
+    provider_ = nullptr;
+    search_controller_.reset();
+    app_list_notifier_.reset();
+    AppListTestBase::TearDown();
   }
 
   void StartZeroStateSearch() {
-    search_controller_.StartZeroState(base::DoNothing(), base::TimeDelta());
+    search_controller_->StartZeroState(base::DoNothing(), base::TimeDelta());
   }
 
   const app_list::Results& GetLatestResults() {
-    return search_controller_.last_results();
+    return search_controller_->last_results();
   }
 
   ::test::TestAppListController* app_list_controller() {
@@ -72,8 +80,8 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
  private:
   ::test::TestAppListController app_list_controller_;
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
-  TestSearchController search_controller_;
   raw_ptr<HelpAppZeroStateProvider> provider_ = nullptr;
+  std::unique_ptr<TestSearchController> search_controller_;
 };
 
 // Test for empty query.

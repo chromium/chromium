@@ -37,6 +37,7 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
 
  protected:
   void ResetBuilder() {
+    cache_ = nullptr;
     scoped_callback_.reset();
     builder_.reset();
     controller_.reset();
@@ -111,8 +112,7 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   display::test::TestScreen test_screen_;
-  std::unique_ptr<Profile> profile_;
-  raw_ptr<apps::PromiseAppRegistryCache> cache_;
+  raw_ptr<apps::PromiseAppRegistryCache> cache_ = nullptr;
   syncer::StringOrdinal last_position_;
   base::WeakPtrFactory<AppServicePromiseAppModelBuilderTest> weak_ptr_factory_{
       this};

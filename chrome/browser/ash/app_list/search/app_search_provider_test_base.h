@@ -39,6 +39,7 @@ class AppSearchProviderTestBase : public AppListTestBase {
 
   // AppListTestBase overrides:
   void SetUp() override;
+  void TearDown() override;
 
   //  Sets up app search provider to be used in the test.
   void InitializeSearchProvider();

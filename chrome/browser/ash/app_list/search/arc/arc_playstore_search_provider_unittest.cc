@@ -46,6 +46,8 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   }
 
   void TearDown() override {
+    provider_ = nullptr;
+    search_controller_.reset();
     controller_.reset();
     arc_app_test_.PreProfileTearDown();
     AppListTestBase::TearDown();
@@ -81,10 +83,10 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
   }
 
  private:
+  ArcAppTest arc_app_test_;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<TestSearchController> search_controller_;
   raw_ptr<ArcPlayStoreSearchProvider> provider_ = nullptr;
-  ArcAppTest arc_app_test_;
 };
 
 TEST_F(ArcPlayStoreSearchProviderTest, Basic) {

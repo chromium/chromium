@@ -200,6 +200,12 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
     OverrideAppServiceProxyInnerIconLoader(fake_icon_loader_.get());
   }
 
+  void TearDown() override {
+    fake_icon_loader_.reset();
+    proxy_ = nullptr;
+    ChromeAppsIconFactoryTest::TearDown();
+  }
+
   void OverrideAppServiceProxyInnerIconLoader(apps::IconLoader* icon_loader) {
     app_service_proxy().OverrideInnerIconLoaderForTesting(icon_loader);
   }
@@ -246,7 +252,7 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
   AppServiceProxy& app_service_proxy() { return *proxy_; }
 
  private:
-  raw_ptr<AppServiceProxy> proxy_;
+  raw_ptr<AppServiceProxy> proxy_ = nullptr;
   std::unique_ptr<apps::FakeIconLoader> fake_icon_loader_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };

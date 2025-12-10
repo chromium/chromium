@@ -49,6 +49,14 @@ void AppSearchProviderTestBase::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
 
+void AppSearchProviderTestBase::TearDown() {
+  controller_.reset();
+  app_search_ = nullptr;
+  data_source_.reset();
+  search_controller_.reset();
+  AppListTestBase::TearDown();
+}
+
 void AppSearchProviderTestBase::InitializeSearchProvider() {
   search_controller_ = std::make_unique<TestSearchController>();
   data_source_ =
