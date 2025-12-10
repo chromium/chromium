@@ -98,8 +98,8 @@ inline constexpr char kGlicClosedCaptioningEnabled[] =
     "glic.closed_captioning_enabled";
 
 // Bool pref for the daisy chain new tabs setting.
-inline constexpr char kGlicDaisyChainNewTabsEnabled[] =
-    "glic.daisy_chain_new_tabs_enabled";
+inline constexpr char kGlicKeepSidepanelOpenOnNewTabsEnabled[] =
+    "glic.keep_sidepanel_open_on_new_tabs_enabled";
 
 // Value enums for the "glic.actuation_on_web" pref. Integer pref that
 // determines if glic actuation is enabled. This is controlled from the

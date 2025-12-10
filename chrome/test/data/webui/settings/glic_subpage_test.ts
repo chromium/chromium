@@ -583,6 +583,54 @@ suite('GlicSubpage', function() {
     });
   });
 
+  suite('KeepSidepanelOpenOnNewTabsToggleEnabled', () => {
+    test('KeepSidepanelOpenOnNewTabsFeatureEnabled', () => {
+      const keepSidepanelOpenOnNewTabsToggle =
+          $<SettingsToggleButtonElement>('keepSidepanelOpenOnNewTabsToggle')!;
+      assertTrue(isVisible(keepSidepanelOpenOnNewTabsToggle));
+    });
+
+    test('KeepSidepanelOpenOnNewTabsToggleEnabled', () => {
+      page.setPrefValue(PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, true);
+
+      assertTrue(
+          $<SettingsToggleButtonElement>(
+              'keepSidepanelOpenOnNewTabsToggle')!.checked);
+    });
+
+    test('KeepSidepanelOpenOnNewTabsToggleDisabled', () => {
+      page.setPrefValue(
+          PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, false);
+
+      assertFalse(
+          $<SettingsToggleButtonElement>(
+              'keepSidepanelOpenOnNewTabsToggle')!.checked);
+    });
+
+    test('KeepSidepanelOpenOnNewTabsToggleChanged', async () => {
+      page.setPrefValue(
+          PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, false);
+
+      const keepSidepanelOpenOnNewTabsToggle =
+          $<SettingsToggleButtonElement>('keepSidepanelOpenOnNewTabsToggle')!;
+      assertTrue(!!keepSidepanelOpenOnNewTabsToggle);
+
+      keepSidepanelOpenOnNewTabsToggle.click();
+      assertTrue(
+          page.getPref(PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED).value);
+      assertTrue(keepSidepanelOpenOnNewTabsToggle.checked);
+      await verifyUserAction(
+          'Glic.Settings.KeepSidepanelOpenOnNewTabs.Enabled');
+
+      keepSidepanelOpenOnNewTabsToggle.click();
+      assertFalse(
+          page.getPref(PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED).value);
+      assertFalse(keepSidepanelOpenOnNewTabsToggle.checked);
+      await verifyUserAction(
+          'Glic.Settings.KeepSidepanelOpenOnNewTabs.Disabled');
+    });
+  });
+
   suite('DefaultTabContextSettingFeatureEnabled', () => {
     test('DefaultTabContextSettingFeatureEnabled', () => {
       const defaultTabAccessToggle =

@@ -524,6 +524,26 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubageClosedCaptionsToggleTest,
           "runMochaSuite('GlicSubpage ClosedCaptionsToggleEnabled')");
 }
 
+class SettingsGlicSubpageKeepSidepanelOpenOnNewTabsToggleTest
+    : public SettingsBrowserTest {
+ public:
+  SettingsGlicSubpageKeepSidepanelOpenOnNewTabsToggleTest() {
+    scoped_feature_list_.InitWithFeatures({features::kGlicDaisyChainNewTabs},
+                                          /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SettingsGlicSubpageKeepSidepanelOpenOnNewTabsToggleTest,
+    SettingsGlicSubpageKeepSidepanelOpenOnNewTabsToggleEnabled) {
+  RunTest(
+      "settings/glic_subpage_test.js",
+      "runMochaSuite('GlicSubpage KeepSidepanelOpenOnNewTabsToggleEnabled')");
+}
+
 class SettingsGlicSubPageDefaultTabContextToggleTest
     : public SettingsBrowserTest {
  public:
