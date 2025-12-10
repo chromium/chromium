@@ -162,10 +162,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   };
 
  private:
-  // Responds to Lens signal indicating that the backend is done processing the
-  // attachment and can serve up-to-date suggestions.
-  void OnLensSignalsReady();
-
   // AutocompleteController::Observer implementation.
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;

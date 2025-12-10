@@ -302,49 +302,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    public void getAttachmentTokens_returnsEmptyListWhenMediatorNotSet() {
-        List<String> tokens = mCoordinator.getAttachmentTokens();
-        assertNotNull(tokens);
-        assertTrue(tokens.isEmpty());
-    }
-
-    @Test
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
-    public void getAttachmentTokens_returnsEmptyListWhenMediatorHasNoAttachments() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
-        ShadowLooper.idleMainLooper();
-
-        List<String> tokens = mCoordinator.getAttachmentTokens();
-        assertNotNull(tokens);
-        assertTrue(tokens.isEmpty());
-    }
-
-    @Test
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
-    public void getAttachmentTokens_returnsTokensWhenMediatorHasAttachments() {
-        doReturn(/* nativeInstance= */ 1L)
-                .when(mComposeboxController)
-                .init(any(Profile.class), any(ComposeBoxQueryControllerBridge.class));
-        mProfileSupplier.set(mProfile);
-        ShadowLooper.idleMainLooper();
-
-        // Mock mediator with attachment tokens.
-        var mockMediator = mock(FuseboxMediator.class);
-        var testTokens = java.util.Arrays.asList("token1", "token2");
-        doReturn(testTokens).when(mockMediator).getAttachmentTokens();
-        mCoordinator.setMediatorForTesting(mockMediator);
-
-        var tokens = mCoordinator.getAttachmentTokens();
-        assertNotNull(tokens);
-        assertEquals(2, tokens.size());
-        assertEquals("token1", tokens.get(0));
-        assertEquals("token2", tokens.get(1));
-    }
-
-    @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void createImageButtonVisibility_isCreateImagesEligible() {
         doReturn(/* nativeInstance= */ 1L)

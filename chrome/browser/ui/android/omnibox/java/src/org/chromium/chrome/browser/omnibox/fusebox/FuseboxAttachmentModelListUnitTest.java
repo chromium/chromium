@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -47,6 +48,7 @@ public class FuseboxAttachmentModelListUnitTest {
 
     @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private FuseboxAttachmentModelList.FuseboxAttachmentChangeListener mListener;
 
     private Resources mResources;
     private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
@@ -70,6 +72,7 @@ public class FuseboxAttachmentModelListUnitTest {
                 mComposeBoxQueryControllerBridge);
         verify(mComposeBoxQueryControllerBridge).setFileUploadObserver(mFuseboxAttachmentModelList);
         mResources = ContextUtils.getApplicationContext().getResources();
+        mFuseboxAttachmentModelList.addAttachmentChangeListener(mListener);
     }
 
     private FuseboxAttachment createTabAttachment(int tabId, String token) {
@@ -453,5 +456,84 @@ public class FuseboxAttachmentModelListUnitTest {
         mFuseboxAttachmentModelList.add(tabAttachment);
 
         assertEquals("token", tabAttachment.getToken());
+    }
+
+    @Test
+    public void batchEdit_singleAdd_notifiesChangeOnce() {
+        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+                .thenReturn("valid-token");
+
+        try (var token = mFuseboxAttachmentModelList.beginBatchEdit()) {
+            FuseboxAttachment attachment = createTestAttachment("test");
+            mFuseboxAttachmentModelList.add(attachment);
+            verify(mListener, never()).onAttachmentListChanged();
+        }
+
+        verify(mListener).onAttachmentListChanged();
+        assertEquals(1, mFuseboxAttachmentModelList.size());
+    }
+
+    @Test
+    public void batchEdit_multipleAdds_notifiesChangeOnce() {
+        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+                .thenReturn("token1", "token2");
+
+        try (var token = mFuseboxAttachmentModelList.beginBatchEdit()) {
+            mFuseboxAttachmentModelList.add(createTestAttachment("first"));
+            mFuseboxAttachmentModelList.add(createTestAttachment("second"));
+            verify(mListener, never()).onAttachmentListChanged();
+        }
+
+        verify(mListener).onAttachmentListChanged();
+        assertEquals(2, mFuseboxAttachmentModelList.size());
+    }
+
+    @Test
+    public void batchEdit_noModifications_doesNotNotifyChange() {
+        try (var token = mFuseboxAttachmentModelList.beginBatchEdit()) {
+            // No modifications
+        }
+        verify(mListener, never()).onAttachmentListChanged();
+    }
+
+    @Test
+    public void batchEdit_nestedEdits_notifiesChangeOnceAtTheEnd() {
+        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+                .thenReturn("token1", "token2");
+
+        try (var outerToken = mFuseboxAttachmentModelList.beginBatchEdit()) {
+            mFuseboxAttachmentModelList.add(createTestAttachment("first"));
+
+            try (var innerToken = mFuseboxAttachmentModelList.beginBatchEdit()) {
+                mFuseboxAttachmentModelList.add(createTestAttachment("second"));
+            }
+            verify(mListener, never()).onAttachmentListChanged();
+        }
+
+        verify(mListener).onAttachmentListChanged();
+        assertEquals(2, mFuseboxAttachmentModelList.size());
+    }
+
+    @Test
+    public void batchEdit_addAndRemove_notifiesChangeOnce() {
+        when(mComposeBoxQueryControllerBridge.addFile(anyString(), anyString(), any()))
+                .thenReturn("token1", "token2");
+        FuseboxAttachment attachment1 = createTestAttachment("first");
+        FuseboxAttachment attachment2 = createTestAttachment("second");
+
+        // Add an attachment before starting the batch edit.
+        mFuseboxAttachmentModelList.add(attachment1);
+        // Reset the listener to ignore the notification from the previous add.
+        reset(mListener);
+
+        try (var token = mFuseboxAttachmentModelList.beginBatchEdit()) {
+            mFuseboxAttachmentModelList.add(attachment2);
+            mFuseboxAttachmentModelList.remove(attachment1);
+            verify(mListener, never()).onAttachmentListChanged();
+        }
+
+        verify(mListener).onAttachmentListChanged();
+        assertEquals(1, mFuseboxAttachmentModelList.size());
+        assertEquals(attachment2, mFuseboxAttachmentModelList.get(0));
     }
 }

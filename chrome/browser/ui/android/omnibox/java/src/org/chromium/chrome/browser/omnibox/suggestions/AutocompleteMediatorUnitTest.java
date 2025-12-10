@@ -133,9 +133,6 @@ public class AutocompleteMediatorUnitTest {
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     private @Mock CachedZeroSuggestionsManager.OverridesForTesting
             mMockCachedZeroSuggestionsManager;
-
-    private final ObservableSupplierImpl<Boolean> mAttachmentsPresentSupplier =
-            new ObservableSupplierImpl<>(false);
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
     private List<AutocompleteMatch> mSuggestionsList;
@@ -181,10 +178,7 @@ public class AutocompleteMediatorUnitTest {
                 .when(mFuseboxCoordinator)
                 .getAutocompleteRequestTypeSupplier();
 
-        lenient()
-                .doReturn(mAttachmentsPresentSupplier)
-                .when(mFuseboxCoordinator)
-                .getAttachmentsPresentSupplier();
+        lenient().doReturn(0).when(mFuseboxCoordinator).getAttachmentsCount();
 
         mMediator =
                 new AutocompleteMediator(

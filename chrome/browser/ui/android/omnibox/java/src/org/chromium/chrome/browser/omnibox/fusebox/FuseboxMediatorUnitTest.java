@@ -124,8 +124,6 @@ public class FuseboxMediatorUnitTest {
     private ObservableSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
             new ObservableSupplierImpl<>(FuseboxState.DISABLED);
-    private final ObservableSupplierImpl<Boolean> mAttachmentsPresentSupplier =
-            new ObservableSupplierImpl<>(false);
     private boolean mCompactModeEnabled;
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
@@ -163,7 +161,6 @@ public class FuseboxMediatorUnitTest {
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
-                        mAttachmentsPresentSupplier,
                         mSnackbarManager,
                         mTemplateUrlServiceSupplier);
         Clipboard.setInstanceForTesting(mClipboard);
@@ -193,7 +190,6 @@ public class FuseboxMediatorUnitTest {
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
-                        mAttachmentsPresentSupplier,
                         mSnackbarManager,
                         mTemplateUrlServiceSupplier);
     }
@@ -543,7 +539,6 @@ public class FuseboxMediatorUnitTest {
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
                         mFuseboxStateSupplier,
-                        mAttachmentsPresentSupplier,
                         mSnackbarManager,
                         mTemplateUrlServiceSupplier);
 
@@ -670,51 +665,6 @@ public class FuseboxMediatorUnitTest {
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
         mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
         assertEquals(AutocompleteRequestType.SEARCH, (int) mAutocompleteRequestTypeSupplier.get());
-    }
-
-    @Test
-    public void getAttachmentTokens_returnsEmptyListWhenEmpty() {
-        List<String> tokens = mMediator.getAttachmentTokens();
-        assertNotNull(tokens);
-        assertTrue(tokens.isEmpty());
-    }
-
-    @Test
-    public void getAttachmentTokens_returnsTokensAfterAddingAttachment() {
-        addTabAttachment("test");
-
-        var tokens = mMediator.getAttachmentTokens();
-        assertNotNull(tokens);
-        assertEquals(1, tokens.size());
-        assertEquals("token-test", tokens.get(0));
-    }
-
-    @Test
-    public void getAttachmentTokens_returnsEmptyListAfterRemovingAllAttachments() {
-        addTabAttachment("test");
-
-        // Verify attachment was added
-        assertNotNull(mMediator.getAttachmentTokens());
-        assertEquals(1, mMediator.getAttachmentTokens().size());
-
-        // Remove all attachments
-        mAttachments.clear();
-
-        List<String> tokens = mMediator.getAttachmentTokens();
-        assertNotNull(tokens);
-        assertTrue(tokens.isEmpty());
-    }
-
-    @Test
-    public void getAttachmentTokens_returnsMultipleTokensInOrder() {
-        addTabAttachment("tab1");
-        addTabAttachment("tab2");
-
-        var tokens = mMediator.getAttachmentTokens();
-        assertNotNull(tokens);
-        assertEquals(2, tokens.size());
-        assertEquals("token-tab1", tokens.get(0));
-        assertEquals("token-tab2", tokens.get(1));
     }
 
     @Test
@@ -953,29 +903,5 @@ public class FuseboxMediatorUnitTest {
     public void testFailedUpload() {
         mMediator.onAttachmentUploadFailed();
         verify(mSnackbarManager).showSnackbar(any());
-    }
-
-    @Test
-    public void testAttachmentsPresentSupplier_updatedOnAdd() {
-        assertFalse(mAttachmentsPresentSupplier.get());
-        addTabAttachment("test");
-        assertTrue(mAttachmentsPresentSupplier.get());
-    }
-
-    @Test
-    public void testAttachmentsPresentSupplier_updatedOnRemove() {
-        addTabAttachment("test");
-        assertTrue(mAttachmentsPresentSupplier.get());
-        mAttachments.remove(mAttachments.get(0));
-        assertFalse(mAttachmentsPresentSupplier.get());
-    }
-
-    @Test
-    public void testAttachmentsPresentSupplier_updatedOnClear() {
-        addTabAttachment("test1");
-        addTabAttachment("test2");
-        assertTrue(mAttachmentsPresentSupplier.get());
-        mAttachments.clear();
-        assertFalse(mAttachmentsPresentSupplier.get());
     }
 }

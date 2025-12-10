@@ -246,8 +246,6 @@ public class LocationBarMediatorTest {
                     new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
     private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
             new ObservableSupplierImpl<>(FuseboxState.EXPANDED);
-    private final ObservableSupplierImpl<Boolean> mAttachmentsPresentSupplier =
-            new ObservableSupplierImpl<>(false);
 
     // Members capturing final state of the LocationBarLayout elements.
     private boolean mNavigateButtonIsVisible;
@@ -289,9 +287,6 @@ public class LocationBarMediatorTest {
                 .setNavigateButtonVisibility(anyBoolean());
 
         doReturn(mFuseboxStateSupplier).when(mFuseboxCoordinator).getFuseboxStateSupplier();
-        doReturn(mAttachmentsPresentSupplier)
-                .when(mFuseboxCoordinator)
-                .getAttachmentsPresentSupplier();
         doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
 
         AppBannerManagerJni.setInstanceForTesting(mAppBannerManagerJni);
