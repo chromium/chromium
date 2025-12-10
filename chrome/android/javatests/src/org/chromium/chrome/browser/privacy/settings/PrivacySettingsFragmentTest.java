@@ -53,6 +53,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -178,13 +179,6 @@ public class PrivacySettingsFragmentTest {
                 () ->
                         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                 .getBoolean(Pref.PRIVACY_GUIDE_VIEWED));
-    }
-
-    private void setShowTrackingProtection(boolean show) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                .setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, show));
     }
 
     @Before
@@ -329,8 +323,8 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
+    @EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testTrackingProtection() throws IOException {
-        setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the 3PC and DNT rows are shown instead of Tracking Protection.

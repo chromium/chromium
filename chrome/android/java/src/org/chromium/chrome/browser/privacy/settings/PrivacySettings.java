@@ -253,7 +253,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         syncAndServicesLink.setSummary(buildFooterString());
 
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
-        if (showTrackingProtectionUi(getProfile())) {
+        if (showTrackingProtectionUi()) {
             if (thirdPartyCookies != null) thirdPartyCookies.setVisible(false);
             Preference trackingProtection = findPreference(PREF_TRACKING_PROTECTION);
             trackingProtection.setVisible(true);
@@ -486,9 +486,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                         : R.string.website_settings_category_javascript_optimizer_blocked_list);
     }
 
-    private static boolean showTrackingProtectionUi(Profile profile) {
-        return UserPrefs.get(profile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
+    private static boolean showTrackingProtectionUi() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
     }
 
     /** Shows the advanced-protection-section if needed. */
@@ -630,7 +629,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                                 PREF_HTTPS_FIRST_MODE_LEGACY, context.getString(textId), indexData);
                     }
 
-                    if (showTrackingProtectionUi(profile)) {
+                    if (showTrackingProtectionUi()) {
                         indexData.removeEntry(getUniqueId(PREF_THIRD_PARTY_COOKIES));
                     } else {
                         indexData.removeEntry(getUniqueId(PREF_TRACKING_PROTECTION));
