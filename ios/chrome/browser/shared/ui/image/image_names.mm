@@ -6,7 +6,6 @@
 
 // Branded image names.
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-NSString* const kChromeAIHubHeaderImage = @"chrome_ai_hub_header";
 NSString* const kChromeDefaultBrowserIllustrationImage =
     @"chrome_default_browser_illustration";
 NSString* const kChromeDefaultBrowserScreenBannerImage =
@@ -27,12 +26,7 @@ NSString* const kGooglePasswordManagerWidgetPromoDisabledImage =
     @"google_password_manager_widget_promo_disabled";
 NSString* const kGoogleSettingsPasswordsInOtherAppsBannerImage =
     @"google_settings_passwords_in_other_apps_banner";
-NSString* const kLensKeyboardAccessoryImage = @"lens_keyboard_accessory";
-NSString* const kFedexCarrierImage = @"parcel_tracking_carrier_fedex";
-NSString* const kUPSCarrierImage = @"parcel_tracking_carrier_ups";
-NSString* const kUSPSCarrierImage = @"parcel_tracking_carrier_usps";
 #else
-NSString* const kChromiumAIHubHeaderImage = @"chromium_ai_hub_header";
 NSString* const kChromiumDefaultBrowserIllustrationImage =
     @"chromium_default_browser_illustration";
 NSString* const kChromiumDefaultBrowserScreenBannerImage =
