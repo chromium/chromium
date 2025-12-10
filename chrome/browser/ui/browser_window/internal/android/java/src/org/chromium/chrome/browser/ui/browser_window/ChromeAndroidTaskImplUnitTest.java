@@ -15,8 +15,10 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -883,6 +885,43 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.maximize();
 
         // Assert.
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
+
+        var capturedBounds = boundsCaptor.getValue();
+        assertEquals(
+                "Not moving to target bound",
+                DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX,
+                capturedBounds);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    public void maximize_whenWindowMinimized_shouldActivateWindow() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+        var mockActivityManager =
+                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        chromeAndroidTask.minimize();
+        assertEquals(
+                "Future state of isVisible() should be false when minimize() is pending",
+                false,
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isVisibleFuture(chromeAndroidTask.getState()));
+        chromeAndroidTask.onTaskVisibilityChanged(/* taskId= */ 1, /* isVisible= */ false);
+        ApplicationStatus.onStateChangeForTesting(mockActivity, ActivityState.STOPPED);
+
+        // Act.
+        chromeAndroidTask.maximize();
+
+        // Assert.
+        verify(mockActivityManager, description("Task should be activated"))
+                .moveTaskToFront(/* taskId= */ eq(1), anyInt());
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
         verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
 

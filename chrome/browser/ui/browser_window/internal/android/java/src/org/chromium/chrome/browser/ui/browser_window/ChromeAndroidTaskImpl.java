@@ -1216,6 +1216,10 @@ final class ChromeAndroidTaskImpl
             mRestoredBoundsInPx = getCurrentBoundsInPxLocked(activity);
         }
 
+        if (isMinimizedInternalLocked(activity)) {
+            activateInternalLocked(activity);
+        }
+
         Rect maxBoundsInPx =
                 ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(activity.getWindowManager());
         mPendingActionManager.requestMaximize(
