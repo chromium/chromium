@@ -168,7 +168,9 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
     TopAlignedImageView* snapshotView = [[TopAlignedImageView alloc] init];
     snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
     if (IsTabGridEmptyThumbnailUIEnabled()) {
-      snapshotView.layer.cornerRadius = kGridCellCornerRadius;
+      // Make nested corner radius so that inset spacing is always consistent
+      // https://cloudfour.com/thinks/the-math-behind-nesting-rounded-corners.
+      snapshotView.layer.cornerRadius = kGridCellCornerRadius - kSnapshotInset;
       snapshotView.layer.masksToBounds = YES;
     }
 
@@ -280,7 +282,8 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
       self.dimmingView.translatesAutoresizingMaskIntoConstraints = NO;
       self.dimmingView.backgroundColor =
           [[UIColor blackColor] colorWithAlphaComponent:0.5];
-      self.dimmingView.layer.cornerRadius = kGridCellCornerRadius;
+      self.dimmingView.layer.cornerRadius =
+          kGridCellCornerRadius - kSnapshotInset;
       self.dimmingView.hidden = YES;
       self.dimmingView.alpha = 0.0;
       [contentContainer addSubview:self.dimmingView];
@@ -845,6 +848,8 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   self.groupingBackgroundView.hidden = NO;
   self.dimmingView.hidden = NO;
   self.dimmingView.alpha = 1.0;
+  self.containerView.layer.cornerRadius =
+      kGridCellCornerRadius - kSnapshotInset;
   [self.containerView bringSubviewToFront:self.dimmingView];
   self.containerView.transform = CGAffineTransformMakeScale(
       kGridCellHighlightScaleTransform, kGridCellHighlightScaleTransform);
@@ -862,6 +867,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   self.groupingBackgroundView.alpha = 0.0;
   self.dimmingView.alpha = 0.0;
   self.containerView.transform = CGAffineTransformIdentity;
+  self.containerView.layer.cornerRadius = kGridCellCornerRadius;
   if (!self.border.hidden) {
     self.border.layer.borderWidth = kGridCellSelectionRingTintWidth;
   }

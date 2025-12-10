@@ -154,7 +154,8 @@ const CGFloat kTopBarLargeInset = 20;
     self.layer.shadowRadius = 4.0f;
     self.layer.shadowOpacity = 0.5f;
     self.layer.masksToBounds = NO;
-    _groupSnapshotsView.layer.cornerRadius = kGridCellCornerRadius;
+    _groupSnapshotsView.layer.cornerRadius =
+        kGridCellCornerRadius - kSnapshotViewLeadingOffset;
     _groupSnapshotsView.layer.masksToBounds = YES;
 
     NSArray* constraints = @[
@@ -207,6 +208,8 @@ const CGFloat kTopBarLargeInset = 20;
           [[UIColor blackColor] colorWithAlphaComponent:0.5];
       self.dimmingView.hidden = YES;
       self.dimmingView.alpha = 0.0;
+      self.dimmingView.layer.cornerRadius =
+          kGridCellCornerRadius - kSnapshotViewLeadingOffset;
       [contentContainer addSubview:self.dimmingView];
       AddSameConstraints(self.dimmingView, contentContainer);
     }
@@ -668,6 +671,8 @@ const CGFloat kTopBarLargeInset = 20;
   self.groupingBackgroundView.hidden = NO;
   self.dimmingView.hidden = NO;
   self.dimmingView.alpha = 1.0;
+  self.containerView.layer.cornerRadius =
+      kGridCellCornerRadius - kSnapshotViewLeadingOffset;
   [self.containerView bringSubviewToFront:self.dimmingView];
   self.containerView.transform = CGAffineTransformMakeScale(
       kGridCellHighlightScaleTransform, kGridCellHighlightScaleTransform);
@@ -685,6 +690,7 @@ const CGFloat kTopBarLargeInset = 20;
   self.groupingBackgroundView.alpha = 0.0;
   self.dimmingView.alpha = 0.0;
   self.containerView.transform = CGAffineTransformIdentity;
+  self.containerView.layer.cornerRadius = kGridCellCornerRadius;
   if (!self.border.hidden) {
     self.border.layer.borderWidth = kGridCellSelectionRingTintWidth;
   }

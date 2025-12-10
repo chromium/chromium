@@ -27,7 +27,7 @@ const CGFloat kBottomFaviconViewScaleFactor = 0.75;
 const CGFloat kFaviconViewWidthAndHeightAnchor = 24;
 const CGFloat kFaviconOffset = 8;
 const CGFloat kFaviconSpacing = 2.0;
-const CGFloat kTabViewCornerRadius = 12;
+const CGFloat kTabViewCornerRadius = 16;
 const CGFloat kFaviconCornerRadius = 8;
 
 }  // namespace

@@ -63,7 +63,7 @@ const int kGridHeaderValueColor = 0xEBEBF5;
 const CGFloat kGridHeaderContentSpacing = 4.0f;
 
 // GridCell dimensions.
-const CGFloat kGridCellCornerRadius = 16.0f;
+const CGFloat kGridCellCornerRadius = 20.0f;
 const CGFloat kGridCellIconCornerRadius = 3.0f;
 const CGFloat kGroupGridCellCornerRadius = 12.0f;
 const CGFloat kGroupGridFaviconViewCornerRadius = 3.0f;
@@ -88,5 +88,5 @@ const CGFloat kGridCellPriceDropTopSpacing = 10.0f;
 const CGFloat kGridCellPriceDropLeadingSpacing = 10.0f;
 const CGFloat kGridCellPriceDropTrailingSpacing = 10.0f;
 
-const CGFloat kGridCellHighlightScaleTransform = 0.8f;
+const CGFloat kGridCellHighlightScaleTransform = 0.65f;
 const CGFloat kGridCellHighlightDuration = 0.2f;
