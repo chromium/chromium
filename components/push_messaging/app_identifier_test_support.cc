@@ -11,13 +11,13 @@ namespace push_messaging {
 
 // static
 AppIdentifier AppIdentifierTestSupport::GenerateId(
-    const GURL& origin,
+    std::string_view origin,
     int64_t service_worker_registration_id) {
   // To bypass DCHECK in AppIdentifier::Generate, we just use
   // it to generate app_id, and then use private constructor.
   std::string app_id =
       AppIdentifier::Generate(GURL("https://www.example.com/"), 1).app_id();
-  return AppIdentifier(app_id, origin, service_worker_registration_id);
+  return AppIdentifier(app_id, GURL(origin), service_worker_registration_id);
 }
 
 // static

@@ -11,15 +11,13 @@
 #include "base/time/time.h"
 #include "components/push_messaging/app_identifier.h"
 
-class GURL;
-
 namespace push_messaging {
 
 // Set of functions commonly used in AppIdentifier related tests which needs the
 // access to the internal state of AppIdentifier.
 class AppIdentifierTestSupport {
  protected:
-  static AppIdentifier GenerateId(const GURL& origin,
+  static AppIdentifier GenerateId(std::string_view origin,
                                   int64_t service_worker_registration_id);
 
   static void ExpectAppIdentifiersEqual(const AppIdentifier& a,

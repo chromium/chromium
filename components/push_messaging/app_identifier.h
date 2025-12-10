@@ -10,6 +10,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -22,9 +23,6 @@ namespace push_messaging {
 // The prefix used for all push messaging application ids.
 extern const char kAppIdentifierPrefix[];
 extern const size_t kPrefixLength;
-
-// Ok to use '#' as separator since only the origin of the url is used.
-inline constexpr char kPrefValueSeparator = '#';
 
 inline constexpr size_t kGuidLength = 36;  // "%08X-%04X-%04X-%04X-%012llX"
 
@@ -52,15 +50,6 @@ class AppIdentifier final {
   // Creates an invalid AppIdentifier which will return is_null() and fail on
   // DCheckValid(), accessing any fields triggers DCheck failure.
   static AppIdentifier GenerateInvalid();
-
-  // Creates an AppIdentifier by directly forwarding the parameters to the
-  // constructor; the returned AppIdentifier instance will be checked by
-  // DCheckValid().
-  static AppIdentifier GenerateDirect(
-      const std::string& app_id,
-      const GURL& origin,
-      int64_t service_worker_registration_id,
-      const std::optional<base::Time>& expiration_time = std::nullopt);
 
   // Returns true if this identifier does not represent an app (i.e. this was
   // returned by a failed Find call).
@@ -99,6 +88,19 @@ class AppIdentifier final {
   // Validates that all the fields contain valid values.
   void DCheckValid() const;
 
+  // Returns a string representation of the AppIdentifier, an identical
+  // AppIdentifier can be created from the returned std::string via
+  // the static FromPrefValue function.
+  // Calling this function on an invalid AppIdentifier triggers DCHECK failures.
+  std::string ToPrefValue() const;
+
+  // Returns a DCheckValid validated AppIdentifier if the pref_value can be
+  // disassembled, or std::nullopt. If succeeded, the |app_id| will be used to
+  // create an identical AppIdentifier instead of using a new UUID.
+  static std::optional<AppIdentifier> FromPrefValue(
+      const std::string& app_id,
+      std::string_view pref_value);
+
  private:
   friend class AppIdentifierTestSupport;
 
@@ -106,7 +108,7 @@ class AppIdentifier final {
       const GURL& origin,
       int64_t service_worker_registration_id,
       bool use_instance_id,
-      const std::optional<base::Time>& expiration_time = std::nullopt);
+      const std::optional<base::Time>& expiration_time);
 
   // Constructs an invalid app identifier.
   AppIdentifier();
