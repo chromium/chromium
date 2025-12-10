@@ -764,9 +764,11 @@ bool PhysicalFragment::DependsOnPercentageBlockSize(
   // We only need to know about if this flex-item has a %-block-size child if
   // the "definiteness" changes, not if the percentage resolution size changes.
   const BlockNode node = To<BlockNode>(builder.node_);
+  const bool is_flex_item =
+      !RuntimeEnabledFeatures::LayoutFlexCacheFixEnabled() && node.IsFlexItem();
   if (builder.has_descendant_that_depends_on_percentage_block_size_ &&
       (node.UseParentPercentageResolutionBlockSizeForChildren() ||
-       node.IsFlexItem())) {
+       is_flex_item)) {
     return true;
   }
 

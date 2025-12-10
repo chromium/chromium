@@ -817,6 +817,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     }
 
     const ComputedStyle& child_style = child.Style();
+    const float flex_grow = child_style.ResolvedFlexGrow(Style());
+    const float flex_shrink = child_style.ResolvedFlexShrink(Style());
     const ItemPosition alignment = ResolvedAlignSelf(child_style);
 
     std::optional<LayoutUnit> max_content_contribution;
@@ -1055,6 +1057,63 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       })();
 
       const LayoutUnit content_size_suggestion = ([&]() -> LayoutUnit {
+        const Length& min_length_in_main_axis = is_horizontal_flow_
+                                                    ? child_style.MinWidth()
+                                                    : child_style.MinHeight();
+
+        // This is an extremely subtle optimization.
+        //
+        // If our specified-size suggestion is smaller than our base-size, then
+        // we can skip determining the content-size in certain scenarios.
+        //
+        // Below we always take the min of the specified-size, and the
+        // content-size. This means that we'll only ever use the auto min-size
+        // if the flex-item has to *shrink*.
+        //
+        // We can't use this optimization with calc-size() as something like:
+        // "min-height: calc-size(auto, size * 2)" may result in the min-size
+        // being greater than the specified-size.
+        //
+        // We'll never shrink a flex-item under the conditions specified below.
+        if (RuntimeEnabledFeatures::LayoutFlexCacheFixEnabled() &&
+            min_length_in_main_axis.IsAuto() &&
+            specified_size_suggestion <= base_border_size) {
+          // If flex-shrink is zero we can't shrink.
+          if (flex_shrink == 0.f) {
+            return LayoutUnit::Max();
+          }
+
+          // Determine if our main-axis content-size is definite. We can't
+          // apply this optimization if its indefinite, as a calc-size() on the
+          // flexbox may cause items to shrink.
+          const LayoutUnit main_axis_content_size = MainAxisContentExtent();
+          if (main_axis_content_size != LayoutUnit::Max()) {
+            const LayoutUnit main_axis_margins =
+                is_horizontal_flow_ ? physical_child_margins.HorizontalSum()
+                                    : physical_child_margins.VerticalSum();
+
+            // If our margin-size is smaller than the (definite) main-axis
+            // content-size we can't shrink if:
+            //  - We are a wrapping flexbox.
+            //  - We are a single flex-item.
+            // E.g. we are the only flex-item on a line.
+            //
+            // NOTE: This optimization could potentially expanded to determine
+            // if there is any (positive) free-space on a line, however this
+            // would mean an additional pass of the items, and re-computing a
+            // bunch of objects needed. It likely isn't worth it.
+            if (specified_size_suggestion + main_axis_margins <=
+                main_axis_content_size) {
+              if (is_multi_line_) {
+                return LayoutUnit::Max();
+              }
+              if (iterator.size() == 1u) {
+                return LayoutUnit::Max();
+              }
+            }
+          }
+        }
+
         const LayoutUnit content_size =
             is_main_axis_inline_axis
                 ? MinMaxSizesFunc(SizeType::kContent).sizes.min_size
@@ -1121,9 +1180,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         is_column_ && !is_main_axis_inline_axis &&
         ChildAvailableSize().block_size == kIndefiniteSize &&
         is_used_flex_basis_indefinite && !AspectRatioProvidesBlockMainSize();
-
-    const float flex_grow = child_style.ResolvedFlexGrow(Style());
-    const float flex_shrink = child_style.ResolvedFlexShrink(Style());
 
     const auto container_writing_direction =
         GetConstraintSpace().GetWritingDirection();

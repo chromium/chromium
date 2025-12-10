@@ -3127,6 +3127,10 @@
       public: true,
     },
     {
+      name: "LayoutFlexCacheFix",
+      status: "stable",
+    },
+    {
       name: "LayoutFlexNewRowAlgorithm",
       status: "stable",
     },

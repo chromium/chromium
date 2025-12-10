@@ -217,8 +217,9 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     }
 
     // Grid/flex/fieldset/grid-lanes can have their children calculate their
-    // size based on their parent's final block-size. E.g. <div style="display:
-    // flex;">
+    // size based on their parent's final block-size. E.g.
+    //
+    // <div style="display: flex;">
     //   <div style="display: flex;"> <!-- or "display: grid;" -->
     //     <!-- Child will stretch to the parent's block-size -->
     //     <div></div>
@@ -300,7 +301,10 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   // etc.
   if (is_old_initial_block_size_indefinite !=
       is_initial_block_size_indefinite) {
-    if (node.IsGrid() || node.IsGridLanes() ||
+    const bool is_flexbox =
+        RuntimeEnabledFeatures::LayoutFlexCacheFixEnabled() &&
+        node.IsFlexibleBox();
+    if (is_flexbox || node.IsGrid() || node.IsGridLanes() ||
         has_descendant_that_depends_on_percentage_block_size) {
       return LayoutCacheStatus::kNeedsLayout;
     }

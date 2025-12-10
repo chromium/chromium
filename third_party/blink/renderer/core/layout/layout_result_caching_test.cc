@@ -1484,7 +1484,7 @@ TEST_F(LayoutResultCachingTest, HitRowFlexBoxMeasureAndLayout) {
   EXPECT_NE(result, nullptr);
 }
 
-TEST_F(LayoutResultCachingTest, HitFlexLegacyImg) {
+TEST_F(LayoutResultCachingTest, MissFlexReplaced) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .bfc { display: flex; flex-direction: column; width: 300px; }
@@ -1492,12 +1492,12 @@ TEST_F(LayoutResultCachingTest, HitFlexLegacyImg) {
     </style>
     <div class="bfc">
       <div id="test">
-        <img />
+        <canvas width=200 height=200></canvas>
       </div>
     </div>
     <div class="bfc" style="height: 200px;">
       <div id="src">
-        <img />
+        <canvas width=200 height=200></canvas>
       </div>
     </div>
   )HTML");
@@ -1508,45 +1508,17 @@ TEST_F(LayoutResultCachingTest, HitFlexLegacyImg) {
   LayoutCacheStatus cache_status;
   const LayoutResult* result = TestCachedLayoutResult(test, src, &cache_status);
 
-  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
-  EXPECT_NE(result, nullptr);
-}
-
-TEST_F(LayoutResultCachingTest, HitFlexLegacyGrid) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      .bfc { display: flex; flex-direction: column; width: 300px; }
-      .bfc > * { display: flex; }
-      .grid { display: grid; }
-    </style>
-    <div class="bfc">
-      <div id="test">
-        <div class="grid"></div>
-      </div>
-    </div>
-    <div class="bfc" style="height: 200px;">
-      <div id="src">
-        <div class="grid"></div>
-      </div>
-    </div>
-  )HTML");
-
-  auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
-  auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
-
-  LayoutCacheStatus cache_status;
-  const LayoutResult* result = TestCachedLayoutResult(test, src, &cache_status);
-
-  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
-  EXPECT_NE(result, nullptr);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(result, nullptr);
 }
 
 TEST_F(LayoutResultCachingTest, HitFlexDefiniteChange) {
   SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-direction: column;">
+    <div style="display: flex; flex-direction: column; height: 200px;">
       <div style="height: 200px;" id=target1>
         <div style="height: 100px"></div>
       </div>
+      <div></div>
     </div>
   )HTML");
 
