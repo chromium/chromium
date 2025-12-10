@@ -153,9 +153,8 @@ std::unique_ptr<views::View> TabCollectionNode::Initialize() {
         child_ptr =
             std::get<std::unique_ptr<tabs::TabInterface>>(child_data).get();
       }
-      auto child_node = std::make_unique<TabCollectionNode>(child_ptr);
-      std::unique_ptr<views::View> child_view = child_node->Initialize();
-      AddChild(std::move(child_view), std::move(child_node), children_.size());
+      AddNewChild(GetPassKey(), child_ptr, children_.size(),
+                  /*perform_initialization=*/true);
     }
   } else {
     CHECK(std::holds_alternative<const tabs::TabInterface*>(node_data_));
@@ -203,14 +202,16 @@ void TabCollectionNode::AddNewChild(base::PassKey<TabCollectionNode> pass_key,
                                     size_t model_index,
                                     bool perform_initialization) {
   auto child_node = std::make_unique<TabCollectionNode>(node_data);
+  auto* child_node_ptr = child_node.get();
+  AddChildNode(std::move(child_node), model_index);
 
   std::unique_ptr<views::View> child_node_view;
   if (perform_initialization) {
-    child_node_view = child_node->Initialize();
+    child_node_view = child_node_ptr->Initialize();
   } else {
-    child_node_view = child_node->CreateAndSetView();
+    child_node_view = child_node_ptr->CreateAndSetView();
   }
-  AddChild(std::move(child_node_view), std::move(child_node), model_index);
+  AddChildNodeView(std::move(child_node_view));
 }
 
 std::pair<std::unique_ptr<views::View>, std::unique_ptr<TabCollectionNode>>
@@ -260,10 +261,22 @@ std::unique_ptr<views::View> TabCollectionNode::CreateAndSetView() {
 void TabCollectionNode::AddChild(std::unique_ptr<views::View> child_node_view,
                                  std::unique_ptr<TabCollectionNode> child_node,
                                  size_t model_index) {
-  child_node->SetController(tab_strip_controller_);
-  children_.insert(children_.begin() + model_index, std::move(child_node));
+  AddChildNode(std::move(child_node), model_index);
+
   // Add child view after inserting the child node into children_, as adding the
   // view may depend on the order of the node in children_.
+  AddChildNodeView(std::move(child_node_view));
+}
+
+void TabCollectionNode::AddChildNode(
+    std::unique_ptr<TabCollectionNode> child_node,
+    size_t model_index) {
+  child_node->SetController(tab_strip_controller_);
+  children_.insert(children_.begin() + model_index, std::move(child_node));
+}
+
+void TabCollectionNode::AddChildNodeView(
+    std::unique_ptr<views::View> child_node_view) {
   if (add_child_to_node_) {
     add_child_to_node_.Run(std::move(child_node_view));
   } else {

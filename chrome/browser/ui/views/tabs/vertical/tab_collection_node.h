@@ -118,6 +118,12 @@ class TabCollectionNode {
   static std::unique_ptr<views::View> CreateViewForNode(
       TabCollectionNode* node_for_view);
 
+  // Adds `child_node` to `children_`.
+  void AddChildNode(std::unique_ptr<TabCollectionNode> child_node,
+                    size_t model_index);
+  // Adds `child_node_view` to `node_view_`.
+  void AddChildNodeView(std::unique_ptr<views::View> child_node_view);
+
   // Creates node_view_, then returns the unique_ptr to the view.
   std::unique_ptr<views::View> CreateAndSetView();
 
