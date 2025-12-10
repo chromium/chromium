@@ -50,7 +50,7 @@ enum class RequestIdUpdateMode {
   // image sequence id, long context id, and creating a new analytics id.
   kPageContentWithViewportRequest = 7,
   // Indicates that the request id should be modified for a new context upload
-  // in a multi-context upload flow, i.e. incrementing the sequence id, image
+  // in a multi-context upload flow, i.e. resetting the sequence id, image
   // sequence id, and creating a new uuid and analytics id, regardless of the
   // context upload mime type.
   kMultiContextUploadRequest = 8,
@@ -72,6 +72,13 @@ class LensOverlayRequestIdGenerator {
   std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
       RequestIdUpdateMode update_mode,
       lens::LensOverlayRequestId::MediaType media_type);
+
+  // Gets a request id using the migrated server flow using context_id.
+  // The resulting request ID will not have an analytics ID, image sequence ID,
+  // sequence ID, or long context ID.
+  std::unique_ptr<lens::LensOverlayRequestId> GetRequestIdWithMultiContextId(
+      lens::LensOverlayRequestId::MediaType media_type,
+      uint64_t context_id);
 
   // Returns the current analytics id as a base32 encoded string.
   std::string GetBase32EncodedAnalyticsId();

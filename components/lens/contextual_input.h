@@ -58,6 +58,10 @@ struct ContextualInputData {
   std::optional<SkBitmap> viewport_screenshot;
   // Whether or not webpage or pdf context is eligible.
   std::optional<bool> is_page_context_eligible;
+  // If set, the context id to use for referring to this context in the server.
+  // Followup uploads for an existing document should re-use the same context
+  // id.
+  std::optional<uint64_t> context_id;
 };
 
 }  // namespace lens

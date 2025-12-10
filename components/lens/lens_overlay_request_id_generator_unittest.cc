@@ -300,4 +300,19 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
             lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
 }
 
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetRequestIdWithMultiContextId_SetsFields) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  uint64_t context_id = 12345;
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      request_id_generator.GetRequestIdWithMultiContextId(
+          lens::LensOverlayRequestId::MEDIA_TYPE_PDF, context_id);
+  ASSERT_EQ(request_id->context_id(), context_id);
+  ASSERT_EQ(request_id->media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+  ASSERT_EQ(request_id->sequence_id(), 0);
+  ASSERT_EQ(request_id->image_sequence_id(), 0);
+  ASSERT_EQ(request_id->long_context_id(), 0);
+}
+
 }  // namespace lens

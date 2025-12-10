@@ -4,11 +4,11 @@
 
 syntax = 'proto3';
 
-option optimize_for = LITE_RUNTIME;
-
 package lens;
 
 import "lens_overlay_routing_info.proto";
+
+option optimize_for = LITE_RUNTIME;
 
 // Request Id definition to support request sequencing and state lookup.
 // Next Id: 11
@@ -52,4 +52,8 @@ message LensOverlayRequestId {
 
   // The type of media this object represents.
   MediaType media_type = 10;
+
+  // Identifier for the contextualized document in this request. Stable across
+  // follow-up requests for the same document.
+  uint64 context_id = 12;
 }

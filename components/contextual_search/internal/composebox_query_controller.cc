@@ -15,6 +15,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -273,6 +274,12 @@ ComposeboxQueryController::ComposeboxQueryController(
           ->use_separate_request_ids_for_multi_context_viewport_images;
   prioritize_suggestions_for_the_first_attached_document_ =
       feature_params->prioritize_suggestions_for_the_first_attached_document;
+  enable_context_id_migration_ = feature_params->enable_context_id_migration;
+  // The context id migration requires that viewport images use a separate
+  // request id, so this flag should be enabled if the context id migration is
+  // enabled.
+  DCHECK(!enable_context_id_migration_ ||
+         use_separate_request_ids_for_multi_context_viewport_images_);
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -299,9 +306,16 @@ ComposeboxQueryController::GetRequestIdForViewportImage(
   if (enable_multi_context_input_flow_ &&
       use_separate_request_ids_for_multi_context_viewport_images_) {
     // Create a new request id for the viewport image upload request.
-    file_info->viewport_request_id_ = request_id_generator_.GetNextRequestId(
-        lens::RequestIdUpdateMode::kMultiContextUploadRequest,
-        lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+    if (enable_context_id_migration_) {
+      file_info->viewport_request_id_ =
+          request_id_generator_.GetRequestIdWithMultiContextId(
+              lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE,
+              file_info->GetContextId());
+    } else {
+      file_info->viewport_request_id_ = request_id_generator_.GetNextRequestId(
+          lens::RequestIdUpdateMode::kMultiContextUploadRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+    }
     return *file_info->viewport_request_id_;
   }
   return file_info->request_id;
@@ -507,23 +521,36 @@ void ComposeboxQueryController::StartFileUploadFlow(
       has_viewport_screenshot &&
       (!enable_multi_context_input_flow_ ||
        !use_separate_request_ids_for_multi_context_viewport_images_);
-  // Unlike image uploads, PDF / page content uploads need to increment the
-  // long context id instead of the image sequence id.
-  current_file_info.request_id =
-      *request_id_generator_
-           .GetNextRequestId(
-               enable_multi_context_input_flow_
-                   ? lens::RequestIdUpdateMode::kMultiContextUploadRequest
-                   : (current_file_info.mime_type == lens::MimeType::kImage
-                          ? lens::RequestIdUpdateMode::kFullImageRequest
-                          : (has_viewport_screenshot
-                                 ? lens::RequestIdUpdateMode::
-                                       kPageContentWithViewportRequest
-                                 : lens::RequestIdUpdateMode::
-                                       kPageContentRequest)),
-               lens::MimeTypeToMediaType(current_file_info.mime_type,
-                                         use_has_viewport_media_type))
-           .get();
+  if (enable_context_id_migration_) {
+    uint64_t context_id = contextual_input_data->context_id.has_value()
+                              ? contextual_input_data->context_id.value()
+                              : base::RandUint64();
+    current_file_info.request_id =
+        *request_id_generator_
+             .GetRequestIdWithMultiContextId(
+                 lens::MimeTypeToMediaType(current_file_info.mime_type,
+                                           use_has_viewport_media_type),
+                 context_id)
+             .get();
+  } else {
+    // Unlike image uploads, PDF / page content uploads need to increment the
+    // long context id instead of the image sequence id.
+    current_file_info.request_id =
+        *request_id_generator_
+             .GetNextRequestId(
+                 enable_multi_context_input_flow_
+                     ? lens::RequestIdUpdateMode::kMultiContextUploadRequest
+                     : (current_file_info.mime_type == lens::MimeType::kImage
+                            ? lens::RequestIdUpdateMode::kFullImageRequest
+                            : (has_viewport_screenshot
+                                   ? lens::RequestIdUpdateMode::
+                                         kPageContentWithViewportRequest
+                                   : lens::RequestIdUpdateMode::
+                                         kPageContentRequest)),
+                 lens::MimeTypeToMediaType(current_file_info.mime_type,
+                                           use_has_viewport_media_type))
+             .get();
+  }
 
   // Update the file upload status to processing.
   UpdateFileUploadStatus(file_token,

@@ -89,6 +89,30 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
   return request_id;
 }
 
+std::unique_ptr<lens::LensOverlayRequestId>
+LensOverlayRequestIdGenerator::GetRequestIdWithMultiContextId(
+    lens::LensOverlayRequestId::MediaType media_type,
+    uint64_t context_id) {
+  // The request ID flow for the multi-context upload flow using context_id
+  // is intended have separate request ids for viewport vs content upload
+  // requests, so the media type should never combine the two with _AND_IMAGE.
+  // Instead, the caller should call this method separately for the content
+  // and viewport upload requests, and provide the same context_id for both.
+  CHECK(media_type != LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE &&
+        media_type != LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
+
+  auto request_id = std::make_unique<lens::LensOverlayRequestId>();
+  request_id->set_uuid(base::RandUint64());
+  request_id->set_time_usec(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  request_id->set_media_type(media_type);
+  if (routing_info_.has_value()) {
+    request_id->mutable_routing_info()->CopyFrom(routing_info_.value());
+  }
+  request_id->set_context_id(context_id);
+  return request_id;
+}
+
 std::string LensOverlayRequestIdGenerator::GetBase32EncodedAnalyticsId() {
   return base32::Base32Encode(base::as_byte_span(analytics_id_),
                               base32::Base32EncodePolicy::OMIT_PADDING);

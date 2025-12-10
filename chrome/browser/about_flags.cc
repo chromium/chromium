@@ -1722,6 +1722,21 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"ShowSubmit", "true"},
     {"SendLnsSurfaceParam", "true"},
 };
+const FeatureEntry::FeatureParam
+    kComposeboxNextForRealboxNextWithContextIdMigration[] = {
+        {"MaxNumFiles", "10"},
+        {"ShowContextMenu", "true"},
+        {"ShowComposeboxZps", "true"},
+        {"ShowComposeboxTypedSuggest", "true"},
+        {"ShowToolsAndModels", "true"},
+        {"ShowCreateImageTool", "true"},
+        {"ShowRecentTabChip", "true"},
+        {"ContextMenuEnableMultiTabSelection", "true"},
+        {"ShowSubmit", "true"},
+        {"SendLnsSurfaceParam", "true"},
+        {"EnableContextIdMigration", "true"},
+        {"UseSeparateRequestIdsForMultiContextViewportImages", "true"},
+};
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show Contextual Input Menu and Suggest, 5 File Limit",
@@ -1749,6 +1764,9 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Next Experience Single Context for Realbox Next",
      kComposeboxNextSingleContextForRealboxNext,
      std::size(kComposeboxNextSingleContextForRealboxNext), nullptr},
+    {"- Next Experience for Realbox Next with Context ID Migration",
+     kComposeboxNextForRealboxNextWithContextIdMigration,
+     std::size(kComposeboxNextForRealboxNextWithContextIdMigration), nullptr},
 };
 
 const FeatureEntry::FeatureParam kShowNextRealboxTallBottomContext[] = {
@@ -1833,11 +1851,9 @@ const FeatureEntry::FeatureParam kNtpFeatureOptimizationTesting[] = {
 };
 
 const FeatureEntry::FeatureVariation kNtpFeatureOptimizationVariations[] = {
-    {"- Default Auto-Removal Timing",
-     kNtpFeatureOptimizationDefault,
+    {"- Default Auto-Removal Timing", kNtpFeatureOptimizationDefault,
      std::size(kNtpFeatureOptimizationDefault), nullptr},
-    {"- Auto-Removal Timing for Testing",
-     kNtpFeatureOptimizationTesting,
+    {"- Auto-Removal Timing for Testing", kNtpFeatureOptimizationTesting,
      std::size(kNtpFeatureOptimizationTesting), nullptr},
 };
 
@@ -7730,8 +7746,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ntp_features::kNtpDummyModules)},
 #endif
 
-    {"ntp-feature-optimization",
-     flag_descriptions::kNtpFeatureOptimizationName,
+    {"ntp-feature-optimization", flag_descriptions::kNtpFeatureOptimizationName,
      flag_descriptions::kNtpFeatureOptimizationDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpFeatureOptimization,
                                     kNtpFeatureOptimizationVariations,
