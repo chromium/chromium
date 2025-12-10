@@ -8,8 +8,8 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <body>
-  <iframe id="same-origin"></iframe>
   <iframe id="cross-origin" allow="digital-credentials-get"></iframe>
+  <iframe id="same-origin"></iframe>
 </body>
 <script type="module">
   import { makeGetOptions, sendMessage, loadIframe } from "./support/helper.js";
@@ -31,16 +31,8 @@
   promise_test(async (t) => {
     const invalidData = [null, undefined, "", 123, true, false];
     for (const data of invalidData) {
-      const options = {
-        digital: {
-          requests: [
-            {
-              data,
-              protocol: "openid4vp-v1-unsigned",
-            },
-          ],
-        },
-      };
+      const options = makeGetOptions({ data });
+      await test_driver.bless("user activation");
       await promise_rejects_js(
         t,
         TypeError,
@@ -253,8 +245,7 @@ promise_test(async t => {
   ];
 
   for (const badValue of throwingValues) {
-    const options = makeGetOptions();
-    options.digital.requests[0].data = badValue;
+    const options = makeGetOptions({ data: badValue });
 
     await promise_rejects_js(
       t,
