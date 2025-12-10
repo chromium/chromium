@@ -1735,8 +1735,9 @@ def EvaluateRevision(archive_build, download, revision, args, evaluate):
     exit_status = stdout = stderr = None
     # Create a temp directory and unzip the revision into it.
     with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
-      # On Windows 10, file system needs to be readable from App Container.
-      if sys.platform == 'win32' and platform.release() == '10':
+      # On Windows 10 and later, file system needs to be readable from
+      # App Container.
+      if sys.platform == 'win32' and sys.getwindowsversion().build >= 19041:
         icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
         proc = subprocess.Popen(icacls_cmd,
                                 bufsize=0,
