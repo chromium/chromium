@@ -393,7 +393,6 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 
   // Select "Open in New Incognito Tab" and confirm that new tab is opened in
   // incognito with the selected URL.
-  //  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:_URL1.GetContent()];
   [[EarlGrey selectElementWithMatcher:OpenLinkInIncognitoButton()]
       performAction:grey_tap()];
   GREYAssertEqualObjects(ChromeCoordinatorAppInterface.lastURLLoaded,
