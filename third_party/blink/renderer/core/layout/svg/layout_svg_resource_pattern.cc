@@ -45,7 +45,7 @@ struct PatternData {
   USING_FAST_MALLOC(PatternData);
 
  public:
-  scoped_refptr<Pattern> pattern;
+  std::unique_ptr<Pattern> pattern;
   AffineTransform transform;
 };
 

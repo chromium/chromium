@@ -26,16 +26,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATTERN_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_PATTERN_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
-#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -70,7 +69,7 @@ class MODULES_EXPORT CanvasPattern final : public ScriptWrappable {
   void setTransform(DOMMatrix2DInit*, ExceptionState&);
 
  private:
-  scoped_refptr<Pattern> pattern_;
+  std::unique_ptr<Pattern> pattern_;
   AffineTransform pattern_transform_;
   const bool origin_clean_;
   const HighEntropyCanvasOpType high_entropy_canvas_op_types_;
