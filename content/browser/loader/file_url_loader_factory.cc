@@ -618,7 +618,8 @@ class FileURLLoader : public network::mojom::URLLoader {
     }
 
     auto file_data_source = std::make_unique<mojo::FileDataSource>(
-        base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
+        base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                             base::File::FLAG_WIN_SHARE_DELETE));
 
     std::vector<char> initial_read_buffer(net::kMaxBytesToSniff);
     auto read_result =
