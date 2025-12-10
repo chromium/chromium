@@ -1700,9 +1700,6 @@ BASE_FEATURE(kProjectorUseUSMForS3, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kProjectorUseDVSPlaybackEndpoint,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to show promise icons during web app installations.
-BASE_FEATURE(kPromiseIconsForWebApps, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the quick dim prototype is enabled.
 BASE_FEATURE(kQuickDim, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2252,10 +2249,6 @@ BASE_FEATURE(kFwupdDeveloperMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool AreDesksTemplatesEnabled() {
   return base::FeatureList::IsEnabled(kDesksTemplates);
-}
-
-bool ArePromiseIconsForWebAppsEnabled() {
-  return base::FeatureList::IsEnabled(kPromiseIconsForWebApps);
 }
 
 bool ForceOnDeviceAppControlsForAllRegions() {

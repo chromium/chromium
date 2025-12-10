@@ -122,8 +122,6 @@ source_set("app_service") {
       "promise_apps/promise_app_update.h",
       "promise_apps/promise_app_utils.cc",
       "promise_apps/promise_app_utils.h",
-      "promise_apps/promise_app_web_apps_utils.cc",
-      "promise_apps/promise_app_web_apps_utils.h",
       "promise_apps/promise_app_wrapper.cc",
       "promise_apps/promise_app_wrapper.h",
       "uninstall_dialog.cc",

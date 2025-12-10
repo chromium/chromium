@@ -35,7 +35,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -271,18 +270,6 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (apps.empty()) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  // This is for prototyping and testing only. It is to provide an easy way to
-  // simulate web app promise icon behaviour for the UI/ client development of
-  // web app promise icons.
-  // TODO(b/261907269): Remove this code snippet and use real listeners for web
-  // app installation events.
-  if (ash::features::ArePromiseIconsForWebAppsEnabled()) {
-    for (auto& app : apps) {
-      apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   apps::AppPublisher::Publish(std::move(apps), apps::AppType::kWeb,
                               /*should_notify_initialized=*/false);
@@ -300,15 +287,9 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
   if (!is_ready_) {
     return;
   }
+
 #if BUILDFLAG(IS_CHROMEOS)
   bool is_projector = app->app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
-
-  // This is for prototyping and testing only.
-  // TODO(b/261907269): Remove this code snippet and use real listeners for web
-  // app installation events.
-  if (ash::features::ArePromiseIconsForWebAppsEnabled()) {
-    apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   apps::AppPublisher::Publish(std::move(app));
