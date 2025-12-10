@@ -1205,6 +1205,32 @@ ToWebAuthenticationGPMRecoveryEvent(
   }
 }
 
+device::enclave::EnclaveTransactionResult TransactErrorToResult(
+    enclave::TransactError error) {
+  switch (error) {
+    case enclave::TransactError::kUnknownClient:
+      return device::enclave::EnclaveTransactionResult::kUnknownClient;
+    case enclave::TransactError::kMissingKey:
+      return device::enclave::EnclaveTransactionResult::kMissingKey;
+    case enclave::TransactError::kSignatureVerificationFailed:
+      return device::enclave::EnclaveTransactionResult::
+          kSignatureVerificationFailed;
+    case enclave::TransactError::kHandshakeFailed:
+      return device::enclave::EnclaveTransactionResult::kHandshakeFailed;
+    case enclave::TransactError::kWebSocketError:
+      return device::enclave::EnclaveTransactionResult::kWebSocketError;
+    case enclave::TransactError::kSigningFailed:
+    case enclave::TransactError::kUnknownServiceError:
+    case enclave::TransactError::kOther:
+      return device::enclave::EnclaveTransactionResult::kOtherError;
+  }
+}
+
+void LogRenewingPinResult(device::enclave::EnclaveTransactionResult result) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.Enclave.RenewingPinTransactionResult", result);
+}
+
 }  // namespace
 
 // StateMachine performs a sequence of actions, as specified by the public
@@ -2770,8 +2796,19 @@ class EnclaveManager::StateMachine {
   void OnEnclaveResponse(
       base::expected<cbor::Value, enclave::TransactError> response) {
     if (!response.has_value()) {
+      if (state_ == State::kRenewingPIN) {
+        // https://crbug.com/467247255: this is to help us investigate why PIN
+        // refreshes fail so often.
+        LogRenewingPinResult(TransactErrorToResult(response.error()));
+      }
       Process(Failure());
     } else {
+      if (state_ == State::kRenewingPIN) {
+        // https://crbug.com/467247255: this is to help us investigate why PIN
+        // refreshes fail so often.
+        LogRenewingPinResult(
+            device::enclave::EnclaveTransactionResult::kSuccess);
+      }
       Process(EnclaveResponse(std::move(response.value())));
     }
   }

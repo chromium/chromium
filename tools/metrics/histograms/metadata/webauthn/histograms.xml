@@ -227,6 +227,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Enclave.RenewingPinTransactionResult"
+    enum="WebAuthenticationEnclaveTransactionResult" expires_after="2026-12-09">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records when an enclave PIN renewal request is completed. This records the
+    result of the overall transaction; the success or failure of individual
+    requests within the transaction are not recorded here. This does not record
+    failures due to client-side errors. It does record for errors received from
+    the service, invalid responses from the service, or success.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.EnclaveEvent"
     enum="WebAuthenticationEnclaveEvent" expires_after="2026-05-17">
   <owner>agl@chromium.org</owner>
