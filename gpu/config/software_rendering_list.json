@@ -1450,15 +1450,15 @@
     },
     {
       "id": 184,
-      "cr_bugs": [383521542, 458062283],
+      "cr_bugs": [383521542],
       "description": "Disable Graphite on very old Intel drivers",
       "os": {
         "type": "win"
       },
       "vendor_id": "0x8086",
       "driver_version": {
-        "op": "<",
-        "value": "31.0.101.2121"
+        "op": "<=",
+        "value": "10.18.10.5161"
       },
       "features": [
         "skia_graphite"
