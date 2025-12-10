@@ -985,3 +985,50 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceCacheBrowserTest,
       "Omnibox.AimEligibility.EligibilityResponseSource",
       AimEligibilityServiceFriend::EligibilityResponseSource::kBrowserCache, 1);
 }
+
+class ChromeAimEligibilityServiceOffTheRecordBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ChromeAimEligibilityServiceOffTheRecordBrowserTest() = default;
+  ~ChromeAimEligibilityServiceOffTheRecordBrowserTest() override = default;
+
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        // Enabled features.
+        {omnibox::kAimEnabled},
+        // Disabled features.
+        {omnibox::kAimServerEligibilityEnabled});
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    SetUpDefaultSearchEngine(browser()->profile(), /*is_google_dse=*/true);
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindOnce(AimEligibilityServiceFactory::GetDefaultFactory()));
+
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOffTheRecordBrowserTest,
+                       IsCreateImagesEligibleReturnsFalseForOffTheRecord) {
+  // Check regular profile.
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->IsCreateImagesEligible());
+
+  // Check off-the-record profile.
+  Profile* otr_profile = browser()->profile()->GetPrimaryOTRProfile(
+      /*create_if_needed=*/true);
+  auto* otr_service = AimEligibilityServiceFactory::GetForProfile(otr_profile);
+  ASSERT_TRUE(otr_service);
+  EXPECT_NE(service, otr_service);
+  EXPECT_FALSE(otr_service->IsCreateImagesEligible());
+}

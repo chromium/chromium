@@ -51,5 +51,6 @@ IOSChromeAimEligibilityServiceFactory::BuildServiceInstanceFor(
       profile->GetPrefs(),
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->IsOffTheRecord());
 }

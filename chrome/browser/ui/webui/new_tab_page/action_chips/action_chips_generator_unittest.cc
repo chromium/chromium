@@ -257,7 +257,7 @@ class GeneratorFixture {
       mock_optimization_guide_;
   TestingPrefServiceSyncable pref_service_;
   MockAimEligibilityService mock_aim_eligibility_service_{
-      pref_service_, nullptr, nullptr, nullptr};
+      pref_service_, nullptr, nullptr, nullptr, false};
 };
 
 using ActionChipGeneratorWithNoRecentTabTest = ::testing::TestWithParam<bool>;

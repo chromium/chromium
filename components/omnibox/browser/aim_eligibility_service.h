@@ -62,7 +62,8 @@ class AimEligibilityService
       PrefService& pref_service,
       TemplateURLService* template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      bool is_off_the_record);
   ~AimEligibilityService() override;
 
   // Checks if the application country matches the given country.
@@ -94,7 +95,8 @@ class AimEligibilityService
   // Checks if user is eligible for Deep Search in AIM features.
   virtual bool IsDeepSearchEligible() const;
 
-  // Checks if user is eligible for Create Images in AIM features.
+  // Checks if user is eligible for Create Images in AIM features. Always
+  // returns false for off-the-record profiles.
   virtual bool IsCreateImagesEligible() const;
 
  protected:
@@ -228,6 +230,7 @@ class AimEligibilityService
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
   const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  const bool is_off_the_record_;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription template_url_service_subscription_;

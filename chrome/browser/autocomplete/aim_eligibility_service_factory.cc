@@ -27,7 +27,8 @@ std::unique_ptr<KeyedService> BuildServiceInstance(
       TemplateURLServiceFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->IsOffTheRecord());
 }
 
 }  // namespace
