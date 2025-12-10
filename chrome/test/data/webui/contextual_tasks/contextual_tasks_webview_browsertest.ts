@@ -106,7 +106,7 @@ suite('ContextualTasksWebviewTest', function() {
     assertTrue(!!userAgentHeader, 'User-Agent header not found');
     assertTrue(!!userAgentHeader.value, 'User-Agent header value is empty');
     assertTrue(
-        userAgentHeader.value.includes('WGA/'),
+        userAgentHeader.value.includes('Cobrowsing/'),
         'User-Agent header does not contain our custom user agent');
   });
 });
