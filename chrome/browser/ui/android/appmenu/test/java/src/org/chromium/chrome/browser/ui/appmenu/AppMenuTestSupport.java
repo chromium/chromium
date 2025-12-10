@@ -195,11 +195,24 @@ public class AppMenuTestSupport {
     }
 
     /**
+     * Finishes all pending animations for the app menu.
+     *
+     * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
+     */
+    public static void finishAnimationsForTests(AppMenuCoordinator coordinator) {
+        ((AppMenuCoordinatorImpl) coordinator)
+                .getAppMenuHandlerImplForTesting()
+                .getAppMenu()
+                .finishAnimationsForTests();
+    }
+
+    /**
      * Override the callback that's executed when an option in the menu is selected. Typically
      * handled by {@link AppMenuDelegate#onOptionsItemSelected(int, Bundle)}.
+     *
      * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
      * @param onOptionsItemSelectedListener The callback to execute instead of the AppMenuDelegate
-     *         method.
+     *     method.
      */
     public static void overrideOnOptionItemSelectedListener(
             AppMenuCoordinator coordinator, Callback<Integer> onOptionsItemSelectedListener) {
