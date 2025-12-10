@@ -68,10 +68,6 @@ mojom("mojom") {
           cpp = "::gfx::BufferUsage"
         },
         {
-          mojom = "gfx.mojom.BufferUsageAndFormat"
-          cpp = "::gfx::BufferUsageAndFormat"
-        },
-        {
           mojom = "gfx.mojom.BufferPlane"
           cpp = "::gfx::BufferPlane"
         },

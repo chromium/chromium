@@ -196,22 +196,6 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
   }
 };
 
-template <>
-struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
-    StructTraits<gfx::mojom::BufferUsageAndFormatDataView,
-                 gfx::BufferUsageAndFormat> {
-  static gfx::BufferUsage usage(const gfx::BufferUsageAndFormat& input) {
-    return input.usage;
-  }
-
-  static gfx::BufferFormat format(const gfx::BufferUsageAndFormat& input) {
-    return input.format;
-  }
-
-  static bool Read(gfx::mojom::BufferUsageAndFormatDataView data,
-                   gfx::BufferUsageAndFormat* out);
-};
-
 #if BUILDFLAG(USE_BLINK)
 template <>
 struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)

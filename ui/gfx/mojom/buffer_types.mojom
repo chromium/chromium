@@ -43,11 +43,6 @@ enum BufferUsage {
   SCANOUT_FRONT_RENDERING,
 };
 
-struct BufferUsageAndFormat {
-  BufferUsage usage;
-  BufferFormat format;
-};
-
 enum BufferPlane {
   DEFAULT,
   Y,
