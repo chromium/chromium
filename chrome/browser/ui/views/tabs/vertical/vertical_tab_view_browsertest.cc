@@ -223,14 +223,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
   ui::MouseEvent mouse_entered_event(ui::EventType::kMouseEntered, gfx::Point(),
                                      gfx::Point(), base::TimeTicks(),
                                      ui::EF_NONE, ui::EF_NONE);
-  tab_view->OnMouseEntered(mouse_entered_event);
+  tab_view->OnMouseEnteredForTesting(mouse_entered_event);
   EXPECT_TRUE(close_button->GetVisible());
 
   // After the mouse exits the tab, the close button should be hidden.
   ui::MouseEvent mouse_exited_event(ui::EventType::kMouseExited, gfx::Point(),
                                     gfx::Point(), base::TimeTicks(),
                                     ui::EF_NONE, ui::EF_NONE);
-  tab_view->OnMouseExited(mouse_exited_event);
+  tab_view->OnMouseExitedForTesting(mouse_exited_event);
   EXPECT_FALSE(close_button->GetVisible());
 }
 

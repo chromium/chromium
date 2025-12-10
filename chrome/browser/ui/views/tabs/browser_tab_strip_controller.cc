@@ -139,6 +139,20 @@ void DialogTimingToSource(
   }
 }
 
+TabStripUserGestureDetails GetGestureDetail(const ui::Event& event) {
+  TabStripUserGestureDetails gesture_detail(
+      TabStripUserGestureDetails::GestureType::kOther, event.time_stamp());
+  TabStripUserGestureDetails::GestureType type =
+      TabStripUserGestureDetails::GestureType::kOther;
+  if (event.type() == ui::EventType::kMousePressed) {
+    type = TabStripUserGestureDetails::GestureType::kMouse;
+  } else if (event.type() == ui::EventType::kGestureTapDown) {
+    type = TabStripUserGestureDetails::GestureType::kTouch;
+  }
+  gesture_detail.type = type;
+  return gesture_detail;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -255,17 +269,7 @@ void BrowserTabStripController::SelectTab(int model_index,
       content::PeakGpuMemoryTrackerFactory::Create(
           viz::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
 
-  TabStripUserGestureDetails gesture_detail(
-      TabStripUserGestureDetails::GestureType::kOther, event.time_stamp());
-  TabStripUserGestureDetails::GestureType type =
-      TabStripUserGestureDetails::GestureType::kOther;
-  if (event.type() == ui::EventType::kMousePressed) {
-    type = TabStripUserGestureDetails::GestureType::kMouse;
-  } else if (event.type() == ui::EventType::kGestureTapDown) {
-    type = TabStripUserGestureDetails::GestureType::kTouch;
-  }
-  gesture_detail.type = type;
-  model_->ActivateTabAt(model_index, gesture_detail);
+  model_->ActivateTabAt(model_index, GetGestureDetail(event));
 
   tabstrip_->GetWidget()
       ->GetCompositor()

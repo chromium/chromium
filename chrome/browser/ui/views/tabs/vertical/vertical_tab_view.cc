@@ -57,6 +57,28 @@ class VerticalTabTitle : public views::Label {
 
 BEGIN_METADATA(VerticalTabTitle)
 END_METADATA
+
+bool IsSelectionModifierDown(const ui::MouseEvent& event) {
+#if BUILDFLAG(IS_MAC)
+  return event.IsCommandDown();
+#else
+  return event.IsControlDown();
+#endif
+}
+
+TabStripUserGestureDetails GetGestureDetail(const ui::Event& event) {
+  TabStripUserGestureDetails gesture_detail(
+      TabStripUserGestureDetails::GestureType::kOther, event.time_stamp());
+  TabStripUserGestureDetails::GestureType type =
+      TabStripUserGestureDetails::GestureType::kOther;
+  if (event.type() == ui::EventType::kMousePressed) {
+    type = TabStripUserGestureDetails::GestureType::kMouse;
+  } else if (event.type() == ui::EventType::kGestureTapDown) {
+    type = TabStripUserGestureDetails::GestureType::kTouch;
+  }
+  gesture_detail.type = type;
+  return gesture_detail;
+}
 }  // namespace
 
 VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
@@ -95,10 +117,22 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
 
 VerticalTabView::~VerticalTabView() = default;
 
-void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
-  // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
-  // an enter event and fail to hover the tab.
-  UpdateHovered(true);
+void VerticalTabView::UpdateHovered(bool hovered) {
+  if (hovered_ == hovered) {
+    return;
+  }
+
+  hovered_ = hovered;
+  if (hover_controller_) {
+    if (hovered_) {
+      hover_controller_->SetSubtleOpacityScale(radial_highlight_opacity_);
+      hover_controller_->Show(TabStyle::ShowHoverStyle::kSubtle);
+    } else {
+      hover_controller_->Hide(TabStyle::HideHoverStyle::kGradual);
+    }
+  }
+  UpdateColors();
+  UpdateCloseButtonVisibility();
 }
 
 void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -107,6 +141,68 @@ void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
 
 void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
   UpdateHovered(false);
+}
+
+bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_RETURN && selected_) {
+    collection_node_->GetController()->SelectTab(GetTabInterface(),
+                                                 GetGestureDetail(event));
+    return true;
+  }
+  return false;
+}
+
+bool VerticalTabView::OnKeyReleased(const ui::KeyEvent& event) {
+  if (event.key_code() == ui::VKEY_SPACE && selected_) {
+    collection_node_->GetController()->SelectTab(GetTabInterface(),
+                                                 GetGestureDetail(event));
+    return true;
+  }
+  return false;
+}
+
+bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
+  auto* controller = collection_node_->GetController();
+  shift_pressed_on_mouse_down_ = event.IsShiftDown();
+
+  if (event.IsOnlyLeftMouseButton() ||
+      (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
+    if (event.IsShiftDown() && IsSelectionModifierDown(event)) {
+      controller->AddSelectionFromAnchorTo(GetTabInterface());
+    } else if (event.IsShiftDown()) {
+      controller->ExtendSelectionTo(GetTabInterface());
+    } else if (IsSelectionModifierDown(event)) {
+      controller->ToggleSelected(GetTabInterface());
+      if (!selected_) {
+        return false;
+      }
+    } else if (!selected_) {
+      controller->SelectTab(GetTabInterface(), GetGestureDetail(event));
+    }
+  }
+  return true;
+}
+
+void VerticalTabView::OnMouseReleased(const ui::MouseEvent& event) {
+  auto* controller = collection_node_->GetController();
+  base::WeakPtr<VerticalTabView> self = weak_ptr_factory_.GetWeakPtr();
+  if (event.IsOnlyMiddleMouseButton()) {
+    controller->CloseTab(GetTabInterface());
+  } else if (event.IsOnlyLeftMouseButton() &&
+             !(event.IsShiftDown() || shift_pressed_on_mouse_down_) &&
+             !IsSelectionModifierDown(event)) {
+    controller->SelectTab(GetTabInterface(), GetGestureDetail(event));
+  }
+  if (!self) {
+    return;
+  }
+  shift_pressed_on_mouse_down_ = false;
+}
+
+void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
+  // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
+  // an enter event and fail to hover the tab.
+  UpdateHovered(true);
 }
 
 void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
@@ -256,24 +352,6 @@ void VerticalTabView::ShowContextMenuForViewImpl(
   }
 }
 
-void VerticalTabView::UpdateHovered(bool hovered) {
-  if (hovered_ == hovered) {
-    return;
-  }
-
-  hovered_ = hovered;
-  if (hover_controller_) {
-    if (hovered_) {
-      hover_controller_->SetSubtleOpacityScale(radial_highlight_opacity_);
-      hover_controller_->Show(TabStyle::ShowHoverStyle::kSubtle);
-    } else {
-      hover_controller_->Hide(TabStyle::HideHoverStyle::kGradual);
-    }
-  }
-  UpdateColors();
-  UpdateCloseButtonVisibility();
-}
-
 void VerticalTabView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }
@@ -403,4 +481,5 @@ const tabs::TabInterface* VerticalTabView::GetTabInterface() {
   return std::get<const tabs::TabInterface*>(collection_node_->GetNodeData());
 }
 
-BEGIN_METADATA(VerticalTabView) END_METADATA
+BEGIN_METADATA(VerticalTabView)
+END_METADATA

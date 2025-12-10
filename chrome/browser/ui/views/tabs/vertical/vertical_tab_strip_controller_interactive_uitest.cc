@@ -15,12 +15,17 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/interaction/interactive_views_test.h"
 
 namespace {
 
-const char kNewTabName[] = "NewTab";
+const char kFirstTabName[] = "FirstTab";
+const char kSecondTabName[] = "SecondTab";
+const char kThirdTabName[] = "ThirdTab";
+const int kShift = ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN;
 
 class VerticalTabStripControllerInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
@@ -36,7 +41,179 @@ class VerticalTabStripControllerInteractiveUiTest
     }
     return false;
   }
+
+  int GetPlatformDependentAccelerator() {
+#if BUILDFLAG(IS_MAC)
+    return ui::EF_LEFT_MOUSE_BUTTON | ui::EF_COMMAND_DOWN;
+#else
+    return ui::EF_LEFT_MOUSE_BUTTON | ui::EF_CONTROL_DOWN;
+#endif
+  }
+
+  base::OnceCallback<void(views::View*)> ClickWithFlags(int flags) {
+    return base::BindOnce(
+        [](int flags, views::View* view) {
+          ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                               gfx::Point(), base::TimeTicks::Now(), flags,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+          view->OnMousePressed(event);
+        },
+        flags);
+  }
 };
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
+                       VerifyTabSelection) {
+  RunTestSequence(
+      // Verify Vertical Tabs is showing.
+      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      // Create a second tab.
+      EnsurePresent(kNewTabButtonElementId),
+      PressButton(kNewTabButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      // Name views so we can interact with them.
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kFirstTabName, 0),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kSecondTabName, 1),
+      // Verify active tab is at index 1.
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); }, 1),
+      // Select tab at index 0 and verify active index.
+      MoveMouseTo(kFirstTabName), ClickMouse(ui_controls::LEFT),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); },
+          0));
+}
+
+// TODO(crbug.com/466106773): Unable to click middle mouse button on MacOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_VerifyClosingTabWithMiddleMouseButton \
+  DISABLED_VerifyClosingTabWithMiddleMouseButton
+#else
+#define MAYBE_VerifyClosingTabWithMiddleMouseButton \
+  VerifyClosingTabWithMiddleMouseButton
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
+                       MAYBE_VerifyClosingTabWithMiddleMouseButton) {
+  RunTestSequence(
+      // Verify Vertical Tabs is showing.
+      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      // Create a second tab.
+      EnsurePresent(kNewTabButtonElementId),
+      PressButton(kNewTabButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      // Name views so we can interact with them.
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kFirstTabName, 0),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kSecondTabName, 1),
+      // Close tab at index 0 w/middle mouse button and verify tab count.
+      MoveMouseTo(kFirstTabName), ClickMouse(ui_controls::MIDDLE),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
+      WaitForHide(kFirstTabName));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
+                       ShiftMultiTabSelection) {
+  RunTestSequence(
+      // Verify Vertical Tabs is showing.
+      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      // Create three tabs.
+      EnsurePresent(kNewTabButtonElementId),
+      PressButton(kNewTabButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      PressButton(kNewTabButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      // Name views so we can interact with them.
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kFirstTabName, 0),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kSecondTabName, 1),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kThirdTabName, 2),
+      // Set Tab 2 to be active.
+      MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::LEFT),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); }, 1),
+      // Shift + Click Tab 3.
+      WithView(kThirdTabName, ClickWithFlags(kShift)),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(0); },
+          false),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); },
+          true),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(2); },
+          true),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); }, 2),
+      // Ctrl/Command + Shift + Click Tab 1.
+      WithView(kFirstTabName,
+               ClickWithFlags(kShift | GetPlatformDependentAccelerator())),
+      // Verify all Tabs are selected, Tab 1 is active.
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(0); },
+          true),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); },
+          true),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(2); },
+          true),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); },
+          0));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
+                       ToggleTabSelection) {
+  RunTestSequence(
+      // Verify Vertical Tabs is showing.
+      WaitForShow(kVerticalTabStripBottomContainerElementId),
+      // Create a second tab.
+      EnsurePresent(kNewTabButtonElementId),
+      PressButton(kNewTabButtonElementId,
+                  ui::test::InteractionTestUtil::InputType::kDontCare),
+      // Name views so we can interact with them.
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kFirstTabName, 0),
+      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
+                                                kSecondTabName, 1),
+      // Set Tab 1 to be active.
+      MoveMouseTo(kFirstTabName), ClickMouse(ui_controls::LEFT),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); }, 0),
+      // Shift + Click Tab 2.
+      WithView(kSecondTabName,
+               ClickWithFlags(GetPlatformDependentAccelerator())),
+      // Verify both tabs are selected, but tab 1 is active.
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(0); },
+          true),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); },
+          true),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); }, 1),
+      // Shift + Click Tab 2.
+      WithView(kSecondTabName,
+               ClickWithFlags(GetPlatformDependentAccelerator())),
+      // Verify only tab 1 is selected and active.
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(0); },
+          true),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->IsTabSelected(1); },
+          false),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); },
+          0));
+}
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
                        VerifyTabContextMenu) {
@@ -45,9 +222,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       WaitForShow(kVerticalTabStripBottomContainerElementId),
       // Identify Tab by Type (VerticalTabView).
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
-                                                kNewTabName, 0),
+                                                kFirstTabName, 0),
       // Open Tab Context Menu.
-      MoveMouseTo(kNewTabName),
+      MoveMouseTo(kFirstTabName),
       MayInvolveNativeContextMenu(
           ClickMouse(ui_controls::RIGHT),
           WaitForShow(TabMenuModel::kAddNewTabAdjacentMenuItem),
@@ -64,9 +241,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       WaitForShow(kVerticalTabStripBottomContainerElementId),
       // Identify Tab by Type (VerticalTabView).
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
-                                                kNewTabName, 0),
+                                                kFirstTabName, 0),
       // Open Tab Context Menu.
-      MoveMouseTo(kNewTabName),
+      MoveMouseTo(kFirstTabName),
       MayInvolveNativeContextMenu(
           ClickMouse(ui_controls::RIGHT),
           WaitForShow(TabMenuModel::kAddNewTabAdjacentMenuItem), Do([this]() {

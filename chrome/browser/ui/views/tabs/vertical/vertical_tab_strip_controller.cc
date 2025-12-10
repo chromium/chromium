@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
@@ -65,6 +66,63 @@ void VerticalTabStripController::ShowContextMenuForNode(
   context_menu_controller_->LoadModel(std::move(model));
 
   context_menu_controller_->RunMenuAt(point, source_type, source->GetWidget());
+}
+
+void VerticalTabStripController::SelectTab(
+    const tabs::TabInterface* tab_interface,
+    const TabStripUserGestureDetails& gesture_detail) {
+  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
+  if (!tab_index.has_value()) {
+    return;
+  }
+
+  model_->ActivateTabAt(tab_index.value(), gesture_detail);
+}
+
+void VerticalTabStripController::CloseTab(
+    const tabs::TabInterface* tab_interface) {
+  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
+  if (!tab_index.has_value()) {
+    return;
+  }
+
+  model_->CloseWebContentsAt(tab_index.value(),
+                             TabCloseTypes::CLOSE_USER_GESTURE |
+                                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+}
+
+void VerticalTabStripController::ToggleSelected(
+    const tabs::TabInterface* tab_interface) {
+  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
+  if (!tab_index.has_value()) {
+    return;
+  }
+
+  if (model_->IsTabSelected(tab_index.value())) {
+    model_->DeselectTabAt(tab_index.value());
+  } else {
+    model_->SelectTabAt(tab_index.value());
+  }
+}
+
+void VerticalTabStripController::AddSelectionFromAnchorTo(
+    const tabs::TabInterface* tab_interface) {
+  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
+  if (!tab_index.has_value()) {
+    return;
+  }
+
+  model_->AddSelectionFromAnchorTo(tab_index.value());
+}
+
+void VerticalTabStripController::ExtendSelectionTo(
+    const tabs::TabInterface* tab_interface) {
+  std::optional<int> tab_index = model_->GetIndexOfTab(tab_interface);
+  if (!tab_index.has_value()) {
+    return;
+  }
+
+  model_->ExtendSelectionTo(tab_index.value());
 }
 
 bool VerticalTabStripController::IsContextMenuCommandChecked(

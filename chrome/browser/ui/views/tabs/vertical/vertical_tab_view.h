@@ -40,7 +40,27 @@ class VerticalTabView : public views::View,
   VerticalTabView& operator=(const VerticalTabView&) = delete;
   ~VerticalTabView() override;
 
+  void UpdateHovered(bool hovered);
+
+  TabIcon* icon_for_testing() { return icon_; }
+  AlertIndicatorButton* alert_indicator_for_testing() {
+    return alert_indicator_;
+  }
+  TabCloseButton* close_button_for_testing() { return close_button_; }
+
+  void OnMouseEnteredForTesting(const ui::MouseEvent& event) {
+    OnMouseEntered(event);
+  }
+  void OnMouseExitedForTesting(const ui::MouseEvent& event) {
+    OnMouseExited(event);
+  }
+
+ private:
   // views::View
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+  bool OnKeyReleased(const ui::KeyEvent& event) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -68,15 +88,6 @@ class VerticalTabView : public views::View,
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) override;
 
-  void UpdateHovered(bool hovered);
-
-  TabIcon* icon_for_testing() { return icon_; }
-  AlertIndicatorButton* alert_indicator_for_testing() {
-    return alert_indicator_;
-  }
-  TabCloseButton* close_button_for_testing() { return close_button_; }
-
- private:
   void ResetCollectionNode();
 
   void OnDataChanged();
@@ -115,11 +126,14 @@ class VerticalTabView : public views::View,
   bool active_ = false;
   bool selected_ = false;
   bool hovered_ = false;
+  bool shift_pressed_on_mouse_down_ = false;
 
   std::unique_ptr<GlowHoverController> hover_controller_;
   float hover_opacity_min_;
   float hover_opacity_max_;
   float radial_highlight_opacity_;
+
+  base::WeakPtrFactory<VerticalTabView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_

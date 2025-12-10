@@ -6,10 +6,15 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_CONTROLLER_H_
 
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 
 class BrowserView;
 class TabCollectionNode;
+
+namespace tabs {
+class TabInterface;
+}
 
 namespace views {
 class View;
@@ -32,6 +37,13 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
                               views::View* source,
                               const gfx::Point& point,
                               ui::mojom::MenuSourceType source_type);
+
+  void SelectTab(const tabs::TabInterface* tab_interface,
+                 const TabStripUserGestureDetails& event);
+  void CloseTab(const tabs::TabInterface* tab_interface);
+  void ToggleSelected(const tabs::TabInterface* tab_interface);
+  void AddSelectionFromAnchorTo(const tabs::TabInterface* tab_interface);
+  void ExtendSelectionTo(const tabs::TabInterface* tab_interface);
 
   TabContextMenuController* GetTabContextMenuController() {
     return context_menu_controller_.get();
