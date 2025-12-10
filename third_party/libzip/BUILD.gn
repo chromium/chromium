@@ -155,4 +155,8 @@ static_library("libzip") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   public_configs = [ ":libzip_config" ]
+
+  # Avoid new uses in Chromium. This library is only here as a necessary
+  # dependency of `tflite_support`.
+  visibility = [ "//third_party/tflite_support:*" ]
 }
