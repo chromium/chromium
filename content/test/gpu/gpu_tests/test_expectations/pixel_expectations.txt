@@ -530,7 +530,6 @@ crbug.com/425739516 [ mac arch-arm64 angle-metal graphite-enabled ] Pixel_Reflec
 # Tests either fail consistently or flakily on Android in TreesInViz mode.
 crbug.com/415830130 [ android-16 android-chromium android-pixel-10 angle-opengles graphite-enabled imagination-technologies mobile no-clang-coverage passthrough renderer-skia-gl target-cpu-64 ] Pixel_Video_MP4_TreesInViz [ Failure ]
 crbug.com/415830130 [ android-chromium android-pixel-2 android-q angle-disabled graphite-disabled mobile no-clang-coverage no-passthrough qualcomm renderer-skia-gl ] Pixel_Video_MP4_TreesInViz [ Failure ]
-crbug.com/415830130 [ android-chromium android-t angle-disabled graphite-disabled mobile no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_Video_MP4_TreesInViz [ Failure ]
 crbug.com/415830130 [ fuchsia ] Pixel_Video_MP4_TreesInViz [ Failure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_ViewTransitionsCapture_TreesInViz [ RetryOnFailure ]
 crbug.com/446950282 [ angle-metal asan graphite-disabled intel-0x3e9b no-clang-coverage release sonoma ] Pixel_ViewTransitionsCapture_TreesInViz [ Failure ]
@@ -554,8 +553,6 @@ crbug.com/415830130 [ angle-vulkan arm fuchsia fuchsia-board-sherlock no-asan no
 # Win11 Canvas Timeout
 crbug.com/446719056 [ win11 angle-d3d11 qualcomm-0x41333430 graphite-disabled ] Pixel_OffscreenCanvas2DResizeOnWorker [ Failure ]
 
-# Win11/Snapdragon X Elite
-crbug.com/458633864 [ win qualcomm-0x36334330 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
 # Pixel 10 failures
 crbug.com/446181110 [ android android-pixel-10 android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
@@ -579,7 +576,6 @@ crbug.com/446861923 [ android android-pixel-10 android-chromium ] Pixel_Video_VP
 
 # ViewTransitions capturing incorrect image
 crbug.com/446157733 [ android-pixel-6 android-t angle-vulkan graphite-disabled renderer-skia-vulkan ] Pixel_ViewTransitionsCapture [ Failure ]
-crbug.com/446157733 [ android-pixel-6 angle-vulkan graphite-enabled renderer-skia-gl ] Pixel_ViewTransitionsCapture [ Failure ]
 
 # Flakily runs into OOM issues in 32-bit browsers.
 crbug.com/466113477 [ win nvidia target-cpu-32 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure ]
