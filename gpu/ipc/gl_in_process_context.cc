@@ -64,8 +64,7 @@ ContextResult GLInProcessContext::Initialize(
       mojom::ContextCreationAttribs::NewGles(mojom::GLESCreationAttribs::New());
 
   auto result = command_buffer_->Initialize(
-      std::move(attribs), /*enable_gpu_rasterization=*/false,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::move(attribs), base::SingleThreadTaskRunner::GetCurrentDefault(),
       /*gr_shader_cache=*/nullptr,
       /*use_shader_cache_shm_count=*/nullptr);
   if (result != ContextResult::kSuccess) {

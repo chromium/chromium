@@ -97,7 +97,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   gpu::ContextResult Initialize(
       mojom::ContextCreationAttribsPtr attribs,
-      bool enable_gpu_rasterization,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       gpu::raster::GrShaderCache* gr_shader_cache,
       GpuProcessShmCount* use_shader_cache_shm_count);

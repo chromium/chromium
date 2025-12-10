@@ -189,7 +189,6 @@ void InProcessCommandBuffer::CreateCacheUse(
 
 gpu::ContextResult InProcessCommandBuffer::Initialize(
     mojom::ContextCreationAttribsPtr attribs,
-    bool enable_gpu_rasterization,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     gpu::raster::GrShaderCache* gr_shader_cache,
     GpuProcessShmCount* use_shader_cache_shm_count) {
