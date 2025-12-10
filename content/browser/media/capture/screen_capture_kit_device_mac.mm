@@ -302,9 +302,12 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
           // fallback. See https://crbug.com/325530044.
           if (source_.id == display.displayID ||
               source_.id == webrtc::kFullDesktopScreenId) {
-            std::vector<NativeWindowId> excluded_window_ids =
-                pip_screen_capture_coordinator_proxy_->WindowsToExclude(
-                    source_);
+            std::vector<NativeWindowId> excluded_window_ids;
+            if (pip_screen_capture_coordinator_proxy_) {
+              excluded_window_ids =
+                  pip_screen_capture_coordinator_proxy_->WindowsToExclude(
+                      source_);
+            }
             NSArray<SCWindow*>* excluded_windows =
                 ConvertWindowIDsToSCWindows(content, excluded_window_ids);
             filter = [[SCContentFilter alloc] initWithDisplay:display
@@ -568,8 +571,11 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       return;
     }
 
-    std::vector<NativeWindowId> excluded_window_ids =
-        pip_screen_capture_coordinator_proxy_->WindowsToExclude(source_);
+    std::vector<NativeWindowId> excluded_window_ids;
+    if (pip_screen_capture_coordinator_proxy_) {
+      excluded_window_ids =
+          pip_screen_capture_coordinator_proxy_->WindowsToExclude(source_);
+    }
     NSArray<SCWindow*>* excluded_windows =
         ConvertWindowIDsToSCWindows(content, excluded_window_ids);
     SCContentFilter* filter =
