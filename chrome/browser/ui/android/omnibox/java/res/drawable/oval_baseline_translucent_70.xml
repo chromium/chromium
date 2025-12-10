@@ -10,10 +10,10 @@ found in the LICENSE file.
 
     <item
         android:id="@android:id/mask"
-        android:top="8dp"
-        android:left="8dp"
-        android:bottom="8dp"
-        android:right="8dp">
+        android:top="@dimen/fusebox_attachment_remove_vertical_padding"
+        android:left="@dimen/fusebox_attachment_remove_horizontal_padding"
+        android:bottom="@dimen/fusebox_attachment_remove_vertical_padding"
+        android:right="@dimen/fusebox_attachment_remove_horizontal_padding">
 
         <shape android:shape="oval">
             <solid android:color="@android:color/white"/>
@@ -22,10 +22,10 @@ found in the LICENSE file.
     </item>
 
     <item
-        android:top="8dp"
-        android:left="8dp"
-        android:bottom="8dp"
-        android:right="8dp">
+        android:top="@dimen/fusebox_attachment_remove_vertical_padding"
+        android:left="@dimen/fusebox_attachment_remove_horizontal_padding"
+        android:bottom="@dimen/fusebox_attachment_remove_vertical_padding"
+        android:right="@dimen/fusebox_attachment_remove_horizontal_padding">
 
         <shape android:shape="oval">
             <solid android:color="@color/white_alpha_70"/>
