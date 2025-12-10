@@ -52,8 +52,7 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
   DistillerService* distillerService =
       DistillerServiceFactory::GetForProfile(self.browser->GetProfile());
   _mediator = [[ReaderModeOptionsMediator alloc]
-      initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()
-                    webStateList:self.browser->GetWebStateList()];
+      initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()];
   _mediator.readerModeHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ReaderModeCommands);
   _viewController.mutator = _mediator;

@@ -10,8 +10,6 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 
-class WebStateList;
-
 namespace dom_distiller {
 class DistilledPagePrefs;
 }
@@ -27,8 +25,7 @@ class DistilledPagePrefs;
 
 // Initializer.
 - (instancetype)initWithDistilledPagePrefs:
-                    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs
-                              webStateList:(WebStateList*)webStateList;
+    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs;
 
 // Disconnects from the model layer.
 - (void)disconnect;

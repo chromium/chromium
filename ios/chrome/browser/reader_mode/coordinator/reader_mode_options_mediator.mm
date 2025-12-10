@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_font_size_utils.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_consumer.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 @interface ReaderModeOptionsMediator () <DistilledPagePrefsObserving>
 @end
@@ -17,16 +16,13 @@
 @implementation ReaderModeOptionsMediator {
   std::unique_ptr<DistilledPagePrefsObserverBridge> _prefsObserverBridge;
   raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
-  raw_ptr<WebStateList> _webStateList;
 }
 
 - (instancetype)initWithDistilledPagePrefs:
-                    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs
-                              webStateList:(WebStateList*)webStateList {
+    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs {
   self = [super init];
   if (self) {
     _distilledPagePrefs = distilledPagePrefs;
-    _webStateList = webStateList;
     _prefsObserverBridge =
         std::make_unique<DistilledPagePrefsObserverBridge>(self);
     _distilledPagePrefs->AddObserver(_prefsObserverBridge.get());
@@ -79,7 +75,6 @@
   }
   _prefsObserverBridge.reset();
   _distilledPagePrefs = nullptr;
-  _webStateList = nullptr;
 }
 
 #pragma mark - DistilledPagePrefsObserving

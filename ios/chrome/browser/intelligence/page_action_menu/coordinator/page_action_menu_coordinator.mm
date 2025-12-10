@@ -77,8 +77,7 @@
     DistillerService* distillerService =
         DistillerServiceFactory::GetForProfile(self.profile);
     _readerModeOptionsMediator = [[ReaderModeOptionsMediator alloc]
-        initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()
-                      webStateList:self.browser->GetWebStateList()];
+        initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()];
   }
 
   _viewController.delegate = self;

@@ -22,8 +22,7 @@ class ReaderModeOptionsMediatorTest : public PlatformTest {
     DistillerService* distiller_service =
         DistillerServiceFactory::GetForProfile(profile_.get());
     mediator_ = [[ReaderModeOptionsMediator alloc]
-        initWithDistilledPagePrefs:distiller_service->GetDistilledPagePrefs()
-                      webStateList:browser_->GetWebStateList()];
+        initWithDistilledPagePrefs:distiller_service->GetDistilledPagePrefs()];
   }
 
   void TearDown() override { [mediator_ disconnect]; }
