@@ -444,6 +444,7 @@ config("delayloads_except_dbghelp") {
     "/DELAYLOAD:uiautomationcore.dll",
     "/DELAYLOAD:urlmon.dll",
     "/DELAYLOAD:user32.dll",
+    "/DELAYLOAD:userenv.dll",
     "/DELAYLOAD:usp10.dll",
     "/DELAYLOAD:uxtheme.dll",
     "/DELAYLOAD:wer.dll",
@@ -476,7 +477,6 @@ config("delayloads_not_for_child_dll") {
   ldflags = [
     "/DELAYLOAD:crypt32.dll",
     "/DELAYLOAD:dwrite.dll",
-    "/DELAYLOAD:userenv.dll",
     "/DELAYLOAD:winmm.dll",
     "/DELAYLOAD:ws2_32.dll",
   ]
