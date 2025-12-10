@@ -231,16 +231,16 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
     const gfx::Rect top_container_local_bounds = CalculateTopContainerLayout(
         top_container_layout, params, /*needs_exclusion=*/true);
 
-    // Position the top container in its parent, whatever that is.
-    views().top_container->SetBoundsRect(
-        GetTopContainerBoundsInParent(top_container_local_bounds, params));
-
     // Apply the child layouts for the top container.
     std::move(top_container_layout)
         .ApplyLayout(views().top_container,
                      [this](views::View* view, bool visible) {
                        SetViewVisibility(view, visible);
                      });
+
+    // Position the top container in its parent, whatever that is.
+    views().top_container->SetBoundsRect(
+        GetTopContainerBoundsInParent(top_container_local_bounds, params));
   }
 
   // The normal clipping created by `View::Paint()` may not cover the bottom of
