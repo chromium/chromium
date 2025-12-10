@@ -361,18 +361,6 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
   }
 }
 
-void LayoutBlockFlow::MoveAllChildrenIncludingFloatsTo(
-    LayoutBlock* to_block,
-    bool full_remove_insert) {
-  NOT_DESTROYED();
-  auto* to_block_flow = To<LayoutBlockFlow>(to_block);
-
-  DCHECK(full_remove_insert ||
-         to_block_flow->ChildrenInline() == ChildrenInline());
-
-  MoveAllChildrenTo(to_block_flow, full_remove_insert);
-}
-
 void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
   NOT_DESTROYED();
   if (IsAnonymousBlockFlow()) {
@@ -456,9 +444,7 @@ bool LayoutBlockFlow::MergeSiblingContiguousAnonymousBlock(
   bool full_remove_insert = sibling_that_may_be_deleted->HasLayer() ||
                             HasLayer() ||
                             sibling_that_may_be_deleted->IsInsideMulticol();
-  sibling_that_may_be_deleted->MoveAllChildrenIncludingFloatsTo(
-      this, full_remove_insert);
-  // Delete the now-empty block's lines and nuke it.
+  sibling_that_may_be_deleted->MoveAllChildrenTo(this, full_remove_insert);
   sibling_that_may_be_deleted->Destroy();
   return true;
 }
