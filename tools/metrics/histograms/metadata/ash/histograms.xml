@@ -1106,23 +1106,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.Birch.Ranking{Time}" units="ranking"
-    expires_after="2026-01-18">
-  <owner>jamescook@chromium.org</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    The ranking (lower is better) of the birch results shown to user during
-    {Time}. Recorded when the birch chips are shown.
-  </summary>
-  <token key="Time">
-    <variant name=".0000to0500" summary="midnight to 5 AM local time"/>
-    <variant name=".0500to1200" summary="5 AM to noon local time"/>
-    <variant name=".1200to1700" summary="noon to 5 PM local time"/>
-    <variant name=".1700to0000" summary="5 PM to midnight local time"/>
-    <variant name=".Total" summary="the entire day"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.Birch.ResultsReturned{Type}" units="count"
     expires_after="2026-05-03">
   <owner>jamescook@chromium.org</owner>
