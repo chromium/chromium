@@ -86,11 +86,6 @@ interface PageHandler {
   // `lens.AimToClientMessage` protobuf containing a `lens.HandshakeResponse`.
   // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
   OnWebviewMessage(array<uint8> message);
-
-  // Called by the WebUI to get the serialized `lens.ClientToAimMessage` proto
-  // containing a `lens.HandshakePing` to send to the webview guest.
-  // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
-  GetHandshakeMessage() => (array<uint8> message);
 };
 
 // WebUI-side handler for requests from the browser.

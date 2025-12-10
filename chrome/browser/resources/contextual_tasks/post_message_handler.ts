@@ -4,6 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 
@@ -37,13 +38,11 @@ export class PostMessageHandler {
     this.eventTracker_.add(
         window, 'message', this.onMessageReceived_.bind(this));
 
-    this.browserProxy_.handler.getHandshakeMessage()
-        .then(({message}) => {
-          this.handshakeMessage_ = new Uint8Array(message);
-        })
-        .catch(e => {
-          console.error('getHandshakeMessage failed:', e);
-        });
+    const encodedHandshakeMessage = loadTimeData.getString('handshakeMessage');
+    // TODO(crbug.com/465817042): Switch to Uint8Array.fromBase64 when
+    // available.
+    this.handshakeMessage_ =
+        Uint8Array.from(atob(encodedHandshakeMessage), c => c.charCodeAt(0));
   }
 
   /**
@@ -81,20 +80,9 @@ export class PostMessageHandler {
     this.stopHandshake_();
   }
 
-  private async startHandshake_() {
+  private startHandshake_() {
     if (this.handshakeIntervalId_ !== null) {
       return;
-    }
-
-    if (!this.handshakeMessage_) {
-      try {
-        const {message} =
-            await this.browserProxy_.handler.getHandshakeMessage();
-        this.handshakeMessage_ = new Uint8Array(message);
-      } catch (e) {
-        console.error('getHandshakeMessage failed in startHandshake_:', e);
-        return;
-      }
     }
 
     assert(this.handshakeMessage_);

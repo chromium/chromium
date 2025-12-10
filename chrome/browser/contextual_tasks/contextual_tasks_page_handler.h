@@ -62,7 +62,6 @@ class ContextualTasksPageHandler
   void GetOAuthToken(GetOAuthTokenCallback callback) override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
   void OnWebviewMessage(const std::vector<uint8_t>& message) override;
-  void GetHandshakeMessage(GetHandshakeMessageCallback callback) override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:

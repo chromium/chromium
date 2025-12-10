@@ -205,17 +205,6 @@ void ContextualTasksPageHandler::OnWebviewMessage(
   }
 }
 
-void ContextualTasksPageHandler::GetHandshakeMessage(
-    GetHandshakeMessageCallback callback) {
-  lens::ClientToAimMessage message;
-  lens::HandshakePing* ping = message.mutable_handshake_ping();
-  ping->add_capabilities(lens::FeatureCapability::DEFAULT);
-  const size_t size = message.ByteSizeLong();
-  std::vector<uint8_t> serialized_message(size);
-  message.SerializeToArray(&serialized_message[0], size);
-  std::move(callback).Run(serialized_message);
-}
-
 void ContextualTasksPageHandler::PostMessageToWebview(
     const lens::ClientToAimMessage& message) {
   DCHECK(web_ui_controller_->page());

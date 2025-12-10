@@ -4,26 +4,16 @@
 
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from 'chrome://contextual-tasks/post_message_handler.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {HANDSHAKE_REQUEST_MESSAGE_BASE64, HANDSHAKE_RESPONSE_BYTES} from './test_utils.js';
 
 const HANDSHAKE_INTERVAL_MS = 500;
 const TARGET_ORIGIN = 'https://local.test';
-
-const BASE64_HANDSHAKE_RESPONSE = 'CgIIAA==';
-
-function base64ToUint8Array(base64: string): Uint8Array {
-  const binaryString = window.atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
 
 // Shared helper functions
 let mockWebView: any;
@@ -48,6 +38,10 @@ suite('PostMessageHandlerTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestContextualTasksBrowserProxy(TARGET_ORIGIN);
     BrowserProxyImpl.setInstance(browserProxy);
+
+    loadTimeData.resetForTesting({
+      handshakeMessage: HANDSHAKE_REQUEST_MESSAGE_BASE64,
+    });
 
     mockWebView = {
       src: TARGET_ORIGIN + '/testPath',
@@ -78,7 +72,6 @@ suite('PostMessageHandlerTest', () => {
 
   test('ignores message from wrong origin', async function() {
     simulateLoadStop();
-    await browserProxy.handler.whenCalled('getHandshakeMessage');
 
     simulateMessage(new ArrayBuffer(8), 'https://wrong.origin');
     await flushTasks();
@@ -86,18 +79,6 @@ suite('PostMessageHandlerTest', () => {
     assertEquals(
         0, browserProxy.handler.getCallCount('onWebviewMessage'),
         'onWebviewMessage should not be called for wrong origin');
-  });
-
-  test('handles getHandshakeMessage rejection', async () => {
-    browserProxy.handler.setRejectGetHandshakeMessage(true);
-    simulateLoadStop();
-    await browserProxy.handler.whenCalled('getHandshakeMessage');
-    // The rejection should be caught internally, and the interval should not
-    // start.
-    await flushTasks();
-    assertFalse(
-        postMessageHandler.isHandshakeCompleteForTesting(),
-        'Handshake should not be complete');
   });
 });
 
@@ -114,6 +95,10 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
     mockTimer.install();
     browserProxy = new TestContextualTasksBrowserProxy(TARGET_ORIGIN);
     BrowserProxyImpl.setInstance(browserProxy);
+
+    loadTimeData.resetForTesting({
+      handshakeMessage: HANDSHAKE_REQUEST_MESSAGE_BASE64,
+    });
 
     postMessageSpy = {
       calls: [],
@@ -154,10 +139,9 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
     }
   });
 
-  test('handles HandshakeResponse', async () => {
+  test('handles HandshakeResponse', () => {
     // Initialize and start handshake process
     simulateLoadStop();
-    await browserProxy.handler.whenCalled('getHandshakeMessage');
 
     // Send a message to be queued
     const pendingMsg = new Uint8Array([4, 5, 6]);
@@ -172,9 +156,7 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         1, postMessageSpy.calls.length, 'Handshake message should be sent');
 
     // Simulate receiving the handshake response
-    const handshakeResponseBytes =
-        base64ToUint8Array(BASE64_HANDSHAKE_RESPONSE);
-    simulateMessage(handshakeResponseBytes, TARGET_ORIGIN);
+    simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
 
     // Verify handshake completion and pending message sent
     assertTrue(
@@ -193,7 +175,7 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
     const onWebviewMessageArgs =
         browserProxy.handler.getArgs('onWebviewMessage')[0];
     assertDeepEquals(
-        Array.from(handshakeResponseBytes), onWebviewMessageArgs,
+        Array.from(HANDSHAKE_RESPONSE_BYTES), onWebviewMessageArgs,
         'onWebviewMessageArgs should match handshake response');
 
     const pendingCallArgs = postMessageSpy.calls[1].args;
@@ -210,10 +192,9 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         2, postMessageSpy.calls.length, 'No more messages should be sent');
   });
 
-  test('queues message across loadstop events', async () => {
+  test('queues message across loadstop events', () => {
     // Initialize and start handshake process
     simulateLoadStop();
-    await browserProxy.handler.whenCalled('getHandshakeMessage');
 
     // Send a message to be queued
     const pendingMsg = new Uint8Array([7, 8, 9]);
@@ -234,9 +215,7 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         1, postMessageSpy.calls.length, 'Handshake message should be sent');
 
     // Simulate receiving the handshake response
-    const handshakeResponseBytes =
-        base64ToUint8Array(BASE64_HANDSHAKE_RESPONSE);
-    simulateMessage(handshakeResponseBytes, TARGET_ORIGIN);
+    simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
 
     // Verify handshake completion and pending message sent
     assertTrue(
@@ -255,14 +234,11 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         'Pending message content should match');
   });
 
-  test('receives message after handshake', async () => {
+  test('receives message after handshake', () => {
     // Initial handshake
-    const handshakeResponseBytes =
-        base64ToUint8Array(BASE64_HANDSHAKE_RESPONSE);
     simulateLoadStop();
-    await browserProxy.handler.whenCalled('getHandshakeMessage');
     mockTimer.tick(HANDSHAKE_INTERVAL_MS);
-    simulateMessage(handshakeResponseBytes, TARGET_ORIGIN);
+    simulateMessage(HANDSHAKE_RESPONSE_BYTES, TARGET_ORIGIN);
     assertTrue(
         postMessageHandler.isHandshakeCompleteForTesting(),
         'Handshake should be complete');
@@ -288,9 +264,8 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
         'No messages should be sent to webview');
   });
 
-  test('handles postMessage error', async () => {
+  test('handles postMessage error', () => {
     simulateLoadStop();
-    await browserProxy.handler.whenCalled('getHandshakeMessage');
 
     // Make postMessage throw an error
     mockWebView.contentWindow.postMessage = () => {
@@ -303,9 +278,8 @@ suite('PostMessageHandlerTestWithMockTimer', () => {
     assertTrue(true, 'Test should not crash due to postMessage error');
   });
 
-  test('stops handshake after max attempts', async () => {
+  test('stops handshake after max attempts', () => {
     simulateLoadStop();
-    await browserProxy.handler.whenCalled('getHandshakeMessage');
 
     for (let i = 0; i < TEST_MAX_HANDSHAKE_ATTEMPTS; i++) {
       mockTimer.tick(HANDSHAKE_INTERVAL_MS);
