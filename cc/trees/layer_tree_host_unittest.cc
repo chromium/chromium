@@ -8535,6 +8535,10 @@ SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestSubmitFrameMetadata);
 
 class LayerTreeHostTestSubmitFrameResources : public LayerTreeHostTest {
  protected:
+  LayerTreeHostTestSubmitFrameResources()
+      : LayerTreeTest(kDefaultRendererType,
+                      /*disable_trees_in_viz=*/true) {}
+
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,

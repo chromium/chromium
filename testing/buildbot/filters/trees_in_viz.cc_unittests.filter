@@ -6,11 +6,6 @@
 -LayerTreeHostImplViewportCoveredTest.ViewportCovered
 -LayerTreeHostImplViewportCoveredTest.ViewportCoveredScaled
 
-# These tests directly append quads to FrameData, which isn't
-# a meaningful test for TreesInViz mode.
--LayerTreeHostTestSubmitFrameResources.RunMultiThread_DelegatingRenderer
--LayerTreeHostTestSubmitFrameResources.RunSingleThread_DelegatingRenderer
-
 # TODO(crbug.com/406251942) Investigate PictureLayerTilingSet::CleanUpTilings path
 -LayerTreeHostPictureTestForceRecalculateScales.RunSingleThread_DelegatingRenderer
 -LayerTreeHostTestDamageWithScale.RunMultiThread_DelegatingRenderer

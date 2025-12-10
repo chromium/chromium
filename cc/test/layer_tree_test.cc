@@ -687,7 +687,8 @@ class LayerTreeTestLayerTreeFrameSinkClient
   raw_ptr<TaskRunnerProvider> task_runner_provider_;
 };
 
-LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
+LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type,
+                             bool disable_trees_in_viz)
     : renderer_type_(renderer_type), initial_root_bounds_(1, 1) {
   main_thread_weak_ptr_ = weak_factory_.GetWeakPtr();
 
@@ -734,11 +735,13 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
   // Check if the graphics backend needs to initialize Vulkan.
   bool init_vulkan = false;
   bool init_dawn = false;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
   if (renderer_type_ == viz::RendererType::kSkiaVk) {
-    scoped_feature_list_.InitAndEnableFeature(features::kVulkan);
+    enabled_features.push_back(features::kVulkan);
     init_vulkan = true;
   } else if (renderer_type_ == viz::RendererType::kSkiaGraphiteDawn) {
-    scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
+    enabled_features.push_back(features::kSkiaGraphite);
     bool use_gpu = command_line->HasSwitch(::switches::kUseGpuInTests);
     // Force the use of Graphite even if disallowed for other reasons e.g.
     // ANGLE Metal is not enabled on Mac. Use dawn-swiftshader backend if
@@ -753,15 +756,19 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
     init_vulkan = true;
 #endif
   } else if (renderer_type_ == viz::RendererType::kSkiaGraphiteMetal) {
-    scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
+    enabled_features.push_back(features::kSkiaGraphite);
     // Force the use of Graphite even if disallowed for other reasons.
     command_line->AppendSwitch(::switches::kEnableSkiaGraphite);
     command_line->AppendSwitchASCII(::switches::kSkiaGraphiteBackend,
                                     ::switches::kSkiaGraphiteBackendMetal);
   } else {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kVulkan, features::kSkiaGraphite});
+    disabled_features.push_back(features::kVulkan);
+    disabled_features.push_back(features::kSkiaGraphite);
   }
+  if (disable_trees_in_viz) {
+    disabled_features.push_back(features::kTreesInViz);
+  }
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
   if (init_vulkan) {
     bool use_gpu = command_line->HasSwitch(::switches::kUseGpuInTests);

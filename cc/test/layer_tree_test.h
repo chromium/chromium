@@ -133,8 +133,8 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   }
 
  protected:
-  explicit LayerTreeTest(
-      viz::RendererType renderer_type = kDefaultRendererType);
+  LayerTreeTest(viz::RendererType renderer_type = kDefaultRendererType,
+                bool disable_trees_in_viz = false);
 
   void SkipAllocateInitialLocalSurfaceId();
   const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
