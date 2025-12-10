@@ -204,6 +204,10 @@ TEST(ExtensionResourceTest, CreateWithAllResourcesOnDisk) {
   // Expect default path only, since fallback logic is disabled.
   // See http://crbug.com/27359.
   expected_path = base::MakeAbsoluteFilePath(root_resource);
+#if BUILDFLAG(IS_WIN)
+  // Convert path to long format to avoid mixing long and 8.3 formats in test.
+  expected_path = base::MakeLongFilePath(expected_path);
+#endif  // BUILDFLAG(IS_WIN)
   ASSERT_FALSE(expected_path.empty());
 
   EXPECT_EQ(ToLower(expected_path.value()), ToLower(resolved_path.value()));
