@@ -792,8 +792,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,
                               kHatsSurveyTriggerAndroidStartupSurvey);
 
-  std::vector<std::string> signin_string_psd_fields{"Channel", "Chrome Version",
-                                                    "Number of Google Accounts",
+  std::vector<std::string> signin_string_psd_fields{"Number of Google Accounts",
                                                     "Sign-in Status"};
   survey_configs.emplace_back(&switches::kChromeAndroidIdentitySurveyFirstRun,
                               kHatsSurveyTriggerSigninFirstRun, std::nullopt,
