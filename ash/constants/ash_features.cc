@@ -1730,11 +1730,6 @@ BASE_FEATURE(kReleaseNotesNotificationAlwaysEligible,
 BASE_FEATURE(kRenderArcNotificationsByChrome,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows the OS to unpin apps that were pinned by PinnedLauncherApps policy
-// but are no longer a part of it from shelf under specific conditions.
-BASE_FEATURE(kRemoveStalePolicyPinnedAppsFromShelf,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Reset audio I/O selection improvement pref, used for testing purpose.
 BASE_FEATURE(kResetAudioSelectionImprovementPref,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3222,10 +3217,6 @@ bool IsRecoveryFlowReorderEnabled() {
 
 bool IsRenderArcNotificationsByChromeEnabled() {
   return base::FeatureList::IsEnabled(kRenderArcNotificationsByChrome);
-}
-
-bool IsRemoveStalePolicyPinnedAppsFromShelfEnabled() {
-  return base::FeatureList::IsEnabled(kRemoveStalePolicyPinnedAppsFromShelf);
 }
 
 bool IsResetAudioSelectionImprovementPrefEnabled() {

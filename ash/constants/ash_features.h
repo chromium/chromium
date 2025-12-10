@@ -777,8 +777,6 @@ BASE_DECLARE_FEATURE(kReleaseNotesNotificationAlwaysEligible);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kRenderArcNotificationsByChrome);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kRemoveStalePolicyPinnedAppsFromShelf);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kResetAudioSelectionImprovementPref);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kResetShortcutCustomizations);
@@ -1273,8 +1271,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsRenderArcNotificationsByChromeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsRecoveryFlowReorderEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsRemoveStalePolicyPinnedAppsFromShelfEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSameAppWindowCycleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsResetAudioSelectionImprovementPrefEnabled();
