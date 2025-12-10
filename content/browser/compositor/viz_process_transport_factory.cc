@@ -54,6 +54,10 @@
 #include "ui/gfx/win/rendering_window_manager.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/compositor/display_link_mac_mojo.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -190,6 +194,22 @@ void VizProcessTransportFactory::CreateLayerTreeFrameSink(
       compositor->widget());
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  // Create DisplayLinkMacMojo only after FrameSinkManager and display::Screen
+  // are available. FrameSinkManager is established in
+  // ConnectHostFrameSinkManager(), but display::Screen is not available in that
+  // function in Content Shell. (Note: display::Screen is available and not an
+  // issue there when running on Chrome.)
+  // CADisplayLink is not used in headless mode
+  // (use_external_begin_frame_control()).
+  if (!compositor->use_external_begin_frame_control() &&
+      !display_link_mac_mojo_ &&
+      ui::DisplayLinkMacMojo::SupportsDisplayLinkMacInBrowser()) {
+    display_link_mac_mojo_ =
+        std::make_unique<ui::DisplayLinkMacMojo>(GetHostFrameSinkManager());
+  }
+#endif
+
   gpu_channel_establish_factory_->EstablishGpuChannel(
       base::BindOnce(&VizProcessTransportFactory::OnEstablishedGpuChannel,
                      weak_ptr_factory_.GetWeakPtr(), compositor));
@@ -318,6 +338,8 @@ void VizProcessTransportFactory::DisableGpuCompositing(
 void VizProcessTransportFactory::OnGpuProcessLost() {
   // Reconnect HostFrameSinkManager to new GPU process.
   ConnectHostFrameSinkManager();
+
+  // TODO: Reconnect VSyncIpc for display_link_mac_mojo_ on mac;
 }
 
 void VizProcessTransportFactory::OnEstablishedGpuChannel(

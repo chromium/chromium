@@ -32,11 +32,14 @@ namespace viz {
 class CompositingModeReporterImpl;
 class HostDisplayClient;
 class RasterContextProvider;
-}
-
-namespace viz {
 class ContextProviderCommandBuffer;
 }
+
+#if BUILDFLAG(IS_MAC)
+namespace ui {
+class DisplayLinkMacMojo;
+}
+#endif
 
 namespace content {
 
@@ -114,6 +117,10 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   // fallback to software compositing.
   gpu::ContextResult TryCreateContextsForGpuCompositing(
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
+
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<ui::DisplayLinkMacMojo> display_link_mac_mojo_{nullptr};
+#endif
 
   const raw_ptr<gpu::GpuChannelEstablishFactory> gpu_channel_establish_factory_;
 

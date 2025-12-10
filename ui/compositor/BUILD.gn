@@ -85,6 +85,8 @@ component("compositor") {
 
   if (is_mac) {
     sources += [
+      "display_link_mac_mojo.h",
+      "display_link_mac_mojo.mm",
       "recyclable_compositor_mac.cc",
       "recyclable_compositor_mac.h",
     ]

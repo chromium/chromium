@@ -37,6 +37,8 @@ BASE_FEATURE(kEnableExternalDisplayHDR10Mode,
 BASE_FEATURE(kCtmColorManagement, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kCADisplayLinkInBrowser, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(gildekel): A temporary flag to control whether EDID-based (vs.
 // port-based) display IDs are generated per display. Remove once the migration
 // process it complete (b/193019614).

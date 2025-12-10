@@ -110,7 +110,7 @@ void CADisplayLinkMac::GetRefreshIntervalRange(
 }
 
 // static
-scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplayOnCurrentThread(
+scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
     CGDirectDisplayID display_id) {
   if (@available(macos 14.0, *)) {
     scoped_refptr<CADisplayLinkMac> display_link(

@@ -15,10 +15,10 @@
 namespace ui {
 struct ObjCState;
 
-class CADisplayLinkMac : public DisplayLinkMac {
+class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
  public:
   // Create a CADisplayLinkMac for the specified display.
-  static scoped_refptr<DisplayLinkMac> GetForDisplayOnCurrentThread(
+  static scoped_refptr<DisplayLinkMac> GetForDisplay(
       CGDirectDisplayID display_id);
 
   // DisplayLinkMac implementation
