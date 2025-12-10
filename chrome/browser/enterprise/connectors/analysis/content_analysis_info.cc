@@ -27,7 +27,7 @@
 namespace enterprise_connectors {
 
 void ContentAnalysisInfo::InitializeRequest(
-    safe_browsing::BinaryUploadService::Request* request,
+    BinaryUploadRequest* request,
     bool include_enterprise_only_fields) {
   if (include_enterprise_only_fields) {
     if (settings().cloud_or_local_settings.is_cloud_analysis()) {

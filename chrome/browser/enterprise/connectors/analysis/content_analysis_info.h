@@ -29,7 +29,7 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
   // Adds shared fields to `request` before sending it to the binary upload
   // service. Connector-specific fields need to be added to the request
   // separately.
-  void InitializeRequest(safe_browsing::BinaryUploadService::Request* request,
+  void InitializeRequest(BinaryUploadRequest* request,
                          bool include_enterprise_only_fields = true);
 
   // Returns email of the active Gaia user based on the values provided by

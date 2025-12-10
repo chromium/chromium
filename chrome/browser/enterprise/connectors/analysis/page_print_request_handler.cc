@@ -12,6 +12,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
@@ -193,7 +194,7 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
 }
 
 void PagePrintRequestHandler::FinishLargeDataRequestEarly(
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   // We add the request here in case we never actually uploaded anything, so
   // it wasn't added in OnGetRequestData
   safe_browsing::WebUIContentInfoSingleton::GetInstance()

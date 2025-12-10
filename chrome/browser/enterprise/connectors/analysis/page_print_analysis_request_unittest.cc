@@ -51,9 +51,8 @@ TEST_P(PagePrintAnalysisRequestTest, CloudSizes) {
 
   base::RunLoop run_loop;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&run_loop, this](
-          ScanRequestUploadResult result,
-          safe_browsing::BinaryUploadService::Request::Data data) {
+      [&run_loop, this](ScanRequestUploadResult result,
+                        BinaryUploadRequest::Data data) {
         ASSERT_TRUE(data.contents.empty());
         ASSERT_TRUE(data.hash.empty());
         ASSERT_TRUE(data.mime_type.empty());
@@ -80,9 +79,8 @@ TEST_P(PagePrintAnalysisRequestTest, LocalSizes) {
 
   base::RunLoop run_loop;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&run_loop, this](
-          ScanRequestUploadResult result,
-          safe_browsing::BinaryUploadService::Request::Data data) {
+      [&run_loop, this](ScanRequestUploadResult result,
+                        BinaryUploadRequest::Data data) {
         ASSERT_TRUE(data.contents.empty());
         ASSERT_TRUE(data.hash.empty());
         ASSERT_TRUE(data.mime_type.empty());
@@ -104,17 +102,15 @@ TEST(PagePrintAnalysisRequest, GetRequestData) {
   PagePrintAnalysisRequest request(AnalysisSettings(), CreateFakePage(1024),
                                    base::DoNothing());
 
-  safe_browsing::BinaryUploadService::Request::Data data1;
+  BinaryUploadRequest::Data data1;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&data1](ScanRequestUploadResult result,
-               safe_browsing::BinaryUploadService::Request::Data data) {
+      [&data1](ScanRequestUploadResult result, BinaryUploadRequest::Data data) {
         data1 = std::move(data);
       }));
 
-  safe_browsing::BinaryUploadService::Request::Data data2;
+  BinaryUploadRequest::Data data2;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&data2](ScanRequestUploadResult result,
-               safe_browsing::BinaryUploadService::Request::Data data) {
+      [&data2](ScanRequestUploadResult result, BinaryUploadRequest::Data data) {
         data2 = std::move(data);
       }));
 

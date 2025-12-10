@@ -22,9 +22,9 @@ PagePrintAnalysisRequest::PagePrintAnalysisRequest(
     const AnalysisSettings& analysis_settings,
     base::ReadOnlySharedMemoryRegion page,
     safe_browsing::BinaryUploadService::ContentAnalysisCallback callback)
-    : safe_browsing::BinaryUploadService::Request(
-          std::move(callback),
-          analysis_settings.cloud_or_local_settings),
+    : BinaryUploadRequest(std::move(callback),
+                          analysis_settings.cloud_or_local_settings,
+                          base::BindRepeating(&GetBrowserPolicyConnector)),
       page_(std::move(page)) {
   DCHECK(page_.IsValid());
   safe_browsing::IncrementCrashKey(
