@@ -4093,11 +4093,6 @@ inline constexpr char kStrictOriginIsolationDescription[] =
     "Controls whether site isolation should use origins instead of scheme and "
     "eTLD+1.";
 
-inline constexpr char kSupportToolScreenshot[] = "Support Tool Screenshot";
-inline constexpr char kSupportToolScreenshotDescription[] =
-    "Enables the Support Tool to capture and include a screenshot in the "
-    "exported packet.";
-
 inline constexpr char kSyncAutofillWalletCredentialDataName[] =
     "Sync Autofill Wallet Credential Data";
 inline constexpr char kSyncAutofillWalletCredentialDataDescription[] =

@@ -8242,11 +8242,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingDocsLoadMoreButtonName,
      flag_descriptions::kReadAnythingDocsLoadMoreButtonDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingDocsLoadMoreButton)},
-
-    {"support-tool-screenshot", flag_descriptions::kSupportToolScreenshot,
-     flag_descriptions::kSupportToolScreenshotDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSupportToolScreenshot)},
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-auto-disable-accessibility",

@@ -4194,8 +4194,6 @@ static_library("browser") {
       "support_tool/data_collector_utils.h",
       "support_tool/policy_data_collector.cc",
       "support_tool/policy_data_collector.h",
-      "support_tool/screenshot_data_collector.cc",
-      "support_tool/screenshot_data_collector.h",
       "support_tool/signin_data_collector.cc",
       "support_tool/signin_data_collector.h",
       "support_tool/support_packet_metadata.cc",

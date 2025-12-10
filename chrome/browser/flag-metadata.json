@@ -9695,11 +9695,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "support-tool-screenshot",
-    "owners": [ "//chrome/browser/support_tool/OWNERS" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "symphonia-audio-decoding",
     "owners": [ "jophba@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 152

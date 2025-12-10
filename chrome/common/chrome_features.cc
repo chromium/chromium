@@ -1619,12 +1619,6 @@ BASE_FEATURE(kSysInternals, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTPMFirmwareUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
-// Enables the Support Tool to include a screenshot in the exported support tool
-// packet.
-BASE_FEATURE(kSupportToolScreenshot, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Disable downloads of unsafe file types over insecure transports if initiated
 // from a secure page. As of M89, mixed downloads are blocked on all platforms.
 BASE_FEATURE(kTreatUnsafeDownloadsAsActive, base::FEATURE_ENABLED_BY_DEFAULT);

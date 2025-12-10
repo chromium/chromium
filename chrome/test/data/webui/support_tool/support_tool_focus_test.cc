@@ -10,17 +10,7 @@
 
 class SupportToolTest : public WebUIMochaFocusTest {
  protected:
-  SupportToolTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            features::kSupportToolScreenshot,
-        },
-        {});
-    set_test_loader_host(chrome::kChromeUISupportToolHost);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  SupportToolTest() { set_test_loader_host(chrome::kChromeUISupportToolHost); }
 };
 
 IN_PROC_BROWSER_TEST_F(SupportToolTest, All) {
