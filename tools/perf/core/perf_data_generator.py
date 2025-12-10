@@ -91,8 +91,17 @@ from telemetry import decorators
 
 # A dictionary that maps a test suite name to the module name and module scheme
 # that corresponds to that test suite.
+
+
 _ModuleArgs = collections.namedtuple('ModuleArgs', ['name', 'scheme'])
 _STRUCTURED_TEST_ID_SUITES = {
+    'chrome_sizes':
+    _ModuleArgs('//chrome/test:chrome_sizes', 'single'),
+    'resource_sizes_system_webview_google_bundle ':
+    _ModuleArgs('//clank/java:resource_sizes_system_webview_google_bundle',
+                'single'),
+    'resource_sizes_trichrome_google':
+    _ModuleArgs('//clank/java:resource_sizes_trichrome_google', 'single'),
     'performance_test_suite_android_trichrome_chrome_google_64_32_bundle':
     _ModuleArgs(
         '//chrome/test:performance_test_suite_android_trichrome_chrome_google_64_32_bundle',

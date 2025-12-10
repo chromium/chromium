@@ -91,6 +91,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//clank/java:resource_sizes_trichrome_google",
+        "module_scheme": "single",
         "name": "resource_sizes_trichrome_google",
         "resultdb": {
           "has_native_resultdb_integration": true
@@ -1084,6 +1086,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//clank/java:resource_sizes_trichrome_google",
+        "module_scheme": "single",
         "name": "resource_sizes_trichrome_google",
         "resultdb": {
           "has_native_resultdb_integration": true
@@ -1124,6 +1128,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:chrome_sizes",
+        "module_scheme": "single",
         "name": "chrome_sizes",
         "resultdb": {
           "has_native_resultdb_integration": true
@@ -1400,6 +1406,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:chrome_sizes",
+        "module_scheme": "single",
         "name": "chrome_sizes",
         "resultdb": {
           "has_native_resultdb_integration": true
@@ -1434,6 +1442,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:chrome_sizes",
+        "module_scheme": "single",
         "name": "chrome_sizes",
         "resultdb": {
           "has_native_resultdb_integration": true
@@ -2351,6 +2361,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:chrome_sizes",
+        "module_scheme": "single",
         "name": "chrome_sizes",
         "resultdb": {
           "has_native_resultdb_integration": true
