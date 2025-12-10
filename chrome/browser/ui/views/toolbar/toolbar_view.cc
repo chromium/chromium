@@ -140,6 +140,10 @@
 #include "ui/aura/window_occlusion_tracker.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 using base::UserMetricsAction;
 using content::WebContents;
 
@@ -829,12 +833,14 @@ void ToolbarView::Layout(PassKey) {
   // The background views should be behind the top-left and top-right corners
   // of the container_view_.
   const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
-  const auto [draw_leading_corner, draw_trailing_corner] = GetCornersToShow();
-  const int leading_corner_radius = draw_leading_corner ? corner_radius : 0;
-  const int trailing_corner_radius = draw_trailing_corner ? corner_radius : 0;
-  leading_curve_->SetBounds(0, 0, leading_corner_radius, leading_corner_radius);
-  trailing_curve_->SetBounds(width() - trailing_corner_radius, 0,
-                             trailing_corner_radius, trailing_corner_radius);
+  const auto [leading_corner_style, trailing_corner_style] = GetCornerStyles();
+  const int leading_curve_size =
+      leading_corner_style == CornerStyle::kTabstripCurve ? corner_radius : 0;
+  const int trailing_curve_size =
+      trailing_corner_style == CornerStyle::kTabstripCurve ? corner_radius : 0;
+  leading_curve_->SetBounds(0, 0, leading_curve_size, leading_curve_size);
+  trailing_curve_->SetBounds(width() - trailing_curve_size, 0,
+                             trailing_curve_size, trailing_curve_size);
 
   if (display_mode_ == DisplayMode::kCustomTab) {
     custom_tab_bar_->SetBounds(0, 0, width(),
@@ -845,7 +851,9 @@ void ToolbarView::Layout(PassKey) {
 
   if (display_mode_ == DisplayMode::kNormal) {
     LayoutCommon();
-    UpdateClipPath(leading_corner_radius, trailing_corner_radius);
+    UpdateClipPath(
+        leading_corner_style != CornerStyle::kSquare ? corner_radius : 0,
+        trailing_corner_style != CornerStyle::kSquare ? corner_radius : 0);
   }
 
   if (toolbar_controller_) {
@@ -1300,7 +1308,8 @@ void ToolbarView::OnTabStripModelChanged(
   }
 }
 
-std::pair<bool, bool> ToolbarView::GetCornersToShow() const {
+std::pair<ToolbarView::CornerStyle, ToolbarView::CornerStyle>
+ToolbarView::GetCornerStyles() const {
   const auto* const frame_view =
       browser_view_->browser_widget()->GetFrameView();
   const bool has_leading_frame_buttons =
@@ -1308,8 +1317,8 @@ std::pair<bool, bool> ToolbarView::GetCornersToShow() const {
   const bool webui_tabstrip = browser_view_->webui_tab_strip();
   const bool vertical_tabstrip = browser_view_->ShouldDrawVerticalTabStrip();
 
-  bool leading = false;
-  bool trailing = false;
+  CornerStyle leading = CornerStyle::kSquare;
+  CornerStyle trailing = CornerStyle::kSquare;
 
   if (vertical_tabstrip) {
     if (!browser_view_->IsFullscreen()) {
@@ -1317,13 +1326,21 @@ std::pair<bool, bool> ToolbarView::GetCornersToShow() const {
       // toolbar.
       if (!has_leading_frame_buttons ||
           !browser_view_->IsVerticalTabStripCollapsed()) {
-        leading = true;
+        leading = CornerStyle::kTabstripCurve;
+      }
+      // Curve trailing corner when it goes all the way to the edge of the
+      // browser.
+      if (!frame_view->CaptionButtonsOnTrailingEdge()) {
+#if BUILDFLAG(IS_CHROMEOS)
+        if (chromeos::features::IsRoundedWindowsEnabled()) {
+          trailing = CornerStyle::kRounded;
+        }
+#else
+        trailing = CornerStyle::kRounded;
+#endif
       }
     }
   } else if (!webui_tabstrip) {
-    // Trailing curve is always shown for normal horizontal tabstrip.
-    trailing = true;
-
     // If there is anything on the leading side or the first tab is not
     // selected, then the corner radius is shown, otherwise we hide the corner
     // radius. Also when showing WebUITabStrip, toolbar should not have receding
@@ -1335,7 +1352,8 @@ std::pair<bool, bool> ToolbarView::GetCornersToShow() const {
         browser_->tab_strip_model()->IsTabInForeground(0);
     if (has_leading_frame_buttons || tab_strip_has_leading_action_buttons ||
         !first_tab_selected) {
-      leading = true;
+      leading = CornerStyle::kTabstripCurve;
+      trailing = CornerStyle::kTabstripCurve;
     }
   }
 

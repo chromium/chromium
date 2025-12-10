@@ -280,10 +280,22 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void NewTabButtonPressed(const ui::Event& event);
 
-  // Determines which corners are painted. Return value is whether to show
-  // leading and/or trailing curves, respectively. See comments on
-  // `leading_curve_` and `trailing_curve_`.
-  std::pair<bool, bool> GetCornersToShow() const;
+  // Determines how corners are painted. Return value is how to paint leading
+  // and/or trailing corners, respectively. See comments on `leading_curve_` and
+  // `trailing_curve_` for more.
+  enum class CornerStyle {
+    // Hard corner. Used when tabstrip is next to other elements of the same
+    // color, or against a flat edge of the window.
+    kSquare,
+    // Curved corner. Used when tabstrip goes all the way to the upper corner of
+    // the browser window.
+    kRounded,
+    // Fake curved corner, with tabstrip color behind. Used when the toolbar is
+    // directly next to or below a background region of the tabstrip or the
+    // titlebar.
+    kTabstripCurve,
+  };
+  std::pair<CornerStyle, CornerStyle> GetCornerStyles() const;
 
   gfx::SlideAnimation size_animation_{this};
 
