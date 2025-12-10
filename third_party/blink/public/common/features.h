@@ -36,6 +36,13 @@ namespace features {
 // AIPageContent.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAIPageContentIncludePopupWindows);
 
+// Controls whether a missing subframe while generating the APC proto is
+// silently dropped. If false, the entire APC is considered failed when this
+// happens. When true, the subframe is simply skipped but the rest of APC
+// generation is unaffected.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAIPageContentMissingSubframesFailSilently);
+
 // Controls the capturing of the Ad-Auction-Signals header, and the maximum
 // allowed Ad-Auction-Signals header value.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionSignals);

@@ -186,7 +186,26 @@ TEST_F(PageContentProtoUtilTest, IframeNodeWithNoData) {
               base::test::ErrorIs("iframe missing iframe_data"));
 }
 
-TEST_F(PageContentProtoUtilTest, IframeDestroyed) {
+class PageContentProtoUtilTestIframeSilentFail
+    : public PageContentProtoUtilTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PageContentProtoUtilTestIframeSilentFail() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          blink::features::kAIPageContentMissingSubframesFailSilently);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          blink::features::kAIPageContentMissingSubframesFailSilently);
+    }
+  }
+  virtual ~PageContentProtoUtilTestIframeSilentFail() = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PageContentProtoUtilTestIframeSilentFail, IframeDestroyed) {
   auto main_frame_token = CreateFrameToken();
   auto root_content = CreatePageContent();
   root_content->root_node->children_nodes.emplace_back(
@@ -221,15 +240,22 @@ TEST_F(PageContentProtoUtilTest, IframeDestroyed) {
 
   AIPageContentResult page_content;
   FrameTokenSet frame_token_set;
-  EXPECT_THAT(
-      ConvertAIPageContentToProto(blink::mojom::AIPageContentOptions::New(),
-                                  main_frame_token, page_content_map,
-                                  get_render_frame_info, frame_token_set,
-                                  page_content),
-      base::test::ErrorIs("could not find render_frame_info for iframe"));
+  base::expected<void, std::string> returned = ConvertAIPageContentToProto(
+      blink::mojom::AIPageContentOptions::New(), main_frame_token,
+      page_content_map, get_render_frame_info, frame_token_set, page_content);
+  if (GetParam()) {
+    EXPECT_TRUE(returned.has_value());
+  } else {
+    EXPECT_THAT(returned, base::test::ErrorIs(
+                              "could not find render_frame_info for iframe"));
+  }
   ASSERT_TRUE(query_token.has_value());
   EXPECT_EQ(iframe_token.frame_token, *query_token);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageContentProtoUtilTestIframeSilentFail,
+                         testing::Bool());
 
 TEST_F(PageContentProtoUtilTest, Basic) {
   auto root_content = CreatePageContent();
