@@ -257,6 +257,13 @@ extern const base::FeatureParam<bool> kNtpNextShowStaticTextParam;
 // dive suggestions.
 extern const base::FeatureParam<bool> kNtpNextShowDeepDiveSuggestionsParam;
 
+// Parameter determining if the suggestions are retrieved from the newly
+// implemented search suggestions endpoint. If true, the new one is used.
+// If false, an existing endpoint (used by ZPS) is used for deep dive chips,
+// and static data is used for steady state chips.
+extern const base::FeatureParam<bool>
+    kNtpNextSuggestionsFromNewSearchSuggestionsEndpointParam;
+
 // Parameter determining if the Action Chips on the NTP should display the
 // NTP Simplification UI.
 extern const base::FeatureParam<bool> kNtpNextShowSimplificationUIParam;

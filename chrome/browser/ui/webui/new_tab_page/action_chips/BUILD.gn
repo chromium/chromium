@@ -12,14 +12,19 @@ source_set("action_chips") {
     "action_chips_generator.h",
     "action_chips_handler.cc",
     "action_chips_handler.h",
+    "remote_suggestions_service_simple.cc",
+    "remote_suggestions_service_simple.h",
     "tab_id_generator.cc",
     "tab_id_generator.h",
   ]
   public_deps = [ ":mojo_bindings" ]
   deps = [
     "//base",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
+    "//chrome/browser/search_engines",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/webui:webui_util",
@@ -51,6 +56,7 @@ source_set("unit_tests") {
     "action_chips_mojo_test_utils.h",
     "fake_tab_id_generator.cc",
     "fake_tab_id_generator.h",
+    "remote_suggestions_service_simple_unittest.cc",
   ]
   deps = [
     ":action_chips",

@@ -1230,9 +1230,7 @@ void NewTabPageUI::CreateActionChipsHandler(
     mojo::PendingRemote<action_chips::mojom::Page> page) {
   action_chips_handler_ = std::make_unique<ActionChipsHandler>(
       std::move(handler), std::move(page), profile_, web_ui(),
-      std::make_unique<ActionChipsGeneratorImpl>(
-          TabIdGeneratorImpl::Get(),
-          OptimizationGuideKeyedServiceFactory::GetForProfile(profile_)));
+      std::make_unique<ActionChipsGeneratorImpl>(profile_));
 }
 
 // OnColorProviderChanged can be called during the destruction process and

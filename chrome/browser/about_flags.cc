@@ -1226,16 +1226,15 @@ const FeatureEntry::FeatureVariation kJourneysVariations[] = {
      std::size(kJourneysAllLocalesParams), nullptr},
 };
 
-
 const FeatureEntry::FeatureParam
     kLensAimSuggestionsTypeContextualWith3Suggestions[] = {
         {"lens-aim-suggestions-type", "Contextual"},
         {"number-of-aim-suggestions", "3"}};
 
-const FeatureEntry::FeatureParam kLensAimSuggestionsTypeContextualWith5Suggestions[] = {
-    {"lens-aim-suggestions-type", "Contextual"},
-    {"number-of-aim-suggestions", "5"}
-};
+const FeatureEntry::FeatureParam
+    kLensAimSuggestionsTypeContextualWith5Suggestions[] = {
+        {"lens-aim-suggestions-type", "Contextual"},
+        {"number-of-aim-suggestions", "5"}};
 
 const FeatureEntry::FeatureParam
     kLensAimSuggestionsTypeContextualWith8Suggestions[] = {
@@ -1247,9 +1246,10 @@ const FeatureEntry::FeatureParam
         {"lens-aim-suggestions-type", "Multimodal"},
         {"number-of-aim-suggestions", "3"}};
 
-const FeatureEntry::FeatureParam kLensAimSuggestionsTypeMultimodalWith5Suggestions[] = {
-    {"lens-aim-suggestions-type", "Multimodal"},
-    {"number-of-aim-suggestions", "5"}};
+const FeatureEntry::FeatureParam
+    kLensAimSuggestionsTypeMultimodalWith5Suggestions[] = {
+        {"lens-aim-suggestions-type", "Multimodal"},
+        {"number-of-aim-suggestions", "5"}};
 
 const FeatureEntry::FeatureParam
     kLensAimSuggestionsTypeMultimodalWith8Suggestions[] = {
@@ -1260,7 +1260,8 @@ const FeatureEntry::FeatureVariation kLensAimSuggestionsVariations[] = {
     {"with Contextual - 3 suggestions",
      kLensAimSuggestionsTypeContextualWith3Suggestions,
      std::size(kLensAimSuggestionsTypeContextualWith3Suggestions), nullptr},
-    {"with Contextual - 5 suggestions", kLensAimSuggestionsTypeContextualWith5Suggestions,
+    {"with Contextual - 5 suggestions",
+     kLensAimSuggestionsTypeContextualWith5Suggestions,
      std::size(kLensAimSuggestionsTypeContextualWith5Suggestions), nullptr},
     {"with Contextual - 8 suggestions",
      kLensAimSuggestionsTypeContextualWith8Suggestions,
@@ -1268,12 +1269,13 @@ const FeatureEntry::FeatureVariation kLensAimSuggestionsVariations[] = {
     {"with Multimodal - 3 suggestions",
      kLensAimSuggestionsTypeMultimodalWith3Suggestions,
      std::size(kLensAimSuggestionsTypeMultimodalWith3Suggestions), nullptr},
-    {"with Multimodal - 5 suggestions", kLensAimSuggestionsTypeMultimodalWith5Suggestions,
+    {"with Multimodal - 5 suggestions",
+     kLensAimSuggestionsTypeMultimodalWith5Suggestions,
      std::size(kLensAimSuggestionsTypeMultimodalWith5Suggestions), nullptr},
     {"with Multimodal - 8 suggestions",
      kLensAimSuggestionsTypeMultimodalWith8Suggestions,
      std::size(kLensAimSuggestionsTypeMultimodalWith8Suggestions), nullptr},
-    };
+};
 
 const FeatureEntry::FeatureVariation kRemotePageMetadataVariations[] = {
     {"High Performance Canonicalization", nullptr, 0, "3362133"},
@@ -1801,8 +1803,8 @@ const FeatureEntry::FeatureParam kNtpNextShowStaticText[] = {
 
 const FeatureEntry::FeatureParam kNtpNextShowDeepDiveSuggestions[] = {
     {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+    {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "false"},
 };
-
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUI[] = {
     {"NtpNextShowSimplificationUIParam", "true"},
 };
