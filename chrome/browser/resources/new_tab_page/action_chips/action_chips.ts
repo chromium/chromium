@@ -64,12 +64,18 @@ export class ActionChipsElement extends CrLitElement {
   static override get properties() {
     return {
       actionChips_: {type: Array, state: true},
+      showSimplifiedUI_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   private handler: ActionChipsHandlerInterface;
   private callbackRouter: PageCallbackRouter;
   protected accessor actionChips_: ActionChip[] = [];
+  protected accessor showSimplifiedUI_: boolean =
+      loadTimeData.getBoolean('ntpNextShowSimplificationUIEnabled');
   private onActionChipChangedListenerId_: number|null = null;
   private initialLoadStartTime_: number|null = null;
 

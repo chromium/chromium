@@ -31,7 +31,11 @@ export function getHtml(this: ActionChipsElement) {
               !this.isDeepDiveChip_(chip) ?
                   html`<span class="chip-title">${chip.title}</span>` :
                   ''}
-          <span title="${chip.suggestion}" class="chip-body">${chip.suggestion}</span>
+          <span
+            title="${chip.suggestion}"
+            class="chip-body">
+              ${this.showSimplifiedUI_ ? ' - ' : ''}${chip.suggestion}
+          </span>
         </div>
       </button>`)}
     </div>
