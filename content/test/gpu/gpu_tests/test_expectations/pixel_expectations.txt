@@ -408,7 +408,7 @@ crbug.com/349132647 [ android android-sm-s911u1 android-chromium ] Pixel_WebGLCo
 # are marked as failing until they are confirmed to be stable.
 crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Failure Slow ]
 crbug.com/286989320 [ win amd ] Pixel_MeetEffects* [ Slow ]
-crbug.com/286989320 [ win nvidia ] Pixel_MeetEffects* [ Failure Slow ]
+crbug.com/286989320 [ win nvidia ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win qualcomm ] Pixel_MeetEffects* [ Failure Slow ]
 crbug.com/286989320 [ win intel-0x4680 ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ Failure Slow ]
@@ -580,6 +580,9 @@ crbug.com/446861923 [ android android-pixel-10 android-chromium ] Pixel_Video_VP
 # ViewTransitions capturing incorrect image
 crbug.com/446157733 [ android-pixel-6 android-t angle-vulkan graphite-disabled renderer-skia-vulkan ] Pixel_ViewTransitionsCapture [ Failure ]
 crbug.com/446157733 [ android-pixel-6 angle-vulkan graphite-enabled renderer-skia-gl ] Pixel_ViewTransitionsCapture [ Failure ]
+
+# Flakily runs into OOM issues in 32-bit browsers.
+crbug.com/466113477 [ win nvidia target-cpu-32 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
