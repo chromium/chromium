@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -1536,6 +1537,8 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
 }
 
 void ServiceWorkerSubresourceLoader::ValidateResponseSentToClient() {
+  SCOPED_CRASH_KEY_BOOL("crbug463388771", "fetch_restarted",
+                        fetch_request_restarted_);
   SCOPED_CRASH_KEY_STRING1024("crbug463388771", "response_url",
                               resource_request_.url.spec());
   CHECK(!response_sent_to_client_);
