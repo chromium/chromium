@@ -50,43 +50,64 @@ class ContextualTasksPageActionControllerInteractiveTest
         GetForProfile(browser()->profile());
   }
 
+  auto CreateTaskForTab(int tab_index) {
+    return Do([&, tab_index] {
+      contextual_tasks::ContextualTask task =
+          GetContextualTasksController()->CreateTask();
+      content::WebContents* const web_contents =
+          browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+      SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
+      GetContextualTasksController()->AssociateTabWithTask(task.GetTaskId(),
+                                                           session_id);
+    });
+  }
+
+  auto RemoveTaskFromTab(int tab_index) {
+    return Do([&, tab_index] {
+      content::WebContents* const web_contents =
+          browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+      SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
+      std::optional<contextual_tasks::ContextualTask> task =
+          GetContextualTasksController()->GetContextualTaskForTab(session_id);
+      if (task.has_value()) {
+        GetContextualTasksController()->DisassociateTabFromTask(
+            task.value().GetTaskId(), session_id);
+      }
+    });
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageActionControllerInteractiveTest,
-                       DISABLED_ShowContextualTaskPageAction) {
+                       ShowContextualTaskPageAction) {
   RunTestSequence(InstrumentTab(kFirstTab),
                   EnsureNotPresent(kContextualTasksPageActionElementId),
                   NavigateWebContents(kFirstTab, GetTestURL()),
-                  Do([&] { GetContextualTasksController()->CreateTask(); }),
+                  CreateTaskForTab(0),
                   WaitForShow(kContextualTasksPageActionElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageActionControllerInteractiveTest,
                        HideContextualTaskPageAction) {
-  contextual_tasks::ContextualTask task =
-      GetContextualTasksController()->CreateTask();
-  RunTestSequence(
-      InstrumentTab(kFirstTab),
-      WaitForShow(kContextualTasksPageActionElementId),
-      Do([&] { GetContextualTasksController()->DeleteTask(task.GetTaskId()); }),
-      WaitForHide(kContextualTasksPageActionElementId));
+  RunTestSequence(InstrumentTab(kFirstTab), CreateTaskForTab(0),
+                  WaitForShow(kContextualTasksPageActionElementId),
+                  RemoveTaskFromTab(0),
+                  WaitForHide(kContextualTasksPageActionElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksPageActionControllerInteractiveTest,
                        ToggleContextualTasksSidePanel) {
-  contextual_tasks::ContextualTask task =
-      GetContextualTasksController()->CreateTask();
   RunTestSequence(
-      InstrumentTab(kFirstTab),
-      NavigateWebContents(kFirstTab, embedded_test_server()->GetURL(
-                                         "example.com", "/title1.html")),
-      WaitForShow(kContextualTasksPageActionElementId),
+      InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, GetTestURL()),
+      CreateTaskForTab(0), WaitForShow(kContextualTasksPageActionElementId),
       // Pressing the page action should open the toolbar height side panel
       PressButton(kContextualTasksPageActionElementId),
       WaitForShow(kSidePanelElementId),
-      // // Pressing the button again should close the toolbar height side panel
+      // Pressing the button again should close the toolbar height side panel
+      // but the page action chip should remain visible
       PressButton(kContextualTasksPageActionElementId),
-      WaitForHide(kSidePanelElementId));
+      WaitForHide(kSidePanelElementId),
+      EnsurePresent(kContextualTasksPageActionElementId));
 }

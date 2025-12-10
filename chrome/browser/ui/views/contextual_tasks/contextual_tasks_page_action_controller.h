@@ -36,8 +36,14 @@ class ContextualTasksPageActionController
       const base::Uuid& task_id,
       contextual_tasks::ContextualTasksService::TriggerSource source) override;
   void OnWillBeDestroyed() override;
+  void OnTaskAssociatedToTab(const base::Uuid& task_id,
+                             SessionID tab_id) override;
+  void OnTaskDisassociatedFromTab(const base::Uuid& task_id,
+                                  SessionID tab_id) override;
 
  private:
+  void UpdatePageActionVisibility();
+
   raw_ptr<tabs::TabInterface> tab_interface_ = nullptr;
 
   ui::ScopedUnownedUserData<ContextualTasksPageActionController>

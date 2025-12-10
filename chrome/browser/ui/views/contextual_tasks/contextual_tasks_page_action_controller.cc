@@ -47,8 +47,7 @@ ContextualTasksPageActionController* ContextualTasksPageActionController::From(
 void ContextualTasksPageActionController::OnTaskAdded(
     const contextual_tasks::ContextualTask& task,
     contextual_tasks::ContextualTasksService::TriggerSource source) {
-  tab_interface_->GetTabFeatures()->page_action_controller()->Show(
-      kActionSidePanelShowContextualTasks);
+  UpdatePageActionVisibility();
 }
 
 void ContextualTasksPageActionController::OnTaskUpdated(
@@ -60,12 +59,40 @@ void ContextualTasksPageActionController::OnTaskUpdated(
 void ContextualTasksPageActionController::OnTaskRemoved(
     const base::Uuid& task_id,
     contextual_tasks::ContextualTasksService::TriggerSource source) {
-  tab_interface_->GetTabFeatures()->page_action_controller()->Hide(
-      kActionSidePanelShowContextualTasks);
+  UpdatePageActionVisibility();
 }
 
 void ContextualTasksPageActionController::OnWillBeDestroyed() {
   tab_interface_->GetTabFeatures()->page_action_controller()->Hide(
       kActionSidePanelShowContextualTasks);
   contextual_task_observation_.Reset();
+}
+
+void ContextualTasksPageActionController::OnTaskAssociatedToTab(
+    const base::Uuid& task_id,
+    SessionID tab_id) {
+  UpdatePageActionVisibility();
+}
+
+void ContextualTasksPageActionController::OnTaskDisassociatedFromTab(
+    const base::Uuid& task_id,
+    SessionID tab_id) {
+  UpdatePageActionVisibility();
+}
+
+void ContextualTasksPageActionController::UpdatePageActionVisibility() {
+  Profile* const profile =
+      tab_interface_->GetBrowserWindowInterface()->GetProfile();
+  contextual_tasks::ContextualTasksContextController* const context_controller =
+      contextual_tasks::ContextualTasksContextControllerFactory::GetForProfile(
+          profile);
+  const SessionID tab_id =
+      sessions::SessionTabHelper::IdForTab(tab_interface_->GetContents());
+  page_actions::PageActionController* const page_action_controller =
+      tab_interface_->GetTabFeatures()->page_action_controller();
+  if (context_controller->GetContextualTaskForTab(tab_id).has_value()) {
+    page_action_controller->Show(kActionSidePanelShowContextualTasks);
+  } else {
+    page_action_controller->Hide(kActionSidePanelShowContextualTasks);
+  }
 }
