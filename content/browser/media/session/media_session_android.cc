@@ -154,20 +154,9 @@ void MediaSessionAndroid::MediaSessionPositionChanged(
   JNIEnv* env = base::android::AttachCurrentThread();
 
   if (position) {
-    base::TimeTicks now = base::TimeTicks::Now();
-    base::TimeDelta age = now - position->last_updated_time();
-
-    // TODO(crbug.com/465571421): remove logs once the bug is fixed.
-    VLOG(1) << __func__ << "Sending Update:"
-            << " Speed=" << position->playback_rate()
-            << " Position=" << position->GetPosition().InMilliseconds()
-            << " TimestampAge=" << age.InMilliseconds() << "ms";
-
     Java_MediaSessionImpl_mediaSessionPositionChanged(
         env, j_local_session, position->CreateJavaObject(env));
   } else {
-    VLOG(1) << __func__ << "Sending Update: NULL position";
-
     Java_MediaSessionImpl_mediaSessionPositionChanged(env, j_local_session,
                                                       nullptr);
   }
