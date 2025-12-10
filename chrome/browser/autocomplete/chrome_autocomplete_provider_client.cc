@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -111,6 +112,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -651,6 +653,16 @@ bool ChromeAutocompleteProviderClient::ShouldSendPageTitleSuggestParam() const {
   return IsContextualSearchFeatureEnabled(
       omnibox_feature_configs::ContextualSearch::kSendPageTitleSuggestParam,
       /*country=*/"us", /*locale=*/"en-US");
+}
+
+bool ChromeAutocompleteProviderClient::IsOmniboxNextFeatureParamEnabled(
+    const std::string& param_name) const {
+#if !BUILDFLAG(IS_ANDROID)
+  return base::GetFieldTrialParamByFeatureAsBool(
+      omnibox::internal::kWebUIOmniboxAimPopup, param_name, false);
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::CallbackListSubscription

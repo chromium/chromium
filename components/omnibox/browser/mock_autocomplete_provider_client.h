@@ -165,6 +165,10 @@ class MockAutocompleteProviderClient
                      base::CallbackListSubscription(
                          LensOverlaySuggestInputsCallback callback));
   MOCK_METHOD(bool, IsAimEligible, (), (const));
+  MOCK_METHOD(bool,
+              IsOmniboxNextFeatureParamEnabled,
+              (const std::string&),
+              (const));
 
   MOCK_METHOD6(
       Classify,
