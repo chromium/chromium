@@ -2190,6 +2190,52 @@ INSTANTIATE_TEST_SUITE_P(
            std::get<1>(info.param) ? "ExclusiveLock" : "NoExclusiveLock"});
     });
 
+class SQLDatabaseTestExclusiveFileLockWithSpecialChars
+    : public testing::Test,
+      public testing::WithParamInterface<base::FilePath::StringViewType> {
+ public:
+  ~SQLDatabaseTestExclusiveFileLockWithSpecialChars() override = default;
+
+  void SetUp() override {
+    db_ = std::make_unique<Database>(
+        DatabaseOptions().set_exclusive_database_file_lock(true),
+        test::kTestTag);
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir(GetParam()));
+    db_path_ = temp_dir_.GetPath().AppendASCII("database_test_locked.sqlite");
+  }
+
+ protected:
+  base::ScopedTempDir temp_dir_;
+  base::FilePath db_path_;
+  std::unique_ptr<Database> db_;
+};
+
+TEST_P(SQLDatabaseTestExclusiveFileLockWithSpecialChars, OpenDb) {
+  ASSERT_FALSE(base::PathExists(db_path_));
+  ASSERT_TRUE(db_->Open(db_path_));
+  ASSERT_TRUE(base::PathExists(db_path_));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SQLDatabaseTestExclusiveFileLockWithSpecialChars,
+                         ::testing::Values(FILE_PATH_LITERAL("!"),
+                                           FILE_PATH_LITERAL("#"),
+                                           FILE_PATH_LITERAL("$"),
+                                           FILE_PATH_LITERAL("&"),
+                                           FILE_PATH_LITERAL("'"),
+                                           FILE_PATH_LITERAL("()"),
+                                           FILE_PATH_LITERAL("+"),
+                                           FILE_PATH_LITERAL(","),
+                                           FILE_PATH_LITERAL(";"),
+                                           FILE_PATH_LITERAL("="),
+                                           FILE_PATH_LITERAL("@"),
+                                           FILE_PATH_LITERAL("[]"),
+                                           FILE_PATH_LITERAL("%"),
+                                           FILE_PATH_LITERAL("%21"),
+                                           FILE_PATH_LITERAL("%23"),
+                                           FILE_PATH_LITERAL("%3f"),
+                                           FILE_PATH_LITERAL("_"),
+                                           FILE_PATH_LITERAL(" ")));
 #else
 
 TEST(SQLInvalidDatabaseFlagsDeathTest, ExclusiveDatabaseLock) {

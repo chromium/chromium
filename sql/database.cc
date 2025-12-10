@@ -44,6 +44,7 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -2012,7 +2013,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
         return false;
       }
       open_flags |= SQLITE_OPEN_URI;
-      uri_file_path = base::StrCat({"file:", db_file_path, "?exclusive=true"});
+      uri_file_path = base::StrCat(
+          {"file:", base::EscapePath(db_file_path), "?exclusive=true"});
     }
 #else
     NOTREACHED()
