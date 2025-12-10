@@ -393,8 +393,10 @@ ExperimentalActorRequestTabObservationFunction::Run() {
 
 void ExperimentalActorRequestTabObservationFunction::OnObservationFinished(
     actor::ActorKeyedService::TabObservationResult observation_result) {
-  if (!observation_result.has_value()) {
-    Respond(Error(observation_result.error()));
+  std::optional<std::string> error_message =
+      actor::ActorKeyedService::ExtractErrorMessageIfFailed(observation_result);
+  if (error_message) {
+    Respond(Error(*error_message));
     return;
   }
 

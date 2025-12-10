@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/task_id.h"
@@ -32,10 +33,6 @@ class Profile;
 namespace content {
 class BrowserContext;
 }  // namespace content
-
-namespace page_content_annotations {
-struct FetchPageContextResult;
-}  // namespace page_content_annotations
 
 namespace actor {
 namespace ui {
@@ -122,15 +119,20 @@ class ActorKeyedService : public KeyedService,
 
   Profile* GetProfile();
 
-  using TabObservationResult = base::expected<
-      std::unique_ptr<page_content_annotations::FetchPageContextResult>,
-      std::string>;
-
+  using TabObservationResult =
+      page_content_annotations::FetchPageContextResultCallbackArg;
   // Request a TabObservation be generated from the given tab.
   void RequestTabObservation(
       tabs::TabInterface& tab,
       TaskId task_id,
       base::OnceCallback<void(TabObservationResult)> callback);
+
+  // A TabObservationResult may return the successful side of the base::expected
+  // but the partial errors in the FetchPageContextResult may be considered a
+  // failing result for actor. Returns a failing string in any case the result
+  // isn't usable for actor. Returns nullopt if the result is fully successful.
+  static std::optional<std::string> ExtractErrorMessageIfFailed(
+      const TabObservationResult& result);
 
   using TaskStateChangedCallback =
       base::RepeatingCallback<void(TaskId, ActorTask::State)>;

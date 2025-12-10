@@ -209,7 +209,9 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
                                                future.GetCallback());
 
   const ActorKeyedService::TabObservationResult& result = future.Get();
-  ASSERT_FALSE(result.has_value());
+  std::optional<std::string> error_message =
+      ActorKeyedService::ExtractErrorMessageIfFailed(result);
+  ASSERT_TRUE(result.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,

@@ -212,8 +212,10 @@ class AttemptFormFillingToolTest : public ActorToolsTest {
         *active_tab(), actor_task().id(), tab_observation_future.GetCallback());
     const ActorKeyedService::TabObservationResult& result =
         tab_observation_future.Get();
-    ASSERT_TRUE(result.has_value())
-        << "Waiting for tab observation failed: " << result.error();
+    std::optional<std::string> error_message =
+        ActorKeyedService::ExtractErrorMessageIfFailed(result);
+    ASSERT_FALSE(error_message)
+        << "Waiting for tab observation failed: " << *error_message;
     ASSERT_TRUE(result.value());
   }
 
