@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -35,6 +36,7 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
@@ -46,6 +48,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/buildflags.h"
@@ -55,6 +58,7 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/gpu_feature_checker.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/management/management_api.h"
@@ -65,9 +69,11 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_approval.h"
 #include "extensions/browser/install_tracker.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/browser/scoped_active_install.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
@@ -75,6 +81,13 @@
 #include "net/base/load_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/browser/promotion/promotion_prefs.h"
+#include "components/enterprise/promotion_types.h"
+#endif  //! BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -1383,5 +1396,106 @@ WebstorePrivateGetMV2DeprecationStatusFunction::Run() {
       api::webstore_private::GetMV2DeprecationStatus::Results::Create(
           api_status)));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+WebstorePrivateShouldShowEnterprisePromotionBannerFunction::
+    WebstorePrivateShouldShowEnterprisePromotionBannerFunction() = default;
+WebstorePrivateShouldShowEnterprisePromotionBannerFunction::
+    ~WebstorePrivateShouldShowEnterprisePromotionBannerFunction() = default;
+
+void WebstorePrivateShouldShowEnterprisePromotionBannerFunction::
+    SetFakePromotionEligibilityCheckerForTesting(
+        std::unique_ptr<enterprise_promotion::PromotionEligibilityChecker>
+            checker) {
+  promotion_eligibility_checker_ = std::move(checker);
+}
+
+ExtensionFunction::ResponseAction
+WebstorePrivateShouldShowEnterprisePromotionBannerFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  PrefService* prefs = profile->GetPrefs();
+
+  // To reduce server requests, use cache result if it is valid.
+  const base::Time expiration_time =
+      prefs->GetTime(pref_names::kEnterprisePromotionExpirationTime);
+  if (!expiration_time.is_null() && base::Time::Now() <= expiration_time) {
+    std::string promotion_type_string = api::webstore_private::ToString(
+        static_cast<api::webstore_private::PromotionType>(prefs->GetInteger(
+            enterprise_promotion::kEnterprisePromotionEligibility)));
+    return RespondNow(WithArguments(promotion_type_string));
+  }
+
+  // If multiples tags are opened at the same time without valid cache, only the
+  // first page will be checked and potential get banner.
+  prefs->SetInteger(
+      enterprise_promotion::kEnterprisePromotionEligibility,
+      static_cast<int>(
+          api::webstore_private::PromotionType::kPromotionTypeUnspecified));
+  prefs->SetTime(pref_names::kEnterprisePromotionExpirationTime,
+                 base::Time::Now() + base::Days(1));
+
+  // A fake checker may be created ahead of time in test.
+  if (!promotion_eligibility_checker_) {
+    promotion_eligibility_checker_ = policy::CreatePromotionEligibilityChecker(
+        profile,
+        // TODO(crbug.com/465701760) Add logic for
+        // kHasDismissedEnterprisePromotion.
+        /*dismissed_banner_pref=*/false,
+        base::FeatureList::IsEnabled(
+            extensions_features::kEnableShouldShowPromotion));
+
+    // If checker can't be created, return the default response for the
+    // unspecified.
+    if (!promotion_eligibility_checker_) {
+      return RespondNow(WithArguments(api::webstore_private::ToString(
+          api::webstore_private::PromotionType::kPromotionTypeUnspecified)));
+    }
+  }
+
+  promotion_eligibility_checker_->MaybeCheckPromotionEligibility(base::BindOnce(
+      &WebstorePrivateShouldShowEnterprisePromotionBannerFunction::
+          OnPromotionEligibilityDetermined,
+      this));
+
+  return RespondLater();
+}
+
+void WebstorePrivateShouldShowEnterprisePromotionBannerFunction::
+    OnPromotionEligibilityDetermined(
+        enterprise_management::GetUserEligiblePromotionsResponse response) {
+  enterprise::PromotionType pref_promotion_type;
+  api::webstore_private::PromotionType api_promotion_type;
+
+  // TODO(crbug.com/465709271) Switch to cws_privacy_details_promotion when
+  // server is ready.
+  switch (response.promotions().policy_page_promotion()) {
+    case enterprise_management::CHROME_ENTERPRISE_CORE:
+      pref_promotion_type = enterprise::PromotionType::kChromeEnterpriseCore;
+      api_promotion_type =
+          api::webstore_private::PromotionType::kChromeEnterpriseCore;
+      break;
+    case enterprise_management::CHROME_ENTERPRISE_PREMIUM:
+      pref_promotion_type = enterprise::PromotionType::kChromeEnterprisePremium;
+      api_promotion_type =
+          api::webstore_private::PromotionType::kChromeEnterprisePremium;
+      break;
+    default:
+      pref_promotion_type = enterprise::PromotionType::kUnspecified;
+      api_promotion_type =
+          api::webstore_private::PromotionType::kPromotionTypeUnspecified;
+      break;
+  }
+
+  PrefService* prefs =
+      Profile::FromBrowserContext(browser_context())->GetPrefs();
+  prefs->SetInteger(enterprise_promotion::kEnterprisePromotionEligibility,
+                    static_cast<int>(pref_promotion_type));
+
+  prefs->SetTime(pref_names::kEnterprisePromotionExpirationTime,
+                 base::Time::Now() + base::Days(1));
+
+  Respond(WithArguments(api::webstore_private::ToString(api_promotion_type)));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

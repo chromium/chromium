@@ -123,6 +123,24 @@
         "id": "MV2DeprecationStatus",
         "type": "string",
         "enum": ["inactive", "warning", "soft_disable", "hard_disable"]
+      },
+      {
+        "id": "PromotionType",
+        "type": "string",
+        "enum": [
+          {
+            "name": "CHROME_ENTERPRISE_CORE",
+            "description": "Show the promotion banner for Chrome Enterprise Core"
+          },
+          {
+            "name": "CHROME_ENTERPRISE_PREMIUM",
+            "description": "Show the promotion banner for Chrome Enterprise Premium"
+          },
+          {
+            "name": "PROMOTION_TYPE_UNSPECIFIED",
+            "description": "Do not show the promotion banner"
+          }
+        ]
       }
     ],
     "functions": [
@@ -393,6 +411,21 @@
             "name": "status",
             "$ref": "MV2DeprecationStatus"
           }]
+        }
+      },
+      {
+        "name": "shouldShowEnterprisePromotionBanner",
+        "description": "Returns whether the enterprise promotion banner should be shown.",
+        "platforms": ["chromeos", "linux", "mac", "win"],
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "shouldShow",
+              "$ref": "PromotionType"
+            }
+          ]
         }
       }
     ]

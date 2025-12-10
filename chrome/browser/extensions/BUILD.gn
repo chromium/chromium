@@ -556,6 +556,8 @@ source_set("extensions") {
     "//components/download/content/public",
     "//components/embedder_support",
     "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
+    "//components/enterprise/browser/promotion",
     "//components/guest_view/buildflags",
     "//components/guest_view/common",
     "//components/infobars/content",

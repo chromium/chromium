@@ -39,9 +39,9 @@ class PromotionEligibilityChecker {
   PromotionEligibilityChecker& operator=(const PromotionEligibilityChecker&) =
       delete;
 
-  ~PromotionEligibilityChecker();
+  virtual ~PromotionEligibilityChecker();
 
-  void MaybeCheckPromotionEligibility(
+  virtual void MaybeCheckPromotionEligibility(
       PromotionEligibilityChecker::PromotionEligibilityCallback callback);
 
   void OnAuthTokenFetched(GoogleServiceAuthError error,
