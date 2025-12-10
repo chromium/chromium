@@ -179,6 +179,10 @@ bool ShouldForceDisableComposeboxCreateImages();
 // Returns true if Composebox Pdf Upload eligibility should be disabled.
 bool ShouldForceDisableComposeboxPdfUpload();
 
+// Returns true if the Catalog items should be shown in Settings. Always true
+// in debug builds.
+bool ShouldShowCatalogItems();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

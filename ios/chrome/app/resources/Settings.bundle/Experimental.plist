@@ -90,6 +90,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Show Catalog Items</string>
+			<key>Key</key>
+			<string>ShowCatalogItems</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Enable Pseudo-RTL</string>
 			<key>Key</key>
 			<string>EnablePseudoRTL</string>

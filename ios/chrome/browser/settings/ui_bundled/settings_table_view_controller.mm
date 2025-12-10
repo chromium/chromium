@@ -603,11 +603,14 @@ struct EnhancedSafeBrowsingActivePromoData
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
   [model addItem:[self viewSourceSwitchItem]
       toSectionWithIdentifier:SettingsSectionIdentifierDebug];
-  [model addItem:[self tableViewCatalogDetailItem]
-      toSectionWithIdentifier:SettingsSectionIdentifierDebug];
-  [model addItem:[self buttonCatalogDetailItem]
-      toSectionWithIdentifier:SettingsSectionIdentifierDebug];
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
+
+  if (experimental_flags::ShouldShowCatalogItems()) {
+    [model addItem:[self tableViewCatalogDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+    [model addItem:[self buttonCatalogDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+  }
 }
 
 - (void)updateSigninSection {
@@ -1126,6 +1129,8 @@ struct EnhancedSafeBrowsingActivePromoData
   return viewSourceItem;
 }
 
+#endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
+
 - (TableViewDetailIconItem*)tableViewCatalogDetailItem {
   return [self detailItemWithType:SettingsItemTypeTableCellCatalog
                              text:@"TableView Cell Catalog"
@@ -1143,8 +1148,6 @@ struct EnhancedSafeBrowsingActivePromoData
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:nil];
 }
-
-#endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 
 #pragma mark Item Constructors
 
@@ -1724,10 +1727,8 @@ struct EnhancedSafeBrowsingActivePromoData
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
   return YES;
 #else
-  if (experimental_flags::IsMemoryDebuggingEnabled()) {
-    return YES;
-  }
-  return NO;
+  return experimental_flags::IsMemoryDebuggingEnabled() ||
+         experimental_flags::ShouldShowCatalogItems();
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 }
 
