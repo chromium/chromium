@@ -1,0 +1,48 @@
+error: abort!(span, from) test
+ --> tests/ui/abort.rs:3:13
+  |
+3 | abort_from!(one, two);
+  |             ^^^
+
+error: abort!(span, single_expr) test
+ --> tests/ui/abort.rs:4:18
+  |
+4 | abort_to_string!(one, two);
+  |                  ^^^
+
+error: abort!(span, expr1, expr2) test
+ --> tests/ui/abort.rs:5:15
+  |
+5 | abort_format!(one, two);
+  |               ^^^
+
+error: Diagnostic::abort() test
+ --> tests/ui/abort.rs:6:15
+  |
+6 | direct_abort!(one, two);
+  |               ^^^
+
+error: This is an error
+
+         = note: simple note
+         = help: simple help
+         = help: simple hint
+         = note: simple yay
+         = note: format note
+         = note: Some note
+         = note: spanned simple note
+         = note: spanned format note
+         = note: Some note
+
+ --> tests/ui/abort.rs:7:14
+  |
+7 | abort_notes!(one, two);
+  |              ^^^
+
+error: abort_call_site! test
+ --> tests/ui/abort.rs:8:1
+  |
+8 | abort_call_site_test!(one, two);
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `abort_call_site_test` (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -1,0 +1,31 @@
+name: Rust
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust_version:
+          - stable
+          - 1.51  # MSRV (Minimum Supported Rust Version)
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: ${{matrix.rust_version}}
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose

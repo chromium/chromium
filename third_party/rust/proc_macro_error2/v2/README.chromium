@@ -1,0 +1,11 @@
+Name: proc-macro-error2
+URL: https://crates.io/crates/proc-macro-error2
+Version: 2.0.1
+Revision: 9b129234ed8f50d3ff8da09041dcbd980b63fc8c
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/proc-macro-error2-v2/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Almost drop-in replacement to panics in proc-macros
