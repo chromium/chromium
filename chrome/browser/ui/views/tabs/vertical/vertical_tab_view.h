@@ -100,6 +100,7 @@ class VerticalTabView : public views::View,
   void UpdateColors();
   void UpdateContrastRatioValues();
 
+  bool IsHoverAnimationActive() const;
   double GetHoverAnimationValue() const;
   float GetHoverOpacity() const;
 

@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -25,6 +26,7 @@
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/theme_provider.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -206,16 +208,21 @@ void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
-  // TODO(crbug.com/465540287): Properly paint background with fill image and
-  // hover opacity.
-  canvas->ClipPath(GetPath(), true);
-
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
-      GetSelectionState(), hovered_, GetHoverAnimationValue(), IsFrameActive(),
-      GetColorProvider()));
-  canvas->DrawRect(GetLocalBounds(), flags);
+  // TODO(crbug.com/465540287): Handle the theme's custom images for the toolbar
+  // area/frame background. Also consider using views::Background to draw the
+  // background if that is compatible with how we handle custom images, so that
+  // we no longer have to override OnPaint.
+  if (active_ || IsHoverAnimationActive() ||
+      GetThemeProvider()->GetDisplayProperty(
+          ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR)) {
+    canvas->ClipPath(GetPath(), true);
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
+        GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
+        IsFrameActive(), GetColorProvider()));
+    canvas->DrawRect(GetLocalBounds(), flags);
+  }
 
   views::View::OnPaint(canvas);
 }
@@ -432,6 +439,10 @@ void VerticalTabView::UpdateContrastRatioValues() {
   radial_highlight_opacity_ = radial_highlight_opacity;
 
   SchedulePaint();
+}
+
+bool VerticalTabView::IsHoverAnimationActive() const {
+  return hovered_ || (hover_controller_ && hover_controller_->ShouldDraw());
 }
 
 double VerticalTabView::GetHoverAnimationValue() const {
