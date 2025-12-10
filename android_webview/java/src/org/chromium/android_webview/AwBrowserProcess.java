@@ -188,6 +188,8 @@ public final class AwBrowserProcess {
                 LibraryProcessType.PROCESS_WEBVIEW_CHILD,
                 bindToCaller,
                 ignoreVisibilityForImportance);
+
+        ChildProcessLauncherHelper.initialize();
     }
 
     /**
