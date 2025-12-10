@@ -18,6 +18,10 @@
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 class ChromePermissionsClient : public permissions::PermissionsClient {
  public:
   ChromePermissionsClient(const ChromePermissionsClient&) = delete;
@@ -53,7 +57,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
                                 const GURL& origin) override;
   void GetUkmSourceId(ContentSettingsType permission_type,
                       content::BrowserContext* browser_context,
-                      content::WebContents* web_contents,
+                      content::RenderFrameHost* render_frame_host,
                       const GURL& requesting_origin,
                       GetUkmSourceIdCallback callback) override;
   permissions::IconId GetOverrideIconId(

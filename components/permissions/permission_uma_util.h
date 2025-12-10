@@ -31,8 +31,6 @@ enum class PermissionType;
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
-class WebContents;
-class RenderFrameHost;
 }  // namespace content
 
 namespace permissions {
@@ -679,7 +677,7 @@ class PermissionUmaUtil {
 
   static void PermissionPromptResolved(
       const std::vector<std::unique_ptr<PermissionRequest>>& requests,
-      content::WebContents* web_contents,
+      content::BrowserContext* browser_context,
       PermissionAction permission_action,
       base::TimeDelta time_to_action,
       PermissionPromptDisposition ui_disposition,
@@ -727,7 +725,7 @@ class PermissionUmaUtil {
 
   static void RecordPermissionUsage(ContentSettingsType permission_type,
                                     content::BrowserContext* browser_context,
-                                    content::WebContents* web_contents,
+                                    content::RenderFrameHost* render_frame_host,
                                     const GURL& requesting_origin);
 
   static void RecordPermissionUsageNotificationShown(
@@ -851,7 +849,6 @@ class PermissionUmaUtil {
       ElementAnchoredBubbleVariant variant,
       int screen_counter,
       const GURL& requesting_origin,
-      content::WebContents* web_contents,
       content::BrowserContext* browser_context);
 
   // Records `TimeDelta` between two consecutive indicators of the same
@@ -1005,7 +1002,6 @@ class PermissionUmaUtil {
       std::optional<PermissionPromptDispositionReason> ui_reason,
       std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
       const GURL& requesting_origin,
-      content::WebContents* web_contents,
       content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
       std::optional<PermissionUiSelector::PredictionGrantLikelihood>

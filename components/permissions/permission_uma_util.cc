@@ -221,7 +221,7 @@ PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
 
 void RecordEngagementMetric(
     const std::vector<std::unique_ptr<PermissionRequest>>& requests,
-    content::WebContents* web_contents,
+    content::BrowserContext* browser_context,
     const std::string& action) {
   CHECK(!requests.empty());
 
@@ -233,7 +233,7 @@ void RecordEngagementMetric(
                                    GetPermissionRequestString(type)});
 
   double engagement_score = PermissionsClient::Get()->GetSiteEngagementScore(
-      web_contents->GetBrowserContext(), requests[0]->requesting_origin());
+      browser_context, requests[0]->requesting_origin());
   base::UmaHistogramPercentageObsoleteDoNotUse(name, engagement_score);
 }
 
@@ -950,7 +950,7 @@ void PermissionUmaUtil::PermissionRevoked(
       /*time_to_action=*/base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /*ui_reason=*/std::nullopt, /*variants=*/std::nullopt, revoked_origin,
-      /*web_contents=*/nullptr, browser_context,
+      browser_context,
       /*render_frame_host*/ nullptr,
       /*predicted_grant_likelihood=*/std::nullopt,
       /*permission_request_relevance=*/std::nullopt,
@@ -1078,7 +1078,7 @@ void PermissionUmaUtil::PermissionPromptShown(
 
 void PermissionUmaUtil::PermissionPromptResolved(
     const std::vector<std::unique_ptr<PermissionRequest>>& requests,
-    content::WebContents* web_contents,
+    content::BrowserContext* browser_context,
     PermissionAction permission_action,
     base::TimeDelta time_to_action,
     PermissionPromptDisposition ui_disposition,
@@ -1115,11 +1115,11 @@ void PermissionUmaUtil::PermissionPromptResolved(
       NOTREACHED();
   }
   std::string action_string = GetPermissionActionString(permission_action);
-  RecordEngagementMetric(requests, web_contents, action_string);
+  RecordEngagementMetric(requests, browser_context, action_string);
 
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
-          web_contents->GetBrowserContext());
+          browser_context);
 
   for (const auto& request : requests) {
     ContentSettingsType permission = request->GetContentSettingsType();
@@ -1135,7 +1135,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     RecordPermissionAction(
         permission, permission_action, PermissionSourceUI::PROMPT, gesture_type,
         time_to_action, ui_disposition, ui_reason, variants, requesting_origin,
-        web_contents, web_contents->GetBrowserContext(),
+        browser_context,
         content::RenderFrameHost::FromID(request->get_requesting_frame_id()),
         predicted_grant_likelihood, permission_request_relevance,
         permission_ai_relevance_model, prediction_decision_held_back,
@@ -1255,8 +1255,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
         gesture_suffix = ".NoGesture";
       }
 
-      PrefService* prefs =
-          user_prefs::UserPrefs::Get(web_contents->GetBrowserContext());
+      PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
       const bool is_msbb_enabled = prefs->GetBoolean(
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 
@@ -1438,10 +1437,10 @@ bool PermissionUmaUtil::ScopedRevocationReporter::IsInstanceInScope() {
 void PermissionUmaUtil::RecordPermissionUsage(
     ContentSettingsType permission_type,
     content::BrowserContext* browser_context,
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin) {
   PermissionsClient::Get()->GetUkmSourceId(
-      permission_type, browser_context, web_contents, requesting_origin,
+      permission_type, browser_context, render_frame_host, requesting_origin,
       base::BindOnce(&RecordPermissionUsageUkm, permission_type));
 }
 
@@ -1470,7 +1469,6 @@ void PermissionUmaUtil::RecordPermissionAction(
     std::optional<PermissionPromptDispositionReason> ui_reason,
     std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
     const GURL& requesting_origin,
-    content::WebContents* web_contents,
     content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host,
     std::optional<PermissionUiSelector::PredictionGrantLikelihood>
@@ -1539,7 +1537,7 @@ void PermissionUmaUtil::RecordPermissionAction(
   }
 
   PermissionsClient::Get()->GetUkmSourceId(
-      permission, browser_context, web_contents, requesting_origin,
+      permission, browser_context, render_frame_host, requesting_origin,
       base::BindOnce(
           &RecordPermissionActionUkm, action, gesture_type, permission,
           dismiss_count, ignore_count, source_ui, time_to_action,
@@ -2244,14 +2242,14 @@ void PermissionUmaUtil::RecordElementAnchoredPermissionPromptAction(
     ElementAnchoredBubbleVariant variant,
     int screen_counter,
     const GURL& requesting_origin,
-    content::WebContents* web_contents,
     content::BrowserContext* browser_context) {
   CHECK(requests.size());
   CHECK(screen_requests.size());
   auto first_request_type =
       RequestTypeToContentSettingsType(requests[0]->request_type());
   PermissionsClient::Get()->GetUkmSourceId(
-      first_request_type.value(), browser_context, web_contents,
+      first_request_type.value(), browser_context,
+      content::RenderFrameHost::FromID(requests[0]->get_requesting_frame_id()),
       requesting_origin,
       base::BindOnce(&RecordElementAnchoredPermissionPromptActionUkm,
                      PermissionUtil::GetUmaValueForRequests(requests),
@@ -2523,7 +2521,7 @@ void PermissionUmaUtil::RecordPostPromptSessionDuration(
                     ".PostPromptSessionDuration"}),
       duration);
 
-      // UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 100);
+  // UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 100);
 
   // Record finer-grained histograms for the first minute.
   if (duration <= base::Seconds(10)) {

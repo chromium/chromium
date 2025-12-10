@@ -271,7 +271,10 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
   permissions::PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
       type, base::Time::Now() - grant_time, setting_info.source);
   permissions::PermissionUmaUtil::RecordPermissionUsage(
-      type, web_contents()->GetBrowserContext(), web_contents(),
+      type, web_contents()->GetBrowserContext(),
+      // TODO: This RenderFrameHost and origin might be wrong if there was a
+      // concurrent navigation.
+      web_contents()->GetPrimaryMainFrame(),
       web_contents()->GetLastCommittedURL());
 }
 

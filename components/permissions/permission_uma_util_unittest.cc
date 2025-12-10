@@ -380,7 +380,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
               testing::ElementsAre(base::Bucket(0, 1)));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      manager_->Requests(), web_contents(), PermissionAction::GRANTED,
+      manager_->Requests(), browser_context(), PermissionAction::GRANTED,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
@@ -720,7 +720,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
              CreateRequest(RequestType::kCameraStream, kTopLevelUrl));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      {manager_->Requests()}, web_contents(), PermissionAction::GRANTED,
+      {manager_->Requests()}, browser_context(), PermissionAction::GRANTED,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE,
       /* ui_reason*/ std::nullopt, variants,
@@ -757,7 +757,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, PermissionAiRelevanceModelUkmTest) {
       test_relvance_model = permissions::PermissionAiRelevanceModel::kAIv4;
 
   PermissionUmaUtil::PermissionPromptResolved(
-      manager_->Requests(), web_contents(), PermissionAction::GRANTED,
+      manager_->Requests(), browser_context(), PermissionAction::GRANTED,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE,
       /* ui_reason*/ std::nullopt, /*variants*/ {},
@@ -798,7 +798,7 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
   histograms.ExpectTotalCount(kGeolocationPermissionsPolicyUsageHistogramName,
                               0);
   PermissionUmaUtil::PermissionPromptResolved(
-      manager_->Requests(), web_contents(), PermissionAction::GRANTED,
+      manager_->Requests(), browser_context(), PermissionAction::GRANTED,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
@@ -968,7 +968,7 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
                            kCrossOriginFrameUrl2));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      manager_->Requests(), web_contents(), GetParam().action,
+      manager_->Requests(), browser_context(), GetParam().action,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
@@ -1056,7 +1056,7 @@ class UkmRecorderPermissionUmaUtilTest
 
     void GetUkmSourceId(ContentSettingsType permission_type,
                         content::BrowserContext* browser_context,
-                        content::WebContents* web_contents,
+                        content::RenderFrameHost* render_frame_host,
                         const GURL& requesting_origin,
                         GetUkmSourceIdCallback callback) override {
       // Short circuit and return a null SourceId.
@@ -1129,14 +1129,13 @@ TEST_F(UkmRecorderPermissionUmaUtilTest,
 TEST_F(UkmRecorderPermissionUmaUtilTest,
        NotificationUsageHistogramDidRecordUkmTest) {
   base::HistogramTester histograms;
-  content::TestBrowserContext browser_context;
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   permissions_client_.SetSimulatedHasSourceId(true);
-  PermissionUmaUtil::RecordPermissionUsage(ContentSettingsType::NOTIFICATIONS,
-                                           &browser_context, web_contents(),
-                                           GURL(kTopLevelUrl));
+  PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, browser_context(),
+      web_contents()->GetPrimaryMainFrame(), GURL(kTopLevelUrl));
 
   histograms.ExpectBucketCount("Permissions.Usage.Notifications.DidRecordUkm",
                                1, 1);
@@ -1151,15 +1150,14 @@ TEST_F(UkmRecorderPermissionUmaUtilTest,
 TEST_F(UkmRecorderPermissionUmaUtilTest,
        NotificationUsageHistogramDroppedUkmTest) {
   base::HistogramTester histograms;
-  content::TestBrowserContext browser_context;
 
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   permissions_client_.SetSimulatedHasSourceId(false);
-  PermissionUmaUtil::RecordPermissionUsage(ContentSettingsType::NOTIFICATIONS,
-                                           &browser_context, web_contents(),
-                                           GURL(kTopLevelUrl));
+  PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, browser_context(),
+      web_contents()->GetPrimaryMainFrame(), GURL(kTopLevelUrl));
 
   histograms.ExpectBucketCount("Permissions.Usage.Notifications.DidRecordUkm",
                                0, 1);
@@ -1175,7 +1173,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kNotifications, PermissionRequestGestureType::GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, web_contents(), PermissionAction::GRANTED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::GRANTED, base::TimeDelta(),
       PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1202,7 +1200,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kNotifications, PermissionRequestGestureType::NO_GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, web_contents(), PermissionAction::DENIED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::DENIED, base::TimeDelta(),
       PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1229,7 +1227,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kNotifications, PermissionRequestGestureType::GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, web_contents(), PermissionAction::DISMISSED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::DISMISSED,
+      base::TimeDelta(),
       PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1256,7 +1255,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kNotifications, PermissionRequestGestureType::NO_GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, web_contents(), PermissionAction::IGNORED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::IGNORED, base::TimeDelta(),
       PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1283,7 +1282,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kGeolocation, PermissionRequestGestureType::GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, web_contents(), PermissionAction::GRANTED_ONCE,
+      requests, browser_context(), PermissionAction::GRANTED_ONCE,
       base::TimeDelta(), PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1310,7 +1309,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, web_contents(), PermissionAction::GRANTED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::GRANTED, base::TimeDelta(),
       PermissionPromptDisposition::ANCHORED_BUBBLE,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1337,7 +1336,7 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kGeolocation, PermissionRequestGestureType::GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, web_contents(), PermissionAction::DENIED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::DENIED, base::TimeDelta(),
       PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},
@@ -1364,7 +1363,8 @@ TEST_F(PermissionsDelegationUmaUtilTest,
       RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      requests, web_contents(), PermissionAction::DISMISSED, base::TimeDelta(),
+      requests, browser_context(), PermissionAction::DISMISSED,
+      base::TimeDelta(),
       PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
       /*ui_reason=*/std::nullopt,
       /*variants=*/{},

@@ -247,7 +247,6 @@ void EmbeddedPermissionPromptFlowModel::RecordPermissionActionUKM(
       // could sometimes be a subset of all requests for the entire prompt.
       requests(), action, GetElementAnchoredBubbleVariant(prompt_variant()),
       prompt_screen_counter_for_metrics_, delegate_->GetRequestingOrigin(),
-      delegate_->GetAssociatedWebContents(),
       delegate_->GetAssociatedWebContents()->GetBrowserContext());
 
   ++prompt_screen_counter_for_metrics_;
