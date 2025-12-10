@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_PROFILE_BROWSER_COLLECTION_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_PROFILE_BROWSER_COLLECTION_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
 
@@ -17,11 +18,14 @@ class Profile;
 // exposed on BrowserWindowInterface instead.
 class ProfileBrowserCollection : public BrowserCollection {
  public:
-  ~ProfileBrowserCollection() override = default;
+  explicit ProfileBrowserCollection(Profile* profile);
+  ~ProfileBrowserCollection() override;
 
   static ProfileBrowserCollection* GetForProfile(Profile* profile);
 
  private:
+  const raw_ref<Profile> profile_;
+
   friend base::ScopedObservationTraits<ProfileBrowserCollection,
                                        BrowserCollectionObserver>;
 };

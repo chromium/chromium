@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 BrowserManagerService::BrowserManagerService(Profile* profile)
-    : profile_(profile) {
+    : ProfileBrowserCollection(profile), profile_(profile) {
   AddObserver(GlobalBrowserCollection::GetInstance());
 }
 
