@@ -306,11 +306,8 @@ bool TabScrubber::FinishScrub(bool activate) {
   if (browser_ && browser_->GetWindow()) {
     GetWidget(browser_)->ReleaseCapture();
 
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(&browser_->GetBrowser());
-    TabStripRegionView* tab_strip_view = browser_view->tab_strip_view();
     if (activate && highlighted_tab_ != -1) {
-      Tab* tab = tab_strip_view->GetTabAnchorViewAt(highlighted_tab_);
+      Tab* tab = tab_strip_->tab_at(highlighted_tab_);
       tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
       int distance =
           std::abs(highlighted_tab_ -
@@ -323,6 +320,10 @@ bool TabScrubber::FinishScrub(bool activate) {
           TabStripUserGestureDetails(
               TabStripUserGestureDetails::GestureType::kOther));
     }
+
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(&browser_->GetBrowser());
+    TabStripRegionView* tab_strip_view = browser_view->tab_strip_view();
     tab_strip_view->SetTabStripObserver(nullptr);
   }
 

@@ -10,7 +10,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/views/accessible_pane_view.h"
 
-class Tab;
 class TabDragContext;
 class TabStripObserver;
 
@@ -31,7 +30,7 @@ class TabStripRegionView : public views::AccessiblePaneView {
   virtual std::optional<int> GetFocusedTabIndex() const = 0;
 
   // -- UI anchoring --
-  virtual Tab* GetTabAnchorViewAt(int tab_index) = 0;
+  virtual views::View* GetTabAnchorViewAt(int tab_index) = 0;
   virtual views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) = 0;
 

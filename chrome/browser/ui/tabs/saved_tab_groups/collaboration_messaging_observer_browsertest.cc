@@ -183,9 +183,10 @@ class CollaborationMessagingObserverBrowserTest
   }
 
   TabIcon* GetTabIcon(Browser* target_browser, int index) {
-    return GetTabStripView(target_browser)
-        ->GetTabAnchorViewAt(index)
-        ->GetTabIconForTesting();
+    return views::AsViewClass<TabIcon>(
+        GetTabStripView(target_browser)
+            ->GetTabAnchorViewAt(index)
+            ->GetViewByElementId(kTabIconElementId));
   }
 
   views::View* GetTabGroupHeader(Browser* target_browser,

@@ -809,9 +809,9 @@ class MemorySaverImprovedFaviconTreatmentTest
   }
 
   TabIcon* GetTabIcon(int tab_index) {
-    return GetTabStripView()
-        ->GetTabAnchorViewAt(tab_index)
-        ->GetTabIconForTesting();
+    return views::AsViewClass<TabIcon>(
+        GetTabStripView()->GetTabAnchorViewAt(tab_index)->GetViewByElementId(
+            kTabIconElementId));
   }
 
  private:

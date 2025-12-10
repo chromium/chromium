@@ -580,7 +580,7 @@ std::optional<int> HorizontalTabStripRegionView::GetFocusedTabIndex() const {
   return std::nullopt;
 }
 
-Tab* HorizontalTabStripRegionView::GetTabAnchorViewAt(int tab_index) {
+views::View* HorizontalTabStripRegionView::GetTabAnchorViewAt(int tab_index) {
   return tab_strip_->tab_at(tab_index);
 }
 

@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
  public:
@@ -36,7 +37,8 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::tuple<tabs::TabInterface*, Tab*> AddTab(int index, bool foreground) {
+  std::tuple<tabs::TabInterface*, views::View*> AddTab(int index,
+                                                       bool foreground) {
     chrome::AddTabAt(browser(), GURL("about:blank"), index, foreground);
     view_->StopAnimating();
     return std::make_tuple(model_->GetTabAtIndex(index),
@@ -58,7 +60,9 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
 
     DragSessionData drag_data;
     for (int tab_index : tab_indices) {
-      Tab* const tab_view = view_->GetTabAnchorViewAt(tab_index);
+      Tab* const tab_view =
+          views::AsViewClass<Tab>(view_->GetTabAnchorViewAt(tab_index));
+      CHECK(tab_view) << "Anchor view did not return a horizontal tab";
       drag_data.tab_drag_data_.emplace_back(view_->GetDragContext(), tab_view);
       drag_data.tab_drag_data_.back().attached_view = tab_view;
     }
