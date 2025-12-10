@@ -127,7 +127,8 @@ class BinaryUploadService : public KeyedService {
 
   // Upload the given file contents for deep scanning if the browser is
   // authorized to upload data, otherwise queue the request.
-  virtual void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) = 0;
+  virtual void MaybeUploadForDeepScanning(
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request) = 0;
 
   // Send an acknowledgement for the request with the given token.
   virtual void MaybeAcknowledge(std::unique_ptr<Ack> ack) = 0;

@@ -52,7 +52,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // a vector<>, the move ctor is used instead of the copy ctor (which is
   // deleted).
   struct RequestInfo {
-    RequestInfo(std::unique_ptr<Request> request, base::OnceClosure closure);
+    RequestInfo(std::unique_ptr<BinaryUploadRequest> request,
+                base::OnceClosure closure);
     RequestInfo(const RequestInfo& other) = delete;
     RequestInfo(RequestInfo&& other) noexcept;
     RequestInfo& operator=(const RequestInfo& other) = delete;
@@ -60,7 +61,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
     ~RequestInfo() noexcept;
 
     base::TimeTicks started_at;
-    std::unique_ptr<Request> request;
+    std::unique_ptr<BinaryUploadRequest> request;
     std::unique_ptr<base::OneShotTimer> timer;
   };
 
@@ -68,7 +69,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   ~LocalBinaryUploadService() override;
 
   // Send the given file contents to local partners for deep scanning.
-  void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override;
+  void MaybeUploadForDeepScanning(
+      std::unique_ptr<BinaryUploadRequest> request) override;
   void MaybeAcknowledge(std::unique_ptr<Ack> ack) override;
   void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override;
   base::WeakPtr<BinaryUploadService> AsWeakPtr() override;

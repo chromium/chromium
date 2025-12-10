@@ -135,7 +135,8 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
               request_tokens_to_final_actions_.at(ack->ack().request_token()));
   }
 
-  void UploadForDeepScanning(std::unique_ptr<Request> request) override {
+  void UploadForDeepScanning(
+      std::unique_ptr<BinaryUploadRequest> request) override {
     ++requests_count_;
     // A request without tags indicates that it's used for authentication
     if (request->content_analysis_request().tags().empty()) {
@@ -145,7 +146,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
       }
     } else {
       blocking_ = request->blocking();
-      Request* request_raw = request.get();
+      auto* request_raw = request.get();
       std::string file = request->filename();
       switch (request->analysis_connector()) {
         case AnalysisConnector::FILE_ATTACHED:
@@ -156,10 +157,10 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
                                  prepared_file_responses_[file]);
           break;
         case AnalysisConnector::BULK_DATA_ENTRY:
-          request_raw->GetRequestData(base::BindLambdaForTesting(
-              [this, request = std::move(request)](
-                  ScanRequestUploadResult result,
-                  BinaryUploadService::Request::Data data) {
+          request_raw->GetRequestData(
+              base::BindLambdaForTesting([this, request = std::move(request)](
+                                             ScanRequestUploadResult result,
+                                             BinaryUploadRequest::Data data) {
                 if (data.size == prepared_image_data_size_) {
                   request->FinishRequest(prepared_image_result_,
                                          prepared_image_response_);
@@ -173,9 +174,9 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
           // Since this path is only used for prints that are too large, calling
           // GetRequestData should then call FinishRequest with FILE_TOO_LARGE.
           request_raw->GetRequestData(base::BindOnce(
-              [](std::unique_ptr<BinaryUploadService::Request> request,
+              [](std::unique_ptr<BinaryUploadRequest> request,
                  ScanRequestUploadResult result,
-                 BinaryUploadService::Request::Data data) {
+                 BinaryUploadRequest::Data data) {
                 ASSERT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
                 request->FinishRequest(result, ContentAnalysisResponse());
               },
@@ -190,7 +191,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
   }
 
   ScanRequestUploadResult authorization_result_;
-  std::unique_ptr<Request> authorization_request_;
+  std::unique_ptr<BinaryUploadRequest> authorization_request_;
 
   ScanRequestUploadResult prepared_text_result_;
   ContentAnalysisResponse prepared_text_response_;

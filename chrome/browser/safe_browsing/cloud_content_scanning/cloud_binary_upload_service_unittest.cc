@@ -31,6 +31,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -46,6 +47,8 @@ using testing::_;
 namespace safe_browsing {
 
 namespace {
+
+using ::enterprise_connectors::BinaryUploadRequest;
 
 enterprise_connectors::CloudAnalysisSettings CloudAnalysisSettingsWithUrl(
     const std::string& url) {
@@ -214,7 +217,7 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
   }
 
   void UploadForDeepScanning(
-      std::unique_ptr<BinaryUploadService::Request> request,
+      std::unique_ptr<BinaryUploadRequest> request,
       enterprise_connectors::ScanRequestUploadResult auth_check_for_enterprise =
           enterprise_connectors::ScanRequestUploadResult::kSuccess) {
     service_->SetAuthForTesting("fake_device_token", auth_check_for_enterprise);
@@ -222,12 +225,12 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
   }
 
   void ReceiveMessageForRequest(
-      BinaryUploadService::Request::Id request_id,
+      BinaryUploadRequest::Id request_id,
       const enterprise_connectors::ContentAnalysisResponse& response) {
     service_->OnGetResponse(request_id, response);
   }
 
-  void ReceiveResponseFromUpload(BinaryUploadService::Request::Id request_id,
+  void ReceiveResponseFromUpload(BinaryUploadRequest::Id request_id,
                                  bool success,
                                  const std::string& response) {
     service_->OnUploadComplete(request_id, success,
@@ -258,8 +261,8 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
       request->set_device_token("fake_device_token");
     }
     ON_CALL(*request, GetRequestData(_))
-        .WillByDefault([](BinaryUploadService::Request::DataCallback callback) {
-          BinaryUploadService::Request::Data data;
+        .WillByDefault([](BinaryUploadRequest::DataCallback callback) {
+          BinaryUploadRequest::Data data;
           data.contents = "contents";
           data.size = data.contents.size();
           std::move(callback).Run(
@@ -312,8 +315,8 @@ TEST_F(CloudBinaryUploadServiceTest, PassesForLargeFile) {
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
   ON_CALL(*request, GetRequestData(_))
       .WillByDefault(
-          [file_path](BinaryUploadService::Request::DataCallback callback) {
-            BinaryUploadService::Request::Data data;
+          [file_path](BinaryUploadRequest::DataCallback callback) {
+            BinaryUploadRequest::Data data;
             data.path = file_path;
             data.size = 4;  // Must not be zero.
             std::move(callback).Run(
@@ -347,8 +350,8 @@ TEST_F(CloudBinaryUploadServiceTest, FailsForLargeFile) {
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
   ON_CALL(*request, GetRequestData(_))
       .WillByDefault(
-          [file_path](BinaryUploadService::Request::DataCallback callback) {
-            BinaryUploadService::Request::Data data;
+          [file_path](BinaryUploadRequest::DataCallback callback) {
+            BinaryUploadRequest::Data data;
             data.path = file_path;
             data.size = 4;  // Must not be zero.
             std::move(callback).Run(
@@ -388,8 +391,8 @@ TEST_F(CloudBinaryUploadServiceTest, FailsForEncryptedFile) {
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
   ON_CALL(*request, GetRequestData(_))
       .WillByDefault(
-          [file_path](BinaryUploadService::Request::DataCallback callback) {
-            BinaryUploadService::Request::Data data;
+          [file_path](BinaryUploadRequest::DataCallback callback) {
+            BinaryUploadRequest::Data data;
             data.path = file_path;
             data.size = 4;  // Must not be zero.
             std::move(callback).Run(
@@ -428,8 +431,8 @@ TEST_F(CloudBinaryUploadServiceTest, PassesForEncryptedFileIfEnabled) {
       enterprise_connectors::AnalysisConnector::FILE_ATTACHED);
   ON_CALL(*request, GetRequestData(_))
       .WillByDefault(
-          [file_path](BinaryUploadService::Request::DataCallback callback) {
-            BinaryUploadService::Request::Data data;
+          [file_path](BinaryUploadRequest::DataCallback callback) {
+            BinaryUploadRequest::Data data;
             data.path = file_path;
             data.size = 4;  // Must not be zero.
             std::move(callback).Run(
@@ -528,8 +531,8 @@ TEST_F(CloudBinaryUploadServiceTest, PasteImageResumableSucceeds) {
   request->set_analysis_connector(
       enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY);
   ON_CALL(*request, GetRequestData(_))
-      .WillByDefault([](BinaryUploadService::Request::DataCallback callback) {
-        BinaryUploadService::Request::Data data;
+      .WillByDefault([](BinaryUploadRequest::DataCallback callback) {
+        BinaryUploadRequest::Data data;
         data.contents = "contents";
         data.size = data.contents.size();
         std::move(callback).Run(
@@ -569,8 +572,8 @@ TEST_F(CloudBinaryUploadServiceTest, PasteImageResumableFails) {
   request->set_analysis_connector(
       enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY);
   ON_CALL(*request, GetRequestData(_))
-      .WillByDefault([](BinaryUploadService::Request::DataCallback callback) {
-        BinaryUploadService::Request::Data data;
+      .WillByDefault([](BinaryUploadRequest::DataCallback callback) {
+        BinaryUploadRequest::Data data;
         data.contents = "contents";
         data.size = data.contents.size();
         std::move(callback).Run(
@@ -636,7 +639,7 @@ TEST_F(CloudBinaryUploadServiceTest,
 
   MockRequest* raw_request = request.get();
   UploadForDeepScanning(std::move(request));
-  BinaryUploadService::Request::Id request_id = raw_request->id();
+  BinaryUploadRequest::Id request_id = raw_request->id();
   content::RunAllTasksUntilIdle();
 
   // Simulate receiving the DLP response
@@ -701,7 +704,7 @@ TEST_F(CloudBinaryUploadServiceTest, OnUploadCompleteAfterTimeout) {
 
   MockRequest* raw_request = request.get();
   UploadForDeepScanning(std::move(request));
-  BinaryUploadService::Request::Id request_id = raw_request->id();
+  BinaryUploadRequest::Id request_id = raw_request->id();
   content::RunAllTasksUntilIdle();
   task_environment_.FastForwardBy(base::Seconds(300));
   EXPECT_EQ(scanning_result,
@@ -727,7 +730,7 @@ TEST_F(CloudBinaryUploadServiceTest, OnGetResponseAfterTimeout) {
 
   MockRequest* raw_request = request.get();
   UploadForDeepScanning(std::move(request));
-  BinaryUploadService::Request::Id request_id = raw_request->id();
+  BinaryUploadRequest::Id request_id = raw_request->id();
   content::RunAllTasksUntilIdle();
   task_environment_.FastForwardBy(base::Seconds(300));
   EXPECT_EQ(scanning_result,

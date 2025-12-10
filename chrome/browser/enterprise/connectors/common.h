@@ -76,8 +76,7 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 // Returns true if the request will use the scotty resumable upload
 // protocol for sending scans to the server.
-bool IsResumableUpload(
-    const safe_browsing::BinaryUploadService::Request& request);
+bool IsResumableUpload(const BinaryUploadRequest& request);
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 // Returns true if `result` as returned by BinaryUploadService is considered a

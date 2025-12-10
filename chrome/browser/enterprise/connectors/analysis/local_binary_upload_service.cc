@@ -26,7 +26,7 @@ namespace {
 
 // Build a content analysis SDK client config based on the request being sent.
 content_analysis::sdk::Client::Config SDKConfigFromRequest(
-    const safe_browsing::BinaryUploadService::Request* request) {
+    const BinaryUploadRequest* request) {
   return {request->cloud_or_local_settings().local_path(),
           request->cloud_or_local_settings().user_specific()};
 }
@@ -208,7 +208,7 @@ void DumpAnalysisResponse(const char* prefix,
 }  // namespace
 
 LocalBinaryUploadService::RequestInfo::RequestInfo(
-    std::unique_ptr<LocalBinaryUploadService::Request> request,
+    std::unique_ptr<BinaryUploadRequest> request,
     base::OnceClosure closure)
     : request(std::move(request)) {
   started_at = base::TimeTicks::Now();
@@ -235,7 +235,7 @@ LocalBinaryUploadService::~LocalBinaryUploadService() {
 }
 
 void LocalBinaryUploadService::MaybeUploadForDeepScanning(
-    std::unique_ptr<Request> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Builds a request context to keep track of this request.  This starts

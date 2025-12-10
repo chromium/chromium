@@ -112,7 +112,7 @@ void DecrementCrashKey(ScanningCrashKey key, int delta = 1);
 
 // Returns true for consumer scans and not on enterprise scans.
 bool IsConsumerScanRequest(
-    const safe_browsing::BinaryUploadService::Request& request);
+    const enterprise_connectors::BinaryUploadRequest& request);
 
 }  // namespace safe_browsing
 

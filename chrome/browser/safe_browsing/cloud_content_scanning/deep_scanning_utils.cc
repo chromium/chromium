@@ -400,7 +400,8 @@ void DecrementCrashKey(ScanningCrashKey key, int delta) {
   ModifyKey(key, -delta);
 }
 
-bool IsConsumerScanRequest(const BinaryUploadService::Request& request) {
+bool IsConsumerScanRequest(
+    const enterprise_connectors::BinaryUploadRequest& request) {
   if (request.cloud_or_local_settings().is_local_analysis()) {
     return false;
   }

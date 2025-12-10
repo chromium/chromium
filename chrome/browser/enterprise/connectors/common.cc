@@ -357,8 +357,7 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-bool IsResumableUpload(
-    const safe_browsing::BinaryUploadService::Request& request) {
+bool IsResumableUpload(const BinaryUploadRequest& request) {
   if (safe_browsing::IsConsumerScanRequest(request) ||
       !request.cloud_or_local_settings().is_cloud_analysis()) {
     return false;

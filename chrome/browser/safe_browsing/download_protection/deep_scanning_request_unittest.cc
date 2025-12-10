@@ -139,7 +139,9 @@ enum class MetadataSourceType { kDownloadItem, kFileSystemAccessWriteItem };
 
 class FakeBinaryUploadService : public BinaryUploadService {
  public:
-  void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override {
+  void MaybeUploadForDeepScanning(
+      std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request)
+      override {
     last_request_ = request->content_analysis_request();
     const std::string& filename = request->filename();
     request->FinishRequest(saved_results_[filename],
