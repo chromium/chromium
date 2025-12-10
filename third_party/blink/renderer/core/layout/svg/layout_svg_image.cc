@@ -160,9 +160,10 @@ SVGLayoutResult LayoutSVGImage::UpdateSVGLayout(
   }
 
   const bool has_viewport_dependence =
-      To<SVGImageElement>(GetElement())->SelfHasRelativeLengths() ||
       (transform_uses_reference_box_ &&
-       StyleRef().TransformBox() == ETransformBox::kViewBox);
+       StyleRef().TransformBox() == ETransformBox::kViewBox) ||
+      StyleRef().Width().HasPercent() || StyleRef().Height().HasPercent() ||
+      StyleRef().X().HasPercent() || StyleRef().Y().HasPercent();
 
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();

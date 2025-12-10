@@ -154,12 +154,6 @@ void SVGImageElement::ParseAttribute(
   }
 }
 
-bool SVGImageElement::SelfHasRelativeLengths() const {
-  return x_->CurrentValue()->IsRelative() || y_->CurrentValue()->IsRelative() ||
-         width_->CurrentValue()->IsRelative() ||
-         height_->CurrentValue()->IsRelative();
-}
-
 LayoutObject* SVGImageElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGImage>(this);
 }

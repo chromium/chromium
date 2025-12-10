@@ -71,8 +71,6 @@ class CORE_EXPORT SVGImageElement final
     GetImageLoader().SetImageForTest(content);
   }
 
-  bool SelfHasRelativeLengths() const override;
-
  private:
   bool IsStructurallyExternal() const override {
     return !HrefString().IsNull();
