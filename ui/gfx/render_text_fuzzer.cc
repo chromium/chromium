@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "skia/ext/font_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_util.h"
 
@@ -45,6 +46,7 @@ struct Environment {
 #endif
     gfx::InitializeFonts();
     gfx::FontList::SetDefaultFontDescription(kFontDescription);
+    skia::InitializeFontRendering();
   }
 
   base::AtExitManager at_exit_manager;
