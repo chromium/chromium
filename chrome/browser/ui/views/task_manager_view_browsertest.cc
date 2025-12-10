@@ -478,6 +478,18 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, CloseByAccelerator) {
   EXPECT_TRUE(GetView()->GetWidget()->IsClosed());
 }
 
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, CloseByAcceleratorOnWindows) {
+  chrome::ShowTaskManager(browser());
+
+  EXPECT_FALSE(GetView()->GetWidget()->IsClosed());
+
+  GetView()->AcceleratorPressed(ui::Accelerator(ui::VKEY_F4, ui::EF_ALT_DOWN));
+
+  EXPECT_TRUE(GetView()->GetWidget()->IsClosed());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AppType) {
   chrome::ShowTaskManager(browser());

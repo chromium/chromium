@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -234,11 +235,19 @@ gfx::Size TaskManagerView::CalculatePreferredSize(
 }
 
 bool TaskManagerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  const bool is_valid_modifier =
-      accelerator.modifiers() == ui::EF_CONTROL_DOWN ||
-      accelerator.modifiers() == (ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  DCHECK(is_valid_modifier);
-  DCHECK_EQ(ui::VKEY_W, accelerator.key_code());
+  switch (accelerator.modifiers()) {
+    case ui::EF_CONTROL_DOWN:
+    case ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN:
+      CHECK_EQ(ui::VKEY_W, accelerator.key_code());
+      break;
+#if BUILDFLAG(IS_WIN)
+    case ui::EF_ALT_DOWN:
+      CHECK_EQ(ui::VKEY_F4, accelerator.key_code());
+      break;
+#endif
+    default:
+      NOTREACHED();
+  }
 
   GetWidget()->Close();
   return true;
@@ -707,6 +716,9 @@ void TaskManagerView::Init() {
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
   AddAccelerator(
       ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
+#if BUILDFLAG(IS_WIN)
+  AddAccelerator(ui::Accelerator(ui::VKEY_F4, ui::EF_ALT_DOWN));
+#endif
 }
 
 void TaskManagerView::InitAlwaysOnTopState() {
