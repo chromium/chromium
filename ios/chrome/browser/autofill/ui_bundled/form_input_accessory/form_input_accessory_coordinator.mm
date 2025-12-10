@@ -578,8 +578,14 @@ bool CanReloadInputViews() {
       [applicationHandler openURLInNewTab:command];
       return;
     }
+  }
 
-    if (type == autofill::AutofillProfile::RecordType::kAccountNameEmail) {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForNameAndEmail)) {
+    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    if (address.record_type() ==
+        autofill::AutofillProfile::RecordType::kAccountNameEmail) {
       OpenNewTabCommand* command = [OpenNewTabCommand
           commandWithURLFromChrome:GURL(kGoogleAccountNameEmailAddressEditURL)];
       [applicationHandler openURLInNewTab:command];
