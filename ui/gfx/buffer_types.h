@@ -74,20 +74,6 @@ enum class BufferUsage {
   LAST = VEA_READ_CAMERA_AND_CPU_READ_WRITE
 };
 
-struct BufferUsageAndFormat {
-  BufferUsageAndFormat()
-      : usage(BufferUsage::GPU_READ), format(BufferFormat::RGBA_8888) {}
-  BufferUsageAndFormat(BufferUsage usage, BufferFormat format)
-      : usage(usage), format(format) {}
-
-  bool operator==(const BufferUsageAndFormat& other) const {
-    return usage == other.usage && format == other.format;
-  }
-
-  BufferUsage usage;
-  BufferFormat format;
-};
-
 // Used to identify the plane of a GpuMemoryBuffer to use when creating a
 // SharedImage.
 enum class BufferPlane {
