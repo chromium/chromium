@@ -22,6 +22,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_executor.h"
 #endif
 
@@ -130,6 +131,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 #if !BUILDFLAG(IS_ANDROID)
   void InvokeTool(actor::mojom::ToolInvocationPtr request,
                   InvokeToolCallback callback) override;
+  void CancelTool(const actor::TaskId& task_id) override;
   void StartActorJournal(
       mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client)
       override;

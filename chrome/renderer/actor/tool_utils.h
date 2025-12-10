@@ -8,13 +8,10 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
 
-#include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/common/actor.mojom-forward.h"
-#include "chrome/renderer/actor/tool_base.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/web/web_element.h"
 
 namespace blink {
 class WebNode;
@@ -31,9 +28,6 @@ class PointF;
 }  // namespace gfx
 
 namespace actor {
-
-struct ResolvedTarget;
-class ToolBase;
 
 // Class to help with iteratively refining interaction points. When created,
 // it grabs the client rects for the provided web node. Then if you perform a
@@ -92,15 +86,6 @@ bool IsPointWithinViewport(const gfx::PointF& point,
 bool IsNodeWithinViewport(const blink::WebNode& node);
 
 std::string ToDebugString(const mojom::ToolTargetPtr& target);
-
-// Create and dispatch the mouse down event and corresponding mouse up, click
-// event to the widget.
-void CreateAndDispatchClick(
-    blink::WebMouseEvent::Button button,
-    int count,
-    const ResolvedTarget& click_point,
-    base::WeakPtr<ToolBase> tool,
-    base::OnceCallback<void(mojom::ActionResultPtr)> on_complete);
 
 // Converts Node to a debug string of tag name, id and class.
 std::string NodeToDebugString(const blink::WebNode& node);

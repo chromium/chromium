@@ -58,6 +58,14 @@ class Tool {
   // tool has finished its actions.
   virtual void Invoke(ToolCallback callback) = 0;
 
+  // Cancels execution of the tool.
+  //
+  // This is a hook tools can use to stop their progress and clean up any
+  // intermediate state they're in, but the ActorTask progresses without delay.
+  //
+  // The tool will be deleted synchronously after this method returns.
+  virtual void Cancel();
+
   // Provides a human readable description of the tool useful for log and
   // debugging purposes.
   virtual std::string DebugString() const = 0;

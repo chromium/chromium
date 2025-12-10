@@ -340,7 +340,19 @@ void PageTool::Invoke(ToolCallback callback) {
 
   chrome_render_frame_->InvokeTool(
       std::move(invocation),
-      base::BindOnce(&PageTool::FinishInvoke, base::Unretained(this)));
+      base::BindOnce(&PageTool::FinishInvoke, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PageTool::Cancel() {
+  if (chrome_render_frame_.is_bound()) {
+    journal().Log(JournalURL(), task_id(), "PageTool::Cancel",
+                  JournalDetailsBuilder()
+                      .Add("tab_handle", request_->GetTabHandle())
+                      .Build());
+
+    chrome_render_frame_->CancelTool(task_id());
+  }
+  FinishInvoke(MakeResult(mojom::ActionResultCode::kInvokeCanceled));
 }
 
 std::string PageTool::DebugString() const {
@@ -414,6 +426,14 @@ void PageTool::OnRenderFrameGone() {
 }
 
 void PageTool::OnTimeout() {
+  if (chrome_render_frame_.is_bound()) {
+    journal().Log(JournalURL(), task_id(), "PageTool::OnTimeout",
+                  JournalDetailsBuilder()
+                      .Add("tab_handle", request_->GetTabHandle())
+                      .Build());
+
+    chrome_render_frame_->CancelTool(task_id());
+  }
   FinishInvoke(MakeResult(mojom::ActionResultCode::kToolTimeout));
 }
 

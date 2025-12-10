@@ -638,6 +638,12 @@ void ChromeRenderFrameObserver::InvokeTool(
   tool_executor_->InvokeTool(std::move(request), std::move(callback));
 }
 
+void ChromeRenderFrameObserver::CancelTool(const actor::TaskId& task_id) {
+  if (tool_executor_) {
+    tool_executor_->CancelTool(task_id);
+  }
+}
+
 void ChromeRenderFrameObserver::StartActorJournal(
     mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client) {
   actor_journal_->Bind(std::move(client));

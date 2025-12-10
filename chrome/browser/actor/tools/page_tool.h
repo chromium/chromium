@@ -45,6 +45,7 @@ class PageTool : public Tool {
       const optimization_guide::proto::AnnotatedPageContent* last_observation)
       override;
   void Invoke(ToolCallback callback) override;
+  void Cancel() override;
   std::string DebugString() const override;
   GURL JournalURL() const override;
   std::string JournalEvent() const override;
@@ -62,9 +63,9 @@ class PageTool : public Tool {
   // Callback when the renderer process is gone.
   void OnRenderFrameGone();
 
-  void FinishInvoke(mojom::ActionResultPtr result);
-
   void OnTimeout();
+
+  void FinishInvoke(mojom::ActionResultPtr result);
 
   content::RenderFrameHost* GetFrame() const;
 

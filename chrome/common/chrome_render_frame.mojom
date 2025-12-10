@@ -99,9 +99,26 @@ interface ChromeRenderFrame {
 
   // Requests invoking of a tool from the actor automation framework. See
   // chrome/browser/actor
+  //
+  // Issuing InvokeTool() when a prior InvokeTool() request is outstanding will
+  // result in kExecutorBusy.
   [EnableIfNot=is_android]
   InvokeTool(actor.mojom.ToolInvocation request) =>
       (actor.mojom.ActionResult result);
+
+  // Cancels an in-progress tool invocation, if it exists -- while there's no
+  // callback to notify cancelation completion (so the browser process doesn't
+  // need to wait on a stuck renderer), the cancelation itself should run
+  // synchronously in the renderer, so it will be completed before the next
+  // InvokeTool() invocation starts running.
+  //
+  // InvokeTool() will still produce a result, although this result can be
+  // ignored in favor of the browser process completion result (such as timeout
+  // or paused). (CancelTool() causes in-progress InvokeTool() calls to end with
+  // kInvokeCanceled status -- it's also possible the tool finished right as
+  // CancelTool() is invoked).
+  [EnableIfNot=is_android]
+  CancelTool(actor.mojom.TaskId task_id);
 
   // Requests actor automation framework journaling. Journaling can be
   // stopped by disconnecting the passed in remote. We use an associated

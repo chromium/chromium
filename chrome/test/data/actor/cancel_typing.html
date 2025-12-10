@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  </head>
+  <body>
+    <input type="text" id="input">
+    <script>
+      const input = document.getElementById('input');
+
+      let event_log = [];
+
+      // Log all input events in the format: Event[Element#ID]
+      const log_handler = e => {
+        event_log.push(`${e.type}[${e.target.tagName}#${e.target.id}]`);
+      };
+
+      input.addEventListener('keydown', log_handler);
+      input.addEventListener('input', log_handler);
+      input.addEventListener('keyup', log_handler);
+    </script>
+  </body>
+</html>

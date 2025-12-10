@@ -220,6 +220,9 @@ void ToolController::Cancel() {
   if (state_ != State::kInit && state_ != State::kReady) {
     weak_ptr_factory_.InvalidateWeakPtrs();
     observation_delayer_.reset();
+    if (active_state_) {
+      active_state_->tool->Cancel();
+    }
     active_state_.reset();
     SetState(State::kReady);
   }

@@ -18,6 +18,8 @@ mojom::ActionResultPtr Tool::TimeOfUseValidation(
   return MakeOkResult();
 }
 
+void Tool::Cancel() {}
+
 GURL Tool::JournalURL() const {
   return GURL::EmptyGURL();
 }

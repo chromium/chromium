@@ -4,8 +4,10 @@
 
 #include "chrome/renderer/actor/type_tool.h"
 
+#include <optional>
 #include <string>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/char_iterator.h"
@@ -21,7 +23,9 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/renderer/actor/click_dispatcher.h"
 #include "chrome/renderer/actor/click_tool.h"
+#include "chrome/renderer/actor/key_dispatcher.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -37,6 +41,7 @@
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "third_party/blink/public/web/web_widget.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -252,11 +257,6 @@ bool PrepareTargetForMode(WebLocalFrame& frame, mojom::TypeAction::Mode mode) {
 
 }  // namespace
 
-
-TypeTool::KeyParams::KeyParams() = default;
-TypeTool::KeyParams::~KeyParams() = default;
-TypeTool::KeyParams::KeyParams(const KeyParams& other) = default;
-
 TypeTool::TypeTool(content::RenderFrame& frame,
                    TaskId task_id,
                    Journal& journal,
@@ -272,8 +272,8 @@ TypeTool::TypeTool(content::RenderFrame& frame,
 
 TypeTool::~TypeTool() = default;
 
-TypeTool::KeyParams TypeTool::GetEnterKeyParams() const {
-  TypeTool::KeyParams params;
+KeyDispatcher::KeyParams TypeTool::GetEnterKeyParams() const {
+  KeyDispatcher::KeyParams params;
   params.windows_key_code = ui::VKEY_RETURN;
   params.native_key_code =
       ui::KeycodeConverter::DomCodeToNativeKeycode(ui::DomCode::ENTER);
@@ -284,8 +284,8 @@ TypeTool::KeyParams TypeTool::GetEnterKeyParams() const {
   return params;
 }
 
-TypeTool::KeyParams TypeTool::GetBackspaceKeyParams() const {
-  TypeTool::KeyParams params;
+KeyDispatcher::KeyParams TypeTool::GetBackspaceKeyParams() const {
+  KeyDispatcher::KeyParams params;
   params.windows_key_code = ui::VKEY_BACK;
   params.native_key_code =
       ui::KeycodeConverter::DomCodeToNativeKeycode(ui::DomCode::BACKSPACE);
@@ -296,7 +296,7 @@ TypeTool::KeyParams TypeTool::GetBackspaceKeyParams() const {
   return params;
 }
 
-std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(
+std::optional<KeyDispatcher::KeyParams> TypeTool::GetKeyParamsForChar(
     char16_t c) const {
   // This function only supports ASCII characters. Non-ASCII characters are
   // handled by composition in the Validate() function.
@@ -304,7 +304,7 @@ std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(
     return std::nullopt;
   }
 
-  TypeTool::KeyParams params;
+  KeyDispatcher::KeyParams params;
   // Basic conversion assuming simple case.
   params.text = c;
   params.unmodified_text = c;
@@ -378,7 +378,7 @@ std::string_view WebInputEventResultToString(WebInputEventResult result) {
 WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
     WebWidget& widget,
     WebInputEvent::Type type,
-    KeyParams key_params) {
+    KeyDispatcher::KeyParams key_params) {
   WebKeyboardEvent key_event(type, key_params.modifiers, ui::EventTimeForNow());
   key_event.windows_key_code = key_params.windows_key_code;
   key_event.native_key_code = key_params.native_key_code;
@@ -399,7 +399,8 @@ WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
 
   return result;
 }
-mojom::ActionResultPtr TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
+mojom::ActionResultPtr TypeTool::SimulateKeyPress(
+    KeyDispatcher::KeyParams params) {
   CHECK(resolved_target_);
 
   WebWidget* widget = resolved_target_->GetWidget(*this);
@@ -476,16 +477,31 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
                 JournalDetailsBuilder()
                     .Add("coord", resolved_target_->widget_point)
                     .Build());
-  CreateAndDispatchClick(
-      blink::WebMouseEvent::Button::kLeft, 1, *resolved_target_,
-      weak_ptr_factory_.GetWeakPtr(),
+  CHECK(!click_dispatcher_);
+  click_dispatcher_.emplace(
+      blink::WebMouseEvent::Button::kLeft, 1, *resolved_target_, *this,
       base::BindOnce(&TypeTool::OnFocusingClickComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void TypeTool::Cancel() {
+  // Clicking is completed before key dispatching, so there shouldn't be both.
+  CHECK(!(click_dispatcher_ && key_dispatcher_));
+
+  if (click_dispatcher_) {
+    click_dispatcher_->Cancel();
+    click_dispatcher_.reset();
+  }
+  if (key_dispatcher_) {
+    key_dispatcher_->Cancel();
+    key_dispatcher_.reset();
+  }
 }
 
 void TypeTool::OnFocusingClickComplete(ToolFinishedCallback callback,
                                        mojom::ActionResultPtr click_result) {
   CHECK(resolved_target_.has_value());
+  click_dispatcher_.reset();
 
   // Cancel rest of typing if initial click failed.
   if (!IsOk(*click_result)) {
@@ -587,12 +603,10 @@ void TypeTool::OnFocusingClickComplete(ToolFinishedCallback callback,
                     JournalDetailsBuilder()
                         .Add("delay", features::kGlicActorKeyUpDuration.Get())
                         .Build());
-      task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-      task_runner_->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&TypeTool::ContinueIncrementalTyping,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-          features::kGlicActorKeyUpDuration.Get());
+      CHECK(resolved_target_);
+      key_dispatcher_.emplace(std::move(key_sequence_), std::move(action_),
+                              *resolved_target_, *this, std::move(callback),
+                              task_id_, *journal_);
     }
     return;
   }
@@ -612,106 +626,6 @@ void TypeTool::OnFocusingClickComplete(ToolFinishedCallback callback,
         /*requires_page_stabilization=*/false,
         "Cannot paste text with unsupported characters because no editable "
         "element is focused after click."));
-  }
-}
-
-void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
-  const KeyParams& params = key_sequence_[current_key_];
-
-  CHECK(resolved_target_.has_value());
-  WebWidget* widget = resolved_target_->GetWidget(*this);
-  if (!widget) {
-    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kFrameWentAway,
-                                       /*requires_page_stabilization=*/true,
-                                       "No widget during incremental typing"));
-    return;
-  }
-
-  if (!is_key_down_) {
-    WebInputEventResult down_result = CreateAndDispatchKeyEvent(
-        *widget, WebInputEvent::Type::kRawKeyDown, params);
-
-    // Only the KeyDown event will check for and report failure. The reason the
-    // other events don't is that if the KeyDown event was dispatched to the
-    // page, the key input was observable to the page and it may mutate itself
-    // in a way that subsequent Char and KeyUp events are suppressed (e.g.
-    // mutating the DOM tree, removing frames, etc). These "failure" cases can
-    // be considered successful in terms that the tool has acted on the page. In
-    // particular, a preventDefault()'ed KeyDown event will force suppressing
-    // the following Char event but this is expected and common.
-    if (down_result == WebInputEventResult::kHandledSuppressed) {
-      std::move(callback).Run(
-          MakeResult(mojom::ActionResultCode::kTypeKeyDownSuppressed,
-                     /*requires_page_stabilization=*/true,
-                     absl::StrFormat("Suppressed char[%s]", params.dom_key)));
-      return;
-    }
-
-    // Input handling could destroy the widget so it needs to be re-read.
-    widget = resolved_target_->GetWidget(*this);
-    if (!widget) {
-      std::move(callback).Run(
-          MakeResult(mojom::ActionResultCode::kFrameWentAway,
-                     /*requires_page_stabilization=*/true,
-                     "No widget during incremental typing"));
-      return;
-    }
-    if (params.dom_key != "Dead") {
-      WebInputEventResult char_result = CreateAndDispatchKeyEvent(
-          *widget, WebInputEvent::Type::kChar, params);
-      if (char_result == WebInputEventResult::kHandledSuppressed) {
-        ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
-                    << " suppressed.";
-      }
-    }
-
-    is_key_down_ = true;
-  } else {
-    WebInputEventResult up_result =
-        CreateAndDispatchKeyEvent(*widget, WebInputEvent::Type::kKeyUp, params);
-    if (up_result == WebInputEventResult::kHandledSuppressed) {
-      ACTOR_LOG() << "Warning: KeyUp event for key " << params.dom_key
-                  << " suppressed.";
-    }
-
-    is_key_down_ = false;
-    current_key_++;
-  }
-
-  if (current_key_ >= key_sequence_.size()) {
-    std::move(callback).Run(MakeOkResult());
-  } else {
-    bool is_final_enter_key_down = action_->follow_by_enter &&
-                                   current_key_ == key_sequence_.size() - 1 &&
-                                   !is_key_down_;
-    DCHECK(!is_final_enter_key_down || key_sequence_[current_key_].dom_code ==
-                                           GetEnterKeyParams().dom_code);
-
-    base::TimeDelta delay;
-
-    if (is_final_enter_key_down) {
-      // If the next key is the final enter key, it has a specific delay to
-      // ensure a user-like input and to allow the page to process the typed
-      // text. Only down is delayed to avoid doubling this longer delay and
-      // since most inputs take action on the down event.
-      delay = features::kGlicActorTypeToolEnterDelay.Get();
-    } else {
-      delay = (is_key_down_ ? features::kGlicActorKeyDownDuration
-                            : features::kGlicActorKeyUpDuration)
-                  .Get();
-
-      // Apply a speed boost when typing a long string.
-      if (action_->text.length() >
-          features::kGlicActorIncrementalTypingLongTextThreshold.Get()) {
-        delay *= features::kGlicActorIncrementalTypingLongMultiplier.Get();
-      }
-    }
-
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&TypeTool::ContinueIncrementalTyping,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        delay);
   }
 }
 
@@ -760,7 +674,8 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
   return resolved_target;
 }
 
-bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {
+bool TypeTool::ProcessInputText(
+    std::vector<KeyDispatcher::KeyParams>& key_sequence) const {
   // Skip typing simulation for very long text.
   if (action_->text.length() >
       features::kGlicActorIncrementalTypingLongTextPasteThreshold.Get()) {
@@ -781,7 +696,7 @@ bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {
     char16_t c = static_cast<char16_t>(code_point);
 
     // Handle simple ASCII character
-    std::optional<KeyParams> params = GetKeyParamsForChar(c);
+    std::optional<KeyDispatcher::KeyParams> params = GetKeyParamsForChar(c);
     if (params.has_value()) {
       key_sequence.push_back(params.value());
       continue;
@@ -791,7 +706,7 @@ bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {
     auto comp_it = composition_map.find(c);
     if (comp_it != composition_map.end()) {
       const Composition& composition = comp_it->second;
-      std::optional<KeyParams> dead_key_params =
+      std::optional<KeyDispatcher::KeyParams> dead_key_params =
           GetKeyParamsForChar(composition.dead_key);
       if (!dead_key_params.has_value()) {
         return false;
@@ -801,7 +716,7 @@ bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {
       dead_key_params->dom_key = "Dead";
       key_sequence.push_back(dead_key_params.value());
 
-      std::optional<KeyParams> base_key_params =
+      std::optional<KeyDispatcher::KeyParams> base_key_params =
           GetKeyParamsForChar(composition.second_key);
       if (!base_key_params.has_value()) {
         return false;
@@ -816,7 +731,7 @@ bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {
     const absl::flat_hash_map<char16_t, char16_t>& altgr_map = GetAltGrMap();
     auto altgr_it = altgr_map.find(c);
     if (altgr_it != altgr_map.end()) {
-      std::optional<KeyParams> base_key_params =
+      std::optional<KeyDispatcher::KeyParams> base_key_params =
           GetKeyParamsForChar(altgr_it->second);
       if (!base_key_params.has_value()) {
         return false;

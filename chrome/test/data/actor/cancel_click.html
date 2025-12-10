@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  </head>
+  <body>
+    <button id="clickable">Clickable</button>
+    <script>
+      const button = document.getElementById('clickable');
+
+      let event_log = [];
+
+      // Log all mouse events in the format: Event[Element#ID]
+      const log_handler = e => {
+        event_log.push(`${e.type}[${e.target.tagName}#${e.target.id}]`);
+      };
+
+      button.addEventListener('click', log_handler);
+      button.addEventListener('mousedown', log_handler);
+      button.addEventListener('mouseup', log_handler);
+      button.addEventListener('mousemove', log_handler);
+    </script>
+  </body>
+</html>

@@ -8,12 +8,16 @@ assert(!is_android)
 
 source_set("actor") {
   sources = [
+    "click_dispatcher.cc",
+    "click_dispatcher.h",
     "click_tool.cc",
     "click_tool.h",
     "drag_and_release_tool.cc",
     "drag_and_release_tool.h",
     "journal.cc",
     "journal.h",
+    "key_dispatcher.cc",
+    "key_dispatcher.h",
     "mouse_move_tool.cc",
     "mouse_move_tool.h",
     "network_and_main_thread_stability_monitor.cc",
