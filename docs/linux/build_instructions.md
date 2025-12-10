@@ -126,6 +126,50 @@ keys](https://www.chromium.org/developers/how-tos/api-keys) if you want your
 build to talk to some Google services, but this is not necessary for most
 development and testing purposes.
 
+## Speed up Git operations
+
+**Googlers**: See
+[go/speed-up-git-operations](http://go/speed-up-git-operations).
+
+Chromium is a big Git repository with lots of files, so operations such as `git
+status` can be very slow. You can speed up Git a lot by running the following
+commands to enable its fsmonitor and untrackedCache features.
+
+```shell
+# If the following command fails, install watchman via one of the recommended
+# methods listed on the installation page:
+# https://facebook.github.io/watchman/docs/install
+$ which watchman
+
+$ cd ~/chromium/src
+
+# Copy executable
+$ cp .git/hooks/fsmonitor-watchman.sample ~/bin/query-watchman
+
+# Enable optimization
+$ git config core.untrackedCache true
+$ git config core.fsmonitor $HOME/bin/query-watchman
+
+# Let watchman ignore out. You should gitignore .watchmanconfig globally
+$ echo '{ "ignore_dirs": ["out"] }' > .watchmanconfig
+
+# Increase inotify parameters in case you hit the error like: `inotify:
+# inotify_init: The user limit on the total number of inotify instances
+# has been reached; increase the fs.inotify.max_user_instances sysctl`.
+$ sudo vim /etc/sysctl.d/99-inotify.conf
+
+# Add the following.
+fs.inotify.max_user_instances = 8192
+fs.inotify.max_user_watches = 10485760
+
+# Then apply the change.
+$ sudo sysctl --system
+
+# (optional) `git add -A` is still slow, so create an alias that does the
+# same but faster. Update ~/.bashrc (or ~/.zshrc or whatever) and add:
+alias gaa="git status --porcelain | awk '{print \$2}' | xargs -r git add"
+```
+
 ## Setting up the build
 
 Chromium uses [Siso](https://pkg.go.dev/go.chromium.org/build/siso#section-readme)
