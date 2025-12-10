@@ -79,10 +79,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Test interacts with activity shutdown and thus is incompatible with batching")
 @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH})
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE,
-    ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS
-})
+@DisableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS})
 public class ArchivedTabModelOrchestratorTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
     private static final String TEST_PATH_2 = "/chrome/test/data/android/google.html";
@@ -287,29 +284,6 @@ public class ArchivedTabModelOrchestratorTest {
                 });
         CriteriaHelper.pollUiThread(() -> 2 == mRegularTabModel.getCount());
         CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE})
-    public void testArchiveAllButActive() {
-        finishLoading();
-        mActivityTestRule.loadUrlInNewTab(
-                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
-
-        assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
-        assertEquals(0, getTabCountOnUiThread(mArchivedTabModel));
-        setupDeclutterSettingsForTest();
-        runOnUiThreadBlocking(
-                () ->
-                        mOrchestrator.doDeclutterPass(
-                                (TabbedModeTabModelOrchestrator)
-                                        mActivityTestRule
-                                                .getActivity()
-                                                .getTabModelOrchestratorSupplier()
-                                                .get()));
-        CriteriaHelper.pollUiThread(() -> 1 == mRegularTabModel.getCount());
-        assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
     }
 
     @Test

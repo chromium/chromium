@@ -10875,13 +10875,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-tab-declutter-archive-all-but-active-tab",
-     flag_descriptions::kAndroidTabDeclutterArchiveAllButActiveTabName,
-     flag_descriptions::kAndroidTabDeclutterArchiveAllButActiveTabDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAndroidTabDeclutterArchiveAllButActiveTab)},
-
     {"android-tab-declutter-archive-tab-groups",
      flag_descriptions::kAndroidTabDeclutterArchiveTabGroupsName,
      flag_descriptions::kAndroidTabDeclutterArchiveTabGroupsDescription,

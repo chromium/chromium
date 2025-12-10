@@ -717,8 +717,7 @@ public class TabArchiverImpl implements TabArchiver {
     // Determine if the user was active during the declutter inactivity period by checking all tabs
     // in the tab model to see if the youngest tab is outside of that threshold.
     private boolean isUserActive(TabModel model) {
-        if (ChromeFeatureList.sAndroidTabDeclutterArchiveAllButActiveTab.isEnabled()
-                || !ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
+        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
             return true;
         }
 
