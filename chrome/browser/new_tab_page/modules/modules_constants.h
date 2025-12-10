@@ -9,6 +9,7 @@
 
 namespace ntp_modules {
 
+inline constexpr char kAllModulesId[] = "all";
 inline constexpr char kDriveModuleId[] = "drive";
 inline constexpr char kDummyModuleId[] = "dummy";
 inline constexpr char kFeedModuleId[] = "feed";

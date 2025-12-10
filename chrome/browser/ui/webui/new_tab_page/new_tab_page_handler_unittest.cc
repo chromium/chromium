@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/chrome_features.h"
@@ -1085,6 +1086,12 @@ TEST_F(NewTabPageHandlerTest, SetModuleDisabled) {
   disabled_modules_list.Append(ntp_modules::kDriveModuleId);
   EXPECT_EQ(disabled_modules_list,
             profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules));
+
+  const std::optional<bool> drive_module_auto_removal_disabled =
+      profile_->GetPrefs()
+          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+          .FindBool(ntp_modules::kDriveModuleId);
+  EXPECT_TRUE(drive_module_auto_removal_disabled.value_or(false));
 }
 
 TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
@@ -1116,6 +1123,12 @@ TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
   EXPECT_FALSE(all);
   EXPECT_EQ(1u, disabled_module_ids.size());
   EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
+
+  const std::optional<bool> drive_module_auto_removal_disabled =
+      profile_->GetPrefs()
+          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+          .FindBool(ntp_modules::kDriveModuleId);
+  EXPECT_TRUE(drive_module_auto_removal_disabled.value_or(false));
 }
 
 TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabledCardsManagedVisible) {
@@ -1149,6 +1162,12 @@ TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabledCardsManagedVisible) {
   EXPECT_FALSE(all);
   EXPECT_EQ(1u, disabled_module_ids.size());
   EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
+
+  const std::optional<bool> drive_module_auto_removal_disabled =
+      profile_->GetPrefs()
+          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+          .FindBool(ntp_modules::kDriveModuleId);
+  EXPECT_TRUE(drive_module_auto_removal_disabled.value_or(false));
 }
 
 TEST_F(NewTabPageHandlerTest,
@@ -1181,6 +1200,40 @@ TEST_F(NewTabPageHandlerTest,
   mock_page_.FlushForTesting();
   EXPECT_TRUE(all);
   EXPECT_TRUE(disabled_module_ids.empty());
+
+  const std::optional<bool> drive_module_auto_removal_disabled =
+      profile_->GetPrefs()
+          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+          .FindBool(ntp_modules::kDriveModuleId);
+  EXPECT_TRUE(drive_module_auto_removal_disabled.value_or(false));
+}
+
+TEST_F(NewTabPageHandlerTest, SetModulesVisible) {
+  handler_->SetModulesVisible(true);
+  EXPECT_CALL(mock_page_, SetDisabledModules).Times(1);
+  mock_page_.FlushForTesting();
+
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
+
+  const std::optional<bool> all_modules_auto_removal_disabled =
+      profile_->GetPrefs()
+          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+          .FindBool(ntp_modules::kAllModulesId);
+  EXPECT_TRUE(all_modules_auto_removal_disabled.value_or(false));
+}
+
+TEST_F(NewTabPageHandlerTest, SetModulesNotVisible) {
+  handler_->SetModulesVisible(false);
+  EXPECT_CALL(mock_page_, SetDisabledModules).Times(1);
+  mock_page_.FlushForTesting();
+
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
+
+  const std::optional<bool> all_modules_auto_removal_disabled =
+      profile_->GetPrefs()
+          ->GetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict)
+          .FindBool(ntp_modules::kAllModulesId);
+  EXPECT_TRUE(all_modules_auto_removal_disabled.value_or(false));
 }
 
 TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {

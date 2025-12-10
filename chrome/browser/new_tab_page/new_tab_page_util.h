@@ -48,7 +48,10 @@ bool IsPersonalShortcutsVisible(Profile* profile);
 // Returns the set of enabled NTP tile types.
 std::set<ntp_tiles::TileType> GetEnabledTileTypes(Profile* profile);
 
-// Sets the kNtpShortcutsAutoRemovalEnabled pref to false.
+// Sets the kNtpShortcutsAutoRemovalDisabled pref to true for the module.
 void DisableShortcutsAutoRemoval(Profile* profile);
+
+// Sets the kNtpModulesAutoRemovalDisabledDict pref to true for the module.
+void DisableModuleAutoRemoval(Profile* profile, const std::string& module_id);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_

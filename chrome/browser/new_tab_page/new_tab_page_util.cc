@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -323,4 +324,10 @@ std::set<ntp_tiles::TileType> GetEnabledTileTypes(Profile* profile) {
 void DisableShortcutsAutoRemoval(Profile* profile) {
   profile->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsAutoRemovalDisabled,
                                   true);
+}
+
+void DisableModuleAutoRemoval(Profile* profile, const std::string& module_id) {
+  ScopedDictPrefUpdate update(profile->GetPrefs(),
+                              ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  update->Set(module_id, true);
 }
