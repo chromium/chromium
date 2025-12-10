@@ -18,7 +18,6 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.os.SystemClock;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
@@ -749,7 +748,7 @@ public class ImeAdapterImpl
                 if (imeTextSpans == null || imeTextSpans.length == 0) {
                     textParam = text;
                 } else {
-                    SpannableStringBuilder spannable = new SpannableStringBuilder(text);
+                    SpannableString spannable = new SpannableString(text);
                     for (ImeTextSpan info : imeTextSpans) {
                         int flags = 0;
                         if (info.getType() == ImeTextSpanType.MISSPELLING_SUGGESTION) {
