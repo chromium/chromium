@@ -18,6 +18,10 @@
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_utils.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace glic::test {
 
 namespace {
@@ -377,6 +381,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
                        MAYBE_ForegroundActorTaskTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
+
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/466748978): The test flakily times out when trying to focus
+  // the other tab on linux-wayland-mutter.
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP() << "Flaky on wayland crbug.com/466748978";
+  }
+#endif
 
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
