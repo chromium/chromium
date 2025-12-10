@@ -93,12 +93,12 @@ void SignChallengeWithKey(
 
   std::optional<std::string> header_and_payload;
   if (is_for_refresh) {
-    header_and_payload = CreateKeyRefreshHeaderAndPayload(
-        challenge, expected_algorithm.value(), registration_url);
+    header_and_payload =
+        CreateKeyRefreshHeaderAndPayload(challenge, expected_algorithm.value());
   } else {
     header_and_payload = CreateKeyRegistrationHeaderAndPayload(
         challenge, expected_algorithm.value(), expected_public_key.value(),
-        std::move(authorization), registration_url);
+        std::move(authorization));
   }
 
   if (!header_and_payload.has_value()) {

@@ -19,7 +19,6 @@
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
-#include "net/base/features.h"
 #include "net/base/url_util.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -81,8 +80,7 @@ std::optional<std::string> CreateHeaderAndPayload(
     std::string_view challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     std::optional<base::Value::Dict> jwk,
-    const std::optional<std::string>& authorization,
-    const GURL& registration_url) {
+    const std::optional<std::string>& authorization) {
   auto header = base::Value::Dict()
                     .Set("alg", SignatureAlgorithmToString(algorithm))
                     .Set("typ", "dbsc+jwt");
@@ -95,10 +93,6 @@ std::optional<std::string> CreateHeaderAndPayload(
     payload.Set("authorization", authorization.value());
   }
 
-  if (features::kDeviceBoundSessionsIncludeAudFieldInJwt.Get()) {
-    payload.Set("aud", registration_url.spec());
-  }
-
   return CombineHeaderAndPayload(header, payload);
 }
 
@@ -108,8 +102,7 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     std::string_view challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey_spki,
-    std::optional<std::string> authorization,
-    const GURL& registration_url) {
+    std::optional<std::string> authorization) {
   base::Value::Dict jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
   if (jwk.empty()) {
     DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
@@ -117,16 +110,14 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
   }
 
   return CreateHeaderAndPayload(challenge, algorithm, std::move(jwk),
-                                std::move(authorization), registration_url);
+                                std::move(authorization));
 }
 
 std::optional<std::string> CreateKeyRefreshHeaderAndPayload(
     std::string_view challenge,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    const GURL& registration_url) {
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
   return CreateHeaderAndPayload(challenge, algorithm, /*jwk=*/std::nullopt,
-                                /*authorization=*/std::nullopt,
-                                registration_url);
+                                /*authorization=*/std::nullopt);
 }
 
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
