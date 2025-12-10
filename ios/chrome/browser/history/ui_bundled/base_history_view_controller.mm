@@ -533,6 +533,12 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
                                         point:(CGPoint)point {
+  // TODO(crbug.com/428177163): Remove this workaround when the underlying iOS
+  // issue handling context menu presentation during an active drag/drop session
+  // is resolved.
+  if (tableView.hasActiveDrag || tableView.hasActiveDrop) {
+    return nil;
+  }
   if (![self.tableViewModel hasItemAtIndexPath:indexPath]) {
     // It's possible that indexPath is invalid due to crossing action (like
     // query refresh or animations).
