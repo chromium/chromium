@@ -184,7 +184,6 @@ class BoundSessionCookieRefreshServiceImpl
                         SessionTerminationTrigger trigger,
                         std::optional<BoundSessionRefreshCookieFetcher::Result>
                             refresh_error = std::nullopt);
-  void RecordSessionTerminationTrigger(SessionTerminationTrigger trigger);
   void NotifyBoundSessionTerminated(
       const GURL& site,
       const base::flat_set<std::string>& bound_cookie_names);

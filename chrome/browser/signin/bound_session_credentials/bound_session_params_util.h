@@ -49,7 +49,15 @@ BoundSessionParams CreateBoundSessionsParamsFromRegistrationPayload(
     const RegisterBoundSessionPayload& payload,
     const GURL& request_url,
     const GURL& site,
-    std::string_view wrapped_key);
+    std::string_view wrapped_key,
+    SessionOrigin session_origin);
+
+// Returns a suffix to be appended to a histogram name to specify from where
+// the bound session originated.
+//
+// Returns `std::nullopt` if the session suffix should not be recorded.
+std::optional<std::string_view> GetSessionOriginHistogramSuffix(
+    SessionOrigin session_origin);
 
 }  // namespace bound_session_credentials
 

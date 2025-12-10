@@ -289,5 +289,7 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
           *payload, url_loader_->GetFinalURL(),
           net::SchemefulSite(registration_params_.registration_endpoint())
               .GetURL(),
-          wrapped_key_str_);
+          wrapped_key_str_,
+          bound_session_credentials::SessionOrigin::
+              SESSION_ORIGIN_REGISTRATION);
 }

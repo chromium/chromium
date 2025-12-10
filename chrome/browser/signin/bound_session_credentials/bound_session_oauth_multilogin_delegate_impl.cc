@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -104,7 +105,8 @@ BoundSessionOAuthMultiLoginDelegateImpl::CreateBoundSessionsParams(
                 GaiaUrls::GetInstance()->oauth_multilogin_url(),
                 ConvertDeviceBoundSessionDomainToUrl(
                     device_bound_session->domain),
-                wrapped_binding_key_str);
+                wrapped_binding_key_str,
+                bound_session_credentials::SessionOrigin::SESSION_ORIGIN_OAML);
     if (!bound_session_credentials::AreParamsValid(params)) {
       ++invalid_params_count;
       continue;
