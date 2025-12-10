@@ -36,6 +36,7 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // |task_runner| is the runner for policy refresh tasks.
   UserCloudPolicyManager(
       std::unique_ptr<UserCloudPolicyStore> user_store,
+      std::unique_ptr<UserCloudPolicyStore> extension_install_store,
       const base::FilePath& component_policy_cache_path,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -95,6 +96,9 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
 
   // Typed pointer to the store owned by CloudPolicyManager.
   raw_ptr<UserCloudPolicyStore> user_store_;
+
+  // Typed pointer to the extension install store owned by CloudPolicyManager.
+  raw_ptr<UserCloudPolicyStore> extension_install_store_;
 
   // Path where policy for components will be cached.
   base::FilePath component_policy_cache_path_;

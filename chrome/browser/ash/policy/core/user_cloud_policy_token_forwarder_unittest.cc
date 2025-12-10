@@ -70,6 +70,7 @@ class MockUserCloudPolicyManagerAsh : public UserCloudPolicyManagerAsh {
       : UserCloudPolicyManagerAsh(
             profile,
             std::make_unique<MockCloudPolicyStore>(),
+            std::make_unique<MockCloudPolicyStore>(),
             std::make_unique<MockCloudExternalDataManager>(),
             base::FilePath() /* component_policy_cache_path */,
             UserCloudPolicyManagerAsh::PolicyEnforcement::kPolicyRequired,

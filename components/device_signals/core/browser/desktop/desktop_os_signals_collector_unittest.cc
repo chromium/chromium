@@ -41,15 +41,27 @@ class DesktopOsSignalsCollectorTest : public testing::Test {
     auto mock_browser_cloud_policy_store =
         std::make_unique<policy::MockCloudPolicyStore>();
     mock_browser_cloud_policy_store_ = mock_browser_cloud_policy_store.get();
+    std::unique_ptr<policy::MockCloudPolicyStore>
+        mock_browser_cloud_policy_extension_install_store;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    mock_browser_cloud_policy_extension_install_store =
+        std::make_unique<policy::MockCloudPolicyStore>();
+#endif
+    mock_browser_cloud_policy_extension_install_store_ =
+        mock_browser_cloud_policy_extension_install_store.get();
     mock_browser_cloud_policy_manager_ =
         std::make_unique<policy::MockCloudPolicyManager>(
             std::move(mock_browser_cloud_policy_store),
+            std::move(mock_browser_cloud_policy_extension_install_store),
             task_environment_.GetMainThreadTaskRunner());
     signal_collector_ = std::make_unique<DesktopOsSignalsCollector>(
         mock_browser_cloud_policy_manager_.get());
   }
 
-  void TearDown() override { mock_browser_cloud_policy_store_ = nullptr; }
+  void TearDown() override {
+    mock_browser_cloud_policy_store_ = nullptr;
+    mock_browser_cloud_policy_extension_install_store_ = nullptr;
+  }
 
   void SetFakeBrowserPolicyData() {
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
@@ -78,6 +90,8 @@ class DesktopOsSignalsCollectorTest : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyManager>
       mock_browser_cloud_policy_manager_;
   raw_ptr<policy::MockCloudPolicyStore> mock_browser_cloud_policy_store_;
+  raw_ptr<policy::MockCloudPolicyStore>
+      mock_browser_cloud_policy_extension_install_store_;
   std::unique_ptr<DesktopOsSignalsCollector> signal_collector_;
 };
 

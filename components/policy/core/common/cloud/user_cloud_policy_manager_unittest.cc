@@ -37,7 +37,8 @@ class UserCloudPolicyManagerTest : public testing::Test {
       delete;
 
  protected:
-  UserCloudPolicyManagerTest() : store_(nullptr) {}
+  UserCloudPolicyManagerTest()
+      : store_(nullptr), extension_install_store_(nullptr) {}
 
   void SetUp() override {
     // Set up a policy map for testing.
@@ -57,14 +58,22 @@ class UserCloudPolicyManagerTest : public testing::Test {
   void CreateManager() {
     store_ = new MockUserCloudPolicyStore();
     EXPECT_CALL(*store_, Load());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    extension_install_store_ = new MockUserCloudPolicyStore();
+    EXPECT_CALL(*extension_install_store_, Load());
+#endif
     const auto task_runner = task_environment_.GetMainThreadTaskRunner();
     manager_ = std::make_unique<UserCloudPolicyManager>(
-        std::unique_ptr<UserCloudPolicyStore>(store_), base::FilePath(),
-        std::unique_ptr<CloudExternalDataManager>(), task_runner,
-        network::TestNetworkConnectionTracker::CreateGetter());
+        std::unique_ptr<UserCloudPolicyStore>(store_),
+        std::unique_ptr<UserCloudPolicyStore>(extension_install_store_),
+        base::FilePath(), std::unique_ptr<CloudExternalDataManager>(),
+        task_runner, network::TestNetworkConnectionTracker::CreateGetter());
     manager_->Init(&schema_registry_);
     manager_->AddObserver(&observer_);
     Mock::VerifyAndClearExpectations(store_);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    Mock::VerifyAndClearExpectations(extension_install_store_);
+#endif
   }
 
   // Needs to be the first member.
@@ -78,6 +87,8 @@ class UserCloudPolicyManagerTest : public testing::Test {
   SchemaRegistry schema_registry_;
   MockConfigurationPolicyObserver observer_;
   raw_ptr<MockUserCloudPolicyStore, DanglingUntriaged> store_;  // Not owned.
+  raw_ptr<MockUserCloudPolicyStore, DanglingUntriaged>
+      extension_install_store_;  // Not owned.
   std::unique_ptr<UserCloudPolicyManager> manager_;
 };
 

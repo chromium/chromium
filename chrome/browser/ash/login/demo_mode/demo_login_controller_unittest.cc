@@ -180,6 +180,8 @@ class DemoLoginControllerTest : public testing::Test {
                          std::string client_id = "fake-client-id") {
     std::unique_ptr<policy::MockCloudPolicyStore> store =
         std::make_unique<policy::MockCloudPolicyStore>();
+    std::unique_ptr<policy::MockCloudPolicyStore> extension_install_store =
+        std::make_unique<policy::MockCloudPolicyStore>();
     std::unique_ptr<policy::MockCloudPolicyClient> cloud_policy_client =
         std::make_unique<policy::MockCloudPolicyClient>();
     policy::CloudPolicyClient* client_ptr = cloud_policy_client.get();
@@ -190,7 +192,8 @@ class DemoLoginControllerTest : public testing::Test {
     cloud_policy_client->client_id_ = client_id;
 
     cloud_policy_manager_ = std::make_unique<policy::MockCloudPolicyManager>(
-        std::move(store), task_environment_.GetMainThreadTaskRunner());
+        std::move(store), std::move(extension_install_store),
+        task_environment_.GetMainThreadTaskRunner());
     cloud_policy_manager_->core()->ConnectForTesting(
         std::move(service), std::move(cloud_policy_client));
 

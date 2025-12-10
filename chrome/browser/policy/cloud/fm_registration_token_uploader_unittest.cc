@@ -60,6 +60,7 @@ class FmRegistrationTokenUploaderTest : public testing::Test {
         core_(dm_protocol::kChromeDevicePolicyType,
               std::string(),
               &mock_store_,
+              &mock_extension_install_store_,
               task_environment_.GetMainThreadTaskRunner(),
               network::TestNetworkConnectionTracker::CreateGetter()) {}
 
@@ -76,6 +77,7 @@ class FmRegistrationTokenUploaderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockInvalidationListener> mock_invalidation_listener_;
   testing::NiceMock<MockCloudPolicyStore> mock_store_;
+  testing::NiceMock<MockCloudPolicyStore> mock_extension_install_store_;
   CloudPolicyCore core_;
 };
 

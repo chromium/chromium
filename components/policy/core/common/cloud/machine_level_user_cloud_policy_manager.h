@@ -25,6 +25,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyManager
  public:
   MachineLevelUserCloudPolicyManager(
       std::unique_ptr<MachineLevelUserCloudPolicyStore> store,
+      std::unique_ptr<MachineLevelUserCloudPolicyStore> extension_install_store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const base::FilePath& policy_dir,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -46,6 +47,9 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyManager
   void RemoveClientObserver(CloudPolicyClient::Observer* observer);
 
   MachineLevelUserCloudPolicyStore* store() { return user_store_.get(); }
+  MachineLevelUserCloudPolicyStore* extension_install_store() {
+    return extension_install_store_.get();
+  }
 
   // Shuts down the MachineLevelUserCloudPolicyManager (removes and stops
   // refreshing the cached cloud policy).
@@ -60,6 +64,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyManager
   void OnStoreLoaded(CloudPolicyStore* cloud_policy_store) override;
 
   raw_ptr<MachineLevelUserCloudPolicyStore> user_store_;
+  raw_ptr<MachineLevelUserCloudPolicyStore> extension_install_store_;
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
 
   const base::FilePath policy_dir_;

@@ -48,15 +48,22 @@ CloudPolicyManager::CloudPolicyManager(
     const std::string& policy_type,
     const std::string& settings_entity_id,
     std::unique_ptr<CloudPolicyStore> cloud_policy_store,
+    std::unique_ptr<CloudPolicyStore> extension_install_store,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
     : store_(std::move(cloud_policy_store)),
+      extension_install_store_(std::move(extension_install_store)),
       core_(policy_type,
             settings_entity_id,
             store_.get(),
+            extension_install_store_.get(),
             task_runner,
             std::move(network_connection_tracker_getter)),
-      waiting_for_policy_refresh_(false) {}
+      waiting_for_policy_refresh_(false) {
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+  CHECK(!extension_install_store_.get());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
 
 CloudPolicyManager::~CloudPolicyManager() = default;
 
@@ -92,12 +99,24 @@ void CloudPolicyManager::Init(SchemaRegistry* registry) {
     OnStoreLoaded(store());
   else
     store()->Load();
+  if (!extension_install_store()) {
+    return;
+  }
+  extension_install_store()->AddObserver(this);
+  if (extension_install_store()->is_initialized()) {
+    OnStoreLoaded(extension_install_store());
+  } else {
+    extension_install_store()->Load();
+  }
 }
 
 void CloudPolicyManager::Shutdown() {
   component_policy_service_.reset();
   core_.Disconnect();
   store()->RemoveObserver(this);
+  if (extension_install_store()) {
+    extension_install_store()->RemoveObserver(this);
+  }
   ConfigurationPolicyProvider::Shutdown();
 }
 
@@ -108,10 +127,18 @@ bool CloudPolicyManager::IsInitializationComplete(PolicyDomain domain) const {
       component_policy_service_) {
     return component_policy_service_->is_initialized();
   }
+  if (domain == POLICY_DOMAIN_EXTENSION_INSTALL) {
+    return !extension_install_store() ||
+           extension_install_store()->is_initialized();
+  }
   return true;
 }
 
 bool CloudPolicyManager::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
+  if (domain == POLICY_DOMAIN_EXTENSION_INSTALL) {
+    return !extension_install_store() ||
+           extension_install_store()->first_policies_loaded();
+  }
   return store()->first_policies_loaded();
 }
 
@@ -128,12 +155,14 @@ void CloudPolicyManager::RefreshPolicies(PolicyFetchReason reason) {
 }
 
 void CloudPolicyManager::OnStoreLoaded(CloudPolicyStore* cloud_policy_store) {
-  DCHECK_EQ(store(), cloud_policy_store);
+  CHECK(cloud_policy_store == store() ||
+        cloud_policy_store == extension_install_store());
   CheckAndPublishPolicy();
 }
 
 void CloudPolicyManager::OnStoreError(CloudPolicyStore* cloud_policy_store) {
-  DCHECK_EQ(store(), cloud_policy_store);
+  CHECK(cloud_policy_store == store() ||
+        cloud_policy_store == extension_install_store());
   // Publish policy (even though it hasn't changed) in order to signal load
   // complete on the ConfigurationPolicyProvider interface. Technically, this
   // is only required on the first load, but doesn't hurt in any case.
@@ -175,6 +204,8 @@ void CloudPolicyManager::CheckAndPublishPolicy() {
   PolicyBundle bundle;
   GetChromePolicy(
       &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())));
+  GetExtensionInstallPolicy(&bundle.Get(
+      PolicyNamespace(POLICY_DOMAIN_EXTENSION_INSTALL, std::string())));
   if (component_policy_service_ &&
       component_policy_service_->is_initialized()) {
     bundle.MergeFrom(component_policy_service_->policy());
@@ -185,6 +216,16 @@ void CloudPolicyManager::CheckAndPublishPolicy() {
 
 void CloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
   *policy_map = store()->policy_map().Clone();
+}
+
+void CloudPolicyManager::GetExtensionInstallPolicy(PolicyMap* policy_map) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  *policy_map = extension_install_store()
+                    ? extension_install_store()->policy_map().Clone()
+                    : PolicyMap();
+#else
+  *policy_map = PolicyMap();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void CloudPolicyManager::CreateComponentCloudPolicyService(

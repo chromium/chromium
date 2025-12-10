@@ -89,6 +89,7 @@ DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
           dm_protocol::kChromeDevicePolicyType,
           std::string(),
           std::move(device_store),
+          /*extension_install_store=*/nullptr,
           task_runner,
           base::BindRepeating(&content::GetNetworkConnectionTracker)),
       device_store_(static_cast<DeviceCloudPolicyStoreAsh*>(store())),

@@ -106,6 +106,7 @@ class UserCloudPolicyManagerAsh
   UserCloudPolicyManagerAsh(
       Profile* profile,
       std::unique_ptr<CloudPolicyStore> store,
+      std::unique_ptr<CloudPolicyStore> extension_install_store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const base::FilePath& component_policy_cache_path,
       PolicyEnforcement enforcement_type,

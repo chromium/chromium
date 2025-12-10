@@ -148,8 +148,12 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
 
   // Objects the invalidator depends on.
   testing::NiceMock<MockCloudPolicyStore> store_;
-  CloudPolicyCore core_{dm_protocol::GetChromeUserPolicyType(), std::string(),
-                        &store_, task_environment_.GetMainThreadTaskRunner(),
+  testing::NiceMock<MockCloudPolicyStore> extension_install_store_;
+  CloudPolicyCore core_{dm_protocol::GetChromeUserPolicyType(),
+                        std::string(),
+                        &store_,
+                        &extension_install_store_,
+                        task_environment_.GetMainThreadTaskRunner(),
                         network::TestNetworkConnectionTracker::CreateGetter()};
   int policy_refresh_count_ = 0;
 

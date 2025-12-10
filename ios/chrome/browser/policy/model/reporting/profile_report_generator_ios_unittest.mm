@@ -166,7 +166,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
 
     machine_policy_manager_ =
         std::make_unique<policy::MachineLevelUserCloudPolicyManager>(
-            std::move(machine_store), /*external_data_manager=*/nullptr,
+            std::move(machine_store), /*extension_install_store=*/nullptr,
+            /*external_data_manager=*/nullptr,
             /*policy_dir=*/base::FilePath(),
             scoped_refptr<base::SequencedTaskRunner>(),
             network::TestNetworkConnectionTracker::CreateGetter());

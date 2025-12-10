@@ -73,7 +73,7 @@ std::unique_ptr<UserCloudPolicyManager> BuildCloudPolicyManager() {
   EXPECT_CALL(*store, Load()).Times(AnyNumber());
 
   return std::make_unique<UserCloudPolicyManager>(
-      std::move(store), base::FilePath(),
+      std::move(store), /*extension_install_store=*/nullptr, base::FilePath(),
       /*cloud_external_data_manager=*/nullptr,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());

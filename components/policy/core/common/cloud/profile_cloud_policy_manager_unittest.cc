@@ -57,14 +57,18 @@ class ProfileCloudPolicyManagerTest : public testing::Test {
   void CreateManager() {
     store_ = new MockProfileCloudPolicyStore();
     EXPECT_CALL(*store_, Load());
+    extension_install_store_ = new MockProfileCloudPolicyStore();
+    EXPECT_CALL(*extension_install_store_, Load());
     const auto task_runner = task_environment_.GetMainThreadTaskRunner();
     manager_ = std::make_unique<ProfileCloudPolicyManager>(
-        std::unique_ptr<ProfileCloudPolicyStore>(store_), base::FilePath(),
-        std::unique_ptr<CloudExternalDataManager>(), task_runner,
-        network::TestNetworkConnectionTracker::CreateGetter());
+        std::unique_ptr<ProfileCloudPolicyStore>(store_),
+        std::unique_ptr<ProfileCloudPolicyStore>(extension_install_store_),
+        base::FilePath(), std::unique_ptr<CloudExternalDataManager>(),
+        task_runner, network::TestNetworkConnectionTracker::CreateGetter());
     manager_->Init(&schema_registry_);
     manager_->AddObserver(&observer_);
     Mock::VerifyAndClearExpectations(store_);
+    Mock::VerifyAndClearExpectations(extension_install_store_);
   }
 
   // Needs to be the first member.
@@ -77,6 +81,8 @@ class ProfileCloudPolicyManagerTest : public testing::Test {
   // Policy infrastructure.
   SchemaRegistry schema_registry_;
   MockConfigurationPolicyObserver observer_;
+  raw_ptr<MockProfileCloudPolicyStore, DanglingUntriaged>
+      extension_install_store_;                                    // Not owned.
   raw_ptr<MockProfileCloudPolicyStore, DanglingUntriaged> store_;  // Not owned.
   std::unique_ptr<ProfileCloudPolicyManager> manager_;
 };
@@ -91,6 +97,7 @@ TEST_F(ProfileCloudPolicyManagerTest, DisconnectAndRemovePolicy) {
   EXPECT_TRUE(expected_bundle_.Equals(manager_->policies()));
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_CALL(*store_, Clear());
+  EXPECT_CALL(*extension_install_store_, Clear());
   manager_->DisconnectAndRemovePolicy();
   EXPECT_FALSE(manager_->core()->service());
 }

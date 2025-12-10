@@ -126,6 +126,15 @@ void MachineLevelUserCloudPolicyFetcher::SetupRegistrationAndFetchPolicy(
   policy_manager_->core()->client()->SetupRegistration(
       dm_token.value(), client_id, std::vector<std::string>());
   policy_manager_->store()->SetupRegistration(dm_token, client_id);
+  if (policy_manager_->extension_install_store()) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    policy_manager_->extension_install_store()->SetupRegistration(dm_token,
+                                                                  client_id);
+#else
+    NOTREACHED() << "extension_install_store initialized on a platform without "
+                    "extensions";
+#endif
+  }
   DCHECK(policy_manager_->IsClientRegistered());
 
   policy_manager_->core()->service()->RefreshPolicy(

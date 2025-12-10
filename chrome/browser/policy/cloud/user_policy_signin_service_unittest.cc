@@ -83,8 +83,14 @@ std::unique_ptr<UserCloudPolicyManager> BuildCloudPolicyManager() {
   auto store = std::make_unique<MockUserCloudPolicyStore>();
   EXPECT_CALL(*store, Load()).Times(AnyNumber());
 
+  std::unique_ptr<MockUserCloudPolicyStore> extension_install_store;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store = std::make_unique<MockUserCloudPolicyStore>();
+  EXPECT_CALL(*extension_install_store, Load()).Times(AnyNumber());
+#endif
+
   return std::make_unique<UserCloudPolicyManager>(
-      std::move(store), base::FilePath(),
+      std::move(store), std::move(extension_install_store), base::FilePath(),
       /*cloud_external_data_manager=*/nullptr,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());

@@ -140,9 +140,23 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
                // Block shutdown to make sure the policy cache update is always
                // finished.
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+
+  std::unique_ptr<MachineLevelUserCloudPolicyStore> extension_install_store =
+      nullptr;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store =
+      MachineLevelUserCloudPolicyStore::CreateForExtensionInstall(
+          dm_token, client_id, policy_dir,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+               // Block shutdown to make sure the policy cache update is
+               // always finished.
+               base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+
   return std::make_unique<MachineLevelUserCloudPolicyManager>(
-      std::move(policy_store), nullptr, policy_dir,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::move(policy_store), std::move(extension_install_store), nullptr,
+      policy_dir, base::SingleThreadTaskRunner::GetCurrentDefault(),
       delegate_->CreateNetworkConnectionTrackerGetter());
 }
 

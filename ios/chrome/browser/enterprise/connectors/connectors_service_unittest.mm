@@ -62,7 +62,8 @@ class ConnectorsServiceTest : public PlatformTest {
 
     auto cloud_policy_manager =
         std::make_unique<policy::UserCloudPolicyManager>(
-            std::move(store), base::FilePath(),
+            std::move(store), /*extension_install_store=*/nullptr,
+            base::FilePath(),
             /*cloud_external_data_manager=*/nullptr,
             base::SingleThreadTaskRunner::GetCurrentDefault(),
             network::TestNetworkConnectionTracker::CreateGetter());
@@ -90,7 +91,8 @@ class ConnectorsServiceTest : public PlatformTest {
     machine_store->set_policy_data_for_testing(std::move(policy_data));
 
     manager_ = std::make_unique<policy::MachineLevelUserCloudPolicyManager>(
-        std::move(machine_store), /*external_data_manager=*/nullptr,
+        std::move(machine_store), /*extension_install_store=*/nullptr,
+        /*external_data_manager=*/nullptr,
         /*policy_dir=*/base::FilePath(),
         scoped_refptr<base::SequencedTaskRunner>(),
         network::TestNetworkConnectionTracker::CreateGetter());

@@ -147,17 +147,35 @@ class BrowserSignalsDecoratorTest : public testing::Test {
     auto mock_browser_cloud_policy_store =
         std::make_unique<policy::MockCloudPolicyStore>();
     mock_browser_cloud_policy_store_ = mock_browser_cloud_policy_store.get();
+    std::unique_ptr<policy::MockCloudPolicyStore>
+        mock_browser_cloud_policy_extension_install_store;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    mock_browser_cloud_policy_extension_install_store =
+        std::make_unique<policy::MockCloudPolicyStore>();
+#endif
+    mock_browser_cloud_policy_extension_install_store_ =
+        mock_browser_cloud_policy_extension_install_store.get();
     mock_browser_cloud_policy_manager_ =
         std::make_unique<policy::MockCloudPolicyManager>(
             std::move(mock_browser_cloud_policy_store),
+            std::move(mock_browser_cloud_policy_extension_install_store),
             task_environment_.GetMainThreadTaskRunner());
 
     auto mock_user_cloud_policy_store =
         std::make_unique<policy::MockCloudPolicyStore>();
     mock_user_cloud_policy_store_ = mock_user_cloud_policy_store.get();
+    std::unique_ptr<policy::MockCloudPolicyStore>
+        mock_user_cloud_policy_extension_install_store;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    mock_user_cloud_policy_extension_install_store =
+        std::make_unique<policy::MockCloudPolicyStore>();
+#endif
+    mock_user_cloud_policy_extension_install_store_ =
+        mock_user_cloud_policy_extension_install_store.get();
     mock_user_cloud_policy_manager_ =
         std::make_unique<policy::MockCloudPolicyManager>(
             std::move(mock_user_cloud_policy_store),
+            std::move(mock_user_cloud_policy_extension_install_store),
             task_environment_.GetMainThreadTaskRunner());
   }
 
@@ -229,7 +247,11 @@ class BrowserSignalsDecoratorTest : public testing::Test {
   std::unique_ptr<policy::MockCloudPolicyManager>
       mock_user_cloud_policy_manager_;
   raw_ptr<policy::MockCloudPolicyStore> mock_browser_cloud_policy_store_;
+  raw_ptr<policy::MockCloudPolicyStore>
+      mock_browser_cloud_policy_extension_install_store_;
   raw_ptr<policy::MockCloudPolicyStore> mock_user_cloud_policy_store_;
+  raw_ptr<policy::MockCloudPolicyStore>
+      mock_user_cloud_policy_extension_install_store_;
   StrictMock<device_signals::MockSignalsAggregator> mock_aggregator_;
 };
 

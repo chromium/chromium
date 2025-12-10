@@ -395,6 +395,7 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     manager_ = std::make_unique<UserCloudPolicyManagerAsh>(
         ash::ProfileHelper::Get()->GetProfileByUser(active_user),
         std::move(store),
+        /*extension_install_store=*/nullptr,
         base::WrapUnique<MockCloudExternalDataManager>(
             external_data_manager_.get()),
         base::FilePath(), enforcement_type, &prefs_, fetch_timeout,

@@ -217,9 +217,19 @@ class UserPolicyOidcSigninServiceTest
 
     EXPECT_CALL(*mock_user_cloud_policy_store, Load())
         .Times(testing::AnyNumber());
+    std::unique_ptr<MockUserCloudPolicyStore>
+        mock_user_cloud_policy_extension_install_store;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    mock_user_cloud_policy_extension_install_store =
+        std::make_unique<MockUserCloudPolicyStore>();
+    EXPECT_CALL(*mock_user_cloud_policy_extension_install_store, Load())
+        .Times(testing::AnyNumber());
+#endif
 
     return std::make_unique<UserCloudPolicyManager>(
-        std::move(mock_user_cloud_policy_store), base::FilePath(),
+        std::move(mock_user_cloud_policy_store),
+        std::move(mock_user_cloud_policy_extension_install_store),
+        base::FilePath(),
         /*cloud_external_data_manager=*/nullptr,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         network::TestNetworkConnectionTracker::CreateGetter());
@@ -243,8 +253,19 @@ class UserPolicyOidcSigninServiceTest
     EXPECT_CALL(*mock_profile_cloud_policy_store, Load())
         .Times(testing::AnyNumber());
 
+    std::unique_ptr<MockProfileCloudPolicyStore>
+        mock_profile_cloud_policy_extension_install_store;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    mock_profile_cloud_policy_extension_install_store =
+        std::make_unique<MockProfileCloudPolicyStore>();
+    EXPECT_CALL(*mock_profile_cloud_policy_extension_install_store, Load())
+        .Times(testing::AnyNumber());
+#endif
+
     return std::make_unique<ProfileCloudPolicyManager>(
-        std::move(mock_profile_cloud_policy_store), base::FilePath(),
+        std::move(mock_profile_cloud_policy_store),
+        std::move(mock_profile_cloud_policy_extension_install_store),
+        base::FilePath(),
         /*cloud_external_data_manager=*/nullptr,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         network::TestNetworkConnectionTracker::CreateGetter());

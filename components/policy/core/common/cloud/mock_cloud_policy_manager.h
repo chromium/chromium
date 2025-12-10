@@ -24,6 +24,11 @@ class MockCloudPolicyManager : public CloudPolicyManager {
       std::unique_ptr<CloudPolicyStore> store,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
+  MockCloudPolicyManager(
+      std::unique_ptr<CloudPolicyStore> store,
+      std::unique_ptr<CloudPolicyStore> extension_install_store,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
   MockCloudPolicyManager(const MockCloudPolicyManager&) = delete;
   MockCloudPolicyManager& operator=(const MockCloudPolicyManager&) = delete;
 
