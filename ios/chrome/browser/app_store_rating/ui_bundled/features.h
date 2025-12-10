@@ -9,7 +9,9 @@
 
 #import "base/feature_list.h"
 
-// Feature controlling the App Store rating prompt.
+// Feature controlling the App Store rating prompt. This base::Feature is needed
+// even if it's already enabled by default to allow remotely disabling the
+// prompt if needed.
 BASE_DECLARE_FEATURE(kAppStoreRating);
 
 // Returns true if the App Store rating feature is enabled.

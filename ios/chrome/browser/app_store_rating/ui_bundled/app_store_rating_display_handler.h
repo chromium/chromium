@@ -8,13 +8,9 @@
 #import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_display_handler.h"
 
 // Handler for displaying the App Store Rating Promo.
-//
 // This handler is called by the Promos Manager and presents the App Store
-// Rating promo to eligible users. Users are considered eligible if they
-// 1) have used Chrome for at least 15 total days,
-// 2) have used Chrome for at least 3 days in the past 7 days,
-// 3) have enabled CPE, and
-// 4) have Chrome set as their default browser.
+// Rating iOS prompt to eligible users. See the App Store Rating scene agent for
+// eligibility conditions.
 @interface AppStoreRatingDisplayHandler : NSObject <StandardPromoDisplayHandler>
 
 #pragma mark - PromoProtocol

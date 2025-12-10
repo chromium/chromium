@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 
-#import "base/test/scoped_feature_list.h"
 #import "components/metrics/metrics_state_manager.h"
 #import "components/metrics/test/test_enabled_state_provider.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
@@ -13,7 +12,6 @@
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_client.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
