@@ -505,7 +505,7 @@
 <translation id="1812975699435941848">Эрүүл мэндийн боловсрол болон эмнэлгийн сургалт</translation>
 <translation id="1816436748874040213">Хуваалцсан табуудыг гүйлгэж, томруулахыг хүсэх боломжтой</translation>
 <translation id="1816707915923025275">Хөтчийн түүхээсээ хайхын тулд @түүх гэж бичнэ үү</translation>
-<translation id="1817364650920811003">Үүрэг: Chrome-н зөвлөгөө. Хандалтын шошго: <ph name="CHROME_TIP" /></translation>
+<translation id="1817364650920811003">Үүрэг: Chrome-н зөвлөгөө. Хүртээмжийн шошго: <ph name="CHROME_TIP" /></translation>
 <translation id="1818522458013171885">Блокоос гаргах</translation>
 <translation id="1818585559878922121">Баримтат кинонууд</translation>
 <translation id="182139138257690338">Автомат таталтууд</translation>
@@ -808,7 +808,7 @@
 <translation id="2312234273148520048">Амтлагч болон сүмснүүд</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />-с бага байна. Таныг дараагийн удаа зочлоход зарим сайт илүү удаан ачаалж магадгүй.</translation>
 <translation id="2316090909467242775">Энэ сэргээх нууц үгийг туршиж үзнэ үү</translation>
-<translation id="2316159751672436664">ChromeOS-н тохиргоонд хандалтын хэрэгслээ хувийн болгоно уу</translation>
+<translation id="2316159751672436664">ChromeOS-н тохиргоонд хүртээмжтэй хэрэгслээ хувийн болгоно уу</translation>
 <translation id="2316887270356262533">1 MB-с бага зай гаргана. Зарим сайтад зочлох үед удаан ачаалж болзошгүй.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> хэрэглэгчийн нэр, нууц үгийг шаардаж байна.</translation>
 <translation id="2318594867107319532">Бодлогын сүүлийн хугацаа тэмдэглэгч:</translation>
@@ -853,7 +853,7 @@
 <translation id="2378084239755710604">Карт хадгалахыг хаасан.</translation>
 <translation id="237978325638124213">Үнэртэн, үнэртэй уснууд</translation>
 <translation id="2380886658946992094">Хууль ёсны</translation>
-<translation id="2383455408879745299">Chrome-н тохиргоонд хандалтын хэрэгслээ хувийн болгоно уу</translation>
+<translation id="2383455408879745299">Chrome-н тохиргоонд хүртээмжтэй хэрэгслээ хувийн болгоно уу</translation>
 <translation id="2384307209577226199">Байгууллагын өгөгдмөл</translation>
 <translation id="238459632961158867">Вебсайт</translation>
 <translation id="2384823392576123225">Хавчуургаас хайх</translation>
@@ -2754,7 +2754,7 @@
 <translation id="5523118979700054094">Тохиргооны нэр</translation>
 <translation id="5523588073846127669">Худалдаачин энэ виртуал картыг зөвшөөрдөггүй</translation>
 <translation id="5525755241743357906">Хуулсан эсвэл зөөсөн файл</translation>
-<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS-н тохиргоонд хүртээмжтэй хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="55293785478302737">Ирмэгийг нь нийлүүлж үдэх</translation>
 <translation id="553377674408670169">Боловсролын ажлын байрууд</translation>
 <translation id="5534785731327961487">Одоогийн ашигтай тусгай санал</translation>
@@ -3162,7 +3162,7 @@
 <translation id="6222527803348563979">Бичгийн цаас</translation>
 <translation id="62231116988543150">Веб аппликэйшнүүдийг суулгах боломжтой байх</translation>
 <translation id="6224281071334553713">Үнэт чулуу болон үнэт эдлэл</translation>
-<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоонд хүртээмжтэй хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="6228346913624365233">Тансаг зэрэглэлийн тээврийн хэрэгслүүд</translation>
 <translation id="6228836011612806720">Дэлгүүрийн шүүмж. Дундаж үнэлгээ нь <ph name="STARS" /> од байна.</translation>
 <translation id="6229196330202833460">Кино болон ТВ-ийн стриминг</translation>
@@ -3219,7 +3219,7 @@
 <translation id="6311642842034740437">Нэртэй байршил</translation>
 <translation id="6312113039770857350">Веб хуудас боломжгүй байна</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" />-д файл байршуулахыг түр зогсоосон</translation>
-<translation id="63172326633386613">Хандалтын тохиргоог удирдах</translation>
+<translation id="63172326633386613">Хүртээмжтэй тохиргоог удирдах</translation>
 <translation id="6319672966240656136">Та Google-н Дэвшилтэт хамгаалалтын хөтөлбөрт байгаа тул энэ сайтыг блоклосон хэвээр үлдэнэ. <ph name="BEGIN_LEARN_MORE_LINK" />Энэ сануулгын талаар нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">DNS тохиргоогоо шалгана уу</translation>
 <translation id="6322182122604171028">Windows Hello-г ашиглаж чадсангүй</translation>
@@ -3367,7 +3367,7 @@
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> "<ph name="GROUP_NAME" />" табын бүлэгт нэгдсэн</translation>
 <translation id="6521745193039995384">Идэвхгүй</translation>
 <translation id="6522682797352430154">Сонгодог хөгжим</translation>
-<translation id="6524830701589638230">Хандалтын тохиргоог удирдах товчлуур, Chrome-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд идэвхжүүлнэ үү</translation>
+<translation id="6524830701589638230">Хүртээмжтэй тохиргоог удирдах товчлуур, Chrome-н тохиргоонд хүртээмжтэй хэрэгслээ хувийн болгохын тулд идэвхжүүлнэ үү</translation>
 <translation id="6527049834925947126">Хүнсний үйлдвэрлэл</translation>
 <translation id="6529173248185917884">Долоо дахь хуйлмал</translation>
 <translation id="6529602333819889595">&amp; Устгах үйлдлийг дахин хийх</translation>
@@ -4393,7 +4393,7 @@
 <translation id="824968735947741546"><ph name="SOURCE" />-с (автоматаар илрүүлсэн) <ph name="TARGET" /> руу орчуулж байна</translation>
 <translation id="8250094606476360498">Энэ хаягийг одоогоор энэ төхөөрөмжид хадгалсан. Үүнийг Google-н бүтээгдэхүүнүүдэд ашиглахын тулд <ph name="ACCOUNT" /> Google Бүртгэлдээ хадгална уу.</translation>
 <translation id="8251493595871259082">Хаягаа бага бичиж бөглөөрэй</translation>
-<translation id="8252991034201168845">Хандалтын тохиргоог удирдах товчлуур, ChromeOS-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд Enter дээр дарна уу</translation>
+<translation id="8252991034201168845">Хүртээмжтэй тохиргоог удирдах товчлуур, ChromeOS-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд Enter дээр дарна уу</translation>
 <translation id="8253091569723639551">Тооцооны хаяг шаардлагатай</translation>
 <translation id="8257387598443225809">Энэ апп нь мобайлд зориулагдсан</translation>
 <translation id="8259239120149678929">ТВ-ийн баримтат кино, бодит явдал</translation>

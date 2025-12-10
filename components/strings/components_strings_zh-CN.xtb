@@ -237,7 +237,7 @@
 <translation id="1380591466760231819">包芯折</translation>
 <translation id="138218114945450791">浅蓝色</translation>
 <translation id="1382194467192730611">您的管理员允许使用的 USB 设备</translation>
-<translation id="1384725838384960382">安全付款凭据身份验证表单</translation>
+<translation id="1384725838384960382">安全付款凭证身份验证表单</translation>
 <translation id="1386623374109090026">注释</translation>
 <translation id="138810468159004008">访问该网站时允许</translation>
 <translation id="1391145880481608015">详细了解此警告</translation>
@@ -494,7 +494,7 @@
 <translation id="1803254472779303354">已允许锁定鼠标</translation>
 <translation id="1803351196216024260">可以询问能否使用您的麦克风</translation>
 <translation id="1804258830776932716">关联账号即可快速启用 Pix</translation>
-<translation id="1806174020048213474">此应用请求您授权安装 Wi-Fi 凭据。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭据，请卸载该应用。</translation>
+<translation id="1806174020048213474">此应用请求您授权安装 Wi-Fi 凭证。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭证，请卸载该应用。</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1807528111851433570">起始工作表</translation>
 <translation id="180757923930449935">(64-bit emulated)</translation>
@@ -1142,7 +1142,7 @@
 <translation id="2911255567212929079">机器学习与人工智能</translation>
 <translation id="2911973620368911614">工作账号用户 ID</translation>
 <translation id="2913421697249863476">烧烤架和烤肉架</translation>
-<translation id="2914160345369867329"><ph name="SITE" /> 通常会使用加密技术来保护您的信息。Chrome 此次尝试连接到 <ph name="SITE" /> 时，该网站发回了异常的错误凭据。这可能是因为有攻击者在试图冒充 <ph name="SITE" />，或者 Wi-Fi 登录屏幕中断了此次连接。请放心，您的信息仍然是安全的，因为 Chrome 尚未进行任何数据交换便停止了连接。</translation>
+<translation id="2914160345369867329"><ph name="SITE" /> 通常会使用加密技术来保护您的信息。Chrome 此次尝试连接到 <ph name="SITE" /> 时，该网站发回了异常的错误凭证。这可能是因为有攻击者在试图冒充 <ph name="SITE" />，或者 Wi-Fi 登录屏幕中断了此次连接。请放心，您的信息仍然是安全的，因为 Chrome 尚未进行任何数据交换便停止了连接。</translation>
 <translation id="2915068235268646559">崩溃时间：<ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">绘画</translation>
 <translation id="2916038427272391327">关闭其他程序</translation>
@@ -1358,7 +1358,7 @@
 <translation id="3236212803136366317">凭卡可享的福利</translation>
 <translation id="3238395604961564389">在无痕式窗口中打开链接</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可自定义您的浏览器外观</translation>
-<translation id="3240791268468473923">“无匹配的安全付款凭据”表单已打开</translation>
+<translation id="3240791268468473923">“无匹配的安全付款凭证”表单已打开</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />”链接已被禁用</translation>
 <translation id="3243650379537999343">绘制</translation>
 <translation id="3248329428895535435">不在此网站上显示</translation>
@@ -1523,7 +1523,7 @@
 <translation id="3527181387426738155">音乐与音频</translation>
 <translation id="3528171143076753409">服务器的证书不受信任。</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{在已同步的设备上至少有 1 项内容}=1{1 项内容（在已同步的设备上还有更多内容）}other{# 项内容（在已同步的设备上还有更多内容）}}</translation>
-<translation id="3531366304259615706">使用屏幕锁定解锁凭据</translation>
+<translation id="3531366304259615706">使用屏幕锁定解锁凭证</translation>
 <translation id="3531780078352352885">工作表</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> 想使用您的麦克风</translation>
 <translation id="3533328374079021623">信箱 5</translation>
@@ -2515,7 +2515,7 @@
 <translation id="5129662217315786329">波兰语</translation>
 <translation id="5135404736266831032">管理地址…</translation>
 <translation id="5136841603454277753">请输入正确的验证码</translation>
-<translation id="5137761395480718572">此应用请求您授权安装 Wi-Fi 凭据。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭据，请卸载该应用。<ph name="LEARN_MORE" /></translation>
+<translation id="5137761395480718572">此应用请求您授权安装 Wi-Fi 凭证。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭证，请卸载该应用。<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">暂时无法使用虚拟卡，请联系您的发卡行</translation>
 <translation id="5138227688689900538">收起</translation>
 <translation id="5144613843429436866">您已允许此网站使用<ph name="PERMISSION" /></translation>
@@ -3059,7 +3059,7 @@
 <translation id="605237284704429106">正在填充 IBAN</translation>
 <translation id="6053584886670442526">您可在各种 Google 产品中使用已保存的地址。此地址已保存到您的 Google 账号 (<ph name="ACCOUNT" />)。</translation>
 <translation id="6053735090575989697">如需详细了解 Google 如何保护您的数据，请参阅我们的隐私权政策。</translation>
-<translation id="6055888660316801977">“无匹配的安全付款凭据”表单</translation>
+<translation id="6055888660316801977">“无匹配的安全付款凭证”表单</translation>
 <translation id="6055982527635883756">信封（存档用）</translation>
 <translation id="6057177372083677067">在线视频</translation>
 <translation id="6058646026409894363">土木工程</translation>
@@ -3268,7 +3268,7 @@
 <translation id="6390200185239044127">Z 型对折</translation>
 <translation id="6390533465682072118">恢复</translation>
 <translation id="639068771471208680">多部分表单</translation>
-<translation id="6391700400718590966">“无匹配的安全付款凭据”表单已关闭</translation>
+<translation id="6391700400718590966">“无匹配的安全付款凭证”表单已关闭</translation>
 <translation id="6392799395081100092">纸（牛皮纸）</translation>
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6393310910507376797">商家不支持</translation>
@@ -3552,7 +3552,7 @@
 <translation id="6880941331070119097">高价选项</translation>
 <translation id="6881240511396774766">快速创建一个新的 Google 文档</translation>
 <translation id="6882210908253838664">如果某个网站无法正常运行，您可尝试向其授予对第三方 Cookie 的临时使用权限。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="6883221904761970440">安全付款凭据身份验证表单已关闭</translation>
+<translation id="6883221904761970440">安全付款凭证身份验证表单已关闭</translation>
 <translation id="6883745783646124431">工作地址</translation>
 <translation id="6886283082988906333">ZIP 归档文件</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
@@ -4693,7 +4693,7 @@
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8763986294015493060">关闭当前打开的所有无痕式窗口</translation>
-<translation id="8766943070169463815">安全付款凭据身份验证表单已打开</translation>
+<translation id="8766943070169463815">安全付款凭证身份验证表单已打开</translation>
 <translation id="8767765348545497220">关闭帮助气泡</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 种支付方式}other{# 种支付方式}}</translation>
 <translation id="8768225988514678921">“创建演示文稿”按钮，激活它即可在幻灯片中快速创建新的 Google 演示文稿</translation>

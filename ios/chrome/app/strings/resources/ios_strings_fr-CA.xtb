@@ -1847,7 +1847,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8035133914807600019">Nouveau dossier...</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8040407350301524547">Pour obtenir les options d'itinéraire, touchez « Obtenir l'itinéraire ».</translation>
-<translation id="804225253087497565">L'<ph name="BEGIN_LINK" />historique de recherche<ph name="END_LINK" /> et d'<ph name="BEGIN_LINK" />autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
+<translation id="804225253087497565">L‘<ph name="BEGIN_LINK" />historique de recherche<ph name="END_LINK" /> et d‘<ph name="BEGIN_LINK" />autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="804427445359061970">Vous trouverez ici les onglets ouverts sur d'autres appareils</translation>
 <translation id="8058655154417507695">Année d'expiration</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} favori}one{{count} favori}other{{count} favoris}}</translation>

@@ -1226,7 +1226,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3027915437837548462">Image SVG</translation>
 <translation id="3030331669969285614">Ces flags empêchent ou annulent une modification destructive et ne sont disponibles que pendant une durée limitée.</translation>
 <translation id="3030542417256082866">Enregistrer le véhicule ?</translation>
-<translation id="3033200136993730761">L'adresse de votre domicile peut vous aider à accomplir des tâches dans les services Google, par exemple pour obtenir des résultats de recherche et des itinéraires plus pertinents dans Google Maps. Vous pouvez modifier ou supprimer votre adresse <ph name="BEGIN_LINK" />dans votre compte Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
+<translation id="3033200136993730761">L'adresse de votre domicile peut vous être utile dans les services Google, par exemple pour obtenir des itinéraires dans Google Maps et des résultats de recherche plus pertinents. Vous pouvez modifier ou supprimer votre adresse <ph name="BEGIN_LINK" />dans votre compte Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3034526003882782781">Défilement et zoom autorisés</translation>
 <translation id="3036894576201005614">Produits ménagers de nettoyage</translation>
 <translation id="3037177537145227281">Suivi du prix activé</translation>
@@ -4808,7 +4808,7 @@ Informations supplémentaires :
 <translation id="8968766641738584599">Enregistrer la carte</translation>
 <translation id="8970887620466824814">Un problème est survenu</translation>
 <translation id="8971063699422889582">Le certificat du serveur a expiré.</translation>
-<translation id="8975012916872825179">Y compris des informations comme les numéros de téléphone, les adresses e-mail et les adresses de livraison</translation>
+<translation id="8975012916872825179">Inclut des infos comme les numéros de téléphone, les adresses e-mail et les adresses de livraison</translation>
 <translation id="8975263830901772334">Noms des fichiers que vous imprimez</translation>
 <translation id="8982884016487650216">Chargement du PDF terminé</translation>
 <translation id="8983369100812962543">Vous pouvez désormais redimensionner l'appli</translation>

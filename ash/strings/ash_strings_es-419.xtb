@@ -872,7 +872,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3886872229787704059">Se abrió hoy</translation>
 <translation id="3891340733213178823">Presiona Ctrl + Mayús + Q dos veces para salir.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
-<translation id="3893630138897523026">ChromeVox (comentarios por voz)</translation>
+<translation id="3893630138897523026">ChromeVox (descripciones por voz)</translation>
 <translation id="3897533311200664389">Iniciar una búsqueda de texto</translation>
 <translation id="3898464793473355515">Rotar la pantalla 90 grados en el sentido de las manecillas del reloj</translation>
 <translation id="3899995891769452915">Entrada de voz</translation>
@@ -1317,7 +1317,7 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5265391159779542051">Se cargaron los resultados</translation>
 <translation id="5270547718570958938">Google Calendario</translation>
 <translation id="5277869901083657836">Activar o desactivar las herramientas de la pluma stylus</translation>
-<translation id="5278086053818066789">Activar o desactivar ChromeVox (comentarios por voz)</translation>
+<translation id="5278086053818066789">Activar o desactivar ChromeVox (descripciones por voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiere tu atención.</translation>
 <translation id="5283198616748585639">Agregar 1 min</translation>
 <translation id="528468243742722775">Finalizar</translation>
@@ -1425,7 +1425,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5599242528220103262">La combinación de teclas está desactivada</translation>
 <translation id="5600415762228455511">El Modo sin distracciones está activado. Tiempo restante: <ph name="REMAINING_TIME" />. Concentrándote en: <ph name="TASK_NAME" /></translation>
-<translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
+<translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar las descripciones por voz.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Te cambiamos a una red mejor</translation>
 <translation id="5619862035903135339">La política del administrador inhabilita el modo de captura de pantalla.</translation>
@@ -2044,7 +2044,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario/a)</translation>
 <translation id="7647488630410863958">Desbloquea el dispositivo para ver tus notificaciones</translation>
 <translation id="7649070708921625228">Ayuda</translation>
-<translation id="7654687942625752712">Mantén presionadas las teclas de volumen durante cinco segundos para inhabilitar los comentarios por voz.</translation>
+<translation id="7654687942625752712">Mantén presionadas las teclas de volumen durante cinco segundos para inhabilitar las descripciones por voz.</translation>
 <translation id="7654916369822103315">Se cambió "<ph name="DISPLAY_NAME" />" a una resolución de <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Debido a limitaciones de ancho de banda del puerto, la pantalla no admite una resolución de <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Si no confirmas el cambio, se restablecerá la configuración anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659861092419699379">Se cerraron el escritorio y las ventanas</translation>
