@@ -185,4 +185,11 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat implements Co
     public @BackgroundStyle int getCustomBackgroundStyle() {
         return mBackgroundStyle;
     }
+
+    @Override
+    public int getCustomMinHeight() {
+        return getContext()
+                .getResources()
+                .getDimensionPixelSize(R.dimen.settings_toggle_item_min_height);
+    }
 }

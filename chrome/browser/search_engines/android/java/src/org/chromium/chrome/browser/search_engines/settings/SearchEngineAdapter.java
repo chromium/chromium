@@ -507,11 +507,12 @@ public class SearchEngineAdapter extends BaseAdapter
 
             View containerView = view.findViewById(R.id.container);
 
-            ContainerStyle style =
-                    mContainmentItemController.createBuilderWithDefaultStyle(
-                            isTop, isBottom, /* isSingleLine= */ true);
-            ContainmentViewStyler.applyBackgroundStyle(containerView, style);
-            ContainmentViewStyler.applyMargins(containerView, style);
+            ContainerStyle containerStyle =
+                    mContainmentItemController
+                            .createStandardBuilder(isTop, isBottom, /* isSingleLine= */ true)
+                            .build();
+            ContainmentViewStyler.applyBackgroundStyle(containerView, containerStyle);
+            ContainmentViewStyler.applyMargins(containerView, containerStyle);
         }
 
         view.setOnClickListener(this);

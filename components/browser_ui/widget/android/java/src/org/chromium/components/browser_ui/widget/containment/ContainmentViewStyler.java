@@ -51,6 +51,10 @@ public class ContainmentViewStyler {
                 style.getHorizontalMargin(),
                 style.getBottomMargin());
         view.setLayoutParams(layoutParams);
+
+        if (style.getMinHeight() != ContainmentItem.DEFAULT_VALUE) {
+            view.setMinimumHeight(style.getMinHeight());
+        }
     }
 
     /**
