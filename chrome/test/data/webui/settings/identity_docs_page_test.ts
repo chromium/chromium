@@ -131,4 +131,49 @@ suite('IdentityDocsPage', function() {
           assertFalse(page.$.optInToggle.checked);
         });
   });
+
+  [{
+    experimentEnabled: true,
+    addressAutofillStatus: true,
+    toggleDisabled: false,
+  },
+   {
+     experimentEnabled: true,
+     addressAutofillStatus: false,
+     toggleDisabled: false,
+   },
+   {
+     experimentEnabled: false,
+     addressAutofillStatus: true,
+     toggleDisabled: false,
+   },
+   {
+     experimentEnabled: false,
+     addressAutofillStatus: false,
+     toggleDisabled: true,
+   },
+  ].forEach(({experimentEnabled, addressAutofillStatus, toggleDisabled}) => {
+    test(
+        `Toggle takes into account address opt in status ` +
+            `experimentEnabled(${experimentEnabled}) ` +
+            `addressAutofillStatus(${addressAutofillStatus})`,
+        async function() {
+          loadTimeData.overrideValues({
+            userEligibleForAutofillAi: true,
+            AutofillAiIgnoresWhetherAddressFillingIsEnabled: experimentEnabled,
+          });
+
+          entityDataManager.setGetOptInStatusResponse(true);
+
+          settingsPrefs.set(
+              'prefs.autofill.autofill_ai.identity_entities_enabled.value',
+              true);
+          settingsPrefs.set(
+              'prefs.autofill.profile_enabled.value', addressAutofillStatus);
+
+          const page = await setupPage();
+
+          assertEquals(page.$.optInToggle.disabled, toggleDisabled);
+        });
+  });
 });
