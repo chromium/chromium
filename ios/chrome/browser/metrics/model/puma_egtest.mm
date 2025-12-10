@@ -16,7 +16,7 @@
 
 @implementation PumaTestCase
 
-// TODO(crbug.com/461922774): This test currently checks the country ID
+// TODO(crbug.com/465698705): This test currently checks the country ID
 // via a test-only AppInterface method. This should be converted to a browser
 // test that inspects the generated UMA proto directly.
 
