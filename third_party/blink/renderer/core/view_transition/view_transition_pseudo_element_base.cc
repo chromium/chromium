@@ -31,10 +31,8 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
       return pseudo_id == kPseudoIdViewTransitionGroup;
     case kPseudoIdViewTransitionGroup:
       return pseudo_id == kPseudoIdViewTransitionImagePair ||
-             (pseudo_id == kPseudoIdViewTransitionGroupChildren &&
-              RuntimeEnabledFeatures::NestedViewTransitionEnabled());
+             pseudo_id == kPseudoIdViewTransitionGroupChildren;
     case kPseudoIdViewTransitionGroupChildren:
-      CHECK(RuntimeEnabledFeatures::NestedViewTransitionEnabled());
       return pseudo_id == kPseudoIdViewTransitionGroup;
     case kPseudoIdViewTransitionImagePair:
       return pseudo_id == kPseudoIdViewTransitionOld ||

@@ -3511,10 +3511,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      name: "NestedViewTransition",
-      status: "stable",
-    },
-    {
       name: "NetInfoConstantType",
     },
     {

@@ -1105,8 +1105,7 @@ ViewTransitionStyleTracker::GetViewTransitionClassList(
 
 const AtomicString& ViewTransitionStyleTracker::GetContainingGroupName(
     const AtomicString& name) const {
-  if (!RuntimeEnabledFeatures::NestedViewTransitionEnabled() ||
-      state_ != State::kStarted) {
+  if (state_ != State::kStarted) {
     return g_null_atom;
   }
 
@@ -1577,10 +1576,8 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
     capture_property(id, css_property_builder);
   }
 
-  if (RuntimeEnabledFeatures::NestedViewTransitionEnabled()) {
-    for (CSSPropertyID id : kPropertiesToCaptureOnGroupChildren) {
-      capture_property(id, group_children_css_property_builder);
-    }
+  for (CSSPropertyID id : kPropertiesToCaptureOnGroupChildren) {
+    capture_property(id, group_children_css_property_builder);
   }
 
   auto css_properties = std::move(css_property_builder).Finish();

@@ -6271,7 +6271,6 @@
       field_template: "external",
       keywords: ["normal", "contain", "nearest"],
       typedom_types: ["Keyword"],
-      runtime_flag: "NestedViewTransition",
     },
     {
       name: "view-transition-name",
