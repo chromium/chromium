@@ -3806,12 +3806,6 @@ deps = {
       'condition': 'checkout_clusterfuzz_data and checkout_src_internal',
   },
 
-  'src/third_party/android_tools_internal': {
-      'url': Var('chrome_git') + '/clank/third_party/android_tools.git' + '@' +
-        'ab59dfd133386420a319a194c9ac6f5cae802471',
-      'condition': 'checkout_android and checkout_src_internal',
-  },
-
   'src/third_party/screen-ai/linux': {
       'packages': [
           {

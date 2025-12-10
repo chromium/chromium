@@ -71,7 +71,6 @@ per-file signing_keys=*
 per-file skia/tools/clusterfuzz-data=*
 per-file third_party/android_prebuilts/build_tools=*
 per-file third_party/android_protobuf/src=*
-per-file third_party/android_tools_internal=*
 per-file third_party/androidx_javascriptengine/src=*
 per-file third_party/angle=*
 per-file third_party/anonymous_tokens/src=*
