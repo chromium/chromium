@@ -191,7 +191,12 @@ bool IsValidButUnsupportedAsAttribute(const String& as) {
          as == "video" || as == "worker" || as == "xslt";
 }
 
-bool IsNetworkHintAllowed(PreloadHelper::LoadLinksFromHeaderMode mode) {
+bool IsNetworkHintAllowed(PreloadHelper::LoadLinksFromHeaderMode mode,
+                          bool is_header_on_subresource) {
+  if (is_header_on_subresource &&
+      blink::features::kRestrictLinkHeaderOnSubresourceNetworkHint.Get()) {
+    return false;
+  }
   switch (mode) {
     case PreloadHelper::LoadLinksFromHeaderMode::kDocumentBeforeCommit:
       return true;
@@ -211,7 +216,12 @@ bool IsNetworkHintAllowed(PreloadHelper::LoadLinksFromHeaderMode mode) {
 }
 
 bool IsResourceLoadAllowed(PreloadHelper::LoadLinksFromHeaderMode mode,
-                           bool is_viewport_dependent) {
+                           bool is_viewport_dependent,
+                           bool is_header_on_subresource) {
+  if (is_header_on_subresource &&
+      blink::features::kRestrictLinkHeaderOnSubresourceResourceLoad.Get()) {
+    return false;
+  }
   switch (mode) {
     case PreloadHelper::LoadLinksFromHeaderMode::kDocumentBeforeCommit:
       return false;
@@ -231,7 +241,13 @@ bool IsResourceLoadAllowed(PreloadHelper::LoadLinksFromHeaderMode mode,
 }
 
 bool IsCompressionDictionaryLoadAllowed(
-    PreloadHelper::LoadLinksFromHeaderMode mode) {
+    PreloadHelper::LoadLinksFromHeaderMode mode,
+    bool is_header_on_subresource) {
+  if (is_header_on_subresource &&
+      blink::features::kRestrictLinkHeaderOnSubresourceCompressionDictionary
+          .Get()) {
+    return false;
+  }
   // Document header can trigger dictionary load after the page load completes.
   // Subresources header can trigger dictionary load if it is not from the
   // memory cache.
@@ -828,11 +844,12 @@ void PreloadHelper::LoadLinksFromHeader(
     if (!header.Valid() || header.Url().empty() || header.Rel().empty()) {
       continue;
     }
-    bool is_network_hint_allowed = IsNetworkHintAllowed(mode);
-    bool is_resource_load_allowed =
-        IsResourceLoadAllowed(mode, header.IsViewportDependent());
+    bool is_network_hint_allowed =
+        IsNetworkHintAllowed(mode, is_subresource_load);
+    bool is_resource_load_allowed = IsResourceLoadAllowed(
+        mode, header.IsViewportDependent(), is_subresource_load);
     bool is_compression_dictionary_load_allowed =
-        IsCompressionDictionaryLoadAllowed(mode);
+        IsCompressionDictionaryLoadAllowed(mode, is_subresource_load);
     if (!is_network_hint_allowed && !is_resource_load_allowed &&
         !is_compression_dictionary_load_allowed) {
       // Skip this `header`; it won't initiate any types of preloading.
@@ -855,6 +872,10 @@ void PreloadHelper::LoadLinksFromHeader(
       ukm::builders::Blink_Preloading_ByLinkHeader(document->UkmSourceID())
           .SetOriginStatusOnSubresource(base::to_underlying(origin_status))
           .Record(document->UkmRecorder());
+    }
+    if (is_subresource_load && !from_same_origin &&
+        blink::features::kRestrictLinkHeaderOnSubresourceCrossOrigin.Get()) {
+      continue;
     }
 
     // For security purposes, set `referrerpolicy: "no-referrer"` in link loads

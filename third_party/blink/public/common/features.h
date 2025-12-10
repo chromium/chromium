@@ -1616,6 +1616,27 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kResourceFetcherStoresStrongReferences);
 
+// Aggregated flag for the restriction on HTTP Link headers on subresource
+// responses. See crbug.com/417529151 for details.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRestrictLinkHeaderOnSubresource);
+// Disables only "rel=compression-dictionary".
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kRestrictLinkHeaderOnSubresourceCompressionDictionary);
+// Disables all types of chained-preloads from cross-origin subresource
+// responses.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kRestrictLinkHeaderOnSubresourceCrossOrigin);
+// Disables "rel=dns-prefetch" and "rel=preconnect".
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kRestrictLinkHeaderOnSubresourceNetworkHint);
+// Disables "rel=preload", "rel=modulepreload", and "rel=prefetch".
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kRestrictLinkHeaderOnSubresourceResourceLoad);
+
 // When enabled, it adds Payto URI Scheme to the safe list for
 // registerProtocolHandler. This feature is disabled by default
 // Payto URI Scheme explanation https://datatracker.ietf.org/doc/html/rfc8905
