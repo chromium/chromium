@@ -975,6 +975,9 @@ public final class ProductionSupportedFlagList {
                         + " asynchronous, in addition to stopping multiprocess enabled checks from"
                         + " starting chromium."),
         Flag.commandLine(
+                AwSwitches.WEBVIEW_STOP_BROWSER_STARTUP_IN_IS_MULTI_PROCESS_ENABLED,
+                "Stop browser startup in isMultiProcessEnabled."),
+        Flag.commandLine(
                 AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR,
                 "When enabled, WebView constructor will not block on WebView process global"
                         + " startup"),

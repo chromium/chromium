@@ -61,6 +61,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewReducedSeedRequestPeriod,
     &features::kWebViewSkipInterceptsForPrefetch,
     &features::kWebViewStartupTasksYieldToNative,
+    &features::kWebViewStopBrowserStartupInIsMultiProcessEnabled,
     &features::kWebViewTestFeature,
     &features::kWebViewUseInitialNetworkStateAtStartup,
     &features::kWebViewUseMetricsUploadServiceOnlySdkRuntime,

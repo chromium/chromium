@@ -113,6 +113,10 @@ const char kWebViewStartupTasksYieldToNative[] =
 const char kWebViewStartupTasksPlusMultiProcess[] =
     "webview-startup-tasks-plus-multi-process";
 
+// Stop browser startup in isMultiProcessEnabled.
+const char kWebViewStopBrowserStartupInIsMultiProcessEnabled[] =
+    "webview-stop-browser-startup-in-is-multi-process-enabled";
+
 const char kStartupNonBlockingWebViewConstructor[] =
     "startup-non-blocking-webview-constructor";
 

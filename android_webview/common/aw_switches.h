@@ -36,6 +36,7 @@ extern const char kWebViewRendererLibraryPrefetch[];
 extern const char kWebViewRendererLibraryPrefetchDisabled[];
 extern const char kWebViewRendererLibraryPrefetchEnabled[];
 extern const char kWebViewStartupTasksPlusMultiProcess[];
+extern const char kWebViewStopBrowserStartupInIsMultiProcessEnabled[];
 
 }  // namespace switches
 
