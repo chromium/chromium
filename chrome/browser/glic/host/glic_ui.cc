@@ -269,6 +269,22 @@ WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)
 
 GlicUI::~GlicUI() = default;
 
+// static
+GlicUI* GlicUI::From(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  content::WebUI* web_ui = web_contents->GetWebUI();
+  if (!web_ui) {
+    return nullptr;
+  }
+  content::WebUIController* controller = web_ui->GetController();
+  if (!controller || !controller->GetType()) {
+    return nullptr;
+  }
+  return controller->GetAs<GlicUI>();
+}
+
 void GlicUI::BindInterface(
     mojo::PendingReceiver<glic::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();

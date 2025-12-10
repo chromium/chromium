@@ -70,20 +70,20 @@ void WebUIContentsContainer::AttachToHost(Host* host) {
   // This is only allowed to be called once.
   CHECK(!host_);
   host_ = host;
-  auto* glic_ui =
-      static_cast<GlicUI*>(web_contents_->GetWebUI()->GetController());
-  glic_ui->AttachToHost(host);
+  if (auto* glic_ui = GlicUI::From(web_contents_.get())) {
+    glic_ui->AttachToHost(host);
+  }
 }
 
 void WebUIContentsContainer::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (host_ && navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->HasCommitted()) {
-    // Re-attach to the (possibly new) GlicUI.
-    if (auto* glic_ui =
-            static_cast<GlicUI*>(web_contents_->GetWebUI()->GetController())) {
-      glic_ui->AttachToHost(host_);
-    }
+  if (!host_ || !navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+  // Re-attach to the (possibly new) GlicUI.
+  if (auto* glic_ui = GlicUI::From(web_contents_.get())) {
+    glic_ui->AttachToHost(host_);
   }
 }
 

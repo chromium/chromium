@@ -38,6 +38,10 @@ class GlicUI : public ui::MojoWebUIController,
   explicit GlicUI(content::WebUI* web_ui);
   ~GlicUI() override;
 
+  // Returns the GlicUI controller for the given WebContents, or nullptr if it
+  // doesn't exist or is not a GlicUI.
+  static GlicUI* From(content::WebContents* web_contents);
+
   void BindInterface(
       mojo::PendingReceiver<glic::mojom::PageHandlerFactory> receiver);
 
