@@ -43,12 +43,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -79,7 +76,6 @@ import java.util.function.Supplier;
 /** Tests for ArchivedTabsMessageService. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
 public class ArchivedTabsMessageServiceUnitTest {
     private static final int TIME_DELTA_DAYS = 10;
     private static final int INITIAL_TAB_COUNT = 0;
@@ -253,7 +249,6 @@ public class ArchivedTabsMessageServiceUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
     public void testObserverInitialized() {
         createArchivedTabsMessageService();
         mTabListCoordinatorSupplier.set(null);
@@ -264,7 +259,6 @@ public class ArchivedTabsMessageServiceUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_ARCHIVAL_DRAG_DROP_ANDROID)
     public void testOnDropListener() {
         createArchivedTabsMessageService();
         mTabListCoordinatorSupplier.set(null);

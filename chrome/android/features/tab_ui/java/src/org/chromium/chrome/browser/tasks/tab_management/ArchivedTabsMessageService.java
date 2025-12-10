@@ -29,7 +29,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -195,7 +194,6 @@ public class ArchivedTabsMessageService
                     if (tabListCoordinator == null) return;
                     tabListCoordinator.addTabListItemSizeChangedObserver(
                             mTabListItemSizeChangedObserver);
-                    if (!ChromeFeatureList.sTabArchivalDragDropAndroid.isEnabled()) return;
 
                     tabListCoordinator.setOnDropOnArchivalMessageCardEventListener(
                             tabId -> {
