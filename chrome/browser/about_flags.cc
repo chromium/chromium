@@ -871,6 +871,8 @@ const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonNone[] = {
     {"AddContextButtonVariant", "none"},
     {"ShowCreateImageTool", "true"},
     {"ShowToolsAndModels", "true"},
+    {"ShowVoiceSearchInSteadyComposebox","true"},
+    {"ShowVoiceSearchInExpandedComposebox","true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
@@ -878,6 +880,8 @@ const FeatureEntry::FeatureParam
         {"ShowCreateImageTool", "true"},
         {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
+        {"ShowVoiceSearchInSteadyComposebox","true"},
+        {"ShowVoiceSearchInExpandedComposebox","true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
@@ -885,6 +889,8 @@ const FeatureEntry::FeatureParam
         {"ShowCreateImageTool", "true"},
         {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
+        {"ShowVoiceSearchInSteadyComposebox","true"},
+        {"ShowVoiceSearchInExpandedComposebox","true"},
 };
 const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
     {
@@ -892,6 +898,8 @@ const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
         {"ShowCreateImageTool", "true"},
         {"ShowRecentTabChip", "true"},
         {"ShowToolsAndModels", "true"},
+        {"ShowVoiceSearchInSteadyComposebox","true"},
+        {"ShowVoiceSearchInExpandedComposebox","true"},
 };
 const FeatureEntry::FeatureParam
     kWebUIOmniboxAimPopupAddContextButtonMultiFile[] = {

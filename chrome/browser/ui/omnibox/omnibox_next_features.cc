@@ -308,6 +308,14 @@ const base::FeatureParam<bool> kShowToolsAndModels(
     &internal::kWebUIOmniboxAimPopup,
     "ShowToolsAndModels",
     false);
+const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(
+    &internal::kWebUIOmniboxAimPopup,
+    "ShowVoiceSearchInSteadyComposebox",
+    false);
+const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
+    &internal::kWebUIOmniboxAimPopup,
+    "ShowVoiceSearchInExpandedComposebox",
+    false);
 const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage(
     &internal::kWebUIOmniboxAimPopup,
     "SuppressLnsSurfaceParamIfNoImage",
