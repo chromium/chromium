@@ -125,7 +125,7 @@ ActionChipPtr CreateStaticRecentTabChip(TabInfoPtr tab) {
 
 const ActionChipPtr& GetStaticDeepSearchChip() {
   static const base::NoDestructor<ActionChipPtr> kInstance(ActionChip::New(
-      /*title=*/"Research a topic",
+      /*title=*/"Deep Search",
       /*suggestion=*/"Dive deep into something new",
       /*type=*/ChipType::kDeepSearch, /*tab=*/nullptr));
   return *kInstance;

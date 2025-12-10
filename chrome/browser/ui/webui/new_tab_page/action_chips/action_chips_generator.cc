@@ -127,7 +127,7 @@ ActionChipPtr CreateDeepSearchChip(std::string_view suggestion) {
   ActionChipPtr chip = ActionChip::New();
   chip->type = ChipType::kDeepSearch;
   chip->title =
-      l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_DEEP_SEARCH_HEADING);
+      l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_DEEP_SEARCH);
   chip->suggestion =
       !suggestion.empty()
           ? suggestion
