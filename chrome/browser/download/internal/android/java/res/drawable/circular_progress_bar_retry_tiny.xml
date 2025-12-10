@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:drawable="@drawable/ic_refresh_white_24dp" />
+    <item android:drawable="@drawable/ic_refresh_24dp" />
     <item>
         <shape
             android:innerRadius="14dp"

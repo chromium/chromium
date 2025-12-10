@@ -59,7 +59,7 @@ found in the LICENSE file.
         <item name="indeterminateProgress">@drawable/circular_progress_bar_indeterminate_small</item>
         <item name="determinateProgress">@drawable/circular_progress_bar_determinate_small</item>
         <item name="resumeSrc">@drawable/ic_play_arrow_white_24dp</item>
-        <item name="retrySrc">@drawable/ic_refresh_white_24dp</item>
+        <item name="retrySrc">@drawable/ic_refresh_24dp</item>
         <item name="pauseSrc">@drawable/ic_pause_white_24dp</item>
     </style>
     <style name="LargeCircularProgress">
@@ -71,7 +71,7 @@ found in the LICENSE file.
         <item name="indeterminateProgress">@drawable/circular_progress_bar_indeterminate_large</item>
         <item name="determinateProgress">@drawable/circular_progress_bar_determinate_large</item>
         <item name="resumeSrc">@drawable/ic_file_download_36dp</item>
-        <item name="retrySrc">@drawable/ic_refresh_white_36dp</item>
+        <item name="retrySrc">@drawable/ic_refresh_36dp</item>
         <item name="pauseSrc">@drawable/ic_pause_white_36dp</item>
     </style>
     <style name="LargeMediaPlayButton">
