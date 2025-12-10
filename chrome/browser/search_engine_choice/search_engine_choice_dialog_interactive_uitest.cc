@@ -115,8 +115,10 @@ class SearchEngineChoiceDialogInteractiveUiTest
   base::UserActionTester user_action_tester_;
 };
 
-// TODO(crbug.com/431780231): Flaky on mac bots.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/431780231): Flaky on mac bots and chromeOS bots.
+#if BUILDFLAG(IS_MAC) ||       \
+    (BUILDFLAG(IS_CHROMEOS) && \
+     (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)))
 #define MAYBE_ChooseSearchEngine DISABLED_ChooseSearchEngine
 #else
 #define MAYBE_ChooseSearchEngine ChooseSearchEngine
