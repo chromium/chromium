@@ -81,8 +81,7 @@ using chrome_test_util::ForwardButton;
   [ChromeEarlGrey evaluateJavaScriptForSideEffect:clickLinkScript];
 
   // Verify that the resulting page is chrome://terms.
-  GREYAssert(WaitForOmniboxURLString(kChromeUITermsURL),
-             @"Omnibox does not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUITermsURL)];
   const std::string kTermsText = "Terms of Service";
   [ChromeEarlGrey waitForWebStateContainingText:kTermsText];
 }
@@ -100,8 +99,7 @@ using chrome_test_util::ForwardButton;
   [ChromeEarlGrey evaluateJavaScriptForSideEffect:clickLinkScript];
 
   // Verify that the resulting page is chrome://version.
-  GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIVersionURL)];
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                         IDS_IOS_ABOUT_VERSION_COMPANY_NAME)];
@@ -109,8 +107,7 @@ using chrome_test_util::ForwardButton;
   // Tap the back button in the toolbar and verify that the resulting page is
   // the previously visited page chrome://chrome-urls.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  GREYAssert(WaitForOmniboxURLString(kChromeUIChromeURLsURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIChromeURLsURL)];
   [ChromeEarlGrey waitForWebStateContainingText:"List of Chrome URLs"];
 }
 
@@ -126,29 +123,25 @@ using chrome_test_util::ForwardButton;
   // Tap the back button in the toolbar and verify that the resulting page's URL
   // corresponds to the first URL chrome://version that was loaded.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIVersionURL)];
 
   // Tap the forward button in the toolbar and verify that the resulting page's
   // URL corresponds the second URL chrome://chrome-urls that was loaded.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  GREYAssert(WaitForOmniboxURLString(kChromeUIChromeURLsURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIChromeURLsURL)];
 
   // Tap the back button in the toolbar then reload, and verify that the
   // resulting page corresponds to the first URL.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey reload];
-  GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIVersionURL)];
 
   // Make sure forward navigation is still possible.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  GREYAssert(WaitForOmniboxURLString(kChromeUIChromeURLsURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIChromeURLsURL)];
 }
 
 // Tests that all URLs on chrome://chrome-urls page load without error.
@@ -162,20 +155,18 @@ using chrome_test_util::ForwardButton;
     GURL URL = WebUIPageUrlWithHost(host);
     [ChromeEarlGrey loadURL:URL];
 
-    GREYAssert(WaitForOmniboxURLString(URL.spec()),
-               @"Omnibox did not contain URL.");
+    [ChromeEarlGrey waitForWebStateVisibleURL:URL];
   }
 }
 
 // Tests that loading an invalid Chrome URL results in an error page.
 - (void)testChromeURLInvalid {
   // Navigate to the native error page chrome://invalidchromeurl.
-  const std::string kChromeInvalidURL = "chrome://invalidchromeurl";
-  [ChromeEarlGrey loadURL:GURL(kChromeInvalidURL)];
+  GURL kChromeInvalidURL = WebUIPageUrlWithHost("invalidchromeurl");
+  [ChromeEarlGrey loadURL:kChromeInvalidURL];
 
   // Verify that the resulting page is an error page.
-  GREYAssert(WaitForOmniboxURLString(kChromeInvalidURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:kChromeInvalidURL];
   std::string errorMessage = net::ErrorToShortString(net::ERR_INVALID_URL);
   [ChromeEarlGrey waitForWebStateContainingText:errorMessage];
 }
@@ -188,10 +179,9 @@ using chrome_test_util::ForwardButton;
       l10n_util::GetStringUTF8(IDS_IOS_ABOUT_VERSION_COMPANY_NAME);
   const char kWebPageText[] = "pony";
 
-  [ChromeEarlGrey loadURL:GURL(kChromeUIVersionURL)];
-
-  GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
-             @"Omnibox did not contain URL.");
+  GURL chromeUIVersionGURL = GURL(kChromeUIVersionURL);
+  [ChromeEarlGrey loadURL:chromeUIVersionGURL];
+  [ChromeEarlGrey waitForWebStateVisibleURL:chromeUIVersionGURL];
   [ChromeEarlGrey waitForWebStateContainingText:chromeVersionWebText];
 
   GURL webURL = self.testServer->GetURL("/pony.html");
@@ -199,16 +189,14 @@ using chrome_test_util::ForwardButton;
   [ChromeEarlGrey waitForWebStateContainingText:kWebPageText];
 
   [ChromeEarlGrey goBack];
-  GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:chromeUIVersionGURL];
   [ChromeEarlGrey waitForWebStateContainingText:chromeVersionWebText];
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:kWebPageText];
 
   [ChromeEarlGrey goBack];
-  GREYAssert(WaitForOmniboxURLString(kChromeUIVersionURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:chromeUIVersionGURL];
   [ChromeEarlGrey waitForWebStateContainingText:chromeVersionWebText];
 }
 
@@ -216,8 +204,7 @@ using chrome_test_util::ForwardButton;
   // Start with NTP and load chrome://flags.
   [ChromeEarlGrey loadURL:GURL(kChromeUIFlagsURL)];
 
-  GREYAssert(WaitForOmniboxURLString(kChromeUIFlagsURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIFlagsURL)];
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Experiments"];
@@ -252,8 +239,7 @@ using chrome_test_util::ForwardButton;
   // Then load chrome://flags in the same tab that has loaded a website.
   [ChromeEarlGrey loadURL:WebUIPageUrlWithHost(kChromeUIFlagsHost)];
 
-  GREYAssert(WaitForOmniboxURLString(kChromeUIFlagsURL),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIFlagsURL)];
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Experiments"];
@@ -279,8 +265,7 @@ using chrome_test_util::ForwardButton;
   GURL URL = WebUIPageUrlWithHost(kChromeUIPasswordManagerInternalsHost);
   [ChromeEarlGrey loadURL:URL];
 
-  GREYAssert(WaitForOmniboxURLString(URL.spec()),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Variations"];
@@ -293,8 +278,7 @@ using chrome_test_util::ForwardButton;
 
   // Autofill-Internals stores the log filter configuration in the URL's
   // fragment identifier (after the hash).
-  GREYAssert(WaitForOmniboxURLString(URL.spec(), false),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Variations"];
@@ -314,8 +298,7 @@ using chrome_test_util::ForwardButton;
 
   // Autofill-Internals stores the log filter configuration in the URL's
   // fragment identifier (after the hash).
-  GREYAssert(WaitForOmniboxURLString(URL.spec()),
-             @"Omnibox did not contain URL");
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"List of user defaults:"];
@@ -335,8 +318,7 @@ using chrome_test_util::ForwardButton;
 
   // Autofill-Internals stores the log filter configuration in the URL's
   // fragment identifier (after the hash).
-  GREYAssert(WaitForOmniboxURLString(URL.spec()),
-             @"Omnibox did not contain URL");
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:

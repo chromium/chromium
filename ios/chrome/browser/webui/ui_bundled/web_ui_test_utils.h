@@ -15,9 +15,4 @@ class GURL;
 // invalid URL.
 GURL WebUIPageUrlWithHost(std::string_view host);
 
-// Waits for omnibox text to equal (if `exact_match`) or contain (else) `URL`
-// and returns true if it was found or false on timeout. Strips trailing URL
-// slash if present as the omnibox does not display them.
-bool WaitForOmniboxURLString(std::string_view url, bool exact_match = true);
-
 #endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_WEB_UI_TEST_UTILS_H_
