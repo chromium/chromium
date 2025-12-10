@@ -67,7 +67,16 @@ std::unique_ptr<ui::GbmDevice> CreateX11GbmDevice() {
   return ui::CreateGbmDevice(fd.release());
 }
 
-std::vector<gfx::BufferUsageAndFormat> CreateSupportedConfigList(
+}  // namespace
+
+// static
+GBMSupportX11* GBMSupportX11::GetInstance() {
+  static base::NoDestructor<GBMSupportX11> instance;
+  return instance.get();
+}
+
+// static
+std::vector<gfx::BufferUsageAndFormat> GBMSupportX11::CreateSupportedConfigList(
     ui::GbmDevice* device) {
   if (!device) {
     return {};
@@ -109,14 +118,6 @@ std::vector<gfx::BufferUsageAndFormat> CreateSupportedConfigList(
     }
   }
   return configs;
-}
-
-}  // namespace
-
-// static
-GBMSupportX11* GBMSupportX11::GetInstance() {
-  static base::NoDestructor<GBMSupportX11> instance;
-  return instance.get();
 }
 
 GBMSupportX11::GBMSupportX11()

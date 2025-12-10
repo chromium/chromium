@@ -48,6 +48,9 @@ class COMPONENT_EXPORT(GBM_SUPPORT_X11) GBMSupportX11 {
  private:
   friend class base::NoDestructor<GBMSupportX11>;
 
+  static std::vector<gfx::BufferUsageAndFormat> CreateSupportedConfigList(
+      ui::GbmDevice* device);
+
   GBMSupportX11();
 
   const std::unique_ptr<GbmDevice> device_;
