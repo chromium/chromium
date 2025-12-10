@@ -9,7 +9,7 @@ import type {AppElement} from './app.js';
 export function getHtml(this: AppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="appFlexParent" @keydown="${this.onKeyDown_}">
+<div id="appFlexParent">
   <div id="toolbar-container">
     <read-anything-toolbar
         .isSpeechActive="${this.isSpeechActive_}"

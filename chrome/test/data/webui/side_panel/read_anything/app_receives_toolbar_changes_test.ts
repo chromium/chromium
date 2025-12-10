@@ -293,7 +293,7 @@ suite('AppReceivesToolbarChanges', () => {
       });
 
       test('first press plays', async () => {
-        app.$.appFlexParent.dispatchEvent(kPress);
+        document.dispatchEvent(kPress);
         await microtasksFinished();
 
         assertTrue(speechController.isSpeechActive());
@@ -301,8 +301,8 @@ suite('AppReceivesToolbarChanges', () => {
       });
 
       test('second press pauses', async () => {
-        app.$.appFlexParent.dispatchEvent(kPress);
-        app.$.appFlexParent.dispatchEvent(kPress);
+        document.dispatchEvent(kPress);
+        document.dispatchEvent(kPress);
         await microtasksFinished();
 
         assertFalse(speechController.isSpeechActive());
@@ -313,7 +313,7 @@ suite('AppReceivesToolbarChanges', () => {
 
       test('other key presses do not play', async () => {
         const fPress = new KeyboardEvent('keydown', {key: 'f'});
-        app.$.appFlexParent.dispatchEvent(fPress);
+        document.dispatchEvent(fPress);
         await microtasksFinished();
 
         assertFalse(speechController.isSpeechActive());

@@ -214,6 +214,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
       return false;
     };
 
+    document.onkeydown = this.onKeyDown_.bind(this);
+
     /////////////////////////////////////////////////////////////////////
     // Called by ReadAnythingUntrustedPageHandler via callback router. //
     /////////////////////////////////////////////////////////////////////
