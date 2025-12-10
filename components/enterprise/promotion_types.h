@@ -8,8 +8,7 @@
 namespace enterprise {
 
 // This enum is used to store which enterprise promotion should be shown. It
-// is stored as an integer in the preferences. This enum is used for
-// histogram recording and should not be renumbered.
+// is stored as an integer in the preferences.
 // LINT.IfChange(PromotionType)
 enum class PromotionType {
   kUnspecified = 0,
@@ -18,6 +17,13 @@ enum class PromotionType {
   kMaxValue = kChromeEnterprisePremium,
 };
 // LINT.ThenChange(//components/policy/proto/device_management_backend.proto:PromotionType)
+
+// This enum is used for histogram recording and should not be renumbered.
+enum class CwsPromotionBannerEvent {
+  kDisplayed = 0,
+  kClicked = 1,
+  kMaxValue = kClicked,
+};
 
 }  // namespace enterprise
 
