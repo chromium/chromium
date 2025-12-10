@@ -1142,6 +1142,9 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <!-- NTP strings -->
+      <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_YOUR_CHROME" desc="The label for the category of actions that involve your Chrome data, such as opening the password manager or clearing browsing data.">
+        Your Chrome
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_BUTTON_LABEL" desc="Label for button on the New Tab Page that opens dialog to customize Chrome browser.">
         Customize Chrome
       </message>
