@@ -62,8 +62,6 @@
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
 #import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_coordinator.h"
 #import "ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
@@ -122,7 +120,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     LocationBarSteadyViewConsumer,
     LocationBarViewControllerDelegate,
     WebLocationBarDelegate,
-    OmniboxStateProvider,
     URLDragDataSource> {
   // API endpoint for omnibox.
   std::unique_ptr<WebLocationBarImpl> _locationBar;
@@ -410,14 +407,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   _omniboxFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.viewController);
-
-  OmniboxPositionBrowserAgent* omniboxPositionBrowserAgent =
-      OmniboxPositionBrowserAgent::FromBrowser(self.browser);
-  /// The location bar is the OmniboxStateProvider because omnibox is used both
-  /// in browser and lens overlay.
-  if (omniboxPositionBrowserAgent) {
-    omniboxPositionBrowserAgent->SetOmniboxStateProvider(self);
-  }
 
   AutocompleteBrowserAgent* autocompleteBrowserAgent =
       AutocompleteBrowserAgent::FromBrowser(self.browser);

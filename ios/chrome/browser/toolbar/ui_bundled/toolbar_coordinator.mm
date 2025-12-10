@@ -523,6 +523,12 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [self.toolbarMediator didNavigateToNTPOnActiveWebState];
 }
 
+#pragma mark - OmniboxStateProvider
+
+- (BOOL)isOmniboxFocused {
+  return [self.locationBarCoordinator isOmniboxFocused];
+}
+
 #pragma mark - PopupMenuUIUpdating
 
 - (void)updateUIForOverflowMenuIPHDisplayed {

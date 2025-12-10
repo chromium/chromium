@@ -7,6 +7,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/composebox/public/composebox_animation_base.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/public/popup_menu_ui_updating.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
@@ -24,6 +25,7 @@
 /// which one specifically send the call.
 @interface ToolbarCoordinator
     : ChromeCoordinator <FakeboxFocuser,
+                         OmniboxStateProvider,
                          PopupMenuUIUpdating,
                          SideSwipeToolbarSnapshotProviding,
                          ToolbarCoordinating,
