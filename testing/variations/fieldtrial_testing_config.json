@@ -12631,6 +12631,21 @@
             ]
         }
     ],
+    "HeliosOnboardingCards": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiOnboardingCards"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosZeroStateSuggestions": [
         {
             "platforms": [
