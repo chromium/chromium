@@ -76,6 +76,9 @@ class WebStateList;
 // Returns the main filling product of the current FormInputSuggestionsProvider.
 - (autofill::FillingProduct)currentProviderMainFillingProduct;
 
+// Retrieves the first responder and reloads its input views if possible.
+- (void)reloadFirstResponderInputViews;
+
 @end
 
 // Methods to allow injection in tests.

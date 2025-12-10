@@ -115,16 +115,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
   }
 }
 
-// Returns yes if input views can be reloaded.
-bool CanReloadInputViews() {
-  // Do not allow reloading input views in the background when skipping that in
-  // the background is enabled.
-  return !base::FeatureList::IsEnabled(
-             kFormInputAccessorySkipInputViewReloadInBackground) ||
-         UIApplication.sharedApplication.applicationState ==
-             UIApplicationStateActive;
-}
-
 }  // namespace
 
 @interface FormInputAccessoryCoordinator () <
@@ -270,7 +260,7 @@ bool CanReloadInputViews() {
     [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
     [self.formInputAccessoryTapRecognizer.view
         removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
-    [self maybeReloadInputViews];
+    [_formInputAccessoryMediator reloadFirstResponderInputViews];
   }
 
   _formInputAccessoryViewController = nil;
@@ -288,7 +278,7 @@ bool CanReloadInputViews() {
 - (void)reset {
   [self stopChildren];
   [self resetInputViews];
-  [self maybeReloadInputViews];
+  [_formInputAccessoryMediator reloadFirstResponderInputViews];
 }
 
 #pragma mark - Presenting Children
@@ -336,7 +326,7 @@ bool CanReloadInputViews() {
     [expandedManualFillCoordinator presentFromButton:button];
   } else {
     self.formInputViewController = expandedManualFillCoordinator.viewController;
-    [self maybeReloadInputViews];
+    [_formInputAccessoryMediator reloadFirstResponderInputViews];
   }
 
   [self.childCoordinators addObject:expandedManualFillCoordinator];
@@ -955,12 +945,6 @@ bool CanReloadInputViews() {
   id<SettingsCommands> settingsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
   [settingsHandler showPasswordDetailsForCredential:credential inEditMode:YES];
-}
-
-- (void)maybeReloadInputViews {
-  if (CanReloadInputViews()) {
-    [GetFirstResponder() reloadInputViews];
-  }
 }
 
 @end
