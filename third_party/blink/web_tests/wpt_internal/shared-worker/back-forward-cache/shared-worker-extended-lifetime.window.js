@@ -4,13 +4,16 @@
 // META: script=/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js
 // META: script=/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
 // META: script=/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js
+// META: script=resources/shared-worker-bfcache-helper.js
 
 promise_test(async t => {
   const rcHelper = new RemoteContextHelper();
   const workerUrl =
       '/wpt_internal/shared-worker/back-forward-cache/resources/writer-worker.js';
-  const DB_NAME = 'wpt-bfcache-test-db';
-  const STORE_NAME = 'store';
+  const DB_NAME = 'wpt-bfcache-extended-test' + Math.random();
+  const STORE_NAME = 'store' + Math.random();
+  const KEY = 'test_key' + Math.random();
+  const VALUE = 'test_value' + Math.random();
 
   const rc1 = await rcHelper.addWindow(
       /*config=*/ {}, /*options=*/ {features: 'noopener'});
@@ -26,8 +29,13 @@ promise_test(async t => {
   await assertSimplestScriptRuns(rc1Away);
 
   // Try to write to the DB from the worker.
-  bc.postMessage(
-      {command: 'try_to_write', dbName: DB_NAME, storeName: STORE_NAME});
+  bc.postMessage({
+    command: 'try_to_write',
+    dbName: DB_NAME,
+    storeName: STORE_NAME,
+    key: KEY,
+    value: VALUE
+  });
   await new Promise((resolve) => {
     bc.onmessage = e => {
       if (e.data === 'wrote_to_db')
@@ -36,17 +44,8 @@ promise_test(async t => {
   });
 
   // Get the value written to the DB.
-  const result = await new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, 1);
-      request.onsuccess = e => {
-        const db = e.target.result;
-        const tx = db.transaction(STORE_NAME, 'readonly');
-        tx.objectStore(STORE_NAME).get('key').onsuccess = e =>
-            resolve(e.target.result);
-      };
-      request.onerror = e => reject(e.target.error);
-    });
-  assert_equals(result, 'value');
+  const result = await getValueFromIndexedDB(DB_NAME, STORE_NAME, KEY);
+  assert_equals(result, VALUE);
 
   // Navigate back to restore the page with the worker from BFCache.
   await rc1Away.historyBack();
