@@ -116,6 +116,7 @@ extern NSString* const kIncognitoRectangle;
 // only.
 extern NSString* const kIncognitoCircleFillSymbol;
 extern NSString* const kPlusCircleFillSymbol;
+extern NSString* const kPDFFillSymbol;
 
 // Symbols available on iOS 18.0+.
 extern NSString* const kClockArrowTriangleheadCounterclockwiseRotate90Symbol

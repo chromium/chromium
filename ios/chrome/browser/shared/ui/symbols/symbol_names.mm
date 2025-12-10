@@ -123,6 +123,7 @@ NSString* const kIncognitoRectangle = @"incognito_rectangle";
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
+NSString* const kPDFFillSymbol = @"pdf_fill";
 
 // Custom symbols added for compatibility with iOS 15.0. These symbols are
 // available as system symbols on iOS 15.1+.

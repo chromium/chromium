@@ -11,9 +11,13 @@
 
 namespace {
 // The input item padding.
-const CGFloat kPadding = 10.0;
+const CGFloat kLeadingPadding = 10.0;
+// The side padding of the icon to the text.
+const CGFloat kIconTrailingPadding = 6.0;
 // The leading icon size.
 const CGFloat kLeadingIconSize = 16;
+// The intrinsic padding of the PDF icon image.
+const CGFloat kPDFIconIntrinsicPadding = 2;
 // The leading icon corner radius.
 const CGFloat kLeadingIconCornerRadius = 6.0;
 // Labels font size.
@@ -76,8 +80,21 @@ const CGFloat kTrailingMargin = 8.0;
     _previewImageView.image = item.previewImage;
   } else {
     if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeFile) {
-      _leadingIconImageView.image =
-          DefaultSymbolWithPointSize(kTextDocument, kLeadingIconSize);
+      UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+          configurationWithPointSize:kLeadingIconSize
+                              weight:UIImageSymbolWeightMedium
+                               scale:UIImageSymbolScaleLarge];
+      UIImage* pdfSymbol = SymbolWithPalette(
+          CustomSymbolWithConfiguration(kPDFFillSymbol, configuration),
+          @[ theme.pdfSymbolColor ]);
+      _leadingIconImageView.image = pdfSymbol;
+      // The PDF symbol has a 2 points intrinsice padding. To normalize it to
+      // `kLeadingIconSize`, apply a scale effect to the image view that does
+      // notdisturb the other constraints relative to the image.
+      CGFloat compensationScale =
+          kLeadingIconSize / (kLeadingIconSize - kPDFIconIntrinsicPadding);
+      _leadingIconImageView.transform = CGAffineTransformScale(
+          CGAffineTransformIdentity, compensationScale, compensationScale);
     } else if (item.type ==
                ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
       _leadingIconImageView.image =
@@ -163,7 +180,7 @@ const CGFloat kTrailingMargin = 8.0;
     // leading icon ImageView
     [_leadingIconImageView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
-                       constant:kPadding],
+                       constant:kLeadingPadding],
     [_leadingIconImageView.centerYAnchor
         constraintEqualToAnchor:self.centerYAnchor],
     [_leadingIconImageView.widthAnchor
@@ -174,7 +191,7 @@ const CGFloat kTrailingMargin = 8.0;
     // Title Label
     [_titleLabel.leadingAnchor
         constraintEqualToAnchor:_leadingIconImageView.trailingAnchor
-                       constant:kPadding],
+                       constant:kIconTrailingPadding],
     [_titleLabel.trailingAnchor
         constraintLessThanOrEqualToAnchor:self.trailingAnchor
                                  constant:-kTrailingMargin],

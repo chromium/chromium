@@ -51,6 +51,9 @@
 // The background color for the send button.
 - (UIColor*)sendButtonBackgroundColorHighlighted:(BOOL)highlighted;
 
+// The color of the PDF symbol.
+- (UIColor*)pdfSymbolColor;
+
 // Creates a newc instance with the given configuration
 - (instancetype)initWithInputPlatePosition:
                     (ComposeboxInputPlatePosition)position
