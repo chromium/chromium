@@ -22,7 +22,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.hamcrest.Matcher;
@@ -42,6 +41,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupCreatedCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -100,6 +100,9 @@ public class NewTabGroupDialogFacility<
             initTabGroupCreatedCondition();
         } else {
             titleInputElement = declareView(createTitleViewSpec(), inDialogOption());
+            declareEnterCondition(
+                    new TabGroupExistsCondition(
+                            getHostStation().tabGroupModelFilterElement, mTabIdsToGroup));
         }
 
         dialogElement =
@@ -133,7 +136,6 @@ public class NewTabGroupDialogFacility<
         doneButtonElement = declareView(withId(R.id.positive_button), inDialogOption());
     }
 
-    @NonNull
     private ViewSpec<View> createTitleViewSpec() {
         return viewSpec(
                 withId(R.id.title_input_text), isAssignableFrom(EditText.class), withText(mTitle));
