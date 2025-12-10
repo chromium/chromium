@@ -3633,6 +3633,13 @@
         {}
        ]
       ],
+      "block-in-inline-with-abspos-after-spanner.html": [
+       "e5bcb4e71e444013a27e000c02a4c19a918d15ad",
+       [
+        null,
+        {}
+       ]
+      ],
       "block-in-inline-with-spanner-in-overflowed-parent-nested-multicol.html": [
        "b75aad5bfc05fe6ffbb3e525d0907b5c348d1e94",
        [
@@ -139491,6 +139498,110 @@
          ],
          {}
         ]
+       ],
+       "grid-gap-decorations-fragmentation-020.html": [
+        "46fe020bb3cf82e18f948006ca1568062042ea37",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-020-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-fragmentation-021.html": [
+        "b81b7379658ad19b74b70de490d724d480f8f4e6",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-021-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-fragmentation-022.html": [
+        "8ae56ea9752075b48ac83daf6b2447d150513236",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-022-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-fragmentation-023.html": [
+        "ca1f97991712bbb20d84342f43190f8c46758dd0",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-023-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-fragmentation-024.html": [
+        "747e6bf2fb755a312976203ea717846f857ff98b",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-024-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-fragmentation-025.html": [
+        "261e090b41fddd33e842d31f563e526efa837877",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-025-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-fragmentation-026.html": [
+        "2eefae856d080f36e516c1494145e0360c863c7f",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-026-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "grid-gap-decorations-fragmentation-027.html": [
+        "ac386c2d49bcb986f4b44caffd767e589c0411c9",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-027-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "grid-gap-decorations-001.html": [
@@ -140341,7 +140452,7 @@
          ]
         ],
         "subgrid-gap-decorations-fragmentation-012.html": [
-         "a65e72d9b11e4b842927f71c7f0c01056311ac37",
+         "9edc0887f85cb06b74b5dedab82272fe2026a8ef",
          [
           null,
           [
@@ -140360,6 +140471,71 @@
           [
            [
             "/css/css-gaps/grid/subgrid/fragmentation/subgrid-gap-decorations-fragmentation-013-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "subgrid-gap-decorations-fragmentation-014.html": [
+         "dddc1f2c859cbb87674fb206e2549b5870ec1767",
+         [
+          null,
+          [
+           [
+            "/css/css-gaps/grid/subgrid/fragmentation/subgrid-gap-decorations-fragmentation-014-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "subgrid-gap-decorations-fragmentation-015.html": [
+         "bfcd458a4c1102f657d63f14ef556622d2b4ab4b",
+         [
+          null,
+          [
+           [
+            "/css/css-gaps/grid/subgrid/fragmentation/subgrid-gap-decorations-fragmentation-015-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "subgrid-gap-decorations-fragmentation-016.html": [
+         "b5a6cdd7d7435afd083c4d0411f60ac0b5f48d46",
+         [
+          null,
+          [
+           [
+            "/css/css-gaps/grid/subgrid/fragmentation/subgrid-gap-decorations-fragmentation-016-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "subgrid-gap-decorations-fragmentation-017.html": [
+         "e4a8482666940fb024ad8a8a221e40699aa41f1c",
+         [
+          null,
+          [
+           [
+            "/css/css-gaps/grid/subgrid/fragmentation/subgrid-gap-decorations-fragmentation-017-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "subgrid-gap-decorations-fragmentation-018.html": [
+         "abda0ac8df36157fe1ad4bf2f38461d7edf4d735",
+         [
+          null,
+          [
+           [
+            "/css/css-gaps/grid/subgrid/fragmentation/subgrid-gap-decorations-fragmentation-018-ref.html",
             "=="
            ]
           ],
@@ -170740,7 +170916,7 @@
         ]
        ],
        "clip-path-animation-retarget.html": [
-        "1e3624e73742ac29ed35d04b1750fcb71fad3ab3",
+        "5204c9c201b02255cb848cdf70b3143ee4d3f982",
         [
          null,
          [
@@ -170749,7 +170925,23 @@
            "=="
           ]
          ],
-         {}
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              10
+             ],
+             [
+              0,
+              30
+             ]
+            ]
+           ]
+          ]
+         }
         ]
        ],
        "clip-path-animation-revert-layer.html": [
@@ -170831,7 +171023,7 @@
         ]
        ],
        "clip-path-animation-start-time.html": [
-        "56ed807f4d05913ed6247dfed0c07187a0645b5e",
+        "116fddb258672c8bb17e1e5b0c17775aef6a5d18",
         [
          null,
          [
@@ -170840,7 +171032,23 @@
            "=="
           ]
          ],
-         {}
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              10
+             ],
+             [
+              0,
+              30
+             ]
+            ]
+           ]
+          ]
+         }
         ]
        ],
        "clip-path-animation-svg-zoom.html": [
@@ -370534,6 +370742,38 @@
        "grid-gap-decorations-fragmentation-017-ref.html": [
         "8f6172a89e80a747325b0155cca8f904e84078fb",
         []
+       ],
+       "grid-gap-decorations-fragmentation-020-ref.html": [
+        "2fb4fc899cbb58f53fa46900da99586545ccc31c",
+        []
+       ],
+       "grid-gap-decorations-fragmentation-021-ref.html": [
+        "59d4d2d6a30f5b7b413474fb735f15645f589d13",
+        []
+       ],
+       "grid-gap-decorations-fragmentation-022-ref.html": [
+        "9697d046828eacf05f837a8d39d8d0c4beb86823",
+        []
+       ],
+       "grid-gap-decorations-fragmentation-023-ref.html": [
+        "9a95d1de87c6422574e4687af5ddbdf7b0996d0e",
+        []
+       ],
+       "grid-gap-decorations-fragmentation-024-ref.html": [
+        "3f6acc00b952b6fae64064edb72d7d5278c59b80",
+        []
+       ],
+       "grid-gap-decorations-fragmentation-025-ref.html": [
+        "bc463a11cbf3d597b035eb417266e1f0250bfc3c",
+        []
+       ],
+       "grid-gap-decorations-fragmentation-026-ref.html": [
+        "424962f626b2777a836af68c24f903656603bcab",
+        []
+       ],
+       "grid-gap-decorations-fragmentation-027-ref.html": [
+        "973c49a5d29e506aae1041c7f319dccd3e3dc334",
+        []
        ]
       },
       "grid-gap-decorations-003-ref.html": [
@@ -370756,6 +370996,26 @@
         ],
         "subgrid-gap-decorations-fragmentation-013-ref.html": [
          "a6893986a1462c038091565efb90716d4d29c942",
+         []
+        ],
+        "subgrid-gap-decorations-fragmentation-014-ref.html": [
+         "fa4d2e946a721e4b0d4d57b032b2bdd59dc86cdb",
+         []
+        ],
+        "subgrid-gap-decorations-fragmentation-015-ref.html": [
+         "a7f51df03f51c9a1431a972cbefa6fd563e5ce1b",
+         []
+        ],
+        "subgrid-gap-decorations-fragmentation-016-ref.html": [
+         "79faac8117ec8ec30ac5dff0f327c0332a26a405",
+         []
+        ],
+        "subgrid-gap-decorations-fragmentation-017-ref.html": [
+         "6174269c6cd9f30aba89ea390f2c0b9dd3932c5c",
+         []
+        ],
+        "subgrid-gap-decorations-fragmentation-018-ref.html": [
+         "bf17b8f8c32d86d17c47da7346b9266c0f6d04e3",
          []
         ]
        },
@@ -393209,7 +393469,7 @@
      ],
      "resources": {
       "testhelper.js": [
-       "4c9ed78c78cb905c95fc98a6d07b53beb0bccca1",
+       "4007a1f094830b1193289786da150e4c8f31a08d",
        []
       ]
      },
@@ -415557,6 +415817,14 @@
         "4268f94f989bad188183f3e408015b5186886e0b",
         []
        ],
+       "origin-from-extendablemessageevent.any.serviceworker-expected.txt": [
+        "a6cf7e024c67e1770f89e751f174e9446ba8c8d4",
+        []
+       ],
+       "origin-from-messageevent.window-expected.txt": [
+        "493c84db2f616d09283d61bdf99a993cc89c3de1",
+        []
+       ],
        "resources": {
         "serializations.js": [
          "dec7fbdd1da7fee8422aa67e4bed073f4d362302",
@@ -425305,6 +425573,10 @@
         "a7142360eb190ab0466fca43bfeb7a068c043b1d",
         []
        ],
+       "WEB_FEATURES.yml": [
+        "b69cf9245fc74f09b1fd1f720ef6b21a66983e14",
+        []
+       ],
        "align-ref.html": [
         "9e4283e208e17e4f2cfed05882bb1aff276028ad",
         []
@@ -426283,6 +426555,20 @@
       "the-title-element": {
        "WEB_FEATURES.yml": [
         "f87a52f573f02b70c9434419f57cf0a3af933e86",
+        []
+       ]
+      }
+     },
+     "edits": {
+      "the-del-element": {
+       "WEB_FEATURES.yml": [
+        "6497c9da752f31783cba6d844f38657545ce0039",
+        []
+       ]
+      },
+      "the-ins-element": {
+       "WEB_FEATURES.yml": [
+        "9ab8483913082a4695f267532f91f291fd130143",
         []
        ]
       }
@@ -428484,6 +428770,12 @@
         []
        ]
       },
+      "the-hr-element": {
+       "WEB_FEATURES.yml": [
+        "b69cf9245fc74f09b1fd1f720ef6b21a66983e14",
+        []
+       ]
+      },
       "the-li-element": {
        "grouping-li-reftest-001-ref.html": [
         "23b6cdabe8054051356450636e910a636da87a41",
@@ -429182,6 +429474,10 @@
       ],
       "WEB_FEATURES.yml": [
        "c1175ff23c5d322f7dec1a7794ffafa5b95f6db6",
+       []
+      ],
+      "light-dismiss-event-ordering-expected.txt": [
+       "81bdb7e87105f0a8095560bf5642631242697da7",
        []
       ],
       "popover-alignment-001-ref.html": [
@@ -445131,6 +445427,10 @@
       "support.js": [
        "5467317cd01312968a4f5375e85c0b2b6de3b691",
        []
+      ],
+      "trigger-scope-support.js": [
+       "ca8723415ab8167b5d2aea63426fe20a4172f857",
+       []
       ]
      }
     },
@@ -450592,18 +450892,14 @@
       []
      ],
      "storage-access-beyond-cookies-iframe-iframe.html": [
-      "61d04834def4e5e66a6ba6e2a94dcaa03e7836cd",
+      "08edcf2d42b63ea237b8ad10aacd98e1c8ad8bc0",
       []
      ],
      "storage-access-beyond-cookies-iframe.sub.html": [
-      "775aaa3d7a699958afefc9a0ef4d037505d973ef",
+      "b50463a3b2ec8a47bdf64bc3f6cb34da6ea1a864",
       []
      ]
     },
-    "storage-access-beyond-cookies.unpartitioned.sub.https.window-expected.txt": [
-     "3efdb8f865284878c7452851b88079d4ce886b28",
-     []
-    ],
     "storageAccess.testdriver.sub-expected.txt": [
      "f2751aa9537c0eae2ee03c17422dde060cd2ab46",
      []
@@ -460875,7 +461171,7 @@
      []
     ],
     "getStats-remote-candidate-address-expected.txt": [
-     "f73ad23fc53014c79fb1d0aa11ece0ab1c2f8ff1",
+     "2142d322389d22fc393beaa11d6a71a798ee7259",
      []
     ],
     "supported-stats.https-expected.txt": [
@@ -575230,6 +575526,19 @@
     },
     "observable": {
      "tentative": {
+      "crashtests": {
+       "observable-takeUntil-toArray.any.js": [
+        "df877d944456967365b754de2487167294325ff9",
+        [
+         "dom/observable/tentative/crashtests/observable-takeUntil-toArray.any.html",
+         {}
+        ],
+        [
+         "dom/observable/tentative/crashtests/observable-takeUntil-toArray.any.worker.html",
+         {}
+        ]
+       ]
+      },
       "idlharness.html": [
        "ea8743528f67ac0bc9154f82b3c391bbc96eb20f",
        [
@@ -595077,6 +595386,24 @@
     ],
     "first-input-shadow-dom.html": [
      "5911dabd54e65f34b04eb40f2e99dd0089047e66",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "gap-keydown-keyup.html": [
+     "b2daa0278763772537c76f7d3c22fe818608b27d",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "gap-pointerdown-pointerup.html": [
+     "46723b4b01fb500d2a015ba64b54382ec06da9a4",
      [
       null,
       {
@@ -637609,7 +637936,7 @@
         ]
        ],
        "origin-from-extendablemessageevent.any.js": [
-        "48fff278131fd84cc8e9019bdd413e768432d81b",
+        "8ddd1b817c86d614dd9348763cc4b8bcbcca7139",
         [
          "html/browsers/origin/api/origin-from-extendablemessageevent.any.serviceworker.html",
          {
@@ -637764,7 +638091,7 @@
         ]
        ],
        "origin-from-messageevent.window.js": [
-        "c2e225b48cfa674def301d943204a1f095652101",
+        "d44828f0f4e10a387de185082d3d8e0d828d5cd2",
         [
          "html/browsers/origin/api/origin-from-messageevent.window.html",
          {
@@ -669263,6 +669590,13 @@
          {}
         ]
        ],
+       "stream-html-unsafe.html": [
+        "2c7052f1cd772b1dc3dbb56d1d756d024011073c",
+        [
+         null,
+         {}
+        ]
+       ],
        "template-contentmethod-append-elements.html": [
         "cf8e3d4c2b9c4c3bde003632cdc3a32d63d0a23d",
         [
@@ -683182,6 +683516,15 @@
           }
          ]
         ],
+        "select-click-picker-light-dismiss.tentative.html": [
+         "120e5c5f9af6811d6ada8a9006b9c5b4b6dbb70d",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "select-dialog-mode-focus.optional.html": [
          "cc739150f4a1a665470dbc2fa6c99f3a96383dd0",
          [
@@ -684390,6 +684733,33 @@
        ],
        "dialog-keydown-preventDefault.html": [
         "4a50b13c87f24d210b5b7558cb4c8c31f24d36a4",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "dialog-light-dismiss-drag.html": [
+        "2b9f9b5793cee68910e5fbf4351264565647e7f6",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "dialog-light-dismiss-pointer-capture.html": [
+        "4b6b1f3261a8cb8d811ba82d655feee38670a5cd",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "dialog-light-dismiss-touch.html": [
+        "43fd9490aec48d97048dfb16cc42ce8e763332e5",
         [
          null,
          {
@@ -685645,6 +686015,24 @@
         }
        ]
       ],
+      "light-dismiss-event-ordering.tentative.html": [
+       "e1d9c66997d15d266851cd221a359453bb31fe44",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "light-dismiss-remove-target.html": [
+       "38ec238c96fd52ed45e1500f4a73cde20157b08d",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "popover-active-document.html": [
        "f5ce266759771d1de153ad3752933b542918cd35",
        [
@@ -685940,6 +686328,15 @@
         }
        ]
       ],
+      "popover-light-dismiss-contextmenu.html": [
+       "12da92947fdf631f59b0bdbb467bee02997c5303",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "popover-light-dismiss-flat-tree-nested.html": [
        "ef3b35aea408e9c59f6d371ca83576268c34141c",
        [
@@ -685977,6 +686374,15 @@
       ],
       "popover-light-dismiss-scroll-within.html": [
        "6bc280fe43eff476d34bb7d42cb0d87bfc3a66c5",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "popover-light-dismiss-touch-scroll.html": [
+       "b71985bae72432eda5c0bfaade759a85f0430884",
        [
         null,
         {
@@ -738204,7 +738610,49 @@
         {}
        ]
       ]
-     }
+     },
+     "trigger-scope-in-scope-source.tentative.html": [
+      "2a76efaf242c677a1e5f04f48eed9b6b40b920ac",
+      [
+       null,
+       {}
+      ]
+     ],
+     "trigger-scope-named.tentative.html": [
+      "adaa3c5b31df444a09008e6ac3764a70821ab7c7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "trigger-scope-oof.tentative.html": [
+      "bfae371e2fdba494870a1a1dcbdbd65308a3a3f7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "trigger-scope-out-of-scope-source.tentative.html": [
+      "08071fd5216059d110520128a2290d0b59382658",
+      [
+       null,
+       {}
+      ]
+     ],
+     "trigger-scope-scoped-tree-order.tentative.html": [
+      "0263ea562aa6fd335dfbad11c26c51971f5cacbd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "trigger-scope-unscoped-tree-order.tentative.html": [
+      "62af3f9a81a97f76e36d790a21dca067b49bf9f7",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "css": {
      "animation-duration-auto.tentative.html": [
@@ -753043,24 +753491,6 @@
      "5dc67f0c7f1d8553d79ded2f315d0bfd073ec500",
      [
       "storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/testdriver.js"
-        ],
-        [
-         "script",
-         "/resources/testdriver-vendor.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "storage-access-beyond-cookies.unpartitioned.sub.https.window.js": [
-     "ddc5b49f4819fc127a99d30ebc2792244cae3570",
-     [
-      "storage-access-api/storage-access-beyond-cookies.unpartitioned.sub.https.window.html",
       {
        "script_metadata": [
         [
@@ -839044,10 +839474,12 @@
    },
    "webrtc-stats": {
     "getStats-remote-candidate-address.html": [
-     "add679044c7499806e1da9a3dce1b75c56822fb1",
+     "93d42845cc5ab6a7ce15c9b670376f134bbeffed",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "getStats-remote-candidate-ufrag.html": [
