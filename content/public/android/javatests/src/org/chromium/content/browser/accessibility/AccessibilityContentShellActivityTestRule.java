@@ -305,18 +305,36 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     /**
-     * Helper method to block until findNodeMatching() returns a valid node matching
-     * the given criteria. Returns the virtual view ID of the matching node, if found, and
-     * asserts if not.
+     * Helper method to block until findNodeMatching() returns a valid node matching the given
+     * criteria. Returns the virtual view ID of the matching node, if found, and asserts if not.
      */
     public <T> int waitForNodeMatching(
             AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher, T element) {
+        return waitForNodeMatching(
+                matcher,
+                element,
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    /**
+     * Helper method to block until findNodeMatching() returns a valid node matching the given
+     * criteria. Additionally allows specifying timeout and check interval. Returns the virtual view
+     * ID of the matching node, if found, and asserts if not.
+     */
+    public <T> int waitForNodeMatching(
+            AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher,
+            T element,
+            long maxTimeoutMs,
+            long checkIntervalMs) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             findNodeMatching(mWcax.getRootIdForTesting(), matcher, element),
                             Matchers.not(View.NO_ID));
-                });
+                },
+                maxTimeoutMs,
+                checkIntervalMs);
 
         int virtualViewId =
                 ThreadUtils.runOnUiThreadBlocking(

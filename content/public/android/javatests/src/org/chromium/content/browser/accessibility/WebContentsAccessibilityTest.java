@@ -226,61 +226,43 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFramework();
-        mActivityTestRule.setAccessibilityDelegate();
-
-        // To prevent flakes, do not disable accessibility mid tests.
-        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
-
-        mTestData = AccessibilityContentShellTestData.getInstance();
-        mActivityTestRule.sendReadyForTestSignal();
+        setupTestBase();
     }
 
+    /* @Before */
     protected void setupTestWithHTMLForFormControlsMode(
             String html, boolean includeEventMaskByDefault) {
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFrameworkForFormControlsMode(includeEventMaskByDefault);
-        mActivityTestRule.setAccessibilityDelegate();
-
-        // To prevent flakes, do not disable accessibility mid tests.
-        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
-
-        mTestData = AccessibilityContentShellTestData.getInstance();
-        mActivityTestRule.sendReadyForTestSignal();
+        setupTestBase();
     }
 
+    /* @Before */
     protected void setupTestWithHTMLForBasicMode(String html, boolean includeEventMaskByDefault) {
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFrameworkForBasicMode(includeEventMaskByDefault);
-        mActivityTestRule.setAccessibilityDelegate();
-
-        // To prevent flakes, do not disable accessibility mid tests.
-        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
-
-        mTestData = AccessibilityContentShellTestData.getInstance();
-        mActivityTestRule.sendReadyForTestSignal();
+        setupTestBase();
     }
 
+    /* @Before */
     protected void setupTestWithHTMLForCompleteMode(
             String html, boolean includeEventMaskByDefault) {
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFrameworkForCompleteMode(includeEventMaskByDefault);
-        mActivityTestRule.setAccessibilityDelegate();
-
-        // To prevent flakes, do not disable accessibility mid tests.
-        mActivityTestRule.mWcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
-
-        mTestData = AccessibilityContentShellTestData.getInstance();
-        mActivityTestRule.sendReadyForTestSignal();
+        setupTestBase();
     }
 
     /* @Before */
     protected void setupTestFromFile(String filepath) {
-        mActivityTestRule.launchContentShellWithUrl(UrlUtils.getIsolatedTestFileUrl(filepath));
-        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        mActivityTestRule.launchContentShellWithUrlSync(filepath);
         mActivityTestRule.setupTestFramework();
+        setupTestBase();
+    }
+
+    private void setupTestBase() {
         mActivityTestRule.setAccessibilityDelegate();
 
         // To prevent flakes, do not disable accessibility mid tests.
@@ -3113,10 +3095,16 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
-    @DisabledTest(message = "https://crbug.com/434253831")
     public void testAccessibilityNodeInfo_textFormatting() throws Throwable {
-        // Build a simple web page with a variety of text formatting options.
+        // Build a web page with a variety of text formatting options.
         setupTestFromFile("content/test/data/android/accessibility_text_formatting_examples.html");
+
+        // This page has a lot of content, so it needs more time to render.
+        mActivityTestRule.waitForNodeMatching(
+                sTextMatcher,
+                "Accessibility Text Formatting Examples",
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL * 5,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL * 4);
 
         String serifFont = "Noto Serif";
         String sansSerifFont = "Roboto";
