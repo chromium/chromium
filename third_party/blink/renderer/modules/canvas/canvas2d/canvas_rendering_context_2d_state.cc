@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <optional>
 
 #include "base/check.h"
@@ -12,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/path_effect.h"
@@ -329,7 +331,10 @@ void CanvasRenderingContext2DState::SetGlobalAlpha(double alpha) {
   global_alpha_ = alpha;
   stroke_style_.ApplyToFlags(stroke_flags_, global_alpha_);
   fill_style_.ApplyToFlags(fill_flags_, global_alpha_);
-  image_flags_.setColor(ScaleAlpha(SK_ColorBLACK, alpha));
+  // TODO: Don't quantize the alpha to 8-bit.
+  image_flags_.setAlphaf(
+      base::ClampRound<uint8_t>(ClampTo<float>(alpha, 0.0f, 1.0f) * 255) /
+      255.0f);
 }
 
 void CanvasRenderingContext2DState::SetGlobalHDRHeadroom(double h) {

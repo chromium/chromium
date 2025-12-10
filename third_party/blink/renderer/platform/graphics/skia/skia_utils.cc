@@ -30,10 +30,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
-#include <algorithm>
-#include <cmath>
-
-#include "base/numerics/safe_conversions.h"
 #include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -128,14 +124,6 @@ InterpolationQuality ComputeInterpolationQuality(float src_width,
 
   // Everything else gets resampled at default quality.
   return GetDefaultInterpolationQuality();
-}
-
-SkColor ScaleAlpha(SkColor color, float alpha) {
-  const auto clamped_alpha = std::max(0.0f, std::min(1.0f, alpha));
-  const auto rounded_alpha =
-      base::ClampRound<U8CPU>(SkColorGetA(color) * clamped_alpha);
-
-  return SkColorSetA(color, rounded_alpha);
 }
 
 bool ApproximatelyEqualSkColorSpaces(sk_sp<SkColorSpace> src_color_space,
