@@ -32,9 +32,8 @@ export function installSoda(language: LanguageCode): void {
       createTranscriptionModelDownloadPerf(language),
     );
   }
-  // TODO: b/375306309 -  Install only if the state is `notInstalled` after the
-  // `OnSodaUninstalled` event is implemented and there's no inconsistent soda
-  // state.
+  // Force SODA installation. The cached 'installed' state will be outdated if
+  // SODA is uninstalled by another app (e.g Live Caption).
   void platformHandler.installSoda(language);
 }
 
