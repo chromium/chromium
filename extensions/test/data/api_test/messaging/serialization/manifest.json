@@ -14,7 +14,8 @@
   "web_accessible_resources": [{
      "matches": ["<all_urls>"],
      "resources": [
-        "serialization_common_tests.js"
+        "serialization_common_tests.js",
+        "test_cases.js"
      ]
   }]
 }
