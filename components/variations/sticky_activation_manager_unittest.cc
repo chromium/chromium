@@ -16,8 +16,7 @@ TEST(StickyActivationManagerTest, ShouldActivate) {
   StickyActivationManager::RegisterPrefs(*local_state.registry());
 
   local_state.SetString(prefs::kVariationsStickyStudies, "Foo/Bar/Foo2/Bar2");
-  StickyActivationManager manager(&local_state,
-                                  /*sticky_activation_enabled=*/true);
+  StickyActivationManager manager(&local_state);
 
   EXPECT_TRUE(manager.ShouldActivate("Foo", "Bar"));
   EXPECT_TRUE(manager.ShouldActivate("Foo2", "Bar2"));
@@ -29,8 +28,7 @@ TEST(StickyActivationManagerTest, SavePrefs) {
   StickyActivationManager::RegisterPrefs(*local_state.registry());
 
   local_state.SetString(prefs::kVariationsStickyStudies, "Foo/Bar/Foo2/Bar2");
-  StickyActivationManager manager(&local_state,
-                                  /*sticky_activation_enabled=*/true);
+  StickyActivationManager manager(&local_state);
 
   auto* foo_far_trial = base::FieldTrialList::CreateFieldTrial("Foo", "Far");
   auto* bla_bla_trial = base::FieldTrialList::CreateFieldTrial("Bla", "Bla");
@@ -61,8 +59,7 @@ TEST(StickyActivationManagerTest, NoCrashAfterManagerDestroyed) {
   auto* foo2_trial = base::FieldTrialList::CreateFieldTrial("Foo2", "Bar2");
 
   {
-    StickyActivationManager manager(&local_state,
-                                    /*sticky_activation_enabled=*/true);
+    StickyActivationManager manager(&local_state);
     // Note: The ShouldActivate() calls mark the trials for monitoring.
     EXPECT_FALSE(manager.ShouldActivate("Foo", "Far"));
     EXPECT_FALSE(manager.ShouldActivate("Foo2", "Bar2"));

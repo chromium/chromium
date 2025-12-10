@@ -308,14 +308,6 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
                     const ClientFilterableState& client_state,
                     const VariationsLayers& layers) {
   const Study& study = *processed_study.study();
-
-  if (study.activation_type() == Study::STICKY_AFTER_QUERY &&
-      !client_state.is_sticky_activation_enabled) {
-    DVLOG(1) << "Filtered out study " << study.name()
-             << " due to unsupported STICKY_AFTER_QUERY activation type.";
-    return false;
-  }
-
   if (study.has_layer()) {
     if (!layers.IsLayerMemberActive(study.layer())) {
       DVLOG(1) << "Filtered out study " << study.name()

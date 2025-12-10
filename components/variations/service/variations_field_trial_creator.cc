@@ -249,8 +249,7 @@ VariationsFieldTrialCreator::VariationsFieldTrialCreator(
       application_locale_(
           language::GetApplicationLocale(seed_store_->local_state())),
       ui_string_overrider_(ui_string_overrider),
-      sticky_activation_manager_(seed_store_->local_state(),
-                                 client->IsStickyActivationEnabled()) {}
+      sticky_activation_manager_(seed_store_->local_state()) {}
 
 VariationsFieldTrialCreator::~VariationsFieldTrialCreator() = default;
 
@@ -441,7 +440,6 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   permanent_consistency_country_initialized_ = true;
 
   state->policy_restriction = GetVariationPolicyRestriction(local_state());
-  state->is_sticky_activation_enabled = client_->IsStickyActivationEnabled();
   return state;
 }
 

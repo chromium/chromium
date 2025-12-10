@@ -39,8 +39,7 @@ class COMPONENT_EXPORT(VARIATIONS) StickyActivationManager
 
   // `local_state` may be null for tests, in which case no prior stickiness
   // information will be loaded and none will be saved.
-  explicit StickyActivationManager(PrefService* local_state,
-                                   bool sticky_activation_enabled = false);
+  explicit StickyActivationManager(PrefService* local_state);
 
   StickyActivationManager(const StickyActivationManager&) = delete;
   StickyActivationManager& operator=(const StickyActivationManager&) = delete;
@@ -59,7 +58,7 @@ class COMPONENT_EXPORT(VARIATIONS) StickyActivationManager
                       const std::string& group_name);
 
   // Starts monitoring field trial activations. May not be called more than
-  // once. Note: This is a no-op if `sticky_activation_enabled_` is false.
+  // once.
   void StartMonitoring();
 
  private:
@@ -72,14 +71,7 @@ class COMPONENT_EXPORT(VARIATIONS) StickyActivationManager
 
   raw_ptr<PrefService> local_state_;
 
-  // Whether support for STICKY_AFTER_QUERY activation for studies is enabled.
-  // TODO: crbug.com/435630455 - Fully enable and remove this once ready.
-  bool sticky_activation_enabled_ = false;
-
-  // Whether StartMonitoring() has been called. Note: This just tracks that the
-  // function was called (to prevent it being called multiple times), but may
-  // not reflect whether monitoring is actually happening, since the function
-  // can be no-op if `sticky_activation_enabled_` is false.
+  // Whether StartMonitoring() has been called.
   bool monitoring_started_ = false;
 
   // The field trials loaded at startup from prefs.
