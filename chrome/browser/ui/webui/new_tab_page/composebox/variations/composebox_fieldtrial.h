@@ -83,6 +83,8 @@ extern const base::FeatureParam<bool> kCloseComposeboxByEscape;
 extern const base::FeatureParam<bool> kCloseComposeboxByClickOutside;
 // Whether to delay an upload if tab context is added from the recent tab chip.
 extern const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick;
+// Whether to trap tab focus within the composebox.
+extern const base::FeatureParam<bool> kEnableModalComposebox;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 

@@ -400,6 +400,8 @@ export class AppElement extends AppElementBase {
   protected accessor contextMenuGlifAnimationState_: GlifAnimationState =
       this.ntpNextFeaturesEnabled_ ? GlifAnimationState.SPINNER_ONLY :
                                      GlifAnimationState.INELIGIBLE;
+  protected enableModalComposebox_: boolean =
+      loadTimeData.getBoolean('enableModalComposebox');
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
@@ -721,6 +723,14 @@ export class AppElement extends AppElementBase {
       this.onPromoAndModulesLoadedChange_();
     }
 
+    if (changedPrivateProperties.has('showComposebox_') &&
+        this.showComposebox_ && this.enableModalComposebox_) {
+      const composeboxDialog =
+          this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
+      assert(composeboxDialog);
+      composeboxDialog.showModal();
+    }
+
     if (changedPrivateProperties.has('oneGoogleBarLoaded_') ||
         changedPrivateProperties.has('theme_') ||
         changedPrivateProperties.has('showComposebox_')) {
@@ -857,6 +867,13 @@ export class AppElement extends AppElementBase {
   }
 
   protected closeComposebox_(e: CustomEvent) {
+    if (this.enableModalComposebox_) {
+      const composeboxDialog =
+          this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
+      assert(composeboxDialog);
+      composeboxDialog.close();
+    }
+
     const composeboxText = e.detail.composeboxText;
 
     if (composeboxText && composeboxText.trim()) {

@@ -658,6 +658,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "addTabUploadDelayOnRecentTabChipClick",
       ntp_composebox::kAddTabUploadDelayOnRecentTabChipClick.Get());
+  source->AddBoolean("enableModalComposebox",
+                     ntp_composebox::kEnableModalComposebox.Get());
 
   // Action Chips LoadTimeData
   bool show_action_chips =
