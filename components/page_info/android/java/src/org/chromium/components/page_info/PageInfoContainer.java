@@ -128,7 +128,8 @@ public class PageInfoContainer extends FrameLayout {
         boolean showExpanded = mExpandedUrlTitle.getVisibility() != VISIBLE;
         mExpandedUrlTitle.setVisibility(showExpanded ? VISIBLE : GONE);
         mTruncatedUrlTitle.setVisibility(showExpanded ? GONE : VISIBLE);
-        announceForAccessibility(
+        ViewCompat.setAccessibilityPaneTitle(
+                this,
                 getResources()
                         .getString(
                                 showExpanded
