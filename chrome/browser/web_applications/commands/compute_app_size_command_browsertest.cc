@@ -13,7 +13,8 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -88,17 +89,9 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
 
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    IwaKeyDistributionInfoProvider::GetInstance()
-        .SkipManagedAllowlistChecksForTesting(true);
     iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle(kPublicKeyPair1));
-  }
-
-  void TearDownOnMainThread() override {
-    IwaKeyDistributionInfoProvider::GetInstance()
-        .SkipManagedAllowlistChecksForTesting(false);
-    IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
   }
 
   ComputeAppSizeCommandForIsolatedWebAppBrowserTest(
@@ -112,7 +105,12 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
                                    std::move(update_manifest_entries));
   }
 
+  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
+    return &data_provider_;
+  }
+
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  FakeIwaRuntimeDataProvider data_provider_;
 
 #if !BUILDFLAG(IS_CHROMEOS)
  private:
@@ -122,6 +120,9 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,
                        RetrieveWebAppSize) {
+  data_provider_.Update(
+      [&](auto& update) { update.AddToManagedAllowlist(kWebBundleId1); });
+
   const webapps::AppId app_id =
       web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(kWebBundleId1)
           .app_id();

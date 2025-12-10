@@ -29,8 +29,9 @@
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -624,19 +625,22 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    IwaKeyDistributionInfoProvider::GetInstance()
-        .SkipManagedAllowlistChecksForTesting(true);
     test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
     SetUpFilesAndServer();
-    AddTrustedWebBundleIdForTesting(url_info_->web_bundle_id());
     run_on_os_login_handler_.ResetSkipRunOnOsLoginStartup();
+
+    data_provider_.Update([&](auto& update) {
+      update.AddToManagedAllowlist(url_info_->web_bundle_id());
+    });
   }
 
   void TearDownOnMainThread() override {
     run_on_os_login_handler_.TearDown();
-    IwaKeyDistributionInfoProvider::GetInstance()
-        .SkipManagedAllowlistChecksForTesting(false);
     IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
+  }
+
+  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
+    return &data_provider_;
   }
 
   void SetUpFilesAndServer() {
@@ -704,6 +708,7 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
   std::unique_ptr<BundledIsolatedWebApp> bundle_304_;
   web_package::test::Ed25519KeyPair key_pair_ =
       test::GetDefaultEd25519KeyPair();
+  FakeIwaRuntimeDataProvider data_provider_;
   RunOnOsLoginTestHandlerMixin run_on_os_login_handler_{&mixin_host_, this};
 };
 
