@@ -24,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
@@ -54,7 +55,7 @@ class SessionStorageImplTest : public testing::Test {
   SessionStorageImplTest& operator=(const SessionStorageImplTest&) = delete;
 
   ~SessionStorageImplTest() override {
-    EXPECT_TRUE(temp_dir_.Delete());
+    EXPECT_TRUE(base::test::RunUntil([this]() { return temp_dir_.Delete(); }));
   }
 
   void SetUp() override {
@@ -93,10 +94,6 @@ class SessionStorageImplTest : public testing::Test {
 
   void ShutDownSessionStorage() {
     remote_session_storage_.FlushForTesting();
-
-    base::RunLoop loop;
-    session_storage_->ShutDown(loop.QuitClosure());
-    loop.Run();
     session_storage_.reset();
   }
 

@@ -88,11 +88,6 @@ StorageServiceImpl::~StorageServiceImpl() {
     auto node = local_storages_.extract(local_storages_.begin());
     ShutDown(std::move(node.value()));
   }
-
-  while (!session_storages_.empty()) {
-    auto node = session_storages_.extract(session_storages_.begin());
-    ShutDown(std::move(node.value()));
-  }
 }
 
 void StorageServiceImpl::EnableAggressiveDomStorageFlushing() {
@@ -205,8 +200,7 @@ void StorageServiceImpl::ShutDownAndRemoveSessionStorage(
 
   auto it = session_storages_.find(storage);
   if (it != session_storages_.end()) {
-    auto node = session_storages_.extract(it);
-    ShutDown(std::move(node.value()));
+    session_storages_.erase(it);
   }
 }
 

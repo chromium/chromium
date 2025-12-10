@@ -99,13 +99,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void DeleteNamespace(const std::string& namespace_id,
                        bool should_persist) override;
 
-  // Called when the client (i.e. the corresponding browser storage partition)
-  // disconnects. Schedules the commit of any unsaved changes. All data on disk
-  // (where there was no call to DeleteNamespace will stay on disk for later
-  // restoring. `callback` is invoked when shutdown is complete, which may
-  // happen even before ShutDown returns.
-  void ShutDown(base::OnceClosure callback);
-
   // Clears unused storage areas, when thresholds are reached.
   void PurgeUnusedAreasIfNeeded();
 
@@ -155,7 +148,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
                          SessionStorageDataMap* map) override;
   void OnDataMapDestruction(const std::vector<uint8_t>& map_prefix) override;
   void OnCommitResult(DbStatus status) override;
-  void OnCommitResultWithCallback(base::OnceClosure callback, DbStatus status);
 
   // SessionStorageNamespaceImpl::Delegate implementation:
   scoped_refptr<SessionStorageDataMap> MaybeGetExistingDataMapForId(
@@ -190,11 +182,11 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void DeleteAndRecreateDatabase();
   void OnDBDestroyed(bool recreate_in_memory, DbStatus status);
 
-  void OnShutdownComplete();
-
   void GetStatistics(size_t* total_cache_size, size_t* unused_areas_count);
 
   void OnReceiverDisconnected();
+
+  void ShutDown();
 
   // Passed in by the StorageServiceImpl that owns this object. Used to signal
   // that this SessionStorageImpl can be destructed when the Receiver is
@@ -211,7 +203,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     NO_CONNECTION,
     CONNECTION_IN_PROGRESS,
     CONNECTION_FINISHED,
-    CONNECTION_SHUTDOWN
   } connection_state_ = NO_CONNECTION;
 
   const base::FilePath partition_directory_;
@@ -252,8 +243,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // whole database is thrown away.
   int commit_error_count_ = 0;
   bool tried_to_recover_from_commit_errors_ = false;
-
-  base::OnceClosure shutdown_complete_callback_;
 
   base::WeakPtrFactory<SessionStorageImpl> weak_ptr_factory_{this};
 };
