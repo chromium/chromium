@@ -155,6 +155,8 @@ class GlicButton : public TabStripNudgeButton,
   // window/FRE change.
   void UpdateTooltipText();
 
+  void OnLabelVisibilityChanged();
+
   // Callback subscription for listening to changes to the Glic window
   // activation changes.
   base::CallbackListSubscription glic_window_activation_subscription_;

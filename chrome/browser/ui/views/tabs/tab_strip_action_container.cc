@@ -473,6 +473,14 @@ TabStripActionContainer::CreateGlicActorButtonContainer() {
 void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
   CHECK(glic_button_);
   gfx::Insets glic_border;
+
+  // Ensure buttons look vertically centered by making the top and bottom insets
+  // match.
+  gfx::Insets border_insets = border_insets_;
+  int min_vertical_inset =
+      std::min(border_insets.top(), border_insets.bottom());
+  border_insets.set_top_bottom(min_vertical_inset, min_vertical_inset);
+
   const bool is_redesign_enabled =
       base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign);
   // GlicActorTaskIcon will only ever be shown alongside the GlicButton.
@@ -482,16 +490,13 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
         is_redesign_enabled ? 0 : kInsideBorderAroundGlicButtons,
         kOutsideBorderAroundGlicButtons);
     const gfx::Insets left_icon_border = gfx::Insets().set_left_right(
-        kOutsideBorderAroundGlicButtons,
-        is_redesign_enabled ? 0 : kInsideBorderAroundGlicButtons);
+        kOutsideBorderAroundGlicButtons, kInsideBorderAroundGlicButtons);
     if (is_redesign_enabled) {
-      task_icon_border = right_icon_border + border_insets_;
-      // If the GlicActorTaskIcon is also present, adjust the border on the
-      // GlicButton to allow the two buttons to sit closer together.
-      glic_border = left_icon_border + border_insets_;
+      task_icon_border = right_icon_border + border_insets;
+      glic_border = left_icon_border + border_insets;
     } else {
-      task_icon_border = left_icon_border + border_insets_;
-      glic_border = right_icon_border + border_insets_;
+      task_icon_border = left_icon_border + border_insets;
+      glic_border = right_icon_border + border_insets;
     }
     glic_actor_task_icon_->SetBorder(
         views::CreateEmptyBorder(task_icon_border));
@@ -501,9 +506,9 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
     }
   } else {
     // Reset GlicButton border if Task Icon is hidden.
-    glic_border = gfx::Insets().set_left_right(border_insets_.top(),
-                                               border_insets_.bottom()) +
-                  border_insets_;
+    glic_border = gfx::Insets().set_left_right(border_insets.top(),
+                                               border_insets.bottom()) +
+                  border_insets;
   }
   glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
   if (is_redesign_enabled) {

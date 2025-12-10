@@ -144,11 +144,11 @@ ui::ImageModel GetIconForHighlight() {
   return {};
 }
 
-gfx::Insets GetIconMargins() {
+gfx::Insets GetIconMargins(bool label_shown) {
   int left = 6 - kHighlightMargin;
   int right = 4;
 
-  if (ShouldShowLabel()) {
+  if (label_shown) {
     // Extra left margin if the label is shown.
     left += 2;
   }
@@ -192,9 +192,9 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   layer()->SetFillsBoundsOpaquely(false);
 
   UpdateIcon();
+  OnLabelVisibilityChanged();
   auto* image_view = static_cast<views::ImageView*>(image_container_view());
   image_view->SetImageSize({kIconSize, kIconSize});
-  image_view->SetProperty(views::kMarginsKey, GetIconMargins());
   image_view->SetPaintToLayer();
   image_view->layer()->SetFillsBoundsOpaquely(false);
 
@@ -497,6 +497,8 @@ void GlicButton::AnimationEnded(const gfx::Animation* animation) {
     }
 
     expansion_animation_done_callback_.Run();
+
+    OnLabelVisibilityChanged();
   }
   if (is_animating_text_) {
     is_animating_text_ = false;
@@ -857,6 +859,12 @@ void GlicButton::SetCloseButtonVisible(bool visible) {
 
 void GlicButton::RefreshBackground() {
   UpdateColors();
+}
+
+void GlicButton::OnLabelVisibilityChanged() {
+  image_container_view()->SetProperty(
+      views::kMarginsKey,
+      GetIconMargins(ShouldShowLabel() && !is_animating_text_));
 }
 
 gfx::SlideAnimation* GlicButton::GetExpansionAnimationForTesting() {
