@@ -190,7 +190,7 @@ void OverlayProcessorWin::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list_in_root_space,
-    std::optional<OverlayCandidate>& primary_plane,
+    const PrimaryPlaneParams& primary_plane_params,
     CandidateList* candidates,
     gfx::Rect* root_damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
@@ -204,6 +204,7 @@ void OverlayProcessorWin::ProcessForOverlays(
       render_pass_filters, render_pass_backdrop_filters,
       surface_damage_rect_list_in_root_space, candidates, root_damage_rect);
 
+  std::optional<OverlayCandidate> primary_plane;
   if (status != DelegationStatus::kFullDelegation) {
     // Fall back to promoting overlays from the output surface plane.
     ProcessOverlaysFromOutputSurfacePlane(
@@ -211,7 +212,7 @@ void OverlayProcessorWin::ProcessForOverlays(
         render_pass_filters, render_pass_backdrop_filters,
         surface_damage_rect_list_in_root_space, candidates, root_damage_rect);
 
-    CHECK(primary_plane);
+    primary_plane = CreatePrimaryPlane(primary_plane_params);
     primary_plane->is_opaque =
         !render_passes->back()->has_transparent_background;
     primary_plane->layer_id = gfx::OverlayLayerId::MakeVizInternalRenderPass(

@@ -194,12 +194,14 @@ class CALayerOverlayTest : public testing::Test {
     output_surface_ = nullptr;
   }
 
-  std::optional<OverlayCandidate>& GetDefaultPrimaryPlane(
-      const gfx::Size& size) {
-    primary_plane_ = OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
-        size, size, SinglePlaneFormat::kRGBA_8888,
-        gfx::ColorSpace::CreateSRGB(), false, 1.0, gpu::Mailbox());
-    return primary_plane_;
+  OverlayProcessorInterface::PrimaryPlaneParams GetDefaultPrimaryPlane(
+      const gfx::Size& primary_plane_size) {
+    return OverlayProcessorInterface::PrimaryPlaneParams{
+        .viewport_size = primary_plane_size,
+        .resource_size_in_pixels = primary_plane_size,
+        .supports_hdr = false,
+        .is_opaque = true,
+    };
   }
 
   std::unique_ptr<SkiaOutputSurface> output_surface_;
