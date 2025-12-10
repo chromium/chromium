@@ -40,7 +40,7 @@
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #import "media/capture/video/mac/video_capture_metrics_mac.h"
 #endif
 
@@ -459,8 +459,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     *outMessage = @"Could not open video capture device.";
     return NO;
   }
+
+#if BUILDFLAG(IS_MAC)
   // TODO(https://crbug.com/461717105): Remove this logging.
   media::LogAVCaptureDeviceInfo(_captureDevice);
+#endif
 
   // Create the capture input associated with the device. Easy peasy.
   NSError* error = nil;
