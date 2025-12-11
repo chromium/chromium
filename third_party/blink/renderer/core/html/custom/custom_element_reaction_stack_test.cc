@@ -23,7 +23,8 @@ TEST(CustomElementReactionStackTest, one) {
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   HeapVector<Member<Command>> commands;
   commands.push_back(MakeGarbageCollected<Log>('a', log));
@@ -43,7 +44,8 @@ TEST(CustomElementReactionStackTest, multipleElements) {
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> commands;
@@ -72,7 +74,8 @@ TEST(CustomElementReactionStackTest, popTopEmpty) {
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   HeapVector<Member<Command>> commands;
   commands.push_back(MakeGarbageCollected<Log>('a', log));
@@ -93,7 +96,8 @@ TEST(CustomElementReactionStackTest, popTop) {
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> commands;
@@ -125,7 +129,8 @@ TEST(CustomElementReactionStackTest, requeueingDoesNotReorderElements) {
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> commands;
@@ -162,7 +167,8 @@ TEST(CustomElementReactionStackTest, oneReactionQueuePerElement) {
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> commands;
@@ -235,7 +241,8 @@ TEST(CustomElementReactionStackTest, enqueueFromReaction) {
   ScopedNullExecutionContext execution_context;
 
   CustomElementReactionStack* stack =
-      MakeGarbageCollected<CustomElementReactionStack>();
+      MakeGarbageCollected<CustomElementReactionStack>(
+          *execution_context.GetExecutionContext().GetAgent());
   stack->Push();
   {
     HeapVector<Member<Command>> subcommands;

@@ -29,6 +29,7 @@ class Command : public GarbageCollected<Command> {
   virtual ~Command() = default;
   virtual void Trace(Visitor* visitor) const {}
   virtual void Run(Element&) = 0;
+
 };
 
 class Call : public Command {
@@ -130,10 +131,9 @@ class TestReaction : public CustomElementReaction {
 
 class ResetCustomElementReactionStackForTest final {
   STACK_ALLOCATED();
-
  public:
   explicit ResetCustomElementReactionStackForTest(Agent& agent)
-      : stack_(MakeGarbageCollected<CustomElementReactionStack>()),
+      : stack_(MakeGarbageCollected<CustomElementReactionStack>(agent)),
         old_stack_(CustomElementReactionStack::Swap(agent, stack_)),
         agent_(agent) {}
   ResetCustomElementReactionStackForTest(

@@ -24,7 +24,7 @@ class CORE_EXPORT CustomElementReactionStack final
       public NameClient,
       public GarbageCollectedMixin {
  public:
-  CustomElementReactionStack() = default;
+  explicit CustomElementReactionStack(Agent& agent);
   CustomElementReactionStack(const CustomElementReactionStack&) = delete;
   CustomElementReactionStack& operator=(const CustomElementReactionStack&) =
       delete;
@@ -45,6 +45,7 @@ class CORE_EXPORT CustomElementReactionStack final
   static CustomElementReactionStack& From(Agent& agent);
 
  private:
+  Member<Agent> agent_;
   friend class ResetCustomElementReactionStackForTest;
 
   using ElementReactionQueueMap =
