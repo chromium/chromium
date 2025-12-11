@@ -834,6 +834,7 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(trusted_types_);
   visitor->Trace(worker_script_);
   visitor->Trace(browser_interface_broker_proxy_);
+  visitor->Trace(global_cookie_store_impl_);
   visitor->Trace(global_performance_impl_);
   visitor->Trace(font_face_set_worker_);
   ExecutionContext::Trace(visitor);

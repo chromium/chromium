@@ -53,7 +53,6 @@
 #include "third_party/blink/renderer/modules/service_worker/cross_origin_resource_policy_checker.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_event_queue.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_installed_scripts_manager.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -85,9 +84,6 @@ class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
 struct WebServiceWorkerError;
 struct WebServiceWorkerObjectInfo;
-
-template <typename T>
-class GlobalCookieStoreImpl;
 
 class MODULES_EXPORT ServiceWorkerGlobalScope final
     : public WorkerGlobalScope,
@@ -372,16 +368,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       const base::UnguessableToken& token) final;
 
   bool did_evaluate_script() { return did_evaluate_script_; }
-
-  ForwardDeclaredMember<GlobalCookieStoreImpl<ServiceWorkerGlobalScope>>
-  GetGlobalCookieStoreImpl() const {
-    return global_cookie_store_impl_;
-  }
-  void SetGlobalCookieStoreImpl(
-      ForwardDeclaredMember<GlobalCookieStoreImpl<ServiceWorkerGlobalScope>>
-          global_cookie_store_impl) {
-    global_cookie_store_impl_ = global_cookie_store_impl;
-  }
 
  protected:
   // EventTarget
@@ -840,9 +826,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
                              ServiceWorkerGlobalScope>
       associated_interfaces_receiver_{this, this};
   AssociatedInterfaceRegistry associated_inteface_registy_;
-
-  ForwardDeclaredMember<GlobalCookieStoreImpl<ServiceWorkerGlobalScope>>
-      global_cookie_store_impl_;
 };
 
 template <>

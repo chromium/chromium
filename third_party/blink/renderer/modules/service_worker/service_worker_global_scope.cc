@@ -801,7 +801,6 @@ void ServiceWorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(can_make_payment_result_callbacks_);
   visitor->Trace(payment_response_callbacks_);
   visitor->Trace(fetch_response_callbacks_);
-  visitor->Trace(global_cookie_store_impl_);
   visitor->Trace(pending_preload_fetch_events_);
   visitor->Trace(pending_streaming_upload_fetch_events_);
   visitor->Trace(controller_receivers_);

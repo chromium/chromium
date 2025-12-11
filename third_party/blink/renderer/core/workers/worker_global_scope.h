@@ -80,6 +80,8 @@ class WorkerThread;
 class WorkerPerformance;
 class FontFaceSetWorker;
 
+template <typename T>
+class GlobalCookieStoreImpl;
 template <typename T, typename P>
 class GlobalPerformanceImpl;
 
@@ -279,6 +281,16 @@ class CORE_EXPORT WorkerGlobalScope
     return top_level_frame_security_origin_.get();
   }
 
+  ForwardDeclaredMember<GlobalCookieStoreImpl<WorkerGlobalScope>>
+  GetGlobalCookieStoreImpl() const {
+    return global_cookie_store_impl_;
+  }
+  void SetGlobalCookieStoreImpl(
+      ForwardDeclaredMember<GlobalCookieStoreImpl<WorkerGlobalScope>>
+          global_cookie_store_impl) {
+    global_cookie_store_impl_ = global_cookie_store_impl;
+  }
+
   ForwardDeclaredMember<
       GlobalPerformanceImpl<WorkerGlobalScope, WorkerPerformance>>
   GetGlobalPerformanceImpl() const {
@@ -421,6 +433,8 @@ class CORE_EXPORT WorkerGlobalScope
   // origin.
   scoped_refptr<const SecurityOrigin> top_level_frame_security_origin_;
 
+  ForwardDeclaredMember<GlobalCookieStoreImpl<WorkerGlobalScope>>
+      global_cookie_store_impl_;
   ForwardDeclaredMember<
       GlobalPerformanceImpl<WorkerGlobalScope, WorkerPerformance>>
       global_performance_impl_;
