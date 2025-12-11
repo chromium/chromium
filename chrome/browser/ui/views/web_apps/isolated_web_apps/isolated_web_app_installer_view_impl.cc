@@ -369,6 +369,7 @@ class ShowMetadataView : public InstallerDialogView {
     std::vector<std::pair<int, std::u16string>> info = {
         {IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL, u""},
         {IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL, u""},
+        {IDS_IWA_INSTALLER_SHOW_METADATA_APP_ENTERPRISE_NAME_LABEL, u""},
     };
     info_pane_ = SetContentsView(std::make_unique<InfoPane>(info),
                                  IDS_IWA_INSTALLER_DETAILS_SCREENREADER_NAME);
@@ -531,7 +532,8 @@ void IsolatedWebAppInstallerViewImpl::ShowMetadataScreen(
        bundle_metadata.app_name()},
       {IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL,
        base::UTF8ToUTF16(bundle_metadata.version().GetString())},
-  };
+      {IDS_IWA_INSTALLER_SHOW_METADATA_APP_ENTERPRISE_NAME_LABEL,
+       base::UTF8ToUTF16(bundle_metadata.enterprise_name().value_or(""))}};
   show_metadata_view_->UpdateInfoPaneContents(data);
   show_metadata_view_->SetTitle(bundle_metadata.app_name());
   show_metadata_view_->SetIcon(

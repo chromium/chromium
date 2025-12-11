@@ -10,12 +10,14 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -128,7 +130,6 @@ void SignedWebBundleMetadata::Create(
   auto fetcher = std::make_unique<WebAppInstallInfoFetcher>(profile, provider,
                                                             url_info, source);
   WebAppInstallInfoFetcher& fetcher_ref = *fetcher.get();
-
   fetcher_ref.FetchAndReply(base::BindOnce(
       [](const IsolatedWebAppUrlInfo& url_info,
          const IwaSourceBundleWithMode& source,
@@ -137,10 +138,18 @@ void SignedWebBundleMetadata::Create(
         std::move(callback).Run(install_info.transform(
             [&url_info, &source](const WebAppInstallInfo& install_info)
                 -> SignedWebBundleMetadata {
+              const ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData*
+                  user_install_data =
+                      web_app::ChromeIwaRuntimeDataProvider::GetInstance()
+                          .GetUserInstallAllowlistData(
+                              url_info.web_bundle_id().id());
               return SignedWebBundleMetadata(
                   url_info, source, install_info.title.value(),
                   install_info.isolated_web_app_version(),
-                  install_info.GetIconBitmapsForSecureSurfaces());
+                  install_info.GetIconBitmapsForSecureSurfaces(),
+                  user_install_data
+                      ? std::optional(user_install_data->enterprise_name)
+                      : std::nullopt);
             }));
       },
       url_info, source,
@@ -154,9 +163,10 @@ SignedWebBundleMetadata SignedWebBundleMetadata::CreateForTesting(
     const IwaSourceBundleWithMode& source,
     const std::u16string& app_name,
     const IwaVersion& version,
-    DialogImageInfo image_info) {
+    DialogImageInfo image_info,
+    const std::optional<std::string>& enterprise_name) {
   return SignedWebBundleMetadata(url_info, source, app_name, version,
-                                 std::move(image_info));
+                                 std::move(image_info), enterprise_name);
 }
 
 SignedWebBundleMetadata::SignedWebBundleMetadata(
@@ -164,11 +174,13 @@ SignedWebBundleMetadata::SignedWebBundleMetadata(
     const IwaSourceBundleWithMode& source,
     const std::u16string& app_name,
     const IwaVersion& version,
-    DialogImageInfo image_info)
+    DialogImageInfo image_info,
+    const std::optional<std::string>& enterprise_name)
     : url_info_(url_info),
       app_name_(app_name),
       version_(version),
-      image_info_(std::move(image_info)) {}
+      image_info_(std::move(image_info)),
+      enterprise_name_(enterprise_name) {}
 
 SignedWebBundleMetadata::~SignedWebBundleMetadata() = default;
 

@@ -42,7 +42,8 @@ class SignedWebBundleMetadata {
       const IwaSourceBundleWithMode& source,
       const std::u16string& app_name,
       const IwaVersion& version,
-      DialogImageInfo image_info);
+      DialogImageInfo image_info,
+      const std::optional<std::string>& enterprise_name);
 
   ~SignedWebBundleMetadata();
   SignedWebBundleMetadata(const SignedWebBundleMetadata&);
@@ -58,6 +59,10 @@ class SignedWebBundleMetadata {
 
   const DialogImageInfo& image_info() const { return image_info_; }
 
+  const std::optional<std::string>& enterprise_name() const {
+    return enterprise_name_;
+  }
+
   bool operator==(const SignedWebBundleMetadata& other) const;
 
  private:
@@ -65,12 +70,14 @@ class SignedWebBundleMetadata {
                           const IwaSourceBundleWithMode& source,
                           const std::u16string& app_name,
                           const IwaVersion& version,
-                          DialogImageInfo image_info);
+                          DialogImageInfo image_info,
+                          const std::optional<std::string>& enterprise_name);
 
   IsolatedWebAppUrlInfo url_info_;
   std::u16string app_name_;
   IwaVersion version_;
   DialogImageInfo image_info_;
+  std::optional<std::string> enterprise_name_;
 };
 
 }  // namespace web_app

@@ -19363,6 +19363,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL" desc="Label before the Isolated Web App version in the pre-install app info summary screen">
       Version: <ph name="APP_VERSION">$1<ex>1.0.0</ex></ph>
     </message>
+    <message name="IDS_IWA_INSTALLER_SHOW_METADATA_APP_ENTERPRISE_NAME_LABEL" desc="Label before the Isolated Web App enterprise name in the pre-install app info summary screen">
+      Offered by: <ph name="ENTERPRISE_NAME">$1<ex>Google</ex></ph>
+    </message>
     <message name="IDS_IWA_INSTALLER_CONFIRM_TITLE" desc="Title of the confirmation popup that appears immediately before Isolated Web App installation">
       Do you want to continue and allow this software to make changes to your device?
     </message>

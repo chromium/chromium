@@ -94,7 +94,8 @@ SignedWebBundleMetadata CreateTestMetadata() {
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           web_package::SignedWebBundleId::CreateRandomForProxyMode()),
       IwaSourceBundleProdMode(base::FilePath()), u"Test Isolated Web App",
-      *IwaVersion::Create("0.0.1"), std::move(image_info));
+      *IwaVersion::Create("0.0.1"), std::move(image_info),
+      /*enterprise_name=*/"Google LLC");
 }
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
