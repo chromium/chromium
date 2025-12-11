@@ -36,8 +36,8 @@ sys.path.append(
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
-RUST_REVISION = '11339a0ef5ed586bb7ea4f85a9b7287880caac3a'
-RUST_SUB_REVISION = 1
+RUST_REVISION = 'a4cfac7093a1c1c7fbdb6bc75d6b6dc4d385fc69'
+RUST_SUB_REVISION = 2
 
 # The revision of Crubit to use from https://github.com/google/crubit
 #
