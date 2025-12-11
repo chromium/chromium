@@ -263,6 +263,46 @@ TEST_F(TokenFetcherImplTest, MalformedTokenExtensions) {
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
 
+// BSA returns a token with an empty token value.
+TEST_F(TokenFetcherImplTest, MalformedTokenEmptyTokenValue) {
+  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
+  privacy_pass_token_data.set_encoded_extensions("some-extensions");
+
+  quiche::BlindSignToken bsa_token;
+  bsa_token.token = privacy_pass_token_data.SerializeAsString();
+  bsa_token.expiration = absl::FromTimeT(expiration_time_.ToTimeT());
+
+  bsa_->set_tokens({bsa_token});
+
+  GetAuthnTokens(1);
+
+  EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
+  EXPECT_EQ(bsa_->num_tokens(), 1);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->oauth_token(), "access_token");
+  ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
+}
+
+// BSA returns a token with an empty extensions value.
+TEST_F(TokenFetcherImplTest, MalformedTokenEmptyExtensionsValue) {
+  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
+  privacy_pass_token_data.set_token("some-token");
+
+  quiche::BlindSignToken bsa_token;
+  bsa_token.token = privacy_pass_token_data.SerializeAsString();
+  bsa_token.expiration = absl::FromTimeT(expiration_time_.ToTimeT());
+
+  bsa_->set_tokens({bsa_token});
+
+  GetAuthnTokens(1);
+
+  EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
+  EXPECT_EQ(bsa_->num_tokens(), 1);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->oauth_token(), "access_token");
+  ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
+}
+
 // BSA returns a 400 error.
 TEST_F(TokenFetcherImplTest, BlindSignedTokenError400) {
   bsa_->set_status(absl::InvalidArgumentError("uhoh"));

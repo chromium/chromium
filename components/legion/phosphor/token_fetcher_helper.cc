@@ -84,6 +84,12 @@ TokenFetcherHelper::CreateBlindSignedAuthToken(
     return std::nullopt;
   }
 
+  if (privacy_pass_token_data.token().empty() ||
+      privacy_pass_token_data.encoded_extensions().empty()) {
+    VLOG(2) << "PrivacyPassTokenData is missing fields";
+    return std::nullopt;
+  }
+
   const std::string& encoded_extensions =
       privacy_pass_token_data.encoded_extensions();
   if (!base::ContainsOnlyChars(encoded_extensions,
