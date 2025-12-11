@@ -73,18 +73,22 @@ static const size_t kMaxOutstandingRequestsPerThread = 100;
 static const base::TimeDelta kProgressNotificationInterval =
     base::Milliseconds(50);
 
-class ThrottlingController final
-    : public GarbageCollected<ThrottlingController>,
-      public GarbageCollectedMixin {
+class FileReader::ThrottlingController final
+    : public GarbageCollected<FileReader::ThrottlingController>,
+      public Supplement<ExecutionContext> {
  public:
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kThrottlingController;
+
   static ThrottlingController* From(ExecutionContext* context) {
     if (!context)
       return nullptr;
 
-    ThrottlingController* controller = context->GetThrottlingController();
+    ThrottlingController* controller =
+        Supplement<ExecutionContext>::From<ThrottlingController>(*context);
     if (!controller) {
       controller = MakeGarbageCollected<ThrottlingController>(*context);
-      context->SetThrottlingController(controller);
+      ProvideTo(*context, controller);
     }
     return controller;
   }
@@ -121,13 +125,13 @@ class ThrottlingController final
   }
 
   explicit ThrottlingController(ExecutionContext& context)
-      : execution_context_(context),
+      : Supplement<ExecutionContext>(context),
         max_running_readers_(kMaxOutstandingRequestsPerThread) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(pending_readers_);
     visitor->Trace(running_readers_);
-    visitor->Trace(execution_context_);
+    Supplement<ExecutionContext>::Trace(visitor);
   }
 
  private:
@@ -168,9 +172,8 @@ class ThrottlingController final
   void ExecuteReaders() {
     // Dont execute more readers if the context is already destroyed (or in the
     // process of being destroyed).
-    if (execution_context_->IsContextDestroyed()) {
+    if (GetSupplementable()->IsContextDestroyed())
       return;
-    }
     while (running_readers_.size() < max_running_readers_) {
       if (pending_readers_.empty())
         return;
@@ -180,7 +183,6 @@ class ThrottlingController final
     }
   }
 
-  Member<ExecutionContext> execution_context_;
   const size_t max_running_readers_;
 
   using FileReaderDeque = HeapDeque<Member<FileReader>>;

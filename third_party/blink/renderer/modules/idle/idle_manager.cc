@@ -16,21 +16,26 @@
 namespace blink {
 
 // static
+const unsigned IdleManager::kSupplementIndex =
+    static_cast<unsigned>(ExecutionContext::Supplements::kIdleManager);
+
+// static
 IdleManager* IdleManager::From(ExecutionContext* context) {
   DCHECK(context);
   DCHECK(context->IsContextThread());
 
-  IdleManager* manager = context->GetIdleManager();
+  IdleManager* manager =
+      Supplement<ExecutionContext>::From<IdleManager>(context);
   if (!manager) {
     manager = MakeGarbageCollected<IdleManager>(context);
-    context->SetIdleManager(manager);
+    Supplement<ExecutionContext>::ProvideTo(*context, manager);
   }
 
   return manager;
 }
 
 IdleManager::IdleManager(ExecutionContext* context)
-    : execution_context_(*context),
+    : Supplement<ExecutionContext>(*context),
       idle_service_(context),
       permission_service_(context) {}
 
@@ -39,7 +44,7 @@ IdleManager::~IdleManager() = default;
 ScriptPromise<V8PermissionState> IdleManager::RequestPermission(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  ExecutionContext* context = execution_context_;
+  ExecutionContext* context = GetSupplementable();
   DCHECK_EQ(context, ExecutionContext::From(script_state));
 
   // This function is annotated with [Exposed=Window].
@@ -82,7 +87,7 @@ void IdleManager::AddMonitor(
     mojo::PendingRemote<mojom::blink::IdleMonitor> monitor,
     mojom::blink::IdleManager::AddMonitorCallback callback) {
   if (!idle_service_.is_bound()) {
-    ExecutionContext* context = execution_context_;
+    ExecutionContext* context = GetSupplementable();
     // See https://bit.ly/2S0zRAS for task types.
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         context->GetTaskRunner(TaskType::kMiscPlatformAPI);
@@ -96,12 +101,12 @@ void IdleManager::AddMonitor(
 void IdleManager::Trace(Visitor* visitor) const {
   visitor->Trace(idle_service_);
   visitor->Trace(permission_service_);
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 void IdleManager::InitForTesting(
     mojo::PendingRemote<mojom::blink::IdleManager> idle_service) {
-  ExecutionContext* context = execution_context_;
+  ExecutionContext* context = GetSupplementable();
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       context->GetTaskRunner(TaskType::kMiscPlatformAPI);

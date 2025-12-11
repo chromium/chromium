@@ -79,7 +79,7 @@ class SyncReadbackThread : public ThreadSafeRefCounted<SyncReadbackThread> {
 
 BackgroundReadback::BackgroundReadback(base::PassKey<BackgroundReadback> key,
                                        ExecutionContext& context)
-    : execution_context_(context),
+    : Supplement<ExecutionContext>(context),
       sync_readback_impl_(base::MakeRefCounted<SyncReadbackThread>()),
       worker_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::WithBaseSyncPrimitives()},
@@ -91,11 +91,12 @@ BackgroundReadback::~BackgroundReadback() {
 
 // static
 BackgroundReadback* BackgroundReadback::From(ExecutionContext& context) {
-  BackgroundReadback* supplement = context.GetBackgroundReadback();
+  BackgroundReadback* supplement =
+      Supplement<ExecutionContext>::From<BackgroundReadback>(context);
   if (!supplement) {
     supplement = MakeGarbageCollected<BackgroundReadback>(
         base::PassKey<BackgroundReadback>(), context);
-    context.SetBackgroundReadback(supplement);
+    Supplement<ExecutionContext>::ProvideTo(context, supplement);
   }
   return supplement;
 }

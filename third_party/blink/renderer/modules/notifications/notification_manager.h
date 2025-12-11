@@ -27,8 +27,11 @@ class V8NotificationPermission;
 //
 // TODO(peter): Make the NotificationManager responsible for resource loading.
 class NotificationManager final : public GarbageCollected<NotificationManager>,
-                                  public GarbageCollectedMixin {
+                                  public Supplement<ExecutionContext> {
  public:
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kNotificationManager;
+
   static NotificationManager* From(ExecutionContext* context);
 
   explicit NotificationManager(ExecutionContext& context);
@@ -110,7 +113,6 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   void OnNotificationServiceConnectionError();
   void OnPermissionServiceConnectionError();
 
-  Member<ExecutionContext> execution_context_;
   HeapMojoRemote<mojom::blink::NotificationService> notification_service_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };

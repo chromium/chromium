@@ -22,16 +22,17 @@ namespace blink {
 NavigatorBadge& NavigatorBadge::From(ScriptState* script_state) {
   DCHECK(IsAllowed(script_state));
   ExecutionContext* context = ExecutionContext::From(script_state);
-  NavigatorBadge* supplement = context->GetNavigatorBadge();
+  NavigatorBadge* supplement =
+      Supplement<ExecutionContext>::From<NavigatorBadge>(context);
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorBadge>(context);
-    context->SetNavigatorBadge(supplement);
+    ProvideTo(*context, supplement);
   }
   return *supplement;
 }
 
 NavigatorBadge::NavigatorBadge(ExecutionContext* context)
-    : execution_context_(*context) {}
+    : Supplement(*context) {}
 
 // static
 ScriptPromise<IDLUndefined> NavigatorBadge::setAppBadge(
@@ -90,7 +91,7 @@ ScriptPromise<IDLUndefined> NavigatorBadge::clearAppBadge(
 }
 
 void NavigatorBadge::Trace(Visitor* visitor) const {
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 // static
@@ -169,7 +170,7 @@ bool NavigatorBadge::IsAllowed(ScriptState* script_state) {
 
 mojo::Remote<mojom::blink::BadgeService> NavigatorBadge::badge_service() {
   mojo::Remote<mojom::blink::BadgeService> badge_service;
-  execution_context_->GetBrowserInterfaceBroker().GetInterface(
+  GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
       badge_service.BindNewPipeAndPassReceiver());
   DCHECK(badge_service);
 

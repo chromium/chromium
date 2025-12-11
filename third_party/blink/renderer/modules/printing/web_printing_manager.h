@@ -20,10 +20,12 @@ class ExecutionContext;
 class WebPrinter;
 
 class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
-                                          public GarbageCollectedMixin {
+                                          public Supplement<ExecutionContext> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Getter for printing (available in the window global scope)
   static WebPrintingManager* GetWebPrintingManager(ExecutionContext&);
 
@@ -43,7 +45,6 @@ class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
 
   ExecutionContext* GetExecutionContext();
 
-  Member<ExecutionContext> execution_context_;
   HeapMojoRemote<mojom::blink::WebPrintingService> printing_service_;
 };
 

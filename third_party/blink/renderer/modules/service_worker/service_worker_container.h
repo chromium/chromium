@@ -61,11 +61,14 @@ class V8UnionTrustedScriptURLOrUSVString;
 
 class MODULES_EXPORT ServiceWorkerContainer final
     : public EventTarget,
+      public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleObserver,
       public WebServiceWorkerProviderClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   static ServiceWorkerContainer* From(ExecutionContext&);
 
   static ServiceWorkerContainer* CreateForTesting(
@@ -150,8 +153,6 @@ class MODULES_EXPORT ServiceWorkerContainer final
                             TransferableMessage);
 
   void OnGetRegistrationForReady(WebServiceWorkerRegistrationObjectInfo info);
-
-  Member<ExecutionContext> execution_context_;
 
   std::unique_ptr<WebServiceWorkerProvider> provider_;
   Member<ServiceWorker> controller_;

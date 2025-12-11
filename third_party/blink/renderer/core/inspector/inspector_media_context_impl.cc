@@ -14,20 +14,25 @@
 
 namespace blink {
 
+const unsigned MediaInspectorContextImpl::kSupplementIndex =
+    static_cast<unsigned>(
+        ExecutionContext::Supplements::kMediaInspectorContextImpl);
+
 // static
 MediaInspectorContextImpl* MediaInspectorContextImpl::From(
     ExecutionContext& execution_context) {
-  auto* context = execution_context.GetMediaInspectorContextImpl();
+  auto* context = Supplement<ExecutionContext>::From<MediaInspectorContextImpl>(
+      execution_context);
   if (!context) {
     context =
         MakeGarbageCollected<MediaInspectorContextImpl>(execution_context);
-    execution_context.SetMediaInspectorContextImpl(context);
+    Supplement<ExecutionContext>::ProvideTo(execution_context, context);
   }
   return context;
 }
 
 MediaInspectorContextImpl::MediaInspectorContextImpl(ExecutionContext& context)
-    : execution_context_(context) {
+    : Supplement<ExecutionContext>(context) {
   DCHECK(context.IsWindow() || context.IsWorkerGlobalScope());
 }
 
@@ -41,7 +46,7 @@ static Vector<T> Iter2Vector(const Iterable& iterable) {
 
 // Garbage collection method.
 void MediaInspectorContextImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
   visitor->Trace(players_);
 }
 
@@ -64,9 +69,9 @@ WebString MediaInspectorContextImpl::CreatePlayer() {
   MediaPlayer* player = MakeGarbageCollected<MediaPlayer>();
   player->player_id = next_player_id;
   players_.insert(next_player_id, player);
-  probe::PlayerCreated(execution_context_, *player);
-  if (!execution_context_->GetProbeSink() ||
-      !execution_context_->GetProbeSink()->HasInspectorMediaAgents()) {
+  probe::PlayerCreated(GetSupplementable(), *player);
+  if (!GetSupplementable()->GetProbeSink() ||
+      !GetSupplementable()->GetProbeSink()->HasInspectorMediaAgents()) {
     unsent_players_.push_back(next_player_id);
   }
   return next_player_id;
@@ -178,7 +183,7 @@ void MediaInspectorContextImpl::NotifyPlayerErrors(
 
   Vector<InspectorPlayerError> vector =
       Iter2Vector<InspectorPlayerError>(errors);
-  probe::PlayerErrorsRaised(execution_context_, player_id, vector);
+  probe::PlayerErrorsRaised(GetSupplementable(), player_id, vector);
 }
 
 void MediaInspectorContextImpl::NotifyPlayerEvents(
@@ -194,7 +199,7 @@ void MediaInspectorContextImpl::NotifyPlayerEvents(
 
   Vector<InspectorPlayerEvent> vector =
       Iter2Vector<InspectorPlayerEvent>(events);
-  probe::PlayerEventsAdded(execution_context_, player_id, vector);
+  probe::PlayerEventsAdded(GetSupplementable(), player_id, vector);
 }
 
 void MediaInspectorContextImpl::SetPlayerProperties(
@@ -207,7 +212,7 @@ void MediaInspectorContextImpl::SetPlayerProperties(
       player->value->properties.Set(property.name, property);
     properties.assign(player->value->properties.Values());
   }
-  probe::PlayerPropertiesChanged(execution_context_, player_id, properties);
+  probe::PlayerPropertiesChanged(GetSupplementable(), player_id, properties);
 }
 
 void MediaInspectorContextImpl::NotifyPlayerMessages(
@@ -223,7 +228,7 @@ void MediaInspectorContextImpl::NotifyPlayerMessages(
 
   Vector<InspectorPlayerMessage> vector =
       Iter2Vector<InspectorPlayerMessage>(messages);
-  probe::PlayerMessagesLogged(execution_context_, player_id, vector);
+  probe::PlayerMessagesLogged(GetSupplementable(), player_id, vector);
 }
 
 HeapHashMap<String, Member<MediaPlayer>>*

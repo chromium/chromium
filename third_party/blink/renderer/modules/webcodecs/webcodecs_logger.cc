@@ -24,7 +24,7 @@ void WebCodecsLogger::VideoFrameCloseAuditor::Clear() {
 }
 
 WebCodecsLogger::WebCodecsLogger(ExecutionContext& context)
-    : execution_context_(context),
+    : Supplement<ExecutionContext>(context),
       close_auditor_(base::MakeRefCounted<VideoFrameCloseAuditor>()),
       timer_(context.GetTaskRunner(TaskType::kInternalMedia),
              this,
@@ -32,10 +32,11 @@ WebCodecsLogger::WebCodecsLogger(ExecutionContext& context)
 
 // static
 WebCodecsLogger& WebCodecsLogger::From(ExecutionContext& context) {
-  WebCodecsLogger* supplement = context.GetWebCodecsLogger();
+  WebCodecsLogger* supplement =
+      Supplement<ExecutionContext>::From<WebCodecsLogger>(context);
   if (!supplement) {
     supplement = MakeGarbageCollected<WebCodecsLogger>(context);
-    context.SetWebCodecsLogger(supplement);
+    Supplement<ExecutionContext>::ProvideTo(context, supplement);
   }
 
   return *supplement;
@@ -66,7 +67,7 @@ void WebCodecsLogger::LogCloseErrors(TimerBase*) {
   if (!close_auditor_->were_frames_not_closed())
     return;
 
-  ExecutionContext* execution_context = execution_context_;
+  auto* execution_context = GetSupplementable();
   if (!execution_context->IsContextDestroyed()) {
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kJavaScript,
@@ -81,7 +82,7 @@ void WebCodecsLogger::LogCloseErrors(TimerBase*) {
 
 void WebCodecsLogger::Trace(Visitor* visitor) const {
   visitor->Trace(timer_);
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 }  // namespace blink

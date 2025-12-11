@@ -77,11 +77,15 @@ enum class LocalNetworkAccessRequestType {
 // Object factory for RTC PeerConnections.
 class MODULES_EXPORT PeerConnectionDependencyFactory
     : public GarbageCollected<PeerConnectionDependencyFactory>,
+      public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleObserver {
   USING_PRE_FINALIZER(PeerConnectionDependencyFactory,
                       CleanupPeerConnectionFactory);
 
  public:
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kPeerConnectionDependencyFactory;
+
   static PeerConnectionDependencyFactory& From(ExecutionContext& context);
   PeerConnectionDependencyFactory(
       ExecutionContext& context,
@@ -213,8 +217,6 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       std::unique_ptr<IpcNetworkManager> network_manager,
       base::WaitableEvent* event);
   void CleanupPeerConnectionFactory();
-
-  Member<ExecutionContext> execution_context_;
 
   void DoGetDevtoolsToken(
       base::OnceCallback<void(std::optional<base::UnguessableToken>)> then);

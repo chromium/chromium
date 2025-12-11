@@ -20,8 +20,10 @@ class FileSystemObservation;
 
 class FileSystemObservationCollection final
     : public GarbageCollected<FileSystemObservationCollection>,
-      public GarbageCollectedMixin {
+      public Supplement<ExecutionContext> {
  public:
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kFileSystemObservationCollection;
   static FileSystemObservationCollection* From(ExecutionContext* context);
   explicit FileSystemObservationCollection(ExecutionContext& context);
   ~FileSystemObservationCollection() = default;
@@ -41,7 +43,6 @@ class FileSystemObservationCollection final
 
  private:
   Member<ExecutionContext> execution_context_;
-
   // Map of observers with active observations. The observer should stick around
   // for as long as there are active observations. As such, it is a Member of
   // the HeapHashMap.

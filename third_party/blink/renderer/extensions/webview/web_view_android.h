@@ -17,11 +17,16 @@
 
 namespace blink {
 
-class EXTENSIONS_WEBVIEW_EXPORT WebViewAndroid : public ScriptWrappable,
-                                                 public ExecutionContextClient {
+class EXTENSIONS_WEBVIEW_EXPORT WebViewAndroid
+    : public ScriptWrappable,
+      public Supplement<ExecutionContext>,
+      public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kWebViewAndroid;
+
   static WebViewAndroid& From(ExecutionContext&);
 
   explicit WebViewAndroid(ExecutionContext&);
@@ -45,7 +50,6 @@ class EXTENSIONS_WEBVIEW_EXPORT WebViewAndroid : public ScriptWrappable,
       ScriptPromiseResolver<MediaIntegrityTokenProvider>* resolver,
       std::optional<mojom::blink::WebViewMediaIntegrityErrorCode> error);
 
-  Member<ExecutionContext> execution_context_;
   HeapHashSet<Member<ScriptPromiseResolver<MediaIntegrityTokenProvider>>>
       provider_resolvers_;
   HeapMojoRemote<mojom::blink::WebViewMediaIntegrityService>

@@ -114,11 +114,12 @@ void RtcTransportDependencies::GetInitialized(
     ExecutionContext& context,
     base::OnceCallback<void(RtcTransportDependencies*)> callback) {
   CHECK(!context.IsContextDestroyed());
-  RtcTransportDependencies* supplement = context.GetRtcTransportDependencies();
+  RtcTransportDependencies* supplement =
+      Supplement::From<RtcTransportDependencies>(context);
   if (!supplement) {
     supplement =
         MakeGarbageCollected<RtcTransportDependencies>(context, PassKey());
-    context.SetRtcTransportDependencies(supplement);
+    ProvideTo(context, supplement);
   }
   supplement->RunOnceInitialized(
       base::BindOnce(std::move(callback), WrapPersistent(supplement)));
@@ -126,8 +127,8 @@ void RtcTransportDependencies::GetInitialized(
 
 RtcTransportDependencies::RtcTransportDependencies(ExecutionContext& context,
                                                    PassKey)
-    : ExecutionContextLifecycleObserver(&context),
-      execution_context_(context),
+    : Supplement(context),
+      ExecutionContextLifecycleObserver(&context),
       p2p_socket_dispatcher_(P2PSocketDispatcher::From(context)),
       webrtc_environment_(webrtc::EnvironmentFactory().Create()) {
   // Start initialization on the network thread.
@@ -230,7 +231,7 @@ void RtcTransportDependencies::ContextDestroyed() {
 }
 
 void RtcTransportDependencies::Trace(Visitor* visitor) const {
-  visitor->Trace(execution_context_);
+  Supplement::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(p2p_socket_dispatcher_);
 }

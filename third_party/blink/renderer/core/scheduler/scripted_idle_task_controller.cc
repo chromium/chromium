@@ -95,10 +95,10 @@ IdleTask::~IdleTask() {
 ScriptedIdleTaskController& ScriptedIdleTaskController::From(
     ExecutionContext& context) {
   ScriptedIdleTaskController* controller =
-      context.GetScriptedIdleTaskController();
+      Supplement<ExecutionContext>::From<ScriptedIdleTaskController>(&context);
   if (!controller) {
     controller = MakeGarbageCollected<ScriptedIdleTaskController>(&context);
-    context.SetScriptedIdleTaskController(controller);
+    Supplement<ExecutionContext>::ProvideTo(context, controller);
   }
   return *controller;
 }
@@ -106,7 +106,7 @@ ScriptedIdleTaskController& ScriptedIdleTaskController::From(
 ScriptedIdleTaskController::ScriptedIdleTaskController(
     ExecutionContext* context)
     : ExecutionContextLifecycleStateObserver(context),
-      execution_context_(*context),
+      Supplement<ExecutionContext>(*context),
       scheduler_(ThreadScheduler::Current()) {
   UpdateStateIfNeeded();
 }
@@ -118,7 +118,7 @@ ScriptedIdleTaskController::~ScriptedIdleTaskController() {
 void ScriptedIdleTaskController::Trace(Visitor* visitor) const {
   visitor->Trace(idle_tasks_);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 int ScriptedIdleTaskController::NextCallbackId() {

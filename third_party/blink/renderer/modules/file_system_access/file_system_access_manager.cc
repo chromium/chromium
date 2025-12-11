@@ -11,25 +11,31 @@
 namespace blink {
 
 // static
+const unsigned FileSystemAccessManager::kSupplementIndex =
+    static_cast<unsigned>(
+        ExecutionContext::Supplements::kFileSystemAccessManager);
+
+// static
 FileSystemAccessManager& FileSystemAccessManager::From(
     ExecutionContext* context) {
-  FileSystemAccessManager* manager = context->GetFileSystemAccessManager();
+  FileSystemAccessManager* manager =
+      Supplement<ExecutionContext>::From<FileSystemAccessManager>(context);
   if (!manager) {
     manager = MakeGarbageCollected<FileSystemAccessManager>(context);
-    context->SetFileSystemAccessManager(manager);
+    Supplement<ExecutionContext>::ProvideTo(*context, manager);
   }
   manager->EnsureConnection();
   return *manager;
 }
 
 FileSystemAccessManager::FileSystemAccessManager(ExecutionContext* context)
-    : ExecutionContextClient(context),
-      execution_context_(*context),
+    : Supplement<ExecutionContext>(*context),
+      ExecutionContextClient(context),
       remote_(context) {}
 
 void FileSystemAccessManager::Trace(Visitor* visitor) const {
   visitor->Trace(remote_);
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 

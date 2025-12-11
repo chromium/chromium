@@ -12,18 +12,18 @@
 
 namespace blink {
 
-class CrosKiosk : public ScriptWrappable, public GarbageCollectedMixin {
+class CrosKiosk : public ScriptWrappable, public Supplement<ExecutionContext> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kCrosKiosk;
+
   static CrosKiosk& From(ExecutionContext&);
 
   explicit CrosKiosk(ExecutionContext&);
 
   void Trace(Visitor*) const override;
-
- private:
-  Member<ExecutionContext> execution_context_;
 };
 
 }  // namespace blink

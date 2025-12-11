@@ -24,8 +24,11 @@ class ExecutionContext;
 // associated with `EventListener`s.
 class CORE_EXPORT AbortSignalRegistry
     : public GarbageCollected<AbortSignalRegistry>,
+      public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleObserver {
  public:
+  static const unsigned kSupplementIndex;
+
   static AbortSignalRegistry* From(ExecutionContext&);
 
   explicit AbortSignalRegistry(ExecutionContext&);
@@ -48,8 +51,6 @@ class CORE_EXPORT AbortSignalRegistry
   void ContextDestroyed() override;
 
  private:
-  Member<ExecutionContext> execution_context_;
-
   // Map holding abort algorithm handlers for event listeners that have them,
   // tying the lifetime of the abort algorithm to the `EventListener`. This is
   // cleared when context is destroyed since we won't run event listeners after

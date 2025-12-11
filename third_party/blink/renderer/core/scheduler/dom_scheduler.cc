@@ -63,17 +63,17 @@ V8TaskPriority::Enum V8TaskEnumFromWebSchedulingPriority(
 }  // namespace
 
 DOMScheduler* DOMScheduler::scheduler(ExecutionContext& context) {
-  DOMScheduler* scheduler = context.GetDOMScheduler();
+  DOMScheduler* scheduler = Supplement::From<DOMScheduler>(context);
   if (!scheduler) {
     scheduler = MakeGarbageCollected<DOMScheduler>(&context);
-    context.SetDOMScheduler(scheduler);
+    Supplement::ProvideTo(context, scheduler);
   }
   return scheduler;
 }
 
 DOMScheduler::DOMScheduler(ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
-      execution_context_(*context),
+      Supplement<ExecutionContext>(*context),
       fixed_priority_task_signals_(kWebSchedulingPriorityCount) {
   if (context->IsContextDestroyed()) {
     return;
@@ -96,7 +96,7 @@ void DOMScheduler::Trace(Visitor* visitor) const {
   visitor->Trace(signal_to_continuation_queue_map_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 ScriptPromise<IDLAny> DOMScheduler::postTask(

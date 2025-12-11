@@ -661,12 +661,13 @@ void WaitForEncoderSupportReady(
 PeerConnectionDependencyFactory& PeerConnectionDependencyFactory::From(
     ExecutionContext& context) {
   CHECK(!context.IsContextDestroyed());
-  PeerConnectionDependencyFactory* supplement =
-      context.GetPeerConnectionDependencyFactory();
+  auto* supplement =
+      Supplement<ExecutionContext>::From<PeerConnectionDependencyFactory>(
+          context);
   if (!supplement) {
     supplement = MakeGarbageCollected<PeerConnectionDependencyFactory>(
         context, PassKey());
-    context.SetPeerConnectionDependencyFactory(supplement);
+    ProvideTo(context, supplement);
   }
   return *supplement;
 }
@@ -674,8 +675,8 @@ PeerConnectionDependencyFactory& PeerConnectionDependencyFactory::From(
 PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
     ExecutionContext& context,
     PassKey)
-    : ExecutionContextLifecycleObserver(&context),
-      execution_context_(context),
+    : Supplement(context),
+      ExecutionContextLifecycleObserver(&context),
       context_task_runner_(
           context.GetTaskRunner(TaskType::kInternalMediaRealTime)),
       network_manager_(nullptr),
@@ -692,7 +693,7 @@ PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
 }
 
 PeerConnectionDependencyFactory::PeerConnectionDependencyFactory()
-    : ExecutionContextLifecycleObserver(nullptr), execution_context_(nullptr) {}
+    : Supplement(nullptr), ExecutionContextLifecycleObserver(nullptr) {}
 
 PeerConnectionDependencyFactory::~PeerConnectionDependencyFactory() = default;
 
@@ -759,7 +760,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
     // Note that MdnsResponderAdapter is created on the main thread to have
     // access to the connector to the service manager.
     mdns_responder =
-        std::make_unique<MdnsResponderAdapter>(*execution_context_);
+        std::make_unique<MdnsResponderAdapter>(*GetSupplementable());
   }
 #endif  // BUILDFLAG(ENABLE_MDNS)
   PostCrossThreadTask(
@@ -1285,7 +1286,7 @@ PeerConnectionDependencyFactory::GetGpuFactories() {
 }
 
 void PeerConnectionDependencyFactory::Trace(Visitor* visitor) const {
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(p2p_socket_dispatcher_);
   visitor->Trace(webrtc_video_perf_reporter_);

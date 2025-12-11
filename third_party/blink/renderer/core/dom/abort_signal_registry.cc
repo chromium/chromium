@@ -12,18 +12,23 @@
 namespace blink {
 
 // static
+const unsigned AbortSignalRegistry::kSupplementIndex =
+    static_cast<unsigned>(ExecutionContext::Supplements::kAbortSignalRegistry);
+
+// static
 AbortSignalRegistry* AbortSignalRegistry::From(ExecutionContext& context) {
-  AbortSignalRegistry* registry = context.GetAbortSignalRegistry();
+  AbortSignalRegistry* registry =
+      Supplement<ExecutionContext>::From<AbortSignalRegistry>(context);
   if (!registry) {
     registry = MakeGarbageCollected<AbortSignalRegistry>(context);
-    context.SetAbortSignalRegistry(registry);
+    Supplement<ExecutionContext>::ProvideTo(context, registry);
   }
   return registry;
 }
 
 AbortSignalRegistry::AbortSignalRegistry(ExecutionContext& context)
-    : ExecutionContextLifecycleObserver(&context),
-      execution_context_(context) {}
+    : Supplement<ExecutionContext>(context),
+      ExecutionContextLifecycleObserver(&context) {}
 
 AbortSignalRegistry::~AbortSignalRegistry() = default;
 
@@ -31,7 +36,7 @@ void AbortSignalRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(event_listener_signals_);
   visitor->Trace(signals_registered_for_abort_);
   visitor->Trace(signals_registered_for_priority_);
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

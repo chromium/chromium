@@ -36,33 +36,33 @@ NotificationManager* NotificationManager::From(ExecutionContext* context) {
   DCHECK(context);
   DCHECK(context->IsContextThread());
 
-  NotificationManager* manager = context->GetNotificationManager();
+  NotificationManager* manager =
+      Supplement<ExecutionContext>::From<NotificationManager>(context);
   if (!manager) {
     manager = MakeGarbageCollected<NotificationManager>(*context);
-    context->SetNotificationManager(manager);
+    Supplement<ExecutionContext>::ProvideTo(*context, manager);
   }
 
   return manager;
 }
 
 NotificationManager::NotificationManager(ExecutionContext& context)
-    : execution_context_(context),
+    : Supplement<ExecutionContext>(context),
       notification_service_(&context),
       permission_service_(&context) {}
 
 NotificationManager::~NotificationManager() = default;
 
 mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
-  if (execution_context_->IsContextDestroyed()) {
+  if (GetSupplementable()->IsContextDestroyed())
     return mojom::blink::PermissionStatus::DENIED;
-  }
 
   // Tentatively have an early return to avoid calling GetNotificationService()
   // during prerendering. The return value is the same as
   // `Notification::permission`'s.
   // TODO(1280155): defer the construction of notification to ensure this method
   // is not called during prerendering instead.
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(GetSupplementable())) {
     if (Document* document = window->document(); document->IsPrerendering()) {
       return mojom::blink::PermissionStatus::ASK;
     }
@@ -83,7 +83,7 @@ mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
 
 void NotificationManager::GetPermissionStatusAsync(
     base::OnceCallback<void(mojom::blink::PermissionStatus)> callback) {
-  if (execution_context_->IsContextDestroyed()) {
+  if (GetSupplementable()->IsContextDestroyed()) {
     std::move(callback).Run(mojom::blink::PermissionStatus::DENIED);
     return;
   }
@@ -93,7 +93,7 @@ void NotificationManager::GetPermissionStatusAsync(
   // `Notification::permission`'s.
   // TODO(1280155): defer the construction of notification to ensure this method
   // is not called during prerendering instead.
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(GetSupplementable())) {
     if (Document* document = window->document(); document->IsPrerendering()) {
       std::move(callback).Run(mojom::blink::PermissionStatus::ASK);
       return;
@@ -292,8 +292,8 @@ NotificationManager::GetNotificationService() {
   if (!notification_service_.is_bound()) {
     // See https://bit.ly/2S0zRAS for task types
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI);
-    execution_context_->GetBrowserInterfaceBroker().GetInterface(
+        GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI);
+    GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
         notification_service_.BindNewPipeAndPassReceiver(task_runner));
 
     notification_service_.set_disconnect_handler(
@@ -307,7 +307,7 @@ NotificationManager::GetNotificationService() {
 void NotificationManager::Trace(Visitor* visitor) const {
   visitor->Trace(notification_service_);
   visitor->Trace(permission_service_);
-  visitor->Trace(execution_context_);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 }  // namespace blink

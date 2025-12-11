@@ -30,22 +30,27 @@
 #include "url/origin.h"
 
 namespace blink {
+namespace {
 
 class ParsedFeaturePolicies final
     : public GarbageCollected<ParsedFeaturePolicies>,
-      public GarbageCollectedMixin {
+      public Supplement<ExecutionContext> {
  public:
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kParsedFeaturePolicies;
+
   static ParsedFeaturePolicies& From(ExecutionContext& context) {
-    ParsedFeaturePolicies* policies = context.GetParsedFeaturePolicies();
+    ParsedFeaturePolicies* policies =
+        Supplement<ExecutionContext>::From<ParsedFeaturePolicies>(context);
     if (!policies) {
       policies = MakeGarbageCollected<ParsedFeaturePolicies>(context);
-      context.SetParsedFeaturePolicies(policies);
+      Supplement<ExecutionContext>::ProvideTo(context, policies);
     }
     return *policies;
   }
 
   explicit ParsedFeaturePolicies(ExecutionContext& context)
-      : execution_context_(context),
+      : Supplement<ExecutionContext>(context),
         policies_(static_cast<size_t>(
                       network::mojom::PermissionsPolicyFeature::kMaxValue) +
                   1) {}
@@ -59,19 +64,11 @@ class ParsedFeaturePolicies final
     return false;
   }
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(execution_context_);
-  }
-
  private:
-  Member<ExecutionContext> execution_context_;
-
   // Tracks which permissions policies have already been parsed, so as not to
   // count them multiple times.
   Vector<bool> policies_;
 };
-
-namespace {
 
 class FeatureObserver {
  public:

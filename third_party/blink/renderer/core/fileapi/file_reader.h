@@ -52,7 +52,6 @@ class TaskAttributionInfo;
 class Blob;
 class ExceptionState;
 class ExecutionContext;
-class ThrottlingController;
 class V8UnionArrayBufferOrString;
 enum class FileErrorCode;
 
@@ -110,7 +109,7 @@ class CORE_EXPORT FileReader final : public EventTarget,
   void Trace(Visitor*) const override;
 
  private:
-  friend class ThrottlingController;
+  class ThrottlingController;
 
   void Terminate();
   void ReadInternal(Blob*, FileReadType, ExceptionState&);

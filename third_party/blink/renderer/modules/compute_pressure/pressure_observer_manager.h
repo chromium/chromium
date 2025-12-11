@@ -27,8 +27,11 @@ class ExecutionContext;
 // PressureManager remote.
 class MODULES_EXPORT PressureObserverManager final
     : public GarbageCollected<PressureObserverManager>,
-      public ExecutionContextLifecycleStateObserver {
+      public ExecutionContextLifecycleStateObserver,
+      public Supplement<ExecutionContext> {
  public:
+  static const unsigned kSupplementIndex;
+
   static PressureObserverManager* From(ExecutionContext*);
 
   explicit PressureObserverManager(ExecutionContext*);
@@ -59,8 +62,6 @@ class MODULES_EXPORT PressureObserverManager final
 
   void DidAddClient(V8PressureSource::Enum,
                     device::mojom::blink::PressureManagerAddClientResult);
-
-  Member<ExecutionContext> execution_context_;
 
   // Connection to the browser side implementation.
   HeapMojoRemote<mojom::blink::WebPressureManager> pressure_manager_;

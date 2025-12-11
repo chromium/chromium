@@ -1404,7 +1404,8 @@ TEST_F(DocumentSimTest, DuplicatedDocumentPolicyViolationsAreIgnored) {
   ExecutionContext* execution_context = GetDocument().GetExecutionContext();
   MockReportingContext* mock_reporting_context =
       MakeGarbageCollected<MockReportingContext>(*execution_context);
-  execution_context->SetReportingContext(mock_reporting_context);
+  Supplement<ExecutionContext>::ProvideTo(*execution_context,
+                                          mock_reporting_context);
 
   EXPECT_FALSE(execution_context->IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,

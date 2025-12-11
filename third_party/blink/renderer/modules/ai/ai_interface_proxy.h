@@ -22,8 +22,11 @@ namespace blink {
 
 // Provides static getters to browser interfaces for the built-in AI APIs.
 class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
-                               public GarbageCollectedMixin {
+                               public Supplement<ExecutionContext> {
  public:
+  static constexpr auto kSupplementIndex =
+      ExecutionContext::Supplements::kAIInterfaceProxy;
+
   using GetLanguageDetectionModelStatusCallback = base::OnceCallback<void(
       language_detection::mojom::blink::LanguageDetectionModelStatus)>;
 
@@ -72,8 +75,6 @@ class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
 
   HeapMojoRemote<mojom::blink::AIManager>& GetAIManagerRemoteImpl(
       ExecutionContext* execution_context);
-
-  Member<ExecutionContext> execution_context_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
