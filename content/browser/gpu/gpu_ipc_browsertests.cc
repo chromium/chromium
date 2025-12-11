@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   ASSERT_EQ(impl->Initialize(content::kGpuStreamPriorityDefault,
                              gpu::mojom::ContextCreationAttribs::NewGles(
                                  gpu::mojom::GLESCreationAttribs::New()),
-                             /*enable_gpu_rasterization=*/false, GURL()),
+                             GURL()),
             gpu::ContextResult::kSuccess);
 
   // Creating a transfer buffer works normally.

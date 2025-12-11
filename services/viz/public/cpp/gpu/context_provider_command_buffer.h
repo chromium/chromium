@@ -231,8 +231,6 @@ class ContextProviderCommandBuffer
 
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
 
-  bool enable_gpu_rasterization_ = false;
-
   // Shared memory mapper used by command buffer proxies created from this
   // provider when creating shared memory mappings.
   // TODO(crbug.com/40837434) remove this member again once users of the command

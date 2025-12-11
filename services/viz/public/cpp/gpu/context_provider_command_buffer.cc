@@ -76,7 +76,6 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
       attributes_(std::move(attributes)),
       context_type_(type),
       channel_(std::move(channel)),
-      enable_gpu_rasterization_(enable_gpu_rasterization),
       buffer_mapper_(buffer_mapper) {
   DETACH_FROM_SEQUENCE(context_sequence_checker_);
   DCHECK(channel_);
@@ -258,8 +257,8 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
       channel_, stream_id_, default_task_runner_, buffer_mapper_);
   bind_result_ = command_buffer_->Initialize(
-      stream_priority_, attributes_.Clone(), enable_gpu_rasterization_,
-      active_url_, command_buffer_metrics::ContextTypeToString(context_type_));
+      stream_priority_, attributes_.Clone(), active_url_,
+      command_buffer_metrics::ContextTypeToString(context_type_));
   if (bind_result_ != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "GpuChannelHost failed to create command buffer.";
     command_buffer_metrics::UmaRecordContextInitFailed(context_type_);

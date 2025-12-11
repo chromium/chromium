@@ -68,7 +68,6 @@ CommandBufferProxyImpl::~CommandBufferProxyImpl() {
 ContextResult CommandBufferProxyImpl::Initialize(
     gpu::SchedulingPriority stream_priority,
     mojom::ContextCreationAttribsPtr attribs,
-    bool enable_gpu_rasterization,
     const GURL& active_url,
     const std::string_view label) {
   TRACE_EVENT0("gpu", "GpuChannelHost::CreateViewCommandBuffer");

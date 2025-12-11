@@ -138,7 +138,7 @@ class CommandBufferProxyImplTest
     proxy->Initialize(SchedulingPriority::kNormal,
                       mojom::ContextCreationAttribs::NewGles(
                           mojom::GLESCreationAttribs::New()),
-                      /*enable_gpu_rasterization=*/false, GURL());
+                      GURL());
     // Use an arbitrary valid shm_id. The command buffer doesn't use this
     // directly, but not setting it triggers DCHECKs.
     proxy->SetGetBuffer(1 /* shm_id */);

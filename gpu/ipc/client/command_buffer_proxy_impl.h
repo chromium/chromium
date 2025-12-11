@@ -92,7 +92,6 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   // Connect to a command buffer in the GPU process.
   ContextResult Initialize(gpu::SchedulingPriority stream_priority,
                            mojom::ContextCreationAttribsPtr attribs,
-                           bool enable_gpu_rasterization,
                            const GURL& active_url = GURL(),
                            const std::string_view label = "");
 
