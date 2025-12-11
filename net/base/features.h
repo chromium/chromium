@@ -632,9 +632,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kDeviceBoundSessionsCheckSubdomainRegistration);
 // This feature controls the database schema version for stored sessions.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kDeviceBoundSessionsSchemaVersion);
-// This feature controls whether the "aud" field is included in the JWT.
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                      kDeviceBoundSessionsIncludeAudFieldInJwt);
 
 // This feature controls whether DBSC allows federated sessions.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsFederatedRegistration);
@@ -643,10 +640,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsFederatedRegistration);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kDeviceBoundSessionsFederatedRegistrationCheckWellKnown);
-// Controls whether federated sessions require the key thumbprint to match.
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kDeviceBoundSessionFederatedRegistrationRequireThumbprintMatch);
 
 // This feature controls whether to proactively trigger Device
 // Bound Session refreshes when a cookie is soon to expire.
