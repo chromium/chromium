@@ -4,21 +4,17 @@
 
 #include "chrome/browser/actor/ui/dom_node_geometry.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace actor::ui {
 namespace {
-using base::UmaHistogramEnumeration;
 using optimization_guide::proto::AnnotatedPageContent;
 using optimization_guide::proto::ContentAttributes;
 using optimization_guide::proto::ContentNode;
 using optimization_guide::proto::DocumentIdentifier;
 using NodeGeomMap = DomNodeGeometry::NodeGeomMap;
-
-constexpr std::string_view kDomNodeResultHistogram =
-    "Actor.DomNodeGeometry.GetDomNodeResult";
 
 void BuildNodeMapInternal(const DocumentIdentifier& doc_id,
                           const ContentNode& root,
@@ -67,8 +63,7 @@ base::expected<gfx::Point, GetDomNodeResult> DomNodeGeometry::GetDomNode(
     const DomNode& node) const {
   TRACE_EVENT("actor", "DomNodeGeometry::GetDomNode");
   auto result = InternalGetDomNode(node);
-  UmaHistogramEnumeration(kDomNodeResultHistogram,
-                          result.error_or(GetDomNodeResult::kSuccess));
+  RecordGetDomNodeResult(result.error_or(GetDomNodeResult::kSuccess));
   return result;
 }
 

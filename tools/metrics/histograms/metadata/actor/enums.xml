@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kCallbackError"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_tab_controller_interface.h:ActorUiTabControllerError) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ActorUiTabControllerError) -->
 
 <!-- LINT.IfChange(ComputedTargetResult) -->
 
@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kTargetNotResolvedInApc"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/ui/event_dispatcher.h:ComputedTargetResult) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ComputedTargetResult) -->
 
 <!-- LINT.IfChange(GatingDecision) -->
 
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kOffScreen"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/ui/dom_node_geometry.h:GetDomNodeResult) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/dom_node_geometry_types.h:GetDomNodeResult) -->
 
 <!-- LINT.IfChange(ModelPageTargetType) -->
 
@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kPoint"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/actor/ui/event_dispatcher.h:ModelPageTargetType) -->
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ModelPageTargetType) -->
 
 <!-- LINT.IfChange(PageStabilityOutcome) -->
 

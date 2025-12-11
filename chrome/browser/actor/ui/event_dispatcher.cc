@@ -361,10 +361,8 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
       VLOG(4) << VisitorTraits<V>::phase_name
               << "(SyncUiEvent): " << DebugString(event);
 
-      base::ScopedUmaHistogramTimer timer(
-          GetUiEventDurationHistogramName(GetUiEventName(event)),
-          base::ScopedUmaHistogramTimer::ScopedHistogramTiming::
-              kMicrosecondTimes);
+      base::ScopedUmaHistogramTimer timer =
+          GetUiEventDurationScopedTimer(GetUiEventName(event));
       ui_state_manager_->OnUiEvent(std::move(event));
     }
     ResetAndComplete(MakeOkResult());

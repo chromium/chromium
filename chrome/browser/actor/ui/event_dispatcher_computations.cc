@@ -4,6 +4,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/actor/actor_tab_data.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics_types.h"
 #include "chrome/browser/actor/ui/dom_node_geometry.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/ui_event.h"
@@ -13,32 +15,24 @@ namespace actor::ui {
 namespace {
 using base::UmaHistogramEnumeration;
 
-constexpr std::string_view kComputedTargetResultHistogram =
-    "Actor.EventDispatcher.ComputedTargetResult";
-constexpr std::string_view kModelPageTargetTypeHistogram =
-    "Actor.EventDispatcher.ModelPageTargetType";
-
 }  // namespace
 
 AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
                                const PageTarget& target) {
   if (std::holds_alternative<gfx::Point>(target)) {
-    UmaHistogramEnumeration(kModelPageTargetTypeHistogram,
-                            ModelPageTargetType::kPoint);
+    RecordModelPageTargetType(ModelPageTargetType::kPoint);
     return MouseMove(tab, std::get<gfx::Point>(target),
                      TargetSource::kToolRequest);
   }
 
-  UmaHistogramEnumeration(kModelPageTargetTypeHistogram,
-                          ModelPageTargetType::kDomNode);
+  RecordModelPageTargetType(ModelPageTargetType::kDomNode);
 
   // Try to compute a point target by converting the DomNode to a gfx::Point.
   auto* actor_tab_data = ActorTabData::From(tab.Get());
   if (!actor_tab_data) {
     VLOG(4) << "ComputedMouseMove: No ActorTabData available for tab "
             << tab.raw_value();
-    UmaHistogramEnumeration(kComputedTargetResultHistogram,
-                            ComputedTargetResult::kMissingActorTabData);
+    RecordComputedTargetResult(ComputedTargetResult::kMissingActorTabData);
     return MouseMove(tab, std::nullopt, TargetSource::kUnresolvableInApc);
   }
 
@@ -47,8 +41,8 @@ AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
     VLOG(4)
         << "ComputedMouseMove: No cached APC/DomNodeGeometry available for tab "
         << tab.raw_value();
-    UmaHistogramEnumeration(kComputedTargetResultHistogram,
-                            ComputedTargetResult::kMissingAnnotatedPageContent);
+    RecordComputedTargetResult(
+        ComputedTargetResult::kMissingAnnotatedPageContent);
     return MouseMove(tab, std::nullopt, TargetSource::kUnresolvableInApc);
   }
 
@@ -56,14 +50,12 @@ AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
   if (!pt_target.has_value()) {
     VLOG(4) << "ComputedMouseMove: Failed to resolve point target for "
             << DebugString(target);
-    UmaHistogramEnumeration(kComputedTargetResultHistogram,
-                            ComputedTargetResult::kTargetNotResolvedInApc);
+    RecordComputedTargetResult(ComputedTargetResult::kTargetNotResolvedInApc);
     return MouseMove(tab, std::nullopt, TargetSource::kUnresolvableInApc);
   }
   VLOG(4) << "Converted PageTarget: " << std::get<DomNode>(target) << " to "
-          << pt_target.value();
-  UmaHistogramEnumeration(kComputedTargetResultHistogram,
-                          ComputedTargetResult::kSuccess);
+          << pt_target.value().ToString();
+  RecordComputedTargetResult(ComputedTargetResult::kSuccess);
   return MouseMove(tab, pt_target.value(), TargetSource::kDerivedFromApc);
 }
 

@@ -27,8 +27,6 @@ source_set("ui") {
     "actor_overlay_ui.h",
     "actor_overlay_web_view.cc",
     "actor_overlay_web_view.h",
-    "actor_ui_metrics.cc",
-    "actor_ui_metrics.h",
     "actor_ui_state_manager.cc",
     "actor_ui_state_manager.h",
     "actor_ui_state_manager_interface.h",
@@ -68,7 +66,10 @@ source_set("ui") {
     "//ui/webui",
   ]
 
-  public_deps = [ ":mojo_bindings" ]
+  public_deps = [
+    ":metrics",
+    ":mojo_bindings",
+  ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
@@ -87,6 +88,20 @@ source_set("states") {
   ]
 
   public_deps = [ "//chrome/browser/actor:types" ]
+}
+
+source_set("metrics") {
+  sources = [
+    "actor_ui_metrics.cc",
+    "actor_ui_metrics.h",
+    "actor_ui_metrics_types.h",
+  ]
+
+  public_deps = [
+    ":dom_node_geometry_types",
+    ":states",
+    "//base",
+  ]
 }
 
 source_set("event_dispatcher") {
@@ -117,10 +132,16 @@ source_set("dom_node_geometry") {
     "dom_node_geometry.h",
   ]
   deps = [
+    ":dom_node_geometry_types",
+    ":metrics",
     "//chrome/browser/actor:types",
     "//chrome/common:chrome_features",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
+}
+
+source_set("dom_node_geometry_types") {
+  sources = [ "dom_node_geometry_types.h" ]
 }
 
 source_set("actor_ui_interactive_base") {

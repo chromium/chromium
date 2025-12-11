@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/concurrent_closures.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"

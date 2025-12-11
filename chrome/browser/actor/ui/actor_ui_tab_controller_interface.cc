@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics_types.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace actor::ui {
