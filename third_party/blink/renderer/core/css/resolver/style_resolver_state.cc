@@ -386,8 +386,7 @@ const CSSValue& StyleResolverState::ResolveLightDarkPair(
 const CSSValue& StyleResolverState::ResolveGradient(const CSSValue& value) {
   if (const auto* gradient_value =
           DynamicTo<cssvalue::CSSGradientValue>(&value)) {
-    return *gradient_value->ResolveValuesIfNeeded(
-        css_to_length_conversion_data_);
+    return *gradient_value->ResolveValuesIfNeeded(*this);
   }
   return value;
 }

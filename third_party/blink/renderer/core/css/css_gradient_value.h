@@ -41,6 +41,7 @@ namespace blink {
 class Color;
 class Gradient;
 class Document;
+class StyleResolverState;
 
 namespace cssvalue {
 
@@ -118,7 +119,7 @@ class CSSGradientValue : public CSSImageGeneratorValue {
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
   const CSSGradientValue* ResolveValuesIfNeeded(
-      const CSSToLengthConversionData& conversion_data) const;
+      const StyleResolverState&) const;
   CSSGradientValue* ComputedCSSValue(const ComputedStyle&,
                                      bool allow_visited_style,
                                      CSSValuePhase value_phase) const;
@@ -202,7 +203,7 @@ class CSSLinearGradientValue final : public CSSGradientValue {
   bool Equals(const CSSLinearGradientValue&) const;
 
   const CSSLinearGradientValue* ResolveValuesIfNeeded(
-      const CSSToLengthConversionData& conversion_data) const;
+      const StyleResolverState&) const;
   CSSLinearGradientValue* ComputedCSSValue(const ComputedStyle&,
                                            bool allow_visited_style,
                                            CSSValuePhase value_phase) const;
@@ -306,7 +307,7 @@ class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
   bool Equals(const CSSRadialGradientValue&) const;
 
   const CSSRadialGradientValue* ResolveValuesIfNeeded(
-      const CSSToLengthConversionData& conversion_data) const;
+      const StyleResolverState&) const;
   CSSRadialGradientValue* ComputedCSSValue(const ComputedStyle&,
                                            bool allow_visited_style,
                                            CSSValuePhase value_phase) const;
@@ -358,7 +359,7 @@ class CSSConicGradientValue final : public CSSGradientValue {
   bool Equals(const CSSConicGradientValue&) const;
 
   const CSSConicGradientValue* ResolveValuesIfNeeded(
-      const CSSToLengthConversionData& conversion_data) const;
+      const StyleResolverState&) const;
   CSSConicGradientValue* ComputedCSSValue(const ComputedStyle&,
                                           bool allow_visited_style,
                                           CSSValuePhase value_phase) const;
@@ -401,6 +402,8 @@ class CSSConstantGradientValue final : public CSSGradientValue {
   CSSConstantGradientValue* ComputedCSSValue(const ComputedStyle&,
                                              bool allow_visited_style,
                                              CSSValuePhase value_phase) const;
+  const CSSConstantGradientValue* ResolveValuesIfNeeded(
+      const StyleResolverState&) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

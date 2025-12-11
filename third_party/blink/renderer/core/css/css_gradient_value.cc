@@ -923,6 +923,16 @@ bool CSSGradientValue::KnownToBeOpaque(const Document& document,
   return true;
 }
 
+static const CSSValue* ResolveColor(const CSSValue* value,
+                                    const StyleResolverState& state) {
+  if (!value || value->IsColorValue()) {
+    return value;
+  }
+  StyleColor style_color =
+      StyleBuilderConverter::ConvertStyleColor(state, *value);
+  return style_color.ToCSSValue();
+}
+
 static bool NeedsResolution(const CSSPrimitiveValue* value) {
   if (!value) {
     return false;
@@ -1035,19 +1045,20 @@ static const CSSValue* ResolvePosition(
 }
 
 const CSSGradientValue* CSSGradientValue::ResolveValuesIfNeeded(
-    const CSSToLengthConversionData& conversion_data) const {
+    const StyleResolverState& style_resolver_state) const {
   switch (GetClassType()) {
     case kLinearGradientClass:
       return To<CSSLinearGradientValue>(this)->ResolveValuesIfNeeded(
-          conversion_data);
+          style_resolver_state);
     case kRadialGradientClass:
       return To<CSSRadialGradientValue>(this)->ResolveValuesIfNeeded(
-          conversion_data);
+          style_resolver_state);
     case kConicGradientClass:
       return To<CSSConicGradientValue>(this)->ResolveValuesIfNeeded(
-          conversion_data);
+          style_resolver_state);
     case kConstantGradientClass:
-      return this;
+      return To<CSSConstantGradientValue>(this)->ResolveValuesIfNeeded(
+          style_resolver_state);
     default:
       NOTREACHED();
   }
@@ -1444,7 +1455,9 @@ bool CSSLinearGradientValue::Equals(const CSSLinearGradientValue& other) const {
 }
 
 const CSSLinearGradientValue* CSSLinearGradientValue::ResolveValuesIfNeeded(
-    const CSSToLengthConversionData& conversion_data) const {
+    const StyleResolverState& style_resolver_state) const {
+  const CSSToLengthConversionData& conversion_data =
+      style_resolver_state.CssToLengthConversionData();
   const CSSValue* first_x = ResolveLength(first_x_, conversion_data);
   const CSSValue* first_y = ResolveLength(first_y_, conversion_data);
   const CSSValue* second_x = ResolveLength(second_x_, conversion_data);
@@ -1456,8 +1469,10 @@ const CSSLinearGradientValue* CSSLinearGradientValue::ResolveValuesIfNeeded(
   for (const auto& stop : stops_) {
     const auto* offset = DynamicTo<CSSPrimitiveValue>(
         ResolveLength(stop.offset_, conversion_data));
-    stops_changed = stops_changed || (offset != stop.offset_);
-    stops.push_back(CSSGradientColorStop(offset, stop.color_));
+    const CSSValue* color = ResolveColor(stop.color_, style_resolver_state);
+    stops_changed =
+        stops_changed || (offset != stop.offset_) || (color != stop.color_);
+    stops.push_back(CSSGradientColorStop(offset, color));
   }
 
   // If the values are the same as the current ones, return this.
@@ -1971,7 +1986,9 @@ bool CSSRadialGradientValue::Equals(const CSSRadialGradientValue& other) const {
 }
 
 const CSSRadialGradientValue* CSSRadialGradientValue::ResolveValuesIfNeeded(
-    const CSSToLengthConversionData& conversion_data) const {
+    const StyleResolverState& style_resolver_state) const {
+  const CSSToLengthConversionData& conversion_data =
+      style_resolver_state.CssToLengthConversionData();
   const CSSValue* first_x = ResolvePosition(first_x_, conversion_data);
   const CSSValue* first_y = ResolvePosition(first_y_, conversion_data);
   const CSSValue* second_x = ResolvePosition(second_x_, conversion_data);
@@ -2146,7 +2163,9 @@ bool CSSConicGradientValue::Equals(const CSSConicGradientValue& other) const {
 }
 
 const CSSConicGradientValue* CSSConicGradientValue::ResolveValuesIfNeeded(
-    const CSSToLengthConversionData& conversion_data) const {
+    const StyleResolverState& style_resolver_state) const {
+  const CSSToLengthConversionData& conversion_data =
+      style_resolver_state.CssToLengthConversionData();
   const CSSValue* x = ResolvePosition(x_, conversion_data);
   const CSSValue* y = ResolvePosition(y_, conversion_data);
   // TODO(crbug.com/40620723): We may need a new Length category for degrees,
@@ -2257,6 +2276,15 @@ CSSConstantGradientValue* CSSConstantGradientValue::ComputedCSSValue(
     CSSValuePhase value_phase) const {
   return MakeGarbageCollected<CSSConstantGradientValue>(
       GetComputedStopColor(*color_, style, allow_visited_style, value_phase));
+}
+
+const CSSConstantGradientValue* CSSConstantGradientValue::ResolveValuesIfNeeded(
+    const StyleResolverState& style_resolver_state) const {
+  const CSSValue* color = ResolveColor(color_, style_resolver_state);
+  if (color == color_) {
+    return this;
+  }
+  return MakeGarbageCollected<CSSConstantGradientValue>(color);
 }
 
 }  // namespace blink::cssvalue

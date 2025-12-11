@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>CSS Values Test: getComputedStyle() for linear-gradient() with sibling-index()</title>
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#tree-counting">
+<link rel="help" href="https://drafts.csswg.org/css-values-4/#calc-serialize">
+<link rel="help" href="https://drafts.csswg.org/css-images-4/#linear-gradients">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #target {
+    background-image: linear-gradient(white, rgb(0 0 calc(sibling-index() * 200)));
+  }
+</style>
+<div id="target"></div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(target).backgroundImage, "linear-gradient(rgb(255, 255, 255), rgb(0, 0, 200))");
+  }, "Check that sibling-index() is resolved in serialization of computed value of linear-gradient()");
+</script>
