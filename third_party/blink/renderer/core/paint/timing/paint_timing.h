@@ -36,7 +36,8 @@ using OptionalPaintTimingCallback = std::optional<PaintTimingCallback>;
 
 // PaintTiming is responsible for tracking paint-related timings for a given
 // document.
-class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming> {
+class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
+                                      public GarbageCollectedMixin {
   friend class FirstMeaningfulPaintDetector;
   using ReportTimeCallback =
       base::OnceCallback<void(const viz::FrameTimingDetails&)>;
@@ -181,7 +182,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming> {
 
   void MarkPaintTiming();
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   friend class RecodingTimeAfterBackForwardCacheRestoreFrameCallback;

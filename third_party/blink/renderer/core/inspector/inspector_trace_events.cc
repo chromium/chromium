@@ -279,13 +279,14 @@ void InspectorTraceEvents::Did(const probe::CallFunction& probe) {
 void InspectorTraceEvents::PaintTiming(Document* document,
                                        const char* name,
                                        double timestamp) {
-  TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-      "loading,rail,devtools.timeline", name,
-      trace_event::ToTraceTimestamp(timestamp), "frame",
-      GetFrameIdForTracing(document->GetFrame()), "data",
-      [&](perfetto::TracedValue context) {
-        GetNavigationTracingData(std::move(context), document);
-      });
+  TRACE_EVENT_MARK_WITH_TIMESTAMP2("loading,rail,devtools.timeline", name,
+                                   trace_event::ToTraceTimestamp(timestamp),
+                                   "frame",
+                                   GetFrameIdForTracing(document->GetFrame()),
+                                   "data", [&](perfetto::TracedValue context) {
+                                     GetNavigationTracingData(
+                                         std::move(context), document);
+                                   });
 }
 
 void InspectorTraceEvents::FrameStartedLoading(LocalFrame* frame) {
@@ -1602,14 +1603,15 @@ void inspector_set_layer_tree_id::Data(perfetto::TracedValue context,
            frame->GetPage()->GetChromeClient().GetLayerTreeId(*frame));
 }
 
-struct DOMStats : public GarbageCollected<DOMStats> {
+struct DOMStats : public GarbageCollected<DOMStats>,
+                  public GarbageCollectedMixin {
   unsigned int total_elements = 0;
   unsigned int max_children = 0;
   unsigned int max_depth = 0;
   Member<Node> max_children_node;
   Member<Node> max_depth_node;
 
-  void Trace(Visitor* visitor) const {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(max_children_node);
     visitor->Trace(max_depth_node);
   }

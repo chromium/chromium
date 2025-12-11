@@ -44,7 +44,8 @@ namespace blink {
 class StyleRule;
 
 class CORE_EXPORT CSSSelectorWatch final
-    : public GarbageCollected<CSSSelectorWatch> {
+    : public GarbageCollected<CSSSelectorWatch>,
+      public GarbageCollectedMixin {
  public:
   explicit CSSSelectorWatch(Document&);
   ~CSSSelectorWatch() = default;
@@ -60,7 +61,7 @@ class CORE_EXPORT CSSSelectorWatch final
   void UpdateSelectorMatches(const Vector<String>& removed_selectors,
                              const Vector<String>& added_selectors);
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   void CallbackSelectorChangeTimerFired(TimerBase*);

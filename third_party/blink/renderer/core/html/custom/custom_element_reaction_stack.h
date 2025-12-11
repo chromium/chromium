@@ -21,7 +21,8 @@ class Element;
 // https://html.spec.whatwg.org/C/#custom-element-reactions
 class CORE_EXPORT CustomElementReactionStack final
     : public GarbageCollected<CustomElementReactionStack>,
-      public NameClient {
+      public NameClient,
+      public GarbageCollectedMixin {
  public:
   CustomElementReactionStack() = default;
   CustomElementReactionStack(const CustomElementReactionStack&) = delete;
@@ -29,7 +30,7 @@ class CORE_EXPORT CustomElementReactionStack final
       delete;
   ~CustomElementReactionStack() override = default;
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
   const char* GetHumanReadableName() const override {
     return "CustomElementReactionStack";
   }

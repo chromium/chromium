@@ -14,7 +14,8 @@ namespace blink {
 // DocumentParserTiming is responsible for tracking parser-related timings for a
 // given document.
 class DocumentParserTiming final
-    : public GarbageCollected<DocumentParserTiming> {
+    : public GarbageCollected<DocumentParserTiming>,
+      public GarbageCollectedMixin {
  public:
   explicit DocumentParserTiming(Document&);
   DocumentParserTiming(const DocumentParserTiming&) = delete;
@@ -93,7 +94,7 @@ class DocumentParserTiming final
     return parser_blocked_on_script_execution_from_document_write_duration_;
   }
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   void NotifyDocumentParserTimingChanged();

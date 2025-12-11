@@ -14,7 +14,8 @@ namespace blink {
 class Document;
 
 class RenderBlockingMetricsReporter final
-    : public GarbageCollected<RenderBlockingMetricsReporter> {
+    : public GarbageCollected<RenderBlockingMetricsReporter>,
+      public GarbageCollectedMixin {
  public:
   static RenderBlockingMetricsReporter& From(Document&);
 
@@ -27,7 +28,7 @@ class RenderBlockingMetricsReporter final
   void PreloadedFontStartedLoading();
   void PreloadedFontFinishedLoading();
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   base::TimeDelta GetDeltaFromTimeOrigin();

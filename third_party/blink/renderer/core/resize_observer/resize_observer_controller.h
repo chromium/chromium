@@ -22,7 +22,8 @@ class ResizeObserver;
 // In each iteration, only notifications deeper than the
 // shallowest notification from previous iteration are delivered.
 class CORE_EXPORT ResizeObserverController final
-    : public GarbageCollected<ResizeObserverController> {
+    : public GarbageCollected<ResizeObserverController>,
+      public GarbageCollectedMixin {
  public:
   static const size_t kDepthBottom = 4096;
 
@@ -51,7 +52,7 @@ class CORE_EXPORT ResizeObserverController final
     loop_limit_error_dispatched = is_dispatched;
   }
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   // For testing only.
   const HeapLinkedHashSet<WeakMember<ResizeObserver>>& Observers() {

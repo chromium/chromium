@@ -27,7 +27,8 @@ class TextRecord;
 // TextElementTiming is responsible for tracking the paint timings for groups of
 // text nodes associated with elements of a given window.
 class CORE_EXPORT TextElementTiming final
-    : public GarbageCollected<TextElementTiming> {
+    : public GarbageCollected<TextElementTiming>,
+      public GarbageCollectedMixin {
  public:
   explicit TextElementTiming(LocalDOMWindow&);
   TextElementTiming(const TextElementTiming&) = delete;
@@ -56,7 +57,7 @@ class CORE_EXPORT TextElementTiming final
   // resolved. Dispatches PerformanceElementTiming entries to WindowPerformance.
   void OnTextObjectPainted(const TextRecord&, const DOMPaintTimingInfo&);
 
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
  private:
   void EnsureContainerTiming();

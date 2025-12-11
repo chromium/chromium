@@ -14,14 +14,15 @@ namespace blink {
 class UserActivation;
 
 class CORE_EXPORT NavigatorUserActivation final
-    : public GarbageCollected<NavigatorUserActivation> {
+    : public GarbageCollected<NavigatorUserActivation>,
+      public GarbageCollectedMixin {
  public:
   static UserActivation* userActivation(Navigator& navigator);
   UserActivation* userActivation();
 
   explicit NavigatorUserActivation(Navigator&);
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   static NavigatorUserActivation& From(Navigator&);

@@ -23,7 +23,8 @@ class TreeScope;
 // for a video element in Blink outside of modules/ module. It
 // is an interface that the module will implement and add a provider for.
 class CORE_EXPORT PictureInPictureController
-    : public GarbageCollected<PictureInPictureController> {
+    : public GarbageCollected<PictureInPictureController>,
+      public GarbageCollectedMixin {
  public:
   PictureInPictureController(const PictureInPictureController&) = delete;
   PictureInPictureController& operator=(const PictureInPictureController&) =
@@ -104,7 +105,7 @@ class CORE_EXPORT PictureInPictureController
   // the associated document.
   virtual bool PictureInPictureEnabled() const = 0;
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  protected:
   explicit PictureInPictureController(Document&);

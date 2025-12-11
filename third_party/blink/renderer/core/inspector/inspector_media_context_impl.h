@@ -36,7 +36,8 @@ struct MediaPlayer final : public GarbageCollected<MediaPlayer> {
 
 class CORE_EXPORT MediaInspectorContextImpl final
     : public GarbageCollected<MediaInspectorContextImpl>,
-      public MediaInspectorContext {
+      public MediaInspectorContext,
+      public GarbageCollectedMixin {
  public:
   static MediaInspectorContextImpl* From(ExecutionContext&);
 
@@ -58,7 +59,7 @@ class CORE_EXPORT MediaInspectorContextImpl final
                            const InspectorPlayerProperties&) override;
 
   // GarbageCollected methods.
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   Vector<WebString> AllPlayerIdsAndMarkSent();
   const MediaPlayer& MediaPlayerFromId(const WebString&);

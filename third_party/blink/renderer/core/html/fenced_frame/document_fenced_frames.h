@@ -14,7 +14,8 @@ class Document;
 class HTMLFencedFrameElement;
 
 class DocumentFencedFrames final
-    : public GarbageCollected<DocumentFencedFrames> {
+    : public GarbageCollected<DocumentFencedFrames>,
+      public GarbageCollectedMixin {
  public:
   // Returns the supplement that stores the fenced frame elements
   // that are associated with the document. Returns nullptr if
@@ -35,7 +36,7 @@ class DocumentFencedFrames final
     return fenced_frames_;
   }
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   Member<Document> document_;

@@ -17,7 +17,8 @@ class ExecutionContext;
 // pertaining to the enabled/disabled state of any platform API features which
 // are gated behind a ContextEnabled extended attribute in IDL.
 class CORE_EXPORT ContextFeatureSettings final
-    : public GarbageCollected<ContextFeatureSettings> {
+    : public GarbageCollected<ContextFeatureSettings>,
+      public GarbageCollectedMixin {
  public:
   enum class CreationMode { kCreateIfNotExists, kDontCreateIfNotExists };
 
@@ -63,7 +64,7 @@ class CORE_EXPORT ContextFeatureSettings final
     return enable_private_aggregation_in_shared_storage_;
   }
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   bool enable_mojo_js_ = false;

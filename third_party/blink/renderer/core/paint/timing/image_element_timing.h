@@ -27,7 +27,8 @@ struct DOMPaintTimingInfo;
 // ImageElementTiming is responsible for tracking the paint timings for <img>
 // elements for a given window.
 class CORE_EXPORT ImageElementTiming final
-    : public GarbageCollected<ImageElementTiming> {
+    : public GarbageCollected<ImageElementTiming>,
+      public GarbageCollectedMixin {
  public:
   // The maximum amount of characters included in Element Timing and Largest
   // Contentful Paint for inline images.
@@ -62,7 +63,7 @@ class CORE_EXPORT ImageElementTiming final
   void NotifyImageRemoved(const LayoutObject*,
                           const ImageResourceContent* image);
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   std::optional<base::OnceCallback<void(const base::TimeTicks&,
                                         const DOMPaintTimingInfo&)>>
