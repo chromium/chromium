@@ -9218,8 +9218,6 @@ crbug.com/360163253 [ Linux ] virtual/threaded/wpt_internal/scheduler/integratio
 crbug.com/361095256 [ Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-keyboard.html [ Failure Pass ]
 crbug.com/360385661 virtual/threaded/wpt_internal/scheduler/integration_tests/high-priority-input-click.html [ Failure Pass ]
 
-crbug.com/361277938 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Failure Pass ]
-
 # Gardener 2024-08-22
 crbug.com/361491550 [ Release Win11-arm64 ] external/wpt/css/css-backgrounds/parsing/background-clip-computed.html [ Failure ]
 crbug.com/361491550 [ Release Win11-arm64 ] external/wpt/css/css-backgrounds/parsing/background-clip-valid.html [ Failure ]
