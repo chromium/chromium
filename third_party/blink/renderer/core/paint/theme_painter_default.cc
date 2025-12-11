@@ -256,8 +256,19 @@ gfx::Rect ProgressValueRectFor(const LayoutProgress& layout_progress,
              : IndeterminateProgressValueRectFor(layout_progress, rect);
 }
 
-std::optional<SkColor> GetAccentColor(const ComputedStyle& style,
-                                      const Document& document) {
+// Users have encountered issues where their system accent color is white,
+// which can make a white accent colored radio button difficult to see. To
+// account for this, this flag ensures that system accent colors are rendered
+// with enough contrast with white to be visible.
+enum class ClampingBehavior {
+  kNoClamping,
+  kClampSystemAccentColor,
+};
+
+std::optional<SkColor> GetAccentColor(
+    const ComputedStyle& style,
+    const Document& document,
+    ClampingBehavior clamping_behavior = ClampingBehavior::kNoClamping) {
   std::optional<Color> accent_color = style.AccentColorResolved();
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   LayoutTheme& layout_theme = LayoutTheme::GetTheme();
@@ -270,7 +281,17 @@ std::optional<SkColor> GetAccentColor(const ComputedStyle& style,
     if (!document.InForcedColorsMode() &&
         RuntimeEnabledFeatures::CSSSystemAccentColorEnabled() &&
         layout_theme.IsAccentColorCustomized(color_scheme)) {
-      return layout_theme.GetSystemAccentColor(color_scheme).Rgb();
+      SkColor system_accent_color =
+          layout_theme.GetSystemAccentColor(color_scheme).Rgb();
+      if (clamping_behavior == ClampingBehavior::kClampSystemAccentColor) {
+        return color_utils::BlendForMinContrast(
+                   system_accent_color, SK_ColorWHITE,
+                   /*high_contrast_foreground=*/std::nullopt,
+                   /*contrast_ratio=*/3.0f)
+            .color;
+      } else {
+        return system_accent_color;
+      }
     }
   }
 
@@ -326,9 +347,11 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
       button.checked &&
       GetWebThemeState(element) != WebThemeEngine::kStateDisabled;
   if (accent_color_affects_color_scheme) {
-    color_scheme = GetColorSchemeForAccentColor(element, color_scheme,
-                                                GetAccentColor(style, document),
-                                                WebThemeEngine::kPartCheckbox);
+    color_scheme = GetColorSchemeForAccentColor(
+        element, color_scheme,
+        GetAccentColor(style, document,
+                       ClampingBehavior::kClampSystemAccentColor),
+        WebThemeEngine::kPartCheckbox);
   }
 
   const ui::ColorProvider* color_provider =
@@ -338,7 +361,8 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
       GetWebThemeState(element), unzoomed_rect, &extra_params,
       document.InForcedColorsMode(), color_scheme,
       document.GetPreferredContrast(), color_provider,
-      GetAccentColor(style, document));
+      GetAccentColor(style, document,
+                     ClampingBehavior::kClampSystemAccentColor));
   return false;
 }
 
@@ -366,9 +390,11 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
       button.checked &&
       GetWebThemeState(element) != WebThemeEngine::kStateDisabled;
   if (accent_color_affects_color_scheme) {
-    color_scheme = GetColorSchemeForAccentColor(element, color_scheme,
-                                                GetAccentColor(style, document),
-                                                WebThemeEngine::kPartRadio);
+    color_scheme = GetColorSchemeForAccentColor(
+        element, color_scheme,
+        GetAccentColor(style, document,
+                       ClampingBehavior::kClampSystemAccentColor),
+        WebThemeEngine::kPartRadio);
   }
 
   const ui::ColorProvider* color_provider =
@@ -378,7 +404,8 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
       GetWebThemeState(element), unzoomed_rect, &extra_params,
       document.InForcedColorsMode(), color_scheme,
       document.GetPreferredContrast(), color_provider,
-      GetAccentColor(style, document));
+      GetAccentColor(style, document,
+                     ClampingBehavior::kClampSystemAccentColor));
   return false;
 }
 
