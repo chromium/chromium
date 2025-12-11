@@ -117,6 +117,7 @@
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
+#include "remoting/signaling/corp_signal_strategy.h"
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/signal_strategy.h"
@@ -505,10 +506,14 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::unique_ptr<SignalStrategy> signal_strategy_;
 
   std::unique_ptr<FtlSignalingConnector> ftl_signaling_connector_;
+
   std::unique_ptr<HeartbeatSender> heartbeat_sender_;
   std::unique_ptr<FtlHostChangeNotificationListener>
       ftl_host_change_notification_listener_;
   std::unique_ptr<FtlEchoMessageListener> ftl_echo_message_listener_;
+
+  // TODO: joedow - Unify FTL and Corp classes with a single SignalStrategy.
+  std::unique_ptr<SignalStrategy> corp_signal_strategy_;
 
   std::unique_ptr<HostEventLogger> host_event_logger_;
 #if BUILDFLAG(IS_LINUX)
@@ -1732,6 +1737,7 @@ std::optional<ErrorCode> HostProcess::OnSessionPoliciesReceived(
 void HostProcess::InitializeSignaling() {
   DCHECK(!host_id_.empty());  // ApplyConfig() should already have been run.
   DCHECK(!signal_strategy_);
+  DCHECK(!corp_signal_strategy_);
   DCHECK(!oauth_token_getter_);
   DCHECK(!ftl_signaling_connector_);
   DCHECK(!heartbeat_sender_);
@@ -1752,7 +1758,16 @@ void HostProcess::InitializeSignaling() {
   // TODO: joedow - Remove Linux scope after this codepath has been stabilized.
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (is_corp_host_ && cmd_line->HasSwitch(kEnableCorpMessaging)) {
-    // TODO: joedow - Create CorpSignalStrategy instance here.
+    // TODO: joedow - Add a config value for username rather than extracting
+    // username from the email address.
+    std::string username(
+        base::SplitStringOnce(*host_owner_emails_.begin(), '@')->first);
+    // TODO: joedow - For now, just create a Corp messaging channel and let it
+    // run. We'll hook it into JingleSession in a later CL.
+    corp_signal_strategy_ = std::make_unique<CorpSignalStrategy>(
+        context_->url_loader_factory(),
+        context_->create_client_cert_store_callback(), username, key_pair_);
+    corp_signal_strategy_->Connect();
   }
 #endif
 
@@ -2087,6 +2102,7 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
   ftl_signaling_connector_.reset();
   ftl_echo_message_listener_.reset();
   signal_strategy_.reset();
+  corp_signal_strategy_.reset();
   zombie_host_detector_.reset();
 
   if (state_ == HOST_GOING_OFFLINE_TO_RESTART) {

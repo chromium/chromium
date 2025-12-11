@@ -4,7 +4,10 @@
 
 #include "remoting/signaling/corp_messaging_client.h"
 
+#include <memory>
+#include <string>
 #include <utility>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"

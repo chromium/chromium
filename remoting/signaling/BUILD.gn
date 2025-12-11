@@ -8,6 +8,8 @@ static_library("signaling") {
     "corp_message_channel_strategy.h",
     "corp_messaging_client.cc",
     "corp_messaging_client.h",
+    "corp_signal_strategy.cc",
+    "corp_signal_strategy.h",
     "ftl_client_uuid_device_id_provider.cc",
     "ftl_client_uuid_device_id_provider.h",
     "ftl_device_id_provider.h",
@@ -98,6 +100,7 @@ source_set("unit_tests") {
   sources = [
     "corp_message_channel_strategy_unittest.cc",
     "corp_messaging_client_unittest.cc",
+    "corp_signal_strategy_unittest.cc",
     "ftl_message_channel_strategy_unittest.cc",
     "ftl_messaging_client_unittest.cc",
     "ftl_registration_manager_unittest.cc",

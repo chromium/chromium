@@ -40,7 +40,7 @@ constexpr char kFakeUsername[] = "fake_user";
 constexpr char kFakeAuthzToken[] = "fake_authz_token";
 constexpr char kFakePublicKey[] = "fake_public_key";
 
-using DoneCallback = CorpMessagingClient::DoneCallback;
+using DoneCallback = MessagingClient::DoneCallback;
 
 base::OnceCallback<void(const HttpStatus&)> CheckStatusThenQuitRunLoopCallback(
     const base::Location& from_here,
