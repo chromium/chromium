@@ -104,6 +104,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "scoped_app_window.cc",
+    "scoped_app_window.h",
     "test_external_cache.cc",
     "test_external_cache.h",
   ]

@@ -57,6 +57,7 @@ specific_include_rules = {
   "chrome_kiosk_app_launcher_unittest.cc": [
     "+ash/test/ash_test_helper.h",
     "+chrome/browser/ash/app_mode/test_kiosk_extension_builder.h",
+    "+chrome/browser/ash/extensions/scoped_app_window.h",
   ],
   "kiosk_troubleshooting_controller_ash.cc": [
     "+ash/accelerators/accelerator_commands.h",
@@ -86,5 +87,6 @@ specific_include_rules = {
   ],
   "kiosk_app_windows_logs_collector_unittest.cc": [
     "+ash/test/ash_test_helper.h",
+    "+chrome/browser/ash/extensions/scoped_app_window.h",
   ],
 }

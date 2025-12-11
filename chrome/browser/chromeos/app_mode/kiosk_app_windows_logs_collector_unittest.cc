@@ -12,6 +12,7 @@
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/ash/extensions/scoped_app_window.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -89,13 +90,13 @@ void InitAppWindow(extensions::AppWindow* app_window, const gfx::Rect& bounds) {
   app_window->Init(GURL(), std::move(app_window_contents), main_frame, params);
 }
 
-extensions::AppWindow* CreateAppWindowForApp(
+ash::ScopedAppWindow CreateAppWindowForApp(
     Profile* profile,
     const extensions::Extension* extension,
     gfx::Rect bounds = {}) {
-  extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile, std::make_unique<ChromeAppDelegate>(profile, true), extension);
-  InitAppWindow(app_window, bounds);
+  ash::ScopedAppWindow app_window(new extensions::AppWindow(
+      profile, std::make_unique<ChromeAppDelegate>(profile, true), extension));
+  InitAppWindow(app_window.Get(), bounds);
   return app_window;
 }
 
@@ -150,10 +151,10 @@ class KioskAppWindowsLogsCollectorTest
                                        untrusted_stack_trace);
   }
 
-  extensions::AppWindow* CreateAppWindow() {
-    extensions::AppWindow* app_window =
+  ash::ScopedAppWindow CreateAppWindow() {
+    ash::ScopedAppWindow app_window =
         CreateAppWindowForApp(profile(), chrome_app_.get());
-    CHECK(app_window);
+    CHECK(app_window.Get());
     CHECK(app_window->web_contents());
 
     return app_window;
@@ -173,7 +174,7 @@ TEST_F(KioskAppWindowsLogsCollectorTest, ShouldCollectLogsFromAppWindow) {
       result_future;
   CreateLogsCollector(result_future.GetCallback());
 
-  auto* app_window1 = CreateAppWindow();
+  ash::ScopedAppWindow app_window1 = CreateAppWindow();
   AddMessageToConsole(app_window1->web_contents(),
                       blink::mojom::ConsoleMessageLevel::kInfo, kDefaultMessage,
                       kDefaultLineNumber, kDefaultSource, std::nullopt);
@@ -193,7 +194,7 @@ TEST_F(KioskAppWindowsLogsCollectorTest,
       result_future;
   CreateLogsCollector(result_future.GetCallback());
 
-  auto* app_window1 = CreateAppWindow();
+  ash::ScopedAppWindow app_window1 = CreateAppWindow();
   AddMessageToConsole(app_window1->web_contents(),
                       blink::mojom::ConsoleMessageLevel::kInfo, kDefaultMessage,
                       kDefaultLineNumber, kDefaultSource, std::nullopt);
@@ -205,7 +206,7 @@ TEST_F(KioskAppWindowsLogsCollectorTest,
   EXPECT_EQ(log.untrusted_stack_trace(), std::nullopt);
   EXPECT_EQ(log.severity(), blink::mojom::ConsoleMessageLevel::kInfo);
 
-  auto* app_window2 = CreateAppWindow();
+  ash::ScopedAppWindow app_window2 = CreateAppWindow();
   AddMessageToConsole(
       app_window2->web_contents(), blink::mojom::ConsoleMessageLevel::kError,
       kDefaultMessage2, kDefaultLineNumber2, kDefaultSource2, std::nullopt);
@@ -217,7 +218,7 @@ TEST_F(KioskAppWindowsLogsCollectorTest,
   EXPECT_EQ(log2.untrusted_stack_trace(), std::nullopt);
   EXPECT_EQ(log2.severity(), blink::mojom::ConsoleMessageLevel::kError);
 
-  auto* app_window3 = CreateAppWindow();
+  ash::ScopedAppWindow app_window3 = CreateAppWindow();
   AddMessageToConsole(
       app_window3->web_contents(), blink::mojom::ConsoleMessageLevel::kWarning,
       kDefaultMessage3, kDefaultLineNumber3, kDefaultSource3, std::nullopt);
@@ -232,9 +233,9 @@ TEST_F(KioskAppWindowsLogsCollectorTest,
 
 TEST_F(KioskAppWindowsLogsCollectorTest,
        ShouldCollectLogsFromExistingAppWindows) {
-  auto* app_window1 = CreateAppWindow();
-  auto* app_window2 = CreateAppWindow();
-  auto* app_window3 = CreateAppWindow();
+  ash::ScopedAppWindow app_window1 = CreateAppWindow();
+  ash::ScopedAppWindow app_window2 = CreateAppWindow();
+  ash::ScopedAppWindow app_window3 = CreateAppWindow();
 
   base::test::RepeatingTestFuture<
       const KioskAppLevelLogsSaver::KioskLogMessage&>

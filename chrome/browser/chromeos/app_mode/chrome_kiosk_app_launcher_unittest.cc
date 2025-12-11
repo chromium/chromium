@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
+#include "chrome/browser/ash/extensions/scoped_app_window.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
@@ -106,12 +107,12 @@ void InitAppWindow(extensions::AppWindow* app_window, const gfx::Rect& bounds) {
   app_window->Init(GURL(), std::move(app_window_contents), main_frame, params);
 }
 
-extensions::AppWindow* CreateAppWindow(Profile* profile,
-                                       const extensions::Extension* extension,
-                                       gfx::Rect bounds = {}) {
-  extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile, std::make_unique<ChromeAppDelegate>(profile, true), extension);
-  InitAppWindow(app_window, bounds);
+ScopedAppWindow CreateAppWindow(Profile* profile,
+                                const extensions::Extension* extension,
+                                gfx::Rect bounds = {}) {
+  ScopedAppWindow app_window(new extensions::AppWindow(
+      profile, std::make_unique<ChromeAppDelegate>(profile, true), extension));
+  InitAppWindow(app_window.Get(), bounds);
   return app_window;
 }
 
@@ -145,6 +146,7 @@ class ChromeKioskAppLauncherTest : public extensions::ExtensionServiceTestBase,
   }
 
   void TearDown() override {
+    launcher_.reset();
     app_launch_tracker_.reset();
 
     extensions::ExtensionServiceTestBase::TearDown();
@@ -157,8 +159,9 @@ class ChromeKioskAppLauncherTest : public extensions::ExtensionServiceTestBase,
         profile(), kTestPrimaryAppId, is_network_ready);
   }
 
-  void SimulateAppWindowLaunch(const extensions::Extension* extension) {
-    CreateAppWindow(profile(), extension);
+  ScopedAppWindow SimulateAppWindowLaunch(
+      const extensions::Extension* extension) {
+    return CreateAppWindow(profile(), extension);
   }
 
   ash::AshTestHelper ash_test_helper_;
@@ -223,7 +226,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedIfNetworkAvailable) {
   TestFuture<bool> future;
   launcher_->LaunchApp(future.GetCallback());
 
-  SimulateAppWindowLaunch(primary_app.get());
+  ScopedAppWindow app_window = SimulateAppWindowLaunch(primary_app.get());
 
   ASSERT_TRUE(future.Get());
 
@@ -262,7 +265,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithSecondaryApp) {
   TestFuture<bool> future;
   launcher_->LaunchApp(future.GetCallback());
 
-  SimulateAppWindowLaunch(primary_app.get());
+  ScopedAppWindow app_window = SimulateAppWindowLaunch(primary_app.get());
 
   ASSERT_TRUE(future.Get());
 
@@ -286,7 +289,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithAppService) {
   TestFuture<bool> future;
   launcher_->LaunchApp(future.GetCallback());
 
-  SimulateAppWindowLaunch(primary_app.get());
+  ScopedAppWindow app_window = SimulateAppWindowLaunch(primary_app.get());
 
   ASSERT_TRUE(future.Get());
 

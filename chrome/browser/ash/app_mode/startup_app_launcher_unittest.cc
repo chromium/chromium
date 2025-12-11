@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/ash/extensions/external_cache.h"
+#include "chrome/browser/ash/extensions/scoped_app_window.h"
 #include "chrome/browser/ash/extensions/test_external_cache.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -376,12 +377,12 @@ void InitAppWindow(extensions::AppWindow* app_window, const gfx::Rect& bounds) {
   app_window->Init(GURL(), std::move(app_window_contents), main_frame, params);
 }
 
-extensions::AppWindow* CreateAppWindow(Profile* profile,
-                                       const Extension& app,
-                                       gfx::Rect bounds = {}) {
-  extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile, std::make_unique<ChromeAppDelegate>(profile, true), &app);
-  InitAppWindow(app_window, bounds);
+ScopedAppWindow CreateAppWindow(Profile* profile,
+                                const Extension& app,
+                                gfx::Rect bounds = {}) {
+  ScopedAppWindow app_window(new extensions::AppWindow(
+      profile, std::make_unique<ChromeAppDelegate>(profile, true), &app));
+  InitAppWindow(app_window.Get(), bounds);
   return app_window;
 }
 
@@ -557,11 +558,12 @@ class StartupAppLauncherNoCreateTest
   }
 
   void TearDown() override {
+    app_launch_tracker_.reset();
     primary_app_provider_->ServiceShutdown();
     secondary_apps_provider_->ServiceShutdown();
+    primary_app_provider_.reset();
+    secondary_apps_provider_.reset();
     external_apps_loader_handler_.reset();
-
-    app_launch_tracker_.reset();
 
     extensions::ExtensionServiceTestBase::TearDown();
 
@@ -777,7 +779,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {
             LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
@@ -814,7 +816,7 @@ TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
   EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
@@ -841,7 +843,7 @@ TEST_F(StartupAppLauncherTest,
             LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
@@ -969,7 +971,7 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
             LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
@@ -1017,7 +1019,7 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kReadyToLaunch);
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
@@ -1060,7 +1062,7 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
   EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
@@ -1091,7 +1093,7 @@ TEST_F(StartupAppLauncherTest, OfflineInstallPreCachedExtension) {
             LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
@@ -1120,7 +1122,7 @@ TEST_F(StartupAppLauncherTest,
             LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window1 = CreateAppWindow(profile(), *primary_app);
 
   // When trying to launch app we should realize that the app is not offline
   // enabled and request a network connection.
@@ -1138,7 +1140,7 @@ TEST_F(StartupAppLauncherTest,
             LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window2 = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
@@ -1191,7 +1193,7 @@ TEST_F(StartupAppLauncherTest,
             LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
@@ -1227,7 +1229,7 @@ TEST_F(StartupAppLauncherTest,
             LaunchState::kReadyToLaunch);
 
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
@@ -1262,7 +1264,7 @@ TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kReadyToLaunch);
   startup_app_launcher_->LaunchApp();
-  CreateAppWindow(profile(), *primary_app);
+  ScopedAppWindow app_window = CreateAppWindow(profile(), *primary_app);
 
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kLaunching);
