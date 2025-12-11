@@ -1668,10 +1668,7 @@ BASE_FEATURE(kProjectorCustomThumbnail,
 BASE_FEATURE(kProjectorShowShortPseudoTranscript,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable features that are not ready to enable by
-// default but ready for internal testing.
-BASE_FEATURE(kProjectorBleedingEdgeExperience,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+
 
 // Controls whether the transcript muting feature is enabled.
 BASE_FEATURE(kProjectorMuting, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2849,8 +2846,7 @@ bool IsSnoopingProtectionEnabled() {
 
 bool IsInternalServerSideSpeechRecognitionEnabled() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // TODO(b/245614967): Once ready, enable this feature under
-  // kProjectorBleedingEdgeExperience flag as well.
+
   return (ShouldForceEnableServerSideSpeechRecognition() ||
           base::FeatureList::IsEnabled(kInternalServerSideSpeechRecognition));
 #else
