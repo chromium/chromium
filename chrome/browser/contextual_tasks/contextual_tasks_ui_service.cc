@@ -381,7 +381,9 @@ std::optional<GURL> ContextualTasksUiService::GetInitialUrlForTask(
     const base::Uuid& uuid) {
   auto it = task_id_to_creation_url_.find(uuid);
   if (it != task_id_to_creation_url_.end()) {
-    return it->second;
+    GURL url = it->second;
+    task_id_to_creation_url_.erase(it);
+    return std::move(url);
   }
   return std::nullopt;
 }
@@ -415,10 +417,10 @@ void ContextualTasksUiService::GetThreadUrlFromTaskId(
                      // URL. A query parameter needs to be present, but its
                      // value is not used for continued threads.
                      url = net::AppendQueryParameter(url, "q", thread->title);
-                     url = net::AppendQueryParameter(url, "mstk",
-                                                     thread->server_id);
                      url = net::AppendQueryParameter(
-                         url, "mtid", thread->conversation_turn_id);
+                         url, "mstk", thread->conversation_turn_id);
+                     url = net::AppendQueryParameter(url, "mtid",
+                                                     thread->server_id);
 
                      std::move(callback).Run(url);
                    },
