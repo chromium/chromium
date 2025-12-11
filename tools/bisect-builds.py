@@ -2266,6 +2266,7 @@ def SetupAndroidEnvironment():
 
   # Modules required from devil
   devil_imports = {
+      'apk_helper': 'devil.android.apk_helper',
       'devil_env': 'devil.devil_env',
       'device_errors': 'devil.android.device_errors',
       'device_utils': 'devil.android.device_utils',
@@ -2295,10 +2296,21 @@ def InitializeAndroidDevice(device_id, apk, chrome_flags):
   return device
 
 
+def _IsWebViewProvider(apk_helper_instance):
+  meta_data = apk_helper_instance.GetAllMetadata()
+  meta_data_keys = [pair[0] for pair in meta_data]
+  return 'com.android.webview.WebViewLibrary' in meta_data_keys
+
+
 def InstallOnAndroid(device, apk_path):
   """Installs the chromium build on a given device."""
   print('Installing %s on android device...' % apk_path)
   device.Install(apk_path)
+  helper = apk_helper.ApkHelper(apk_path)
+  if _IsWebViewProvider(helper):
+    print(f'Detected {apk_path} to be a WebView package. Setting your webview '
+          f'implementation to {helper.GetPackageName()}...')
+    device.SetWebViewImplementation(helper.GetPackageName())
 
 
 def LaunchOnAndroid(device, apk):
