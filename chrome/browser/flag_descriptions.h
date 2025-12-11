@@ -4956,11 +4956,6 @@ inline constexpr char kAndroidSurfaceColorUpdateName[] =
 inline constexpr char kAndroidSurfaceColorUpdateDescription[] =
     "If enabled, updates the android surface colors for toolbar/omnibox.";
 
-inline constexpr char kAndroidTabDeclutterPerformanceImprovementsName[] =
-    "Android Tab Declutter performance improvements";
-inline constexpr char kAndroidTabDeclutterPerformanceImprovementsDescription[] =
-    "Enables performance improvements to the android tab declutter process.";
-
 inline constexpr char kAndroidTabHighlightingName[] =
     "Android tab strip tab highlighting";
 inline constexpr char kAndroidTabHighlightingDescription[] =

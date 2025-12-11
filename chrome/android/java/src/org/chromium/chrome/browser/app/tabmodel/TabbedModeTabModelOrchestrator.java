@@ -282,15 +282,11 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         }
         assertCreated();
 
-        if (ChromeFeatureList.sAndroidTabDeclutterPerformanceImprovements.isEnabled()) {
-            TabModelUtils.runOnTabStateInitialized(
-                    mTabModelSelector,
-                    (selector) -> {
-                        createArchivedTabModelInDeferredTask(tabContentManager);
-                    });
-        } else {
-            createArchivedTabModelInDeferredTask(tabContentManager);
-        }
+        TabModelUtils.runOnTabStateInitialized(
+                mTabModelSelector,
+                (selector) -> {
+                    createArchivedTabModelInDeferredTask(tabContentManager);
+                });
 
         if (TabStateStorageFlagHelper.isTabStorageEnabled()) {
             mTabStateStoreIsAuthoritative = TabStateStorageFlagHelper.isStorageAuthoritative();
