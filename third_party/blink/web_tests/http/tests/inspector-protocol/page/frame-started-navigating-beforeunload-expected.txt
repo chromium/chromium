@@ -3,7 +3,7 @@ CONFIRM NAVIGATION
 Tests frameStartedNavigating events with beforeunload
 
 Prepare
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -15,7 +15,7 @@ frameStartedNavigating{
 }
 
 Fragment navigation
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -27,7 +27,7 @@ frameStartedNavigating{
 }
 
 Reload
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -39,7 +39,7 @@ frameStartedNavigating{
 }
 
 Leave beforeunload page
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>

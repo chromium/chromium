@@ -11,7 +11,7 @@ Running test: getFirstDivInBody
     nodeId : <number>
     nodeName : BODY
     nodeType : 1
-    nodeValue : 
+    nodeValue :
     parentId : <number>
 }
 {
@@ -30,7 +30,7 @@ Running test: getFirstDivInBody
     nodeId : <number>
     nodeName : DIV
     nodeType : 1
-    nodeValue : 
+    nodeValue :
     parentId : <number>
 }
 
@@ -44,7 +44,7 @@ Running test: queryForSecondDivInBodyById
     nodeId : <number>
     nodeName : BODY
     nodeType : 1
-    nodeValue : 
+    nodeValue :
     parentId : <number>
 }
 {
@@ -67,7 +67,7 @@ Running test: queryForAllDivsWithGivenClassName
     nodeId : <number>
     nodeName : BODY
     nodeType : 1
-    nodeValue : 
+    nodeValue :
     parentId : <number>
 }
 5
@@ -82,7 +82,7 @@ Running test: expectProperSetChildNodeEventsForDeepNodeQuery
     nodeId : <number>
     nodeName : BODY
     nodeType : 1
-    nodeValue : 
+    nodeValue :
     parentId : <number>
 }
 {

@@ -1,6 +1,6 @@
 Verifies that a subresource accessing a SameSite=Strict cookie across schemes triggers a context downgrade inspector issue.
 
-Inspector issue:{
+Inspector issue: {
     issue : {
         code : CookieIssue
         details : {

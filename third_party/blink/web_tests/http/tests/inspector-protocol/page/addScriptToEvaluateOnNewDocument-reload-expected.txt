@@ -14,10 +14,10 @@ console called: {
             callFrames : [
                 [0] : {
                     columnNumber : 8
-                    functionName : 
+                    functionName :
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
         }

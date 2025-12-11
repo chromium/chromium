@@ -10,7 +10,7 @@ Inspector issue: {
                     columnNumber : 14
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : CreationIssue
             }

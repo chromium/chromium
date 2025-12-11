@@ -12,7 +12,7 @@ Inspector issue: {
                     columnNumber : 28
                     lineNumber : 2
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Topics
             }

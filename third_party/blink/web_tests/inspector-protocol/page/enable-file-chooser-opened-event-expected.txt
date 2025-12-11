@@ -1,7 +1,7 @@
 Tests that Page.enable(enableFileChooserOpenedEvent) enables `Page.fileChooserOpened` events
 
 Running test: testClickFileInput
-Page.fileChooserOpened{
+Page.fileChooserOpened {
     method : Page.fileChooserOpened
     params : {
         backendNodeId : <number>
@@ -12,7 +12,7 @@ Page.fileChooserOpened{
 }
 
 Running test: testShowPickerAPI
-Page.fileChooserOpened{
+Page.fileChooserOpened {
     method : Page.fileChooserOpened
     params : {
         backendNodeId : <number>
@@ -23,7 +23,7 @@ Page.fileChooserOpened{
 }
 
 Running test: testOpenFilePickerAPI
-Page.fileChooserOpened{
+Page.fileChooserOpened {
     method : Page.fileChooserOpened
     params : {
         frameId : <string>
@@ -33,7 +33,7 @@ Page.fileChooserOpened{
 }
 
 Running test: testSaveFilePickerAPI
-Page.fileChooserOpened{
+Page.fileChooserOpened {
     method : Page.fileChooserOpened
     params : {
         frameId : <string>
@@ -43,7 +43,7 @@ Page.fileChooserOpened{
 }
 
 Running test: testDirectoryPickerAPI
-Page.fileChooserOpened{
+Page.fileChooserOpened {
     method : Page.fileChooserOpened
     params : {
         frameId : <string>

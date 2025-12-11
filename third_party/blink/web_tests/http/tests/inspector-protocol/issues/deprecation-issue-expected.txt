@@ -11,7 +11,7 @@ Inspector issue: {
                     columnNumber : 24
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : RangeExpand
             }

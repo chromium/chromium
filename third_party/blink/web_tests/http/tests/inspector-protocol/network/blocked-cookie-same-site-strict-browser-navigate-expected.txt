@@ -1,6 +1,6 @@
 Verifies that browser cross origin navigation requests with SameSite=Strict cookies sends us Network.RequestWillBeSentExtraInfo events with corresponding blocked cookies.
 
-Browser initiated navigation blocked cookies:[
+Browser initiated navigation blocked cookies: [
     [0] : {
         blockedReasons : [
         ]

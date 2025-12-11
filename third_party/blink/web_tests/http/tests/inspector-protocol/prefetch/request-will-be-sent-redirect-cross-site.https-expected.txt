@@ -1,5 +1,5 @@
 Tests that appropriate Network domain events are dispatched during speculation rules prefetch while following redirects cross-site
-Network.requestWillBeSent{
+Network.requestWillBeSent {
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -29,7 +29,7 @@ Network.requestWillBeSent{
     type : Document
     wallTime : <number>
 }
-Network.requestWillBeSentExtraInfo{
+Network.requestWillBeSentExtraInfo {
     associatedCookies : [
     ]
     connectTiming : <object>
@@ -52,14 +52,14 @@ Network.requestWillBeSentExtraInfo{
     requestId : <string>
     siteHasCookieInOtherPartition : false
 }
-Network.responseReceived{
+Network.responseReceived {
     frameId : <string>
     hasExtraInfo : true
     loaderId : <string>
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
-        charset : 
+        charset :
         connectionId : <number>
         connectionReused : true
         encodedDataLength : <number>
@@ -92,7 +92,7 @@ Network.responseReceived{
     timestamp : <number>
     type : Document
 }
-Network.responseReceivedExtraInfo{
+Network.responseReceivedExtraInfo {
     blockedCookies : [
     ]
     cookiePartitionKey : {
@@ -118,12 +118,12 @@ Network.responseReceivedExtraInfo{
     resourceIPAddressSpace : Loopback
     statusCode : 200
 }
-Network.loadingFinished{
+Network.loadingFinished {
     encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }
-Network.requestWillBeSent{
+Network.requestWillBeSent {
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -154,7 +154,7 @@ Network.requestWillBeSent{
     type : Prefetch
     wallTime : <number>
 }
-Network.requestWillBeSentExtraInfo{
+Network.requestWillBeSentExtraInfo {
     associatedCookies : [
     ]
     connectTiming : <object>
@@ -179,7 +179,7 @@ Network.requestWillBeSentExtraInfo{
     requestId : <string>
     siteHasCookieInOtherPartition : false
 }
-Network.requestWillBeSent{
+Network.requestWillBeSent {
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -191,7 +191,7 @@ Network.requestWillBeSent{
     redirectHasExtraInfo : true
     redirectResponse : {
         alternateProtocolUsage : unspecifiedReason
-        charset : 
+        charset :
         connectionId : <number>
         connectionReused : true
         encodedDataLength : <number>
@@ -240,7 +240,7 @@ Network.requestWillBeSent{
     type : Prefetch
     wallTime : <number>
 }
-Network.responseReceivedExtraInfo{
+Network.responseReceivedExtraInfo {
     blockedCookies : [
     ]
     cookiePartitionKey : {
@@ -265,7 +265,7 @@ Network.responseReceivedExtraInfo{
     resourceIPAddressSpace : Loopback
     statusCode : 302
 }
-Network.requestWillBeSentExtraInfo{
+Network.requestWillBeSentExtraInfo {
     associatedCookies : [
     ]
     connectTiming : <object>
@@ -288,14 +288,14 @@ Network.requestWillBeSentExtraInfo{
     requestId : <string>
     siteHasCookieInOtherPartition : false
 }
-Network.responseReceived{
+Network.responseReceived {
     frameId : <string>
     hasExtraInfo : true
     loaderId : <string>
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
-        charset : 
+        charset :
         connectionId : <number>
         connectionReused : false
         encodedDataLength : <number>
@@ -328,7 +328,7 @@ Network.responseReceived{
     timestamp : <number>
     type : Prefetch
 }
-Network.responseReceivedExtraInfo{
+Network.responseReceivedExtraInfo {
     blockedCookies : [
     ]
     cookiePartitionKey : {
@@ -354,12 +354,12 @@ Network.responseReceivedExtraInfo{
     resourceIPAddressSpace : Loopback
     statusCode : 200
 }
-Network.loadingFinished{
+Network.loadingFinished {
     encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }
-Unable to get prefetch response body{
+Unable to get prefetch response body {
     code : -32000
     message : No resource with given identifier found
 }

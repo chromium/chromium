@@ -39,7 +39,7 @@ Basic test for LayoutShift support in PerformanceTimeline
             ]
             value : 0.023958333333333335
         }
-        name : 
+        name :
         time : <number>
         type : layout-shift
     }
@@ -67,7 +67,7 @@ Basic test for LayoutShift support in PerformanceTimeline
             ]
             value : 0.012
         }
-        name : 
+        name :
         time : <number>
         type : layout-shift
     }

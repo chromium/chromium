@@ -19,7 +19,7 @@ Tests Accessibility.getAXNodeAndAncestors
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -54,7 +54,7 @@ Tests Accessibility.getAXNodeAndAncestors
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -89,7 +89,7 @@ Tests Accessibility.getAXNodeAndAncestors
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -178,7 +178,7 @@ Tests Accessibility.getAXNodeAndAncestors
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     properties : [

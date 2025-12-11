@@ -15,7 +15,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 0
             nodeName : #document
             nodeType : 9
-            nodeValue : 
+            nodeValue :
             scrollOffsetX : 0
             scrollOffsetY : 1614
         }
@@ -29,7 +29,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 1
             nodeName : HTML
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [2] : {
             backendNodeId : <number>
@@ -41,7 +41,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             ]
             nodeName : HEAD
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [3] : {
             backendNodeId : <number>
@@ -50,7 +50,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             ]
             nodeName : STYLE
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [4] : {
             backendNodeId : <number>
@@ -74,7 +74,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             backendNodeId : <number>
             nodeName : SCRIPT
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [7] : {
             backendNodeId : <number>
@@ -96,7 +96,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 2
             nodeName : BODY
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [9] : {
             backendNodeId : <number>
@@ -118,7 +118,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 3
             nodeName : DIV
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [11] : {
             backendNodeId : <number>
@@ -147,7 +147,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 5
             nodeName : DIV
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [14] : {
             backendNodeId : <number>
@@ -183,7 +183,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 7
             nodeName : IFRAME
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [17] : {
             backendNodeId : <number>
@@ -197,7 +197,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 8
             nodeName : #document
             nodeType : 9
-            nodeValue : 
+            nodeValue :
             scrollOffsetX : 0
             scrollOffsetY : 310
         }
@@ -211,7 +211,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 9
             nodeName : HTML
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [19] : {
             backendNodeId : <number>
@@ -223,7 +223,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             ]
             nodeName : HEAD
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [20] : {
             backendNodeId : <number>
@@ -232,7 +232,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             ]
             nodeName : STYLE
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [21] : {
             backendNodeId : <number>
@@ -256,7 +256,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             backendNodeId : <number>
             nodeName : SCRIPT
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [24] : {
             backendNodeId : <number>
@@ -276,7 +276,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 10
             nodeName : BODY
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [26] : {
             backendNodeId : <number>
@@ -298,7 +298,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 11
             nodeName : DIV
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [28] : {
             backendNodeId : <number>
@@ -327,7 +327,7 @@ Tests DOMSnapshot.getSnapshot reports scroll offset and bounding box in terms of
             layoutNodeIndex : 13
             nodeName : DIV
             nodeType : 1
-            nodeValue : 
+            nodeValue :
         }
         [31] : {
             backendNodeId : <number>

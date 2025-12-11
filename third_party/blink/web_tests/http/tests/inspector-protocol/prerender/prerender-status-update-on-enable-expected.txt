@@ -7,6 +7,7 @@ Test that a status update is sent for a completed prerender on enable
         loaderId : <string>
         url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
     }
+    pipelineId : <string>
     status : Ready
 }
 
@@ -18,7 +19,8 @@ Test that a status update is sent for a completed prerender on enable
         loaderId : <string>
         url : http://127.0.0.1:8000/echo?status=204
     }
-    prerenderStatus : NavigationBadHttpStatus
+    pipelineId : <string>
+    prerenderStatus : PrerenderFailedDuringPrefetch
     status : Failure
 }
 

@@ -76,7 +76,7 @@ type: all but frames [
         browserContextId : <string>
         canAccessOpener : false
         targetId : <string>
-        title : 
+        title :
         type : shared_worker
         url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
     }
@@ -142,7 +142,7 @@ default filter [
         browserContextId : <string>
         canAccessOpener : false
         targetId : <string>
-        title : 
+        title :
         type : shared_worker
         url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
     }
@@ -190,7 +190,7 @@ wildcard pattern [
         browserContextId : <string>
         canAccessOpener : false
         targetId : <string>
-        title : 
+        title :
         type : shared_worker
         url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
     }
@@ -220,7 +220,7 @@ Discovered targets with type = shared_worker [
             browserContextId : <string>
             canAccessOpener : false
             targetId : <string>
-            title : 
+            title :
             type : shared_worker
             url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
         }

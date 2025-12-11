@@ -1,5 +1,5 @@
 Tests frameStartedNavigating events when navigation is initiated by renderer
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -9,11 +9,11 @@ frameStartedNavigating{
     }
     sessionId : <string>
 }
-frameRequestedNavigation{
+frameRequestedNavigation {
     frameId : <string>
     url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html
 }
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -23,11 +23,11 @@ frameStartedNavigating{
     }
     sessionId : <string>
 }
-frameRequestedNavigation{
+frameRequestedNavigation {
     frameId : <string>
     url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=1
 }
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -37,11 +37,11 @@ frameStartedNavigating{
     }
     sessionId : <string>
 }
-frameRequestedNavigation{
+frameRequestedNavigation {
     frameId : <string>
     url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=2
 }
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -51,11 +51,11 @@ frameStartedNavigating{
     }
     sessionId : <string>
 }
-frameRequestedNavigation{
+frameRequestedNavigation {
     frameId : <string>
     url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=3
 }
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>
@@ -65,11 +65,11 @@ frameStartedNavigating{
     }
     sessionId : <string>
 }
-frameRequestedNavigation{
+frameRequestedNavigation {
     frameId : <string>
     url : http://127.0.0.1:8000/inspector-protocol/page/resources/frame-requested-navigation-2.html?step=4
 }
-frameStartedNavigating{
+frameStartedNavigating {
     method : Page.frameStartedNavigating
     params : {
         frameId : <string>

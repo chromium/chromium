@@ -1,13 +1,13 @@
 Tests the DOM.forceShowPopover method
 Compare force/unforce orders with hint and auto stacks
-closed popovers when force-showing node #p1[
+closed popovers when force-showing node #p1 [
 ]
-closed popovers when force-showing node #p3[
+closed popovers when force-showing node #p3 [
 ]
-closed popovers when force-hiding node #p1[
+closed popovers when force-hiding node #p1 [
     [0] : #p1
 ]
-closed popovers when force-hiding node #p3[
+closed popovers when force-hiding node #p3 [
     [0] : #p3
 ]
 Currently open popovers: {
@@ -15,7 +15,7 @@ Currently open popovers: {
     value : [
     ]
 }
-closed popovers when force-showing node #p3[
+closed popovers when force-showing node #p3 [
 ]
 Open popovers after #p1.showPopover(): {
     type : string
@@ -31,7 +31,7 @@ Currently open popovers: {
         [0] : p3
     ]
 }
-closed popovers when force-hiding node #p3[
+closed popovers when force-hiding node #p3 [
     [0] : #p3
 ]
 Open popovers after #p1.hidePopover(): {
@@ -58,7 +58,7 @@ Open popovers after #popover.hidePopover(): {
     value : []
 }
 force-open:
-closed popovers when force-showing node #popover[
+closed popovers when force-showing node #popover [
 ]
 Currently open popovers: {
     type : object
@@ -71,7 +71,7 @@ Open popovers after #popover.hidePopover(): {
     value : ["popover"]
 }
 force-close:
-closed popovers when force-hiding node #popover[
+closed popovers when force-hiding node #popover [
     [0] : #popover
 ]
 Currently open popovers: {
@@ -90,7 +90,7 @@ Currently open popovers: {
     ]
 }
 force-open:
-closed popovers when force-showing node #popover[
+closed popovers when force-showing node #popover [
 ]
 Currently open popovers: {
     type : object
@@ -108,17 +108,17 @@ Currently open popovers: {
         [0] : popover
     ]
 }
-closed popovers when force-hiding node #popover[
+closed popovers when force-hiding node #popover [
     [0] : #popover
 ]
 
 Second, test forceShowPopover calls for popover stack in different orders
 force-opened in order:
-closed popovers when force-showing node #p1[
+closed popovers when force-showing node #p1 [
 ]
-closed popovers when force-showing node #p2[
+closed popovers when force-showing node #p2 [
 ]
-closed popovers when force-showing node #p3[
+closed popovers when force-showing node #p3 [
 ]
 Currently open popovers: {
     type : object
@@ -129,13 +129,13 @@ Currently open popovers: {
     ]
 }
 force-closed in order:
-closed popovers when force-hiding node #p3[
+closed popovers when force-hiding node #p3 [
     [0] : #p3
 ]
-closed popovers when force-hiding node #p2[
+closed popovers when force-hiding node #p2 [
     [0] : #p2
 ]
-closed popovers when force-hiding node #p1[
+closed popovers when force-hiding node #p1 [
     [0] : #p1
 ]
 Currently open popovers: {
@@ -144,11 +144,11 @@ Currently open popovers: {
     ]
 }
 force-opened in order:
-closed popovers when force-showing node #p1[
+closed popovers when force-showing node #p1 [
 ]
-closed popovers when force-showing node #p2[
+closed popovers when force-showing node #p2 [
 ]
-closed popovers when force-showing node #p3[
+closed popovers when force-showing node #p3 [
 ]
 Currently open popovers: {
     type : object
@@ -159,13 +159,13 @@ Currently open popovers: {
     ]
 }
 force-closed out of order:
-closed popovers when force-hiding node #p2[
+closed popovers when force-hiding node #p2 [
     [0] : #p2
 ]
-closed popovers when force-hiding node #p3[
+closed popovers when force-hiding node #p3 [
     [0] : #p3
 ]
-closed popovers when force-hiding node #p1[
+closed popovers when force-hiding node #p1 [
     [0] : #p1
 ]
 Currently open popovers: {
@@ -174,11 +174,11 @@ Currently open popovers: {
     ]
 }
 force-opened out of order:
-closed popovers when force-showing node #p3[
+closed popovers when force-showing node #p3 [
 ]
-closed popovers when force-showing node #p2[
+closed popovers when force-showing node #p2 [
 ]
-closed popovers when force-showing node #p1[
+closed popovers when force-showing node #p1 [
 ]
 Currently open popovers: {
     type : object
@@ -189,13 +189,13 @@ Currently open popovers: {
     ]
 }
 force-closed out of order:
-closed popovers when force-hiding node #p2[
+closed popovers when force-hiding node #p2 [
     [0] : #p2
 ]
-closed popovers when force-hiding node #p3[
+closed popovers when force-hiding node #p3 [
     [0] : #p3
 ]
-closed popovers when force-hiding node #p1[
+closed popovers when force-hiding node #p1 [
     [0] : #p1
 ]
 Currently open popovers: {
@@ -208,7 +208,7 @@ Open popovers after #p1.showPopover(): {
     type : string
     value : ["p1"]
 }
-closed popovers when force-showing node #p2[
+closed popovers when force-showing node #p2 [
 ]
 Open popovers after #p1.hidePopover(): {
     type : string

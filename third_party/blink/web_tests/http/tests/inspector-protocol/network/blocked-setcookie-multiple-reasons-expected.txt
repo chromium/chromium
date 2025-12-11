@@ -1,5 +1,5 @@
 Verifies that we get multiple cookie blocked reasons when overwriting a Secure cookie over an insecure connection.
-set-cookie that would overwrite secure cookie blocked set-cookies:[
+set-cookie that would overwrite secure cookie blocked set-cookies: [
     [0] : {
         blockedReasons : [
             [0] : SecureOnly

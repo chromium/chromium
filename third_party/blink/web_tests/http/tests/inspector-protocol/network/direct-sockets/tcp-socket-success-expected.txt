@@ -1,7 +1,7 @@
 TCP DirectSockets success
 socket created
    remoteAddr: 127.0.0.1
-   options:{
+   options: {
     dnsQueryType : ipv4
     keepAliveDelay : 10033
     noDelay : true

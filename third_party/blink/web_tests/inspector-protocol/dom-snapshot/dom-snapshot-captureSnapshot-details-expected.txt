@@ -306,12 +306,12 @@ Tests that DOMSnapshot.captureSnapshot fills document details: title, size, etc.
         }
     ]
     strings : [
-        [0] : 
+        [0] :
         [1] : http://example.com/
         [2] : Document Title
         [3] : nl-NL
         [4] : UTF-8
-        [5] : 
+        [5] :
         [6] : -//W3C//DTD HTML 4.01//EN
         [7] : http://www.w3.org/TR/html4/strict.dtd
         [8] : #document

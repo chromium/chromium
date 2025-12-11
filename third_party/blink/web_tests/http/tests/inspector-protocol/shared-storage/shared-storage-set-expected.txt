@@ -1,6 +1,6 @@
 Tests shared storage item setting via devtools.
 undefined
-Entries:[
+Entries: [
 ]
 Set entries via devtools
 Metadata: {
@@ -9,7 +9,7 @@ Metadata: {
     length : 6
     remainingBudget : 12
 }
-Entries:[
+Entries: [
     [0] : {
         key : key0-set-from-devtools
         value : value0
