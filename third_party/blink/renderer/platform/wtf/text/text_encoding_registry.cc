@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -64,7 +65,7 @@ struct TextCodecFactory {
 
 typedef HashMap<const char*, const char*, CaseFoldingHashTraits<const char*>>
     TextEncodingNameMap;
-typedef HashMap<String, TextCodecFactory> TextCodecMap;
+using TextCodecMap = HashMap<AtomicString, TextCodecFactory>;
 
 static base::Lock& EncodingRegistryLock() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
@@ -142,9 +143,11 @@ static void AddToTextEncodingNameMap(const char* alias, const char* name) {
   g_text_encoding_name_map->insert(alias, atomic_name);
 }
 
-static void AddToTextCodecMap(const char* name, NewTextCodecFunction function) {
+static void AddToTextCodecMap(const char* canonical_name,
+                              NewTextCodecFunction function) {
   EncodingRegistryLock().AssertAcquired();
-  g_text_codec_map->insert(AtomicString(name), TextCodecFactory(function));
+  g_text_codec_map->insert(AtomicString(canonical_name),
+                           TextCodecFactory(function));
 }
 
 // Note that this can be called both the main thread and worker threads.
