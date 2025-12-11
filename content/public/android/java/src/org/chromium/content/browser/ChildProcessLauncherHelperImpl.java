@@ -910,7 +910,8 @@ public final class ChildProcessLauncherHelperImpl {
             boolean boostForPendingViews,
             boolean boostForLoading,
             boolean isSpareRenderer,
-            @ChildProcessImportance int importance) {
+            @ChildProcessImportance int importance,
+            boolean hasActiveClients) {
         assert LauncherThread.runningOnLauncherThread();
         assert mLauncher.getPid() == pid
                 : "The provided pid ("
@@ -989,6 +990,12 @@ public final class ChildProcessLauncherHelperImpl {
         // should be applied first.
         if (visible && !mVisible) {
             if (mBindingManager != null) mBindingManager.addConnection(connection);
+        } else if (!hasActiveClients
+                && ContentFeatureList.sRemoveCachedProcessFromBindingManager.isEnabled()) {
+            // If all RenderWidgetHost tied to the process connection are inactive (i.e. in
+            // bfcache), the process connection should be downgraded to NORMAL priority by removing
+            // from the BindingManager.
+            if (mBindingManager != null) mBindingManager.removeConnection(connection);
         }
         mVisible = visible;
 

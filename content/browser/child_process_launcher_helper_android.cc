@@ -322,7 +322,7 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
       priority.has_foreground_service_worker, priority.frame_depth,
       priority.intersects_viewport, priority.boost_for_pending_views,
       priority.boost_for_loading, priority.is_spare_renderer,
-      static_cast<jint>(priority.importance));
+      static_cast<jint>(priority.importance), priority.has_active_clients);
   if (result != static_cast<jint>(SpareRendererPriority::SPARE_NO_CHANGE)) {
     client_task_runner_->PostTask(
         FROM_HERE,

@@ -20934,6 +20934,21 @@
             ]
         }
     ],
+    "RemoveCachedProcessFromBindingManager": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveCachedProcessFromBindingManager"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemoveDataUrlInSvgUse": [
         {
             "platforms": [

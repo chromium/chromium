@@ -2123,6 +2123,11 @@ RenderProcessHostPriorityClient::Priority RenderWidgetHostImpl::GetPriority() {
                         owner_delegate_->ShouldContributePriorityToProcess();
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // should_contribute represents whether the RenderWidgetHost is active or not.
+  // For example, RenderWidgetHost is inactive if it is in BFCache.
+  priority.has_active_clients = should_contribute;
+#endif
   if (!should_contribute) {
     priority.is_hidden = true;
     priority.frame_depth = RenderProcessHostImpl::kMaxFrameDepthForPriority;

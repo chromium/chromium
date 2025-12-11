@@ -459,7 +459,8 @@ public class ChildProcessLauncherHelperTest {
                                 /* boostForPendingViews= */ false,
                                 /* boostForLoading= */ false,
                                 isSpareRenderer,
-                                ChildProcessImportance.NORMAL);
+                                ChildProcessImportance.NORMAL,
+                                /* hasActiveClients= */ false);
                     }
                 });
     }
