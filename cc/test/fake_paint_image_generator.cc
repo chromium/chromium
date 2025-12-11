@@ -57,8 +57,9 @@ bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
 
   CHECK(!is_yuv_ || expect_fallback_to_rgb_);
   const SkImageInfo& dst_info = dst_pixmap.info();
-  if (image_backing_memory_.empty())
+  if (image_backing_memory_.empty()) {
     return false;
+  }
   if (expect_fallback_to_rgb_) {
     image_backing_memory_.resize(dst_info.computeMinByteSize(), 0);
     image_pixmap_ = SkPixmap(dst_info, image_backing_memory_.data(),
@@ -78,8 +79,9 @@ bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
 bool FakePaintImageGenerator::QueryYUVA(
     const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
     SkYUVAPixmapInfo* yuva_pixmap_info) const {
-  if (!is_yuv_)
+  if (!is_yuv_) {
     return false;
+  }
 
   *yuva_pixmap_info = yuva_pixmap_info_;
   return yuva_pixmap_info->isSupported(supported_data_types);
@@ -98,8 +100,9 @@ bool FakePaintImageGenerator::GetYUVAPlanes(
 
   CHECK(is_yuv_);
   CHECK(!expect_fallback_to_rgb_);
-  if (image_backing_memory_.empty())
+  if (image_backing_memory_.empty()) {
     return false;
+  }
   std::array<size_t, SkYUVAInfo::kMaxPlanes> plane_sizes;
   yuva_pixmap_info_.computeTotalBytes(plane_sizes.data());
   uint8_t* src_plane_memory = image_backing_memory_.data();

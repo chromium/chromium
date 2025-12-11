@@ -32,13 +32,15 @@ void TransferCacheTestHelper::CreateEntryDirect(const EntryKey& key,
   // Deserialize into a service transfer cache entry.
   std::unique_ptr<ServiceTransferCacheEntry> service_entry =
       ServiceTransferCacheEntry::Create(key.first);
-  if (!service_entry)
+  if (!service_entry) {
     return;
+  }
 
   bool success =
       service_entry->Deserialize(context_, /*graphite_recorder=*/nullptr, data);
-  if (!success)
+  if (!success) {
     return;
+  }
 
   last_added_entry_ = key;
 
@@ -123,15 +125,17 @@ uint32_t TransferCacheTestHelper::CreateEntryInternal(
 }
 
 void TransferCacheTestHelper::FlushEntriesInternal(std::set<EntryKey> keys) {
-  for (auto& key : keys)
+  for (auto& key : keys) {
     locked_entries_.erase(key);
+  }
   EnforceLimits();
 }
 
 void TransferCacheTestHelper::EnforceLimits() {
   for (auto it = entries_.begin(); it != entries_.end();) {
-    if (entries_.size() <= cached_items_limit_)
+    if (entries_.size() <= cached_items_limit_) {
       break;
+    }
 
     auto found = locked_entries_.find(it->first);
     if (found == locked_entries_.end()) {
