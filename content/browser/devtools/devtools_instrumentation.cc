@@ -2615,6 +2615,18 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
     case blink::mojom::GenericIssueErrorType::kNavigationEntryMarkedSkippable:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           NavigationEntryMarkedSkippable;
+    case blink::mojom::GenericIssueErrorType::
+        kAutofillAndManualTextPolicyControlledFeaturesInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillAndManualTextPolicyControlledFeaturesInfo;
+    case blink::mojom::GenericIssueErrorType::
+        kAutofillPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillPolicyControlledFeatureInfo;
+    case blink::mojom::GenericIssueErrorType::
+        kManualTextPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          ManualTextPolicyControlledFeatureInfo;
   }
 }
 

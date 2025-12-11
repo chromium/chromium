@@ -329,6 +329,9 @@ enum GenericIssueErrorType {
   kFormInputHasWrongButWellIntendedAutocompleteValueError,
   kResponseWasBlockedByORB,
   kNavigationEntryMarkedSkippable,
+  kAutofillAndManualTextPolicyControlledFeaturesInfo,
+  kAutofillPolicyControlledFeatureInfo,
+  kManualTextPolicyControlledFeatureInfo,
 };
 
 struct GenericIssueDetails {

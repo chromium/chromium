@@ -1160,6 +1160,10 @@ Called by update_protocol_commands_enum.py.-->
       label="SRIMessageSignatureIssue::ValidationFailedIntegrityMismatch"/>
   <int value="113"
       label="ElementAccessibilityIssue::InteractiveContentSummaryDescendant"/>
+  <int value="114"
+      label="GenericIssue::AutofillAndManualTextPolicyControlledFeaturesInfo"/>
+  <int value="115" label="GenericIssue::AutofillPolicyControlledFeatureInfo"/>
+  <int value="116" label="GenericIssue::ManualTextPolicyControlledFeatureInfo"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">

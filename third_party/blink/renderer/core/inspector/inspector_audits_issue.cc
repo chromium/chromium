@@ -140,6 +140,18 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
     case mojom::blink::GenericIssueErrorType::kNavigationEntryMarkedSkippable:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           NavigationEntryMarkedSkippable;
+    case mojom::blink::GenericIssueErrorType::
+        kAutofillAndManualTextPolicyControlledFeaturesInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillAndManualTextPolicyControlledFeaturesInfo;
+    case mojom::blink::GenericIssueErrorType::
+        kAutofillPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillPolicyControlledFeatureInfo;
+    case mojom::blink::GenericIssueErrorType::
+        kManualTextPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          ManualTextPolicyControlledFeatureInfo;
   }
 }
 

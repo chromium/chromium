@@ -412,6 +412,9 @@ experimental domain Audits
       FormInputHasWrongButWellIntendedAutocompleteValueError
       ResponseWasBlockedByORB
       NavigationEntryMarkedSkippable
+      AutofillAndManualTextPolicyControlledFeaturesInfo
+      AutofillPolicyControlledFeatureInfo
+      ManualTextPolicyControlledFeatureInfo
 
   # Depending on the concrete errorType, different properties are set.
   type GenericIssueDetails extends object
