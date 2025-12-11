@@ -553,7 +553,6 @@ source_set("web_applications") {
     "//components/webapps/isolated_web_apps",
     "//components/webapps/isolated_web_apps:iwa_client",
     "//components/webapps/services/web_app_origin_association:lib",
-    "//components/webapps/services/web_app_origin_association:service",
     "//content/browser/background_fetch:background_fetch_proto",
     "//content/public/browser",
     "//mojo/core/embedder",

@@ -21,8 +21,6 @@
 #include "components/services/unzip/unzipper_impl.h"
 #include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
-#include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
-#include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_impl.h"
 #include "content/public/utility/utility_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -147,13 +145,6 @@ auto RunFilePatcher(mojo::PendingReceiver<patch::mojom::FilePatcher> receiver) {
 
 auto RunUnzipper(mojo::PendingReceiver<unzip::mojom::Unzipper> receiver) {
   return std::make_unique<unzip::UnzipperImpl>(std::move(receiver));
-}
-
-auto RunWebAppOriginAssociationParser(
-    mojo::PendingReceiver<webapps::mojom::WebAppOriginAssociationParser>
-        receiver) {
-  return std::make_unique<webapps::WebAppOriginAssociationParserImpl>(
-      std::move(receiver));
 }
 
 auto RunCSVPasswordParser(
@@ -443,7 +434,6 @@ void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
 void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunFilePatcher);
   services.Add(RunUnzipper);
-  services.Add(RunWebAppOriginAssociationParser);
   services.Add(RunCSVPasswordParser);
   services.Add(ContentBookmarkParser);
   services.Add(RunPassageEmbeddingsService);
