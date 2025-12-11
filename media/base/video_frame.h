@@ -513,13 +513,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Gets the ScopedMapping object which clients can use to access the CPU
   // visible memory and other metadata for the MappableSI backing this
   // VideoFrame.
-  // TODO(crbug.com/40263579): Have this method directly return
-  // ClientSharedImage::ScopedMapping object instead.
-  std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImageDEPRECATED() const;
-
-  // Gets the ScopedMapping object which clients can use to access the CPU
-  // visible memory and other metadata for the MappableSI backing this
-  // VideoFrame.
   // This isn't guaranteed to be always async.
   // If 'AsyncMappingIsNonBlocking()' is 'false', this will run the callback
   // in the current sequence. Otherwise, the callback will be invoked in the

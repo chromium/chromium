@@ -1762,21 +1762,6 @@ VideoFrame::ScopedMapping::ScopedMapping(
 
 VideoFrame::ScopedMapping::~ScopedMapping() = default;
 
-std::unique_ptr<VideoFrame::ScopedMapping>
-VideoFrame::MapSharedImageDEPRECATED() const {
-  if (wrapped_frame_) {
-    return wrapped_frame_->MapSharedImageDEPRECATED();
-  }
-  if (HasMappableSharedImage()) {
-    // If MappableSI is used, there must be a shared image.
-    CHECK(HasSharedImage());
-    if (auto mapping = shared_image_->Map()) {
-      return base::WrapUnique(new ScopedMapping(std::move(mapping)));
-    }
-  }
-  return nullptr;
-}
-
 void VideoFrame::WrapScopedSharedImageMapping(
     base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
         result_cb,
