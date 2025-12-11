@@ -146,10 +146,6 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CreateAndRegisterEntry(SidePanelRegistry::From(browser_window_));
-  active_tab_subscription_ =
-      browser_window->RegisterActiveTabDidChange(base::BindRepeating(
-          &ContextualTasksSidePanelCoordinator::OnActiveTabChanged,
-          base::Unretained(this)));
   browser_window_->GetTabStripModel()->AddObserver(this);
 }
 
@@ -440,8 +436,7 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
   return prev_web_contents != web_contents;
 }
 
-void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
-    BrowserWindowInterface* browser_interface) {
+void ContextualTasksSidePanelCoordinator::OnActiveTabChanged() {
   bool was_side_panel_open = IsSidePanelOpenForContextualTask();
   bool web_contents_changed = UpdateWebContentsForActiveTab();
   UpdateSidePanelVisibility();
@@ -526,6 +521,10 @@ void ContextualTasksSidePanelCoordinator::OnTabStripModelChanged(
   } else if (change.type() == TabStripModelChange::kReplaced) {
     DisassociateTabFromTask(change.GetReplace()->old_contents);
     CleanUpUnusedWebContents();
+  }
+
+  if (selection.active_tab_changed() && !tab_strip_model->empty()) {
+    OnActiveTabChanged();
   }
 }
 

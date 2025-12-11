@@ -130,7 +130,7 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   bool UpdateWebContentsForActiveTab();
 
   // Handle swapping WebContents if thread changes.
-  void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
+  void OnActiveTabChanged();
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -183,9 +183,6 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   // Browser window of the current side panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
-
-  // Subscription to listen for tab change.
-  base::CallbackListSubscription active_tab_subscription_;
 
   // Context controller to query task information.
   const raw_ptr<ContextualTasksContextController> context_controller_;
