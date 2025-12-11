@@ -118,13 +118,19 @@
 #endif
 
 namespace blink {
+namespace {
 
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 
 class SuspendCaptureObserver : public GarbageCollected<SuspendCaptureObserver>,
+                               public Supplement<Page>,
                                public PageVisibilityObserver {
  public:
-  explicit SuspendCaptureObserver(Page& page) : PageVisibilityObserver(&page) {}
+  static constexpr auto kSupplementIndex =
+      Page::Supplements::kSuspendCaptureObserver;
+
+  explicit SuspendCaptureObserver(Page& page)
+      : Supplement<Page>(page), PageVisibilityObserver(&page) {}
 
   // PageVisibilityObserver overrides:
   void PageVisibilityChanged() override {
@@ -150,11 +156,14 @@ class SuspendCaptureObserver : public GarbageCollected<SuspendCaptureObserver>,
   }
 
   void Trace(Visitor* visitor) const override {
+    Supplement<Page>::Trace(visitor);
     PageVisibilityObserver::Trace(visitor);
   }
 };
 
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+
+}  // namespace
 
 void ModulesInitializer::Initialize() {
   // Strings must be initialized before calling CoreInitializer::init().
@@ -366,8 +375,7 @@ void ModulesInitializer::ProvideModulesToPage(
   StorageNamespace::ProvideSessionStorageNamespaceTo(page, namespace_id);
   AudioGraphTracer::ProvideAudioGraphTracerTo(page);
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
-  page.SetSuspendCaptureObserver(
-      MakeGarbageCollected<SuspendCaptureObserver>(page));
+  page.ProvideSupplement(MakeGarbageCollected<SuspendCaptureObserver>(page));
 #endif  // BUILDFLAG(IS_ANDROID)  && !BUILDFLAG(IS_DESKTOP_ANDROID)
 }
 
