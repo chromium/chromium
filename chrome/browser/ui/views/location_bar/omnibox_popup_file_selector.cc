@@ -10,6 +10,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -17,9 +18,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "components/contextual_search/contextual_search_context_controller.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
-#include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -38,11 +38,9 @@ OmniboxPopupFileSelector::~OmniboxPopupFileSelector() = default;
 void OmniboxPopupFileSelector::OpenFileUploadDialog(
     content::WebContents* web_contents,
     bool is_image,
-    contextual_search::ContextualSearchContextController* query_controller,
     OmniboxEditModel* edit_model,
     std::optional<lens::ImageEncodingOptions> image_encoding_options) {
   web_contents_ = web_contents;
-  query_controller_ = query_controller;
   edit_model_ = edit_model;
   image_encoding_options_ = image_encoding_options;
   file_dialog_ = ui::SelectFileDialog::Create(
@@ -94,12 +92,6 @@ void OmniboxPopupFileSelector::FileSelectionCanceled() {}
 
 void OmniboxPopupFileSelector::OnFileDataReady(
     std::unique_ptr<FileData> file_data) {
-  if (!query_controller_) {
-    return;
-  }
-
-  base::UnguessableToken file_token = base::UnguessableToken::Create();
-
   lens::MimeType mime_type;
   if (file_data->mime_type.find("pdf") != std::string::npos) {
     mime_type = lens::MimeType::kPdf;
@@ -109,20 +101,17 @@ void OmniboxPopupFileSelector::OnFileDataReady(
     NOTREACHED();
   }
 
-  std::unique_ptr<lens::ContextualInputData> input_data =
-      std::make_unique<lens::ContextualInputData>();
-  input_data->context_input = std::vector<lens::ContextualInput>();
-  input_data->primary_content_type = mime_type;
 
   base::span<const uint8_t> file_data_span =
       base::as_bytes(base::span(file_data->bytes));
   std::vector<uint8_t> file_data_vector(file_data_span.begin(),
                                         file_data_span.end());
-  input_data->context_input->push_back(
-      lens::ContextualInput(std::move(file_data_vector), mime_type));
+  mojo_base::BigBuffer file_data_buffer =
+      mojo_base::BigBuffer(file_data_vector);
 
-  query_controller_->StartFileUploadFlow(file_token, std::move(input_data),
-                                         std::move(image_encoding_options_));
+  auto* handle =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents_.get())
+          ->session_handle();
 
   std::string image_data_url;
   if (mime_type == lens::MimeType::kImage) {
@@ -130,18 +119,23 @@ void OmniboxPopupFileSelector::OnFileDataReady(
                      base::Base64Encode(file_data->bytes);
   }
 
-  UpdateSearchboxContextData(file_token, mime_type, image_data_url,
-                             file_data->name, file_data->mime_type);
+  handle->AddFileContext(
+      file_data->mime_type, std::move(file_data_buffer),
+      std::move(image_encoding_options_),
+      base::BindOnce(&OmniboxPopupFileSelector::UpdateSearchboxContextData,
+                     weak_factory_.GetWeakPtr(), mime_type,
+                     std::move(image_data_url), std::move(file_data->name),
+                     std::move(file_data->mime_type)));
 
   edit_model_->OpenAiMode(false, /*via_context_menu=*/true);
 }
 
 void OmniboxPopupFileSelector::UpdateSearchboxContextData(
-    base::UnguessableToken file_token,
     lens::MimeType mime_type,
-    const std::string& image_data_url,
+    std::string image_data_url,
     std::string file_name,
-    std::string mime_string) {
+    std::string mime_string,
+    const base::UnguessableToken& file_token) {
   auto file_attachment = searchbox::mojom::FileAttachmentStub::New();
   file_attachment->uuid = file_token;
   file_attachment->name = file_name;

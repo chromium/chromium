@@ -354,17 +354,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   } else {
     switch (id) {
       case IDC_OMNIBOX_CONTEXT_ADD_IMAGE: {
-        file_selector_->OpenFileUploadDialog(
-            web_contents_.get(),
-            /*is_image=*/true, GetQueryController(), GetEditModel(),
-            CreateImageEncodingOptions());
+        file_selector_->OpenFileUploadDialog(web_contents_.get(),
+                                             /*is_image=*/true, GetEditModel(),
+                                             CreateImageEncodingOptions());
         break;
       }
       case IDC_OMNIBOX_CONTEXT_ADD_FILE:
-        file_selector_->OpenFileUploadDialog(
-            web_contents_.get(),
-            /*is_image=*/false, GetQueryController(), GetEditModel(),
-            CreateImageEncodingOptions());
+        file_selector_->OpenFileUploadDialog(web_contents_.get(),
+                                             /*is_image=*/false, GetEditModel(),
+                                             CreateImageEncodingOptions());
         break;
       case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
         UpdateSearchboxContext(

@@ -13,10 +13,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace contextual_search {
-class ContextualSearchContextController;
-}  // namespace contextual_search
-
 namespace lens {
 enum class MimeType;
 }  // namespace lens
@@ -49,17 +45,16 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
   virtual void OpenFileUploadDialog(
       content::WebContents* web_contents,
       bool is_image,
-      contextual_search::ContextualSearchContextController* query_controller,
       OmniboxEditModel* edit_model,
       std::optional<lens::ImageEncodingOptions> image_encoding_options);
 
   void OnFileDataReady(std::unique_ptr<FileData> file_data);
 
-  void UpdateSearchboxContextData(base::UnguessableToken file_token,
-                                  lens::MimeType mime_type,
-                                  const std::string& image_data_url,
+  void UpdateSearchboxContextData(lens::MimeType mime_type,
+                                  std::string image_data_url,
                                   std::string file_name,
-                                  std::string mime_string);
+                                  std::string mime_string,
+                                  const base::UnguessableToken& file_token);
 
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
@@ -67,8 +62,6 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
 
  private:
   scoped_refptr<ui::SelectFileDialog> file_dialog_;
-  raw_ptr<contextual_search::ContextualSearchContextController>
-      query_controller_;
   std::string file_info_type_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<OmniboxEditModel> edit_model_;
