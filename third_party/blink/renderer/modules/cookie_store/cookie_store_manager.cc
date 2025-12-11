@@ -96,7 +96,8 @@ CookieStoreManager* CookieStoreManager::cookies(
 }
 
 CookieStoreManager::CookieStoreManager(ServiceWorkerRegistration& registration)
-    : registration_(&registration),
+    : service_worker_registration_(registration),
+      registration_(&registration),
       backend_(registration.GetExecutionContext()),
       default_cookie_url_(DefaultCookieURL(&registration)) {
   auto* execution_context = registration.GetExecutionContext();
@@ -179,6 +180,7 @@ CookieStoreManager::getSubscriptions(ScriptState* script_state,
 void CookieStoreManager::Trace(Visitor* visitor) const {
   visitor->Trace(registration_);
   visitor->Trace(backend_);
+  visitor->Trace(service_worker_registration_);
   ScriptWrappable::Trace(visitor);
 }
 

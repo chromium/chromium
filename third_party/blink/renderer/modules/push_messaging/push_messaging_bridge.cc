@@ -41,7 +41,8 @@ PushMessagingBridge* PushMessagingBridge::From(
 
 PushMessagingBridge::PushMessagingBridge(
     ServiceWorkerRegistration& registration)
-    : permission_service_(registration.GetExecutionContext()) {}
+    : service_worker_registration_(registration),
+      permission_service_(registration.GetExecutionContext()) {}
 
 PushMessagingBridge::~PushMessagingBridge() = default;
 
@@ -81,6 +82,7 @@ ScriptPromise<V8PermissionState> PushMessagingBridge::GetPermissionState(
 
 void PushMessagingBridge::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
+  visitor->Trace(service_worker_registration_);
 }
 
 void PushMessagingBridge::DidGetPermissionState(

@@ -51,6 +51,7 @@ class CookieStoreManager final : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
  private:
+  Member<ServiceWorkerRegistration> service_worker_registration_;
   // The non-static callbacks keep CookieStoreManager alive during mojo calls.
   //
   // The browser-side implementation of the mojo calls assumes the SW

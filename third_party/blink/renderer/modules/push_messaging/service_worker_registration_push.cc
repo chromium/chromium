@@ -34,16 +34,15 @@ PushManager* ServiceWorkerRegistrationPush::pushManager(
 }
 
 PushManager* ServiceWorkerRegistrationPush::pushManager() {
-  if (!push_manager_) {
+  if (!push_manager_)
     push_manager_ =
         MakeGarbageCollected<PushManager>(service_worker_registration_);
-  }
   return push_manager_.Get();
 }
 
 void ServiceWorkerRegistrationPush::Trace(Visitor* visitor) const {
-  visitor->Trace(service_worker_registration_);
   visitor->Trace(push_manager_);
+  visitor->Trace(service_worker_registration_);
 }
 
 }  // namespace blink

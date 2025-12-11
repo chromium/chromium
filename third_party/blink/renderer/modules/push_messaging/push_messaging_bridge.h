@@ -51,6 +51,7 @@ class PushMessagingBridge final : public GarbageCollected<PushMessagingBridge>,
   void DidGetPermissionState(ScriptPromiseResolver<V8PermissionState>* resolver,
                              mojom::blink::PermissionStatus status);
 
+  Member<ServiceWorkerRegistration> service_worker_registration_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };
 
