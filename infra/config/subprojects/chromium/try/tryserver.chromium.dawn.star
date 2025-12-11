@@ -577,20 +577,6 @@ try_.builder(
     ),
 )
 
-try_.builder(
-    name = "dawn-try-linux-tsan-rel",
-    mirrors = [
-        "ci/Dawn Linux TSAN Release",
-    ],
-    gn_args = "ci/Dawn Linux TSAN Release",
-    pool = "luci.chromium.gpu.try",
-    builderless = True,
-    max_concurrent_builds = 1,
-    test_presentation = resultdb.test_presentation(
-        grouping_keys = ["status", "v.test_suite", "v.gpu"],
-    ),
-)
-
 dawn_mac_builder(
     name = "dawn-try-mac-amd-555x-rel",
     mirrors = [

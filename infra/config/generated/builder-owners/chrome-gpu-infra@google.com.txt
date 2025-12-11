@@ -21,7 +21,6 @@ ci/Dawn Android arm64 Release (Pixel 10)
 ci/Dawn Android arm64 Release (Pixel 6)
 ci/Dawn Android arm64 Release (Samsung S24)
 ci/Dawn Chromium Presubmit
-ci/Dawn Linux TSAN Release
 ci/Dawn Linux x64 Builder
 ci/Dawn Linux x64 DEPS Builder
 ci/Dawn Linux x64 DEPS Release (Intel UHD 630)
@@ -170,7 +169,6 @@ try/dawn-chromium-presubmit
 try/dawn-linux-x64-deps-rel
 try/dawn-mac-arm64-deps-rel
 try/dawn-mac-x64-deps-rel
-try/dawn-try-linux-tsan-rel
 try/dawn-try-linux-x64-intel-uhd770-rel
 try/dawn-try-mac-amd-555x-rel
 try/dawn-try-mac-amd-exp
