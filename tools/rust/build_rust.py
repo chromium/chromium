@@ -685,6 +685,12 @@ def main():
         help=
         'dump all environment variables set for x.py to a file `rust-build-env`'
     )
+    parser.add_argument(
+        '--stage-1',
+        action='store_true',
+        help=
+        'build/install stage 1 Rust toolchain instead of stage 2 toolchain for faster iteration'
+    )
     parser.add_argument('--skip-checkout',
                         action='store_true',
                         help='do not create or update any checkouts')
@@ -906,7 +912,8 @@ def main():
         return 0
 
     target_triple = RustTargetTriple()
-    xpy_args = ['--build', target_triple]
+    stage = '1' if args.stage_1 else '2'
+    xpy_args = ['--build', target_triple, '--stage', stage]
 
     # Delete the build directory.
     if not args.skip_clean:
@@ -916,21 +923,20 @@ def main():
 
     if not args.skip_test:
         print(f'Building stage 2 artifacts and running tests...')
-        xpy.run('test', ['--stage', '2'] + xpy_args + GetTestArgs())
+        xpy.run('test', xpy_args + GetTestArgs())
 
     if not args.skip_install:
-        # Build stage 2 compiler, tools, and libraries. This should reuse
-        # earlier stages from the test command (if run).
-        print('Installing stage 2 artifacts...')
-        xpy.run('build', xpy_args + ['--stage', '2'] + BUILD_TARGETS)
+        # Build compiler, tools, and libraries. This should reuse earlier
+        # stages from the test command (if run).
+        print(f'Building stage {stage} artifacts...')
+        xpy.run('build', xpy_args + BUILD_TARGETS)
 
-    if not args.skip_install:
         print(f'Installing Rust to {RUST_TOOLCHAIN_OUT_DIR} ...')
         # Clean output directory.
         if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
             RmTree(RUST_TOOLCHAIN_OUT_DIR)
 
-        xpy.run('install', xpy_args + [])
+        xpy.run('install', xpy_args)
 
         WriteStampFile(
             MakeVersionStamp(checkout_revision, args.rust_force_head_revision,
