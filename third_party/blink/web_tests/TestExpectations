@@ -7862,7 +7862,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure ]
 [ Debug Mac13 ] media/video-source.html [ Failure ]
 [ Debug Mac13 ] fast/forms/focus-rect/radio-focus-ring.html [ Failure ]
-[ Debug Mac13 ] http/tests/devtools/resource-tree/resource-tree-non-unique-url.js [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/network/network-not-modified-images-mime-type.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/disallowed-navigations-dangling-markup-urn.https.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-hidden-viewport-scrolling.html [ Skip Timeout ]
@@ -8231,7 +8230,6 @@ crbug.com/40615943 http/tests/security/dataURL/xss-DENIED-to-data-url-in-foreign
 # Gardener: 2024-01-19
 crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Skip Timeout ]
 crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Skip Timeout ]
-crbug.com/41491912 [ Linux ] http/tests/devtools/resource-tree/resource-tree-non-unique-url.js [ Failure Pass ]
 crbug.com/1519124 [ Mac13 Release ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/1519124 [ Mac13-arm64 Release ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/1519124 [ Mac12 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
@@ -8492,7 +8490,6 @@ crbug.com/374090995 [ Mac14-arm64 ] fast/webgl/offscreenCanvas-transferToImageBi
 [ Debug Mac14 ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Failure Pass ]
 [ Debug Mac14 ] fast/peerconnection/RTCPeerConnection-iframe-gc.html [ Failure Pass ]
 [ Debug Mac14 ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
-[ Debug Mac14 ] http/tests/devtools/resource-tree/resource-tree-non-unique-url.js [ Failure Pass ]
 [ Debug Mac14 ] http/tests/misc/load-event-after-removing-child-frame.html [ Failure Pass ]
 [ Debug Mac14 ] http/tests/security/filesystem-iframe-from-remote.html [ Failure Pass ]
 [ Debug Mac14 ] http/tests/webfont/font-display-intervention.html [ Failure Pass ]
