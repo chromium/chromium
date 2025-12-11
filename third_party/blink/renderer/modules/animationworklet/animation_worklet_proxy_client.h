@@ -68,6 +68,8 @@ class MODULES_EXPORT AnimationWorkletProxyClient
   FRIEND_TEST_ALL_PREFIXES(AnimationWorkletProxyClientTest,
                            RegisteredAnimatorNameShouldSyncOnce);
 
+  Member<WorkerClients> worker_clients_;
+
   // The global scope periodically switches in order to enforce stateless
   // behavior. For stateless animators, prior state is lost on each switch to
   // global scope. For stateful animators, prior state is transferred to the new

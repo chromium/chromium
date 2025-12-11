@@ -111,6 +111,8 @@ class MODULES_EXPORT PaintWorkletProxyClient
   FRIEND_TEST_ALL_PREFIXES(PaintWorkletProxyClientTest,
                            PaintWorkletProxyClientConstruction);
 
+  Member<WorkerClients> worker_clients_;
+
   // Store the device pixel ratio here so it can be used off main thread
   double device_pixel_ratio_;
 
