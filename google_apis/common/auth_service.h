@@ -6,7 +6,6 @@
 #define GOOGLE_APIS_COMMON_AUTH_SERVICE_H_
 
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -43,8 +42,7 @@ class AuthService : public AuthServiceInterface {
   AuthService(signin::IdentityManager* identity_manager,
               const CoreAccountId& account_id,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-              std::variant<std::vector<std::string>, signin::OAuthConsumerId>
-                  scopes_or_consumer_id);
+              signin::OAuthConsumerId oauth_consumer_id);
   AuthService(const AuthService&) = delete;
   AuthService& operator=(const AuthService&) = delete;
   ~AuthService() override;
@@ -78,8 +76,7 @@ class AuthService : public AuthServiceInterface {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   bool has_refresh_token_;
   std::string access_token_;
-  std::variant<std::vector<std::string>, signin::OAuthConsumerId>
-      scopes_or_consumer_id_;
+  signin::OAuthConsumerId oauth_consumer_id_;
   base::ObserverList<AuthServiceObserver>::Unchecked observers_;
   base::ThreadChecker thread_checker_;
 
