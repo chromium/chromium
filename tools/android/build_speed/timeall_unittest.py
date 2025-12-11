@@ -227,7 +227,7 @@ class TimeallTest(unittest.TestCase):
         self.assertEqual(options.e, '')
         self.assertTrue(options.i)
         self.assertTrue(options.n)
-        self.assertTrue(options.s)
+        self.assertFalse(options.s)
 
     @unittest.mock.patch('random.choice',
                          return_value='android_31_google_apis_x64_local.textpb')
@@ -248,7 +248,7 @@ class TimeallTest(unittest.TestCase):
         self.assertEqual(first_options.e, '')
         self.assertTrue(first_options.i)
         self.assertTrue(first_options.n)
-        self.assertTrue(first_options.s)
+        self.assertFalse(first_options.s)
 
         last_options = benchmark_options[-1]
         self.assertEqual(last_options.benchmark, 'cta_test_sig')
@@ -257,7 +257,7 @@ class TimeallTest(unittest.TestCase):
                          'android_31_google_apis_x64_local.textpb')
         self.assertTrue(last_options.i)
         self.assertFalse(last_options.n)
-        self.assertFalse(last_options.s)
+        self.assertTrue(last_options.s)
 
 
 if __name__ == '__main__':

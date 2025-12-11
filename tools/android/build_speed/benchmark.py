@@ -231,8 +231,9 @@ _BENCHMARKS = [
     Benchmark(
         name='chrome_junit_sig',
         from_string='@Mock Profile mProfile;',
+        # @org.junit.Ignore to avoid the JUnit4TestNotRun errorprone warning.
         to_string=
-        'public void NewInterface<sub>Method(){};@Mock Profile mProfile;',  # pylint: disable=line-too-long
+        '@org.junit.Ignore public void NewInterface<sub>Method(){};@Mock Profile mProfile;',  # pylint: disable=line-too-long
         change_file=
         'chrome/android/junit/src/org/chromium/chrome/browser/ExampleRobolectricTest.java',  # pylint: disable=line-too-long
         can_run=True,

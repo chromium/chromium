@@ -148,7 +148,8 @@ def run(debug: bool):
 
     incremental_opts = [True, False]
     nocomponent_opts = [True, False]
-    server_opts = [True, False]
+    # Use False first for --debug to ensure static analysis pass.
+    server_opts = [False, True]
 
     benchmark_options = []
     for benchmark, emulator in itertools.product(benchmarks, emulators):
