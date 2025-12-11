@@ -5,10 +5,15 @@
 #include "chrome/browser/ui/views/tabs/vertical/bottom_container_button.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/actions/action_view_interface.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
@@ -33,13 +38,33 @@ class BottomContainerButtonActionViewInterface
  private:
   raw_ptr<BottomContainerButton> action_view_;
 };
+class BottomContainerButtonHighlightPathGenerator
+    : public views::HighlightPathGenerator {
+ public:
+  explicit BottomContainerButtonHighlightPathGenerator(const int radius)
+      : radius_(radius) {}
+
+  // HighlightPathGenerator:
+  SkPath GetHighlightPath(const views::View* view) override {
+    gfx::Rect rect = view->GetLocalBounds();
+    rect.Inset(GetToolbarInkDropInsets(view));
+    return SkPath::RRect(
+        SkRRect::MakeRectXY(gfx::RectToSkRect(rect), radius_, radius_));
+  }
+
+ private:
+  const int radius_;
+};
 }  // namespace
 
 BottomContainerButton::BottomContainerButton() {
+  const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
   SetBackground(views::CreateRoundedRectBackground(
-      kColorVerticalTabStripBottomButtonBackground,
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kHigh)));
+      kColorVerticalTabStripBottomButtonBackground, radius));
+  ConfigureInkDropForToolbar(
+      this,
+      std::make_unique<BottomContainerButtonHighlightPathGenerator>(radius));
 }
 
 std::unique_ptr<views::ActionViewInterface>

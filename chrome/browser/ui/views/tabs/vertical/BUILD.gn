@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/toolbar",
   ]
 
   public_deps = [

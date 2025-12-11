@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/label_button.h"
@@ -24,7 +25,7 @@ namespace {
 class TopContainerButton : public views::LabelButton {
   METADATA_HEADER(TopContainerButton, views::LabelButton)
  public:
-  TopContainerButton() = default;
+  TopContainerButton() { ConfigureInkDropForToolbar(this); }
 
   // views::LabelButton:
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
@@ -130,20 +131,21 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
 views::LabelButton* VerticalTabStripTopContainer::AddChildButtonFor(
     actions::ActionId action_id) {
-  std::unique_ptr<TopContainerButton> label_button =
+  std::unique_ptr<TopContainerButton> container_button =
       std::make_unique<TopContainerButton>();
   actions::ActionItem* action_item =
       actions::ActionManager::Get().FindAction(action_id, root_action_item_);
   CHECK(action_item);
 
   action_view_controller_->CreateActionViewRelationship(
-      label_button.get(), action_item->GetAsWeakPtr());
+      container_button.get(), action_item->GetAsWeakPtr());
 
-  TopContainerButton* raw_label_button = AddChildView(std::move(label_button));
+  TopContainerButton* raw_container_button =
+      AddChildView(std::move(container_button));
 
-  raw_label_button->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  raw_container_button->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
 
-  return raw_label_button;
+  return raw_container_button;
 }
 
 bool VerticalTabStripTopContainer::IsPositionInWindowCaption(

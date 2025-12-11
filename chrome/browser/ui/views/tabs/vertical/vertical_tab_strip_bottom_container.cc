@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/tabs/vertical/bottom_container_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/menu_button_controller.h"
@@ -75,22 +76,22 @@ VerticalTabStripBottomContainer::~VerticalTabStripBottomContainer() = default;
 
 views::LabelButton* VerticalTabStripBottomContainer::AddChildButtonFor(
     actions::ActionId action_id) {
-  std::unique_ptr<BottomContainerButton> label_button =
+  std::unique_ptr<BottomContainerButton> container_button =
       std::make_unique<BottomContainerButton>();
   actions::ActionItem* action_item =
       actions::ActionManager::Get().FindAction(action_id, root_action_item_);
   CHECK(action_item);
 
   action_view_controller_->CreateActionViewRelationship(
-      label_button.get(), action_item->GetAsWeakPtr());
+      container_button.get(), action_item->GetAsWeakPtr());
 
-  raw_ptr<BottomContainerButton> raw_label_button =
-      AddChildView(std::move(label_button));
+  raw_ptr<BottomContainerButton> raw_container_button =
+      AddChildView(std::move(container_button));
 
-  raw_label_button->SetHorizontalAlignment(
+  raw_container_button->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_CENTER);
 
-  return raw_label_button;
+  return raw_container_button;
 }
 
 void VerticalTabStripBottomContainer::ShowEverythingMenu() {
