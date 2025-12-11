@@ -173,7 +173,6 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
-#include "chrome/browser/ui/tabs/glic_actor_task_icon_controller.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_legacy_side_panel_coordinator.h"
 #endif
 
@@ -734,7 +733,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
       if (features::kGlicActorUiTaskIcon.Get() &&
           browser_->GetProfile()->IsRegularProfile()) {
-        if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
           // Will be referenced in GlicActorNudgeController and thus needs to be
           // instantiated first.
           actor_task_list_bubble_controller_ =
@@ -749,15 +747,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
                       BrowserElementsViews::From(browser_view->browser())
                           ->GetViewAs<TabStripActionContainer>(
                               kTabStripActionContainerElementId));
-        } else {
-          glic_actor_task_icon_controller_ =
-              GetUserDataFactory()
-                  .CreateInstance<tabs::GlicActorTaskIconController>(
-                      *browser_, browser_,
-                      BrowserElementsViews::From(browser_view->browser())
-                          ->GetViewAs<TabStripActionContainer>(
-                              kTabStripActionContainerElementId));
-        }
       }
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -856,7 +845,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic_button_controller_.reset();
-  glic_actor_task_icon_controller_.reset();
   glic_actor_nudge_controller_.reset();
   actor_task_list_bubble_controller_.reset();
 #endif

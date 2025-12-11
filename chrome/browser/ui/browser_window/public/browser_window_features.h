@@ -20,7 +20,6 @@ class GlicLegacySidePanelCoordinator;
 }  // namespace glic
 
 namespace tabs {
-class GlicActorTaskIconController;
 class GlicActorNudgeController;
 }  // namespace tabs
 #endif
@@ -639,8 +638,6 @@ class BrowserWindowFeatures {
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<tabs::GlicActorTaskIconController>
-      glic_actor_task_icon_controller_;
   std::unique_ptr<tabs::GlicActorNudgeController> glic_actor_nudge_controller_;
   std::unique_ptr<ActorTaskListBubbleController>
       actor_task_list_bubble_controller_;
