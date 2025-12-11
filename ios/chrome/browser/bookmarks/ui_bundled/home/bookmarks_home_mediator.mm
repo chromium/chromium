@@ -671,14 +671,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (!_browser.get()) {
-    // If `_browser` has been removed, the mediator can be disconnected and the
-    // event can be ignored. See http://crbug.com/1442174.
-    // TODO(crbug.com/40064261): This `if` is a workaround until this bug is
-    // fixed. This if should be remove when the bug will be closed.
-    [self disconnect];
-    return;
-  }
+  CHECK(_browser);
   if (self.addingNewFolder) {
     // Adding new folder will trigger a sync update and this callback. Avoid
     // refreshing content which doesn't add much value and will stop the
