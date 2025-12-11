@@ -19,10 +19,7 @@ source_set("base") {
   # is a roll-up target which is part of the //media component. Most other DEPs
   # should be using //media and not directly DEP this roll-up target.
   visibility = media_subcomponent_deps
-  visibility += [
-    "//media",
-    "//media/capture/video/android",
-  ]
+  visibility += [ "//media" ]
 
   if (!enable_library_cdms) {
     # cdm_type_conversion is not part of media_subcomponent_deps.
