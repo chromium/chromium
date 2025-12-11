@@ -32,6 +32,7 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
+#include "base/thread_annotations.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -136,10 +137,27 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // turned on if the database is also using exclusive locking mode.
   // (https://crbug.com/1082059)
   //
-  // Note: Changing page size is not supported when in WAL mode. So running
-  // 'PRAGMA page_size = <new-size>' will result in no-ops.
+  // Of note:
   //
-  // Note: This option is not supported in read-only mode.
+  // - For best performance and fewer edge cases relating to error handling, do
+  //   not disable exclusive locking when enabling WAL mode.
+  //
+  // - Changing the page size is not supported when in WAL mode; 'PRAGMA
+  //   page_size = <new-size>' will have no effect.
+  //
+  // - Auto-checkpointing is performed by `sql::Database`. Clients should not
+  //   execute `PRAGMA wal_autocheckpoint=N` in an attempt to change the
+  //   auto-checkpoint size. The size is fixed at 1000 pages. Contact OWNERS if
+  //   you have a use-case to specify a different value for auto-checkpointing.
+  //
+  // - Auto-checkpointing can be disabled by supplying a WAL commit callback;
+  //   see `set_wal_commit_callback()`.
+  //
+  // - Manual checkpointing should be done via calls to `CheckpointDatabase()`;
+  //   not by executing `PRAGMA wal_checkpoint`. `CheckpointDatabase()` may be
+  //   called at any time; regardless of automatic vs. manual checkpointing.
+  //
+  // - This option is not supported in read-only mode.
   //
   // More details at https://www.sqlite.org/wal.html
   DatabaseOptions& set_wal_mode(bool wal_mode) {
@@ -293,10 +311,10 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
 
   // Set a WAL commit callback for configuring manual WAL checkpointing.
   //
-  // When this callback is provided, SQLite's automatic checkpointing is
-  // disabled. The callback is called each time data is committed to the
-  // database, with the number of pages currently in the write-ahead log file
-  // (including those that were just committed).
+  // Automatic checkpointing is disabled when this callback is provided. The
+  // callback is run each time data is committed to the database, with the
+  // number of pages currently in the write-ahead log file (including those that
+  // were just committed).
   //
   // The owner of the database is responsible for calling CheckpointDatabase()
   // at appropriate times. The owner may choose to do so within the callback,
@@ -304,8 +322,8 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // checkpoints to be performed only when the process is idle to avoid
   // blocking the main database sequence.
   //
-  // When the callback is not set, SQLite will automatically checkpoint the
-  // database when the WAL file reaches 1000 pages.
+  // When the callback is not set, `sql::Database` will automatically checkpoint
+  // the database when the WAL file reaches 1000 pages.
   //
   // This option is only effective when WAL mode is enabled.
   DatabaseOptions& set_wal_commit_callback(
@@ -941,12 +959,21 @@ class COMPONENT_EXPORT(SQL) Database {
   // Internal helper for Does*Exist() functions.
   bool DoesSchemaItemExist(std::string_view name, std::string_view type);
 
-  // This callback is registered with SQLite to be called after each commit when
-  // `set_wal_commit_callback()` is used.
-  static int WalHookCallback(void* db_ptr,
-                             sqlite3* db_handle,
-                             const char* db_name,
-                             int pages);
+  // A function registered with SQLite that is called each time data is
+  // committed to a database in WAL mode; see
+  // https://www.sqlite.org/c3ref/wal_hook.html.
+  static int WalCommitHook(void* db_ptr,
+                           sqlite3* db_handle,
+                           const char* db_name,
+                           int pages);
+  void OnWalDataCommit(base::cstring_view db_name, int pages);
+
+  // Checkpoints `db_name` ("main" in the general case). `is_auto_checkpoint`
+  // indicates whether this initiates from the WAL commit hook (true) or a call
+  // to `CheckpointDatabase()` (false). Returns the SQLite result code from
+  // sqlite3_wal_checkpoint_v2.
+  int WalCheckpointImpl(base::cstring_view db_name, bool is_auto_checkpoint)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Used to implement the interface with sql::test::ScopedErrorExpecter.
   static ScopedErrorExpecterCallback* current_expecter_cb_;
