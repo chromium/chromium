@@ -59,7 +59,9 @@ constexpr int kIconSize = 256;
 
 }  // namespace
 
-class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
+class TwoClientGeneratedIconFixSyncTest
+    : public WebAppsSyncTestBase,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   static proto::GeneratedIconFix MakeGeneratedIconFix(
       proto::GeneratedIconFixSource source,
@@ -78,7 +80,12 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
     return generated_icon_fix;
   }
 
-  TwoClientGeneratedIconFixSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {}
+  TwoClientGeneratedIconFixSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
   ~TwoClientGeneratedIconFixSyncTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -89,6 +96,10 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
   void TearDownOnMainThread() override {
     fake_providers_.clear();
     WebAppsSyncTestBase::TearDownOnMainThread();
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   webapps::AppId SyncBrokenIcon(Profile* source, Profile* destination) {
@@ -187,9 +198,17 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
       GeneratedIconFixManager::DisableAutoRetryForTesting();
 
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientGeneratedIconFixSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientGeneratedIconFixSyncTest, Fix) {
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
   base::HistogramTester histogram_tester;
 
@@ -244,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
                                       1);
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
+IN_PROC_BROWSER_TEST_P(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
   base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
@@ -301,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
   histogram_tester.ExpectTotalCount("WebApp.GeneratedIconFix.AttemptCount", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
+IN_PROC_BROWSER_TEST_P(TwoClientGeneratedIconFixSyncTest, NotRequired) {
   base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
@@ -350,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
   histogram_tester.ExpectTotalCount("WebApp.GeneratedIconFix.AttemptCount", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
+IN_PROC_BROWSER_TEST_P(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
   base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
@@ -398,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
                                       1);
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientGeneratedIconFixSyncTest,
                        RetroactiveTimeWindow) {
   base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
@@ -491,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Throttling) {
+IN_PROC_BROWSER_TEST_P(TwoClientGeneratedIconFixSyncTest, Throttling) {
   base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
@@ -584,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Throttling) {
   // relies on.
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AttemptLimit) {
+IN_PROC_BROWSER_TEST_P(TwoClientGeneratedIconFixSyncTest, AttemptLimit) {
   base::HistogramTester histogram_tester;
   FakeWebAppProvider& provider1 = *fake_providers_[GetProfile(1)];
 
