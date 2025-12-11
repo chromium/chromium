@@ -1284,7 +1284,6 @@ bool IsSettingsAppNotificationSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSettingsAppThemeChangeAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfLauncherNudgeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAComplianceCheckEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSimLockPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAOsUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMA3pDiagnosticsEnabled();
