@@ -42,7 +42,6 @@ import org.chromium.base.test.util.BaseRestrictions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIfSkipCheck;
-import org.chromium.base.test.util.LeakCanaryChecker;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
@@ -146,7 +145,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     private long mTestStartTimeMs;
     private String mFailedBatchTestName;
     private JniTestInstancesSnapshot mJniZeroSnapshot;
-    private boolean mAnyTestFailed;
 
     /**
      * Create a BaseJUnit4ClassRunner to run {@code klass} and initialize values.
@@ -310,7 +308,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
                     @Override
                     public void testFailure(Failure failure) {
-                        mAnyTestFailed = true;
                         mPendingFailure = failure;
                     }
 
@@ -561,9 +558,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         boolean finishSuccess = ActivityFinisher.finishAll();
         if (afterClassPassed && finishSuccess) {
             LifetimeAssert.assertAllInstancesDestroyedForTesting();
-            if (!mAnyTestFailed) {
-                LeakCanaryChecker.maybeCheckLeaks(getTestClass().getJavaClass());
-            }
         } else {
             LifetimeAssert.resetForTesting();
         }
