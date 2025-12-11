@@ -34,8 +34,9 @@ class ServiceWorkerDiskCache::CreateBackendCallbackShim
   void Cancel() { service_worker_disk_cache_ = nullptr; }
 
   void Callback(disk_cache::BackendResult result) {
-    if (service_worker_disk_cache_)
+    if (service_worker_disk_cache_) {
       service_worker_disk_cache_->OnCreateBackendComplete(std::move(result));
+    }
   }
 
  private:
@@ -123,8 +124,9 @@ net::Error ServiceWorkerDiskCache::InitWithMemBackend(
 
 void ServiceWorkerDiskCache::Disable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_disabled_)
+  if (is_disabled_) {
     return;
+  }
 
   is_disabled_ = true;
 
@@ -275,10 +277,11 @@ net::Error ServiceWorkerDiskCache::Init(net::CacheType cache_type,
       base::BindOnce(&CreateBackendCallbackShim::Callback,
                      create_backend_callback_));
   net::Error rv = result.net_error;
-  if (rv == net::ERR_IO_PENDING)
+  if (rv == net::ERR_IO_PENDING) {
     init_callback_ = std::move(callback);
-  else
+  } else {
     OnCreateBackendComplete(std::move(result));
+  }
   return rv;
 }
 
@@ -296,8 +299,9 @@ void ServiceWorkerDiskCache::OnCreateBackendComplete(
   }
 
   // Service pending calls that were queued up while we were initializing.
-  for (auto& call : pending_calls_)
+  for (auto& call : pending_calls_) {
     std::move(call).Run();
+  }
   pending_calls_.clear();
 }
 

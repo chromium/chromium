@@ -37,11 +37,10 @@ void AccountCapabilitiesTestMutator::set_can_have_email_address_displayed(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void AccountCapabilitiesTestMutator::set_can_make_chrome_search_engine_choice_screen_choice(
-    bool value) {
+void AccountCapabilitiesTestMutator::
+    set_can_make_chrome_search_engine_choice_screen_choice(bool value) {
   capabilities_
-      ->capabilities_map_[kCanMakeChromeSearchEngineChoiceScreenChoice] =
-      value;
+      ->capabilities_map_[kCanMakeChromeSearchEngineChoiceScreenChoice] = value;
 }
 #endif
 

@@ -65,8 +65,9 @@ std::unique_ptr<ModelProvider> TestModelProviderFactory::CreateProvider(
 
 std::unique_ptr<DefaultModelProvider>
 TestModelProviderFactory::CreateDefaultProvider(proto::SegmentId segment_id) {
-  if (!base::Contains(data_->segments_supporting_default_model, segment_id))
+  if (!base::Contains(data_->segments_supporting_default_model, segment_id)) {
     return nullptr;
+  }
 
   // The DefaultModelProvider is always expected to have valid segment info.
   // Some tests set up default providers without segment info.

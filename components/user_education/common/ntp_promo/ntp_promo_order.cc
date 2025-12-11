@@ -115,13 +115,13 @@ std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderPendingPromos(
   }
 
   // Sort promos by rank, and then by least-recently shown.
-  std::stable_sort(promos.begin(), promos.end(),
-                   [](const SortablePendingPromo& a,
-                      const SortablePendingPromo& b) {
-                     return a.rank < b.rank ||
-                            (a.rank == b.rank &&
-                             a.last_top_spot_session < b.last_top_spot_session);
-                   });
+  std::stable_sort(
+      promos.begin(), promos.end(),
+      [](const SortablePendingPromo& a, const SortablePendingPromo& b) {
+        return a.rank < b.rank ||
+               (a.rank == b.rank &&
+                a.last_top_spot_session < b.last_top_spot_session);
+      });
 
   // If the most-recently-shown top-ranked promo hasn't been shown long enough,
   // elevate it to the top of the list to be shown again. Essentially, this just

@@ -180,10 +180,12 @@ void SodaInstaller::NotifySodaInstalledForTesting(LanguageCode language_code) {
 
   // Otherwise, this means a language pack installed.
   installed_languages_.insert(language_code);
-  if (base::Contains(language_pack_progress_, language_code))
+  if (base::Contains(language_pack_progress_, language_code)) {
     language_pack_progress_.erase(language_code);
-  if (soda_binary_installed_)
+  }
+  if (soda_binary_installed_) {
     NotifyOnSodaInstalled(language_code);
+  }
 }
 
 void SodaInstaller::NotifySodaErrorForTesting(LanguageCode language_code,
@@ -197,8 +199,9 @@ void SodaInstaller::NotifySodaErrorForTesting(LanguageCode language_code,
     language_pack_progress_.clear();
   } else {
     // Error with the language pack download.
-    if (base::Contains(language_pack_progress_, language_code))
+    if (base::Contains(language_pack_progress_, language_code)) {
       language_pack_progress_.erase(language_code);
+    }
   }
   NotifyOnSodaInstallError(language_code, error_code);
 }
@@ -221,10 +224,11 @@ void SodaInstaller::NotifySodaProgressForTesting(int progress,
     is_soda_downloading_ = true;
   } else {
     // Language pack download progress.
-    if (base::Contains(language_pack_progress_, language_code))
+    if (base::Contains(language_pack_progress_, language_code)) {
       language_pack_progress_.insert({language_code, progress});
-    else
+    } else {
       language_pack_progress_[language_code] = progress;
+    }
   }
   NotifyOnSodaProgress(language_code, progress);
 }
@@ -244,21 +248,24 @@ void SodaInstaller::RegisterRegisteredLanguagePackPref(
 
 void SodaInstaller::NotifyOnSodaInstalled(LanguageCode language_code) {
   error_codes_.erase(language_code);
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnSodaInstalled(language_code);
+  }
 }
 
 void SodaInstaller::NotifyOnSodaInstallError(LanguageCode language_code,
                                              ErrorCode error_code) {
   error_codes_[language_code] = error_code;
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnSodaInstallError(language_code, error_code);
+  }
 }
 
 void SodaInstaller::NotifyOnSodaProgress(LanguageCode language_code,
                                          int progress) {
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnSodaProgress(language_code, progress);
+  }
 }
 
 void SodaInstaller::RegisterLanguage(std::string_view language,
@@ -304,12 +311,14 @@ bool SodaInstaller::IsSodaDownloading(LanguageCode language_code) const {
 
 std::optional<SodaInstaller::ErrorCode> SodaInstaller::GetSodaInstallErrorCode(
     LanguageCode language_code) const {
-  if (IsSodaDownloading(language_code))
+  if (IsSodaDownloading(language_code)) {
     return std::nullopt;
+  }
 
   const auto error_code = error_codes_.find(language_code);
-  if (error_code != error_codes_.end())
+  if (error_code != error_codes_.end()) {
     return error_code->second;
+  }
   return std::nullopt;
 }
 

@@ -86,8 +86,9 @@ CertificatePrincipalPattern CertificatePrincipalPattern::ParseFromOptionalDict(
     std::string_view key_locality,
     std::string_view key_organization,
     std::string_view key_organization_unit) {
-  if (!dict)
+  if (!dict) {
     return CertificatePrincipalPattern();
+  }
   return CertificatePrincipalPattern(
       GetOptionalStringKey(*dict, key_common_name),
       GetOptionalStringKey(*dict, key_locality),

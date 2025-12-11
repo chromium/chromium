@@ -66,16 +66,18 @@ const ClientStorage::ClientInfo* ClientStorage::GetClientOrNull(
 const ClientStorage::ClientInfo* ClientStorage::LookupByStateKey(
     const std::string& state_key) const {
   for (auto const& [device_id, client_info] : clients_) {
-    if (base::Contains(client_info.state_keys, state_key))
+    if (base::Contains(client_info.state_keys, state_key)) {
       return &client_info;
+    }
   }
   return nullptr;
 }
 
 bool ClientStorage::DeleteClient(const std::string& device_token) {
   auto it = registered_tokens_.find(device_token);
-  if (it == registered_tokens_.end())
+  if (it == registered_tokens_.end()) {
     return false;
+  }
 
   const std::string& device_id = it->second;
   DCHECK(!device_id.empty());
@@ -103,10 +105,12 @@ std::vector<std::string> ClientStorage::GetMatchingStateKeyHashes(
       // individual chars in our hash as digits. We only care about the
       // remainder and hence do not compute the quotient in each iteration. This
       // assumes big-endian byte order.
-      for (uint64_t digit : hash)
+      for (uint64_t digit : hash) {
         hash_remainder = (hash_remainder * 256 + digit) % modulus;
-      if (hash_remainder == remainder)
+      }
+      if (hash_remainder == remainder) {
         hashes.emplace_back(base::as_string_view(hash));
+      }
     }
   }
   return hashes;

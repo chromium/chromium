@@ -267,8 +267,9 @@ bool IsApplicationLocaleSupportedByJourneys(
 
   // To allow for using any locale, we also interpret the special '*' value.
   auto allowlist_string = kLocaleOrLanguageAllowlist.Get();
-  if (allowlist_string == "*")
+  if (allowlist_string == "*") {
     return true;
+  }
 
   // Allow comma and colon as delimiters to the language list.
   auto allowlist = base::SplitString(

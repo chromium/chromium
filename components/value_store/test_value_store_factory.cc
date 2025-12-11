@@ -61,10 +61,11 @@ void TestValueStoreFactory::Reset() {
 
 std::unique_ptr<ValueStore> TestValueStoreFactory::CreateStore() {
   std::unique_ptr<ValueStore> store;
-  if (db_path_.empty())
+  if (db_path_.empty()) {
     store = std::make_unique<TestingValueStore>();
-  else
+  } else {
     store = std::make_unique<LeveldbValueStore>(kUMAClientName, db_path_);
+  }
   last_created_store_ = store.get();
   return store;
 }

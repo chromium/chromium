@@ -74,16 +74,16 @@ void PermissionSettingsRegistry::Init() {
   // If a permission is DELETED, please update
   // PrefProvider::DiscardOrMigrateObsoletePreferences() and
   // DefaultProvider::DiscardOrMigrateObsoletePreferences() accordingly.
-    Register(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
-             "geolocation-with-options",
-             GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
-             WebsiteSettingsInfo::UNSYNCABLE,
-             /*allowlisted_primary_schemes=*/{},
-             WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-             WebsiteSettingsRegistry::PLATFORM_ANDROID |
-                 WebsiteSettingsRegistry::DESKTOP,
-             PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY,
-             std::make_unique<GeolocationSettingDelegate>());
+  Register(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+           "geolocation-with-options",
+           GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk),
+           WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{},
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsRegistry::PLATFORM_ANDROID |
+               WebsiteSettingsRegistry::DESKTOP,
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY,
+           std::make_unique<GeolocationSettingDelegate>());
 }
 
 const PermissionSettingsInfo* PermissionSettingsRegistry::Register(

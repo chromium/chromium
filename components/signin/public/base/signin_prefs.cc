@@ -305,8 +305,7 @@ void SigninPrefs::IncrementPasswordSigninPromoImpressionCount(
       gaia_id,
       base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
           ? kPasswordSignInPromoShownCountForLimitsExperiment
-          : kPasswordSignInPromoShownCount
-  );
+          : kPasswordSignInPromoShownCount);
 }
 
 int SigninPrefs::GetPasswordSigninPromoImpressionCount(
@@ -315,8 +314,7 @@ int SigninPrefs::GetPasswordSigninPromoImpressionCount(
       gaia_id,
       base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
           ? kPasswordSignInPromoShownCountForLimitsExperiment
-          : kPasswordSignInPromoShownCount
-  );
+          : kPasswordSignInPromoShownCount);
 }
 
 void SigninPrefs::IncrementAddressSigninPromoImpressionCount(
@@ -325,8 +323,7 @@ void SigninPrefs::IncrementAddressSigninPromoImpressionCount(
       gaia_id,
       base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
           ? kAddressSignInPromoShownCountForLimitsExperiment
-          : kAddressSignInPromoShownCount
-  );
+          : kAddressSignInPromoShownCount);
 }
 
 int SigninPrefs::GetAddressSigninPromoImpressionCount(
@@ -335,8 +332,7 @@ int SigninPrefs::GetAddressSigninPromoImpressionCount(
       gaia_id,
       base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
           ? kAddressSignInPromoShownCountForLimitsExperiment
-          : kAddressSignInPromoShownCount
-  );
+          : kAddressSignInPromoShownCount);
 }
 
 void SigninPrefs::IncrementBookmarkSigninPromoImpressionCount(
