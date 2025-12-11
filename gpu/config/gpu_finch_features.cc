@@ -106,6 +106,10 @@ const base::FeatureParam<std::string>
 
 #endif
 
+// When enabled, gives GpuChannel/Host its own dedicated Mojo pipe instead
+// of associating with an unused IPC::Channel.
+BASE_FEATURE(kRemoveGPULegacyIPC, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable GPU Rasterization by default. This can still be overridden by
 // --enable-gpu-rasterization or --disable-gpu-rasterization.
 // DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS,
@@ -731,6 +735,10 @@ bool EnablePurgeGpuImageDecodeCache() {
 }
 bool EnablePruneOldTransferCacheEntries() {
   return base::FeatureList::IsEnabled(kPruneOldTransferCacheEntries);
+}
+
+bool IsLegacyIpcDisabled() {
+  return base::FeatureList::IsEnabled(kRemoveGPULegacyIPC);
 }
 
 #if BUILDFLAG(IS_ANDROID)

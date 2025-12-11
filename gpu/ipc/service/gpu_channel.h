@@ -78,6 +78,20 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   void Init(mojo::MessagePipeHandle channel_handle,
             base::WaitableEvent* shutdown_event);
 
+  // Start receiving messages on the GpuChannel interface and scheduling
+  // appropriate tasks as needed to handle them.
+  //
+  // TODO(crbug.com/458360488): Convert this to a strongly-typed PendingReceiver
+  // for GpuChannel. Requires intricate rewiring of dependencies between //gpu
+  // and Viz as Viz uses this method, but does not depend on the GpuChannel
+  // interface definition.
+  void Start(mojo::ScopedMessagePipeHandle pipe);
+
+  // Stop receiving messages on the GpuChannel interface and scheduling tasks
+  // for them. This is asynchronous, and once completed the GpuChannel will be
+  // destroyed.
+  void Stop();
+
   base::WeakPtr<GpuChannel> AsWeakPtr();
 
   // Get the GpuChannelManager that owns this channel.
@@ -203,6 +217,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
  private:
+  friend class GpuChannelMessageFilter;
+
   // Takes ownership of the renderer process handle.
   GpuChannel(GpuChannelManager* gpu_channel_manager,
              const base::UnguessableToken& channel_token,
@@ -221,6 +237,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   // Message handlers for control messages.
   bool CreateSharedImageStub(const gfx::GpuExtraInfo& gpu_extra_info);
+
+  // Immediately destroy this GpuChannel. Must only be called if the channel is
+  // already disconnected.
+  void Destroy();
 
   std::unique_ptr<IPC::SyncChannel> sync_channel_;  // nullptr in tests.
 

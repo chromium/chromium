@@ -42,7 +42,7 @@ GpuChannelHost::GpuChannelHost(
       channel_id_(channel_id),
       gpu_info_(gpu_info),
       gpu_feature_info_(gpu_feature_info),
-      listener_(new Listener(), base::OnTaskRunnerDeleter(io_thread_)),
+      listener_(nullptr, base::OnTaskRunnerDeleter(io_thread_)),
       connection_tracker_(base::MakeRefCounted<ConnectionTracker>()),
       shared_image_interface_(
           this,
@@ -50,16 +50,34 @@ GpuChannelHost::GpuChannelHost(
           shared_image_capabilities),
       sync_point_graph_validation_enabled_(
           features::IsSyncPointGraphValidationEnabled()) {
-  mojo::PendingAssociatedRemote<mojom::GpuChannel> channel;
-  listener_->Initialize(std::move(handle),
-                        channel.InitWithNewEndpointAndPassReceiver(),
-                        io_thread_);
-  gpu_channel_ = mojo::SharedAssociatedRemote<mojom::GpuChannel>(
-      std::move(channel), io_thread_);
-  gpu_channel_.set_disconnect_handler(
-      base::BindOnce(&ConnectionTracker::OnDisconnectedFromGpuProcess,
-                     connection_tracker_),
-      io_thread_);
+  if (features::IsLegacyIpcDisabled()) {
+    gpu_channel_.emplace<SharedRemote>(
+        mojo::PendingRemote<mojom::GpuChannel>(std::move(handle), 0),
+        io_thread_);
+  } else {
+    listener_ = std::unique_ptr<Listener, base::OnTaskRunnerDeleter>(
+        new Listener(), base::OnTaskRunnerDeleter(io_thread_));
+    mojo::PendingAssociatedRemote<mojom::GpuChannel> channel;
+    listener_->Initialize(std::move(handle),
+                          channel.InitWithNewEndpointAndPassReceiver(),
+                          io_thread_);
+    gpu_channel_.emplace<SharedAssociatedRemote>(
+        mojo::SharedAssociatedRemote<mojom::GpuChannel>(std::move(channel),
+                                                        io_thread_));
+  }
+
+  std::visit(
+      [&](auto& gpu_channel_remote) {
+        // Test callers may pass an invalid handle, leaving `gpu_channel_remote`
+        // unbound.
+        if (gpu_channel_remote) {
+          gpu_channel_remote.set_disconnect_handler(
+              base::BindOnce(&ConnectionTracker::OnDisconnectedFromGpuProcess,
+                             connection_tracker_),
+              io_thread_);
+        }
+      },
+      gpu_channel_);
 
   next_image_id_.GetNext();
   for (int32_t i = 0;
@@ -68,7 +86,9 @@ GpuChannelHost::GpuChannelHost(
 }
 
 mojom::GpuChannel& GpuChannelHost::GetGpuChannel() {
-  return *gpu_channel_.get();
+  return *std::visit(
+      [](auto& gpu_channel_remote) { return gpu_channel_remote.get(); },
+      gpu_channel_);
 }
 
 uint32_t GpuChannelHost::OrderingBarrier(
@@ -311,15 +331,19 @@ void GpuChannelHost::InternalFlush(uint32_t deferred_message_id) {
 }
 
 void GpuChannelHost::DestroyChannel() {
-  gpu_channel_.Disconnect();
+  std::visit([](auto& gpu_channel_remote) { gpu_channel_remote.Disconnect(); },
+             gpu_channel_);
   connection_tracker_->OnDisconnectedFromGpuProcess();
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Listener::Close, base::Unretained(listener_.get())));
+  if (!features::IsLegacyIpcDisabled()) {
+    io_thread_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Listener::Close, base::Unretained(listener_.get())));
+  }
 }
 
 void GpuChannelHost::ResetChannelRemoteForTesting() {
-  gpu_channel_.reset();
+  std::visit([](auto& gpu_channel_remote) { gpu_channel_remote.reset(); },
+             gpu_channel_);
 }
 
 int32_t GpuChannelHost::ReserveImageId() {

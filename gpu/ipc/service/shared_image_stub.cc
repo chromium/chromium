@@ -605,7 +605,7 @@ ContextResult SharedImageStub::Initialize() {
 }
 
 void SharedImageStub::OnError() {
-  channel_->OnChannelError();
+  channel_->Stop();
 }
 
 SharedImageStub::SharedImageDestructionCallback

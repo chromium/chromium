@@ -901,7 +901,11 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
     return;
   }
   mojo::MessagePipe pipe;
-  gpu_channel->Init(pipe.handle0.release(), shutdown_event_);
+  if (features::IsLegacyIpcDisabled()) {
+    gpu_channel->Start(std::move(pipe.handle0));
+  } else {
+    gpu_channel->Init(pipe.handle0.release(), shutdown_event_);
+  }
 
   media_gpu_channel_manager_->AddChannel(client_id, channel_token);
 

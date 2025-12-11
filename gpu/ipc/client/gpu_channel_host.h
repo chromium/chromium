@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
@@ -28,6 +29,8 @@
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace IPC {
@@ -292,7 +295,11 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   // soon as disconnection is detected.
   const scoped_refptr<ConnectionTracker> connection_tracker_;
 
-  mojo::SharedAssociatedRemote<mojom::GpuChannel> gpu_channel_;
+  using SharedRemote = mojo::SharedRemote<mojom::GpuChannel>;
+  using SharedAssociatedRemote =
+      mojo::SharedAssociatedRemote<mojom::GpuChannel>;
+  std::variant<SharedRemote, SharedAssociatedRemote> gpu_channel_;
+
   SharedImageInterfaceProxy shared_image_interface_;
 
   mutable base::Lock shared_memory_version_lock_;
