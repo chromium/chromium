@@ -17,4 +17,13 @@ void LogOptInEvent(PassCategory pass_category,
       event);
 }
 
+void LogServerExtractionEvent(
+    PassCategory pass_category,
+    WalletablePassServerExtractionFunnelEvents event) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Wallet.WalletablePass.ServerExtraction.Funnel.",
+                    PassCategoryToString(pass_category)}),
+      event);
+}
+
 }  // namespace wallet::metrics

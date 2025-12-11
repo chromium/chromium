@@ -99,6 +99,7 @@ class WalletablePassIngestionController {
   // Callback for when the pass extraction from the model executor is complete.
   void OnExtractWalletablePass(
       const GURL& url,
+      PassCategory pass_category,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 

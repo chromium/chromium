@@ -23,6 +23,8 @@ namespace {
 using enum WalletablePassClient::WalletablePassBubbleResult;
 using WalletablePassOptInFunnelEvents =
     metrics::WalletablePassOptInFunnelEvents;
+using WalletablePassServerExtractionFunnelEvents =
+    metrics::WalletablePassServerExtractionFunnelEvents;
 
 PassCategory GetPassCategory(const WalletablePass& walletable_pass) {
   return std::visit(
@@ -190,7 +192,9 @@ void WalletablePassIngestionController::MaybeStartExtraction(
   if (save_strike_db_->ShouldBlockFeature(
           WalletablePassSaveStrikeDatabaseByHost::GetId(
               PassCategoryToString(pass_category), url.GetHost()))) {
-    // TODO(crbug.com/452779539): Report save bubble blocked to UMA
+    metrics::LogServerExtractionEvent(
+        pass_category, WalletablePassServerExtractionFunnelEvents::
+                           kExtractionBlockedBySaveStrike);
     return;
   }
   GetAnnotatedPageContent(base::BindOnce(
@@ -204,8 +208,9 @@ void WalletablePassIngestionController::OnGetAnnotatedPageContent(
     std::optional<optimization_guide::proto::AnnotatedPageContent>
         annotated_page_content) {
   if (!annotated_page_content) {
-    // TODO(crbug.com/441892746): Report getting annotated page content failure
-    // to UMA
+    metrics::LogServerExtractionEvent(
+        pass_category, WalletablePassServerExtractionFunnelEvents::
+                           kGetAnnotatedPageContentFailed);
     return;
   }
 
@@ -230,16 +235,19 @@ void WalletablePassIngestionController::ExtractWalletablePass(
       /*options=*/{},
       base::BindOnce(
           &WalletablePassIngestionController::OnExtractWalletablePass,
-          weak_ptr_factory_.GetWeakPtr(), url));
+          weak_ptr_factory_.GetWeakPtr(), url, pass_category));
 }
 
 void WalletablePassIngestionController::OnExtractWalletablePass(
     const GURL& url,
+    PassCategory pass_category,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   // Handle model execution failure first.
   if (!result.response.has_value()) {
-    // TODO(crbug.com/441892746): Report model execution failure to UMA
+    metrics::LogServerExtractionEvent(
+        pass_category,
+        WalletablePassServerExtractionFunnelEvents::kModelExecutionFailed);
     return;
   }
 
@@ -248,27 +256,39 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
       optimization_guide::proto::WalletablePassExtractionResponse>(
       *result.response);
   if (!parsed_response) {
-    // TODO(crbug.com/441892746): Report invalid or unparsable response to UMA
+    metrics::LogServerExtractionEvent(
+        pass_category,
+        WalletablePassServerExtractionFunnelEvents::kResponseCannotBeParsed);
     return;
   }
 
   if (parsed_response->walletable_pass_size() == 0) {
-    // TODO(crbug.com/441892746): Report no walletable pass found to UMA
+    metrics::LogServerExtractionEvent(
+        pass_category,
+        WalletablePassServerExtractionFunnelEvents::kNoPassExtracted);
     return;
   }
 
   if (parsed_response->walletable_pass(0).pass_case() ==
       optimization_guide::proto::WalletablePass::PASS_NOT_SET) {
-    // TODO(crbug.com/441892746): Report invalid walletable pass found to UMA
+    metrics::LogServerExtractionEvent(
+        pass_category,
+        WalletablePassServerExtractionFunnelEvents::kInvalidPassType);
     return;
   }
 
   std::optional<WalletablePass> walletable_pass =
       WalletablePass::FromProto(parsed_response->walletable_pass(0));
   if (!walletable_pass) {
+    metrics::LogServerExtractionEvent(
+        pass_category, WalletablePassServerExtractionFunnelEvents::
+                           kWalletablePassConversionFailed);
     return;
   }
   ShowSaveBubble(url, std::move(*walletable_pass));
+  metrics::LogServerExtractionEvent(
+      pass_category,
+      WalletablePassServerExtractionFunnelEvents::kExtractionSucceeded);
 }
 
 void WalletablePassIngestionController::ShowSaveBubble(

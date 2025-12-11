@@ -25,8 +25,27 @@ enum class WalletablePassOptInFunnelEvents {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/wallet/enums.xml:WalletablePassOptInFunnelEvents)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WalletablePassServerExtractionFunnelEvents)
+enum class WalletablePassServerExtractionFunnelEvents {
+  kExtractionBlockedBySaveStrike = 0,
+  kGetAnnotatedPageContentFailed = 1,
+  kModelExecutionFailed = 2,
+  kResponseCannotBeParsed = 3,
+  kNoPassExtracted = 4,
+  kInvalidPassType = 5,
+  kWalletablePassConversionFailed = 6,
+  kExtractionSucceeded = 7,
+  kMaxValue = kExtractionSucceeded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/wallet/enums.xml:WalletablePassServerExtractionFunnelEvents)
+
 void LogOptInEvent(PassCategory pass_category,
                    WalletablePassOptInFunnelEvents event);
+
+void LogServerExtractionEvent(PassCategory pass_category,
+                              WalletablePassServerExtractionFunnelEvents event);
 
 }  // namespace wallet::metrics
 

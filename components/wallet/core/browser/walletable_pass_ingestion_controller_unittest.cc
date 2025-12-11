@@ -170,6 +170,33 @@ class WalletablePassIngestionControllerTest : public testing::Test {
                     callback) { *out_callback = std::move(callback); }));
   }
 
+  void ExpectAndRunExtractWalletablePass(
+      PassCategory pass_category,
+      base::OnceCallback<void(
+          optimization_guide::OptimizationGuideModelExecutionResultCallback)>
+          model_executor_action,
+      metrics::WalletablePassServerExtractionFunnelEvents expected_event) {
+    GURL url("https://example.com");
+    optimization_guide::proto::AnnotatedPageContent content;
+
+    EXPECT_CALL(*controller(), GetPageTitle()).WillRepeatedly(Return("title"));
+
+    EXPECT_CALL(mock_model_executor(),
+                ExecuteModel(kWalletablePassExtraction, _, _, _))
+        .WillOnce(WithArgs<3>(
+            [model_executor_action = std::move(model_executor_action)](
+                optimization_guide::
+                    OptimizationGuideModelExecutionResultCallback
+                        callback) mutable {
+              std::move(model_executor_action).Run(std::move(callback));
+            }));
+    test_api(controller()).ExtractWalletablePass(url, pass_category, content);
+    histogram_tester_.ExpectUniqueSample(
+        base::StrCat({"Wallet.WalletablePass.ServerExtraction.Funnel.",
+                      PassCategoryToString(pass_category)}),
+        expected_event, 1);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -398,6 +425,50 @@ TEST_F(WalletablePassIngestionControllerTest,
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
+       StartWalletablePassDetectionFlow_Eligible_GetAnnotatedPageContentFails) {
+  test_identity_environment().MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  GURL url("https://example.com");
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
+      .WillOnce(Return(kTrue));
+
+  // Expect ShowWalletablePassConsentBubble to be called.
+  WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
+  ExpectConsentBubbleOnClient(PassCategory::kLoyaltyCard, &consent_callback);
+
+  test_api(controller()).StartWalletablePassDetectionFlow(url);
+  ASSERT_TRUE(consent_callback);
+
+  // Expect GetAnnotatedPageContent to be called, and simulate a failure
+  // response.
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent)
+      .WillOnce(WithArgs<0>(
+          [](MockWalletablePassIngestionController::AnnotatedPageContentCallback
+                 callback) { std::move(callback).Run(std::nullopt); }));
+
+  // Expect that the model executor is NOT called.
+  EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
+
+  // Simulate accepting the consent bubble.
+  std::move(consent_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kAccepted);
+
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.OptIn.Funnel.LoyaltyCard",
+      metrics::WalletablePassOptInFunnelEvents::kConsentBubbleWasShown, 1);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.OptIn.Funnel.LoyaltyCard",
+      metrics::WalletablePassOptInFunnelEvents::kConsentBubbleWasAccepted, 1);
+  histogram_tester().ExpectBucketCount(
+      "Wallet.WalletablePass.ServerExtraction.Funnel.LoyaltyCard",
+      metrics::WalletablePassServerExtractionFunnelEvents::
+          kGetAnnotatedPageContentFailed,
+      1);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
        ShowConsentBubble_Accepted_GetsPageContent) {
   test_identity_environment().MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSignin);
@@ -588,6 +659,12 @@ TEST_F(WalletablePassIngestionControllerTest,
   EXPECT_CALL(*controller(), GetAnnotatedPageContent).Times(0);
 
   test_api(controller()).MaybeStartExtraction(url, PassCategory::kLoyaltyCard);
+
+  histogram_tester().ExpectUniqueSample(
+      "Wallet.WalletablePass.ServerExtraction.Funnel.LoyaltyCard",
+      metrics::WalletablePassServerExtractionFunnelEvents::
+          kExtractionBlockedBySaveStrike,
+      1);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -661,6 +738,136 @@ TEST_F(WalletablePassIngestionControllerTest,
   EXPECT_EQ(test_strike_database().GetStrikes(
                 "WalletablePassSaveByHost__LoyaltyCard;example.com"),
             1);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ExtractWalletablePass_ModelExecutionFailed) {
+  ExpectAndRunExtractWalletablePass(
+      PassCategory::kLoyaltyCard,
+      base::BindOnce([](optimization_guide::
+                            OptimizationGuideModelExecutionResultCallback
+                                callback) {
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kGenericFailure)),
+                nullptr),
+            nullptr);
+      }),
+      metrics::WalletablePassServerExtractionFunnelEvents::
+          kModelExecutionFailed);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ExtractWalletablePass_ResponseCannotBeParsed) {
+  ExpectAndRunExtractWalletablePass(
+      PassCategory::kLoyaltyCard,
+      base::BindOnce(
+          [](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            optimization_guide::proto::Any any;
+            any.set_type_url("type.googleapis.com/somerandomtype");
+            any.set_value("garbage");
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    std::move(any), nullptr),
+                nullptr);
+          }),
+      metrics::WalletablePassServerExtractionFunnelEvents::
+          kResponseCannotBeParsed);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ExtractWalletablePass_NoPassExtracted) {
+  ExpectAndRunExtractWalletablePass(
+      PassCategory::kLoyaltyCard,
+      base::BindOnce(
+          [](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            optimization_guide::proto::WalletablePassExtractionResponse
+                response;
+            optimization_guide::proto::Any any;
+            any.set_type_url(
+                "type.googleapis.com/"
+                "optimization_guide.proto.WalletablePassExtractionResponse");
+            response.SerializeToString(any.mutable_value());
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    std::move(any), nullptr),
+                nullptr);
+          }),
+      metrics::WalletablePassServerExtractionFunnelEvents::kNoPassExtracted);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ExtractWalletablePass_InvalidPassType) {
+  ExpectAndRunExtractWalletablePass(
+      PassCategory::kLoyaltyCard,
+      base::BindOnce(
+          [](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            optimization_guide::proto::WalletablePassExtractionResponse
+                response;
+            response.add_walletable_pass();
+            optimization_guide::proto::Any any;
+            any.set_type_url(
+                "type.googleapis.com/"
+                "optimization_guide.proto.WalletablePassExtractionResponse");
+            response.SerializeToString(any.mutable_value());
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    std::move(any), nullptr),
+                nullptr);
+          }),
+      metrics::WalletablePassServerExtractionFunnelEvents::kInvalidPassType);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ExtractWalletablePass_ExtractionSucceeded) {
+  GURL url("https://example.com");
+  optimization_guide::proto::AnnotatedPageContent content;
+
+  EXPECT_CALL(*controller(), GetPageTitle()).WillRepeatedly(Return("title"));
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(kWalletablePassExtraction, _, _, _))
+      .WillOnce(WithArgs<3>(
+          [](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            optimization_guide::proto::WalletablePassExtractionResponse
+                response;
+            auto* pass = response.add_walletable_pass();
+            pass->mutable_loyalty_card()->set_plan_name("Program Name");
+            pass->mutable_loyalty_card()->set_issuer_name("Issuer Name");
+            pass->mutable_loyalty_card()->set_member_id("Member ID");
+            optimization_guide::proto::Any any;
+            any.set_type_url(
+                "type.googleapis.com/"
+                "optimization_guide.proto.WalletablePassExtractionResponse");
+            response.SerializeToString(any.mutable_value());
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    std::move(any), nullptr),
+                nullptr);
+          }));
+  WalletablePassClient::WalletablePassBubbleResultCallback save_bubble_callback;
+  WalletablePass expected_pass = CreateLoyaltyCard("Member ID");
+  // Set additional fields to match the response from the model executor.
+  auto& loyalty_card = std::get<LoyaltyCard>(expected_pass.pass_data);
+  loyalty_card.plan_name = "Program Name";
+  loyalty_card.issuer_name = "Issuer Name";
+
+  ExpectSaveBubbleOnClient(expected_pass, &save_bubble_callback);
+  test_api(controller())
+      .ExtractWalletablePass(url, PassCategory::kLoyaltyCard, content);
+  histogram_tester().ExpectUniqueSample(
+      "Wallet.WalletablePass.ServerExtraction.Funnel.LoyaltyCard",
+      metrics::WalletablePassServerExtractionFunnelEvents::kExtractionSucceeded,
+      1);
 }
 
 }  // namespace

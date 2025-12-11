@@ -37,6 +37,17 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Consent bubble lost focus"/>
 </enum>
 
+<enum name="WalletablePassServerExtractionFunnelEvents">
+  <int value="0" label="Extraction blocked by save bubble frequency cap"/>
+  <int value="1" label="Get annotated page content failed"/>
+  <int value="2" label="Model execution failed"/>
+  <int value="3" label="Response cannot be parsed"/>
+  <int value="4" label="No pass extracted"/>
+  <int value="5" label="Invalid pass type"/>
+  <int value="6" label="Walletable pass conversion failed"/>
+  <int value="7" label="Extraction succeeded"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

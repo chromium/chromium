@@ -44,6 +44,19 @@ chromium-metrics-reviews@google.com.
   <token key="PassCategory" variants="Wallet.WalletablePass.PassCategory"/>
 </histogram>
 
+<histogram name="Wallet.WalletablePass.ServerExtraction.Funnel.{PassCategory}"
+    enum="WalletablePassServerExtractionFunnelEvents"
+    expires_after="2026-12-31">
+  <owner>hanfeng@google.com</owner>
+  <owner>wallet-chrome-integration@google.com</owner>
+  <summary>
+    Records the funnel of events for the {PassCategory} server extraction flow.
+    This identifies whether the extraction succeeded or why it failed. Note that
+    some events are logged before model execution is attempted.
+  </summary>
+  <token key="PassCategory" variants="Wallet.WalletablePass.PassCategory"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
