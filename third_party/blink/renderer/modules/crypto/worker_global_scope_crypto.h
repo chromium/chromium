@@ -47,11 +47,12 @@ class WorkerGlobalScopeCrypto final
   static Crypto* crypto(WorkerGlobalScope&);
   Crypto* crypto() const;
 
-  WorkerGlobalScopeCrypto() = default;
+  explicit WorkerGlobalScopeCrypto(WorkerGlobalScope& worker_scope);
 
   void Trace(Visitor*) const override;
 
  private:
+  Member<WorkerGlobalScope> worker_global_scope_;
   mutable Member<Crypto> crypto_;
 };
 

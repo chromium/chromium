@@ -35,11 +35,15 @@
 
 namespace blink {
 
+WorkerGlobalScopeCrypto::WorkerGlobalScopeCrypto(
+    WorkerGlobalScope& worker_scope)
+    : worker_global_scope_(worker_scope) {}
+
 WorkerGlobalScopeCrypto& WorkerGlobalScopeCrypto::From(
     WorkerGlobalScope& context) {
   WorkerGlobalScopeCrypto* supplement = context.GetWorkerGlobalScopeCrypto();
   if (!supplement) {
-    supplement = MakeGarbageCollected<WorkerGlobalScopeCrypto>();
+    supplement = MakeGarbageCollected<WorkerGlobalScopeCrypto>(context);
     context.SetWorkerGlobalScopeCrypto(supplement);
   }
   return *supplement;
@@ -57,6 +61,7 @@ Crypto* WorkerGlobalScopeCrypto::crypto() const {
 
 void WorkerGlobalScopeCrypto::Trace(Visitor* visitor) const {
   visitor->Trace(crypto_);
+  visitor->Trace(worker_global_scope_);
 }
 
 }  // namespace blink
