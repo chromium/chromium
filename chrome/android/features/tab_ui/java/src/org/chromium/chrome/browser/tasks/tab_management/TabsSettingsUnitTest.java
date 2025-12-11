@@ -297,7 +297,9 @@ public class TabsSettingsUnitTest {
         var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
         indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
         verify(mSearchIndexDataMock, times(0))
-                .removeEntry(TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH));
     }
 
     @Test
@@ -306,7 +308,9 @@ public class TabsSettingsUnitTest {
         var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
         indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
         verify(mSearchIndexDataMock)
-                .removeEntry(TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH));
     }
 
     @Test
@@ -320,10 +324,14 @@ public class TabsSettingsUnitTest {
         var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
         indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
         verify(mSearchIndexDataMock, times(0))
-                .removeEntry(TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH);
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH));
         // Learn more is always removed.
         verify(mSearchIndexDataMock)
-                .removeEntry(TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE));
     }
 
     @Test
@@ -337,9 +345,13 @@ public class TabsSettingsUnitTest {
         var indexProvider = TabsSettings.SEARCH_INDEX_DATA_PROVIDER;
         indexProvider.updateDynamicPreferences(mActivity, mSearchIndexDataMock, mProfileMock);
         verify(mSearchIndexDataMock)
-                .removeEntry(TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH);
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH));
         // Learn more is always removed.
         verify(mSearchIndexDataMock)
-                .removeEntry(TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
+                .removeEntry(
+                        indexProvider.getUniqueId(
+                                TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE));
     }
 }

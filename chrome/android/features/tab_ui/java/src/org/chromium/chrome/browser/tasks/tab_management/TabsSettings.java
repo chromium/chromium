@@ -192,17 +192,19 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                         Context context, SettingsIndexData indexData, Profile profile) {
                     // LINT.IfChange(isTabGroupSyncAutoOpenConfigurableIndex)
                     if (!isTabGroupSyncAutoOpenConfigurable(profile)) {
-                        indexData.removeEntry(PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+                        indexData.removeEntry(getUniqueId(PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH));
                     }
                     // LINT.ThenChange(:isTabGroupSyncAutoOpenConfigurable)
 
                     // LINT.IfChange(isShareTitlesAndUrlsEnabledIndex)
                     if (!isShareTitlesAndUrlsEnabled()) {
-                        indexData.removeEntry(PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH);
+                        indexData.removeEntry(
+                                getUniqueId(PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH));
                     }
 
                     // It's not useful for "Learn more" text pref to be searchable.
-                    indexData.removeEntry(PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
+                    indexData.removeEntry(
+                            getUniqueId(PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE));
                     // LINT.ThenChange(:isShareTitlesAndUrlsEnabled)
                 }
             };
