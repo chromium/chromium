@@ -12,6 +12,7 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -31,21 +32,21 @@ namespace glic {
 
 namespace {
 
-content::RenderFrameHost* GetFirstChildFrame(
+content::RenderFrameHost* GetGuestFrame(
     content::RenderFrameHost* parent_frame) {
   if (!parent_frame) {
     return nullptr;
   }
-  content::RenderFrameHost* first_child = nullptr;
+  content::RenderFrameHost* guest_frame = nullptr;
   parent_frame->ForEachRenderFrameHostWithAction(
-      [&first_child, parent_frame](content::RenderFrameHost* rfh) {
-        if (rfh != parent_frame) {
-          first_child = rfh;
+      [&guest_frame](content::RenderFrameHost* rfh) {
+        if (rfh->GetLastCommittedOrigin() == GetGuestOrigin()) {
+          guest_frame = rfh;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }
         return content::RenderFrameHost::FrameIterationAction::kContinue;
       });
-  return first_child;
+  return guest_frame;
 }
 
 // Based on URLToImageMarkup from clipboard_utilities.cc.
@@ -358,7 +359,7 @@ void GlicShareImageHandler::DoPastePolicyCheck() {
 
   auto* host = &instance->host();
   auto* glic_contents = host->webui_contents();
-  auto* glic_rfh = GetFirstChildFrame(glic_contents->GetPrimaryMainFrame());
+  auto* glic_rfh = GetGuestFrame(glic_contents->GetPrimaryMainFrame());
   if (!glic_rfh) {
     ShareComplete(ShareImageResult::kFailedNoFrame);
     return;
