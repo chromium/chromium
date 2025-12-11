@@ -480,7 +480,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)dismissInfobarModal {
-  // TODO(crbug.com/40103513): add metrics
   [self.infobarModalDelegate dismissInfobarModal:self];
 }
 

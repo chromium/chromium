@@ -52,7 +52,6 @@ IOSAddToReadingListInfobarDelegate::GetIdentifier() const {
 }
 
 std::u16string IOSAddToReadingListInfobarDelegate::GetMessageText() const {
-  // TODO(crbug.com/40176250): Add message title text.
   return std::u16string();
 }
 
