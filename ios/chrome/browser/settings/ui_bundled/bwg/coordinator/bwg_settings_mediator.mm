@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mediator.h"
 
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -70,11 +71,13 @@
   [_consumer setPageContentSharingEnabled:_pageContentPref.value];
 }
 
-- (void)updateDynamicSettingsRows {
-  NSArray<GeminiSettingsMetadata*>* eligibleSettingsMetadata =
-      ios::provider::GetEligibleSettings(_authService);
-  for (GeminiSettingsMetadata* metadata in eligibleSettingsMetadata) {
-    [self.consumer addRowWithTitle:metadata.title subtitle:metadata.subtitle];
+- (void)loadDynamicSettings {
+  // TODO(crbug.com/467402810): Use flag for dynamic settings instead of p13n
+  if (IsGeminiPersonalizationEnabled()) {
+    NSArray<GeminiSettingsMetadata*>* eligibleSettingsMetadata =
+        ios::provider::GetEligibleSettings(_authService);
+
+    [self.consumer updateDynamicSettingsRows:eligibleSettingsMetadata];
   }
 }
 

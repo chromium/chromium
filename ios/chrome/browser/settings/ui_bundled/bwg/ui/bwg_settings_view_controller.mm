@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -55,6 +56,10 @@ NSString* const kPageContentSharingCellId = @"PageContentSharingCellId";
 NSString* const kLocationLinkAction = @"LocationLinkAction";
 NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
+// The amount by which to offset the integer value of a dynamic setting to
+// create its corresponding section/row identifier.
+NSInteger const kDynamicSettingsIdOffset = 10000;
+
 }  // namespace
 
 @interface BWGSettingsViewController () <TableViewLinkHeaderFooterItemDelegate>
@@ -71,6 +76,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   BOOL _preciseLocationEnabled;
   // Page content sharing preference value.
   BOOL _pageContentSharingEnabled;
+  // Metadata for dynamic settings.
+  NSArray<GeminiSettingsMetadata*>* _dynamicSettings;
 }
 
 #pragma mark - UIViewController
@@ -81,6 +88,7 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   self.title = l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_TITLE);
   RecordGeminiSettingsOpened();
   [self loadModel];
+  [self.mutator loadDynamicSettings];
 }
 
 #pragma mark - CollectionViewController
@@ -136,15 +144,17 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   [model setFooter:pageContentSharingFooterItem
       forSectionWithIdentifier:SectionIdentifierPageContent];
 
-  [model addSectionWithIdentifier:SectionIdentifierActivity];
-  [model addItem:[self BWGAppActivityItem]
-      toSectionWithIdentifier:SectionIdentifierActivity];
-  [model setFooter:BWGAppActivityFooterItem
-      forSectionWithIdentifier:SectionIdentifierActivity];
+  if (!IsGeminiPersonalizationEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierActivity];
+    [model addItem:[self BWGAppActivityItem]
+        toSectionWithIdentifier:SectionIdentifierActivity];
+    [model setFooter:BWGAppActivityFooterItem
+        forSectionWithIdentifier:SectionIdentifierActivity];
 
-  [model addSectionWithIdentifier:SectionIdentifierExtensions];
-  [model addItem:[self BWGExtensionsItem]
-      toSectionWithIdentifier:SectionIdentifierExtensions];
+    [model addSectionWithIdentifier:SectionIdentifierExtensions];
+    [model addItem:[self BWGExtensionsItem]
+        toSectionWithIdentifier:SectionIdentifierExtensions];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -273,6 +283,25 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     [self.mutator openNewTabWithURL:GURL(kBWGExtensionsURL)];
   }
 
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
+
+  if (sectionIdentifier >= kDynamicSettingsIdOffset) {
+    NSInteger potentialDynamicSettingsId =
+        sectionIdentifier - kDynamicSettingsIdOffset;
+    switch (potentialDynamicSettingsId) {
+      case GeminiSettingsContextGeminiAppsActivity:
+      case GeminiSettingsContextPersonalization:
+      case GeminiSettingsContextExtensions:
+        // TODO(crbug.com/462382850): Present a view controller instead.
+        NSLog(@"Tapped dynamic setting %ld.", potentialDynamicSettingsId);
+        break;
+      default:
+        NSLog(@"Tapped row in unknown section %ld.",
+              potentialDynamicSettingsId);
+    }
+  }
+
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -319,11 +348,38 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   }
 }
 
-#pragma mark - Dynamic Settings
+- (void)updateDynamicSettingsRows:
+    (NSArray<GeminiSettingsMetadata*>*)newSettings {
+  // Remove previous dynamic settings sections.
+  for (GeminiSettingsMetadata* oldSetting in _dynamicSettings) {
+    NSInteger settingIdentifier = oldSetting.context + kDynamicSettingsIdOffset;
+    [self.tableViewModel removeSectionWithIdentifier:settingIdentifier];
+  }
 
-- (void)addRowWithTitle:(NSString*)title subtitle:(NSString*)subtitle {
-  NSLog(@"Added row - Title: %@, Subtitle: %@", title, subtitle);
-  // TODO(crbug.com/462382316): Actually add rows
+  _dynamicSettings = newSettings;
+
+  // Add a new section, item and optional footer for each dynamic setting.
+  for (GeminiSettingsMetadata* newSetting in newSettings) {
+    NSInteger settingIdentifier = newSetting.context + kDynamicSettingsIdOffset;
+
+    [self.tableViewModel addSectionWithIdentifier:settingIdentifier];
+
+    TableViewDetailTextItem* settingItem =
+        [[TableViewDetailTextItem alloc] initWithType:settingIdentifier];
+    settingItem.text = newSetting.title;
+    [self.tableViewModel addItem:settingItem
+         toSectionWithIdentifier:settingIdentifier];
+
+    if (newSetting.subtitle) {
+      TableViewLinkHeaderFooterItem* settingFooterItem =
+          [self headerFooterItemWithType:ItemTypeAppActivityFooter
+                                    text:newSetting.subtitle
+                                 linkURL:GURL()];
+      [self.tableViewModel setFooter:settingFooterItem
+            forSectionWithIdentifier:settingIdentifier];
+    }
+  }
+  [self.tableView reloadData];
 }
 
 @end

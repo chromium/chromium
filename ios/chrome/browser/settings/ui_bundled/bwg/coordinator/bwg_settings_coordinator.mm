@@ -48,7 +48,6 @@
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
 
-  [_mediator updateDynamicSettingsRows];
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
 }

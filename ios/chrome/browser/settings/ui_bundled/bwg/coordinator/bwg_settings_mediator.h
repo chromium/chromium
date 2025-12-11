@@ -35,9 +35,6 @@ class PrefService;
 // Stops observing objects.
 - (void)disconnect;
 
-// Updates rows for Gemini dynamic settings.
-- (void)updateDynamicSettingsRows;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_MEDIATOR_H_

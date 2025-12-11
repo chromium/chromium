@@ -20,6 +20,9 @@ class GURL;
 // Sets the Page Content Sharing pref value.
 - (void)setPageContentSharingPref:(BOOL)value;
 
+// Loads Gemini dynamic settings.
+- (void)loadDynamicSettings;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_COORDINATOR_BWG_SETTINGS_MUTATOR_H_
