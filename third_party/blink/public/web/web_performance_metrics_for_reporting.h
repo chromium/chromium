@@ -42,7 +42,7 @@ struct LargestContentfulPaintDetailsForReporting {
 };
 
 struct SoftNavigationMetricsForReporting {
-  uint32_t count = 0;
+  uint64_t count = 0;
   base::TimeDelta start_time;
   base::TimeDelta first_contentful_paint;
   // For the mechanism that generates these ids, see

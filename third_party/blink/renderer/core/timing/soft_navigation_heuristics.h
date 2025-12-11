@@ -103,7 +103,7 @@ class CORE_EXPORT SoftNavigationHeuristics
       base::UnguessableToken same_document_metrics_token,
       SoftNavigationContext*);
   bool ModifiedDOM(Node* node);
-  uint32_t SoftNavigationCount() { return soft_navigation_count_; }
+  uint64_t SoftNavigationCount() { return soft_navigation_count_; }
 
   SoftNavigationContext* MaybeGetSoftNavigationContextForTiming(Node* node);
   void OnPaintFinished();
@@ -221,7 +221,7 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   HeapHashSet<Member<InteractionEffectsMonitor>> interaction_effects_monitors_;
 
-  uint32_t soft_navigation_count_ = 0;
+  uint64_t soft_navigation_count_ = 0;
   bool has_active_event_scope_ = false;
 
   // `task_attribution_tracker_` is cleared during `Shutdown()` (frame detach),
