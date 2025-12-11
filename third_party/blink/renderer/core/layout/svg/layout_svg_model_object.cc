@@ -106,6 +106,21 @@ void LayoutSVGModelObject::WillBeDestroyed() {
   LayoutObject::WillBeDestroyed();
 }
 
+bool LayoutSVGModelObject::MapToVisualRectInAncestorSpaceInternal(
+    const LayoutBoxModelObject* ancestor,
+    TransformState& transform_state,
+    VisualRectFlags visual_rect_flags) const {
+  NOT_DESTROYED();
+  transform_state.Flatten();
+  PhysicalRect rect = PhysicalRect::FastAndLossyFromRectF(
+      transform_state.LastPlanarQuad().BoundingBox());
+  // Apply other mappings on local SVG coordinates.
+  bool retval = SVGLayoutSupport::MapToVisualRectInAncestorSpace(
+      *this, ancestor, gfx::RectF(rect), rect);
+  transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
+  return retval;
+}
+
 bool LayoutSVGModelObject::CheckForImplicitTransformChange(
     const SVGLayoutInfo& layout_info,
     bool bbox_changed) const {

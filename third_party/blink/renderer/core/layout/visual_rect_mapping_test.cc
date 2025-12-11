@@ -1439,6 +1439,53 @@ TEST_P(VisualRectMappingTest, NestedTransformsFastVsSlowPath) {
   EXPECT_EQ(mapper_rect, root_rect);
 }
 
+TEST_P(VisualRectMappingTest, SVGTransformsFastVsSlowPath) {
+  // Purpose: validate that the non-GeometryMapper code path produces the same
+  // visual rect as the GeometryMapper fast path, even when mapping through
+  // SVG transforms.
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <svg width="100" height="100" viewBox="-10 10 100 200"
+        preserveAspectRatio="none">
+      <rect id="green_box" x="0" y="1" width="20" height="20" fill="green"/>
+    </svg>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* layout_view = &GetLayoutView();
+  auto* green_box = GetLayoutObjectByElementId("green_box");
+  ASSERT_TRUE(green_box);
+
+  constexpr VisualRectFlags kGeomFlags = static_cast<VisualRectFlags>(
+      kUseGeometryMapper | kDefaultVisualRectFlags);
+  constexpr VisualRectFlags kNonMapperFlags = kDefaultVisualRectFlags;
+  PhysicalRect local_rect(0, 0, 20, 20);
+
+  // GeometryMapper path (expected reference).
+  PhysicalRect mapper_rect = local_rect;
+  ASSERT_TRUE(green_box->MapToVisualRectInAncestorSpace(
+      layout_view, mapper_rect, kGeomFlags));
+
+  // The green box is located at the SVG origin with width and height 20, which
+  // maps to (10, -5) with a width of 20 and height of 10. Note the y axis is
+  // squished due to `preserveAspectRatio="none"`. Then, the negative y portion
+  // is clipped away.
+  EXPECT_EQ(PhysicalRect(10, 0, 20, 5), mapper_rect);
+
+  // Non-GeometryMapper path with the same ancestor should match the reference.
+  PhysicalRect non_mapper_rect = local_rect;
+  ASSERT_TRUE(green_box->MapToVisualRectInAncestorSpace(
+      layout_view, non_mapper_rect, kNonMapperFlags));
+  EXPECT_EQ(mapper_rect, non_mapper_rect);
+
+  // Mapping to the main frame (null ancestor) should also match.
+  PhysicalRect root_rect = local_rect;
+  ASSERT_TRUE(green_box->MapToVisualRectInAncestorSpace(nullptr, root_rect,
+                                                        kNonMapperFlags));
+  EXPECT_EQ(mapper_rect, root_rect);
+}
+
 TEST_P(VisualRectMappingTest, NestedTransformsGeometryMapperFlag) {
   SetBodyInnerHTML(R"HTML(
     <style>
