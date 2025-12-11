@@ -39,13 +39,7 @@ class PumaBrowserTest : public SyncTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Failing on Linux MSan https://crbug.com/465698705.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_GetCountryId DISABLED_GetCountryId
-#else
-#define MAYBE_GetCountryId GetCountryId
-#endif
-IN_PROC_BROWSER_TEST_F(PumaBrowserTest, MAYBE_GetCountryId) {
+IN_PROC_BROWSER_TEST_F(PumaBrowserTest, GetCountryId) {
   test::MetricsConsentOverride metrics_consent(true);
 
   ASSERT_NE(GetPumaService(), nullptr);

@@ -281,6 +281,16 @@ class ChromeMetricsServiceClient
   // The DwaService that |this| is a client of.
   std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
 
+  // IMPORTANT: This member's declaration order is critical for shutdown
+  // stability. It must be declared *before* `puma_service_` to ensure it is
+  // destroyed *after* `puma_service_`. This is because the `PumaService`
+  // destructor triggers a callback that uses this `cached_profile_` object.
+  // Reordering these members will lead to a use-after-free crash during
+  // shutdown. See crbug.com/465698705 for details.
+  //
+  // This member variable ensures the profile lookup is cached across calls.
+  metrics::CachedMetricsProfile cached_profile_;
+
   // The PumaService that |this| is a client of.
   std::unique_ptr<metrics::private_metrics::PumaService> puma_service_;
 
@@ -302,9 +312,6 @@ class ChromeMetricsServiceClient
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
   base::CallbackListSubscription omnibox_url_opened_subscription_;
-
-  // This member variable ensures the profile lookup is cached across calls.
-  metrics::CachedMetricsProfile cached_profile_;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;
