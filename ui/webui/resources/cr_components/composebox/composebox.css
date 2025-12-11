@@ -66,18 +66,18 @@
     0.998 86.4%,
     1
   );
-
+  --border-radius-transition: border-radius var(--collapse-duration)
+    var(--emphasized-curve);
+  --fade-duration: 100ms;
+  --height-expand-duration: 600ms;
   --icon-entry-transition: opacity var(--expand-ease-out-duration) linear 800ms;
   --icon-exit-transition: opacity var(--collapse-ease-in-duration)
     var(--emphasized-accelerate);
+  --lens-icon-animation-duration: 1100ms;
 
-  --height-expand-duration: 600ms;
   --submit-enabled-transition: opacity 255ms;
 
-  --border-radius-transition: border-radius var(--collapse-duration)
-    var(--emphasized-curve);
 
-  --lens-icon-animation-duration: 1100ms;
 
   border-radius: 30px;
   box-shadow: var(--cr-searchbox-shadow);
@@ -130,8 +130,8 @@
   position: relative;
   overflow: hidden;
   transition:
-      opacity 500ms ease-in-out,
-      visibility 500ms ease-in-out;
+    opacity var(--fade-duration) ease-in-out,
+    visibility var(--fade-duration) ease-in-out;
 }
 
 :host([is-dragging-file_]) #composebox * {
@@ -145,12 +145,13 @@ search-animated-glow {
 }
 
 :host([is-collapsible]) #composebox {
-  transition:
-    min-height var(--emphasized-curve),
-    max-height var(--emphasized-curve);
-  transition-duration: var(--collapse-duration);
   min-height: 60px;
   max-height: 60px;
+  transition:
+    max-height var(--collapse-duration) var(--emphasized-curve),
+    min-height var(--collapse-duration) var(--emphasized-curve),
+    opacity var(--fade-duration) ease-in-out,
+    visibility var(--fade-duration) ease-in-out;
 }
 
 :host(:not([is-collapsible])) #composebox {
@@ -163,7 +164,11 @@ search-animated-glow {
 :host([expanding_]) #composebox {
   height: calc-size(auto, size);
   max-height: var(--cr-composebox-max-height, 422px);
-  transition-duration: var(--expand-duration);
+  transition:
+    max-height var(--expand-duration) var(--emphasized-curve),
+    min-height var(--expand-duration) var(--emphasized-curve),
+    opacity var(--fade-duration) ease-in-out,
+    visibility var(--fade-duration) ease-in-out;
 }
 
 :host([is-collapsible][expanding_]) #composebox {
