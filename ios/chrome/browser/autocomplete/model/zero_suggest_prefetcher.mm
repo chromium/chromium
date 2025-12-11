@@ -21,10 +21,11 @@
 @end
 
 @implementation ZeroSuggestPrefetcher {
+  /// Autocomplete controller used to start suggestion prefetch.
   raw_ptr<AutocompleteController> _autocompleteController;
-  // Observed web state list. Only used when observing a web state list.
+  /// Observed web state list. Only used when observing a web state list.
   raw_ptr<WebStateList> _webStateList;
-  // Observed web state. Only used in singular web state observation mode.
+  /// Observed web state. Only used in singular web state observation mode.
   raw_ptr<web::WebState> _webState;
   base::RepeatingCallback<metrics::OmniboxEventProto::PageClassification()>
       _classificationCallback;
@@ -146,19 +147,23 @@
 }
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
+  // Make sure self is retained after the callback to disconnect.
+  ZeroSuggestPrefetcher* strongSelf = self;
   if (_webStateListDisconnectCallback) {
     std::move(_webStateListDisconnectCallback).Run(_webStateList);
   }
-  [self disconnect];
+  [strongSelf disconnect];
 }
 
 #pragma mark - web::WebStateObserver
 
 - (void)webStateDestroyed:(web::WebState*)webState {
+  // Make sure self is retained after the callback to disconnect.
+  ZeroSuggestPrefetcher* strongSelf = self;
   if (_webStateDisconnectCallback) {
     std::move(_webStateDisconnectCallback).Run(_webState);
   }
-  [self disconnect];
+  [strongSelf disconnect];
 }
 
 - (void)webState:(web::WebState*)webState
