@@ -184,10 +184,6 @@ namespace gfx {
 class Rect;
 }
 
-namespace glic {
-class GlicWidgetDelegate;
-}
-
 namespace javascript_dialogs {
 class AppModalDialogViewViews;
 }
@@ -476,7 +472,6 @@ class VIEWS_EXPORT WidgetDelegate {
     friend class ::ShareThisTabDialogView;
     friend class ::SigninViewControllerDelegateViews;
     friend class ::ash::InformedRestoreController;
-    friend class ::glic::GlicWidgetDelegate;
     friend class ::native_app_window::NativeAppWindowViews;
     friend class ::plus_addresses::PlusAddressCreationDialogDelegate;
     friend class ::remoting::MessageBoxCore;
