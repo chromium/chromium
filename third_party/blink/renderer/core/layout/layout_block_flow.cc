@@ -276,7 +276,6 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     LayoutBox::RemoveChild(old_child);
     return;
   }
-  const bool is_inner_editor_child = IsAnonymous() && IsInnerEditorChild(*this);
 
   // If this child is a block, and if our previous and next siblings are both
   // anonymous blocks with inline content, then we can go ahead and fold the
@@ -317,6 +316,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
 
   LayoutBlock::RemoveChild(old_child);
 
+  const bool is_inner_editor_child = IsAnonymous() && IsInnerEditorChild(*this);
   if (is_inner_editor_child && !BeingDestroyed()) {
     if (old_child->IsBR() && FirstChild()) {
       // We removed a LayoutBR from `this`. If this still contains LayoutTexts,
@@ -328,8 +328,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
                           /* full_remove_insert */ true);
       }
     }
-    if (!FirstChild() && Parent()) {
-      Parent()->RemoveChild(this);
+    if (!FirstChild()) {
       Destroy();
     }
     return;
