@@ -408,7 +408,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   }
 
   int GetPinnedTabCount() const override {
-    return tab_strip_->GetModelPinnedTabCount();
+    return tab_strip_->NumPinnedTabsInModel();
   }
 
   TabGroupHeader* GetTabGroupHeader(
@@ -1558,17 +1558,6 @@ int TabStrip::GetModelCount() const {
   return controller_->GetCount();
 }
 
-int TabStrip::GetModelPinnedTabCount() const {
-  for (size_t i = 0; i < static_cast<size_t>(controller_->GetCount()); ++i) {
-    if (!controller_->IsTabPinned(static_cast<int>(i))) {
-      return static_cast<int>(i);
-    }
-  }
-
-  // All tabs are pinned.
-  return controller_->GetCount();
-}
-
 TabDragContext* TabStrip::GetDragContext() {
   return base::to_address(drag_context_);
 }
@@ -1599,9 +1588,9 @@ std::optional<int> TabStrip::GetActiveIndex() const {
 }
 
 int TabStrip::NumPinnedTabsInModel() const {
-  for (size_t i = 0; i < static_cast<size_t>(controller_->GetCount()); ++i) {
-    if (!controller_->IsTabPinned(static_cast<int>(i))) {
-      return static_cast<int>(i);
+  for (int i = 0; i < controller_->GetCount(); ++i) {
+    if (!controller_->IsTabPinned(i)) {
+      return i;
     }
   }
 
@@ -2515,7 +2504,6 @@ void TabStrip::AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id) {
 BEGIN_METADATA(TabStrip)
 ADD_READONLY_PROPERTY_METADATA(int, TabCount)
 ADD_READONLY_PROPERTY_METADATA(int, ModelCount)
-ADD_READONLY_PROPERTY_METADATA(int, ModelPinnedTabCount)
 ADD_READONLY_PROPERTY_METADATA(int, StrokeThickness)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                TabSeparatorColor,

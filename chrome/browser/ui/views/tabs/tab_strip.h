@@ -220,9 +220,6 @@ class TabStrip : public views::View,
   // Cover method for TabStripController::GetCount.
   int GetModelCount() const;
 
-  // Returns the number of pinned tabs.
-  int GetModelPinnedTabCount() const;
-
   TabStripController* controller() const { return controller_.get(); }
 
   TabDragContext* GetDragContext();
