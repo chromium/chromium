@@ -67,6 +67,8 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
   // Permission handling
   mojom::blink::PermissionService* GetPermissionService();
 
+  Member<NavigatorBase> navigator_base_;
+
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
   // https://w3c.github.io/screen-wake-lock/#dfn-activelocks

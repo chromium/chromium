@@ -260,6 +260,7 @@ LockManager* LockManager::locks(NavigatorBase& navigator,
 
 LockManager::LockManager(NavigatorBase& navigator)
     : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      navigator_base_(navigator),
       service_(navigator.GetExecutionContext()),
       observer_(navigator.GetExecutionContext()) {}
 
@@ -508,6 +509,7 @@ bool LockManager::IsPendingRequest(LockRequestImpl* request) {
 
 void LockManager::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(pending_requests_);
   visitor->Trace(held_locks_);

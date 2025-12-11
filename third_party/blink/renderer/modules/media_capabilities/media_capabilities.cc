@@ -751,7 +751,8 @@ MediaCapabilities* MediaCapabilities::mediaCapabilities(
 }
 
 MediaCapabilities::MediaCapabilities(NavigatorBase& navigator)
-    : decode_history_service_(navigator.GetExecutionContext()),
+    : navigator_base_(navigator),
+      decode_history_service_(navigator.GetExecutionContext()),
       webrtc_history_service_(navigator.GetExecutionContext()) {}
 
 void MediaCapabilities::Trace(blink::Visitor* visitor) const {
@@ -759,6 +760,7 @@ void MediaCapabilities::Trace(blink::Visitor* visitor) const {
   visitor->Trace(webrtc_history_service_);
   visitor->Trace(pending_cb_map_);
   ScriptWrappable::Trace(visitor);
+  visitor->Trace(navigator_base_);
 }
 
 MediaCapabilities::PendingCallbackState::PendingCallbackState(

@@ -92,6 +92,8 @@ class Permissions final : public ScriptWrappable,
   mojom::blink::PermissionDescriptorPtr CreatePermissionVerificationDescriptor(
       PermissionType descriptor_type);
 
+  Member<NavigatorBase> navigator_base_;
+
   HeapHashMap<PermissionType, Member<PermissionStatusListener>> listeners_;
 
   HeapMojoRemote<mojom::blink::PermissionService> service_;

@@ -52,13 +52,14 @@ class NavigatorStorageQuota final
   // Web-exposed on both window and worker.
   static StorageManager* storage(NavigatorBase&);
 
-  NavigatorStorageQuota() = default;
+  explicit NavigatorStorageQuota(NavigatorBase&);
 
   void Trace(Visitor*) const override;
 
  private:
   static NavigatorStorageQuota& From(NavigatorBase&);
 
+  Member<NavigatorBase> navigator_base_;
   mutable Member<DeprecatedStorageQuota> temporary_storage_;
   mutable Member<StorageManager> storage_manager_;
 };

@@ -304,6 +304,7 @@ NetworkInformation* NetworkInformation::connection(NavigatorBase& navigator) {
 NetworkInformation::NetworkInformation(NavigatorBase& navigator)
     : ActiveScriptWrappable<NetworkInformation>({}),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      navigator_base_(navigator),
       web_holdback_console_message_shown_(false),
       context_stopped_(false) {
   std::optional<base::TimeDelta> http_rtt;
@@ -322,6 +323,7 @@ NetworkInformation::NetworkInformation(NavigatorBase& navigator)
 
 void NetworkInformation::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
+  visitor->Trace(navigator_base_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
