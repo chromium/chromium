@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/unguessable_token.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
@@ -29,7 +30,8 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   ClientSideDetectionIntelligentScanDelegateAndroid(
       PrefService& pref,
       std::unique_ptr<optimization_guide::ModelBrokerClient>
-          model_broker_client);
+          model_broker_client,
+      optimization_guide::RemoteModelExecutor* remote_model_executor);
   ~ClientSideDetectionIntelligentScanDelegateAndroid() override;
 
   ClientSideDetectionIntelligentScanDelegateAndroid(
@@ -68,6 +70,9 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   // This object is used to download the model and create sessions for on-device
   // model execution. It may be null after shutdown.
   std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
+  // This object is for server-side model execution. It may be null after
+  // shutdown.
+  raw_ptr<optimization_guide::RemoteModelExecutor> remote_model_executor_;
 
   // A wrapper of the current intelligent scan inquiries. This is null if there
   // is no active inquiry.

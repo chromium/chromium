@@ -122,6 +122,12 @@ BASE_DECLARE_FEATURE(kClientSideDetectionSendIntelligentScanInfoAndroid);
 // if it exists and the force request mechanism occurs.
 BASE_DECLARE_FEATURE(kClientSideDetectionSendLlamaForcedTriggerInfo);
 
+#if BUILDFLAG(IS_ANDROID)
+// Inquire the server-side model instead of the on-device model for scam
+// detection.
+BASE_DECLARE_FEATURE(kClientSideDetectionServerModelForScamDetectionAndroid);
+#endif
+
 // Show a warning to the user based on the
 // IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2.
 BASE_DECLARE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning);

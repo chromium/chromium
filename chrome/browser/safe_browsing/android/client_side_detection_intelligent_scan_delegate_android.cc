@@ -10,7 +10,10 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_util.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -23,6 +26,7 @@ namespace safe_browsing {
 
 namespace {
 using optimization_guide::mojom::OnDeviceFeature::kScamDetection;
+using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
 }  // namespace
 
 class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
@@ -45,6 +49,10 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
 
+  void RemoteExecutionCallback(
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
   // The parent object is guaranteed to outlive this object because the parent
   // owns this object.
   const raw_ptr<ClientSideDetectionIntelligentScanDelegateAndroid> parent_;
@@ -52,6 +60,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
   base::UnguessableToken scan_id_;
   IntelligentScanDoneCallback callback_;
   std::string rendered_texts_;
+  bool was_start_called_ = false;
 
   base::WeakPtrFactory<Inquiry> weak_factory_{this};
 };
@@ -67,7 +76,22 @@ ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::~Inquiry() =
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
     const std::string& rendered_texts) {
-  CHECK(!session_) << "Start() should only be called once per inquiry.";
+  CHECK(!was_start_called_)
+      << "Start() should only be called once per inquiry.";
+  was_start_called_ = true;
+
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionServerModelForScamDetectionAndroid)) {
+    ScamDetectionRequest request;
+    request.set_rendered_text(rendered_texts);
+    parent_->remote_model_executor_->ExecuteModel(
+        optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+        std::move(request), /*options=*/{},
+        base::BindOnce(&ClientSideDetectionIntelligentScanDelegateAndroid::
+                           Inquiry::RemoteExecutionCallback,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
 
   rendered_texts_ = rendered_texts;
   parent_->model_broker_client_->CreateSession(
@@ -89,7 +113,6 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
     return;
   }
 
-  using ScamDetectionRequest = optimization_guide::proto::ScamDetectionRequest;
   ScamDetectionRequest request;
   request.set_rendered_text(rendered_texts_);
 
@@ -150,13 +173,47 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   parent_->CancelIntelligentScan(scan_id_);
 }
 
+void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
+    RemoteExecutionCallback(
+        optimization_guide::OptimizationGuideModelExecutionResult result,
+        std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  CHECK(callback_);
+  // Server model does not return model version.
+  int model_version = IntelligentScanResult::kModelVersionUnavailable;
+  if (!result.response.has_value()) {
+    // TODO(crbug.com/462643935): Log error_response from result.execution_info.
+    std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
+    return;
+  }
+
+  auto scam_detection_response = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::ScamDetectionResponse>(
+      result.response.value());
+
+  if (!scam_detection_response) {
+    std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
+    return;
+  }
+
+  std::move(callback_).Run({.brand = scam_detection_response->brand(),
+                            .intent = scam_detection_response->intent(),
+                            .model_version = model_version,
+                            .execution_success = true});
+
+  // Reset this inquiry immediately so that future inference is not affected by
+  // the old context.
+  parent_->CancelIntelligentScan(scan_id_);
+}
+
 ClientSideDetectionIntelligentScanDelegateAndroid::
     ClientSideDetectionIntelligentScanDelegateAndroid(
         PrefService& pref,
         std::unique_ptr<optimization_guide::ModelBrokerClient>
-            model_broker_client)
+            model_broker_client,
+        optimization_guide::RemoteModelExecutor* remote_model_executor)
     : pref_(pref),
       model_broker_client_(std::move(model_broker_client)),
+      remote_model_executor_(remote_model_executor),
       is_feature_enabled_(
           !base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) &&
           base::FeatureList::IsEnabled(
@@ -201,6 +258,10 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
     IsIntelligentScanAvailable(bool log_failed_eligibility_reason) {
   if (!is_feature_enabled_) {
     return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionServerModelForScamDetectionAndroid)) {
+    return !!remote_model_executor_;
   }
   if (!model_broker_client_) {
     return false;
@@ -283,6 +344,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Shutdown() {
       !inquiries_.empty());
   ResetAllInquiries();
   model_broker_client_.reset();
+  remote_model_executor_ = nullptr;
   pref_change_registrar_.RemoveAll();
 }
 
@@ -290,10 +352,15 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::OnPrefsUpdated() {
   if (!is_feature_enabled_) {
     return;
   }
-  if (IsEnhancedProtectionEnabled(*pref_)) {
-    StartModelDownload();
-  } else {
+  if (!IsEnhancedProtectionEnabled(*pref_)) {
     ResetAllInquiries();
+    return;
+  }
+  // No need to download the on-device model if we are using the server
+  // model.
+  if (!base::FeatureList::IsEnabled(
+          kClientSideDetectionServerModelForScamDetectionAndroid)) {
+    StartModelDownload();
   }
 }
 
