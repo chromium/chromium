@@ -985,6 +985,16 @@ BASE_FEATURE(kAutoplayDisableSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether we should allow color space changes to flush AcceleratedVideoDecoder.
 BASE_FEATURE(kAVDColorSpaceChanges, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Browser Initiated Automatic Picture-in-Picture (ChAP) in dry run
+// mode.
+//
+// When enabled in dry run mode, all ChAP code paths are executed with the
+// exception of actually opening the video PiP window, or any other paths that
+// may be visible to the user experience. This flag will be used to enable
+// analyzing the feature impact and catch early any potential regressions.
+BASE_FEATURE(kBrowserInitiatedAutomaticPictureInPictureDryRun,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows Chrome to reconfigure the sink to match the channel count of the
 // source audio data. This ensures opening of an audio output stream to match
 // the source audio data channels, to signal to the downstream audio

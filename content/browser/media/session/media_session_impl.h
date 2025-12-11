@@ -561,6 +561,10 @@ class MediaSessionImpl : public MediaSession,
   // `enterpictureinpicture` action handler).
   void MaybeEnterBrowserInitiatedAutomaticPictureInPicture();
 
+  // Returns true if browser initiated picture in picture is enabled. This will
+  // be true if either the main feature or the dry run feature is enabled.
+  bool IsBrowserInitiatedPictureInPictureEnabled() const;
+
   // Notifies a player of the last known auto picture-in-picture information.
   // This is used to keep newly added players updated with the latest
   // information.

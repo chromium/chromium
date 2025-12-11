@@ -23,6 +23,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/features.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
@@ -143,11 +144,8 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
   MediaSessionImplTest& operator=(const MediaSessionImplTest&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {media_session::features::kMediaSessionService,
-         media_session::features::kAudioFocusEnforcement,
-         blink::features::kBrowserInitiatedAutomaticPictureInPicture},
-        {});
+    scoped_feature_list_.InitWithFeatures(GetEnabledFeatures(),
+                                          GetDisabledFeatures());
 
     RenderViewHostTestHarness::SetUp();
 
@@ -173,6 +171,17 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
         media_session::mojom::EnforcementMode::kDefault);
 
     RenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() {
+    return {media_session::features::kMediaSessionService,
+            media_session::features::kAudioFocusEnforcement,
+            blink::features::kBrowserInitiatedAutomaticPictureInPicture};
+  }
+
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    return {};
   }
 
   void RequestAudioFocus(MediaSessionImpl* session,
@@ -1675,5 +1684,97 @@ TEST_F(MediaSessionImplDurationThrottleTest, ThrottleResetOnPlayerChange) {
     GetMediaSession()->RemovePlayer(player_observer_.get(), player_id);
   }
 }
+
+class MediaSessionImplBrowserAutoPipDryRunTest
+    : public MediaSessionImplTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  bool IsBrowserInitiatedAutoPipEnabled() const {
+    return std::get<0>(GetParam());
+  }
+  bool IsBrowserInitiatedAutoPipDryRunEnabled() const {
+    return std::get<1>(GetParam());
+  }
+  bool IsEnterPictureInPictureActionEnabled() const {
+    return std::get<2>(GetParam());
+  }
+
+ private:
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        media_session::features::kMediaSessionService,
+        media_session::features::kAudioFocusEnforcement};
+
+    if (IsBrowserInitiatedAutoPipDryRunEnabled()) {
+      enabled_features.push_back(
+          media::kBrowserInitiatedAutomaticPictureInPictureDryRun);
+    }
+
+    if (IsBrowserInitiatedAutoPipEnabled()) {
+      enabled_features.push_back(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture);
+    }
+    return enabled_features;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (!IsBrowserInitiatedAutoPipDryRunEnabled()) {
+      disabled_features.push_back(
+          media::kBrowserInitiatedAutomaticPictureInPictureDryRun);
+    }
+
+    if (!IsBrowserInitiatedAutoPipEnabled()) {
+      disabled_features.push_back(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture);
+    }
+    return disabled_features;
+  }
+};
+
+TEST_P(MediaSessionImplBrowserAutoPipDryRunTest, EnterAutoPictureInPicture) {
+  MockMediaSessionMojoObserver observer(*GetMediaSession());
+  FlushForTesting(GetMediaSession());
+
+  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
+
+  int player = player_observer_->StartNewPlayer();
+  player_observer_->SetIsPictureInPictureAvailable(player, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+  FlushForTesting(GetMediaSession());
+
+  if (IsEnterPictureInPictureActionEnabled()) {
+    mock_media_session_service().EnableAction(
+        MediaSessionAction::kEnterPictureInPicture);
+  }
+
+  // The EnterPictureInPictureAction action should be received if enabled on the
+  // media session service.
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(
+                  MediaSessionAction::kEnterPictureInPicture,
+                  EnterPictureInPictureReasonEquals(
+                      blink::mojom::MediaSessionEnterPictureInPictureReason::
+                          kContentOccluded)))
+      .Times(IsEnterPictureInPictureActionEnabled() ? 1 : 0);
+
+  GetMediaSession()->EnterAutoPictureInPicture();
+  mock_media_session_service().FlushForTesting();
+
+  // Verify that the `BrowserInitiatedAutomaticPictureInPictureDryRun` flag does
+  // not cause PiP to be entered.
+  int expected_pip_calls = (!IsEnterPictureInPictureActionEnabled() &&
+                            IsBrowserInitiatedAutoPipEnabled())
+                               ? 1
+                               : 0;
+  EXPECT_EQ(expected_pip_calls,
+            player_observer()->received_enter_picture_in_picture_calls());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MediaSessionImplBrowserAutoPipDryRunTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
+                                            ::testing::Bool()));
 
 }  // namespace content

@@ -85,6 +85,20 @@ AutoPictureInPictureTabHelper::~AutoPictureInPictureTabHelper() {
 
 bool AutoPictureInPictureTabHelper::HasAutoPictureInPictureBeenRegistered()
     const {
+  // This is a special case to handle browser initiated autopip in "dry run"
+  // mode. In this mode we do not want to incorrectly report that autopip has
+  // been registered for the site.
+  const bool is_browser_initiated_pip_dry_run_only =
+      !base::FeatureList::IsEnabled(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture) &&
+      base::FeatureList::IsEnabled(
+          media::kBrowserInitiatedAutomaticPictureInPictureDryRun);
+
+  if (is_browser_initiated_pip_dry_run_only &&
+      CanEnterBrowserInitiatedAutoPictureInPicture()) {
+    return false;
+  }
+
   return has_ever_registered_for_auto_picture_in_picture_;
 }
 
@@ -770,8 +784,10 @@ AutoPictureInPictureTabHelper::GetPrimaryMainRoutedFrame() const {
   // registered a MediaSession `enterpictureinpicture` action handler). This is
   // in line with the current requirement of only allowing auto picture in
   // picture from the top frame.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBrowserInitiatedAutomaticPictureInPicture) &&
+  if ((base::FeatureList::IsEnabled(
+           blink::features::kBrowserInitiatedAutomaticPictureInPicture) ||
+       base::FeatureList::IsEnabled(
+           media::kBrowserInitiatedAutomaticPictureInPictureDryRun)) &&
       rfh == nullptr) {
     rfh = web_contents()->GetPrimaryMainFrame();
   }

@@ -3351,3 +3351,88 @@ IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
                                UkmEntry::kBrowserInitiatedName,
                                PromptResult::kAllowOnce);
 }
+
+class AutoPictureInPictureTabHelperBrowserAutoPipDryRunTest
+    : public AutoPictureInPictureWithVideoPlaybackBrowserTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  AutoPictureInPictureTabHelperBrowserAutoPipDryRunTest() = default;
+  ~AutoPictureInPictureTabHelperBrowserAutoPipDryRunTest() override = default;
+
+  bool IsBrowserInitiatedAutoPipEnabled() const {
+    return std::get<0>(GetParam());
+  }
+  bool IsBrowserInitiatedAutoPipDryRunEnabled() const {
+    return std::get<1>(GetParam());
+  }
+  bool IsAutopipRegistered() const { return std::get<2>(GetParam()); }
+
+ private:
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRef> features = {
+        blink::features::kDocumentPictureInPictureAPI,
+        media::kAutoPictureInPictureForVideoPlayback,
+        blink::features::kAutoPictureInPictureVideoHeuristics};
+
+    if (IsBrowserInitiatedAutoPipEnabled()) {
+      features.push_back(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture);
+    }
+    if (IsBrowserInitiatedAutoPipDryRunEnabled()) {
+      features.push_back(
+          media::kBrowserInitiatedAutomaticPictureInPictureDryRun);
+    }
+    return features;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    std::vector<base::test::FeatureRef> features;
+
+    if (!IsBrowserInitiatedAutoPipEnabled()) {
+      features.push_back(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture);
+    }
+    if (!IsBrowserInitiatedAutoPipDryRunEnabled()) {
+      features.push_back(
+          media::kBrowserInitiatedAutomaticPictureInPictureDryRun);
+    }
+    return features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(AutoPictureInPictureTabHelperBrowserAutoPipDryRunTest,
+                       HasAutoPictureInPictureBeenRegistered) {
+  // Load a page that does not register for autopip.
+  LoadNotRegisteredPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  AutoPictureInPictureTabHelper* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+
+  // Conditionally register for autopip if necessary before starting video
+  // playback.
+  if (IsAutopipRegistered()) {
+    RegisterForAutopip(web_contents);
+    WaitForMediaSessionActionRegistered(web_contents);
+  }
+
+  // Start video playback and wait for all preconditions to be met.
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  // `HasAutoPictureInPictureBeenRegistered` returns false if only the dry run
+  // flag enables browser initiated autopip, preventing unintended registration
+  // values in dry run.
+  bool expected_has_auto_pip_been_registered =
+      IsAutopipRegistered() || IsBrowserInitiatedAutoPipEnabled();
+  EXPECT_EQ(expected_has_auto_pip_been_registered,
+            tab_helper->HasAutoPictureInPictureBeenRegistered());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutoPictureInPictureTabHelperBrowserAutoPipDryRunTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
+                                            ::testing::Bool()));

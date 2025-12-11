@@ -2165,8 +2165,7 @@ bool MediaSessionImpl::IsActivelyUsingCameraOrMicrophone() const {
 
 bool MediaSessionImpl::CanEnterBrowserInitiatedAutomaticPictureInPicture()
     const {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kBrowserInitiatedAutomaticPictureInPicture)) {
+  if (!IsBrowserInitiatedPictureInPictureEnabled()) {
     return false;
   }
 
@@ -2207,8 +2206,7 @@ bool MediaSessionImpl::CanEnterBrowserInitiatedAutomaticPictureInPicture()
 }
 
 void MediaSessionImpl::MaybeEnterBrowserInitiatedAutomaticPictureInPicture() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kBrowserInitiatedAutomaticPictureInPicture)) {
+  if (!IsBrowserInitiatedPictureInPictureEnabled()) {
     return;
   }
 
@@ -2222,11 +2220,24 @@ void MediaSessionImpl::MaybeEnterBrowserInitiatedAutomaticPictureInPicture() {
   // initiated automatic picture-in-picture.
   CHECK_EQ(normal_players_.size(), 1u);
 
-  auto& first = normal_players_.begin()->first;
-  first.observer->OnEnterPictureInPicture(first.player_id);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture)) {
+    auto& first = normal_players_.begin()->first;
+    first.observer->OnEnterPictureInPicture(first.player_id);
+  } else {
+    // We are in dry run mode.
+    // TODO(crbug.com/408502322): Add UKM to analyze the impact of the feature.
+  }
 
   uma_helper_.RecordEnterPictureInPicture(
       MediaSessionUmaHelper::EnterPictureInPictureType::kDefaultAutomatic);
+}
+
+bool MediaSessionImpl::IsBrowserInitiatedPictureInPictureEnabled() const {
+  return base::FeatureList::IsEnabled(
+             blink::features::kBrowserInitiatedAutomaticPictureInPicture) ||
+         base::FeatureList::IsEnabled(
+             media::kBrowserInitiatedAutomaticPictureInPictureDryRun);
 }
 
 void MediaSessionImpl::NotifyPlayerOfAutoPictureInPictureInfo(
