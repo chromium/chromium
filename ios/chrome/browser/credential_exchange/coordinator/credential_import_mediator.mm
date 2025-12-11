@@ -163,8 +163,9 @@
 - (BOOL)passwordImportItem:(PasswordImportItem*)item
     loadFaviconAttributesWithUIHandler:(ProceduralBlock)handler {
   // Make sure `handler` is run on the original sequence.
-  base::OnceClosure faviconLoadClosure = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(), base::BindOnce(handler));
+  base::RepeatingClosure faviconLoadClosure =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindRepeating(handler));
   ProceduralBlock faviconLoadCompletion =
       base::CallbackToBlock(std::move(faviconLoadClosure));
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
