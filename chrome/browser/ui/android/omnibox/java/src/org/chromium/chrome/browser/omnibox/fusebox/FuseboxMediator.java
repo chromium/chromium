@@ -331,6 +331,36 @@ public class FuseboxMediator {
         }
     }
 
+    /**
+     * Check whether additional attachments of a specific kind are allowed, showing a snackbar when
+     * limit is reached.
+     */
+    @VisibleForTesting
+    /* package */ boolean isMaxAttachmentCountReached(@FuseboxAttachmentType int attachmentType) {
+        boolean isImageGenerationUsed =
+                mAutocompleteRequestTypeSupplier.get() == AutocompleteRequestType.IMAGE_GENERATION;
+
+        // Permit image reselection when image generation is picked.
+        if (attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE && isImageGenerationUsed) {
+            return false;
+        }
+
+        // Permit tab reselection (except image generation).
+        if (attachmentType == FuseboxAttachmentType.ATTACHMENT_TAB
+                && !isImageGenerationUsed
+                && !mModelList.getAttachedTabIds().isEmpty()) {
+            return false;
+        }
+
+        // Permit additional attachments, except when creating images.
+        if (mModelList.getRemainingAttachments() > 0 && !isImageGenerationUsed) {
+            return false;
+        }
+
+        warnForMaxAttachments();
+        return true;
+    }
+
     private void onAttachmentsChanged() {
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
         mModel.set(
@@ -359,10 +389,8 @@ public class FuseboxMediator {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
         int remainingAttachments = mModelList.getRemainingAttachments();
-        if (remainingAttachments < 1) {
-            warnForMaxAttachments();
-            return;
-        }
+        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB)) return;
+
         Intent intent;
         ArrayList<Integer> preselectedTabIds = new ArrayList<>(mModelList.getAttachedTabIds());
         try {
@@ -446,10 +474,8 @@ public class FuseboxMediator {
     void onCameraClicked() {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CAMERA);
-        if (mModelList.getRemainingAttachments() < 1) {
-            warnForMaxAttachments();
-            return;
-        }
+        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
+
         if (mPermissionDelegate.hasPermission(Manifest.permission.CAMERA)) {
             launchCamera();
         } else {
@@ -511,10 +537,7 @@ public class FuseboxMediator {
     void onImagePickerClicked() {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
-        if (mModelList.getRemainingAttachments() < 1) {
-            warnForMaxAttachments();
-            return;
-        }
+        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
 
         boolean allowMultipleAttachments =
                 mAutocompleteRequestTypeSupplier.get() != AutocompleteRequestType.IMAGE_GENERATION;
@@ -557,10 +580,8 @@ public class FuseboxMediator {
     void onFilePickerClicked() {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.FILES);
-        if (mModelList.getRemainingAttachments() < 1) {
-            warnForMaxAttachments();
-            return;
-        }
+        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE)) return;
+
         var i =
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
@@ -592,10 +613,8 @@ public class FuseboxMediator {
     void onClipboardClicked() {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CLIPBOARD);
-        if (mModelList.getRemainingAttachments() < 1) {
-            warnForMaxAttachments();
-            return;
-        }
+        if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
+
         new AsyncTask<byte[]>() {
             @Override
             protected byte[] doInBackground() {
