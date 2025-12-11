@@ -51,7 +51,7 @@ class RoundedOmniboxResultsFrame : public views::View {
 
   // views::View:
   void Layout(PassKey) override;
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
+  void AddedToWidget() override;
 #if !defined(USE_AURA)
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
