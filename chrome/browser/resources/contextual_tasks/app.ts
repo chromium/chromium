@@ -68,6 +68,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected async onNewThreadClick_() {
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.OpenNewThread');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
     const {url} = await this.browserProxy_.handler.getThreadUrl();
     this.threadUrl_ = url.url;
   }
@@ -75,6 +77,8 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected async onThreadHistoryClick_() {
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.OpenThreadHistory');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.OpenThreadHistory', true);
     const {threads} = await this.browserProxy_.handler.showThreadHistory();
     this.historyThreads_ = threads;
     // TODO(crbug.com/445469925): Display the threads in a drawer.

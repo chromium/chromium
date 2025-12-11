@@ -56,6 +56,8 @@ export class TopToolbarElement extends CrLitElement {
   protected onCloseButtonClick_() {
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.CloseSidePanel');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.CloseSidePanel', true);
     this.browserProxy_.handler.closeSidePanel();
   }
 
@@ -79,6 +81,8 @@ export class TopToolbarElement extends CrLitElement {
     this.$.sourcesMenu.get().close();
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked', true);
     this.browserProxy_.handler.onTabClickedFromSourcesMenu(tab.tabId, tab.url);
   }
 
@@ -86,6 +90,8 @@ export class TopToolbarElement extends CrLitElement {
     this.$.menu.get().close();
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.OpenInNewTab');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.OpenInNewTab', true);
     this.browserProxy_.handler.moveTaskUiToNewTab();
   }
 
@@ -93,6 +99,8 @@ export class TopToolbarElement extends CrLitElement {
     this.$.menu.get().close();
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.OpenMyActivity');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.OpenMyActivity', true);
     this.browserProxy_.handler.openMyActivityUi();
   }
 
@@ -100,6 +108,8 @@ export class TopToolbarElement extends CrLitElement {
     this.$.menu.get().close();
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.OpenHelp');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.OpenHelp', true);
     this.browserProxy_.handler.openHelpUi();
   }
 
