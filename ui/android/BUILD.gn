@@ -1031,7 +1031,7 @@ if (enable_new_texture_compressor) {
     rustflags = [ "-Zallow-features=portable_simd" ]
   }
 
-  rust_executable("texture_compressor_cli") {
+  rust_executable("texture_compressor_benchmark") {
     testonly = true
     crate_root = "texture_compressor/main.rs"
     sources = [ "texture_compressor/main.rs" ]
