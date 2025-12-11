@@ -60,13 +60,12 @@ class ScrollbarThemeFluentMock : public ScrollbarThemeFluent {
 class ScrollbarThemeFluentTest : public ::testing::TestWithParam<float> {
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(::features::kFluentScrollbar);
     ScrollbarThemeSettings::SetFluentScrollbarsEnabled(true);
     mock_scrollable_area_ = MakeGarbageCollected<MockScrollableArea>(
         /*maximum_scroll_offset=*/ScrollOffset(0, 1000));
     mock_scrollable_area_->SetScaleFromDIP(GetParam());
-    // ScrollbarThemeFluent Needs to be instantiated after feature flag and
-    // scrollbar settings have been set.
+    // ScrollbarThemeFluent Needs to be instantiated after scrollbar settings
+    // have been set.
     theme_ = std::make_unique<ScrollbarThemeFluentMock>();
   }
 
@@ -96,7 +95,6 @@ class ScrollbarThemeFluentTest : public ::testing::TestWithParam<float> {
   std::unique_ptr<ScrollbarThemeFluentMock> theme_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   Persistent<MockScrollableArea> mock_scrollable_area_;
 };
 
