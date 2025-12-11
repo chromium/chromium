@@ -32,23 +32,6 @@ namespace glic {
 
 namespace {
 
-content::RenderFrameHost* GetGuestFrame(
-    content::RenderFrameHost* parent_frame) {
-  if (!parent_frame) {
-    return nullptr;
-  }
-  content::RenderFrameHost* guest_frame = nullptr;
-  parent_frame->ForEachRenderFrameHostWithAction(
-      [&guest_frame](content::RenderFrameHost* rfh) {
-        if (rfh->GetLastCommittedOrigin() == GetGuestOrigin()) {
-          guest_frame = rfh;
-          return content::RenderFrameHost::FrameIterationAction::kStop;
-        }
-        return content::RenderFrameHost::FrameIterationAction::kContinue;
-      });
-  return guest_frame;
-}
-
 // Based on URLToImageMarkup from clipboard_utilities.cc.
 std::u16string GetImageMarkup(const GURL& src_url,
                               content::RenderFrameHost* rfh) {
@@ -358,8 +341,7 @@ void GlicShareImageHandler::DoPastePolicyCheck() {
   }
 
   auto* host = &instance->host();
-  auto* glic_contents = host->webui_contents();
-  auto* glic_rfh = GetGuestFrame(glic_contents->GetPrimaryMainFrame());
+  auto* glic_rfh = host->GetGuestMainFrame();
   if (!glic_rfh) {
     ShareComplete(ShareImageResult::kFailedNoFrame);
     return;

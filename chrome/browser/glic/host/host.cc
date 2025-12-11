@@ -385,6 +385,13 @@ bool Host::IsGlicWebUiHost(content::RenderProcessHost* host) const {
   return false;
 }
 
+content::RenderFrameHost* Host::GetGuestMainFrame() const {
+  if (page_handler()) {
+    return page_handler()->GetGuestMainFrame();
+  }
+  return nullptr;
+}
+
 bool Host::IsGlicWebUi(content::WebContents* contents) const {
   return FindInfoForWebUiContents(contents) != nullptr;
 }

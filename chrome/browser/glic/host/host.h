@@ -238,6 +238,9 @@ class Host : public GlicSharingManagerProvider {
   // Returns whether `contents` is the glic WebUI web contents.
   bool IsGlicWebUi(content::WebContents* contents) const;
 
+  // Returns the guest main frame. May be null and may change over time.
+  content::RenderFrameHost* GetGuestMainFrame() const;
+
   // Returns the list of page handlers for glic WebUI pages.
   std::vector<GlicPageHandler*> GetPageHandlersForTesting();
   GlicPageHandler* GetPrimaryPageHandlerForTesting();
