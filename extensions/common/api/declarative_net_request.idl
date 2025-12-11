@@ -349,7 +349,7 @@ namespace declarativeNetRequest {
     //      initiated requests, the request initiator's domain is considered
     //      instead.</li>
     // </ul>
-    [nodoc] DOMString[]? topDomains;
+    DOMString[]? topDomains;
 
     // The rule will not match network requests when the associated top-level
     // frame's domain matches one from the list of
@@ -367,7 +367,7 @@ namespace declarativeNetRequest {
     //      initiated requests, the request initiator's domain is considered
     //      instead.</li>
     // </ul>
-    [nodoc] DOMString[]? excludedTopDomains;
+    DOMString[]? excludedTopDomains;
 
     // The rule will only match network requests originating from the list of
     // <code>domains</code>.
@@ -615,7 +615,7 @@ namespace declarativeNetRequest {
     long? tabId;
 
     // The associated top-level frame URL (if any) for the request.
-    [nodoc] DOMString? topUrl;
+    DOMString? topUrl;
 
     // The headers provided by a hypothetical response if the request does not
     // get blocked or redirected before it is sent. Represented as an object
