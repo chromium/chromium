@@ -76,9 +76,10 @@ PLATFORM_EXPORT bool IsValidAudioBufferSampleRate(float sample_rate);
 PLATFORM_EXPORT float MinAudioBufferSampleRate();
 PLATFORM_EXPORT float MaxAudioBufferSampleRate();
 
-// Return the clamped render quantum size.
-PLATFORM_EXPORT uint32_t
-GetClampedRenderQuantumFrames(uint32_t render_quantum_frames);
+PLATFORM_EXPORT bool IsValidRenderQuantumSize(uint32_t render_quantum_size,
+                                              float sample_rate);
+PLATFORM_EXPORT uint32_t MinRenderQuantumSize();
+PLATFORM_EXPORT uint32_t MaxRenderQuantumSize(float sample_rate);
 
 PLATFORM_EXPORT const std::string GetSinkIdForTracing(
     blink::WebAudioSinkDescriptor sink_descriptor);

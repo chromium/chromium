@@ -104,6 +104,19 @@ OfflineAudioContext* OfflineAudioContext::Create(
     return nullptr;
   }
 
+  if (!audio_utilities::IsValidRenderQuantumSize(render_quantum_frames,
+                                                 sample_rate)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        ExceptionMessages::IndexOutsideRange(
+            "renderSizeHint", render_quantum_frames,
+            audio_utilities::MinRenderQuantumSize(),
+            ExceptionMessages::kInclusiveBound,
+            audio_utilities::MaxRenderQuantumSize(sample_rate),
+            ExceptionMessages::kInclusiveBound));
+    return nullptr;
+  }
+
   SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.OfflineAudioContext.CreateTime");
   OfflineAudioContext* audio_context =
       MakeGarbageCollected<OfflineAudioContext>(
@@ -136,8 +149,7 @@ OfflineAudioContext* OfflineAudioContext::Create(
   if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled() &&
       options->hasRenderSizeHint()) {
     if (options->renderSizeHint()->IsUnsignedLong()) {
-      render_quantum_frames = audio_utilities::GetClampedRenderQuantumFrames(
-          options->renderSizeHint()->GetAsUnsignedLong());
+      render_quantum_frames = options->renderSizeHint()->GetAsUnsignedLong();
     }
   }
   return Create(context, options->numberOfChannels(), options->length(),

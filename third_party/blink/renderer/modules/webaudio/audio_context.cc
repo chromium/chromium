@@ -430,8 +430,7 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
     switch (hint->GetContentType()) {
       case V8UnionAudioContextRenderSizeCategoryOrUnsignedLong::ContentType::
           kUnsignedLong:
-        render_quantum_frames = audio_utilities::GetClampedRenderQuantumFrames(
-            hint->GetAsUnsignedLong());
+        render_quantum_frames = hint->GetAsUnsignedLong();
         break;
       case V8UnionAudioContextRenderSizeCategoryOrUnsignedLong::ContentType::
           kAudioContextRenderSizeCategory:
@@ -479,12 +478,48 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
     return nullptr;
   }
 
+  // Pre-validation for renderSizeHint if sampleRate is provided. This prevents
+  // allocating excessive memory for clearly invalid renderSizeHint values
+  // before the AudioContext is fully constructed.
+  bool render_quantum_frames_validated = false;
+  if (sample_rate.has_value() && render_quantum_frames.has_value()) {
+    if (!audio_utilities::IsValidRenderQuantumSize(
+            render_quantum_frames.value(), sample_rate.value())) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          ExceptionMessages::IndexOutsideRange(
+              "renderSizeHint", render_quantum_frames.value(),
+              audio_utilities::MinRenderQuantumSize(),
+              ExceptionMessages::kInclusiveBound,
+              audio_utilities::MaxRenderQuantumSize(sample_rate.value()),
+              ExceptionMessages::kInclusiveBound));
+      return nullptr;
+    }
+    render_quantum_frames_validated = true;
+  }
+
   SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.AudioContext.CreateTime");
   AudioContext* audio_context = MakeGarbageCollected<AudioContext>(
       window, latency_hint, sample_rate, sink_descriptor,
       update_echo_cancellation_on_first_start, render_quantum_frames);
   ++hardware_context_count;
   audio_context->UpdateStateIfNeeded();
+
+  // If the render quantum size was not able to be validated before due to the
+  // sample rate or hardware buffer size not being known, validate it here.
+  if (!render_quantum_frames_validated &&
+      !audio_utilities::IsValidRenderQuantumSize(
+          audio_context->renderQuantumSize(), audio_context->sampleRate())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        ExceptionMessages::IndexOutsideRange(
+            "renderSizeHint", audio_context->renderQuantumSize(),
+            audio_utilities::MinRenderQuantumSize(),
+            ExceptionMessages::kInclusiveBound,
+            audio_utilities::MaxRenderQuantumSize(audio_context->sampleRate()),
+            ExceptionMessages::kInclusiveBound));
+    return nullptr;
+  }
 
   // This starts the audio thread. The destination node's
   // provideInput() method will now be called repeatedly to render
