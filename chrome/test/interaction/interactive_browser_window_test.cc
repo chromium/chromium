@@ -389,8 +389,8 @@ namespace {
 constexpr char kPaintWorkaroundWarning[] =
     "\n\nIMPORTANT NOTE FOR TESTERS AND CHROMIUM GARDENERS:\n\n"
     "There is a known issue (crbug.com/332895669, crbug.com/334747109) on Mac "
-    "where sometimes WebContents::CompletedFirstVisuallyNonEmptyPaint() can "
-    "return false even for a WebContents that is visible and painted, "
+    "and Win where sometimes WebContents::CompletedFirstVisuallyNonEmptyPaint()"
+    " can return false even for a WebContents that is visible and painted, "
     "especially in secondary UI.\n\n"
     "Unfortunately, this has happened. In order to prevent this test from "
     "timing out, we will be ensuring that the page is visible and renders at "
@@ -442,7 +442,7 @@ InteractiveBrowserWindowTestApi::WaitForWebContentsPainted(
   wait_step.SetMustBeVisibleAtStart(false);
   wait_step.AddDescriptionPrefix("WaitForWebContentsPainted()");
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   const bool requires_workaround = true;
 #else
   const bool requires_workaround = false;

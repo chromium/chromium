@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -15,14 +16,21 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/clipboard_types.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 class RenderFrameHost;
-}
+}  // namespace content
+
+namespace ui {
+class ClipboardFormatType;
+}  // namespace ui
 
 namespace tabs {
 class TabInterface;
@@ -74,10 +82,13 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   // Attempt to display an error toast
   void MaybeShowErrorToast(tabs::TabInterface* tab);
 
-  // Attempts to send the received context. The glic panel may not be ready,
-  // however, and in that case, this function will begin polling for readiness
-  // and will cancel after a timeout of 1 minute is exceeded.
-  void SendAdditionalContextWhenReady();
+  // Starts a process that will perform a paste policy check once the glic panel
+  // is ready.
+  void PerformPastePolicyCheckWhenReady();
+
+  // Performs the paste policy check. This is called by
+  // `PerformPastePolicyCheckWhenReady` once the client is ready.
+  void DoPastePolicyCheck();
 
   // Returns true if the glic client for the given tab is ready for context to
   // be sent.
@@ -93,6 +104,14 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   // Called whenever sharing is completed, successful or otherwise. Stops the
   // timer if it is running and clears state.
   void Reset();
+
+  void OnCopyPolicyCheckComplete(
+      const ui::ClipboardFormatType& data_type,
+      const content::ClipboardPasteData& data,
+      std::optional<std::u16string> replacement_data);
+
+  void OnPastePolicyCheckComplete(
+      std::optional<content::ClipboardPasteData> data);
 
   raw_ref<GlicKeyedService> service_;  // owns this
 

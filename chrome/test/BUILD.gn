@@ -12277,6 +12277,14 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/glic/test_support",
         "//chrome/browser/ui/tabs:glic",
       ]
+      if (enterprise_cloud_content_analysis) {
+        deps += [
+          "//chrome/browser/enterprise/connectors/test:test_support",
+          "//components/enterprise/connectors/core:cloud_content_scanning",
+          "//components/enterprise/content",
+          "//third_party/content_analysis_sdk:liblcasdk",
+        ]
+      }
       data_deps += [
         "//chrome/browser/background/glic:interactive_ui_tests",
         "//chrome/browser/glic:interactive_ui_tests",
