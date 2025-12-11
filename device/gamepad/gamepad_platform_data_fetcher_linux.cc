@@ -13,16 +13,60 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_blocklist.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_uma.h"
+#include "device/gamepad/hid_haptic_gamepad.h"
 #include "device/gamepad/nintendo_controller.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
+#include "device/gamepad/xbox_hid_controller.h"
 #include "device/udev_linux/scoped_udev.h"
+#include "device/udev_linux/udev.h"
 
 namespace device {
+
+namespace {
+
+// Fetch the vendor ID and product ID for `device` from the parent node's HID_ID
+// property. Returns a pair containing the vendor and product IDs, or nullopt if
+// the IDs could not be read.
+std::optional<std::pair<uint32_t, uint32_t>> GetVendorProduct(
+    udev_device* device) {
+  if (!device) {
+    return std::nullopt;
+  }
+  udev_device* parent = udev_device_get_parent(device);
+  if (!parent) {
+    return std::nullopt;
+  }
+  const char* hid_id = udev_device_get_property_value(parent, "HID_ID");
+  if (!hid_id) {
+    return std::nullopt;
+  }
+  std::vector<std::string_view> values = base::SplitStringPiece(
+      hid_id, /*separators=*/":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (values.size() != 3) {
+    return std::nullopt;
+  }
+  std::pair<uint32_t, uint32_t> result;
+  auto& [vendor_id, product_id] = result;
+  if (!base::HexStringToUInt(values[1], &vendor_id) ||
+      vendor_id > std::numeric_limits<uint16_t>::max()) {
+    return std::nullopt;
+  }
+  if (!base::HexStringToUInt(values[2], &product_id) ||
+      product_id > std::numeric_limits<uint16_t>::max()) {
+    return std::nullopt;
+  }
+  return result;
+}
+
+}  // namespace
 
 GamepadPlatformDataFetcherLinux::Factory::Factory(
     scoped_refptr<base::SequencedTaskRunner> dbus_runner)
@@ -290,6 +334,19 @@ void GamepadPlatformDataFetcherLinux::RefreshEvdevDevice(
 void GamepadPlatformDataFetcherLinux::RefreshHidrawDevice(
     udev_device* dev,
     const UdevGamepadLinux& pad_info) {
+  if (base::FeatureList::IsEnabled(features::kAllowlistHidrawGamepads)) {
+    if (auto vendor_product = GetVendorProduct(dev)) {
+      const auto& [vendor_id, product_id] = vendor_product.value();
+      GamepadId gamepad_id = GamepadIdList::Get().GetGamepadId(
+          /*product_name=*/"", vendor_id, product_id);
+      if (!Dualshock4Controller::IsDualshock4(gamepad_id) &&
+          !XboxHidController::IsXboxHid(gamepad_id) &&
+          !HidHapticGamepad::IsHidHaptic(vendor_id, product_id)) {
+        return;
+      }
+    }
+  }
+
   GamepadDeviceLinux* device = GetOrCreateMatchingDevice(pad_info);
   if (device == nullptr)
     return;
