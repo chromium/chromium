@@ -3,13 +3,11 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-#
-# Set up everything for the roll.
+"""Set up everything for the roll."""
 
 import io
 import os
 from robo_lib.errors import UserInstructions
-import subprocess
 from robo_lib import shell
 from robo_lib import packages
 import shutil
@@ -38,7 +36,6 @@ def InstallPrereqs(robo_configuration):
 
     if robo_configuration.host_operating_system() == "linux":
         packages.Nasm.Install(robo_configuration)
-        #packages.GccAarch64LinuxGNU.Install(robo_configuration)
         packages.GccMultilib.Install(robo_configuration)
     else:
         raise Exception("I don't know how to install deps for host os %s" %
@@ -281,14 +278,16 @@ def EnsureUpstreamRemote(robo_configuration):
 
 
 def EnsureLinuxSysroots(robo_configuration):
-    '''
-    linux arm/arm-neon/arm64/mipsel/mips64el/riscv64:
-    Script can run on a normal Ubuntu with ARM/ARM64 or MIPS32/MIPS64 or RISCV64 ready
-    Chromium checkout:
-      build/linux/sysroot_scripts/install-sysroot.py --arch=arm
-      build/linux/sysroot_scripts/install-sysroot.py --arch=arm64
-      build/linux/sysroot_scripts/install-sysroot.py --arch=mips
-      build/linux/sysroot_scripts/install-sysroot.py --arch=mips64el
-      build/linux/sysroot_scripts/install-sysroot.py --arch=riscv64
-    '''
+    """Ensures that linux sysroots are in place (currently a noop).
+
+    If sysroots are missing, the best way to install them is typically ensuring
+    that your .gclient `target_os` array is properly populated, and then running
+    gclient hooks again. They can also be installed manually by invoking the
+    install script directly:
+        build/linux/sysroots_scripts/install-sysroot.py --all
+
+    A list of all currently supports architectures is available in help, if you
+    don't want to install all sysroot images.
+        build/linux/sysroot_scripts/install-sysroot.py --help
+    """
     pass

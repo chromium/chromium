@@ -1,6 +1,13 @@
-# Copyright 2024 The Chromium Authors.
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+"""Extracts and reports changes in FFmpeg configuration flags.
+
+This module parses the git diff of configuration files to identify changes in
+defined flags (e.g., #define CONFIG_FOO 1/0) between the current branch and
+the upstream baseline.
+"""
 
 import re
 from robo_lib import shell
@@ -32,7 +39,8 @@ def get_config_flag_changes(cfg):
 
     # TODO(liberato) remove this on the next possible roll.
     for file in filemapped_deltas.keys():
-        # When the mips configs were deleted, they poisoned the config flag deltas.
+        # When the mips configs were deleted, they poisoned the config flag
+        # deltas.
         if file.endswith('mips64el/config.h'):
             filemapped_deltas[file] = set()
         if file.endswith('mipsel/config.h'):

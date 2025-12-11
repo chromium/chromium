@@ -3,24 +3,20 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-#
-# Set up everything for the roll.
-#
-# --prompt:     require user input before taking any action.  Use in conjunction
-#               with (before) other options.
-# --setup:      set up the host to do a roll.  Idempotent, but probably doesn't
-#               need to be run more than once in a while.
-# --auto-merge: do the merge.  Requires --setup to be run first.
-# --test:       configure ffmpeg for the host machine, and try running media
-#               unit tests and the ffmpeg regression tests.
-# --build-gn:   build ffmpeg configs for all platforms, then generate gn config.
-# --patches:    generate chromium/patches/README and commit it locally.
+"""A tool to automate the process of rolling FFmpeg into Chromium.
+
+This script orchestrates the following steps:
+- Setting up the host environment.
+- Merging upstream FFmpeg changes.
+- Building configurations for all supported architectures.
+- Running regression and unit tests.
+- Generating patches and README files.
+- Managing the git branch and upload process.
+"""
 
 import dataclasses
-import optparse
-import os
+import argparse
 import sys
-from subprocess import check_output
 import typing
 
 import robo_branch
@@ -51,7 +47,7 @@ def BuildGnConfigsUnconditionally(robo_configuration):
     robo_branch.CheckMerge(robo_configuration)
     # Write the config changes to help the reviewer.
     robo_branch.WriteConfigChangesFile(robo_configuration)
-    # TODO(liberato): Add the 'autodetect' regex too.
+    # TODO(crbug.com/450394703): Add the 'autodetect' regex too.
     # Handle autorenames last, so that we don't stage things and then fail.
     # While it's probably okay, it's nicer if we don't.
     robo_branch.HandleAutorename(robo_configuration)
@@ -61,6 +57,7 @@ def BuildGnConfigsUnconditionally(robo_configuration):
 
 @dataclasses.dataclass
 class Target():
+    """Represents a build target or step in the rollout process."""
     name: str
     desc: str
     func: typing.Callable[[config.RoboConfiguration], None]
@@ -113,10 +110,13 @@ def RunAllTargets(cfg:config.RoboConfiguration, tasks:[str]):
 
 
 def RunTarget(target:Target, cfg:config.RoboConfiguration):
-    shell.log(f'loading step: `{target.name}`')
+    """Executes a single target step, checking if it can be skipped."""
+    shell.log(f'step: `{target.name}`',
+              style=(shell.Style.BLUE + shell.Style.BOLD))
     try:
         if cfg.skip_allowed() and target.can_skip(cfg):
-            shell.log(f'  skipped step: `{target.name}`')
+            shell.log(f'  skipped step: `{target.name}`',
+                      style=shell.Style.YELLOW)
         else:
             target.execute(cfg)
     except StepError as se:
@@ -162,7 +162,7 @@ LoadTargets(
                     func=robo_build.ObliterateOldBuildOutputIfNeeded),
               Target(name="create_sushi_branch",
                      desc="Create a sushi-MDY branch if we're not on one",
-                     func=robo_branch.CreateAndCheckoutDatedSushiBranchIfNeeded),
+                     func=robo_branch.CreateAndCheckoutSushiBranchIfNeeded),
               Target(name="merge_from_upstream",
                      desc="Merge upstream/master to our local sushi-MDY branch",
                      func=robo_branch.MergeUpstreamToSushiBranchIfNeeded),
@@ -211,43 +211,44 @@ def ListSteps():
 
 
 def main(argv):
-    parser = optparse.OptionParser(usage='Usage: %prog [options]')
-    parser.add_option('--branch',
-                      action='store',
-                      help='Manually set sushi branch name')
-    parser.add_option('--prompt',
-                      action='store_true',
-                      help='Prompt for each robosushi step')
-    parser.add_option('--verbose',
-                      action='store_true',
-                      help='Log all shell calls')
-    parser.add_option(
+    """Parses arguments and runs the requested build steps."""
+    parser = argparse.ArgumentParser(usage='%(prog)s [options]')
+    parser.add_argument('--branch',
+                        action='store',
+                        help='Manually set sushi branch name')
+    parser.add_argument('--prompt',
+                        action='store_true',
+                        help='Prompt for each robosushi step')
+    parser.add_argument('--verbose',
+                        action='store_true',
+                        help='Log all shell calls')
+    parser.add_argument(
         '--setup',
         action='store_true',
         help='Run initial setup steps. Do this once before auto-merge.')
-    parser.add_option('--test',
-                      action='store_true',
-                      help='Build and run all tests')
-    parser.add_option(
+    parser.add_argument('--test',
+                        action='store_true',
+                        help='Build and run all tests')
+    parser.add_argument(
         '--build-gn',
         action='store_true',
         help='Unconditionally build all the configs and import them.')
-    parser.add_option('--patches',
-                      action='store_true',
-                      help='Update patches file only')
-    parser.add_option('--auto-merge',
-                      action='store_true',
-                      help='Run auto-merge. (Usually what you want)')
-    parser.add_option('--list', action='store_true', help='List steps')
-    parser.add_option('--no-skip',
-                      action='store_true',
-                      help='Don\'t allow any steps to be skipped')
-    parser.add_option('--force-gn-rebuild',
-                      action='store_true',
-                      help='Force rebuild of GN args.')
-    parser.add_option('--step', action='append', help='Step to run.')
+    parser.add_argument('--patches',
+                        action='store_true',
+                        help='Update patches file only')
+    parser.add_argument('--auto-merge',
+                        action='store_true',
+                        help='Run auto-merge. (Usually what you want)')
+    parser.add_argument('--list', action='store_true', help='List steps')
+    parser.add_argument('--no-skip',
+                        action='store_true',
+                        help='Don\'t allow any steps to be skipped')
+    parser.add_argument('--force-gn-rebuild',
+                        action='store_true',
+                        help='Force rebuild of GN args.')
+    parser.add_argument('--step', action='append', help='Step to run.')
 
-    options, args = parser.parse_args(argv)
+    options = parser.parse_args(argv)
 
     if options.list:
         ListSteps()
@@ -255,6 +256,9 @@ def main(argv):
 
     robo_configuration = config.RoboConfiguration()
     robo_configuration.chdir_to_ffmpeg_home()
+
+    shell.enable_file_logging(
+        robo_configuration.get_script_path("robosushi.log"))
 
     exec_steps = []
 
@@ -292,12 +296,12 @@ def main(argv):
         parser.print_help()
         return 1
 
-    # TODO: make sure that any untracked autorename files are removed, or
-    # make sure that the autorename git script doesn't try to 'git rm'
-    # untracked files, else the script fails.
+    # TODO(crbug.com/450394703): make sure that any untracked autorename files
+    # are removed, or make sure that the autorename git script doesn't try to
+    # 'git rm' untracked files, else the script fails.
     RunAllTargets(robo_configuration, exec_steps)
 
-    # TODO: Start a fake deps roll.  To do this, we would:
+    # TODO(crbug.com/450394703): Start a fake deps roll.  To do this, we would:
     # Create new remote branch from the current remote sushi branch.
     # Create and check out a new local branch at the current local branch.
     # Make the new local branch track the new remote branch.
@@ -307,7 +311,7 @@ def main(argv):
     # For extra points, include a pointer to the fake deps roll CL in the
     # local branch, so that when it's pushed for review, it'll point the
     # reviewer at it.
-    # TODO: git cl upload for review.
+    # TODO(crbug.com/450394703): git cl upload for review.
 
 
 if __name__ == "__main__":

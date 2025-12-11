@@ -3,12 +3,13 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-#
-# Various functions to help build / test ffmpeg.
+"""Various functions to help build / test ffmpeg."""
 
 import glob
 import os
+import re
 import shutil
+import sys
 from robo_lib import shell
 
 
@@ -132,7 +133,7 @@ def CopyConfigPythonTranslation(robo_configuration):
                     if robo_configuration.Call(
                         ["cp", "-rT", copy_from, ios_dir]):
                         raise Exception(
-                            f"Could not copy iOS configs from {copy_from} to {ios_dir}"
+                            f"Failed cp of iOS configs {copy_from} to {ios_dir}"
                         )
 
 
@@ -205,7 +206,8 @@ def BuildAndRunChromeTargetASAN(robo_configuration, target, platform,
   """
     shell.log("Building and running %s" % target)
     BuildChromeTargetASAN(robo_configuration, target, platform, architecture)
-    # TODO: we should be smarter about running things on android, for example.
+    # TODO(crbug.com/450394703): we should be smarter about running things on
+    # android, for example.
     shell.log("Running %s" % target)
     robo_configuration.chdir_to_chrome_src()
     if robo_configuration.Call(
