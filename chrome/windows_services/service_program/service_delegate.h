@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include "base/containers/heap_array.h"
+#include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "base/win/windows_types.h"
 #include "chrome/windows_services/service_program/factory_and_clsid.h"
@@ -46,7 +47,11 @@ class ServiceDelegate {
   // called by the `Service` to delegate all the logic of
   // registering/unregistering classes and running the COM server. The service
   // is stopped when this method returns.
-  virtual HRESULT Run(const base::CommandLine& command_line);
+  // `on_service_stopping` should be called as early as possible when the
+  // delegate begins its own self-motivated shutdown sequence. The delegate must
+  // either run or destroy the closure before returning from `Run`.
+  virtual HRESULT Run(const base::CommandLine& command_line,
+                      base::OnceClosure on_service_stopping);
 
   // This method is only called if `PreRun` returns `false`, see `PreRun` above
   // for more details. Returns the service's class factories and corresponding

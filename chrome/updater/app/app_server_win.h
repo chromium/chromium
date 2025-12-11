@@ -9,8 +9,7 @@
 
 #include <memory>
 
-#include "base/check.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/app/app_server.h"
@@ -61,6 +60,10 @@ class AppServerWin : public AppServer {
   // function runs on a COM RPC thread when the WRL module is destroyed.
   void Stop();
 
+  // Handles COM object registration, message loop, and unregistration. Returns
+  // when all COM objects are released.
+  HRESULT RunCOMServer(base::OnceClosure on_service_stopping);
+
  private:
   ~AppServerWin() override;
 
@@ -106,6 +109,8 @@ class AppServerWin : public AppServer {
   scoped_refptr<UpdateServiceInternal> update_service_internal_;
   std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
   std::unique_ptr<UpdateServiceStub> active_duty_stub_;
+
+  base::OnceClosure on_service_stopping_;
 };
 
 // Returns the singleton AppServerWin instance.

@@ -49,6 +49,7 @@
 #include "chrome/updater/win/setup/uninstall.h"
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/win_constants.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace updater {
 namespace {
@@ -259,6 +260,13 @@ void AppServerWin::PostOnTaskRunner(
 }
 
 void AppServerWin::Stop() {
+  if (IsSystemInstall(updater_scope())) {
+    // Call `on_service_stopping_` to allow for incoming COM activation requests
+    // received while the service is shutting down to be handled by a new
+    // service process.
+    std::move(on_service_stopping_).Run();
+  }
+
   VLOG(2) << __func__ << ": COM server is shutting down.";
   UnregisterClassObjects();
   main_task_runner_->PostTask(FROM_HERE, base::BindOnce([] {
@@ -270,6 +278,14 @@ void AppServerWin::Stop() {
                                 this_server->active_duty_internal_stub_.reset();
                                 this_server->Shutdown(0);
                               }));
+}
+
+HRESULT AppServerWin::RunCOMServer(base::OnceClosure on_service_stopping) {
+  on_service_stopping_ = std::move(on_service_stopping);
+  absl::Cleanup reset_on_service_stopping = [&] {
+    on_service_stopping_.Reset();
+  };
+  return Run();
 }
 
 void AppServerWin::PostRpcTaskOnMainSequence(base::OnceClosure task) {

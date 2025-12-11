@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/task/single_thread_task_executor.h"
@@ -38,7 +39,7 @@ HRESULT RunWakeTask() {
 
 int UpdaterServiceDelegate::RunWindowsService() {
   UpdaterServiceDelegate delegate;
-  return Service(delegate).Start();
+  return base::MakeRefCounted<Service>(delegate)->Start();
 }
 
 UpdaterServiceDelegate::UpdaterServiceDelegate() = default;
@@ -53,13 +54,15 @@ void UpdaterServiceDelegate::OnServiceControlStop() {
   GetAppServerWinInstance()->Stop();
 }
 
-HRESULT UpdaterServiceDelegate::Run(const base::CommandLine& command_line) {
+HRESULT UpdaterServiceDelegate::Run(const base::CommandLine& command_line,
+                                    base::OnceClosure on_service_stopping) {
   // Allow this thread to run tasks.
   base::SingleThreadTaskExecutor task_executor;
 
   if (command_line.HasSwitch(kComServiceSwitch)) {
     VLOG(2) << "Running COM server within the Windows Service";
-    return RunCOMServer();
+    return GetAppServerWinInstance()->RunCOMServer(
+        std::move(on_service_stopping));
   }
 
   if (IsInternalService()) {
@@ -68,10 +71,6 @@ HRESULT UpdaterServiceDelegate::Run(const base::CommandLine& command_line) {
   }
 
   return S_OK;
-}
-
-HRESULT UpdaterServiceDelegate::RunCOMServer() {
-  return GetAppServerWinInstance()->Run();
 }
 
 }  // namespace updater

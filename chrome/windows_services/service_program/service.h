@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -26,12 +27,11 @@ class WaitableEvent;
 class ServiceDelegate;
 
 // The runner for a Windows service hosting a COM server.
-class Service {
+class Service : public base::RefCountedThreadSafe<Service> {
  public:
   explicit Service(ServiceDelegate& delegate);
   Service(const Service&) = delete;
   Service& operator=(const Service&) = delete;
-  ~Service();
 
   // This function parses the command line and selects the action routine.
   bool InitWithCommandLine(const base::CommandLine* command_line);
@@ -52,6 +52,9 @@ class Service {
   static void UnregisterClassObjects(base::HeapArray<DWORD>& cookies);
 
  private:
+  friend class base::RefCountedThreadSafe<Service>;
+  ~Service();
+
   static Service& GetInstance();
 
   // This function handshakes with the service control manager and starts
@@ -80,6 +83,9 @@ class Service {
 
   // The main service entry point.
   static void WINAPI ServiceMainEntry(DWORD argc, wchar_t* argv[]);
+
+  // Takes `lock_` and then calls `SetServiceStatus`.
+  void LockAndSetServiceStatus(DWORD state);
 
   // Calls ::SetServiceStatus().
   void SetServiceStatus(DWORD state) EXCLUSIVE_LOCKS_REQUIRED(lock_);

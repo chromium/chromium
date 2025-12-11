@@ -28,12 +28,9 @@ class UpdaterServiceDelegate : public ServiceDelegate {
   bool PreRun() override;
 
   // Runs the main logic of the service.
-  HRESULT Run(const base::CommandLine& command_line) override;
+  HRESULT Run(const base::CommandLine& command_line,
+              base::OnceClosure on_service_stopping) override;
   void OnServiceControlStop() override;
-
-  // Handles COM object registration, message loop, and unregistration. Returns
-  // when all COM objects are released.
-  HRESULT RunCOMServer();
 };
 
 }  // namespace updater
