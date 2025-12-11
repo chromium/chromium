@@ -1979,12 +1979,12 @@ TEST_F(FormFillerTest, ProgrammaticRefillBeforeTimeout) {
   task_environment_.FastForwardBy(kLimitBeforeProgrammaticRefill / 2);
 
   // The first refill.
-  form_filler().MaybeTriggerProgrammaticRefill(fill_id);
+  form_filler().MaybeScheduleProgrammaticRefill(fill_id);
   std::move(run_loop2).Run();
   check.Call("refill complete");
 
   // The second refill.
-  form_filler().MaybeTriggerProgrammaticRefill(fill_id);
+  form_filler().MaybeScheduleProgrammaticRefill(fill_id);
   check.Call("second refill ignored");
 
   EXPECT_FALSE(fill_id->is_empty());
@@ -2030,7 +2030,7 @@ TEST_F(FormFillerTest, NoProgrammaticRefillAfterTimeout) {
                                   base::Seconds(1));
 
   // The first refill.
-  form_filler().MaybeTriggerProgrammaticRefill(fill_id);
+  form_filler().MaybeScheduleProgrammaticRefill(fill_id);
   check.Call("refill ignored");
 }
 

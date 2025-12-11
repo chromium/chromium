@@ -2189,7 +2189,7 @@ void BrowserAutofillManager::SuppressAutomaticRefillsImpl(
 }
 
 void BrowserAutofillManager::RequestRefillImpl(const FillId& fill_id) {
-  form_filler_->MaybeTriggerProgrammaticRefill(fill_id);
+  form_filler_->MaybeScheduleProgrammaticRefill(fill_id);
 }
 
 void BrowserAutofillManager::DidShowSuggestions(
@@ -2365,7 +2365,7 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
   if (!form_structure) {
     return;
   }
-  form_filler_->MaybeTriggerAutomaticRefill(
+  form_filler_->MaybeScheduleAutomaticRefill(
       form, *form_structure, RefillTriggerReason::kSelectOptionsChanged,
       AutofillTriggerSource::kSelectOptionsChanged,
       form_structure->GetFieldById(field_id));
@@ -2419,7 +2419,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
     return;
   }
   AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field);
-  form_filler_->MaybeTriggerAutomaticRefill(
+  form_filler_->MaybeScheduleAutomaticRefill(
       form, *form_structure, RefillTriggerReason::kExpirationDateFormatted,
       AutofillTriggerSource::kJavaScriptChangedAutofilledValue, *autofill_field,
       old_value);
@@ -3051,9 +3051,9 @@ void BrowserAutofillManager::OnFormProcessed(
   // If a form with the same FormGlobalId was previously filled, the structure
   // of the form changed, and we might be able to refill the form with other
   // information.
-  form_filler_->MaybeTriggerAutomaticRefill(form, form_structure,
-                                            RefillTriggerReason::kFormChanged,
-                                            AutofillTriggerSource::kFormsSeen);
+  form_filler_->MaybeScheduleAutomaticRefill(form, form_structure,
+                                             RefillTriggerReason::kFormChanged,
+                                             AutofillTriggerSource::kFormsSeen);
 }
 
 void BrowserAutofillManager::OnDidIdentifyFormForMetrics(

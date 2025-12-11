@@ -277,10 +277,10 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
   NOTREACHED();
 }
 
-// Called by `FormFiller::MaybeTriggerAutomaticRefill()` and constructs a refill
-// value in case the website used JavaScript to reformat an expiration date like
-// "05/2023" into "05 / 20" (i.e. it broke the year by cutting the last two
-// digits instead of stripping the first two digits).
+// Called by `FormFiller::MaybeScheduleAutomaticRefill()` and constructs a
+// refill value in case the website used JavaScript to reformat an expiration
+// date like "05/2023" into "05 / 20" (i.e. it broke the year by cutting the
+// last two digits instead of stripping the first two digits).
 std::optional<FormFiller::ValueAndType> GetRefillValueForExpirationDate(
     const FormFieldData& field,
     const std::u16string& old_value) {
@@ -1037,7 +1037,7 @@ void FormFiller::SuppressAutomaticRefills(const FillId& fill_id) {
   refill_context->allows_automatic_refill = false;
 }
 
-void FormFiller::MaybeTriggerProgrammaticRefill(const FillId& fill_id) {
+void FormFiller::MaybeScheduleProgrammaticRefill(const FillId& fill_id) {
   RefillContext* refill_context = GetRefillContext(fill_id);
   if (!refill_context || refill_context->attempted_refill ||
       !refill_context->filled_form) {
@@ -1078,7 +1078,7 @@ void FormFiller::MaybeTriggerProgrammaticRefill(const FillId& fill_id) {
           refill_context->filled_form->global_id()));
 }
 
-void FormFiller::MaybeTriggerAutomaticRefill(
+void FormFiller::MaybeScheduleAutomaticRefill(
     const FormData& form,
     const FormStructure& form_structure,
     RefillTriggerReason refill_trigger_reason,
