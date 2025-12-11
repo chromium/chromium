@@ -37,6 +37,7 @@ public class PreferenceParser {
     public static final String METADATA_FRAGMENT = "fragment";
 
     private static final String TAG = "PreferenceParser";
+    private static final String ID_DELIMITER = "#";
 
     /**
      * Parses a {@link androidx.preference.PreferenceScreen} XML resource to extract key attributes
@@ -199,7 +200,18 @@ public class PreferenceParser {
         }
     }
 
+    /**
+     * Returns the unique id for a given key.
+     *
+     * @param parentFragmentName Name of the parent {@link Fragment}.
+     * @param originalKey Name of the preference key.
+     */
     public static String createUniqueId(String parentFragmentName, String originalKey) {
-        return parentFragmentName + "#" + originalKey;
+        return parentFragmentName + ID_DELIMITER + originalKey;
+    }
+
+    /** Returns {@code true} if the passed ID string is of the right form. */
+    public static boolean isId(String id) {
+        return id.contains(ID_DELIMITER);
     }
 }

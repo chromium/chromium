@@ -239,6 +239,7 @@ public class SettingsIndexData {
      * @throws IllegalStateException If a preference with the same key already exists in the index.
      */
     public void addEntry(String id, Entry entry) {
+        assert PreferenceParser.isId(id) : "Use getUniqueId(key) to pass a unique id.";
         if (mEntries.containsKey(id)) {
             throw new IllegalStateException("Duplicate ID found: " + id);
         }
@@ -282,6 +283,7 @@ public class SettingsIndexData {
      * @param updatedEntry The new {@link Entry} to place in place of the existing one.
      */
     public void updateEntry(String id, Entry updatedEntry) {
+        assert PreferenceParser.isId(id) : "Use getUniqueId(key) to pass a unique id.";
         mEntries.put(id, updatedEntry);
     }
 
@@ -318,6 +320,7 @@ public class SettingsIndexData {
      * @param id The unique ID of the preference link to remove.
      */
     public void removeEntry(String id) {
+        assert PreferenceParser.isId(id) : "Use getUniqueId(key) to pass a unique id.";
         mEntries.remove(id);
     }
 
@@ -355,12 +358,12 @@ public class SettingsIndexData {
      * Registers a potential parent-child relationship between a preference and a fragment.
      *
      * @param childFragmentName The class name of the child fragment.
-     * @param parentPreferenceKey The key of the preference that links to the child fragment.
+     * @param parentId The ID of the preference that links to the child fragment.
      */
-    public void addChildParentLink(String childFragmentName, String parentPreferenceKey) {
+    public void addChildParentLink(String childFragmentName, String parentId) {
         mChildFragmentToParentKeys
                 .computeIfAbsent(childFragmentName, k -> new ArrayList<>())
-                .add(parentPreferenceKey);
+                .add(parentId);
     }
 
     /**
