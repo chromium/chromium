@@ -8,6 +8,7 @@
 
 #import "base/containers/contains.h"
 #import "base/containers/flat_set.h"
+#import "base/containers/to_vector.h"
 #import "base/strings/strcat.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -1210,9 +1211,8 @@ TEST_F(AutofillAcrossIframesTest, SubmitMultiFrameForm) {
   ASSERT_EQ(form.child_frames().size(), 2u);
   ASSERT_EQ(form.fields().size(), 2u);
 
-  std::vector<FieldGlobalId> field_global_ids(form.fields().size());
-  std::ranges::transform(
-      form.fields(), field_global_ids.begin(),
+  std::vector<FieldGlobalId> field_global_ids = base::ToVector(
+      form.fields(),
       [](const FormFieldData& field) { return field.global_id(); });
 
   main_frame_driver()->FormSubmitted(main_frame_manager().seen_forms().front(),
@@ -1258,10 +1258,8 @@ TEST_F(AutofillAcrossIframesTest, SubmitMultiFrameForm_XHR) {
   ASSERT_EQ(browser_form.child_frames().size(), 2u);
   ASSERT_EQ(browser_form.fields().size(), 2u);
 
-  std::vector<FieldGlobalId> field_global_ids(browser_form.fields().size());
-  std::ranges::transform(
-      browser_form.fields(), field_global_ids.begin(),
-      [](const FormFieldData& field) { return field.global_id(); });
+  std::vector<FieldGlobalId> field_global_ids =
+      base::ToVector(browser_form.fields(), &FormFieldData::global_id);
 
   std::set frames = web_frames_manager()->GetAllWebFrames();
 
@@ -1379,10 +1377,8 @@ TEST_F(AutofillAcrossIframesTest, AskForFillDataOnMultiFrameForm) {
   ASSERT_EQ(form.child_frames().size(), 2u);
   ASSERT_EQ(form.fields().size(), 2u);
 
-  std::vector<FieldGlobalId> field_global_ids(form.fields().size());
-  std::ranges::transform(
-      form.fields(), field_global_ids.begin(),
-      [](const FormFieldData& field) { return field.global_id(); });
+  std::vector<FieldGlobalId> field_global_ids =
+      base::ToVector(form.fields(), &FormFieldData::global_id);
 
   std::vector<FormFieldData> fields = form.fields();
 
@@ -1432,10 +1428,8 @@ TEST_F(AutofillAcrossIframesTest, TextChangeOnMultiFrameForm) {
   ASSERT_EQ(form.child_frames().size(), 2u);
   ASSERT_EQ(form.fields().size(), 2u);
 
-  std::vector<FieldGlobalId> field_global_ids(form.fields().size());
-  std::ranges::transform(
-      form.fields(), field_global_ids.begin(),
-      [](const FormFieldData& field) { return field.global_id(); });
+  std::vector<FieldGlobalId> field_global_ids =
+      base::ToVector(form.fields(), &FormFieldData::global_id);
 
   std::vector<FormFieldData> fields = form.fields();
 

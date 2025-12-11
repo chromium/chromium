@@ -62,7 +62,9 @@ void MaybeRemoveAffix(base::span<std::u16string_view> strings,
   if (std::ranges::all_of(strings, [&](std::u16string_view s) {
         return IsValidParseableName(RemoveAffix(s));
       })) {
-    std::ranges::transform(strings, strings.begin(), RemoveAffix);
+    for (std::u16string_view& s : strings) {
+      s = RemoveAffix(s);
+    }
   }
 }
 

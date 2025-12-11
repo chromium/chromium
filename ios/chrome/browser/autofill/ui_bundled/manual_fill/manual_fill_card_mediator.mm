@@ -6,6 +6,7 @@
 
 #import <vector>
 
+#import "base/containers/to_vector.h"
 #import "base/functional/callback_helpers.h"
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
@@ -65,14 +66,11 @@ std::vector<CreditCard> FetchCards(
   std::vector<const CreditCard*> fetched_cards =
       autofill::GetCreditCardsToSuggest(
           personal_data_manager.payments_data_manager());
-  std::vector<CreditCard> cards;
-  cards.reserve(fetched_cards.size());
-
   // Make copies of the received `fetched_cards` to not make any assumption over
   // their lifetime and make sure that the CreditCard objects stay valid
   // throughout the lifetime of this class.
-  std::ranges::transform(fetched_cards, std::back_inserter(cards),
-                         [](const CreditCard* card) { return *card; });
+  std::vector<CreditCard> cards = base::ToVector(
+      fetched_cards, [](const CreditCard* card) { return *card; });
 
   return cards;
 }

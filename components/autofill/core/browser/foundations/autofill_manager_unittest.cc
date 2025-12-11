@@ -120,11 +120,7 @@ auto HaveSameFormIdAs(const FormData& form) {
 // Matches a std::map<FormGlobalId, std::unique_ptr<FormStructure>> whose
 // keys are the same the FormGlobalIds of the forms in |forms|.
 auto HaveSameFormIdsAs(const std::vector<FormData>& forms) {
-  std::vector<decltype(HaveSameFormIdAs(forms.front()))> matchers;
-  matchers.reserve(forms.size());
-  std::ranges::transform(forms, std::back_inserter(matchers),
-                         &HaveSameFormIdAs);
-  return UnorderedElementsAreArray(matchers);
+  return UnorderedElementsAreArray(base::ToVector(forms, &HaveSameFormIdAs));
 }
 
 // Expects the calls triggered by OnFormsSeen().

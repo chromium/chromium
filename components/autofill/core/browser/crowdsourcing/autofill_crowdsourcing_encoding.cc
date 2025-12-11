@@ -892,9 +892,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
         form, upload.mutable_three_bit_hashed_form_metadata());
   }
 
-  std::vector<AutofillField*> upload_fields(form.fields().size());
-  std::ranges::transform(form.fields(), upload_fields.begin(),
-                         &std::unique_ptr<AutofillField>::get);
+  std::vector<AutofillField*> upload_fields =
+      base::ToVector(form.fields(), &std::unique_ptr<AutofillField>::get);
   EncodeFormFieldsForUpload(form, options.encoder, options.fields,
                             upload_fields, &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};

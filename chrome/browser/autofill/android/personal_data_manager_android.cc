@@ -13,6 +13,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -514,12 +515,11 @@ BankAccount PersonalDataManagerAndroid::CreateNativeBankAccountFromJava(
 
 ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetEwallets(
     JNIEnv* env) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> jewallets_list;
-  std::ranges::transform(payments_data_manager().GetEwalletAccounts(),
-                         std::back_inserter(jewallets_list),
-                         [env](const Ewallet& ewallet) {
-                           return CreateJavaEwalletFromNative(env, ewallet);
-                         });
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> jewallets_list =
+      base::ToVector(payments_data_manager().GetEwalletAccounts(),
+                     [env](const Ewallet& ewallet) {
+                       return CreateJavaEwalletFromNative(env, ewallet);
+                     });
   ScopedJavaLocalRef<jclass> type = base::android::GetClass(
       env, "org/chromium/components/autofill/payments/Ewallet");
   return base::android::ToTypedJavaArrayOfObjects(env, jewallets_list,
@@ -665,15 +665,10 @@ PersonalDataManagerAndroid::GetPaymentRailsFromPaymentInstrument(
     const PaymentInstrument& payment_instrument) {
   DenseSet<PaymentInstrument::PaymentRail> payment_instrument_supported_rails =
       payment_instrument.supported_rails();
-  std::vector<int> supported_payment_rails_array(
-      payment_instrument.supported_rails().size());
-  std::transform(payment_instrument_supported_rails.begin(),
-                 payment_instrument_supported_rails.end(),
-                 supported_payment_rails_array.begin(),
-                 [](PaymentInstrument::PaymentRail rail) {
-                   return static_cast<int>(rail);
-                 });
-  return supported_payment_rails_array;
+  return base::ToVector(payment_instrument_supported_rails,
+                        [](PaymentInstrument::PaymentRail rail) {
+                          return static_cast<int>(rail);
+                        });
 }
 
 ScopedJavaLocalRef<jobject>
@@ -780,13 +775,12 @@ jboolean PersonalDataManagerAndroid::ShouldShowAddIbanButtonOnSettingsPage(
 
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
-  std::vector<ScopedJavaLocalRef<jobject>> j_bank_accounts_list;
-  std::ranges::transform(payments_data_manager().GetMaskedBankAccounts(),
-                         std::back_inserter(j_bank_accounts_list),
-                         [env](const BankAccount& bank_account) {
-                           return CreateJavaBankAccountFromNative(env,
-                                                                  bank_account);
-                         });
+  std::vector<ScopedJavaLocalRef<jobject>> j_bank_accounts_list =
+      base::ToVector(payments_data_manager().GetMaskedBankAccounts(),
+                     [env](const BankAccount& bank_account) {
+                       return CreateJavaBankAccountFromNative(env,
+                                                              bank_account);
+                     });
   ScopedJavaLocalRef<jclass> type = base::android::GetClass(
       env, "org/chromium/components/autofill/payments/BankAccount");
   return base::android::ToTypedJavaArrayOfObjects(env, j_bank_accounts_list,
@@ -851,13 +845,12 @@ jboolean PersonalDataManagerAndroid::ShouldShowBnplSettings(JNIEnv* env) {
 
 base::android::ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetBnplIssuersForSettings(JNIEnv* env) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> jbnpl_issuers_list;
-  std::ranges::transform(payments_data_manager().GetLinkedBnplIssuers(),
-                         std::back_inserter(jbnpl_issuers_list),
-                         [env](const BnplIssuer& bnpl_issuer) {
-                           return CreateBnplIssuerForSettingsFromNative(
-                               env, bnpl_issuer);
-                         });
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> jbnpl_issuers_list =
+      base::ToVector(payments_data_manager().GetLinkedBnplIssuers(),
+                     [env](const BnplIssuer& bnpl_issuer) {
+                       return CreateBnplIssuerForSettingsFromNative(
+                           env, bnpl_issuer);
+                     });
   ScopedJavaLocalRef<jclass> type = base::android::GetClass(
       env, "org/chromium/components/autofill/payments/BnplIssuerForSettings");
   return base::android::ToTypedJavaArrayOfObjects(env, jbnpl_issuers_list,

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -165,9 +166,8 @@ std::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
 // invalidates the pointers returned by `ADM::GetProfiles()`, this is done by
 // collecting all GUIDs to remove first.
 void RemoveAllExistingProfiles(AddressDataManager& adm) {
-  std::vector<std::string> existing_guids;
-  std::ranges::transform(adm.GetProfiles(), std::back_inserter(existing_guids),
-                         &AutofillProfile::guid);
+  std::vector<std::string> existing_guids =
+      base::ToVector(adm.GetProfiles(), &AutofillProfile::guid);
   for (const std::string& guid : existing_guids) {
     adm.RemoveProfile(guid);
   }

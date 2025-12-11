@@ -764,12 +764,10 @@ void AutofillDriverIOS::FormsRemoved(
                                         .renderer_id = FormRendererId(0)};
     if (FormStructure* form =
             GetAutofillManager().FindCachedFormById(synthetic_global_id)) {
-      std::set<FieldRendererId> form_fields;
-      std::ranges::transform(form->fields(),
-                             std::inserter(form_fields, form_fields.begin()),
-                             [](const std::unique_ptr<AutofillField>& field) {
-                               return field->renderer_id();
-                             });
+      base::flat_set<FieldRendererId> form_fields = base::ToVector(
+          form->fields(), [](const std::unique_ptr<AutofillField>& field) {
+            return field->renderer_id();
+          });
       // If the synthetic form fields are a subset of the removed fields, it
       // means that all the synthetic form fields were removed.
       const bool is_deleted =

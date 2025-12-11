@@ -8,6 +8,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -133,10 +134,8 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
     for (size_t i = 0; i < field_ids.size(); ++i) {
       for (auto form_field_data : formData.fields()) {
         if (form_field_data.id_attribute() == field_ids[i]) {
-          std::vector<FieldType> field_types;
-          field_types.reserve(raw_field_types[i].size());
-          std::ranges::transform(
-              raw_field_types[i], std::back_inserter(field_types),
+          std::vector<FieldType> field_types = base::ToVector(
+              raw_field_types[i],
               [](int type) -> FieldType { return FieldType(type); });
           autofill::test::AddFieldPredictionsToForm(
               form_field_data, field_types, form_suggestion);
