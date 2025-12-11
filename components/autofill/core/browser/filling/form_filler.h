@@ -36,7 +36,8 @@ enum class RefillTriggerReason {
   kFormChanged = 0,
   kSelectOptionsChanged = 1,
   kExpirationDateFormatted = 2,
-  kMaxValue = kExpirationDateFormatted
+  kProgrammaticRefill = 3,
+  kMaxValue = kProgrammaticRefill
 };
 
 using VerifiedProfile = std::map<FieldType, std::u16string>;
@@ -121,7 +122,9 @@ class FormFiller {
   // Resets states that FormFiller holds and maintains.
   void Reset();
 
-  base::TimeDelta get_limit_before_refill() { return limit_before_refill_; }
+  base::TimeDelta limit_before_automatic_refill() const {
+    return limit_before_automatic_refill_;
+  }
 
   // Given a `form`, returns a map from each field's id to the skip reason for
   // that field. See additional comments in GetFieldFillingSkipReason.
@@ -275,7 +278,9 @@ class FormFiller {
   // The maximum amount of time between a change in the form and the original
   // fill that triggers a refill. This value is only changed in browser tests,
   // where time cannot be mocked, to avoid flakiness.
-  base::TimeDelta limit_before_refill_ = kLimitBeforeRefill;
+  base::TimeDelta limit_before_automatic_refill_ = kLimitBeforeAutomaticRefill;
+  base::TimeDelta limit_before_programmatic_refill_ =
+      kLimitBeforeProgrammaticRefill;
 
   const raw_ref<BrowserAutofillManager> manager_;
 

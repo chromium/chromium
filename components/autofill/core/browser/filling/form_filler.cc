@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1039,7 +1038,44 @@ void FormFiller::SuppressAutomaticRefills(const FillId& fill_id) {
 }
 
 void FormFiller::MaybeTriggerProgrammaticRefill(const FillId& fill_id) {
-  NOTIMPLEMENTED();
+  RefillContext* refill_context = GetRefillContext(fill_id);
+  if (!refill_context || refill_context->attempted_refill ||
+      !refill_context->filled_form) {
+    return;
+  }
+
+  if (base::TimeDelta delta =
+          base::TimeTicks::Now() - refill_context->original_fill_time;
+      delta > limit_before_programmatic_refill_) {
+    return;
+  }
+
+  if (refill_context->on_refill_timer.IsRunning()) {
+    refill_context->on_refill_timer.Stop();
+  }
+  refill_context->on_refill_timer.Start(
+      FROM_HERE, kWaitTimeForDynamicForms,
+      base::BindRepeating(
+          [](base::WeakPtr<FormFiller> self, const FormGlobalId& form_id) {
+            if (!self) {
+              return;
+            }
+            // Taking the form from the cache is not entirely correct until the
+            // AutofillField::is_autofilled() semantics is fixed:
+            // crbug.com/393114125.
+            // TODO(crbug.com/466333215): Make sure crbug.com/467804204 is fixed
+            // before programmatic refills move beyond prototyping.
+            const FormStructure* form_structure =
+                self->manager_->FindCachedFormById(form_id);
+            if (!form_structure) {
+              return;
+            }
+            self->TriggerRefill(form_structure->ToFormData(),
+                                AutofillTriggerSource::kProgrammaticRefill,
+                                RefillTriggerReason::kProgrammaticRefill);
+          },
+          weak_ptr_factory_.GetWeakPtr(),
+          refill_context->filled_form->global_id()));
 }
 
 void FormFiller::MaybeTriggerAutomaticRefill(
@@ -1049,6 +1085,8 @@ void FormFiller::MaybeTriggerAutomaticRefill(
     AutofillTriggerSource trigger_source,
     base::optional_ref<const AutofillField> field,
     base::optional_ref<const std::u16string> old_value) {
+  CHECK_NE(refill_trigger_reason, RefillTriggerReason::kProgrammaticRefill);
+
   // Should not refill if a form with the same FormGlobalId has not been filled
   // before or if it has been refilled before.
   RefillContext* refill_context = GetRefillContext(form_structure.global_id());
@@ -1063,7 +1101,7 @@ void FormFiller::MaybeTriggerAutomaticRefill(
   // instead of filling_context->original_fill_time.
   if (base::TimeDelta delta =
           base::TimeTicks::Now() - refill_context->original_fill_time;
-      delta > limit_before_refill_) {
+      delta > limit_before_automatic_refill_) {
     return;
   }
 
@@ -1113,6 +1151,8 @@ void FormFiller::MaybeTriggerAutomaticRefill(
         break;
       }
       return;
+    case RefillTriggerReason::kProgrammaticRefill:
+      NOTREACHED();
   }
   ScheduleRefill(form, CHECK_DEREF(refill_context), trigger_source,
                  refill_trigger_reason);

@@ -1968,6 +1968,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kAutofillAi:
       case AutofillTriggerSource::kNone:
       case AutofillTriggerSource::kProactivePasswordRecovery:
+      case AutofillTriggerSource::kProgrammaticRefill:
         NOTREACHED();
     }
   }();
@@ -2547,7 +2548,7 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
   base::TimeDelta delta = base::TimeTicks::Now() - *original_fill_time;
   // If the filling happened too long ago, maybe this is just an effect of
   // the user pressing a "reset form" button.
-  if (delta >= form_filler_->get_limit_before_refill()) {
+  if (delta >= form_filler_->limit_before_automatic_refill()) {
     return;
   }
   if (auto* logger = GetEventFormLogger(field)) {

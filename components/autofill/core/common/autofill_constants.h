@@ -86,8 +86,11 @@ inline constexpr size_t kMaxTypeMatchingCalls = 5000;
 // upload the form to and request predictions from the Autofill servers.
 inline constexpr size_t kRequiredFieldsForFormsWithOnlyPasswordFields = 2;
 
-// A refill happens only within `kLimitBeforeRefill` of the original fill.
-inline constexpr base::TimeDelta kLimitBeforeRefill = base::Seconds(1);
+// Automatic refills, which may happen after DOM changes, have a tigther timeout
+// than programmatic refills, which can be triggered by JavaScript.
+inline constexpr base::TimeDelta kLimitBeforeAutomaticRefill = base::Seconds(1);
+inline constexpr base::TimeDelta kLimitBeforeProgrammaticRefill =
+    base::Seconds(5);
 
 // Constants for the soft/hard deletion of Autofill data.
 inline constexpr base::TimeDelta kDisusedDataModelTimeDelta = base::Days(180);

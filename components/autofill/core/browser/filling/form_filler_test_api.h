@@ -17,7 +17,8 @@ class FormFillerTestApi {
       : form_filler_(*form_filler) {}
 
   void set_limit_before_refill(base::TimeDelta limit) {
-    form_filler_->limit_before_refill_ = limit;
+    form_filler_->limit_before_automatic_refill_ = limit;
+    form_filler_->limit_before_programmatic_refill_ = limit;
   }
 
   void AddFormFillingEntry(

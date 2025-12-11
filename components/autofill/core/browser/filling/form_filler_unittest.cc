@@ -1933,6 +1933,107 @@ TEST_F(FormFillerTest, FillAndRefillHaveSameFillId) {
   EXPECT_EQ(initial_fill_id, refill_fill_id);
 }
 
+// Tests that a programmatic refill can be triggered within the timeout.
+// Also tests that a second refill within the timeout is a no-op.
+TEST_F(FormFillerTest, ProgrammaticRefillBeforeTimeout) {
+  FillId fill_id;
+  FillId refill_id;
+  base::RunLoop run_loop;
+  base::RunLoop run_loop2;
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_driver(), ApplyFormAction)
+        .WillOnce(DoAll(SaveArg<3>(&fill_id),
+                        base::test::RunOnceClosure(run_loop.QuitClosure()),
+                        Return(std::vector<FieldGlobalId>{})));
+    EXPECT_CALL(check, Call("initial fill complete"));
+    EXPECT_CALL(autofill_driver(), ApplyFormAction)
+        .WillOnce(DoAll(SaveArg<3>(&refill_id),
+                        base::test::RunOnceClosure(run_loop2.QuitClosure()),
+                        Return(std::vector<FieldGlobalId>{})));
+    EXPECT_CALL(check, Call("refill complete"));
+    EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(0);
+    EXPECT_CALL(check, Call("second refill ignored"));
+  }
+
+  CreditCard credit_card = test::GetCreditCard();
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
+           {.role = CREDIT_CARD_NUMBER, .autocomplete_attribute = "cc-number"},
+           {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+            .autocomplete_attribute = "cc-exp"}}});
+
+  FormsSeen({form});
+
+  // The original fill.
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &credit_card,
+      *GetFormStructure(form),
+      *GetAutofillField(form.global_id(), form.fields().front().global_id()),
+      AutofillTriggerSource::kPopup);
+  std::move(run_loop).Run();
+  check.Call("initial fill complete");
+
+  task_environment_.FastForwardBy(kLimitBeforeProgrammaticRefill / 2);
+
+  // The first refill.
+  form_filler().MaybeTriggerProgrammaticRefill(fill_id);
+  std::move(run_loop2).Run();
+  check.Call("refill complete");
+
+  // The second refill.
+  form_filler().MaybeTriggerProgrammaticRefill(fill_id);
+  check.Call("second refill ignored");
+
+  EXPECT_FALSE(fill_id->is_empty());
+  EXPECT_EQ(fill_id, refill_id);
+}
+
+// Tests that a programmatic refill cannot be triggered outside of the timeout.
+TEST_F(FormFillerTest, NoProgrammaticRefillAfterTimeout) {
+  FillId fill_id;
+  base::RunLoop run_loop;
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_driver(), ApplyFormAction)
+        .WillOnce(DoAll(SaveArg<3>(&fill_id),
+                        base::test::RunOnceClosure(run_loop.QuitClosure()),
+                        Return(std::vector<FieldGlobalId>{})));
+    EXPECT_CALL(check, Call("initial fill complete"));
+    EXPECT_CALL(autofill_driver(), ApplyFormAction).Times(0);
+    EXPECT_CALL(check, Call("refill ignored"));
+  }
+
+  CreditCard credit_card = test::GetCreditCard();
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = CREDIT_CARD_NAME_FULL, .autocomplete_attribute = "cc-name"},
+           {.role = CREDIT_CARD_NUMBER, .autocomplete_attribute = "cc-number"},
+           {.role = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+            .autocomplete_attribute = "cc-exp"}}});
+
+  FormsSeen({form});
+
+  // The original fill.
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &credit_card,
+      *GetFormStructure(form),
+      *GetAutofillField(form.global_id(), form.fields().front().global_id()),
+      AutofillTriggerSource::kPopup);
+  std::move(run_loop).Run();
+  check.Call("initial fill complete");
+
+  task_environment_.FastForwardBy(kLimitBeforeProgrammaticRefill +
+                                  base::Seconds(1));
+
+  // The first refill.
+  form_filler().MaybeTriggerProgrammaticRefill(fill_id);
+  check.Call("refill ignored");
+}
+
 class MockFormFiller : public TestFormFiller {
  public:
   explicit MockFormFiller(BrowserAutofillManager& manager)

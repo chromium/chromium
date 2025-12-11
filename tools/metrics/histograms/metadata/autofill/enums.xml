@@ -4222,6 +4222,7 @@ Called by update_autofill_enums.py.-->
   <int value="0" label="Form Changed"/>
   <int value="1" label="Select Options Changed"/>
   <int value="2" label="Expiration Date Formatted"/>
+  <int value="3" label="Programmatic Refill"/>
 </enum>
 
 <enum name="RendererFillSkipReason">

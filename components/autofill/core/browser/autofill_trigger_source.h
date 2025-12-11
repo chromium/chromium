@@ -58,6 +58,8 @@ enum class AutofillTriggerSource {
   kCreditCardSaveAndFill = 14,
   // Autofill was triggered by GLIC.
   kGlic = 15,
+  // A refill was triggered by JavaScript.
+  kProgrammaticRefill = 16,
 };
 
 }  // namespace autofill

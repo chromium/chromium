@@ -22,6 +22,8 @@ std::string RefillTriggerReasonToString(
       return "SelectOptionsChanged";
     case RefillTriggerReason::kExpirationDateFormatted:
       return "ExpirationDateFormatted";
+    case RefillTriggerReason::kProgrammaticRefill:
+      return "ProgrammaticRefill";
   }
   NOTREACHED();
 }
