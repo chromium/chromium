@@ -99,6 +99,8 @@ source_set("core") {
 
 source_set("cloud_content_scanning") {
   sources = [
+    "cloud_content_scanning/binary_upload_ack.cc",
+    "cloud_content_scanning/binary_upload_ack.h",
     "cloud_content_scanning/binary_upload_request.cc",
     "cloud_content_scanning/binary_upload_request.h",
     "cloud_content_scanning/common.cc",

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_ack.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -57,38 +58,15 @@ class BinaryUploadService : public KeyedService {
   // A class to encapsulate the a request acknowledgement. This class will
   // provide all the functionality needed to generate a
   // ContentAnalysisAcknowledgement.
-  class Ack {
+  class Ack : public enterprise_connectors::BinaryUploadAck {
    public:
-    explicit Ack(enterprise_connectors::CloudOrLocalAnalysisSettings settings);
-    virtual ~Ack();
+    explicit Ack(enterprise_connectors::CloudOrLocalAnalysisSettings settings)
+        : enterprise_connectors::BinaryUploadAck(std::move(settings)) {}
+    ~Ack() override = default;
     Ack(const Ack&) = delete;
     Ack& operator=(const Ack&) = delete;
     Ack(Ack&&) = delete;
     Ack& operator=(Ack&&) = delete;
-
-    void set_request_token(const std::string& token);
-    void set_status(
-        enterprise_connectors::ContentAnalysisAcknowledgement::Status status);
-    void set_final_action(
-        enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
-            final_action);
-
-    const enterprise_connectors::CloudOrLocalAnalysisSettings&
-    cloud_or_local_settings() const {
-      return cloud_or_local_settings_;
-    }
-
-    const enterprise_connectors::ContentAnalysisAcknowledgement& ack() const {
-      return ack_;
-    }
-
-   private:
-    enterprise_connectors::ContentAnalysisAcknowledgement ack_;
-
-    // Settings used to determine how the request is used in the cloud or
-    // locally.
-    enterprise_connectors::CloudOrLocalAnalysisSettings
-        cloud_or_local_settings_;
   };
 
   // A class to encapsulate requests to cancel.  Any request that match the

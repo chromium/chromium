@@ -45,27 +45,6 @@ BinaryUploadService::Request::Request(
 
 BinaryUploadService::Request::~Request() = default;
 
-BinaryUploadService::Ack::Ack(
-    enterprise_connectors::CloudOrLocalAnalysisSettings settings)
-    : cloud_or_local_settings_(std::move(settings)) {}
-
-BinaryUploadService::Ack::~Ack() = default;
-
-void BinaryUploadService::Ack::set_request_token(const std::string& token) {
-  ack_.set_request_token(token);
-}
-
-void BinaryUploadService::Ack::set_status(
-    enterprise_connectors::ContentAnalysisAcknowledgement::Status status) {
-  ack_.set_status(status);
-}
-
-void BinaryUploadService::Ack::set_final_action(
-    enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
-        final_action) {
-  ack_.set_final_action(final_action);
-}
-
 BinaryUploadService::CancelRequests::CancelRequests(
     enterprise_connectors::CloudOrLocalAnalysisSettings settings)
     : cloud_or_local_settings_(std::move(settings)) {}
