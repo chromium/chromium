@@ -2953,6 +2953,10 @@ Chromium is unable to recover your settings.
         <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite announcement that happens when a contextual nudge is shown next to the Glic button." translateable="false">
           To open Gemini in Chromium, press <ph name="GLOBAL_HOTKEY">$1<ex>⌘+G</ex></ph>
         </message>
+        <!-- Variant of the label on the Gemini button in the tabstrip-->
+        <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_BROWSER_LABEL" desc="Label on the button used to open Gemini in Chromium.">
+          Ask Chromium
+        </message>
       </if>
 
       <!-- UNO Promo strings for extensions -->

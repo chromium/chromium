@@ -2968,6 +2968,11 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite voice over announcement that happens when a contextual nudge is shown next to the Gemini button.">
           To open Gemini in Chrome, press <ph name="GLOBAL_HOTKEY">$1<ex>⌘+G</ex></ph>
         </message>
+
+        <!-- Variant of the label on the Gemini button in the tabstrip-->
+        <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_BROWSER_LABEL" desc="Label on the button used to open Gemini in Chrome.">
+          Ask Chrome
+        </message>
       </if>
 
       <!-- UNO Promo strings for extensions -->
