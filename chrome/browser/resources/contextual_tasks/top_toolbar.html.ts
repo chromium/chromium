@@ -46,7 +46,7 @@ export function getHtml(this: TopToolbarElement) {
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`
     <cr-action-menu>
       <div class="header">$i18n{sourcesMenuTabsHeader}</div>
-      ${this.attachedTabs_.map(tab => html`
+      ${this.attachedTabs.map(tab => html`
         <button class="dropdown-item" @click="${() => this.onTabClick_(tab)}">
           <div class="tab-favicon" style="background-image:
             ${this.faviconUrl_(tab)}">

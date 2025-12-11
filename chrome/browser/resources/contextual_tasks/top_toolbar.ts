@@ -39,14 +39,14 @@ export class TopToolbarElement extends CrLitElement {
 
   static override get properties() {
     return {
-      attachedTabs_: {type: Array},
+      attachedTabs: {type: Array},
       logoImageUrl_: {type: String},
       title: {type: String},
     };
   }
 
   override accessor title: string = '';
-  accessor attachedTabs_: Tab[] = [];
+  accessor attachedTabs: Tab[] = [];
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override render() {
@@ -118,7 +118,7 @@ export class TopToolbarElement extends CrLitElement {
   }
 
   protected shouldHideSourcesButton_() {
-    return this.attachedTabs_.length === 0;
+    return this.attachedTabs.length === 0;
   }
 }
 
