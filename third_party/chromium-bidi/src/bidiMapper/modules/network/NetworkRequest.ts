@@ -501,6 +501,9 @@ export class NetworkRequest {
       Boolean(this.#response.loadingFailed) ||
       this.#isDataUrl() ||
       Boolean(this.#request.extraInfo) ||
+      // If the request is intercepted during the `authRequired` phase, there
+      // will be no `Network.requestWillBeSentExtraInfo` CDP events.
+      this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired) ||
       // Requests from cache don't have extra info
       this.#servedFromCache ||
       // Sometimes there is no extra info and the response
@@ -689,6 +692,9 @@ export class NetworkRequest {
       this.#fetchId !== this.id
     ) {
       this.#interceptPhase = Network.InterceptPhase.AuthRequired;
+      // Make sure the `network.beforeRequestSent` is emitted before
+      // `network.authRequired`.
+      this.#emitEventsIfReady();
     } else {
       void this.#continueWithAuth({
         response: 'Default',

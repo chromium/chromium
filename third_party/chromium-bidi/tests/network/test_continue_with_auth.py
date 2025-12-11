@@ -311,7 +311,6 @@ async def test_continue_with_auth_twice(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: #1890")
 async def test_continue_with_auth_remove_intercept_inflight_request(
         websocket, context_id, url_example, url_auth_required):
     await subscribe(websocket,
@@ -360,7 +359,7 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
 
-    assert event_response == {
+    assert event_response == AnyExtending({
         "method": "network.beforeRequestSent",
         "params": {
             "context": context_id,
@@ -383,7 +382,7 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
-    }
+    })
 
     result = await execute_command(
         websocket, {
@@ -393,17 +392,6 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
             },
         })
     assert result == {}
-
-    # TODO: Clarify removal of last intercept
-
-    # await execute_command(
-    #     websocket, {
-    #         "method": "network.continueWithAuth",
-    #         "params": {
-    #             "request": network_id,
-    #             "action": "cancel",
-    #         },
-    #     })
 
     event_response = await wait_for_event(websocket,
                                           "network.responseCompleted")
