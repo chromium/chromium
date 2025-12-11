@@ -24,11 +24,19 @@ class MockTabDragContext : public TabDragContext {
   MOCK_METHOD(int, GetTabDragAreaWidth, (), (const, override));
 
   // TabDragContext methods:
-  MOCK_METHOD(TabSlotView*, GetTabAt, (int index), (const, override));
-  MOCK_METHOD(std::optional<int>,
-              GetIndexOf,
+  MOCK_METHOD(TabSlotView*,
+              GetTabForContents,
+              (content::WebContents * contents),
+              (override));
+  MOCK_METHOD(content::WebContents*,
+              GetContentsForTab,
+              (TabSlotView * view),
+              (override));
+  MOCK_METHOD(bool,
+              IsTabDetachable,
               (const TabSlotView* view),
               (const, override));
+  MOCK_METHOD(TabSlotView*, GetTabAt, (int index), (const, override));
   MOCK_METHOD(int, GetTabCount, (), (const, override));
   MOCK_METHOD(bool, IsTabPinned, (const TabSlotView* tab), (const, override));
   MOCK_METHOD(int, GetPinnedTabCount, (), (const, override));

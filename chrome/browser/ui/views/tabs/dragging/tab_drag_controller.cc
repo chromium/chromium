@@ -407,6 +407,7 @@ TabDragController::Liveness TabDragController::Init(
     ref->detach_behavior_ = DetachBehavior::kNotDetachable;
   }
 #else
+#if BUILDFLAG(IS_CHROMEOS)
   // Tabs should not be detachable from the window if any of the following are
   // true:
   // 1. The app window is locked for OnTask. Not applicable for web browser
@@ -416,18 +417,13 @@ TabDragController::Liveness TabDragController::Init(
   Browser* source_browser = BrowserView::GetBrowserViewForNativeWindow(
                                 source_context->GetWidget()->GetNativeWindow())
                                 ->browser();
-#if BUILDFLAG(IS_CHROMEOS)
   if (source_browser->IsLockedForOnTask()) {
     ref->detach_behavior_ = DetachBehavior::kNotDetachable;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  if (source_browser->app_controller() &&
-      source_browser->app_controller()->has_tab_strip() &&
-      web_app::HasPinnedHomeTab(source_browser->tab_strip_model())) {
-    for (TabSlotView* dragging_view : dragging_views) {
-      if (source_context->GetIndexOf(dragging_view) == 0) {
-        ref->detach_behavior_ = DetachBehavior::kNotDetachable;
-      }
+  for (TabSlotView* dragging_view : dragging_views) {
+    if (!source_context->IsTabDetachable(dragging_view)) {
+      ref->detach_behavior_ = DetachBehavior::kNotDetachable;
     }
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -1690,12 +1686,12 @@ std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(
   std::vector<TabSlotView*> views;
   for (const TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
     if (tab_drag_datum.view_type == TabSlotView::ViewType::kTab) {
-      const int model_index =
-          model->GetIndexOfWebContents(tab_drag_datum.contents);
-      if (model_index == TabStripModel::kNoTab) {
+      TabSlotView* tab_view =
+          context->GetTabForContents(tab_drag_datum.contents);
+      if (!tab_view) {
         return {};
       }
-      views.push_back(context->GetTabAt(model_index));
+      views.push_back(tab_view);
     } else {
       // Return empty vector if the group is not present in the model.
       if (!model->group_model()->ContainsTabGroup(

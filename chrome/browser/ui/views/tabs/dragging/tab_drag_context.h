@@ -27,6 +27,10 @@ namespace tab_groups {
 class TabGroupId;
 }
 
+namespace content {
+class WebContents;
+}
+
 // A limited subset of TabDragContext for use by non-TabDragController clients.
 class TabDragContextBase : public views::View {
   METADATA_HEADER(TabDragContextBase, views::View)
@@ -61,8 +65,10 @@ class TabDragContext : public TabDragContextBase {
  public:
   ~TabDragContext() override = default;
 
+  virtual TabSlotView* GetTabForContents(content::WebContents* contents) = 0;
+  virtual content::WebContents* GetContentsForTab(TabSlotView* view) = 0;
+  virtual bool IsTabDetachable(const TabSlotView* view) const = 0;
   virtual TabSlotView* GetTabAt(int index) const = 0;
-  virtual std::optional<int> GetIndexOf(const TabSlotView* view) const = 0;
   virtual int GetTabCount() const = 0;
   virtual bool IsTabPinned(const TabSlotView* tab) const = 0;
   virtual int GetPinnedTabCount() const = 0;
