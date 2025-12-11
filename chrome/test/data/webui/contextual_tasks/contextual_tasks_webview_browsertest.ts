@@ -62,6 +62,51 @@ suite('ContextualTasksWebviewTest', function() {
     assertEquals(`Bearer fake_token`, authHeader.value);
   });
 
+  test('webview sends request when oauth token is empty', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    // Wait for app to finish initializing, which includes setting the initial
+    // webview URL.
+    await microtasksFinished();
+
+    // Get the webview element.
+    const threadFrame =
+        appElement.shadowRoot.querySelector<chrome.webviewTag.WebView>(
+            '#threadFrame');
+    assertTrue(!!threadFrame, 'Thread frame not found');
+
+    // Simulate the browser pushing the OAuth token to the page.
+    proxy.callbackRouterRemote.setOAuthToken('');
+    await microtasksFinished();
+
+    // Add a promise that will be resolved after the headers contain the OAuth
+    // token.
+    const headersPromise =
+        new Promise<chrome.webRequest.HttpHeaders|undefined>(resolve => {
+          const listener = (details: any) => {
+            // Remove listener to avoid capturing other requests.
+            threadFrame.request.onSendHeaders.removeListener(listener);
+            resolve(details.requestHeaders);
+          };
+
+          threadFrame.request.onSendHeaders.addListener(
+              listener, {urls: ['<all_urls>']}, ['requestHeaders']);
+        });
+
+    // Switch the URL to trigger a request. Note, this needs to a real URL or
+    // else the request will not actually trigger the listener. However, this
+    // does not actually load a URL in the webview, because browsertests use a
+    // mock server implementation.
+    threadFrame.src = 'https://www.google.com';
+
+    // Verify that the OAuth token was added to the request headers.
+    const headers = await headersPromise;
+    assertTrue(!!headers, 'Request headers not found');
+  });
+
   test('webview removes gsc param when in tab', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     proxy.handler.setIsShownInTab(true);
