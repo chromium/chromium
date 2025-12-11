@@ -277,6 +277,7 @@ public class WindowAndroid
         mLifetimeAssert = LifetimeAssert.create(this);
         // context does not have the same lifetime guarantees as an application context so we can't
         // hold a strong reference to it.
+        assert context != null : "Context when creating WindowAndroid must not be null.";
         mContextRef = new ImmutableWeakReference<>(context);
         mDisplayAndroid = display;
         mDisplayAndroid.addObserver(this);
@@ -1377,12 +1378,10 @@ public class WindowAndroid
         mPointerLockingViewPrvFocusChangeListener = null;
     }
 
-    @VisibleForTesting(otherwise = PRIVATE)
     @Nullable View getPointerLockChangeViewForTesting() {
         return mPointerLockChangeView;
     }
 
-    @VisibleForTesting(otherwise = PRIVATE)
     View.@Nullable OnFocusChangeListener getPointerLockingViewFocusChangeListenerForTesting() {
         return mPointerLockingViewFocusChangeListener;
     }
