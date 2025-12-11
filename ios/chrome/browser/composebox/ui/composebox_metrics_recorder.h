@@ -39,6 +39,16 @@ enum class AutocompleteRequestType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AutocompleteRequestType)
 
+// LINT.IfChange(FocusResultedInNavigationType)
+enum class FocusResultedInNavigationType {
+  kNoNavigationNoAttachments = 0,
+  kNavigationNoAttachments = 1,
+  kNoNavigationWithAttachments = 2,
+  kNavigationWithAttachments = 3,
+  kMaxValue = kNavigationWithAttachments
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FocusResultedInNavigationTypes)
+
 // A metrics recorder object for the composebox.
 @interface ComposeboxMetricsRecorder : NSObject
 // Records the AI mode activation source.
@@ -66,6 +76,13 @@ enum class AutocompleteRequestType {
 // Records the autocomplete request type when a navigation occurs.
 - (void)recordAutocompleteRequestTypeAtNavigation:
     (AutocompleteRequestType)requestType;
+
+// Records whether a composebox focus resulted in navigation and whether there
+// was attachments.
+- (void)recordComposeboxFocusResultedInNavigation:(BOOL)navigation
+                                  withAttachments:(BOOL)hasAttachments
+                                      requestType:
+                                          (AutocompleteRequestType)requestType;
 
 @end
 

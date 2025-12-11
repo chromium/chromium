@@ -247,6 +247,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)disconnect {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self recordNavigationResult];
   [_modeHolder removeObserver:self];
   _modeHolder = nil;
   _faviconLoader = nullptr;
@@ -826,6 +827,33 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - Private
+
+// Records whether the session resulted in navigation.
+- (void)recordNavigationResult {
+  switch (_modeHolder.mode) {
+    case ComposeboxMode::kRegularSearch:
+      [self.metricsRecorder
+          recordComposeboxFocusResultedInNavigation:_inNavigation
+                                    withAttachments:!_items.empty
+                                        requestType:AutocompleteRequestType::
+                                                        kSearch];
+      break;
+    case ComposeboxMode::kAIM:
+      [self.metricsRecorder
+          recordComposeboxFocusResultedInNavigation:_inNavigation
+                                    withAttachments:!_items.empty
+                                        requestType:AutocompleteRequestType::
+                                                        kAIMode];
+      break;
+    case ComposeboxMode::kImageGeneration:
+      [self.metricsRecorder
+          recordComposeboxFocusResultedInNavigation:_inNavigation
+                                    withAttachments:!_items.empty
+                                        requestType:AutocompleteRequestType::
+                                                        kImageGeneration];
+      break;
+  }
+}
 
 // Reloads the displayed suggestions based on the attachments/modeHolder.
 - (void)reloadSuggestions {

@@ -82,3 +82,13 @@ source_set("eg2_tests") {
     "//net:test_support",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "composebox_metrics_recorder_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
