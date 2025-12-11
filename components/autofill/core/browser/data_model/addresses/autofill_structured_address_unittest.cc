@@ -3067,8 +3067,10 @@ TEST_F(AutofillStructuredAddress, ZipCodeParsing) {
 }
 
 TEST_F(AutofillStructuredAddress, ZipCodeFormatting) {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillSupportSplitZipCode};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillSupportSplitZipCode},
+      /*disabled_features=*/{features::kAutofillUseINAddressModel});
   std::vector<AddressLineParsingTestCase> test_cases = {
       {.country_code = "US",
        .zip = "94043-4100",
@@ -3115,7 +3117,10 @@ TEST_F(AutofillStructuredAddress, ZipCodeFormatting) {
        .zip = "114 55",
        .zip_prefix = "114",
        .zip_suffix = "55"},
-  };
+      {.country_code = "IN",
+       .zip = "110 001",
+       .zip_prefix = "110",
+       .zip_suffix = "001"}};
 
   for (const auto& test_case : test_cases) {
     AddressComponentsStore address =

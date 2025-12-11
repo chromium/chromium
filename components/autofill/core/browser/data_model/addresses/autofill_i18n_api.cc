@@ -72,7 +72,7 @@ std::u16string GetFormattingExpressionOverrides(
   // with space zip code separator.
   static constexpr auto kSpaceZipCodeSeparatorCountriesSet =
       base::MakeFixedFlatSet<std::string_view>(
-          {"CZ", "GB", "GR", "HR", "IE", "LB", "MT", "SE", "SK"});
+          {"CZ", "GB", "GR", "HR", "IE", "LB", "MT", "SE", "SK", "IN"});
 
   if (field_type == ADDRESS_HOME_ZIP &&
       base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
