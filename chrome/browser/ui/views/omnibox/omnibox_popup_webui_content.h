@@ -46,6 +46,9 @@ class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   bool wants_focus() const { return wants_focus_; }
 
  private:
+  // Returns the WebUI Omnibox Handler. Can return null.
+  WebuiOmniboxHandler* omnibox_handler();
+
   // Indicate whether this WebUI content wants to receive activation and focus.
   bool wants_focus_ = false;
 
