@@ -12,7 +12,8 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {openMenu, ToolbarEvent} from '../shared/common.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
+import {openMenu} from '../shared/common.js';
 
 import type {MenuStateItem} from './menu_util.js';
 import {getCss} from './simple_action_menu.css.js';

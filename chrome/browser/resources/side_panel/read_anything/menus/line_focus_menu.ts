@@ -7,9 +7,9 @@ import './simple_action_menu.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {SettingsPrefs} from '../content/read_anything_types.js';
 import {LineFocusType} from '../content/read_anything_types.js';
 import type {LineFocus} from '../content/read_anything_types.js';
-import type {SettingsPrefs} from '../shared/common.js';
 
 import {getHtml} from './line_focus_menu.html.js';
 import type {MenuStateItem} from './menu_util.js';

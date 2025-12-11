@@ -29,6 +29,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement, html, type TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {SettingsPrefs} from '../content/read_anything_types.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {ColorMenuElement} from '../menus/color_menu.js';
 import type {FontMenuElement} from '../menus/font_menu.js';
 import type {HighlightMenuElement} from '../menus/highlight_menu.js';
@@ -38,8 +40,7 @@ import type {LineSpacingMenuElement} from '../menus/line_spacing_menu.js';
 import type {RateMenuElement} from '../menus/rate_menu.js';
 import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
 import type {VoiceSelectionMenuElement} from '../read_aloud/voice_selection_menu.js';
-import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from '../shared/common.js';
-import type {SettingsPrefs} from '../shared/common.js';
+import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout} from '../shared/common.js';
 import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom} from '../shared/read_anything_logger.js';

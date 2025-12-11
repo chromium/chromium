@@ -17,41 +17,6 @@ export const playFromSelectionTimeout = spinnerDebounceTimeout + 25;
 // no need to log.
 export const LOG_EMPTY_DELAY_MS = 500;
 
-// Events emitted from the toolbar to the app
-export enum ToolbarEvent {
-  LETTER_SPACING = 'letter-spacing-change',
-  LINE_SPACING = 'line-spacing-change',
-  THEME = 'theme-change',
-  FONT_SIZE = 'font-size-change',
-  FONT = 'font-change',
-  RATE = 'rate-change',
-  PLAY_PAUSE = 'play-pause-click',
-  HIGHLIGHT_CHANGE = 'highlight-change',
-  NEXT_GRANULARITY = 'next-granularity-click',
-  PREVIOUS_GRANULARITY = 'previous-granularity-click',
-  LINKS = 'links-toggle',
-  IMAGES = 'images-toggle',
-  VOICE = 'select-voice',
-  LANGUAGE_TOGGLE = 'voice-language-toggle',
-  PLAY_PREVIEW = 'preview-voice',
-  LANGUAGE_MENU_OPEN = 'language-menu-open',
-  LANGUAGE_MENU_CLOSE = 'language-menu-close',
-  VOICE_MENU_OPEN = 'voice-menu-open',
-  VOICE_MENU_CLOSE = 'voice-menu-close',
-  LINE_FOCUS = 'line-focus-change',
-}
-
-// The user settings stored in preferences and restored on re-opening Reading
-// mode. Used to set the initial values for the toolbar buttons and menus.
-export interface SettingsPrefs {
-  letterSpacing: number;
-  lineSpacing: number;
-  theme: number;
-  speechRate: number;
-  font: string;
-  highlightGranularity: number;
-}
-
 const ACTIVE_CSS_CLASS = 'active';
 // The percent of a view that must be visible to be considered "mostly visible"
 // for the purpose of determining what's likely being actually read in the

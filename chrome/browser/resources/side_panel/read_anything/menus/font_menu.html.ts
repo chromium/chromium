@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ToolbarEvent} from '../shared/common.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
 
 import type {FontMenuElement} from './font_menu.js';
 
