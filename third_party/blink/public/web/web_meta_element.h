@@ -14,9 +14,7 @@ class HTMLMetaElement;
 
 class BLINK_EXPORT WebMetaElement final : public WebElement {
  public:
-  explicit WebMetaElement(
-      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
-      : WebElement(loc) {}
+  WebMetaElement() : WebElement() {}
   WebMetaElement(const WebMetaElement& element) = default;
 
   WebMetaElement& operator=(const WebMetaElement& element) {

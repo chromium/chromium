@@ -41,9 +41,7 @@ class HTMLLabelElement;
 // Provides readonly access to some properties of a DOM label element node.
 class BLINK_EXPORT WebLabelElement final : public WebElement {
  public:
-  explicit WebLabelElement(
-      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
-      : WebElement(loc) {}
+  WebLabelElement() : WebElement() {}
   WebLabelElement(const WebLabelElement& element) = default;
 
   WebLabelElement& operator=(const WebLabelElement& element) {

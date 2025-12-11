@@ -36,9 +36,7 @@ class PasswordAutofillAgent;
 // `kAutofillReplaceCachedWebElementsByRendererIds` launches.
 class FormRef {
  public:
-  explicit FormRef(
-      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
-      : form_(loc) {}
+  FormRef() = default;
   explicit FormRef(blink::WebFormElement form);
 
   blink::WebFormElement GetForm() const;
@@ -55,9 +53,7 @@ class FormRef {
 // `kAutofillReplaceCachedWebElementsByRendererIds` launches.
 class FieldRef {
  public:
-  explicit FieldRef(
-      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
-      : field_(loc) {}
+  FieldRef() = default;
   explicit FieldRef(blink::WebFormControlElement form_control);
   explicit FieldRef(blink::WebElement content_editable);
 

@@ -41,9 +41,7 @@ class WebString;
 
 class BLINK_EXPORT WebOptionElement final : public WebElement {
  public:
-  explicit WebOptionElement(
-      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
-      : WebElement(loc) {}
+  WebOptionElement() : WebElement() {}
   WebOptionElement(const WebOptionElement& element) = default;
 
   WebOptionElement& operator=(const WebOptionElement& element) {

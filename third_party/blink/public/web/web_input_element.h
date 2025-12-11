@@ -43,9 +43,7 @@ class WebOptionElement;
 // Provides readonly access to some properties of a DOM input element node.
 class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
  public:
-  explicit WebInputElement(
-      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
-      : WebFormControlElement(loc) {}
+  WebInputElement() = default;
   WebInputElement(const WebInputElement& element) = default;
 
   WebInputElement& operator=(const WebInputElement& element) {
