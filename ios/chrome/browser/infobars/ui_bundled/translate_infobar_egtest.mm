@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/infobar_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_translate_modal_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -330,6 +331,13 @@ void TestResponseProvider::GetLanguageResponse(
   if ([self isRunningTest:@selector
             (testTranslateBadgeWithReaderModeBadgeSupport)]) {
     config.features_enabled.push_back(kEnableReaderModeBadgeSupport);
+  }
+
+  if ([self isRunningTest:@selector(testInfobarTranslateRevert)] ||
+      [self isRunningTest:@selector(testInfobarTranslateRevertIncognito)] ||
+      [self isRunningTest:@selector(testTranslateBadgeInReaderMode)] ||
+      [self isRunningTest:@selector(testTranslateModalCancel)]) {
+    config.features_disabled.push_back(kProactiveSuggestionsFramework);
   }
 
   return config;

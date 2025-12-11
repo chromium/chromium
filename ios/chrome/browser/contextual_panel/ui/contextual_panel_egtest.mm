@@ -98,6 +98,10 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
         feature_engagement::kIPHiOSContextualPanelSampleModelFeature.name;
   }
 
+  // TODO(crbug.com/467331873): Re-enable this when the test is updated for
+  // PSF.
+  config.features_disabled.push_back(kProactiveSuggestionsFramework);
+
   return config;
 }
 

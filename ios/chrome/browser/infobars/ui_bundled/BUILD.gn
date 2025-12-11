@@ -34,6 +34,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/infobars/ui_bundled:constants",
     "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/infobars/ui_bundled/modals:public",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/location_bar/badge/ui:constants",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/reader_mode/model:features",

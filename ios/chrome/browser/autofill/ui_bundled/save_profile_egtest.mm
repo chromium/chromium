@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/infobar_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_address_profile_modal_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -216,6 +217,9 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
           isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)]) {
     // These test cases need a badge.
     config.features_disabled.push_back(kAutofillBadgeRemoval);
+    // TODO(crbug.com/467331873): Re-enable this when the test is updated for
+    // PSF.
+    config.features_disabled.push_back(kProactiveSuggestionsFramework);
   }
 
   config.features_disabled.push_back(

@@ -13882,7 +13882,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "IOSProactiveSuggestionsFramework"
+                        "ProactiveSuggestionsFramework"
                     ]
                 }
             ]
