@@ -59,6 +59,14 @@ void MigrationCompleteForProfile(
     const std::string& profile_name,
     BOOL success,
     NSError* error) {
+  if (!success && error &&
+      [error.domain isEqualToString:kCredentialProviderMigratorErrorDomain] &&
+      error.code == kCredentialProviderMigratorErrorBackgroundedApp) {
+    // We can't attempt to migrate credentials while the app is backgrounded.
+    // Credentials will be imported when `appDidEnterForeground` is called.
+    return;
+  }
+
   DCHECK(success) << error.localizedDescription;
   [app_agent migrationCompleteForProfile:weak_profile.get()
                              profileName:profile_name];

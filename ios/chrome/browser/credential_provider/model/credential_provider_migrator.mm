@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -21,10 +23,6 @@ using password_manager::PasswordStoreInterface;
 
 NSErrorDomain const kCredentialProviderMigratorErrorDomain =
     @"kCredentialProviderMigratorErrorDomain";
-
-typedef enum : NSInteger {
-  CredentialProviderMigratorErrorAlreadyRunning,
-} CredentialProviderMigratorErrors;
 
 // Name of the passkey migration related histogram.
 static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
@@ -68,10 +66,20 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
 
 - (void)startMigrationWithCompletion:(void (^)(BOOL success,
                                                NSError* error))completion {
+  if (UIApplication.sharedApplication.applicationState !=
+      UIApplicationStateActive) {
+    NSError* error =
+        [NSError errorWithDomain:kCredentialProviderMigratorErrorDomain
+                            code:kCredentialProviderMigratorErrorBackgroundedApp
+                        userInfo:nil];
+    completion(NO, error);
+    return;
+  }
+
   if (self.temporalStore) {
     NSError* error =
         [NSError errorWithDomain:kCredentialProviderMigratorErrorDomain
-                            code:CredentialProviderMigratorErrorAlreadyRunning
+                            code:kCredentialProviderMigratorErrorAlreadyRunning
                         userInfo:nil];
     completion(NO, error);
     return;
