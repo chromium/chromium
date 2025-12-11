@@ -8,6 +8,9 @@
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "third_party/jni_zero/jni_zero.h"
+#include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace task_manager {
 
@@ -33,6 +36,17 @@ static jni_zero::ScopedJavaLocalRef<jstring>
 JNI_TaskManagerServiceBridge_GetTitle(JNIEnv* env, TaskId task_id) {
   return base::android::ConvertUTF16ToJavaString(
       env, TaskManagerInterface::GetTaskManager()->GetTitle(task_id));
+}
+
+static jni_zero::ScopedJavaLocalRef<jobject>
+JNI_TaskManagerServiceBridge_GetIcon(JNIEnv* env, TaskId task_id) {
+  const gfx::ImageSkia& icon =
+      TaskManagerInterface::GetTaskManager()->GetIcon(task_id);
+  const SkBitmap bitmap = icon.GetRepresentation(1.0f).GetBitmap();
+  if (bitmap.isNull()) {
+    return nullptr;
+  }
+  return gfx::ConvertToJavaBitmap(bitmap);
 }
 
 static jlong JNI_TaskManagerServiceBridge_GetMemoryFootprintUsage(

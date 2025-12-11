@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.task_manager;
 
+import android.graphics.Bitmap;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -73,6 +75,10 @@ public class TaskManagerServiceBridge {
         return TaskManagerServiceBridgeJni.get().getTitle(taskId);
     }
 
+    public Bitmap getIcon(long taskId) {
+        return TaskManagerServiceBridgeJni.get().getIcon(taskId);
+    }
+
     public long getMemoryFootprintUsage(long taskId) {
         return TaskManagerServiceBridgeJni.get().getMemoryFootprintUsage(taskId);
     }
@@ -121,6 +127,8 @@ public class TaskManagerServiceBridge {
         void removeObserver(long pointer);
 
         String getTitle(long taskid);
+
+        Bitmap getIcon(long taskId);
 
         long getMemoryFootprintUsage(long taskId);
 
