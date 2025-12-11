@@ -7607,11 +7607,6 @@ inline constexpr char kArcWindowPredictorName[] = "Enable ARC window predictor";
 inline constexpr char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";
 
-inline constexpr char kShelfAutoHideSeparationName[] =
-    "Enable separate shelf auto-hide preferences.";
-inline constexpr char kShelfAutoHideSeparationDescription[] =
-    "Allows for the shelf's auto-hide preference to be specified separately "
-    "for clamshell and tablet mode.";
 
 inline constexpr char kShimlessRMAOsUpdateName[] =
     "Enable OS updates in shimless RMA";

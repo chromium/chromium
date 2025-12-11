@@ -9260,10 +9260,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::kLauncherItemSuggest,
                                     kLauncherItemSuggestVariations,
                                     "LauncherItemSuggest")},
-    {"shelf-auto-hide-separation",
-     flag_descriptions::kShelfAutoHideSeparationName,
-     flag_descriptions::kShelfAutoHideSeparationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kShelfAutoHideSeparation)},
+
     {"launcher-keyword-extraction-scoring",
      flag_descriptions::kLauncherKeywordExtractionScoring,
      flag_descriptions::kLauncherKeywordExtractionScoringDescription, kOsCrOS,

@@ -9332,11 +9332,6 @@
     "expiry_milestone": 134
   },
   {
-    "name": "shelf-auto-hide-separation",
-    "owners": [ "yulunwu@chromium.org", "etuck@chromium.org", "//ash/shelf/OWNERS" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "shimless-rma-dynamic-device-info-inputs",
     "owners": [
       "jeffulin@google.com",
