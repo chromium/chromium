@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -19,6 +20,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/typography_provider.h"
@@ -65,8 +67,11 @@ class DropTargetViewTest : public ChromeViewsTestBase {
     drop_target_view_->SetDragDelegate(&drag_delegate_);
     drop_target_view_->animation_for_testing().SetSlideDuration(
         base::Seconds(0));
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
   void TearDown() override {
+    normal_duration_.reset();
     drop_target_view_ = nullptr;
     widget_.reset();
     ChromeViewsTestBase::TearDown();
@@ -84,6 +89,7 @@ class DropTargetViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   MockDragDelegate drag_delegate_;
   raw_ptr<MultiContentsDropTargetView> drop_target_view_;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(DropTargetViewTest, ViewIsOpened) {

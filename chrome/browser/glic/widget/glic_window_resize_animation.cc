@@ -79,7 +79,7 @@ void GlicWindowResizeAnimation::AnimateToState(double state) {
   // The widget is detached, so make sure the bounds don't go out-of-screen.
   widget_->SetBoundsConstrained(bounds_to_animate);
 
-  duration_left_ = (1 - GetCurrentValue()) * duration();
+  duration_left_ = (1 - GetCurrentValue()) * GetDuration();
 }
 
 void GlicWindowResizeAnimation::AnimationEnded(const Animation* animation) {

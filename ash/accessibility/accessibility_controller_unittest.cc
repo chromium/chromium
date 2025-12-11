@@ -5,6 +5,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 
 #include <array>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -56,6 +57,7 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touchpad_device.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -147,6 +149,8 @@ class AccessibilityControllerTest : public AccessibilityControllerTestBase {
                               ::features::kAccessibilityFlashScreenFeature},
         /*disabled_features=*/{});
     AccessibilityControllerTestBase::SetUp();
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void ExpectSessionDurationMetricCount(const std::string& feature_name,
@@ -195,6 +199,7 @@ class AccessibilityControllerTest : public AccessibilityControllerTestBase {
 
  private:
   base::HistogramTester histogram_tester_;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(AccessibilityControllerTest, ChangingCursorSizePrefChangesCursorSize) {

@@ -9,8 +9,12 @@
 
 namespace gfx {
 
-// Speed up or slow down animations for testing or debugging.
-class COMPONENT_EXPORT(GFX) ScopedAnimationDurationScaleMode {
+// Speed up or slow down animations for testing or debugging.  This is typically
+// used in the test harness to disable the animation by setting to
+// ZERO_DURATION. If a test needs to re-enable it to test animation itself, it
+// should re-enable the animation by creating this in a nested scope with the
+// value other than ZERO_DURATION after test harness disables the animation.
+class COMPONENT_EXPORT(ANIMATION_SCALE) ScopedAnimationDurationScaleMode {
  public:
   // Animation duration multipliers.
   static constexpr float NORMAL_DURATION = 1.0;

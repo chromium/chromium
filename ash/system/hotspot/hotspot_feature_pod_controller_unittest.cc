@@ -4,6 +4,8 @@
 
 #include "ash/system/hotspot/hotspot_feature_pod_controller.h"
 
+#include <optional>
+
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/hotspot/hotspot_detailed_view.h"
@@ -20,6 +22,7 @@
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -54,9 +57,12 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
 
     GetPrimaryUnifiedSystemTray()->ShowBubble();
     CreateHotspotFeatureTile();
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void TearDown() override {
+    normal_duration_.reset();
     hotspot_feature_tile_.reset();
     hotspot_feature_pod_controller_.reset();
     AshTestBase::TearDown();
@@ -124,6 +130,7 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
  protected:
   std::unique_ptr<HotspotFeaturePodController> hotspot_feature_pod_controller_;
   std::unique_ptr<FeatureTile> hotspot_feature_tile_;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(HotspotFeaturePodControllerTest, HotspotNotUsedBefore) {

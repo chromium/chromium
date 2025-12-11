@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -52,9 +53,12 @@ class WidgetFadeAnimatorTest : public test::WidgetTest {
     delegate_ = std::make_unique<TestWidgetFadeAnimator>(widget_.get());
     delegate_->set_fade_in_duration(kFadeDuration);
     delegate_->set_fade_out_duration(kFadeDuration);
+    non_zero_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void TearDown() override {
+    non_zero_duration_.reset();
     if (widget_ && !widget_->IsClosed()) {
       widget_->CloseNow();
     }
@@ -64,6 +68,7 @@ class WidgetFadeAnimatorTest : public test::WidgetTest {
  protected:
   std::unique_ptr<Widget> widget_;
   std::unique_ptr<TestWidgetFadeAnimator> delegate_;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> non_zero_duration_;
 };
 
 TEST_F(WidgetFadeAnimatorTest, FadeIn) {
