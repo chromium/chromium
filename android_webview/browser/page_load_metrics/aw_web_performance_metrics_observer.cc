@@ -35,9 +35,12 @@ void AwWebPerformanceMetricsObserver::OnUserTimingMarkFullyLoaded(
   if (!timing.user_timing_mark_fully_loaded) {
     return;
   }
-  AwContents::FromWebContents(GetDelegate().GetWebContents())
-      ->OnPerformanceMark(kMarkFullyLoaded,
-                          timing.user_timing_mark_fully_loaded.value());
+  AwContents* aw_contents =
+      AwContents::FromWebContents(GetDelegate().GetWebContents());
+  if (aw_contents) {
+    aw_contents->OnPerformanceMark(
+        kMarkFullyLoaded, timing.user_timing_mark_fully_loaded.value());
+  }
 }
 
 void AwWebPerformanceMetricsObserver::OnUserTimingMarkFullyVisible(
@@ -47,9 +50,12 @@ void AwWebPerformanceMetricsObserver::OnUserTimingMarkFullyVisible(
   if (!timing.user_timing_mark_fully_visible) {
     return;
   }
-  AwContents::FromWebContents(GetDelegate().GetWebContents())
-      ->OnPerformanceMark(kMarkFullyVisible,
-                          timing.user_timing_mark_fully_visible.value());
+  AwContents* aw_contents =
+      AwContents::FromWebContents(GetDelegate().GetWebContents());
+  if (aw_contents) {
+    aw_contents->OnPerformanceMark(
+        kMarkFullyVisible, timing.user_timing_mark_fully_visible.value());
+  }
 }
 
 void AwWebPerformanceMetricsObserver::OnUserTimingMarkInteractive(
@@ -59,9 +65,12 @@ void AwWebPerformanceMetricsObserver::OnUserTimingMarkInteractive(
   if (!timing.user_timing_mark_interactive) {
     return;
   }
-  AwContents::FromWebContents(GetDelegate().GetWebContents())
-      ->OnPerformanceMark(kMarkInteractive,
-                          timing.user_timing_mark_interactive.value());
+  AwContents* aw_contents =
+      AwContents::FromWebContents(GetDelegate().GetWebContents());
+  if (aw_contents) {
+    aw_contents->OnPerformanceMark(kMarkInteractive,
+                                   timing.user_timing_mark_interactive.value());
+  }
 }
 
 void AwWebPerformanceMetricsObserver::OnCustomUserTimingMarkObserved(
@@ -69,8 +78,10 @@ void AwWebPerformanceMetricsObserver::OnCustomUserTimingMarkObserved(
         timings) {
   AwContents* aw_contents =
       AwContents::FromWebContents(GetDelegate().GetWebContents());
-  for (const auto& mark : timings) {
-    aw_contents->OnPerformanceMark(mark->mark_name, mark->start_time);
+  if (aw_contents) {
+    for (const auto& mark : timings) {
+      aw_contents->OnPerformanceMark(mark->mark_name, mark->start_time);
+    }
   }
 }
 
