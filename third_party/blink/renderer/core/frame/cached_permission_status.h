@@ -35,8 +35,10 @@ class LocalDOMWindow;
 class CORE_EXPORT CachedPermissionStatus final
     : public GarbageCollected<CachedPermissionStatus>,
       public mojom::blink::PermissionObserver,
-      public GarbageCollectedMixin {
+      public Supplement<LocalDOMWindow> {
  public:
+  static const unsigned kSupplementIndex;
+
   // Returns the supplement, creating one as needed.
   static CachedPermissionStatus* From(LocalDOMWindow* window);
 
@@ -122,8 +124,6 @@ class CORE_EXPORT CachedPermissionStatus final
   PermissionObserverReceiverSet& GetPermissionObserverReceiversForTesting() {
     return permission_observer_receivers_;
   }
-
-  Member<LocalDOMWindow> local_dom_window_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 

@@ -22,7 +22,7 @@ class KURL;
 
 class DOMWindowLaunchQueue final
     : public GarbageCollected<DOMWindowLaunchQueue>,
-      public GarbageCollectedMixin {
+      public Supplement<LocalDOMWindow> {
  public:
   static const unsigned kSupplementIndex;
 
@@ -45,7 +45,6 @@ class DOMWindowLaunchQueue final
  private:
   static DOMWindowLaunchQueue* FromState(LocalDOMWindow* window);
 
-  Member<LocalDOMWindow> local_dom_window_;
   Member<LaunchQueue> launch_queue_;
 };
 

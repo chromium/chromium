@@ -548,11 +548,14 @@ const char* GetErrorString(RequestFullscreenError error) {
 
 }  // anonymous namespace
 
+const unsigned Fullscreen::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kFullscreen);
+
 Fullscreen& Fullscreen::From(LocalDOMWindow& window) {
-  Fullscreen* fullscreen = window.GetFullscreen();
+  Fullscreen* fullscreen = Supplement<LocalDOMWindow>::From<Fullscreen>(window);
   if (!fullscreen) {
     fullscreen = MakeGarbageCollected<Fullscreen>(window);
-    window.SetFullscreen(fullscreen);
+    ProvideTo(window, fullscreen);
   }
   return *fullscreen;
 }
@@ -588,7 +591,8 @@ bool Fullscreen::IsInFullscreenElementStack(const Element& element) {
 }
 
 Fullscreen::Fullscreen(LocalDOMWindow& window)
-    : ExecutionContextLifecycleObserver(&window), local_dom_window_(window) {}
+    : Supplement<LocalDOMWindow>(window),
+      ExecutionContextLifecycleObserver(&window) {}
 
 Fullscreen::~Fullscreen() = default;
 
@@ -765,7 +769,8 @@ void Fullscreen::EnforceRequestFullscreenConditions(
   //
   // The supplement may be null before this window ever enters fullscreen, but
   // the browser enforces broader per-origin cooldowns with FullscreenUserData.
-  if (Fullscreen* fullscreen = document.domWindow()->GetFullscreen();
+  if (Fullscreen* fullscreen =
+          Supplement<LocalDOMWindow>::From<Fullscreen>(*document.domWindow());
       fullscreen && base::TimeTicks::Now() <=
                         fullscreen->block_automatic_fullscreen_until()) {
     std::move(callback).Run(RequestFullscreenError::kPermissionCheckFailed);
@@ -1266,7 +1271,7 @@ bool Fullscreen::IsFullscreenFlagSetFor(const Element& element) {
 void Fullscreen::Trace(Visitor* visitor) const {
   visitor->Trace(pending_requests_);
   visitor->Trace(pending_exits_);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

@@ -20,16 +20,17 @@ namespace blink {
 
 // static
 TextElementTiming& TextElementTiming::From(LocalDOMWindow& window) {
-  TextElementTiming* timing = window.GetTextElementTiming();
+  TextElementTiming* timing =
+      Supplement<LocalDOMWindow>::From<TextElementTiming>(window);
   if (!timing) {
     timing = MakeGarbageCollected<TextElementTiming>(window);
-    window.SetTextElementTiming(timing);
+    ProvideTo(window, timing);
   }
   return *timing;
 }
 
 TextElementTiming::TextElementTiming(LocalDOMWindow& window)
-    : local_dom_window_(window),
+    : Supplement<LocalDOMWindow>(window),
       performance_(DOMWindowPerformance::performance(window)) {}
 
 // static
@@ -97,7 +98,7 @@ void TextElementTiming::OnTextObjectPainted(
 }
 
 void TextElementTiming::Trace(Visitor* visitor) const {
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(performance_);
   visitor->Trace(container_timing_);
 }
@@ -106,7 +107,7 @@ void TextElementTiming::EnsureContainerTiming() {
   if (container_timing_) {
     return;
   }
-  LocalDOMWindow* window = local_dom_window_;
+  LocalDOMWindow* window = GetSupplementable();
   DCHECK(window);
   container_timing_ = ContainerTiming::From(*window);
 }

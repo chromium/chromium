@@ -12,7 +12,7 @@
 namespace blink {
 
 CredentialManagerProxy::CredentialManagerProxy(LocalDOMWindow& window)
-    : local_dom_window_(window),
+    : Supplement<LocalDOMWindow>(window),
       authenticator_(window.GetExecutionContext()),
       credential_manager_(window.GetExecutionContext()),
       webotp_service_(window.GetExecutionContext()),
@@ -24,7 +24,7 @@ CredentialManagerProxy::~CredentialManagerProxy() = default;
 
 mojom::blink::CredentialManager* CredentialManagerProxy::CredentialManager() {
   if (!credential_manager_.is_bound()) {
-    LocalFrame* frame = local_dom_window_->GetFrame();
+    LocalFrame* frame = GetSupplementable()->GetFrame();
     DCHECK(frame);
     frame->GetBrowserInterfaceBroker().GetInterface(
         credential_manager_.BindNewPipeAndPassReceiver(
@@ -35,7 +35,7 @@ mojom::blink::CredentialManager* CredentialManagerProxy::CredentialManager() {
 
 mojom::blink::Authenticator* CredentialManagerProxy::Authenticator() {
   if (!authenticator_.is_bound()) {
-    LocalFrame* frame = local_dom_window_->GetFrame();
+    LocalFrame* frame = GetSupplementable()->GetFrame();
     DCHECK(frame);
     frame->GetBrowserInterfaceBroker().GetInterface(
         authenticator_.BindNewPipeAndPassReceiver(
@@ -46,7 +46,7 @@ mojom::blink::Authenticator* CredentialManagerProxy::Authenticator() {
 
 mojom::blink::WebOTPService* CredentialManagerProxy::WebOTPService() {
   if (!webotp_service_.is_bound()) {
-    LocalFrame* frame = local_dom_window_->GetFrame();
+    LocalFrame* frame = GetSupplementable()->GetFrame();
     DCHECK(frame);
     frame->GetBrowserInterfaceBroker().GetInterface(
         webotp_service_.BindNewPipeAndPassReceiver(
@@ -58,7 +58,7 @@ mojom::blink::WebOTPService* CredentialManagerProxy::WebOTPService() {
 payments::mojom::blink::SecurePaymentConfirmationService*
 CredentialManagerProxy::SecurePaymentConfirmationService() {
   if (!spc_service_.is_bound()) {
-    LocalFrame* frame = local_dom_window_->GetFrame();
+    LocalFrame* frame = GetSupplementable()->GetFrame();
     DCHECK(frame);
     frame->GetBrowserInterfaceBroker().GetInterface(
         spc_service_.BindNewPipeAndPassReceiver(
@@ -74,7 +74,7 @@ void CredentialManagerProxy::BindRemoteForFedCm(
   if (remote.is_bound())
     return;
 
-  LocalFrame* frame = local_dom_window_->GetFrame();
+  LocalFrame* frame = GetSupplementable()->GetFrame();
   // TODO(kenrb): Work out whether kUserInteraction is the best task type
   // here. It might be appropriate to create a new one.
   frame->GetBrowserInterfaceBroker().GetInterface(
@@ -122,10 +122,11 @@ CredentialManagerProxy* CredentialManagerProxy::From(
 }
 
 CredentialManagerProxy* CredentialManagerProxy::From(LocalDOMWindow* window) {
-  CredentialManagerProxy* supplement = window->GetCredentialManagerProxy();
+  auto* supplement =
+      Supplement<LocalDOMWindow>::From<CredentialManagerProxy>(*window);
   if (!supplement) {
     supplement = MakeGarbageCollected<CredentialManagerProxy>(*window);
-    window->SetCredentialManagerProxy(supplement);
+    ProvideTo(*window, supplement);
   }
   return supplement;
 }
@@ -136,10 +137,11 @@ CredentialManagerProxy* CredentialManagerProxy::From(
   // Since the FedCM API cannot be used by workers, the execution context is
   // always a window.
   LocalDOMWindow& window = *To<LocalDOMWindow>(execution_context);
-  CredentialManagerProxy* supplement = window.GetCredentialManagerProxy();
+  auto* supplement =
+      Supplement<LocalDOMWindow>::From<CredentialManagerProxy>(window);
   if (!supplement) {
     supplement = MakeGarbageCollected<CredentialManagerProxy>(window);
-    window.SetCredentialManagerProxy(supplement);
+    ProvideTo(window, supplement);
   }
   return supplement;
 }
@@ -151,7 +153,7 @@ void CredentialManagerProxy::Trace(Visitor* visitor) const {
   visitor->Trace(spc_service_);
   visitor->Trace(federated_auth_request_);
   visitor->Trace(digital_identity_request_);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 }  // namespace blink

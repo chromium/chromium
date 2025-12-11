@@ -47,8 +47,10 @@ class SpeechGrammarList;
 
 class MODULES_EXPORT SpeechRecognitionController final
     : public GarbageCollected<SpeechRecognitionController>,
-      public GarbageCollectedMixin {
+      public Supplement<LocalDOMWindow> {
  public:
+  static const unsigned kSupplementIndex;
+
   explicit SpeechRecognitionController(LocalDOMWindow&);
   ~SpeechRecognitionController();
 
@@ -97,7 +99,6 @@ class MODULES_EXPORT SpeechRecognitionController final
   media::mojom::blink::OnDeviceSpeechRecognition*
   GetOnDeviceSpeechRecognition();
 
-  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoRemote<media::mojom::blink::SpeechRecognizer> speech_recognizer_;
   HeapMojoRemote<media::mojom::blink::OnDeviceSpeechRecognition>
       on_device_speech_recognition_;

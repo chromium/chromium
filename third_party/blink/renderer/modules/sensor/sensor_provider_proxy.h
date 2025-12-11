@@ -21,8 +21,11 @@ class SensorProxy;
 // This class wraps 'SensorProvider' mojo interface and it manages
 // 'SensorProxy' instances.
 class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
-                                  public GarbageCollectedMixin {
+                                  public Supplement<LocalDOMWindow> {
  public:
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kSensorProviderProxy;
+
   static SensorProviderProxy* From(LocalDOMWindow*);
 
   explicit SensorProviderProxy(LocalDOMWindow&);
@@ -39,8 +42,6 @@ class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
 
   void Trace(Visitor*) const override;
 
-  LocalDOMWindow* GetLocalDOMWindow() const { return local_dom_window_; }
-
  private:
   friend class SensorProxy;
 
@@ -51,7 +52,6 @@ class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
   void InitializeIfNeeded();
   void OnSensorProviderConnectionError();
 
-  Member<LocalDOMWindow> local_dom_window_;
   HeapHashSet<WeakMember<SensorProxy>> sensor_proxies_;
   HeapMojoRemote<mojom::blink::WebSensorProvider> sensor_provider_;
 };

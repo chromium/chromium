@@ -29,8 +29,11 @@ struct DOMPaintTimingInfo;
 // elements for a given window.
 class CORE_EXPORT ImageElementTiming final
     : public GarbageCollected<ImageElementTiming>,
-      public GarbageCollectedMixin {
+      public Supplement<LocalDOMWindow> {
  public:
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kImageElementTiming;
+
   // The maximum amount of characters included in Element Timing and Largest
   // Contentful Paint for inline images.
   static constexpr const unsigned kInlineImageMaxChars = 100;
@@ -114,8 +117,6 @@ class CORE_EXPORT ImageElementTiming final
     AtomicString id;
     Member<Element> element;
   };
-
-  Member<LocalDOMWindow> local_dom_window_;
 
   // Vector containing the element timing infos that will be reported during the
   // next presentation promise callback.

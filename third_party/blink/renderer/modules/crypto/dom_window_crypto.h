@@ -40,8 +40,10 @@ class Crypto;
 class LocalDOMWindow;
 
 class DOMWindowCrypto final : public GarbageCollected<DOMWindowCrypto>,
-                              public GarbageCollectedMixin {
+                              public Supplement<LocalDOMWindow> {
  public:
+  static const unsigned kSupplementIndex;
+
   static DOMWindowCrypto& From(LocalDOMWindow&);
   static Crypto* crypto(LocalDOMWindow&);
 
@@ -52,7 +54,6 @@ class DOMWindowCrypto final : public GarbageCollected<DOMWindowCrypto>,
   void Trace(Visitor*) const override;
 
  private:
-  Member<LocalDOMWindow> local_dom_window_;
   mutable Member<Crypto> crypto_;
 };
 

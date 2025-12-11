@@ -257,8 +257,8 @@ UserMediaClient::UserMediaClient(
     UserMediaProcessor* user_media_processor,
     UserMediaProcessor* display_user_media_processor,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : ExecutionContextLifecycleObserver(frame->DomWindow()),
-      local_dom_window_(*frame->DomWindow()),
+    : Supplement<LocalDOMWindow>(*frame->DomWindow()),
+      ExecutionContextLifecycleObserver(frame->DomWindow()),
       frame_(frame),
       media_devices_dispatcher_(frame->DomWindow()),
       pending_device_requests_(
@@ -423,7 +423,7 @@ void UserMediaClient::ContextDestroyed() {
 }
 
 void UserMediaClient::Trace(Visitor* visitor) const {
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(frame_);
   visitor->Trace(media_devices_dispatcher_);
@@ -450,18 +450,21 @@ UserMediaClient::GetMediaDevicesDispatcher() {
   return media_devices_dispatcher_.get();
 }
 
+const unsigned UserMediaClient::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kUserMediaClient);
+
 UserMediaClient* UserMediaClient::From(LocalDOMWindow* window) {
   if (!window) {
     return nullptr;
   }
-  UserMediaClient* client = window->GetUserMediaClient();
+  auto* client = Supplement<LocalDOMWindow>::From<UserMediaClient>(window);
   if (!client) {
     if (!window->GetFrame()) {
       return nullptr;
     }
     client = MakeGarbageCollected<UserMediaClient>(
         window->GetFrame(), window->GetTaskRunner(TaskType::kInternalMedia));
-    window->SetUserMediaClient(client);
+    Supplement<LocalDOMWindow>::ProvideTo(*window, client);
   }
   return client;
 }

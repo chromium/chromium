@@ -26,16 +26,17 @@ uint64_t GetRegionSize(const cc::Region& region) {
 
 // static
 ContainerTiming& ContainerTiming::From(LocalDOMWindow& window) {
-  ContainerTiming* timing = window.GetContainerTiming();
+  ContainerTiming* timing =
+      Supplement<LocalDOMWindow>::From<ContainerTiming>(window);
   if (!timing) {
     timing = MakeGarbageCollected<ContainerTiming>(window);
-    window.SetContainerTiming(timing);
+    ProvideTo(window, timing);
   }
   return *timing;
 }
 
 ContainerTiming::ContainerTiming(LocalDOMWindow& window)
-    : local_dom_window_(window),
+    : Supplement<LocalDOMWindow>(window),
       performance_(DOMWindowPerformance::performance(window)) {}
 
 bool ContainerTiming::CanReportToContainerTiming() const {
@@ -188,7 +189,7 @@ void ContainerTiming::EmitPerformanceEntries() {
 }
 
 void ContainerTiming::Trace(Visitor* visitor) const {
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(performance_);
   visitor->Trace(container_root_records_);
 }

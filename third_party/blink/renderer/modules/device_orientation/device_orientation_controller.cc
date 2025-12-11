@@ -29,7 +29,7 @@ namespace blink {
 
 DeviceOrientationController::DeviceOrientationController(LocalDOMWindow& window)
     : DeviceSingleWindowEventController(window),
-      local_dom_window_(window),
+      Supplement<LocalDOMWindow>(window),
       permission_service_(&window) {}
 
 DeviceOrientationController::~DeviceOrientationController() = default;
@@ -43,10 +43,10 @@ void DeviceOrientationController::DidUpdateData() {
 DeviceOrientationController& DeviceOrientationController::From(
     LocalDOMWindow& window) {
   DeviceOrientationController* controller =
-      window.GetDeviceOrientationController();
+      Supplement<LocalDOMWindow>::From<DeviceOrientationController>(window);
   if (!controller) {
     controller = MakeGarbageCollected<DeviceOrientationController>(window);
-    window.SetDeviceOrientationController(controller);
+    ProvideTo(window, controller);
   }
   return *controller;
 }
@@ -160,7 +160,7 @@ void DeviceOrientationController::Trace(Visitor* visitor) const {
   visitor->Trace(orientation_event_pump_);
   visitor->Trace(permission_service_);
   DeviceSingleWindowEventController::Trace(visitor);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 void DeviceOrientationController::RegisterWithOrientationEventPump(
@@ -174,7 +174,7 @@ void DeviceOrientationController::RegisterWithOrientationEventPump(
 
 ScriptPromise<V8PermissionState> DeviceOrientationController::RequestPermission(
     ScriptState* script_state) {
-  ExecutionContext* context = local_dom_window_;
+  ExecutionContext* context = GetSupplementable();
   DCHECK_EQ(context, ExecutionContext::From(script_state));
 
   has_requested_permission_ = true;

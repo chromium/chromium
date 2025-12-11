@@ -34,12 +34,16 @@ const char kFeaturePolicyBlocked[] =
     "Access to the feature \"local-fonts\" is disallowed by Permissions Policy";
 }
 
+// static
+const unsigned FontAccess::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kFontAccess);
+
 FontAccess::FontAccess(LocalDOMWindow* window)
-    : local_dom_window_(*window), remote_(window) {}
+    : Supplement<LocalDOMWindow>(*window), remote_(window) {}
 
 void FontAccess::Trace(blink::Visitor* visitor) const {
   visitor->Trace(remote_);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 // static
@@ -55,10 +59,10 @@ ScriptPromise<IDLSequence<FontMetadata>> FontAccess::queryLocalFonts(
 
 // static
 FontAccess* FontAccess::From(LocalDOMWindow* window) {
-  FontAccess* supplement = window->GetFontAccess();
+  auto* supplement = Supplement<LocalDOMWindow>::From<FontAccess>(window);
   if (!supplement) {
     supplement = MakeGarbageCollected<FontAccess>(window);
-    window->SetFontAccess(supplement);
+    Supplement<LocalDOMWindow>::ProvideTo(*window, supplement);
   }
   return supplement;
 }

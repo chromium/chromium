@@ -24,32 +24,39 @@
 namespace blink {
 
 HighlightRegistry* HighlightRegistry::From(LocalDOMWindow& window) {
-  HighlightRegistry* supplement = window.GetHighlightRegistry();
+  HighlightRegistry* supplement =
+      Supplement<LocalDOMWindow>::From<HighlightRegistry>(window);
   if (!supplement) {
     supplement = MakeGarbageCollected<HighlightRegistry>(window);
-    window.SetHighlightRegistry(supplement);
+    Supplement<LocalDOMWindow>::ProvideTo(window, supplement);
   }
   return supplement;
 }
 
 HighlightRegistry::HighlightRegistry(LocalDOMWindow& window)
-    : local_dom_window_(window), frame_(window.GetFrame()) {}
+    : Supplement<LocalDOMWindow>(window), frame_(window.GetFrame()) {}
 
 HighlightRegistry::~HighlightRegistry() = default;
+
+const unsigned HighlightRegistry::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kHighlightRegistry);
 
 void HighlightRegistry::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlights_);
   visitor->Trace(frame_);
   visitor->Trace(active_highlights_in_node_);
   ScriptWrappable::Trace(visitor);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 HighlightRegistry* HighlightRegistry::GetHighlightRegistry(const Node* node) {
   if (!node) {
     return nullptr;
   }
-  return node->GetDocument().domWindow()->GetHighlightRegistry();
+  return node->GetDocument()
+      .domWindow()
+      ->Supplementable<LocalDOMWindow,
+                       43>::RequireSupplement<HighlightRegistry>();
 }
 
 bool HighlightRegistry::IsAbstractRangePaintable(AbstractRange* abstract_range,

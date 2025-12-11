@@ -22,8 +22,10 @@ class QueryOptions;
 class ScriptState;
 
 class FontAccess final : public GarbageCollected<FontAccess>,
-                         public GarbageCollectedMixin {
+                         public Supplement<LocalDOMWindow> {
  public:
+  static const unsigned kSupplementIndex;
+
   explicit FontAccess(LocalDOMWindow* window);
 
   void Trace(blink::Visitor* visitor) const override;
@@ -57,7 +59,6 @@ class FontAccess final : public GarbageCollected<FontAccess>,
 
   void OnDisconnect();
 
-  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoRemote<mojom::blink::FontAccessManager> remote_;
 };
 

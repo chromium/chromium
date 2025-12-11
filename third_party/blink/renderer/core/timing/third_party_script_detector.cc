@@ -109,23 +109,29 @@ ThirdPartyScriptDetector::Technology GetTechnologyFromGroupIndex(int index) {
 }  // namespace
 
 // static
+const unsigned ThirdPartyScriptDetector::kSupplementIndex =
+    static_cast<unsigned>(
+        LocalDOMWindow::Supplements::kThirdPartyScriptDetector);
+
+// static
 ThirdPartyScriptDetector& ThirdPartyScriptDetector::From(
     LocalDOMWindow& window) {
-  ThirdPartyScriptDetector* supplement = window.GetThirdPartyScriptDetector();
+  ThirdPartyScriptDetector* supplement =
+      Supplement<LocalDOMWindow>::From<ThirdPartyScriptDetector>(window);
   if (!supplement) {
     supplement = MakeGarbageCollected<ThirdPartyScriptDetector>(window);
-    window.SetThirdPartyScriptDetector(supplement);
+    ProvideTo(window, supplement);
   }
   return *supplement;
 }
 
 ThirdPartyScriptDetector::ThirdPartyScriptDetector(LocalDOMWindow& window)
-    : local_dom_window_(window),
+    : Supplement<LocalDOMWindow>(window),
       precompiled_detection_regex__(
           kThirdPartyTechnologiesSourceLocationRegexString) {}
 
 void ThirdPartyScriptDetector::Trace(Visitor* visitor) const {
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 ThirdPartyScriptDetector::Technology ThirdPartyScriptDetector::Detect(

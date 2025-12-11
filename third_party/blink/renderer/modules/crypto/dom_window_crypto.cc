@@ -37,13 +37,17 @@
 namespace blink {
 
 DOMWindowCrypto::DOMWindowCrypto(LocalDOMWindow& window)
-    : local_dom_window_(window) {}
+    : Supplement<LocalDOMWindow>(window) {}
+
+const unsigned DOMWindowCrypto::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kDOMWindowCrypto);
 
 DOMWindowCrypto& DOMWindowCrypto::From(LocalDOMWindow& window) {
-  DOMWindowCrypto* supplement = window.GetDOMWindowCrypto();
+  DOMWindowCrypto* supplement =
+      Supplement<LocalDOMWindow>::From<DOMWindowCrypto>(window);
   if (!supplement) {
     supplement = MakeGarbageCollected<DOMWindowCrypto>(window);
-    window.SetDOMWindowCrypto(supplement);
+    ProvideTo(window, supplement);
   }
   return *supplement;
 }
@@ -60,7 +64,7 @@ Crypto* DOMWindowCrypto::crypto() const {
 
 void DOMWindowCrypto::Trace(Visitor* visitor) const {
   visitor->Trace(crypto_);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 }  // namespace blink

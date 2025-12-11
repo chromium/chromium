@@ -23,16 +23,17 @@ namespace blink {
 
 DeviceMotionController::DeviceMotionController(LocalDOMWindow& window)
     : DeviceSingleWindowEventController(window),
-      local_dom_window_(window),
+      Supplement<LocalDOMWindow>(window),
       permission_service_(&window) {}
 
 DeviceMotionController::~DeviceMotionController() = default;
 
 DeviceMotionController& DeviceMotionController::From(LocalDOMWindow& window) {
-  DeviceMotionController* controller = window.GetDeviceMotionController();
+  DeviceMotionController* controller =
+      Supplement<LocalDOMWindow>::From<DeviceMotionController>(window);
   if (!controller) {
     controller = MakeGarbageCollected<DeviceMotionController>(window);
-    window.SetDeviceMotionController(controller);
+    ProvideTo(window, controller);
   }
   return *controller;
 }
@@ -117,12 +118,12 @@ void DeviceMotionController::Trace(Visitor* visitor) const {
   DeviceSingleWindowEventController::Trace(visitor);
   visitor->Trace(motion_event_pump_);
   visitor->Trace(permission_service_);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 ScriptPromise<V8PermissionState> DeviceMotionController::RequestPermission(
     ScriptState* script_state) {
-  ExecutionContext* context = local_dom_window_;
+  ExecutionContext* context = GetSupplementable();
   DCHECK_EQ(context, ExecutionContext::From(script_state));
 
   has_requested_permission_ = true;

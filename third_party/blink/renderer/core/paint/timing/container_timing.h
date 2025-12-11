@@ -21,8 +21,11 @@ namespace blink {
 // timing events for a given window.
 class CORE_EXPORT ContainerTiming final
     : public GarbageCollected<ContainerTiming>,
-      public GarbageCollectedMixin {
+      public Supplement<LocalDOMWindow> {
  public:
+  static constexpr auto kSupplementIndex =
+      LocalDOMWindow::Supplements::kContainerTiming;
+
   explicit ContainerTiming(LocalDOMWindow&);
   ContainerTiming(const ContainerTiming&) = delete;
   ContainerTiming& operator=(const ContainerTiming&) = delete;
@@ -80,7 +83,6 @@ class CORE_EXPORT ContainerTiming final
   Record* GetOrCreateRecord(const DOMPaintTimingInfo& paint_timing_info,
                             Element* container_root);
 
-  Member<LocalDOMWindow> local_dom_window_;
   Member<WindowPerformance> performance_;
   HeapHashMap<WeakMember<Element>, Member<Record>> container_root_records_;
 };

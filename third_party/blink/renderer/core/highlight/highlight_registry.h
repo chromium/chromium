@@ -32,6 +32,7 @@ class LocalFrame;
 class Text;
 
 class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
+                                      public Supplement<LocalDOMWindow>,
                                       public HighlightRegistryMapIterable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -99,7 +100,6 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
  private:
   bool IsAbstractRangePaintable(AbstractRange*, Document*) const;
 
-  Member<LocalDOMWindow> local_dom_window_;
   HighlightRegistryMap highlights_;
   Member<LocalFrame> frame_;
   // Only valid after ValidateHighlightMarkers(), used to optimize painting.

@@ -13,9 +13,11 @@
 
 namespace blink {
 
+const unsigned DOMWindowLaunchQueue::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kDOMWindowLaunchQueue);
+
 DOMWindowLaunchQueue::DOMWindowLaunchQueue(LocalDOMWindow& window)
-    : local_dom_window_(window),
-      launch_queue_(MakeGarbageCollected<LaunchQueue>()) {}
+    : Supplement(window), launch_queue_(MakeGarbageCollected<LaunchQueue>()) {}
 
 LaunchQueue* DOMWindowLaunchQueue::launchQueue(LocalDOMWindow& window) {
   return FromState(&window)->launch_queue_.Get();
@@ -39,15 +41,16 @@ void DOMWindowLaunchQueue::EnqueueLaunchParams(
 
 void DOMWindowLaunchQueue::Trace(Visitor* visitor) const {
   visitor->Trace(launch_queue_);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 // static
 DOMWindowLaunchQueue* DOMWindowLaunchQueue::FromState(LocalDOMWindow* window) {
-  DOMWindowLaunchQueue* supplement = window->GetDOMWindowLaunchQueue();
+  DOMWindowLaunchQueue* supplement =
+      Supplement<LocalDOMWindow>::From<DOMWindowLaunchQueue>(window);
   if (!supplement) {
     supplement = MakeGarbageCollected<DOMWindowLaunchQueue>(*window);
-    window->SetDOMWindowLaunchQueue(supplement);
+    ProvideTo(*window, supplement);
   }
   return supplement;
 }

@@ -23,7 +23,8 @@ class ScreenDetails;
 // Supplements LocalDOMWindow with a ScreenDetails interface.
 // https://w3c.github.io/window-management/
 class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
-                                  public ExecutionContextLifecycleObserver {
+                                  public ExecutionContextLifecycleObserver,
+                                  public Supplement<LocalDOMWindow> {
  public:
   static const unsigned kSupplementIndex;
 
@@ -59,7 +60,6 @@ class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
       bool permission_requested,
       mojom::blink::PermissionStatus status);
 
-  Member<LocalDOMWindow> local_dom_window_;
   Member<ScreenDetails> screen_details_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };

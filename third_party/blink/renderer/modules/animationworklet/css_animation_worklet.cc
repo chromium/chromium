@@ -35,23 +35,24 @@ void CSSAnimationWorklet::ContextDestroyed() {
 
 void CSSAnimationWorklet::Trace(Visitor* visitor) const {
   visitor->Trace(animation_worklet_);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 // static
 CSSAnimationWorklet& CSSAnimationWorklet::From(LocalDOMWindow& window) {
-  CSSAnimationWorklet* supplement = window.GetCSSAnimationWorklet();
+  CSSAnimationWorklet* supplement =
+      Supplement<LocalDOMWindow>::From<CSSAnimationWorklet>(window);
   if (!supplement) {
     supplement = MakeGarbageCollected<CSSAnimationWorklet>(window);
-    window.SetCSSAnimationWorklet(supplement);
+    ProvideTo(window, supplement);
   }
   return *supplement;
 }
 
 CSSAnimationWorklet::CSSAnimationWorklet(LocalDOMWindow& window)
-    : ExecutionContextLifecycleObserver(&window),
-      local_dom_window_(window),
+    : Supplement(window),
+      ExecutionContextLifecycleObserver(&window),
       animation_worklet_(MakeGarbageCollected<AnimationWorklet>(window)) {
   DCHECK(GetExecutionContext());
 }

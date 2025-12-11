@@ -356,7 +356,8 @@ TEST_F(RemotePlaybackTest, IsListening) {
   LocalDOMWindow& window = *page_holder()->GetFrame().DomWindow();
   MockPresentationController* mock_controller =
       MakeGarbageCollected<MockPresentationController>(window);
-  window.SetPresentationController(mock_controller);
+  Supplement<LocalDOMWindow>::ProvideTo(
+      window, static_cast<PresentationController*>(mock_controller));
 
   EXPECT_CALL(*mock_controller,
               AddAvailabilityObserver(testing::Eq(&remote_playback)))

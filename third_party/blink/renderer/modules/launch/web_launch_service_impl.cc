@@ -13,10 +13,13 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
+// static
+const unsigned WebLaunchServiceImpl::kSupplementIndex =
+    static_cast<unsigned>(LocalDOMWindow::Supplements::kWebLaunchServiceImpl);
 
 // static
 WebLaunchServiceImpl* WebLaunchServiceImpl::From(LocalDOMWindow& window) {
-  return window.GetWebLaunchServiceImpl();
+  return Supplement<LocalDOMWindow>::From<WebLaunchServiceImpl>(window);
 }
 
 // static
@@ -28,14 +31,14 @@ void WebLaunchServiceImpl::BindReceiver(
   if (!service) {
     service = MakeGarbageCollected<WebLaunchServiceImpl>(
         base::PassKey<WebLaunchServiceImpl>(), *frame->DomWindow());
-    frame->DomWindow()->SetWebLaunchServiceImpl(service);
+    Supplement<LocalDOMWindow>::ProvideTo(*frame->DomWindow(), service);
   }
   service->Bind(std::move(receiver));
 }
 
 WebLaunchServiceImpl::WebLaunchServiceImpl(base::PassKey<WebLaunchServiceImpl>,
                                            LocalDOMWindow& window)
-    : local_dom_window_(window), receiver_(this, &window) {}
+    : Supplement<LocalDOMWindow>(window), receiver_(this, &window) {}
 
 WebLaunchServiceImpl::~WebLaunchServiceImpl() = default;
 
@@ -45,13 +48,13 @@ void WebLaunchServiceImpl::Bind(
   // doesn't keep this around, so it is re-requested on demand every time;
   // however, there should never be multiple callers bound at a time.
   receiver_.reset();
-  receiver_.Bind(std::move(receiver),
-                 local_dom_window_->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
+                                          TaskType::kMiscPlatformAPI));
 }
 
 void WebLaunchServiceImpl::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 void WebLaunchServiceImpl::SetLaunchFiles(
@@ -59,19 +62,20 @@ void WebLaunchServiceImpl::SetLaunchFiles(
   HeapVector<Member<FileSystemHandle>> files;
   for (auto& entry : entries) {
     files.push_back(FileSystemHandle::CreateFromMojoEntry(
-        std::move(entry), local_dom_window_->GetExecutionContext()));
+        std::move(entry), GetSupplementable()->GetExecutionContext()));
   }
 
-  UseCounter::Count(local_dom_window_->GetExecutionContext(),
+  UseCounter::Count(GetSupplementable()->GetExecutionContext(),
                     WebFeature::kFileHandlingLaunch);
-  DOMWindowLaunchQueue::UpdateLaunchFiles(local_dom_window_, std::move(files));
+  DOMWindowLaunchQueue::UpdateLaunchFiles(GetSupplementable(),
+                                          std::move(files));
 }
 
 void WebLaunchServiceImpl::EnqueueLaunchParams(
     const KURL& launch_url,
     base::TimeTicks time_navigation_started_in_browser,
     bool navigation_started) {
-  DOMWindowLaunchQueue::EnqueueLaunchParams(local_dom_window_, launch_url,
+  DOMWindowLaunchQueue::EnqueueLaunchParams(GetSupplementable(), launch_url,
                                             time_navigation_started_in_browser,
                                             navigation_started);
 }

@@ -11,22 +11,22 @@
 namespace blink {
 
 DOMWindowStorageController::DOMWindowStorageController(LocalDOMWindow& window)
-    : local_dom_window_(window) {
+    : Supplement<LocalDOMWindow>(window) {
   window.RegisterEventListenerObserver(this);
 }
 
 void DOMWindowStorageController::Trace(Visitor* visitor) const {
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 // static
 DOMWindowStorageController& DOMWindowStorageController::From(
     LocalDOMWindow& window) {
   DOMWindowStorageController* controller =
-      window.GetDOMWindowStorageController();
+      Supplement<LocalDOMWindow>::From<DOMWindowStorageController>(window);
   if (!controller) {
     controller = MakeGarbageCollected<DOMWindowStorageController>(window);
-    window.SetDOMWindowStorageController(controller);
+    ProvideTo(window, controller);
   }
   return *controller;
 }

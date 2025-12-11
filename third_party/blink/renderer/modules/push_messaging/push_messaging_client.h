@@ -25,8 +25,10 @@ class PushSubscriptionOptions;
 class ServiceWorkerRegistration;
 
 class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
-                                  public GarbageCollectedMixin {
+                                  public Supplement<LocalDOMWindow> {
  public:
+  static const unsigned kSupplementIndex;
+
   explicit PushMessagingClient(LocalDOMWindow&);
 
   PushMessagingClient(const PushMessagingClient&) = delete;
@@ -65,7 +67,6 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
                     mojom::blink::PushRegistrationStatus status,
                     mojom::blink::PushSubscriptionPtr subscription);
 
-  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoRemote<mojom::blink::PushMessaging> push_messaging_manager_;
 };
 

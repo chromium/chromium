@@ -9,23 +9,27 @@
 
 namespace blink {
 
+const unsigned ResizeObserverController::kSupplementIndex =
+    static_cast<unsigned>(
+        LocalDOMWindow::Supplements::kResizeObserverController);
+
 ResizeObserverController* ResizeObserverController::From(
     LocalDOMWindow& window) {
   auto* controller = FromIfExists(window);
   if (!controller) {
     controller = MakeGarbageCollected<ResizeObserverController>(window);
-    window.SetResizeObserverController(controller);
+    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
   }
   return controller;
 }
 
 ResizeObserverController* ResizeObserverController::FromIfExists(
     LocalDOMWindow& window) {
-  return window.GetResizeObserverController();
+  return Supplement<LocalDOMWindow>::From<ResizeObserverController>(window);
 }
 
 ResizeObserverController::ResizeObserverController(LocalDOMWindow& window)
-    : local_dom_window_(window) {}
+    : Supplement(window) {}
 
 void ResizeObserverController::AddObserver(ResizeObserver& observer) {
   switch (observer.Delivery()) {
@@ -76,7 +80,7 @@ void ResizeObserverController::ClearObservations() {
 }
 
 void ResizeObserverController::Trace(Visitor* visitor) const {
-  visitor->Trace(local_dom_window_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(observers_);
 }
 

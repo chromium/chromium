@@ -28,7 +28,8 @@ using device::mojom::blink::ScreenOrientationLockResult;
 class MODULES_EXPORT ScreenOrientationController final
     : public GarbageCollected<ScreenOrientationController>,
       public ExecutionContextLifecycleObserver,
-      public PageVisibilityObserver {
+      public PageVisibilityObserver,
+      public Supplement<LocalDOMWindow> {
  public:
   explicit ScreenOrientationController(LocalDOMWindow&);
 
@@ -88,7 +89,6 @@ class MODULES_EXPORT ScreenOrientationController final
       std::unique_ptr<WebLockOrientationCallback> callback);
   void UnlockOrientationInternal();
 
-  Member<LocalDOMWindow> local_dom_window_;
   Member<ScreenOrientation> orientation_;
   bool active_lock_ = false;
   HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>

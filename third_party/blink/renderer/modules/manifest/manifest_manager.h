@@ -37,6 +37,7 @@ class ResourceResponse;
 // they are not specified in the json.
 class MODULES_EXPORT ManifestManager
     : public GarbageCollected<ManifestManager>,
+      public Supplement<LocalDOMWindow>,
       public mojom::blink::ManifestManager,
       public ExecutionContextLifecycleObserver {
  public:
@@ -131,7 +132,6 @@ class MODULES_EXPORT ManifestManager
 
   friend class ManifestManagerTest;
 
-  Member<LocalDOMWindow> local_dom_window_;
   Member<ManifestFetcher> fetcher_;
   Member<ManifestChangeNotifier> manifest_change_notifier_;
 

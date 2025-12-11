@@ -91,7 +91,7 @@ class UserMediaClientUnderTest : public UserMediaClient {
 class ScopedMockUserMediaClient {
  public:
   explicit ScopedMockUserMediaClient(LocalDOMWindow* window)
-      : original_(window->GetUserMediaClient()) {
+      : original_(Supplement<LocalDOMWindow>::From<UserMediaClient>(window)) {
     auto* user_media_processor =
         MakeGarbageCollected<MockUserMediaProcessor>(window->GetFrame());
     auto* display_user_media_processor =
@@ -103,16 +103,20 @@ class ScopedMockUserMediaClient {
     temp_ = MakeGarbageCollected<UserMediaClientUnderTest>(
         window->GetFrame(), user_media_processor, display_user_media_processor,
         scheduler::GetSingleThreadTaskRunnerForTesting());
-    window->SetUserMediaClient(temp_.Get());
+    Supplement<LocalDOMWindow>::ProvideTo<UserMediaClient>(*window,
+                                                           temp_.Get());
   }
 
   ~ScopedMockUserMediaClient() {
-    LocalDOMWindow* window = temp_->GetLocalDOMWindow();
-    if (window->GetUserMediaClient() == temp_.Get()) {
+    auto* window = temp_->GetSupplementable();
+    if (Supplement<LocalDOMWindow>::From<UserMediaClient>(window) ==
+        temp_.Get()) {
       if (original_) {
-        window->SetUserMediaClient(original_.Get());
+        Supplement<LocalDOMWindow>::ProvideTo<UserMediaClient>(*window,
+                                                               original_.Get());
       } else {
-        window->SetUserMediaClient(nullptr);
+        window->Supplementable<LocalDOMWindow,
+                               43>::RemoveSupplement<UserMediaClient>();
       }
     }
   }

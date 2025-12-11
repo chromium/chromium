@@ -17,8 +17,10 @@ class LocalDOMWindow;
 class StorageArea;
 
 class DOMWindowStorage final : public GarbageCollected<DOMWindowStorage>,
-                               public GarbageCollectedMixin {
+                               public Supplement<LocalDOMWindow> {
  public:
+  static const unsigned kSupplementIndex;
+
   static DOMWindowStorage& From(LocalDOMWindow&);
   static StorageArea* sessionStorage(LocalDOMWindow&, ExceptionState&);
   static StorageArea* localStorage(LocalDOMWindow&, ExceptionState&);
@@ -49,7 +51,6 @@ class DOMWindowStorage final : public GarbageCollected<DOMWindowStorage>,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area_for_init)
       const;
 
-  Member<LocalDOMWindow> local_dom_window_;
   mutable Member<StorageArea> session_storage_;
   mutable Member<StorageArea> local_storage_;
 };
