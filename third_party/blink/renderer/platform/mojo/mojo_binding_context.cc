@@ -14,12 +14,16 @@ class MojoJSInterfaceBrokerWrapper final
       public GarbageCollectedMixin {
  public:
   explicit MojoJSInterfaceBrokerWrapper(MojoBindingContext& context)
-      : impl_(&context) {}
+      : mojo_binding_context_(context), impl_(&context) {}
   BrowserInterfaceBrokerProxyImpl& impl() { return impl_; }
 
-  void Trace(Visitor* visitor) const override { visitor->Trace(impl_); }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(impl_);
+    visitor->Trace(mojo_binding_context_);
+  }
 
  private:
+  Member<MojoBindingContext> mojo_binding_context_;
   BrowserInterfaceBrokerProxyImpl impl_;
 };
 
