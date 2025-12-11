@@ -112,6 +112,7 @@ class GlicButton : public TabStripNudgeButton,
  private:
   // views::LabelButton:
   void SetText(std::u16string_view text) override;
+  void NotifyClick(const ui::Event& event) override;
 
   // Creates the model for the context menu.
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
