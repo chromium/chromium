@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/updater/updater.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -104,7 +104,7 @@ std::u16string KeystonePromotionInfoBarDelegate::GetButtonLabel(
 }
 
 bool KeystonePromotionInfoBarDelegate::Accept() {
-  SetupSystemUpdater();
+  updater::SetUpSystemUpdater();
   return true;
 }
 

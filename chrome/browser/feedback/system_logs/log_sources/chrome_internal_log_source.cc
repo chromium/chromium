@@ -75,7 +75,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#include "chrome/browser/updater/browser_updater_client.h"
+#include "chrome/browser/updater/updater.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -690,8 +690,8 @@ void ChromeInternalLogSource::PopulateLastUpdateState(
 #if BUILDFLAG(IS_MAC)
 void ChromeInternalLogSource::PopulateLastUpdateState(
     SystemLogsResponse* response) {
-  const std::optional<updater::UpdateService::UpdateState> update_state =
-      BrowserUpdaterClient::GetLastOnDemandUpdateState();
+  const std::optional<updater::mojom::UpdateState> update_state =
+      updater::GetLastOnDemandUpdateState();
   if (!update_state) {
     return;  // There is nothing to include if no update check has completed.
   }

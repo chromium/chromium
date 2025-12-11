@@ -16,6 +16,8 @@
 #include "chrome/updater/registration_data.h"
 #include "components/version_info/version_info.h"
 
+namespace updater {
+
 std::string BrowserUpdaterClient::GetAppId() {
   return std::string(base::apple::BaseBundleID());
 }
@@ -24,9 +26,9 @@ base::FilePath BrowserUpdaterClient::GetExpectedEcp() {
   return base::apple::OuterBundlePath();
 }
 
-updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
+RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
   base::FilePath bundle = base::apple::OuterBundlePath();
-  updater::RegistrationRequest req;
+  RegistrationRequest req;
   req.app_id = GetAppId();
   google_brand::GetBrand(&req.brand_code);
   req.version = version_info::GetVersionNumber();
@@ -37,8 +39,9 @@ updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
   return req;
 }
 
-bool BrowserUpdaterClient::AppMatches(
-    const updater::UpdateService::AppState& app) {
+bool BrowserUpdaterClient::AppMatches(const UpdateService::AppState& app) {
   return base::EqualsCaseInsensitiveASCII(app.app_id, GetAppId()) &&
          app.ecp == GetExpectedEcp();
 }
+
+}  // namespace updater

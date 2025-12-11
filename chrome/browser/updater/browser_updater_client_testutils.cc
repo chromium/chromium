@@ -10,8 +10,11 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/version.h"
+#include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/updater/update_service.h"
 
 namespace policy {
@@ -116,6 +119,31 @@ base::RepeatingCallback<scoped_refptr<UpdateService>()> MakeFakeService(
             base::MakeRefCounted<FakeUpdateService>(result, states));
       },
       result, states);
+}
+
+base::ScopedClosureRunner OverrideService(
+    UpdateService::Result result,
+    const std::vector<UpdateService::AppState>& states) {
+  return base::ScopedClosureRunner(base::BindOnce(
+      [](scoped_refptr<BrowserUpdaterClient>) {},
+      BrowserUpdaterClient::Create(MakeFakeService(result, states),
+                                   UpdaterScope::kUser)));
+}
+
+void LoadAppStates() {
+  base::RunLoop loop;
+  BrowserUpdaterClient::Create(updater::UpdaterScope::kUser)
+      ->IsBrowserRegistered(
+          base::BindOnce([](bool) {}).Then(loop.QuitClosure()));
+  loop.Run();
+}
+
+std::string GetAppId() {
+  return BrowserUpdaterClient::GetAppId();
+}
+
+base::FilePath GetExpectedEcp() {
+  return BrowserUpdaterClient::GetExpectedEcp();
 }
 
 }  // namespace updater
