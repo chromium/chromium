@@ -84,19 +84,6 @@ ACTION_TEMPLATE(SaveArgElementsTo,
   pointer->assign(span.begin(), span.end());
 }
 
-class MockAutofillClient : public TestAutofillClient {
- public:
-  MockAutofillClient() = default;
-  MockAutofillClient(const MockAutofillClient&) = delete;
-  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
-  ~MockAutofillClient() override = default;
-
-  MOCK_METHOD(void,
-              DidFillForm,
-              (AutofillTriggerSource trigger_source, bool is_refill),
-              (override));
-};
-
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   using TestAutofillDriver::TestAutofillDriver;
@@ -149,7 +136,7 @@ MATCHER_P(AutofilledWithProfile, profile, "") {
 
 class FormFillerTest
     : public testing::Test,
-      public WithTestAutofillClientDriverManager<NiceMock<MockAutofillClient>,
+      public WithTestAutofillClientDriverManager<TestAutofillClient,
                                                  MockAutofillDriver> {
  public:
   void SetUp() override {
@@ -518,15 +505,6 @@ TEST_F(FormFillerTest, UndoResetsCachedAutofillState) {
   autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
                                   form.fields().front());
   EXPECT_FALSE(autofill_field->is_autofilled());
-}
-
-TEST_F(FormFillerTest, FillOrPreviewFormCallsDidFillForm) {
-  FormData form = test::CreateTestAddressFormData();
-  FormsSeen({form});
-
-  AutofillProfile profile = test::GetFullProfile();
-  EXPECT_CALL(autofill_client(), DidFillForm);
-  AutofillForm(form, form.fields().front(), &profile);
 }
 
 // Tests that for autocomplete=unrecognized fields are not filled by default,

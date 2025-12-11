@@ -1090,17 +1090,6 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() const {
              password_manager::PasswordManagerSetting::kOfferToSavePasswords);
 }
 
-void ChromeAutofillClient::DidFillForm(AutofillTriggerSource trigger_source,
-                                       bool is_refill) {
-#if BUILDFLAG(IS_ANDROID)
-  if (trigger_source == AutofillTriggerSource::kTouchToFillCreditCard &&
-      !is_refill) {
-    autofill::AutofillAccessibilityHelper::GetInstance()->AnnounceTextForA11y(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM));
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 bool ChromeAutofillClient::IsContextSecure() const {
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents());

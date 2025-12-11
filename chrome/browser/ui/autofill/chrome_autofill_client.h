@@ -199,7 +199,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool IsAutocompleteEnabled() const final;
   bool IsWalletStorageEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
-  void DidFillForm(AutofillTriggerSource trigger_source, bool is_refill) final;
   bool IsContextSecure() const final;
   LogManager* GetCurrentLogManager() final;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()

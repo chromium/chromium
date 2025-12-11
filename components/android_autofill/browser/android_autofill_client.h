@@ -129,8 +129,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   bool IsWalletStorageEnabled() const final;
   bool IsAutocompleteEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
-  void DidFillForm(autofill::AutofillTriggerSource trigger_source,
-                   bool is_refill) final;
   bool IsContextSecure() const final;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
   autofill::autofill_metrics::FormInteractionsUkmLogger&

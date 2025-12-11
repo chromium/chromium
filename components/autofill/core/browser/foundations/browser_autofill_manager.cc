@@ -2665,7 +2665,6 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     autofill_metrics::LogNumberOfFieldsModifiedByRefill(
         *refill_trigger_reason, safe_filled_fields.size());
   }
-  client().DidFillForm(trigger_source, refill_trigger_reason.has_value());
 
   std::visit(
       absl::Overload{[&](const AutofillProfile* profile) {

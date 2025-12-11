@@ -73,7 +73,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
-#include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
@@ -121,19 +120,6 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
            payments::PaymentsAutofillClient::OnConfirmationClosedCallback>),
       (override));
   MOCK_METHOD(void, HideSaveCardBubble, (), (override));
-};
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-class MockAutofillAccessibilityHelper : public AutofillAccessibilityHelper {
- public:
-  MockAutofillAccessibilityHelper() = default;
-  ~MockAutofillAccessibilityHelper() override = default;
-
-  MOCK_METHOD(void,
-              AnnounceTextForA11y,
-              (const std::u16string& message),
-              (override));
 };
 #endif
 
@@ -219,23 +205,6 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-  // Helper function to set up mock accessibility helper for Android tests.
-  MockAutofillAccessibilityHelper* SetUpMockAccessibilityHelper() {
-    mock_accessibility_helper_ =
-        std::make_unique<MockAutofillAccessibilityHelper>();
-    MockAutofillAccessibilityHelper* mock_ptr =
-        mock_accessibility_helper_.get();
-    AutofillAccessibilityHelper::SetInstanceForTesting(mock_ptr);
-    return mock_ptr;
-  }
-
-  void TearDownMockAccessibilityHelper() {
-    AutofillAccessibilityHelper::SetInstanceForTesting(nullptr);
-    mock_accessibility_helper_.reset();
-  }
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
   MockSaveCardBubbleController& save_card_bubble_controller() {
     return static_cast<MockSaveCardBubbleController&>(
@@ -274,9 +243,6 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MockAutofillFieldPromoController> autofill_field_promo_controller_;
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<MockAutofillAccessibilityHelper> mock_accessibility_helper_;
-#endif
   TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;
   base::OnceCallback<void()> setup_flags_;
@@ -811,64 +777,6 @@ TEST_F(ChromeAutofillClientTestWithWindow, AutofillFieldIPH_NotifyFeatureUsed) {
   client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kAutofillAi);
 }
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-// Test that TouchToFill credit card filling triggers accessibility
-// announcement.
-TEST_F(ChromeAutofillClientTest,
-       DidFillForm_TouchToFillCreditCard_AnnouncesAccessibility) {
-  MockAutofillAccessibilityHelper* mock_ptr = SetUpMockAccessibilityHelper();
-
-  EXPECT_CALL(*mock_ptr, AnnounceTextForA11y(testing::_)).Times(1);
-
-  client()->DidFillForm(AutofillTriggerSource::kTouchToFillCreditCard,
-                        /*is_refill=*/false);
-
-  TearDownMockAccessibilityHelper();
-}
-
-// Test that refill operations do not trigger accessibility announcements.
-TEST_F(ChromeAutofillClientTest,
-       DidFillForm_TouchToFillCreditCardRefill_NoAccessibilityAnnouncement) {
-  MockAutofillAccessibilityHelper* mock_ptr = SetUpMockAccessibilityHelper();
-
-  EXPECT_CALL(*mock_ptr, AnnounceTextForA11y(testing::_)).Times(0);
-
-  client()->DidFillForm(AutofillTriggerSource::kTouchToFillCreditCard,
-                        /*is_refill=*/true);
-
-  TearDownMockAccessibilityHelper();
-}
-
-// Test that non-TouchToFill trigger sources do not make accessibility
-// announcements.
-TEST_F(ChromeAutofillClientTest,
-       DidFillForm_OtherTriggerSource_NoAccessibilityAnnouncement) {
-  MockAutofillAccessibilityHelper* mock_ptr = SetUpMockAccessibilityHelper();
-
-  EXPECT_CALL(*mock_ptr, AnnounceTextForA11y(testing::_)).Times(0);
-
-  client()->DidFillForm(AutofillTriggerSource::kPopup,
-                        /*is_refill=*/false);
-
-  TearDownMockAccessibilityHelper();
-}
-
-// Test that the correct localized accessibility message is announced.
-TEST_F(ChromeAutofillClientTest, DidFillForm_VerifiesCorrectMessage) {
-  MockAutofillAccessibilityHelper* mock_ptr = SetUpMockAccessibilityHelper();
-
-  const std::u16string expected_message =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
-
-  EXPECT_CALL(*mock_ptr, AnnounceTextForA11y(expected_message)).Times(1);
-
-  client()->DidFillForm(AutofillTriggerSource::kTouchToFillCreditCard,
-                        /*is_refill=*/false);
-
-  TearDownMockAccessibilityHelper();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace autofill
