@@ -202,7 +202,6 @@ class CanvasResourceProviderExternalBitmap::SoftwareImageProvider
     ImageProvider::ScopedResult scoped_decoded_image;
     if (playback_image_provider_f16_ &&
         draw_image.paint_image().is_high_bit_depth()) {
-      DCHECK(playback_image_provider_f16_);
       scoped_decoded_image =
           playback_image_provider_f16_->GetRasterContent(draw_image);
     } else {
@@ -1514,7 +1513,6 @@ CanvasResourceProvider::CanvasImageProvider::GetRasterContent(
   ImageProvider::ScopedResult scoped_decoded_image;
   if (playback_image_provider_f16_ &&
       draw_image.paint_image().is_high_bit_depth()) {
-    DCHECK(playback_image_provider_f16_);
     scoped_decoded_image =
         playback_image_provider_f16_->GetRasterContent(draw_image);
   } else {
