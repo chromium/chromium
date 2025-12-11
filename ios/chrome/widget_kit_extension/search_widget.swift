@@ -20,8 +20,8 @@ struct SearchWidget: Widget {
     .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DESCRIPTION"))
     .supportedFamilies([.systemSmall])
     .crDisfavoredLocations()
-    .crContentMarginsDisabled()
-    .crContainerBackgroundRemovable(false)
+    .contentMarginsDisabled()
+    .containerBackgroundRemovable(false)
   }
 }
 
@@ -42,8 +42,8 @@ struct SearchWidget: Widget {
       .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_DESCRIPTION"))
       .supportedFamilies([.systemSmall])
       .crDisfavoredLocations()
-      .crContentMarginsDisabled()
-      .crContainerBackgroundRemovable(false)
+      .contentMarginsDisabled()
+      .containerBackgroundRemovable(false)
     }
   }
 #endif
@@ -114,9 +114,10 @@ struct SearchWidgetEntryViewTemplate: View {
       }
     }
     .widgetURL(destinationURL)
-    .crContainerBackground(
+    .containerBackground(for: .widget) {
       Color("widget_background_color")
-        .unredacted())
+        .unredacted()
+    }
   }
 }
 

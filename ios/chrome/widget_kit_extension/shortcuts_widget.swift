@@ -92,8 +92,8 @@ struct ShortcutsWidget: Widget {
     )
     .supportedFamilies([.systemMedium])
     .crDisfavoredLocations()
-    .crContentMarginsDisabled()
-    .crContainerBackgroundRemovable(false)
+    .contentMarginsDisabled()
+    .containerBackgroundRemovable(false)
   }
 }
 
@@ -122,8 +122,8 @@ struct ShortcutsWidget: Widget {
       )
       .supportedFamilies([.systemMedium])
       .crDisfavoredLocations()
-      .crContentMarginsDisabled()
-      .crContainerBackgroundRemovable(false)
+      .contentMarginsDisabled()
+      .containerBackgroundRemovable(false)
     }
   }
 
@@ -486,9 +486,9 @@ struct ShortcutsWidgetEntryView: View {
         }
         .frame(maxHeight: .infinity)
       }
-      .crContainerBackground(
+      .containerBackground(for: .widget) {
         Colors.widgetBackgroundColor.unredacted()
-      )
+      }
     }
   }
 }

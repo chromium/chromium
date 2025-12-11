@@ -20,8 +20,8 @@ struct DinoGameWidget: Widget {
     .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION"))
     .supportedFamilies([.systemSmall])
     .crDisfavoredLocations()
-    .crContentMarginsDisabled()
-    .crContainerBackgroundRemovable(false)
+    .contentMarginsDisabled()
+    .containerBackgroundRemovable(false)
   }
 }
 
@@ -44,8 +44,8 @@ struct DinoGameWidget: Widget {
       .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION"))
       .supportedFamilies([.systemSmall])
       .crDisfavoredLocations()
-      .crContentMarginsDisabled()
-      .crContainerBackgroundRemovable(false)
+      .contentMarginsDisabled()
+      .containerBackgroundRemovable(false)
     }
   }
 #endif
@@ -90,7 +90,9 @@ struct DinoGameWidgetEntryView: View {
       }
       .widgetURL(destinationURL)
       // Background is not used as the image takes the whole widget.
-      .crContainerBackground(Color("widget_background_color").unredacted())
+      .containerBackground(for: .widget) {
+        Color("widget_background_color").unredacted()
+      }
     }
   }
 }

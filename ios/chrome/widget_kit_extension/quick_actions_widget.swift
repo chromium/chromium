@@ -31,7 +31,7 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      useColorLensAndVoiceIcons: shouldUseLens(),
       isPreview: context.isPreview,
       avatar: nil,
       gaiaID: nil,
@@ -48,7 +48,7 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      useColorLensAndVoiceIcons: shouldUseLens(),
       isPreview: context.isPreview,
       avatar: nil,
       gaiaID: nil,
@@ -79,8 +79,8 @@ struct QuickActionsWidget: Widget {
     .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION"))
     .supportedFamilies([.systemMedium])
     .crDisfavoredLocations()
-    .crContentMarginsDisabled()
-    .crContainerBackgroundRemovable(false)
+    .contentMarginsDisabled()
+    .containerBackgroundRemovable(false)
   }
 }
 
@@ -104,8 +104,8 @@ struct QuickActionsWidget: Widget {
       .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION"))
       .supportedFamilies([.systemMedium])
       .crDisfavoredLocations()
-      .crContentMarginsDisabled()
-      .crContainerBackgroundRemovable(false)
+      .contentMarginsDisabled()
+      .containerBackgroundRemovable(false)
     }
   }
 
@@ -129,7 +129,7 @@ struct QuickActionsWidget: Widget {
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
-        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        useColorLensAndVoiceIcons: shouldUseLens(),
         isPreview: context.isPreview,
         avatar: avatar,
         gaiaID: gaiaID,
@@ -150,7 +150,7 @@ struct QuickActionsWidget: Widget {
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
-        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        useColorLensAndVoiceIcons: shouldUseLens(),
         isPreview: context.isPreview,
         avatar: avatar,
         gaiaID: gaiaID,
@@ -172,17 +172,6 @@ func shouldUseLens() -> Bool {
     && sharedDefaults.bool(
       forKey: WidgetConstants.QuickActionsWidget.enableLensInWidgetKey)
   return useLens
-}
-
-func shouldUseColorLensAndVoiceIcons() -> Bool {
-  // On iOS 15, color icons are not supported in widget, always return false
-  // as no icon would be displayed.
-  // On iOS 16, color icons are displayed in monochrome, so still present
-  // the monochrome icon as it may be better adapted.
-  if #available(iOS 17, *) {
-    return shouldUseLens()
-  }
-  return false
 }
 
 struct QuickActionsWidgetEntryView: View {
@@ -319,7 +308,9 @@ struct QuickActionsWidgetEntryView: View {
           .padding([.leading, .trailing], 11)
         }
       }
-      .crContainerBackground(Color("widget_background_color").unredacted())
+      .containerBackground(for: .widget) {
+        Color("widget_background_color").unredacted()
+      }
     }
   }
 }

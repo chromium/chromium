@@ -13,17 +13,10 @@ struct IsPressedStyle: ButtonStyle {
 
   @ViewBuilder
   func makeBody(configuration: Configuration) -> some View {
-    if #available(iOS 17, *) {
-      configuration.label
-        .onChange(of: configuration.isPressed) { oldValue, newValue in
-          isPressed = newValue
-        }
-    } else {
-      configuration.label
-        .onChange(of: configuration.isPressed) { newValue in
-          isPressed = newValue
-        }
-    }
+    configuration.label
+      .onChange(of: configuration.isPressed) { oldValue, newValue in
+        isPressed = newValue
+      }
   }
 }
 
@@ -34,17 +27,9 @@ struct HideBadgeOnPressModifier: ViewModifier {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if #available(iOS 17, *) {
-      content.onChange(of: isPressed) { _, newValue in
-        if newValue {
-          hideBadge = true
-        }
-      }
-    } else {
-      content.onChange(of: isPressed) { newValue in
-        if newValue {
-          hideBadge = true
-        }
+    content.onChange(of: isPressed) { _, newValue in
+      if newValue {
+        hideBadge = true
       }
     }
   }

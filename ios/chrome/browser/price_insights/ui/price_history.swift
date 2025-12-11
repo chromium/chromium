@@ -410,13 +410,7 @@ struct HistoryGraph: View {
 
   /// This function encapsulates the mechanism used to the frame for the plot contained
   /// within the ChartProxy object.
-  /// TODO: (crbug.com/403260493 ) Remove and inline the content of this function once
-  /// the minimum deployment target is raised to iOS 17.
   private func getFrameFrom(chart: ChartProxy) -> Anchor<CGRect>? {
-    if #available(iOS 17, *) {
-      return chart.plotFrame
-    } else {
-      return chart.plotAreaFrame
-    }
+    return chart.plotFrame
   }
 }

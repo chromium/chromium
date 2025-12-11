@@ -20,8 +20,8 @@ struct SearchPasswordsWidget: Widget {
     .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DESCRIPTION"))
     .supportedFamilies([.systemSmall])
     .crDisfavoredLocations()
-    .crContentMarginsDisabled()
-    .crContainerBackgroundRemovable(false)
+    .contentMarginsDisabled()
+    .containerBackgroundRemovable(false)
   }
 }
 
@@ -42,8 +42,8 @@ struct SearchPasswordsWidget: Widget {
       .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_SEARCH_PASSWORDS_DESCRIPTION"))
       .supportedFamilies([.systemSmall])
       .crDisfavoredLocations()
-      .crContentMarginsDisabled()
-      .crContainerBackgroundRemovable(false)
+      .contentMarginsDisabled()
+      .containerBackgroundRemovable(false)
     }
   }
 #endif

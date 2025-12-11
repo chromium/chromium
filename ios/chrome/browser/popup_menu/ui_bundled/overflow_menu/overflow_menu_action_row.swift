@@ -26,18 +26,6 @@ struct OverflowMenuActionToggleStyle: ToggleStyle {
           .imageScale(.large)
       }
     }
-    .overflowMenuActionToggleCompat()
-  }
-}
-
-extension View {
-  /// For whatever reason, in iOS 15, the button is not toggleable unless this
-  /// `buttonStyle` is set. In iOS 16+, the `buttonStyle` is not necessary.
-  fileprivate func overflowMenuActionToggleCompat() -> some View {
-    if #available(iOS 16.0, *) {
-      return self
-    }
-    return self.buttonStyle(.borderless)
   }
 }
 
@@ -68,81 +56,42 @@ struct OverflowMenuActionRow: View {
   }
 
   var body: some View {
-    if #available(iOS 17, *) {
-      button
-        .listRowBackground(background)
-        .onChange(of: action.highlighted) {
-          guard action.automaticallyUnhighlight else {
-            return
-          }
+    button
+      .listRowBackground(background)
+      .onChange(of: action.highlighted) { _, _ in
+        guard action.automaticallyUnhighlight else {
+          return
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
+          action.highlighted = false
+        }
+      }
+      .onAppear {
+        if action.highlighted && action.automaticallyUnhighlight {
           DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
             action.highlighted = false
           }
         }
-        .onAppear {
-          if action.highlighted && action.automaticallyUnhighlight {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
-              action.highlighted = false
-            }
-          }
-        }
-        .accessibilityIdentifier(action.accessibilityIdentifier)
-        .disabled(!action.enabled || action.enterpriseDisabled)
-        .if(!isEditing) { view in
-          view.contextMenu {
-            ForEach(action.longPressItems) { item in
-              Section {
-                Button {
-                  item.handler()
-                } label: {
-                  Label(item.title, systemImage: item.symbolName)
-                }
+      }
+      .accessibilityIdentifier(action.accessibilityIdentifier)
+      .disabled(!action.enabled || action.enterpriseDisabled)
+      .if(!isEditing) { view in
+        view.contextMenu {
+          ForEach(action.longPressItems) { item in
+            Section {
+              Button {
+                item.handler()
+              } label: {
+                Label(item.title, systemImage: item.symbolName)
               }
             }
           }
         }
-        .if(!action.useButtonStyling) { view in
-          view.accentColor(.textPrimary)
-        }
-        .listRowSeparatorTint(.overflowMenuSeparator)
-    } else {
-      button
-        .listRowBackground(background)
-        .onChange(of: action.highlighted) { _ in
-          guard action.automaticallyUnhighlight else {
-            return
-          }
-          DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
-            action.highlighted = false
-          }
-        }
-        .onAppear {
-          if action.highlighted && action.automaticallyUnhighlight {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
-              action.highlighted = false
-            }
-          }
-        }
-        .accessibilityIdentifier(action.accessibilityIdentifier)
-        .disabled(!action.enabled || action.enterpriseDisabled)
-        .if(!isEditing) { view in
-          view.contextMenu {
-            ForEach(action.longPressItems) { item in
-              Section {
-                Button {
-                  item.handler()
-                } label: {
-                  Label(item.title, systemImage: item.symbolName)
-                }
-              }
-            }
-          }
-        }
-        .if(!action.useButtonStyling) { view in
-          view.accentColor(.textPrimary)
-        }
-        .listRowSeparatorTint(.overflowMenuSeparator)
-    }
+      }
+      .if(!action.useButtonStyling) { view in
+        view.accentColor(.textPrimary)
+      }
+      .listRowSeparatorTint(.overflowMenuSeparator)
   }
 
   @ViewBuilder
