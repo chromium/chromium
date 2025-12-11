@@ -73,6 +73,9 @@ COMPONENT_EXPORT(HISTORY_FEATURES)
 bool IsBrowsingHistoryActorIntegrationM1Enabled();
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kHistoryQueryOnlyLocalFirst);
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_FEATURES_H_

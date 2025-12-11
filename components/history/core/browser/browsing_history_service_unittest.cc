@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -176,7 +177,9 @@ class TestBrowsingHistoryService : public BrowsingHistoryService {
                                std::move(timer)) {}
 };
 
-class BrowsingHistoryServiceTest : public ::testing::Test {
+// The param determines whether the feature `kHistoryQueryOnlyLocalFirst` is
+// enabled.
+class BrowsingHistoryServiceTest : public ::testing::TestWithParam<bool> {
  protected:
   // WebHistory API is to pass time ranges as the number of microseconds since
   // Time::UnixEpoch() as a query parameter. This becomes a problem when we use
@@ -186,6 +189,8 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   BrowsingHistoryServiceTest()
       : baseline_time_(Time::UnixEpoch().LocalMidnight() + base::Days(1)),
         driver_(&web_history_) {
+    features_.InitWithFeatureState(kHistoryQueryOnlyLocalFirst, GetParam());
+
     EXPECT_TRUE(history_dir_.CreateUniqueTempDir());
     local_history_ = CreateHistoryService(history_dir_.GetPath(), true);
     ResetService(driver(), local_history(), sync());
@@ -304,6 +309,8 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList features_;
+
   base::test::TaskEnvironment task_environment_;
 
   // Duplicates on the same day in the local timezone are removed, so set a
@@ -319,7 +326,15 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
 };
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryExcludes404s) {
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowsingHistoryServiceTest,
+                         testing::Bool(),
+                         [](testing::TestParamInfo<bool> param_info) {
+                           return param_info.param ? "QueryLocalFirst"
+                                                   : "QueryInParallel";
+                         });
+
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryExcludes404s) {
   // Allow saving 404 visits to History.
   base::test::ScopedFeatureList scoped_featurelist;
   scoped_featurelist.InitAndEnableFeature(history::kVisitedLinksOn404);
@@ -341,19 +356,19 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryExcludes404s) {
                     QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryNoSources) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryNoSources) {
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), nullptr, nullptr);
   VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryJustLocal) {
+TEST_P(BrowsingHistoryServiceTest, EmptyQueryHistoryJustLocal) {
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), local_history(), nullptr);
   VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryJustLocal) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryJustLocal) {
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), local_history(), nullptr);
   AddHistory({{kUrl1, 1, kLocal}});
@@ -361,43 +376,43 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryJustLocal) {
                     QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryJustWeb) {
+TEST_P(BrowsingHistoryServiceTest, EmptyQueryHistoryJustWeb) {
   ResetService(driver(), nullptr, nullptr);
   VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryDelayedWeb) {
+TEST_P(BrowsingHistoryServiceTest, EmptyQueryHistoryDelayedWeb) {
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), nullptr, sync());
   driver()->SetWebHistory(web_history());
   VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryJustWeb) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryJustWeb) {
   ResetService(driver(), nullptr, sync());
   AddHistory({{kUrl1, 1, kRemote}});
   VerifyQueryResult(/*reached_beginning*/ true, {{kUrl1, 1, kRemote}},
                     QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, EmptyQueryHistoryBothSources) {
+TEST_P(BrowsingHistoryServiceTest, EmptyQueryHistoryBothSources) {
   ResetService(driver(), local_history(), sync());
   VerifyQueryResult(/*reached_beginning*/ true, {}, QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryAllSources) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryAllSources) {
   ResetService(driver(), local_history(), sync());
-  AddHistory({{kUrl1, 1, kLocal},
-              {kUrl2, 2, kLocal},
-              {kUrl3, 3, kRemote},
-              {kUrl1, 4, kRemote}});
+  AddHistory({{kUrl1, 1, kRemote},
+              {kUrl2, 2, kRemote},
+              {kUrl3, 3, kLocal},
+              {kUrl1, 4, kLocal}});
   VerifyQueryResult(
       /*reached_beginning*/ true,
-      {{kUrl1, 4, kBoth}, {kUrl3, 3, kRemote}, {kUrl2, 2, kLocal}},
+      {{kUrl1, 4, kBoth}, {kUrl3, 3, kLocal}, {kUrl2, 2, kRemote}},
       QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRanges) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRanges) {
   AddHistory({{kUrl1, 1, kLocal},
               {kUrl2, 2, kLocal},
               {kUrl3, 3, kLocal},
@@ -415,7 +430,7 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRanges) {
                     QueryHistory(options));
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemoteTimeRanges) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryRemoteTimeRanges) {
   AddHistory({{kUrl1, 1, kRemote},
               {kUrl2, 2, kRemote},
               {kUrl3, 3, kRemote},
@@ -428,7 +443,7 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemoteTimeRanges) {
       QueryHistory(options));
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemote) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemote) {
   AddHistory({{kUrl8, 1, kRemote}, {kUrl9, 2, kRemote}, {kUrl10, 3, kRemote}});
 
   QueryOptions options;
@@ -444,7 +459,7 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemote) {
                     QueryHistory(u"eight.com", options));
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingPartial) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryLocalPagingPartial) {
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
   VerifyQueryResult(/*reached_beginning*/ false,
 
@@ -453,17 +468,22 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingPartial) {
       /*reached_beginning*/ true, {{kUrl1, 1, kLocal}}, ContinueQuery());
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingFull) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryLocalPagingFull) {
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
+  // With `kHistoryQueryOnlyLocalFirst`, the first query doesn't reach the
+  // beginning, since there were just enough local results to fulfill the
+  // request and remote hasn't been queried yet.
+  bool reached_beginning =
+      !base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst);
   VerifyQueryResult(
-      /*reached_beginning*/ true,
+      reached_beginning,
       {{kUrl3, 3, kLocal}, {kUrl2, 2, kLocal}, {kUrl1, 1, kLocal}},
       QueryHistory(3));
   VerifyQueryResult(
       /*reached_beginning*/ true, {}, ContinueQuery());
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemotePagingPartial) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryRemotePagingPartial) {
   AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
   VerifyQueryResult(/*reached_beginning*/ false,
 
@@ -473,8 +493,11 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemotePagingPartial) {
       /*reached_beginning*/ true, {{kUrl1, 1, kRemote}}, ContinueQuery());
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemotePagingFull) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryRemotePagingFull) {
   AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
+  // Note: As opposed to QueryHistoryLocalPagingFull, here both local and remote
+  // reach the beginning. The local query returns no results, so remote gets
+  // queried immediately and returns all the existing results.
   VerifyQueryResult(
       /*reached_beginning*/ true,
       {{kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}, {kUrl1, 1, kRemote}},
@@ -483,7 +506,7 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemotePagingFull) {
       /*reached_beginning*/ true, {}, ContinueQuery());
 }
 
-TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesSameDay) {
+TEST_P(BrowsingHistoryServiceTest, MergeDuplicatesSameDay) {
   AddHistory({{kUrl1, 0, kRemote},
               {kUrl2, 1, kRemote},
               {kUrl1, 2, kRemote},
@@ -492,14 +515,14 @@ TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesSameDay) {
                     {{kUrl1, 3, kRemote}, {kUrl2, 1, kRemote}}, QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesNextDayNotRemoved) {
+TEST_P(BrowsingHistoryServiceTest, MergeDuplicatesNextDayNotRemoved) {
   AddHistory({{kUrl1, 0, kRemote}, {kUrl1, 23, kRemote}, {kUrl1, 24, kRemote}});
   VerifyQueryResult(/*reached_beginning*/ true,
                     {{kUrl1, 24, kRemote}, {kUrl1, 23, kRemote}},
                     QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesMultipleDays) {
+TEST_P(BrowsingHistoryServiceTest, MergeDuplicatesMultipleDays) {
   AddHistory({{kUrl2, 0, kRemote},
               {kUrl1, 1, kRemote},
               {kUrl2, 2, kRemote},
@@ -516,7 +539,7 @@ TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesMultipleDays) {
                     QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesVerifyTimestamps) {
+TEST_P(BrowsingHistoryServiceTest, MergeDuplicatesVerifyTimestamps) {
   AddHistory({{kUrl1, 0, kRemote},
               {kUrl2, 1, kRemote},
               {kUrl1, 2, kRemote},
@@ -528,7 +551,7 @@ TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesVerifyTimestamps) {
   EXPECT_EQ(1U, results.first[1].all_timestamps.size());
 }
 
-TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesKeepNonEmptyIconUrl) {
+TEST_P(BrowsingHistoryServiceTest, MergeDuplicatesKeepNonEmptyIconUrl) {
   AddHistory({{kUrl1, 0, kRemote, kIconUrl1}, {kUrl1, 1, kLocal}});
   auto results = QueryHistory();
   VerifyQueryResult(/*reached_beginning*/ true, {{kUrl1, 1, kBoth, kIconUrl1}},
@@ -540,7 +563,7 @@ TEST_F(BrowsingHistoryServiceTest, MergeDuplicatesKeepNonEmptyIconUrl) {
                     results);
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryMerge) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryMerge) {
   AddHistory({{kUrl1, 1, kRemote},
               {kUrl2, 2, kRemote},
               {kUrl3, 3, kLocal},
@@ -551,16 +574,25 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryMerge) {
       QueryHistory());
 }
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryPending) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryPending) {
   AddHistory({{kUrl1, 1, kRemote},
               {kUrl2, 2, kRemote},
               {kUrl3, 3, kLocal},
               {kUrl4, 4, kLocal}});
   VerifyQueryResult(
       /*reached_beginning*/ false, {{kUrl4, 4, kLocal}}, QueryHistory(1));
-  VerifyQueryResult(
-      /*reached_beginning*/ false, {{kUrl3, 3, kLocal}, {kUrl2, 2, kRemote}},
-      ContinueQuery());
+  if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
+    VerifyQueryResult(
+        /*reached_beginning*/ false, {{kUrl3, 3, kLocal}}, ContinueQuery());
+    VerifyQueryResult(
+        /*reached_beginning*/ false, {{kUrl2, 2, kRemote}}, ContinueQuery());
+  } else {
+    // Since local and remote are queried in parallel, one result is returned
+    // from each, even though only one result was requested.
+    VerifyQueryResult(
+        /*reached_beginning*/ false, {{kUrl3, 3, kLocal}, {kUrl2, 2, kRemote}},
+        ContinueQuery());
+  }
   VerifyQueryResult(
       /*reached_beginning*/ true, {{kUrl1, 1, kRemote}}, ContinueQuery());
 }
@@ -568,7 +600,12 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPending) {
 // A full request worth of local results will sit in pending, resulting in us
 // being able to delete local history before our next query and we should still
 // see the local entry.
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryFullLocalPending) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryFullLocalPending) {
+  if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
+    // With `kHistoryQueryOnlyLocalFirst`, the situation with pending results
+    // doesn't exist.
+    GTEST_SKIP();
+  }
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
   VerifyQueryResult(
       /*reached_beginning*/ false, {{kUrl3, 3, kRemote}}, QueryHistory(1));
@@ -580,7 +617,12 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryFullLocalPending) {
 
 // Part of a request worth of local results will sit in pending, resulting in us
 // seeing extra local results on our next request.
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryPartialLocalPending) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryPartialLocalPending) {
+  if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
+    // With `kHistoryQueryOnlyLocalFirst`, the situation with pending results
+    // doesn't exist.
+    GTEST_SKIP();
+  }
   AddHistory({{kUrl1, 1, kLocal},
               {kUrl2, 2, kLocal},
               {kUrl3, 3, kRemote},
@@ -603,7 +645,12 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPartialLocalPending) {
 // A full request worth of remote results will sit in pending, resulting in us
 // being able to delete remote history before our next query and we should still
 // see the remote entry.
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryFullRemotePending) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryFullRemotePending) {
+  if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
+    // With `kHistoryQueryOnlyLocalFirst`, the situation with pending results
+    // doesn't exist.
+    GTEST_SKIP();
+  }
   AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
   VerifyQueryResult(/*reached_beginning*/ false, {{kUrl3, 3, kLocal}},
                     QueryHistory(1));
@@ -615,7 +662,12 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryFullRemotePending) {
 
 // Part of a request worth of remote results will sit in pending, resulting in
 // us seeing extra remote results on our next request.
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryPartialRemotePending) {
+TEST_P(BrowsingHistoryServiceTest, QueryHistoryPartialRemotePending) {
+  if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
+    // With `kHistoryQueryOnlyLocalFirst`, the situation with pending results
+    // doesn't exist.
+    GTEST_SKIP();
+  }
   AddHistory({{kUrl1, 1, kRemote},
               {kUrl2, 2, kRemote},
               {kUrl3, 3, kLocal},
@@ -635,14 +687,14 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryPartialRemotePending) {
                     ContinueQuery());
 }
 
-TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailureEmpty) {
+TEST_P(BrowsingHistoryServiceTest, RetryOnRemoteFailureEmpty) {
   web_history()->SetupFakeResponse(false, 0);
   VerifyQueryResult(/*reached_beginning*/ false, {}, QueryHistory());
   web_history()->SetupFakeResponse(true, net::HTTP_OK);
   VerifyQueryResult(/*reached_beginning*/ true, {}, ContinueQuery());
 }
 
-TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingRemote) {
+TEST_P(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingRemote) {
   AddHistory({{kUrl1, 1, kRemote}, {kUrl2, 2, kRemote}, {kUrl3, 3, kRemote}});
   VerifyQueryResult(/*reached_beginning*/ false,
                     {{kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}},
@@ -656,7 +708,7 @@ TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingRemote) {
                     ContinueQuery());
 }
 
-TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingLocal) {
+TEST_P(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingLocal) {
   AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
   web_history()->SetupFakeResponse(false, 0);
   VerifyQueryResult(/*reached_beginning*/ false,
@@ -667,7 +719,7 @@ TEST_F(BrowsingHistoryServiceTest, RetryOnRemoteFailurePagingLocal) {
                     ContinueQuery());
 }
 
-TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
+TEST_P(BrowsingHistoryServiceTest, WebHistoryTimeout) {
   TimeoutWebHistoryService timeout;
   driver()->SetWebHistory(&timeout);
   ResetService(driver(), local_history(), sync());
@@ -687,7 +739,7 @@ TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
   ResetService(driver(), nullptr, nullptr);
 }
 
-TEST_F(BrowsingHistoryServiceTest, ObservingWebHistory) {
+TEST_P(BrowsingHistoryServiceTest, ObservingWebHistory) {
   // No need to observe SyncService since we have a WebHistory already.
   EXPECT_CALL(*sync(), AddObserver).Times(0);
   EXPECT_CALL(*sync(), RemoveObserver).Times(0);
@@ -698,7 +750,7 @@ TEST_F(BrowsingHistoryServiceTest, ObservingWebHistory) {
   EXPECT_EQ(1, driver()->GetHistoryDeletedCount());
 }
 
-TEST_F(BrowsingHistoryServiceTest, ObservingWebHistoryDelayedWeb) {
+TEST_P(BrowsingHistoryServiceTest, ObservingWebHistoryDelayedWeb) {
   // Since there's no WebHistory, observations should be set up on Sync.
   EXPECT_CALL(*sync(), AddObserver);
   EXPECT_CALL(*sync(), RemoveObserver).Times(0);
@@ -728,22 +780,37 @@ TEST_F(BrowsingHistoryServiceTest, ObservingWebHistoryDelayedWeb) {
   EXPECT_EQ(1, driver()->GetHistoryDeletedCount());
 }
 
-TEST_F(BrowsingHistoryServiceTest, IncorrectlyOrderedRemoteResults) {
+TEST_P(BrowsingHistoryServiceTest, IncorrectlyOrderedRemoteResults) {
   // Created from crbug.com/787928, where suspected MergeDuplicateResults did
   // not start with sorted data. This case originally hit a NOTREACHED.
   ReversedWebHistoryService reversed;
   driver()->SetWebHistory(&reversed);
   ResetService(driver(), local_history(), sync());
   AddHistory({{kUrl1, 1, kRemote},
-              {kUrl1, 2, kLocal},
+              {kUrl3, 2, kRemote},
               {kUrl3, 3, kLocal},
               {kUrl5, 4, kRemote},
               {kUrl5, 5, kLocal},
               {kUrl6, 6, kRemote}},
              &reversed);
-  VerifyQueryResult(
-      /*reached_beginning*/ false, {{kUrl6, 6, kRemote}, {kUrl5, 5, kBoth}},
-      QueryHistory(2));
+  if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
+    // The local query returns 5, 3. Since more results were requested, a
+    // remote query is started for entries < 3, which returns 1, 2 (in this
+    // order!). 2 and 3 have the same URL and day so are merged. Note that the
+    // remote entries 4 and 6 are never queried. In practice, this situation
+    // should be impossible - recent remote entries should always also be
+    // available locally.
+    VerifyQueryResult(
+        /*reached_beginning*/ true,
+        {{kUrl5, 5, kLocal}, {kUrl3, 3, kBoth}, {kUrl1, 1, kRemote}},
+        QueryHistory(4));
+  } else {
+    // The local query returns 5, 3, and the remote one returns 4, 6 (in this
+    // order!). 4 and 5 have the same URL and are merged.
+    VerifyQueryResult(
+        /*reached_beginning*/ false, {{kUrl6, 6, kRemote}, {kUrl5, 5, kBoth}},
+        QueryHistory(2));
+  }
 
   // WebHistoryService will DCHECK if we destroy it before the observer in
   // BrowsingHistoryService is removed, so reset our first
@@ -752,7 +819,44 @@ TEST_F(BrowsingHistoryServiceTest, IncorrectlyOrderedRemoteResults) {
   ResetService(driver(), nullptr, nullptr);
 }
 
-TEST_F(BrowsingHistoryServiceTest, RemoveVisitsMetric) {
+TEST_P(BrowsingHistoryServiceTest, MultipleSubsequentQueries) {
+  AddHistory({{kUrl1, 1, kRemote},
+              {kUrl2, 2, kRemote},
+              {kUrl3, 3, kRemote},
+              {kUrl4, 4, kLocal},
+              {kUrl5, 5, kLocal},
+              {kUrl6, 6, kLocal}});
+
+  // First query: Two local results.
+  VerifyQueryResult(
+      /*reached_beginning=*/false, {{kUrl6, 6, kLocal}, {kUrl5, 5, kLocal}},
+      QueryHistory(2));
+  if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
+    // Second query: One local and one remote result. Under the hood, this maps
+    // to two successive queries, one to the local DB and then one to the remote
+    // service.
+    VerifyQueryResult(
+        /*reached_beginning=*/false, {{kUrl4, 4, kLocal}, {kUrl3, 3, kRemote}},
+        ContinueQuery());
+    // Third query: Two remote results, and done.
+    VerifyQueryResult(
+        /*reached_beginning=*/true, {{kUrl2, 2, kRemote}, {kUrl1, 1, kRemote}},
+        ContinueQuery());
+  } else {
+    // Second query: One local and *two* remote results. This is sort of
+    // unexpected (only two results were asked for), but is a consequence of the
+    // parallel local+remote queries.
+    VerifyQueryResult(
+        /*reached_beginning=*/false,
+        {{kUrl4, 4, kLocal}, {kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}},
+        ContinueQuery());
+    // Third query: The one remaining remote result, and done.
+    VerifyQueryResult(
+        /*reached_beginning=*/true, {{kUrl1, 1, kRemote}}, ContinueQuery());
+  }
+}
+
+TEST_P(BrowsingHistoryServiceTest, RemoveVisitsMetric) {
   // `kUrl1` was visited 3 times on day 1, and 4 times on day 2. `kUrl2` was
   // visited once on day 1. In total, there are 3 `HistoryEntry` instances
   // (since every "entry" groups all visits to a URL for a single day).
@@ -785,7 +889,7 @@ TEST_F(BrowsingHistoryServiceTest, RemoveVisitsMetric) {
   }
 }
 
-TEST_F(BrowsingHistoryServiceTest, ActorVisitPropagated) {
+TEST_P(BrowsingHistoryServiceTest, ActorVisitPropagated) {
   AddHistory({
       {kUrl1, 1, kRemote},
       {kUrl2, 2, kLocal, "", VisitSource::SOURCE_ACTOR},
@@ -798,7 +902,7 @@ TEST_F(BrowsingHistoryServiceTest, ActorVisitPropagated) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(BrowsingHistoryServiceTest, ActorVisitDeduplication) {
+TEST_P(BrowsingHistoryServiceTest, ActorVisitDeduplication) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kBrowsingHistoryActorIntegrationM2);
 

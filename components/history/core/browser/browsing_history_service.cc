@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -62,7 +63,8 @@ enum QuerySourceStatus {
 
 bool CanRetry(QuerySourceStatus status) {
   // TODO(skym): Should we be retrying on FAILURE?
-  return status == MORE_RESULTS || status == FAILURE || status == TIMED_OUT;
+  return status == UNINITIALIZED || status == MORE_RESULTS ||
+         status == FAILURE || status == TIMED_OUT;
 }
 
 base::Time OldestTime(
@@ -244,12 +246,13 @@ void BrowsingHistoryService::QueryHistoryInternal(
   web_history_request_.reset();
 
   bool should_return_results_immediately = true;
-  size_t desired_count =
+  const size_t desired_count =
       static_cast<size_t>(state->original_options.EffectiveMaxCount());
 
   if (local_history_) {
     if (state->local_results.size() < desired_count &&
         state->local_status != REACHED_BEGINNING) {
+      CHECK_NE(state->local_status, NO_DEPENDENCY);
       should_return_results_immediately = false;
       local_history_->QueryHistory(
           state->search_text,
@@ -275,19 +278,7 @@ void BrowsingHistoryService::QueryHistoryInternal(
             weak_factory_.GetWeakPtr()));
 
     // If necessary, run a WebHistory query for remote history.
-    bool should_query_remote = state->remote_results.size() < desired_count &&
-                               state->remote_status != REACHED_BEGINNING;
-
-    // App-specific history uses the results from the local database only, since
-    // the legacy json API service WebHistory relies on can't be updated to
-    // process app_id.
-    // TODO(crbug.com/460361854): Once migrated to a non-legacy API, also query
-    // remote app-specific history.
-    if (state->original_options.app_id != kNoAppIdFilter) {
-      should_query_remote = false;
-    }
-
-    if (should_query_remote) {
+    if (ShouldQueryRemote(*state)) {
       // Start a timer with timeout before we make the actual query, otherwise
       // tests get confused when completion callback is run synchronously.
       web_history_timer_->Start(
@@ -323,10 +314,16 @@ void BrowsingHistoryService::QueryHistoryInternal(
               }
             })");
       should_return_results_immediately = false;
+      QueryOptions options = OptionsWithEndTime(
+          state->original_options, state->remote_end_time_for_continuation);
+      if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
+        options.max_count = desired_count - state->local_results.size();
+        // If no remote results were needed, ShouldQueryRemote() should have
+        // returned false and control flow wouldn't reach here.
+        CHECK(options.max_count > 0);
+      }
       web_history_request_ = web_history->QueryHistory(
-          state->search_text,
-          OptionsWithEndTime(state->original_options,
-                             state->remote_end_time_for_continuation),
+          state->search_text, options,
           base::BindOnce(&BrowsingHistoryService::WebHistoryQueryComplete,
                          weak_factory_.GetWeakPtr(), state, clock_->Now()),
           partial_traffic_annotation);
@@ -497,6 +494,44 @@ void BrowsingHistoryService::RemoveVisits(
 }
 
 // static
+bool BrowsingHistoryService::ShouldQueryRemote(const QueryHistoryState& state) {
+  if (state.remote_status == REACHED_BEGINNING) {
+    // Finished with remote history, no point in querying any more.
+    return false;
+  }
+
+  const size_t desired_count =
+      static_cast<size_t>(state.original_options.EffectiveMaxCount());
+  if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst)) {
+    if (CanRetry(state.local_status)) {
+      // There is more local history to query first, so don't query remote yet.
+      return false;
+    }
+    if (state.local_results.size() + state.remote_results.size() >=
+        desired_count) {
+      // Already have sufficient results, no need to query more.
+      return false;
+    }
+  } else {
+    if (state.remote_results.size() >= desired_count) {
+      // Already have sufficient results, no need to query more.
+      return false;
+    }
+  }
+
+  // App-specific history uses the results from the local database only, since
+  // the legacy json API service WebHistory relies on can't be updated to
+  // process app_id.
+  // TODO(crbug.com/460361854): Once migrated to a non-legacy API, also query
+  // remote app-specific history.
+  if (state.original_options.app_id != kNoAppIdFilter) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
 void BrowsingHistoryService::MergeDuplicateResults(
     QueryHistoryState* state,
     std::vector<HistoryEntry>* results) {
@@ -641,6 +676,32 @@ void BrowsingHistoryService::QueryComplete(
 
   state->local_status =
       results.reached_beginning() ? REACHED_BEGINNING : MORE_RESULTS;
+
+  if (base::FeatureList::IsEnabled(kHistoryQueryOnlyLocalFirst) &&
+      results.reached_beginning()) {
+    // Exhausted the local results; continue querying to get remote results.
+    // Start querying at the point where local history ends.
+    base::Time expiry_treshold =
+        clock_->Now() - base::Days(HistoryBackend::kExpireDaysThreshold);
+    if (state->remote_end_time_for_continuation.is_null()) {
+      state->remote_end_time_for_continuation = base::Time::Max();
+    }
+    state->remote_end_time_for_continuation =
+        std::min(state->remote_end_time_for_continuation, expiry_treshold);
+
+    // Local history isn't expired *immediately* once it goes past the expiry
+    // threshold. To avoid duplicates at the switch-over point, make sure to
+    // start querying only past the oldest local entry.
+    if (!output.empty()) {
+      state->remote_end_time_for_continuation =
+          std::min(state->remote_end_time_for_continuation, OldestTime(output));
+    }
+
+    // Note: QueryHistoryInternal() checks whether a remote request is actually
+    // possible and necessary, and returns immediately if not.
+    QueryHistoryInternal(std::move(state));
+    return;
+  }
 
   if (!web_history_timer_->IsRunning()) {
     ReturnResultsToDriver(std::move(state));

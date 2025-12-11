@@ -192,6 +192,8 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Used to hold and track query state between asynchronous calls.
   struct QueryHistoryState;
 
+  static bool ShouldQueryRemote(const QueryHistoryState& state);
+
   // Moves results from `state` into `results`, merging both remote and local
   // results together and maintaining reverse chronological order. Any results
   // with the same URL will be merged together for each day. Often holds back

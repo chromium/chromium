@@ -135,4 +135,9 @@ bool IsBrowsingHistoryActorIntegrationM1Enabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// If enabled, the BrowsingHistoryService will start querying only local data,
+// and switch to querying remote data only once all local data has been
+// exhausted.
+BASE_FEATURE(kHistoryQueryOnlyLocalFirst, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace history
