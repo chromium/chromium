@@ -37,7 +37,8 @@ using printing::PrintingContextLinux;
 class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
                        public aura::WindowObserver {
  public:
-  PrintDialogGtk(PrintingContextLinux* context, gtk::GtkUiPlatform* platform);
+  explicit PrintDialogGtk(PrintingContextLinux* context,
+                          gtk::GtkUiPlatform* platform);
 
   PrintDialogGtk(const PrintDialogGtk&) = delete;
   PrintDialogGtk& operator=(const PrintDialogGtk&) = delete;
@@ -61,6 +62,7 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
   void OnJobCompleted(GtkPrintJob* print_job, const GError* error);
 
  private:
+
   // Handles dialog response.
   void OnResponse(GtkWidget* dialog, int response_id);
 

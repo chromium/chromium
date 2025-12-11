@@ -24,12 +24,6 @@
 
 namespace printing {
 
-namespace {
-
-PrintingContextLinux::PrintDialogFactory* g_print_dialog_factory = nullptr;
-
-}  // namespace
-
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
@@ -38,28 +32,13 @@ std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
                                                 out_of_process_behavior);
 }
 
-// static
-void PrintingContextLinux::SetPrintDialogFactory(PrintDialogFactory* factory) {
-  CHECK(!g_print_dialog_factory || !factory);
-  g_print_dialog_factory = factory;
-}
-
 PrintingContextLinux::PrintingContextLinux(
     Delegate* delegate,
     OutOfProcessBehavior out_of_process_behavior)
-    : PrintingContext(delegate, out_of_process_behavior) {}
+    : PrintingContext(delegate, out_of_process_behavior),
+      print_dialog_(nullptr) {}
 
 PrintingContextLinux::~PrintingContextLinux() = default;
-
-void PrintingContextLinux::EnsurePrintDialog() {
-  if (print_dialog_) {
-    return;
-  }
-
-  if (g_print_dialog_factory) {
-    print_dialog_ = g_print_dialog_factory->CreatePrintDialog(this);
-  }
-}
 
 void PrintingContextLinux::AskUserForSettings(int max_pages,
                                               bool has_selection,
@@ -78,7 +57,15 @@ void PrintingContextLinux::AskUserForSettings(int max_pages,
 mojom::ResultCode PrintingContextLinux::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
-  EnsurePrintDialog();
+  ResetSettings();
+
+  if (!ui::LinuxUi::instance()) {
+    return mojom::ResultCode::kSuccess;
+  }
+
+  if (!print_dialog_) {
+    print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
+  }
 
   if (print_dialog_) {
     print_dialog_->UseDefaultSettings();
@@ -100,7 +87,13 @@ mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
   DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
 
-  EnsurePrintDialog();
+  if (!ui::LinuxUi::instance()) {
+    return mojom::ResultCode::kSuccess;
+  }
+
+  if (!print_dialog_) {
+    print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
+  }
 
   if (print_dialog_) {
     // PrintDialogGtk::UpdateSettings() calls InitWithSettings() so settings_
@@ -138,7 +131,11 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
     // Take the settings captured by the browser process from the system print
     // dialog and apply them to this printing context in the PrintBackend
     // service.
-    EnsurePrintDialog();
+    if (!print_dialog_) {
+      CHECK(ui::LinuxUi::instance());
+      print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
+    }
+    print_dialog_->LoadPrintSettings(*settings_);
   }
 #endif
 
