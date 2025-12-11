@@ -748,6 +748,16 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updatePreferences();
     }
 
+    @Override
+    public void onSignInAllowedChanged() {
+        updatePreferences();
+    }
+
+    @Override
+    public void onSignOutAllowedChanged() {
+        updatePreferences();
+    }
+
     // TemplateUrlService.LoadListener implementation.
     @Override
     public void onTemplateUrlServiceLoaded() {
