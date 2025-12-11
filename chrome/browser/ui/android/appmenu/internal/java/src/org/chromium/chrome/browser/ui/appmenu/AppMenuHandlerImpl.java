@@ -252,9 +252,10 @@ class AppMenuHandlerImpl
      * @return True, if the menu is shown, false, if menu is not shown, example reasons: the menu is
      *     not yet available to be shown, or the menu is already showing.
      */
+    @Override
     // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("ResourceType")
-    boolean showAppMenu(@Nullable View anchorView, boolean startDragging) {
+    public boolean showAppMenu(@Nullable View anchorView, boolean startDragging) {
         if (!shouldShowAppMenu() || isAppMenuShowing()) return false;
 
         TextBubble.dismissBubbles();

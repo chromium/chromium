@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import android.view.View;
+
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -102,6 +104,15 @@ public interface AppMenuHandler {
 
     /** Requests to hide the App Menu. */
     void hideAppMenu();
+
+    /**
+     * Show the app menu.
+     *
+     * @param anchorView Anchor view used for the popup
+     * @param startDragging Whether dragging is started
+     * @return True, if the menu is shown, false, if menu is not shown.
+     */
+    boolean showAppMenu(@Nullable View anchorView, boolean startDragging);
 
     /**
      * @return A new {@link AppMenuButtonHelper} to hook up to a view containing a menu button.

@@ -388,7 +388,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                             mThemeColorProvider,
                             mIncognitoStateProvider,
                             (Supplier<@Nullable MenuButtonState>) mMenuButtonStateSupplier,
-                            /* onMenuButtonClicked= */ () -> {},
+                            this::onMenuButtonClicked,
                             R.id.menu_button_wrapper,
                             /* visibilityDelegate= */ null,
                             /* isWebApp= */ true);
@@ -723,5 +723,21 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                         ? mAppOriginView.getTextColors()
                         : mThemeColorProvider.getActivityFocusTint();
         mAppOriginView.setTextColor(textColorList);
+    }
+
+    private void onMenuButtonClicked() {
+        AppMenuCoordinator appMenuCoordinator = mAppMenuCoordinatorSupplier.get();
+        if (appMenuCoordinator == null || mView == null) return;
+
+        View menuButtonView = mView.findViewById(R.id.menu_button_wrapper);
+        assert menuButtonView != null;
+        // Post the show call to handle keyboard click events and enure the View is laid out
+        // appropriately.
+        menuButtonView.post(
+                () -> {
+                    appMenuCoordinator
+                            .getAppMenuHandler()
+                            .showAppMenu(menuButtonView, /* startDragging= */ false);
+                });
     }
 }
