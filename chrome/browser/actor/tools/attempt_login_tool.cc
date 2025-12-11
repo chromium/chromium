@@ -326,13 +326,21 @@ void AttemptLoginTool::OnCredentialSelected(
     quality_logger_.SetPermissionPicked(
         optimization_guide::proto::ActorLoginQuality_PermissionOption_UNKNOWN);
   }
-  // Cache the user selected credential for reuse.
-  tool_delegate().SetUserSelectedCredential(
-      ToolDelegate::CredentialWithPermission(
-          *selected_credential,
-          response->permission_duration.value_or(
-              webui::mojom::UserGrantedPermissionDuration::kOneTime)));
 
+  webui::mojom::UserGrantedPermissionDuration permission_duration =
+      response->permission_duration.value_or(
+          webui::mojom::UserGrantedPermissionDuration::kOneTime);
+  tool_delegate().SetUserSelectedCredential(
+      ToolDelegate::CredentialWithPermission(*selected_credential,
+                                             permission_duration),
+      base::BindOnce(&AttemptLoginTool::OnCredentialCachingDone,
+                     weak_ptr_factory_.GetWeakPtr(), *selected_credential,
+                     permission_duration));
+}
+
+void AttemptLoginTool::OnCredentialCachingDone(
+    actor_login::Credential selected_credential,
+    webui::mojom::UserGrantedPermissionDuration permission_duration) {
   tabs::TabInterface* tab = tab_handle_.Get();
   if (!tab) {
     PostResponseTask(std::move(invoke_callback_),
@@ -351,13 +359,13 @@ void AttemptLoginTool::OnCredentialSelected(
   }
 
   const bool should_store_permission =
-      response->permission_duration ==
+      permission_duration ==
       webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow;
   GetActorLoginService().AttemptLogin(
-      tab, *selected_credential, should_store_permission,
+      tab, selected_credential, should_store_permission,
       quality_logger_.AsWeakPtr(),
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
-                     weak_ptr_factory_.GetWeakPtr(), *selected_credential,
+                     weak_ptr_factory_.GetWeakPtr(), selected_credential,
                      should_store_permission));
 }
 

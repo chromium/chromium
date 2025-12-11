@@ -94,8 +94,13 @@ class ToolDelegate {
   // within the same task.
   // `permission_duration` can be one-time or permanent. Permanent permission
   // means the `credential` can be used in future calls to the tool.
+  // `affiliations_fetched` is invoked when the operation to fetch affiliated
+  // domains is completed. Affiliations are fetched in order to reuse the
+  // permission given to the selected `credential` in other domains that are
+  // strongly affiliated.
   virtual void SetUserSelectedCredential(
-      const CredentialWithPermission& credential) = 0;
+      const CredentialWithPermission& credential,
+      base::OnceClosure affiliations_fetched) = 0;
   virtual const std::optional<CredentialWithPermission>
   GetUserSelectedCredential(const url::Origin& request_origin) const = 0;
 

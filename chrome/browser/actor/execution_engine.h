@@ -32,6 +32,10 @@
 
 class Profile;
 
+namespace affiliations {
+struct Facet;
+}  // namespace affiliations
+
 namespace content {
 class NavigationHandle;
 }
@@ -140,7 +144,8 @@ class ExecutionEngine : public ToolDelegate {
       const base::flat_map<std::string, gfx::Image>& icons,
       ToolDelegate::CredentialSelectedCallback callback) override;
   void SetUserSelectedCredential(
-      const CredentialWithPermission& credential) override;
+      const CredentialWithPermission& credential,
+      base::OnceClosure affiliations_fetched) override;
   const std::optional<CredentialWithPermission> GetUserSelectedCredential(
       const url::Origin& request_origin) const override;
   void RequestToShowAutofillSuggestions(
@@ -182,6 +187,11 @@ class ExecutionEngine : public ToolDelegate {
 
   std::optional<mojom::ActionResultCode> user_take_over_result() const {
     return user_takeover_result_;
+  }
+
+  const base::flat_map<url::Origin, url::Origin>&
+  GetAffiliatedOriginMapForTesting() const {
+    return affiliated_origin_map_;
   }
 
   void AddObserver(StateObserver* observer);
@@ -229,6 +239,13 @@ class ExecutionEngine : public ToolDelegate {
   // Returns the next action that will be started when ExecuteNextAction is
   // reached.
   const ToolRequest& GetNextAction() const;
+
+  // Processes the affiliation service results for the given `source_origin`.
+  // and saves it into `affiliated_origin_map_`.
+  void OnAffiliationsReceived(const url::Origin& source_origin,
+                              base::OnceClosure affiliations_fetched,
+                              const std::vector<affiliations::Facet>& results,
+                              bool success);
 
   // Returns the index / action that was last executed and is still in progress.
   // It is an error to call this when an action is not in progress.
@@ -306,6 +323,8 @@ class ExecutionEngine : public ToolDelegate {
   std::unique_ptr<autofill::ActorFormFillingService>
       actor_form_filling_service_;
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
+
+  base::flat_map<url::Origin, url::Origin> affiliated_origin_map_;
 
   std::vector<std::unique_ptr<ToolRequest>> action_sequence_;
   ActorTask::ActCallback act_callback_;
