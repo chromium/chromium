@@ -95,7 +95,7 @@ void ActorOverlayWebView::MoveCursorTo(const gfx::Point& point,
   // Ensure the callback runs on any early return. We Release() ownership only
   // when passing the callback to an asynchronous operation.
   base::ScopedClosureRunner runner(std::move(callback));
-  if (!features::kGlicActorUiOverlayMagicCursor.Get()) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
     return;
   }
   if (actor::ui::ActorOverlayUI* web_ui = GetWebUi()) {

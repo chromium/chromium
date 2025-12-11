@@ -39,7 +39,7 @@ ActorTabData::GetLastObservedPageContent() {
 
 const ui::DomNodeGeometry* ActorTabData::GetLastObservedDomNodeGeometry() {
   if (!last_observed_dom_node_geometry_ &&
-      features::kGlicActorUiOverlayMagicCursor.Get()) {
+      base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
     if (last_observed_page_content_.has_value()) {
       // Disabled unless Magic Cursor is enabled to improve latency.
       last_observed_dom_node_geometry_ =

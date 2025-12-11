@@ -88,9 +88,10 @@ class ActorUiDomNodeGeometryBrowserTest
       public testing::WithParamInterface<float> {
  public:
   ActorUiDomNodeGeometryBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActorUi,
-        {{features::kGlicActorUiOverlayMagicCursorName, "true"}});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicActorUi,
+                              features::kGlicActorUiOverlayMagicCursor},
+        /*disabled_features=*/{});
   }
 
   ~ActorUiDomNodeGeometryBrowserTest() override = default;

@@ -29,9 +29,10 @@ constexpr char kArbiraryDocId[] = "4D7AF36711F7531ACB55F32BC7C6242E";
 class ActorUiDomNodeGeometryTest : public testing::Test {
  public:
   ActorUiDomNodeGeometryTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActorUi,
-        {{features::kGlicActorUiOverlayMagicCursorName, "true"}});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicActorUi,
+                              features::kGlicActorUiOverlayMagicCursor},
+        /*disabled_features=*/{});
   }
 
  protected:

@@ -31,8 +31,9 @@ ActorOverlayUI::ActorOverlayUI(content::WebUI* web_ui)
       Profile::FromWebUI(web_ui), chrome::kChromeUIActorOverlayHost);
   webui::SetupWebUIDataSource(source, kActorOverlayResources,
                               IDR_ACTOR_OVERLAY_ACTOR_OVERLAY_HTML);
-  source->AddBoolean("isMagicCursorEnabled",
-                     features::kGlicActorUiOverlayMagicCursor.Get());
+  source->AddBoolean(
+      "isMagicCursorEnabled",
+      base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor));
   source->AddBoolean("isStandaloneBorderGlowEnabled",
                      features::kGlicActorUiStandaloneBorderGlow.Get());
   source->AddResourcePath("magic_cursor.svg", IDR_ACTOR_OVERLAY_MAGIC_CURSOR);

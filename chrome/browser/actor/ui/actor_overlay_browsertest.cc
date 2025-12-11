@@ -41,10 +41,11 @@ using base::test::TestFuture;
 class ActorOverlayTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActorUi,
-        {{features::kGlicActorUiOverlayName, "true"},
-         {features::kGlicActorUiOverlayMagicCursorName, "true"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicActorUi,
+                               {{features::kGlicActorUiOverlayName, "true"}}},
+                              {features::kGlicActorUiOverlayMagicCursor, {}}},
+        /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
   }
 

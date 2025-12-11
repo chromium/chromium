@@ -322,10 +322,11 @@ BASE_FEATURE(kGlicHandoffButtonShowInImmersiveMode,
 BASE_FEATURE(kGlicHandoffButtonResetFocusAndHoverStatus,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the magic cursor in the actor overlay is shown.
+BASE_FEATURE(kGlicActorUiOverlayMagicCursor, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kGlicActorUiTaskIconName[] = "glic-actor-ui-task-icon";
 const char kGlicActorUiOverlayName[] = "glic-actor-ui-overlay";
-const char kGlicActorUiOverlayMagicCursorName[] =
-    "glic-actor-ui-overlay-magic-cursor";
 const char kGlicActorUiToastName[] = "glic-actor-ui-toast";
 const char kGlicActorUiHandoffButtonName[] = "glic-actor-ui-handoff-button";
 const char kGlicActorUiTabIndicatorName[] = "glic-actor-ui-tab-indicator";
@@ -340,9 +341,6 @@ const base::FeatureParam<bool> kGlicActorUiTaskIcon{
 // Controls whether the Actor Overlay in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiOverlay{
     &kGlicActorUi, kGlicActorUiOverlayName, true};
-// Controls whether the Magic Cursor in the Actor Overlay is enabled.
-const base::FeatureParam<bool> kGlicActorUiOverlayMagicCursor{
-    &kGlicActorUi, kGlicActorUiOverlayMagicCursorName, false};
 // Controls whether the toast in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiToast{&kGlicActorUi,
                                                  kGlicActorUiToastName, true};
