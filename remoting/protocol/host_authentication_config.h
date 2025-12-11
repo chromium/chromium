@@ -26,7 +26,7 @@ struct HostAuthenticationConfig {
                            scoped_refptr<RsaKeyPair> key_pair);
 
   HostAuthenticationConfig(const HostAuthenticationConfig&);
-  HostAuthenticationConfig(HostAuthenticationConfig&&);
+  HostAuthenticationConfig& operator=(const HostAuthenticationConfig&);
 
   ~HostAuthenticationConfig();
 

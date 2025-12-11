@@ -35,6 +35,8 @@ class Me2MeHostAuthenticatorFactory : public AuthenticatorFactory {
       const std::string& local_jid,
       const std::string& remote_jid) override;
 
+  std::unique_ptr<AuthenticatorFactory> Clone() const override;
+
  private:
   // Used for all host authenticators.
   CheckAccessPermissionCallback check_access_permission_callback_;

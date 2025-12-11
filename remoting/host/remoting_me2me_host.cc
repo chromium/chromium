@@ -1908,6 +1908,11 @@ void HostProcess::StartHost() {
           std::move(ice_config_fetcher), protocol::TransportRole::SERVER);
   std::unique_ptr<protocol::SessionManager> session_manager(
       new protocol::JingleSessionManager(signal_strategy_.get()));
+  std::unique_ptr<protocol::SessionManager> corp_session_manager;
+  if (corp_signal_strategy_) {
+    corp_session_manager = std::make_unique<protocol::JingleSessionManager>(
+        corp_signal_strategy_.get());
+  }
 
   std::unique_ptr<protocol::CandidateSessionConfig> protocol_config =
       protocol::CandidateSessionConfig::CreateDefault();
@@ -1945,8 +1950,9 @@ void HostProcess::StartHost() {
 
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
-      transport_context, context_->audio_task_runner(),
-      context_->video_encode_task_runner(), desktop_environment_options_,
+      std::move(corp_session_manager), transport_context,
+      context_->audio_task_runner(), context_->video_encode_task_runner(),
+      desktop_environment_options_,
       base::BindRepeating(&HostProcess::OnSessionPoliciesReceived,
                           base::Unretained(this)),
       &local_session_policies_provider_);

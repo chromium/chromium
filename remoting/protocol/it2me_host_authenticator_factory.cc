@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/negotiating_host_authenticator.h"
@@ -42,6 +43,12 @@ It2MeHostAuthenticatorFactory::CreateAuthenticator(
       std::make_unique<HostAuthenticationConfig>(auth_config_));
   return std::make_unique<ValidatingAuthenticator>(
       remote_jid, std::move(validation_callback_), std::move(authenticator));
+}
+
+std::unique_ptr<AuthenticatorFactory> It2MeHostAuthenticatorFactory::Clone()
+    const {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 }  // namespace remoting::protocol
