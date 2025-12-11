@@ -60,7 +60,6 @@ BASE_DECLARE_FEATURE(kRichAutocompletion);
 BASE_DECLARE_FEATURE(kAiModeOmniboxEntryPoint);
 BASE_DECLARE_FEATURE(kAiModeOmniboxEntryPointEnUs);
 BASE_DECLARE_FEATURE(kHideAimEntrypointOnUserInput);
-BASE_DECLARE_FEATURE(kOmniboxAssistantVoiceSearch);
 BASE_DECLARE_FEATURE(kOmniboxMultimodalInput);
 BASE_DECLARE_FEATURE(kRemoveSearchReadyOmnibox);
 
