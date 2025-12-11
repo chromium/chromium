@@ -1596,7 +1596,7 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
       gpu::kGpuFeatureStatusEnabled;
 
   auto shared_memory_limits =
-      support_gpu_rasterization ? gpu::SharedMemoryLimits::ForOOPRasterContext()
+      support_gpu_rasterization ? gpu::SharedMemoryLimits::ForGPURasterContext()
                                 : gpu::SharedMemoryLimits();
   shared_worker_context_provider_ =
       viz::ContextProviderCommandBuffer::CreateForRaster(

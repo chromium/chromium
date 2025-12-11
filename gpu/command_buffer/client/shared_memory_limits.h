@@ -54,7 +54,7 @@ struct SharedMemoryLimits {
     return limits;
   }
 
-  static SharedMemoryLimits ForOOPRasterContext() {
+  static SharedMemoryLimits ForGPURasterContext() {
     SharedMemoryLimits limits;
     limits.command_buffer_size = 64 * 1024;
     // TODO(khushalsagar): See if transfer buffer sizes can be fine-tuned
