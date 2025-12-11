@@ -13,7 +13,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Button;
@@ -390,17 +389,11 @@ class FuseboxViewBinder {
         FuseboxPopup popup = viewHolder.popup;
         Button addCurrentTabButton = popup.mAddCurrentTab;
 
-        final Drawable drawable;
-        if (favicon != null) {
-            @Px int iconSizePx = res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size);
-            Bitmap bitmap =
-                    Bitmap.createScaledBitmap(favicon, iconSizePx, iconSizePx, /* filter= */ true);
-            drawable = new BitmapDrawable(res, bitmap);
-            drawable.setBounds(
-                    /* left= */ 0, /* top= */ 0, /* right= */ iconSizePx, /* bottom= */ iconSizePx);
-        } else {
-            drawable = assumeNonNull(context.getDrawable(R.drawable.ic_globe_24dp));
-        }
+        Drawable drawable =
+                FuseboxTabUtils.getDrawableForTabFavicon(
+                        context,
+                        favicon,
+                        res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size));
         addCurrentTabButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 drawable, /* top= */ null, /* end= */ null, /* bottom= */ null);
 

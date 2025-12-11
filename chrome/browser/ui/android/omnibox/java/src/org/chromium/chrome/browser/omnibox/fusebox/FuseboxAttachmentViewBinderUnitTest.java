@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +34,8 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -40,6 +46,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Drawable mDrawable;
+    @Mock private Tab mTab;
 
     private ActivityController<TestActivity> mActivityController;
     private PropertyModel mModel;
@@ -61,6 +68,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @After
     public void tearDown() {
         mActivityController.close();
+        OmniboxResourceProvider.setTabFaviconFactory(null);
     }
 
     @Test
@@ -144,5 +152,58 @@ public class FuseboxAttachmentViewBinderUnitTest {
         assertEquals(View.GONE, spinner.getVisibility());
         assertEquals(View.VISIBLE, imageView.getVisibility());
         assertEquals(View.VISIBLE, textView.getVisibility());
+    }
+
+    @Test
+    public void testGetThumbnailDrawable() {
+        Context context = mView.getContext();
+
+        // File attachment with thumbnail.
+        FuseboxAttachment fileWithThumb =
+                FuseboxAttachment.forFile(mDrawable, "File", "text/plain", new byte[0]);
+        assertEquals(
+                mDrawable,
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(fileWithThumb, context));
+
+        // File attachment without thumbnail (fallback).
+        FuseboxAttachment fileNoThumb =
+                FuseboxAttachment.forFile(null, "File", "text/plain", new byte[0]);
+        Drawable fallback = FuseboxAttachmentViewBinder.getThumbnailDrawable(fileNoThumb, context);
+        assertNotNull(fallback);
+        assertNotEquals(mDrawable, fallback);
+
+        // Image attachment with thumbnail.
+        FuseboxAttachment imageWithThumb =
+                FuseboxAttachment.forCameraImage(mDrawable, "Image", "image/png", new byte[0]);
+        assertEquals(
+                mDrawable,
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(imageWithThumb, context));
+
+        // Image attachment without thumbnail (fallback).
+        FuseboxAttachment imageNoThumb =
+                FuseboxAttachment.forCameraImage(null, "Image", "image/png", new byte[0]);
+        Drawable imageFallback =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(imageNoThumb, context);
+        assertNotNull(imageFallback);
+        assertNotEquals(mDrawable, imageFallback);
+
+        // Tab attachment with favicon.
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        OmniboxResourceProvider.setTabFaviconFactory(t -> bitmap);
+        doReturn(1).when(mTab).getId();
+        doReturn("Title").when(mTab).getTitle();
+
+        FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(mTab, context.getResources());
+        Drawable tabDrawable =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(tabAttachment, context);
+        assertNotNull(tabDrawable);
+
+        // Tab attachment without favicon (fallback).
+        OmniboxResourceProvider.setTabFaviconFactory(t -> null);
+        FuseboxAttachment tabAttachmentNoFavicon =
+                FuseboxAttachment.forTab(mTab, context.getResources());
+        Drawable tabDrawableNoFavicon =
+                FuseboxAttachmentViewBinder.getThumbnailDrawable(tabAttachmentNoFavicon, context);
+        assertNotNull(tabDrawableNoFavicon);
     }
 }
