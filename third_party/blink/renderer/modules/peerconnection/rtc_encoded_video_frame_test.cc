@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
@@ -41,7 +41,7 @@ class RTCEncodedVideoFrameTest : public testing::Test {
 };
 
 DOMHighResTimeStamp GetTimeOriginNtp(V8TestingScope& v8_scope) {
-  return GlobalPerformance::performance(v8_scope.GetWindow())->timeOrigin() +
+  return DOMWindowPerformance::performance(v8_scope.GetWindow())->timeOrigin() +
          2208988800000.0;
 }
 

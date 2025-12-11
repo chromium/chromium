@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 
 namespace blink {
 
@@ -402,7 +402,7 @@ TEST_F(AutoscrollControllerTest, TextSelectionAutoScroll) {
   LocalDOMWindow* current_window = GetDocument().GetFrame()->DomWindow();
   DCHECK(current_window);
   WindowPerformance* window_performance =
-      GlobalPerformance::performance(*current_window);
+      DOMWindowPerformance::performance(*current_window);
   EXPECT_TRUE(controller.AutoscrollInProgress());
   EXPECT_GT(scrollable_area->GetScrollOffset().y(), 0);
   EXPECT_TRUE(window_performance->IsAutoscrollActive());

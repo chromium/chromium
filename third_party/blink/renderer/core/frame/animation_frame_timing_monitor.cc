@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/third_party_script_detector.h"
 #include "third_party/blink/renderer/core/timing/timing_utils.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
@@ -70,7 +70,8 @@ void AnimationFrameTimingMonitor::BeginMainFrame(
     LocalDOMWindow& local_root_window,
     viz::BeginFrameId frame_id) {
   current_begin_frame_id_ = frame_id;
-  GlobalPerformance::performance(local_root_window)->OnBeginMainFrame(frame_id);
+  DOMWindowPerformance::performance(local_root_window)
+      ->OnBeginMainFrame(frame_id);
 
   base::TimeTicks now = base::TimeTicks::Now();
   if (!current_frame_timing_info_) {
@@ -83,7 +84,7 @@ void AnimationFrameTimingMonitor::BeginMainFrame(
   state_ = State::kRenderingFrame;
   ApplyTaskDuration(now - current_task_start_);
 
-  WindowPerformance* performance = GlobalPerformance::performance(
+  WindowPerformance* performance = DOMWindowPerformance::performance(
       *local_root_window.GetFrame()->DomWindow());
   performance->SetRenderStartTimeForPendingEvents(now);
 
@@ -279,7 +280,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     timing_info->SetDidPause();
   }
 
-  GlobalPerformance::performance(*frame->DomWindow())
+  DOMWindowPerformance::performance(*frame->DomWindow())
       ->QueueLongAnimationFrameTiming(timing_info);
   RecordLongAnimationFrameUKMAndTrace(*timing_info, *frame->DomWindow());
 }

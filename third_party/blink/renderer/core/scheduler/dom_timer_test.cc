@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 
 using testing::DoubleNear;
 using testing::ElementsAreArray;
@@ -50,7 +50,7 @@ class DOMTimerTest : public RenderingTest {
     AdvanceClock(base::Seconds(1));
     RenderingTest::SetUp();
     auto* window_performance =
-        GlobalPerformance::performance(*GetDocument().domWindow());
+        DOMWindowPerformance::performance(*GetDocument().domWindow());
     auto* mock_clock = platform()->GetClock();
     auto* mock_tick_clock = platform()->GetTickClock();
     auto now_ticks = platform()->NowTicks();

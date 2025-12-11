@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_error_event.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_event.h"
@@ -352,7 +352,7 @@ bool SpeechSynthesis::GetElapsedTimeMillis(double* millis) {
     return false;
   }
 
-  *millis = GlobalPerformance::performance(*local_dom_window_)->now();
+  *millis = DOMWindowPerformance::performance(*local_dom_window_)->now();
   return true;
 }
 

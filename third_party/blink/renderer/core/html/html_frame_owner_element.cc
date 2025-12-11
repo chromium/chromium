@@ -63,7 +63,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -515,7 +515,7 @@ void HTMLFrameOwnerElement::AddResourceTiming(
     return;
   }
 
-  GlobalPerformance::performance(*GetDocument().domWindow())
+  DOMWindowPerformance::performance(*GetDocument().domWindow())
       ->AddResourceTiming(std::move(info), localName());
   DidReportResourceTiming();
 }
@@ -539,7 +539,7 @@ void HTMLFrameOwnerElement::ReportFallbackResourceTimingIfNeeded() {
   resource_timing_info.Swap(&fallback_timing_info_);
   resource_timing_info->response_end = base::TimeTicks::Now();
 
-  GlobalPerformance::performance(*GetDocument().domWindow())
+  DOMWindowPerformance::performance(*GetDocument().domWindow())
       ->AddResourceTiming(std::move(resource_timing_info), localName());
 }
 

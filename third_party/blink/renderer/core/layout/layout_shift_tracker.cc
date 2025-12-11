@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -634,7 +634,7 @@ void LayoutShiftTracker::SubmitPerformanceEntry(double score_delta,
   LocalDOMWindow* window = frame_view_->GetFrame().DomWindow();
   if (!window)
     return;
-  WindowPerformance* performance = GlobalPerformance::performance(*window);
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window);
   DCHECK(performance);
 
   double input_timestamp = LastInputTimestamp();
@@ -818,7 +818,7 @@ double LayoutShiftTracker::LastInputTimestamp() const {
   LocalDOMWindow* window = frame_view_->GetFrame().DomWindow();
   if (!window)
     return 0.0;
-  WindowPerformance* performance = GlobalPerformance::performance(*window);
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window);
   DCHECK(performance);
 
   return most_recent_input_timestamp_initialized_

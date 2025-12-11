@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
@@ -54,7 +54,7 @@ webrtc::Timestamp GetWebRTCTimeOrigin(LocalDOMWindow* window) {
 }
 
 DOMHighResTimeStamp GetTimeOriginNtp(V8TestingScope& v8_scope) {
-  return GlobalPerformance::performance(v8_scope.GetWindow())->timeOrigin() +
+  return DOMWindowPerformance::performance(v8_scope.GetWindow())->timeOrigin() +
          2208988800000.0;
 }
 

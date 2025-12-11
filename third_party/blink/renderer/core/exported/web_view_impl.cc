@@ -168,7 +168,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
@@ -2767,7 +2767,7 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
       if (RuntimeEnabledFeatures::
               BackForwardCacheRestorationPerformanceEntryEnabled(window)) {
         WindowPerformance* performance =
-            GlobalPerformance::performance(*window);
+            DOMWindowPerformance::performance(*window);
         DCHECK(performance);
         performance->IncrementNavigationId();
       }
@@ -2779,7 +2779,7 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
         auto pageshow_end_time = base::TimeTicks::Now();
 
         WindowPerformance* performance =
-            GlobalPerformance::performance(*window);
+            DOMWindowPerformance::performance(*window);
         DCHECK(performance);
 
         performance->AddBackForwardCacheRestoration(

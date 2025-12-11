@@ -28,27 +28,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/modules/mediasource/video_playback_quality.h"
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WORKER_GLOBAL_SCOPE_PERFORMANCE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WORKER_GLOBAL_SCOPE_PERFORMANCE_H_
 
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/timing/worker_performance.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 
 namespace blink {
 
-VideoPlaybackQuality::VideoPlaybackQuality(const Document& document,
-                                           unsigned total_video_frames,
-                                           unsigned dropped_video_frames,
-                                           unsigned corrupted_video_frames)
-    : creation_time_(0),
-      total_video_frames_(total_video_frames),
-      dropped_video_frames_(dropped_video_frames),
-      corrupted_video_frames_(corrupted_video_frames) {
-  if (document.domWindow()) {
-    creation_time_ =
-        DOMWindowPerformance::performance(*(document.domWindow()))->now();
-  }
-}
+class WorkerGlobalScope;
+
+class CORE_EXPORT WorkerGlobalScopePerformance final {
+ public:
+  static WorkerPerformance* performance(WorkerGlobalScope&);
+
+  explicit WorkerGlobalScopePerformance(WorkerGlobalScope&);
+};
 
 }  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_WORKER_GLOBAL_SCOPE_PERFORMANCE_H_

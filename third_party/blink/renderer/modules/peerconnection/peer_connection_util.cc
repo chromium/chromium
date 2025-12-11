@@ -8,8 +8,9 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 
 namespace blink {
@@ -24,9 +25,9 @@ constexpr base::TimeDelta kNtpUnixEpochOffset =
 
 Performance* GetPerformanceFromExecutionContext(ExecutionContext* context) {
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    return GlobalPerformance::performance(*window);
+    return DOMWindowPerformance::performance(*window);
   } else if (auto* worker = DynamicTo<WorkerGlobalScope>(context)) {
-    return GlobalPerformance::performance(*worker);
+    return WorkerGlobalScopePerformance::performance(*worker);
   }
   NOTREACHED();
 }

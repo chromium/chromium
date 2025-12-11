@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/timing_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -81,7 +81,7 @@ PerformanceEventTiming::PerformanceEventTiming(
     : PerformanceEntry(
           /*duration=*/0.0,
           event_type,
-          GlobalPerformance::performance(*source->ToLocalDOMWindow())
+          DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
               ->MonotonicTimeToDOMHighResTimeStamp(
                   reporting_info.creation_time),
           source,
@@ -103,7 +103,7 @@ PerformanceEntryType PerformanceEventTiming::EntryTypeEnum() const {
 DOMHighResTimeStamp PerformanceEventTiming::processingStart() const {
   if (!processing_start_) {
     processing_start_ =
-        GlobalPerformance::performance(*source()->ToLocalDOMWindow())
+        DOMWindowPerformance::performance(*source()->ToLocalDOMWindow())
             ->MonotonicTimeToDOMHighResTimeStamp(
                 reporting_info_.processing_start_time);
   }
@@ -113,7 +113,7 @@ DOMHighResTimeStamp PerformanceEventTiming::processingStart() const {
 DOMHighResTimeStamp PerformanceEventTiming::processingEnd() const {
   if (!processing_end_) {
     processing_end_ =
-        GlobalPerformance::performance(*source()->ToLocalDOMWindow())
+        DOMWindowPerformance::performance(*source()->ToLocalDOMWindow())
             ->MonotonicTimeToDOMHighResTimeStamp(
                 reporting_info_.processing_end_time);
   }

@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "cc/base/region.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -36,7 +36,7 @@ ContainerTiming& ContainerTiming::From(LocalDOMWindow& window) {
 
 ContainerTiming::ContainerTiming(LocalDOMWindow& window)
     : local_dom_window_(window),
-      performance_(GlobalPerformance::performance(window)) {}
+      performance_(DOMWindowPerformance::performance(window)) {}
 
 bool ContainerTiming::CanReportToContainerTiming() const {
   DCHECK(performance_);

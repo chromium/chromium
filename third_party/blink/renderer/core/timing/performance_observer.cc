@@ -15,10 +15,11 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_observer_entry_list.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -38,12 +39,12 @@ PerformanceObserver* PerformanceObserver::Create(
   if (window) {
     UseCounter::Count(context, WebFeature::kPerformanceObserverForWindow);
     return MakeGarbageCollected<PerformanceObserver>(
-        context, GlobalPerformance::performance(*window), callback);
+        context, DOMWindowPerformance::performance(*window), callback);
   }
   if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
     UseCounter::Count(context, WebFeature::kPerformanceObserverForWorker);
     return MakeGarbageCollected<PerformanceObserver>(
-        context, GlobalPerformance::performance(*scope), callback);
+        context, WorkerGlobalScopePerformance::performance(*scope), callback);
   }
   V8ThrowException::ThrowTypeError(
       script_state->GetIsolate(),

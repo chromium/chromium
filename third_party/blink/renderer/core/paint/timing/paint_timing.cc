@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
@@ -54,7 +54,7 @@ namespace {
 WindowPerformance* GetPerformanceInstance(LocalFrame* frame) {
   WindowPerformance* performance = nullptr;
   if (frame && frame->DomWindow()) {
-    performance = GlobalPerformance::performance(*frame->DomWindow());
+    performance = DOMWindowPerformance::performance(*frame->DomWindow());
   }
   return performance;
 }

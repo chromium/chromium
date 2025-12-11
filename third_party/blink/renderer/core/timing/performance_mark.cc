@@ -11,8 +11,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -38,10 +39,10 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
   Performance* performance = nullptr;
   bool is_worker_global_scope = false;
   if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
-    performance = GlobalPerformance::performance(*window);
+    performance = DOMWindowPerformance::performance(*window);
   } else if (auto* scope = DynamicTo<WorkerGlobalScope>(
                  ExecutionContext::From(script_state))) {
-    performance = GlobalPerformance::performance(*scope);
+    performance = WorkerGlobalScopePerformance::performance(*scope);
     is_worker_global_scope = true;
   }
   DCHECK(performance);

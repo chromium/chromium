@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -57,7 +57,7 @@ TEST_F(PerformanceMarkTest, Construction) {
 
   auto* window = LocalDOMWindow::From(script_state);
   ASSERT_TRUE(window);
-  auto* performance = GlobalPerformance::performance(*window);
+  auto* performance = DOMWindowPerformance::performance(*window);
   ASSERT_TRUE(performance);
 
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
@@ -83,7 +83,7 @@ TEST_F(PerformanceMarkTest, ConstructionWithDetail) {
 
   auto* window = LocalDOMWindow::From(script_state);
   ASSERT_TRUE(window);
-  auto* performance = GlobalPerformance::performance(*window);
+  auto* performance = DOMWindowPerformance::performance(*window);
   ASSERT_TRUE(performance);
 
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
@@ -109,7 +109,7 @@ TEST_F(PerformanceMarkTest, BuildJSONValue) {
 
   auto* window = LocalDOMWindow::From(script_state);
   ASSERT_TRUE(window);
-  auto* performance = GlobalPerformance::performance(*window);
+  auto* performance = DOMWindowPerformance::performance(*window);
   ASSERT_TRUE(performance);
 
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(

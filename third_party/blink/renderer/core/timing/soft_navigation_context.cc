@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -22,7 +22,7 @@ uint64_t SoftNavigationContext::last_context_id_ = 0;
 SoftNavigationContext::SoftNavigationContext(LocalDOMWindow& window)
     : window_(&window),
       lcp_calculator_(MakeGarbageCollected<LargestContentfulPaintCalculator>(
-          GlobalPerformance::performance(window),
+          DOMWindowPerformance::performance(window),
           this)) {
   window_->GetSoftNavigationHeuristics()->ForEachInteractionEffectsMonitor(
       [&](InteractionEffectsMonitor& monitor) {
@@ -249,9 +249,10 @@ void SoftNavigationContext::EmitPerformanceEntry(
   CHECK(WasEmitted());
   // This should not be called after we've been shut down.
   CHECK(window_);
-  GlobalPerformance::performance(*window_)->OnInteractionContentfulPaintUpdated(
-      paint_timing_info, paint_size, load_time, id, url, element,
-      NavigationId());
+  DOMWindowPerformance::performance(*window_)
+      ->OnInteractionContentfulPaintUpdated(paint_timing_info, paint_size,
+                                            load_time, id, url, element,
+                                            NavigationId());
 }
 
 }  // namespace blink

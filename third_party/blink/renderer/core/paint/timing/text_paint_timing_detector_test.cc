@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -58,14 +58,24 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
   Document& GetDocument() { return *GetFrame()->GetDocument(); }
 
+  LocalFrameView& GetChildFrameView() {
+    return *To<LocalFrame>(GetFrame()->Tree().FirstChild())->View();
+  }
+
+  TextPaintTimingDetector& GetChildFrameTextPaintTimingDetector() {
+    return GetChildFrameView()
+        .GetPaintTimingDetector()
+        .GetTextPaintTimingDetector();
+  }
+
+  LargestTextPaintManager& GetLargestTextPaintManager() {
+    return GetTextPaintTimingDetector()->ltp_manager_;
+  }
+
   gfx::Rect GetViewportRect(LocalFrameView& view) {
     ScrollableArea* scrollable_area = view.GetScrollableArea();
     DCHECK(scrollable_area);
     return scrollable_area->VisibleContentRect();
-  }
-
-  LocalFrameView& GetChildFrameView() {
-    return *To<LocalFrame>(GetFrame()->Tree().FirstChild())->View();
   }
 
   Document* GetChildDocument() {
@@ -78,16 +88,6 @@ class TextPaintTimingDetectorTest : public testing::Test {
 
   TextPaintTimingDetector* GetTextPaintTimingDetector() {
     return &GetPaintTimingDetector().GetTextPaintTimingDetector();
-  }
-
-  TextPaintTimingDetector& GetChildFrameTextPaintTimingDetector() {
-    return GetChildFrameView()
-        .GetPaintTimingDetector()
-        .GetTextPaintTimingDetector();
-  }
-
-  LargestTextPaintManager& GetLargestTextPaintManager() {
-    return GetTextPaintTimingDetector()->ltp_manager_;
   }
 
   wtf_size_t CountRecordedSize() {
@@ -142,7 +142,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
     base::TimeTicks presentation_time = test_task_runner_->NowTicks();
     DOMHighResTimeStamp timestamp =
         (presentation_time -
-         GlobalPerformance::performance(*GetDocument().domWindow())
+         DOMWindowPerformance::performance(*GetDocument().domWindow())
              ->GetTimeOriginInternal())
             .InMillisecondsF();
     callback_manager->InvokePresentationTimeCallback(

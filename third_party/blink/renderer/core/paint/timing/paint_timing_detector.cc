@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -172,7 +172,7 @@ void PaintTimingDetector::NotifyPaintFinished() {
   }
 
   if (LocalDOMWindow* window = DomWindow()) {
-    GlobalPerformance::performance(*window)->OnPaintFinished();
+    DOMWindowPerformance::performance(*window)->OnPaintFinished();
 
     if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
       heuristics->OnPaintFinished();
@@ -367,7 +367,7 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
 
   largest_contentful_paint_calculator_ =
       MakeGarbageCollected<LargestContentfulPaintCalculator>(
-          GlobalPerformance::performance(*dom_window), this);
+          DOMWindowPerformance::performance(*dom_window), this);
   return largest_contentful_paint_calculator_.Get();
 }
 
@@ -490,7 +490,7 @@ void PaintTimingDetector::EmitPerformanceEntry(
     const AtomicString& id,
     const String& url,
     Element* element) {
-  GlobalPerformance::performance(CHECK_DEREF(DomWindow()))
+  DOMWindowPerformance::performance(CHECK_DEREF(DomWindow()))
       ->OnLargestContentfulPaintUpdated(paint_timing_info, paint_size,
                                         load_time, id, url, element);
 }

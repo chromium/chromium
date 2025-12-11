@@ -252,7 +252,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -948,7 +948,7 @@ WebLocalFrameImpl::PerformanceMetricsForReporting() const {
   if (!GetFrame())
     return WebPerformanceMetricsForReporting();
   return WebPerformanceMetricsForReporting(
-      GlobalPerformance::performance(*(GetFrame()->DomWindow())));
+      DOMWindowPerformance::performance(*(GetFrame()->DomWindow())));
 }
 
 WebPerformanceMetricsForNestedContexts
@@ -956,7 +956,7 @@ WebLocalFrameImpl::PerformanceMetricsForNestedContexts() const {
   if (!GetFrame())
     return WebPerformanceMetricsForNestedContexts();
   return WebPerformanceMetricsForNestedContexts(
-      GlobalPerformance::performance(*(GetFrame()->DomWindow())));
+      DOMWindowPerformance::performance(*(GetFrame()->DomWindow())));
 }
 
 bool WebLocalFrameImpl::IsAdFrame() const {

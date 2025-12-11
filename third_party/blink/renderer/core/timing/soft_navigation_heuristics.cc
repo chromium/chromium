@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
@@ -389,7 +389,7 @@ void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigationEntry(
   // order to match with the eventual soft-nav entry.
   ++soft_navigation_count_;
 
-  WindowPerformance* performance = GlobalPerformance::performance(*window_);
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
   performance->IncrementNavigationId();
   context->SetNavigationId(performance->NavigationId());
@@ -409,7 +409,7 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntry(
   CHECK(!context->WasEmitted());
   context->MarkEmitted();
 
-  WindowPerformance* performance = GlobalPerformance::performance(*window_);
+  WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
   performance->AddSoftNavigationEntry(
       AtomicString(context->AttributionUrl()), context->TimeOrigin(),

@@ -46,7 +46,8 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/timing/worker_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
@@ -1512,12 +1513,13 @@ void inspector_time_stamp_event::Data(perfetto::TracedValue trace_context,
     LocalFrame* frame = window->GetFrame();
     dict.Add("frame", IdentifiersFactory::FrameId(frame));
     isolate = frame->DomWindow()->GetIsolate();
-    performance = GlobalPerformance::performance(*window);
+    performance = DOMWindowPerformance::performance(*window);
   } else if (auto* worker_global_scope =
                  DynamicTo<WorkerGlobalScope>(context)) {
     dict.Add("worker", ToHexString(worker_global_scope));
     isolate = worker_global_scope->GetIsolate();
-    performance = GlobalPerformance::performance(*worker_global_scope);
+    performance =
+        WorkerGlobalScopePerformance::performance(*worker_global_scope);
   }
 
   if (!isolate || !performance) {

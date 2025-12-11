@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/service_worker/fetch_event.h"
-
 #include <utility>
 
-#include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "third_party/blink/renderer/modules/service_worker/fetch_event.h"
+
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
@@ -18,9 +18,9 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/core/timing/performance_measure.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/fetch_respond_with_observer.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_error.h"
@@ -249,7 +249,7 @@ void FetchEvent::OnNavigationPreloadComplete(
       request_time, request_->url(), &resource_response);
   info->response_end = completion_time;
   info->allow_negative_values = true;
-  GlobalPerformance::performance(*worker_global_scope)
+  WorkerGlobalScopePerformance::performance(*worker_global_scope)
       ->AddResourceTiming(std::move(info), AtomicString("navigation"));
 }
 

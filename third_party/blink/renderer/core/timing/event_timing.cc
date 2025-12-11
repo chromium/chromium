@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/events/wheel_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
-#include "third_party/blink/renderer/core/timing/global_performance.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -94,7 +94,7 @@ std::optional<EventTiming> EventTiming::TryCreate(
     LocalDOMWindow* window,
     const Event& event,
     EventTarget* hit_test_target) {
-  auto* performance = GlobalPerformance::performance(*window);
+  auto* performance = DOMWindowPerformance::performance(*window);
   if (!performance || !IsEventTypeForEventTiming(event)) {
     return std::nullopt;
   }
