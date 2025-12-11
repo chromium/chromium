@@ -251,13 +251,7 @@ class SyncTest : public PlatformBrowserTest,
   virtual bool TestUsesSelfNotifications();
 
   // Blocks until all sync clients have completed their mutual sync cycles.
-  // Returns true if a quiescent state was successfully reached. Not supported
-  // for E2E tests.
-  //
-  // WARNING: Prefer using other test-specific methods to wait for a specific
-  // state because current checker is too generic and can lead to test flakiness
-  // in some cases. This method can be used in cases where "no changes" are
-  // expected to be applied to the server or to the client.
+  // Returns true if a quiescent state was successfully reached.
   [[nodiscard]] bool AwaitQuiescence();
 
   // Sets the mock gaia response for when an OAuth2 token is requested.

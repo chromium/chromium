@@ -31,7 +31,7 @@ class TwoClientOsPreferencesSyncTest : public SyncTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, Sanity) {
+IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(Sanity)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
@@ -66,7 +66,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, Sanity) {
               .size());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, Bidirectional) {
+IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest,
+                       E2E_ENABLED(Bidirectional)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
 
@@ -83,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, Bidirectional) {
             GetPrefs(0)->GetString(ash::prefs::kShelfAlignment));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, ClearPref) {
+IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ChangeStringPref(0, ash::prefs::kShelfAlignment, ash::kShelfAlignmentRight);

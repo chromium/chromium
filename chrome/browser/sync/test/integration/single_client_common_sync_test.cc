@@ -238,14 +238,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
-                       E2E_ENABLED(ShouldCrashAwaitQuiescenceForE2ETest)) {
-  ASSERT_TRUE(SetupSync());
-  EXPECT_DEATH(
-      { EXPECT_TRUE(AwaitQuiescence()); },
-      "AwaitQuiescence is not supported for E2E tests.");
-}
-
 class SingleClientGetUnsyncedTypesTest : public SingleClientCommonSyncTest {
  public:
   SingleClientGetUnsyncedTypesTest() {
