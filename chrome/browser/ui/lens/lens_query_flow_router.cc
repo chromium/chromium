@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -179,24 +180,18 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
     return;
   }
 
-  // TODO(crbug.com/461909986): This should load the URL returned by the
-  // interaction request into the contextual tasks panel and then move ownership
-  // of the session handle to the contextual tasks UI. For now, it only sends
-  // the interaction request.
-  pending_session_handle_->CreateSearchUrl(std::move(request_info));
-  OpenContextualTasksPanel();
+  auto search_url =
+      pending_session_handle_->CreateSearchUrl(std::move(request_info));
+  OpenContextualTasksPanel(search_url);
 }
 
-void LensQueryFlowRouter::OpenContextualTasksPanel() {
-  // TODO(crbug.com/461909986): This should instead properly load the search URL
-  // returned by the interaction request into the contextual tasks panel. For
-  // now, it just opens the contextual tasks panel.
-  auto* coordinator =
-      contextual_tasks::ContextualTasksSidePanelCoordinator::From(
-          browser_window_interface());
-  if (coordinator) {
-    coordinator->Show();
-  }
+void LensQueryFlowRouter::OpenContextualTasksPanel(const GURL& url) {
+  // Show the side panel. This will create a new task and associate it with the
+  // active tab.
+  contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext())
+      ->StartTaskUiInSidePanel(browser_window_interface(), tab_interface(),
+                               url);
 }
 
 void LensQueryFlowRouter::UploadContextualInputData(
@@ -248,7 +243,7 @@ LensQueryFlowRouter::CreateContextualInputData(
   contextual_input_data->pdf_current_page = pdf_current_page;
   contextual_input_data->viewport_screenshot = screenshot;
   contextual_input_data->is_page_context_eligible =
-      lens_search_controller_->lens_search_contextualization_controller()
+      lens_search_contextualization_controller()
           ->GetCurrentPageContextEligibility();
   contextual_input_data->tab_session_id =
       sessions::SessionTabHelper::IdForTab(web_contents());

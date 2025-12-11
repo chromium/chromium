@@ -516,6 +516,22 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
   coordinator->Close();
 }
 
+void ContextualTasksUiService::StartTaskUiInSidePanel(
+    BrowserWindowInterface* browser_window_interface,
+    tabs::TabInterface* tab_interface,
+    const GURL& url) {
+  CHECK(context_controller_);
+
+  // Create a task for the URL that was just intercepted.
+  ContextualTask task = context_controller_->CreateTaskFromUrl(url);
+  task_id_to_creation_url_[task.GetTaskId()] = url;
+
+  // Associate the task with the active tab.
+  AssociateWebContentsToTask(tab_interface->GetContents(), task.GetTaskId());
+
+  ContextualTasksSidePanelCoordinator::From(browser_window_interface)->Show();
+}
+
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
       !net::SchemefulSite::IsSameSite(url, ai_page_host_)) {

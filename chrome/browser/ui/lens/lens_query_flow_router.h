@@ -107,13 +107,16 @@ class LensQueryFlowRouter {
     return lens_search_controller_->lens_search_contextualization_controller();
   }
 
+  tabs::TabInterface* tab_interface() const {
+    return lens_search_controller_->GetTabInterface();
+  }
+
   content::WebContents* web_contents() const {
-    return lens_search_controller_->GetTabInterface()->GetContents();
+    return tab_interface()->GetContents();
   }
 
   BrowserWindowInterface* browser_window_interface() const {
-    return lens_search_controller_->GetTabInterface()
-        ->GetBrowserWindowInterface();
+    return tab_interface()->GetBrowserWindowInterface();
   }
 
   Profile* profile() const {
@@ -125,8 +128,8 @@ class LensQueryFlowRouter {
   void SendInteractionToContextualTasks(
       std::unique_ptr<CreateSearchUrlRequestInfo> request_info);
 
-  // Opens the contextual tasks panel to a default page URL.
-  void OpenContextualTasksPanel();
+  // Opens the contextual tasks panel to a provided URL.
+  void OpenContextualTasksPanel(const GURL& url);
 
   // Uploads the viewport and page context using the provided session handle.
   void UploadContextualInputData(
