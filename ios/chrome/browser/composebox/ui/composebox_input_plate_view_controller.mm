@@ -239,6 +239,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _plusButton = [self createPlusButton];
   _sendButton = [self createSendButton];
   _aimButton = [self createAIMButton];
+  _imageGenerationButton = [self createImageGenerationButton];
   [self updatePlusButtonItems];
   [self setupCarouselContainer];
 
@@ -395,15 +396,52 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
 - (void)updateVisibleControls:(ComposeboxInputPlateControls)controls {
   _plusButton.hidden = !(controls & ComposeboxInputPlateControls::kPlus);
-  _aimButton.hidden = !(controls & ComposeboxInputPlateControls::kAIM);
   _micButton.hidden = !(controls & ComposeboxInputPlateControls::kVoice);
   _lensButton.hidden = !(controls & ComposeboxInputPlateControls::kLens);
-  _sendButton.hidden = !(controls & ComposeboxInputPlateControls::kSend);
-  _imageGenerationButton.hidden =
-      !(controls & ComposeboxInputPlateControls::kCreateImage);
-  [self.editView
-      hideLeadingImage:!(controls &
-                         ComposeboxInputPlateControls::kLeadingImage)];
+
+  [self animateButton:_aimButton
+               hidden:!(controls & ComposeboxInputPlateControls::kAIM)];
+  [self animateButton:_sendButton
+               hidden:!(controls & ComposeboxInputPlateControls::kSend)];
+  [self animateButton:_imageGenerationButton
+               hidden:!(controls & ComposeboxInputPlateControls::kCreateImage)];
+  [self
+      animateLeadingImageHidden:!(controls &
+                                  ComposeboxInputPlateControls::kLeadingImage)];
+}
+
+- (void)animateReveal:(void (^)(void))animations {
+  [UIView animateWithDuration:0.6 * kCompactModeAnimationDuration
+                        delay:0.4 * kCompactModeAnimationDuration
+                      options:UIViewAnimationCurveEaseInOut
+                   animations:animations
+                   completion:nil];
+}
+
+- (void)animateButton:(UIButton*)button hidden:(BOOL)hidden {
+  BOOL alreadyHidden = button.hidden;
+  button.hidden = hidden;
+  // Only the appear sequence is animated.
+  BOOL isAppearing = alreadyHidden && !hidden;
+  if (isAppearing) {
+    button.alpha = 0;
+    [self animateReveal:^{
+      button.alpha = 1;
+    }];
+  }
+}
+
+- (void)animateLeadingImageHidden:(BOOL)hidden {
+  BOOL alreadyHidden = self.editView.leadingImageHidden;
+  self.editView.leadingImageHidden = hidden;
+  // Only the appear sequence is animated.
+  BOOL isAppearing = alreadyHidden && !hidden;
+  if (isAppearing) {
+    [self.editView setLeadingImageAlpha:0];
+    [self animateReveal:^{
+      [self.editView setLeadingImageAlpha:1];
+    }];
+  }
 }
 
 - (void)setCompact:(BOOL)compact {
@@ -756,32 +794,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     return;
   }
 
-  UIButtonConfiguration* config =
-      [UIButtonConfiguration plainButtonConfiguration];
-
-  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-  config.image = CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
-                                           kAIMButtonSymbolPointSize);
-
-  // Font setup
-  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
-                                   weight:UIFontWeightMedium];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSAttributedString* attributedTitle = [[NSAttributedString alloc]
-      initWithString:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION)
-          attributes:attributes];
-  config.attributedTitle = attributedTitle;
-
-  config.imagePadding = 5;
+  UIButtonConfiguration* config = _aimButton.configuration;
   self.aimButtonWidthConstraint.constant = kAIMButtonWidth;
-  _aimButton.layer.borderWidth = 0;
-  _aimButton.accessibilityTraits = UIAccessibilityTraitButton;
 
   if (self.AIModeEnabled) {
     config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 22);
     config.background.backgroundColor =
         [_theme aimButtonBackgroundColorWithAIMEnabled:YES];
     config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:YES];
+    _aimButton.layer.borderWidth = 0;
     _aimButton.accessibilityLabel = l10n_util::GetNSString(
         IDS_IOS_COMPOSEBOX_AIM_BUTTON_DISABLE_ACTION_ACCESSIBILITY_LABEL);
   } else {
@@ -871,6 +892,27 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [button addTarget:self
                 action:@selector(aimButtonTapped)
       forControlEvents:UIControlEventTouchUpInside];
+
+  UIButtonConfiguration* config =
+      [UIButtonConfiguration plainButtonConfiguration];
+
+  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  config.image = CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
+                                           kAIMButtonSymbolPointSize);
+
+  // Font setup
+  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
+                                   weight:UIFontWeightMedium];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+      initWithString:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION)
+          attributes:attributes];
+  config.attributedTitle = attributedTitle;
+  config.imagePadding = 5;
+  button.layer.borderWidth = 0;
+  button.accessibilityTraits = UIAccessibilityTraitButton;
+
+  button.configuration = config;
 
   return button;
 }
@@ -977,9 +1019,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   self.aimButtonWidthConstraint =
       [_aimButton.widthAnchor constraintEqualToConstant:kAIMButtonWidth];
   self.aimButtonWidthConstraint.active = YES;
-
-  [self createImageGenerationButton];
-  _imageGenerationButton.hidden = YES;
 
   // Horizontal stack view for buttons
   UIView* spacerView = [[UIView alloc] init];
@@ -1294,34 +1333,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     return;
   }
 
-  CGFloat initialAlpha = self.compact ? 1 : 0;
-  CGFloat finalAlpha = 1 - initialAlpha;
-  [self.editView setLeadingImageAlpha:initialAlpha];
-  self.sendButton.alpha = initialAlpha;
-
-  auto animations = ^() {
-    [UIView addKeyframeWithRelativeStartTime:0
-                            relativeDuration:1.0
-                                  animations:^{
-                                    [self updateInputPlateStackViewContent];
-                                    [self.inputPlateStackView layoutIfNeeded];
-                                    [self.view layoutIfNeeded];
-                                  }];
-    [UIView
-        addKeyframeWithRelativeStartTime:0.6
-                        relativeDuration:0.4
-                              animations:^{
-                                [self.editView setLeadingImageAlpha:finalAlpha];
-                                self.sendButton.alpha = finalAlpha;
-                              }];
-  };
-
-  auto animationOptions = UIViewKeyframeAnimationOptionCalculationModeLinear;
-  [UIView animateKeyframesWithDuration:kCompactModeAnimationDuration
-                                 delay:0
-                               options:animationOptions
-                            animations:animations
-                            completion:nil];
+  [UIView animateWithDuration:kCompactModeAnimationDuration
+                        delay:0
+                      options:UIViewAnimationCurveEaseInOut
+                   animations:^{
+                     [self updateInputPlateStackViewContent];
+                     [self.inputPlateStackView layoutIfNeeded];
+                     [self.view layoutIfNeeded];
+                   }
+                   completion:nil];
 }
 
 /// Generates a banana icon image to be used in the UI.
@@ -1346,12 +1366,12 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   return image;
 }
 
-- (void)createImageGenerationButton {
-  _imageGenerationButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  _imageGenerationButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [_imageGenerationButton addTarget:self
-                             action:@selector(imageGenerationButtonTapped)
-                   forControlEvents:UIControlEventTouchUpInside];
+- (UIButton*)createImageGenerationButton {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  [button addTarget:self
+                action:@selector(imageGenerationButtonTapped)
+      forControlEvents:UIControlEventTouchUpInside];
 
   UIButtonConfiguration* config =
       [UIButtonConfiguration plainButtonConfiguration];
@@ -1369,15 +1389,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   config.attributedTitle = attributedTitle;
 
   config.imagePadding = 5;
-  _imageGenerationButton.layer.borderWidth = 0;
+  button.layer.borderWidth = 0;
 
   config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 28);
   config.background.backgroundColor =
       [_theme imageGenerationButtonBackgroundColor];
   config.baseForegroundColor = [_theme imageGenerationButtonTextColor];
-  _imageGenerationButton.tintColor = [_theme imageGenerationButtonTextColor];
+  button.tintColor = [_theme imageGenerationButtonTextColor];
 
-  _imageGenerationButton.configuration = config;
+  button.configuration = config;
 
   UIImageView* xMarkImageView = [[UIImageView alloc] init];
   xMarkImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1388,15 +1408,17 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                            scale:UIImageSymbolScaleMedium];
   xMarkImageView.image =
       DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
-  [_imageGenerationButton addSubview:xMarkImageView];
+  [button addSubview:xMarkImageView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [_imageGenerationButton.titleLabel.trailingAnchor
+    [button.titleLabel.trailingAnchor
         constraintEqualToAnchor:xMarkImageView.leadingAnchor
                        constant:-kCloseModeButtonMargin],
-    [_imageGenerationButton.titleLabel.centerYAnchor
+    [button.titleLabel.centerYAnchor
         constraintEqualToAnchor:xMarkImageView.centerYAnchor],
   ]];
+
+  return button;
 }
 
 @end

@@ -195,8 +195,6 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
   // The last known width of the text view, used to avoid redundant height
   // calculations.
   CGFloat _lastKnownTextViewWidth;
-  // Whether to hide the leading image.
-  BOOL _hideLeadingImage;
   // The last computed ideal height of the text view, before being constrained
   // by the container's bounds.
   CGFloat _lastComputedIdealHeight;
@@ -209,6 +207,7 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
 }
 
 @synthesize heightDelegate = _heightDelegate;
+@synthesize leadingImageHidden = _leadingImageHidden;
 
 #pragma mark - Public
 
@@ -337,9 +336,9 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
                           underName:kOmniboxTextFieldGuide];
 }
 
-- (void)hideLeadingImage:(BOOL)hideLeadingImage {
-  _hideLeadingImage = hideLeadingImage;
-  _leadingImageView.hidden = hideLeadingImage;
+- (void)setLeadingImageHidden:(BOOL)leadingImageHidden {
+  _leadingImageHidden = leadingImageHidden;
+  _leadingImageView.hidden = leadingImageHidden;
   [self updateLeadingConstraint];
 }
 
@@ -364,7 +363,7 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
 
   BOOL thumbnailVisible = !_thumbnailButton.hidden &&
                           base::FeatureList::IsEnabled(kEnableLensOverlay);
-  if (_hideLeadingImage) {
+  if (self.leadingImageHidden) {
     _textInputViewLeadingConstraint = [_textInputView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor];
   } else if (thumbnailVisible) {

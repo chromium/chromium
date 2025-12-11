@@ -30,7 +30,7 @@
 @property(nonatomic, readonly) NSUInteger numberOfLines;
 
 // Hide the leading image in the omnibox.
-- (void)hideLeadingImage:(BOOL)hideLeadingImage;
+@property(nonatomic, assign) BOOL leadingImageHidden;
 
 // Sets the alpha value for the leading image.
 - (void)setLeadingImageAlpha:(BOOL)alpha;
