@@ -90,10 +90,9 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
   ~GlicEnablingProfileEligibilityTest() override = default;
 
   void SetUp() override {
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    testing_profile_manager_ =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PreProfileSetUp(
@@ -105,10 +104,10 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
   }
 
   void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
-
     profile_ = nullptr;
-    testing_profile_manager_.reset();
+
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
+        std::move(testing_profile_manager_));
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();

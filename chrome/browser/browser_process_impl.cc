@@ -328,6 +328,9 @@ const ui::UnownedUserDataHost& BrowserProcessImpl::GetUnownedUserDataHost()
 }
 
 void BrowserProcessImpl::Init() {
+  features_ = GlobalFeatures::CreateGlobalFeatures();
+  features_->PreBrowserProcessInit();
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Forces creation of |metrics_services_manager_client_| if necessary
   // (typically this call is a no-op as MetricsServicesManager has already been
@@ -473,8 +476,7 @@ void BrowserProcessImpl::Init() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  features_ = GlobalFeatures::CreateGlobalFeatures();
-  features_->Init();
+  features_->PostBrowserProcessInit();
 
   // `Unretained` is safe as CallbackListSubscription does not outlive `this`.
   on_locale_changed_callback_subscription_ =
@@ -526,7 +528,7 @@ void BrowserProcessImpl::StartTearDown() {
   tearing_down_ = true;
   DCHECK(IsShuttingDown());
 
-  features_->Shutdown();
+  features_->PostMainMessageLoopRun();
   metrics_services_manager_client_ = nullptr;
   metrics_services_manager_.reset();
   intranet_redirect_detector_.reset();
@@ -659,6 +661,13 @@ void BrowserProcessImpl::PostDestroyThreads() {
 
   // Must outlive the worker threads.
   webrtc_log_uploader_.reset();
+
+  // ResourceCoordinatorParts owns TabLifecycleUnitSource, which depends on a
+  // Global Feature (GlobalBrowserCollection). Thus, we need to make sure
+  // ResourceCoordinatorParts is destroyed before GlobalFeatures is completely
+  // shut down.
+  resource_coordinator_parts_.reset();
+  features_->PostDestroyThreads();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -92,6 +93,19 @@ class TestingBrowserProcess
 
   TestingBrowserProcess(const TestingBrowserProcess&) = delete;
   TestingBrowserProcess& operator=(const TestingBrowserProcess&) = delete;
+
+  // Handles creating the global features and optionally profile manager in the
+  // correct order. Should be called after Init() in unit tests that need to to
+  // create GlobalFeatures after modifying feature flags, or unit tests that
+  // need more than just the core GlobalFeatures initialized.
+  std::unique_ptr<TestingProfileManager> SetUpGlobalFeaturesForTesting(
+      bool profile_manager);
+
+  // Destroys the global features, optionally profile manager, and resource
+  // coordinator parts in the correct order. Should be used if (and only if)
+  // SetUpGlobalFeaturesForTesting() was used in initialization.
+  void TearDownGlobalFeaturesForTesting(
+      std::unique_ptr<TestingProfileManager> profile_manager);
 
   // BrowserProcess overrides:
   ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
@@ -223,6 +237,9 @@ class TestingBrowserProcess
   void MaybeStartTearDown();
 
   void ShutdownBrowserPolicyConnector();
+
+  void CreateGlobalFeaturesPreProfileManager();
+  void CreateGlobalFeaturesPostProfileManager();
 
   ui::UnownedUserDataHost unowned_user_data_host_;
 

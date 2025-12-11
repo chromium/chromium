@@ -90,8 +90,7 @@ const char kChromiumOrgDomain[] = "chromium.org";
 
 class GAIAInfoUpdateServiceTest : public testing::Test {
  protected:
-  GAIAInfoUpdateServiceTest()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+  GAIAInfoUpdateServiceTest() {
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
@@ -103,8 +102,9 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    testing_profile_manager_ =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
     RecreateGAIAInfoUpdateService();
   }
 
@@ -115,7 +115,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
 
     service_ = std::make_unique<GAIAInfoUpdateService>(
         profile(), identity_manager(),
-        testing_profile_manager_.profile_attributes_storage(), pref_service_,
+        testing_profile_manager_->profile_attributes_storage(), pref_service_,
         profile()->GetPath());
   }
 
@@ -129,7 +129,11 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
     if (service_) {
       ClearGAIAInfoUpdateService();
     }
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
+
+    profile_ = nullptr;
+
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
+        std::move(testing_profile_manager_));
   }
 
   TestingProfile* profile() {
@@ -144,7 +148,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   }
 
   ProfileAttributesStorage* storage() {
-    return testing_profile_manager_.profile_attributes_storage();
+    return testing_profile_manager_->profile_attributes_storage();
   }
 
   network::TestURLLoaderFactory* test_url_loader_factory() {
@@ -154,7 +158,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   GAIAInfoUpdateService* service() { return service_.get(); }
 
   void CreateProfile(const std::string& name) {
-    profile_ = testing_profile_manager_.CreateTestingProfile(
+    profile_ = testing_profile_manager_->CreateTestingProfile(
         name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
         base::UTF8ToUTF16(name), 0,
         IdentityTestEnvironmentProfileAdaptor::
@@ -179,7 +183,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   glic::GlicUnitTestEnvironment glic_test_env_;
 #endif
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager testing_profile_manager_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<GAIAInfoUpdateService> service_;

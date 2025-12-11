@@ -35,6 +35,7 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
@@ -184,6 +185,38 @@ TestingBrowserProcess::~TestingBrowserProcess() {
   DCHECK_EQ(static_cast<BrowserProcess*>(nullptr), g_browser_process);
 }
 
+std::unique_ptr<TestingProfileManager>
+TestingBrowserProcess::SetUpGlobalFeaturesForTesting(bool profile_manager) {
+  CreateGlobalFeaturesPreProfileManager();
+
+  std::unique_ptr<TestingProfileManager> testing_profile_manager;
+  if (profile_manager) {
+    testing_profile_manager = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    CHECK(testing_profile_manager->SetUp());
+  }
+
+  CreateGlobalFeaturesPostProfileManager();
+
+  return testing_profile_manager;
+}
+
+void TestingBrowserProcess::TearDownGlobalFeaturesForTesting(
+    std::unique_ptr<TestingProfileManager> profile_manager) {
+  CHECK(features_);
+  features_->PostMainMessageLoopRun();
+
+  profile_manager.reset();
+
+  // ResourceCoordinatorParts owns TabLifecycleUnitSource, which depends on a
+  // Global Feature (GlobalBrowserCollection). Thus, we need to make sure
+  // ResourceCoordinatorParts is destroyed before GlobalFeatures is completely
+  // shut down.
+  resource_coordinator_parts_.reset();
+
+  features_->PostDestroyThreads();
+}
+
 ui::UnownedUserDataHost& TestingBrowserProcess::GetUnownedUserDataHost() {
   return unowned_user_data_host_;
 }
@@ -198,7 +231,8 @@ void TestingBrowserProcess::Init() {
   // Only initialize core features for now. If needed unit tests can call
   // TestingBrowserProcess::CreateGlobalFeaturesForTesting() to initialize rest
   // of the features.
-  features_->InitCoreFeatures();
+  features_->PreBrowserProcessInitCore();
+  features_->PostBrowserProcessInitCore();
 
   // Assume locale is initialized to "en" during initialization.
   features_->application_locale_storage()->Set("en");
@@ -592,13 +626,23 @@ GlobalFeatures* TestingBrowserProcess::GetFeatures() {
 }
 
 void TestingBrowserProcess::CreateGlobalFeaturesForTesting() {
+  CreateGlobalFeaturesPreProfileManager();
+  CreateGlobalFeaturesPostProfileManager();
+}
+
+void TestingBrowserProcess::CreateGlobalFeaturesPreProfileManager() {
   // To replace the GlobalFeatures, shutdown the default instance first.
   CHECK(features_);
-  features_->Shutdown();
+  features_->PostMainMessageLoopRun();
+  features_->PostDestroyThreads();
   features_.reset();
 
   features_ = GlobalFeatures::CreateGlobalFeatures();
-  features_->Init();
+  features_->PreBrowserProcessInit();
+}
+
+void TestingBrowserProcess::CreateGlobalFeaturesPostProfileManager() {
+  features_->PostBrowserProcessInit();
 
   // Assume locale is initialized to "en" during initialization.
   features_->application_locale_storage()->Set("en");

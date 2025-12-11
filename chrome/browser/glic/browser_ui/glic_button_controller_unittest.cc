@@ -82,10 +82,9 @@ class GlicButtonControllerTest : public testing::Test {
          features::kGlicRollout},
         {});
 
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    testing_profile_manager_ =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PreProfileSetUp(
@@ -116,12 +115,12 @@ class GlicButtonControllerTest : public testing::Test {
     glic_button_controller_.reset();
     mock_browser_window_interface_.reset();
 
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
-
     mock_glic_service_.reset();
     actor_keyed_service_.reset();
     profile_ = nullptr;
-    testing_profile_manager_.reset();
+
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
+        std::move(testing_profile_manager_));
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();

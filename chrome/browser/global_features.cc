@@ -82,7 +82,11 @@ void GlobalFeatures::ReplaceGlobalFeaturesForTesting(
   f = std::move(factory);
 }
 
-void GlobalFeatures::Init() {
+void GlobalFeatures::PreBrowserProcessInit() {
+  PreBrowserProcessInitCore();
+}
+
+void GlobalFeatures::PostBrowserProcessInit() {
 #if !BUILDFLAG(IS_ANDROID)
   startup_launch_manager_ =
       GetUserDataFactory().CreateInstance<StartupLaunchManager>(
@@ -100,10 +104,16 @@ void GlobalFeatures::Init() {
   }
 #endif
 
-  InitCoreFeatures();
+  PostBrowserProcessInitCore();
 }
 
-void GlobalFeatures::InitCoreFeatures() {
+void GlobalFeatures::PreBrowserProcessInitCore() {
+#if !BUILDFLAG(IS_ANDROID)
+  global_browser_collection_ = std::make_unique<GlobalBrowserCollection>();
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void GlobalFeatures::PostBrowserProcessInitCore() {
   system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/463742800): Migrate WhatsNewRegistry (and other non-core
@@ -142,13 +152,9 @@ void GlobalFeatures::InitCoreFeatures() {
         safe_browsing::ApplicationAdvancedProtectionStatusDetector>(
         g_browser_process->profile_manager());
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  global_browser_collection_ = std::make_unique<GlobalBrowserCollection>();
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-void GlobalFeatures::Shutdown() {
+void GlobalFeatures::PostMainMessageLoopRun() {
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_background_mode_manager_) {
     glic_background_mode_manager_->Shutdown();
@@ -164,6 +170,17 @@ void GlobalFeatures::Shutdown() {
   optimization_guide_global_feature_.reset();
 
   application_advanced_protection_status_detector_.reset();
+}
+
+void GlobalFeatures::PostDestroyThreads() {
+#if !BUILDFLAG(IS_ANDROID)
+  global_browser_collection_.reset();
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void GlobalFeatures::Shutdown() {
+  PostMainMessageLoopRun();
+  PostDestroyThreads();
 }
 
 std::unique_ptr<system_permission_settings::PlatformHandle>

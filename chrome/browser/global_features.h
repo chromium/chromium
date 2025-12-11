@@ -71,17 +71,44 @@ class GlobalFeatures {
       base::RepeatingCallback<std::unique_ptr<GlobalFeatures>()>;
   static void ReplaceGlobalFeaturesForTesting(GlobalFeaturesFactory factory);
 
-  // Called exactly once to initialize features.
-  void Init();
+  // Each of these is called exactly once to initialize features.
+  // `PreBrowserProcessInit()` happens very early in
+  // `BrowserProcessImpl::Init()` - in particular, it must happen before a
+  // `ProfileManager` is created. `PostBrowserProcessInit()` happens further
+  // down near the very end of `BrowserProcessImpl::Init()` after a
+  // `ProfileManager` is allowed to exist. As with anything in
+  // `BrowserProcessImpl::Init()`, both of these functions are called before
+  // threads are created.
+  void PreBrowserProcessInit();
+  void PostBrowserProcessInit();
 
   // Only initializes core features. Used in unittests to create partial
   // features for TestingBrowserProcess.
   //
-  // TODO(crbug.com/463444220) Merge implementation back into Init() once unit
-  // tests stop creating TestingBrowserProcess.
-  void InitCoreFeatures();
+  // TODO(crbug.com/463444220) Merge implementation back into
+  // PreBrowserProcessInit() and PostBrowserProcessInit() once unit tests stop
+  // creating TestingBrowserProcess.
+  void PreBrowserProcessInitCore();
+  void PostBrowserProcessInitCore();
 
-  // Called exactly once when the browser starts to shutdown.
+  // Each of these is called exactly once when the browser starts to shutdown,
+  // in the named browser shutdown lifecycle phases. Importantly,
+  // `PostMainMessageLoopRun()` must be called before the `ProfileManager` is
+  // destroyed, and `PostDestroyThreads()` must be called after the
+  // `ProfileManager` and `ResourceCoordinatorParts` are destroyed.
+  //
+  // In unit tests, it is recommended that you call
+  // TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting() for
+  // convenience instead of calling these methods directly.
+  void PostMainMessageLoopRun();
+  void PostDestroyThreads();
+
+  // Legacy method used in some tests. New code and non-test code should not use
+  // this.
+  //
+  // TODO(crbug.com/467395900): Remove this function and its remaining uses and
+  // replace them with
+  // TestingBrowserProcess::TearDownGlobalFeaturesForTesting().
   void Shutdown();
 
   // Public accessors for features, e.g.
