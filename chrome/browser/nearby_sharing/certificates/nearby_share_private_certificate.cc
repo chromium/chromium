@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -53,17 +54,13 @@ base::TimeDelta GenerateRandomOffset() {
 
 // Creates an HMAC from |metadata_encryption_key| to be used as a key commitment
 // in certificates.
-std::optional<std::vector<uint8_t>> CreateMetadataEncryptionKeyTag(
+std::vector<uint8_t> CreateMetadataEncryptionKeyTag(
     base::span<const uint8_t> metadata_encryption_key) {
   // This array of 0x00 is used to conform with the GmsCore implementation.
-  std::vector<uint8_t> key(kNearbyShareNumBytesMetadataEncryptionKeyTag, 0x00);
+  const std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeyTag> key =
+      {0};
 
-  std::vector<uint8_t> result(kNearbyShareNumBytesMetadataEncryptionKeyTag);
-  crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
-  if (!hmac.Init(key) || !hmac.Sign(metadata_encryption_key, result))
-    return std::nullopt;
-
-  return result;
+  return base::ToVector(crypto::hmac::SignSha256(key, metadata_encryption_key));
 }
 
 std::string EncodeString(std::string_view unencoded_string) {
@@ -274,13 +271,8 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
     return std::nullopt;
   }
 
-  std::optional<std::vector<uint8_t>> metadata_encryption_key_tag =
+  std::vector<uint8_t> metadata_encryption_key_tag =
       CreateMetadataEncryptionKeyTag(metadata_encryption_key_);
-  if (!metadata_encryption_key_tag) {
-    CD_LOG(ERROR, Feature::NS)
-        << "Failed to compute metadata encryption key tag.";
-    return std::nullopt;
-  }
 
   base::TimeDelta not_before_offset =
       offset_for_testing_.value_or(GenerateRandomOffset());
@@ -312,9 +304,8 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
       metadata_encryption_key_.begin(), metadata_encryption_key_.end()));
   public_certificate.set_encrypted_metadata_bytes(std::string(
       encrypted_metadata_bytes->begin(), encrypted_metadata_bytes->end()));
-  public_certificate.set_metadata_encryption_key_tag(
-      std::string(metadata_encryption_key_tag->begin(),
-                  metadata_encryption_key_tag->end()));
+  public_certificate.set_metadata_encryption_key_tag(std::string(
+      metadata_encryption_key_tag.begin(), metadata_encryption_key_tag.end()));
 
   // Note: Setting |for_self_share| here will cause the server to silently
   // reject the marked certificates. The |for_self_share| field is not set by
