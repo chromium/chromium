@@ -363,9 +363,9 @@ def _BuildTargets(targets, jobs_count):
     subprocess_cmd.append('-j' + str(jobs_count))
 
   subprocess_cmd.extend(targets)
-  # subprocess.check_call(subprocess_cmd, shell=os.name == 'nt')
-  # RBE enabled autoninja run returns non-zero exit code
-  subprocess.call(subprocess_cmd, shell=os.name == 'nt')
+  # TODO(crbug.com/409763102): Change back to subprocess.call if it doesn't
+  # work with rbe backend.
+  subprocess.check_call(subprocess_cmd, shell=os.name == 'nt')
   logging.debug('Finished building %s.', str(targets))
 
 
