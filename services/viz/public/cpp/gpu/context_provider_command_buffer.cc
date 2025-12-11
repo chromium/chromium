@@ -63,7 +63,6 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
     const gpu::SharedMemoryLimits& memory_limits,
     gpu::mojom::ContextCreationAttribsPtr attributes,
     command_buffer_metrics::ContextType type,
-    bool enable_gpu_rasterization,
     base::SharedMemoryMapper* buffer_mapper)
     : base::subtle::RefCountedThreadSafeBase(
           base::subtle::GetRefCountPreference<ContextProviderCommandBuffer>()),
@@ -164,7 +163,7 @@ ContextProviderCommandBuffer::CreateForWebGPU(
       /*automatic_flushes=*/true,
       /*support_locking=*/false, gpu::SharedMemoryLimits::ForWebGPUContext(),
       gpu::mojom::ContextCreationAttribs::NewWebgpu(std::move(attributes)),
-      type, /*enable_gpu_rasterization=*/false, buffer_mapper);
+      type, buffer_mapper);
 }
 
 // static
@@ -178,7 +177,6 @@ ContextProviderCommandBuffer::CreateForRaster(
     bool support_locking,
     const gpu::SharedMemoryLimits& memory_limits,
     command_buffer_metrics::ContextType type,
-    bool enable_gpu_rasterization,
     bool lose_context_when_out_of_memory) {
   auto attributes = gpu::mojom::RasterCreationAttribs::New();
   attributes->lose_context_when_out_of_memory = lose_context_when_out_of_memory;
@@ -188,7 +186,7 @@ ContextProviderCommandBuffer::CreateForRaster(
       stream_id, stream_priority, active_url, automatic_flushes,
       support_locking, memory_limits,
       gpu::mojom::ContextCreationAttribs::NewRaster(std::move(attributes)),
-      type, enable_gpu_rasterization);
+      type);
 }
 
 ContextProviderCommandBuffer::~ContextProviderCommandBuffer() {

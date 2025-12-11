@@ -1061,7 +1061,6 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
                "RenderCompositor"),
           /*automatic_flushes=*/false, /*support_locking=*/false, limits,
           viz::command_buffer_metrics::ContextType::RENDERER_COMPOSITOR,
-          /*enable_gpu_rasterization=*/false,
           /*lose_context_when_out_of_memory=*/true);
 
   return video_frame_compositor_context_provider_;
@@ -1120,7 +1119,6 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
           /*automatic_flushes=*/true, /*support_locking=*/false,
           gpu::SharedMemoryLimits(),
           viz::command_buffer_metrics::ContextType::RENDERER_MAIN_THREAD,
-          /*enable_gpu_rasterization=*/true,
           /*lose_context_when_out_of_memory=*/true);
 
   auto result = shared_main_thread_contexts_->BindToCurrentSequence();
@@ -1607,7 +1605,6 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
           /*automatic_flushes=*/false, /*support_locking=*/true,
           shared_memory_limits,
           viz::command_buffer_metrics::ContextType::RENDERER_RASTER_WORKER,
-          /*enable_gpu_rasterization=*/support_gpu_rasterization,
           /*lose_context_when_out_of_memory=*/true);
 
   auto result = shared_worker_context_provider_->BindToCurrentSequence();

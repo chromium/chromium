@@ -873,14 +873,13 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
 
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
-  constexpr bool enable_gpu_rasterization = false;
   constexpr bool lose_context_when_out_of_memory = true;
 
   auto context_provider = viz::ContextProviderCommandBuffer::CreateForRaster(
       gpu_channel_host, kGpuStreamIdDefault, kGpuStreamPriorityDefault,
       GURL(params.url), automatic_flushes, support_locking, limits,
       viz::command_buffer_metrics::ContextType::RENDERER_COMPOSITOR,
-      enable_gpu_rasterization, lose_context_when_out_of_memory);
+      lose_context_when_out_of_memory);
 
 #if BUILDFLAG(IS_ANDROID)
   if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView() &&

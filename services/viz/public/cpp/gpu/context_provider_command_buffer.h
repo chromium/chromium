@@ -95,7 +95,6 @@ class ContextProviderCommandBuffer
       bool support_locking,
       const gpu::SharedMemoryLimits& memory_limits,
       command_buffer_metrics::ContextType type,
-      bool enable_gpu_rasterization,
       bool lose_context_when_out_of_memory);
 
   static scoped_refptr<ContextProviderCommandBuffer> CreateForWebGPU(
@@ -115,7 +114,6 @@ class ContextProviderCommandBuffer
       const gpu::SharedMemoryLimits& memory_limits,
       gpu::mojom::ContextCreationAttribsPtr attributes,
       command_buffer_metrics::ContextType type,
-      bool enable_gpu_rasterization = false,
       base::SharedMemoryMapper* buffer_mapper = nullptr);
 
   // Virtual for testing.

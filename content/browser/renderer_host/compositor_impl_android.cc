@@ -516,7 +516,6 @@ void CompositorImpl::OnGpuChannelEstablished(
       automatic_flushes, support_locking,
       GetCompositorContextSharedMemoryLimits(root_window_),
       viz::command_buffer_metrics::ContextType::BROWSER_COMPOSITOR,
-      /*enable_gpu_rasterization=*/false,
       /*lose_context_when_out_of_memory=*/false
 
   );

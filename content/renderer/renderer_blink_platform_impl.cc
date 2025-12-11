@@ -771,7 +771,6 @@ RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;
-  constexpr bool enable_gpu_rasterization = true;
   constexpr bool lose_context_when_out_of_memory = false;
 
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
@@ -779,8 +778,7 @@ RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
           std::move(gpu_channel_host), kGpuStreamIdDefault,
           kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
           support_locking, gpu::SharedMemoryLimits(),
-          ToVizContextType(context_type), enable_gpu_rasterization,
-          lose_context_when_out_of_memory));
+          ToVizContextType(context_type), lose_context_when_out_of_memory));
 }
 
 //------------------------------------------------------------------------------
