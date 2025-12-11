@@ -87,7 +87,7 @@ public class ExtensionActionListMediatorTest {
     public final FakeExtensionActionsBridgeRule mFakeBridgeRule =
             new FakeExtensionActionsBridgeRule();
 
-    private FakeExtensionActionsBridge.ProfileModel mProfileModel;
+    private FakeExtensionActionsBridge.TaskModel mTaskModel;
     private MockTab mTab1;
     private MockTab mTab2;
     private ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier;
@@ -110,7 +110,7 @@ public class ExtensionActionListMediatorTest {
                 .thenReturn(mMenuModelBridge);
         when(mMenuModelBridge.populateModelList()).thenReturn(new ModelList());
 
-        setUpProfileModel();
+        setUpTaskModel();
 
         // Initialize common objects.
         mTab1 = new MockTab(TAB1_ID, mProfile);
@@ -134,7 +134,7 @@ public class ExtensionActionListMediatorTest {
 
     @Test
     public void testUpdateModels() {
-        setUpProfileModel();
+        setUpTaskModel();
 
         // Set the current tab.
         mCurrentTabSupplier.set(mTab1);
@@ -210,11 +210,11 @@ public class ExtensionActionListMediatorTest {
         verify(mActionContextMenuBridgeJniMock).destroy(eq(ACTION_CONTEXT_MENU_BRIDGE_POINTER));
     }
 
-    private void setUpProfileModel() {
-        mProfileModel = mFakeBridgeRule.getFakeBridge().getOrCreateProfileModel(mProfile);
-        mProfileModel.setInitialized(true);
+    private void setUpTaskModel() {
+        mTaskModel = mFakeBridgeRule.getFakeBridge().getOrCreateTaskModel(mTask);
+        mTaskModel.setInitialized(true);
 
-        mProfileModel.putAction(
+        mTaskModel.putAction(
                 "a",
                 (tabId) -> {
                     if (tabId == TAB1_ID) {
@@ -229,7 +229,7 @@ public class ExtensionActionListMediatorTest {
                                 .build();
                     }
                 });
-        mProfileModel.putAction(
+        mTaskModel.putAction(
                 "b",
                 (tabId) -> {
                     if (tabId == TAB1_ID) {

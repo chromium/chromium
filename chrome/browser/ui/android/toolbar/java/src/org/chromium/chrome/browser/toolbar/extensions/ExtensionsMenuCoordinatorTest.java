@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
-import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ProfileModel;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.TaskModel;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -66,7 +66,7 @@ public class ExtensionsMenuCoordinatorTest {
     public final FakeExtensionActionsBridgeRule mBridgeRule = new FakeExtensionActionsBridgeRule();
 
     private final FakeExtensionActionsBridge mBridge = mBridgeRule.getFakeBridge();
-    private ProfileModel mProfileModel;
+    private TaskModel mTaskModel;
 
     private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
 
@@ -80,14 +80,11 @@ public class ExtensionsMenuCoordinatorTest {
         mExtensionsMenuButton = new ListMenuButton(activity, null);
         activity.setContentView(mExtensionsMenuButton);
 
-        // Mock AndroidChromeTask.
         when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
-        when(mTask.getProfile()).thenReturn(mProfile);
-
         when(mTab.getProfile()).thenReturn(mProfile);
 
-        mProfileModel = mBridge.getOrCreateProfileModel(mProfile);
-        mProfileModel.setInitialized(true);
+        mTaskModel = mBridge.getOrCreateTaskModel(mTask);
+        mTaskModel.setInitialized(true);
 
         mExtensionsMenuCoordinator =
                 new ExtensionsMenuCoordinator(

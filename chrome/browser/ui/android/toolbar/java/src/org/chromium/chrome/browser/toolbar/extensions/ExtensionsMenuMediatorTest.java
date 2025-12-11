@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridg
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ActionData;
-import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ProfileModel;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.TaskModel;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.content_public.browser.WebContents;
@@ -97,7 +97,7 @@ public class ExtensionsMenuMediatorTest {
 
     private final FakeExtensionActionsBridge mActionsBridge = mBridgeRule.getFakeBridge();
 
-    private ProfileModel mProfileModel;
+    private TaskModel mTaskModel;
     private MockTab mTab1;
     private MockTab mTab2;
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
@@ -107,16 +107,16 @@ public class ExtensionsMenuMediatorTest {
 
     @Before
     public void setUp() {
-        mProfileModel = mActionsBridge.getOrCreateProfileModel(mProfile);
-        mProfileModel.setInitialized(true);
-        mProfileModel.putAction(
-                "a", new ActionData.Builder().setTitle("title of a").setIcon(ICON_RED).build());
-        mProfileModel.putAction(
-                "b", new ActionData.Builder().setTitle("title of b").setIcon(ICON_GREEN).build());
-
         // Mock AndroidChromeTask.
         when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
-        when(mTask.getProfile()).thenReturn(mProfile);
+
+        // Set up the fake ExtensionActionsBridge.
+        mTaskModel = mActionsBridge.getOrCreateTaskModel(mTask);
+        mTaskModel.setInitialized(true);
+        mTaskModel.putAction(
+                "a", new ActionData.Builder().setTitle("title of a").setIcon(ICON_RED).build());
+        mTaskModel.putAction(
+                "b", new ActionData.Builder().setTitle("title of b").setIcon(ICON_GREEN).build());
 
         // Mock {@link ExtensionActionContextMenuBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
@@ -183,7 +183,7 @@ public class ExtensionsMenuMediatorTest {
     @Test
     public void testUpdateModels_tabChanged() {
         // Set up tab-dependent actions.
-        mProfileModel.putAction(
+        mTaskModel.putAction(
                 "a",
                 (tabId) -> {
                     switch (tabId) {
@@ -201,7 +201,7 @@ public class ExtensionsMenuMediatorTest {
                             throw new RuntimeException("Unknown tab ID: " + tabId);
                     }
                 });
-        mProfileModel.putAction(
+        mTaskModel.putAction(
                 "b",
                 (tabId) -> {
                     switch (tabId) {

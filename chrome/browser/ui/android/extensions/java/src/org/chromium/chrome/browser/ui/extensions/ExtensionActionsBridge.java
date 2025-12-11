@@ -18,6 +18,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.extensions.ShowAction;
 
@@ -36,9 +37,9 @@ public class ExtensionActionsBridge {
         mNativeExtensionActionsBridge = nativeExtensionActionsBridge;
     }
 
-    /** Returns an instance for the given profile. */
-    public static ExtensionActionsBridge get(Profile profile) {
-        return ExtensionActionsBridgeJni.get().get(profile);
+    /** Returns an instance for the given window. */
+    public static ExtensionActionsBridge get(ChromeAndroidTask task) {
+        return ExtensionActionsBridgeJni.get().get(task.getOrCreateNativeBrowserWindowPtr());
     }
 
     /** Represents the result of handling a key event. */
@@ -244,7 +245,7 @@ public class ExtensionActionsBridge {
     public interface Natives {
         boolean extensionsEnabled(@JniType("Profile*") Profile profile);
 
-        ExtensionActionsBridge get(@JniType("Profile*") Profile profile);
+        ExtensionActionsBridge get(long browserWindowInterfacePtr);
 
         boolean areActionsInitialized(long nativeExtensionActionsBridge);
 

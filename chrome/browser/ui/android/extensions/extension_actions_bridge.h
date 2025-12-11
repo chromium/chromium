@@ -28,7 +28,7 @@ class ExtensionActionsBridge : public ToolbarActionsModel::Observer,
   ExtensionActionsBridge& operator=(const ExtensionActionsBridge&) = delete;
   ~ExtensionActionsBridge() override;
 
-  // Convenience function to get the ExtensionActionsBridge for a Profile.
+  // Convenience function to get the ExtensionActionsBridge for a profile.
   static ExtensionActionsBridge* Get(Profile* profile);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

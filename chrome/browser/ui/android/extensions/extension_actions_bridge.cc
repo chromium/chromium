@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/extensions/extension_actions_bridge_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
@@ -290,8 +291,11 @@ void ExtensionActionsBridge::OnToolbarIconUpdated(
 
 static ScopedJavaLocalRef<jobject> JNI_ExtensionActionsBridge_Get(
     JNIEnv* env,
-    Profile* profile) {
-  ExtensionActionsBridge* bridge = ExtensionActionsBridge::Get(profile);
+    jlong j_browser_window_interface) {
+  BrowserWindowInterface* browser =
+      reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
+  ExtensionActionsBridge* bridge =
+      ExtensionActionsBridge::Get(browser->GetProfile());
   DCHECK(bridge);
   return bridge->GetJavaObject();
 }

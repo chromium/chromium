@@ -75,7 +75,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             return false;
         }
 
-        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(mTask.getProfile());
+        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(mTask);
         if (bridge == null) {
             return false;
         }
