@@ -1595,6 +1595,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="693761253105515415">Подесите шифру</translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6950522403736391608">Скривено</translation>
+<translation id="6962809930976936328">Стекните увид помоћу Gemini-ја</translation>
 <translation id="6964300328304469089">Тренутно је изабрано <ph name="NAME" />, <ph name="EMAIL" />. Одаберите налог.</translation>
 <translation id="6964760285928603117">Уклони из групе</translation>
 <translation id="6965382102122355670">Потврди</translation>
@@ -1910,6 +1911,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8114753159095730575">Преузимање датотеке није доступно. Опције су наведене у дну екрана.</translation>
 <translation id="8123502380991596210">Сакриј опцију Шта је ново</translation>
 <translation id="8123953306357309250">Желите да откажете синхронизацију? Можете да укључите синхронизацију у подешавањима у било ком тренутку.</translation>
+<translation id="8130712116203026166">Дај ми резиме у једном реду и корисне увиде изван ове странице. Користи сажет, опуштен тон. Ограничи на 100 речи.</translation>
 <translation id="81313319706244542">2. Додирните Лозинке</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8132598642024322408">Цена је <ph name="PRICE" />, а била је <ph name="PREVIOUS_PRICE" />.</translation>

@@ -1595,6 +1595,7 @@
 <translation id="693761253105515415">ตั้งรหัสผ่าน</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6950522403736391608">ซ่อนอยู่</translation>
+<translation id="6962809930976936328">รับข้อมูลเชิงลึกด้วย Gemini</translation>
 <translation id="6964300328304469089">เลือก <ph name="NAME" />, <ph name="EMAIL" /> อยู่ เลือกบัญชี</translation>
 <translation id="6964760285928603117">นำออกจากกลุ่ม</translation>
 <translation id="6965382102122355670">ตกลง</translation>
@@ -1910,6 +1911,7 @@
 <translation id="8114753159095730575">การดาวน์โหลดไฟล์พร้อมใช้งาน มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="8123502380991596210">ซ่อน "มีอะไรใหม่"</translation>
 <translation id="8123953306357309250">ยกเลิกการซิงค์ใช่ไหม คุณเปิดการซิงค์ได้ทุกเมื่อในการตั้งค่า</translation>
+<translation id="8130712116203026166">แสดงข้อมูลสรุปใน 1 บรรทัดและข้อมูลเชิงลึกที่เป็นประโยชน์นอกเหนือจากหน้านี้ ใช้น้ำเสียงที่สั้นกระชับและเป็นกันเอง จำกัดไม่เกิน 100 คำ</translation>
 <translation id="81313319706244542">2. แตะรหัสผ่าน</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8132598642024322408">ลดจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="PRICE" /></translation>

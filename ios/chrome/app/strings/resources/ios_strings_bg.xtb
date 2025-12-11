@@ -1595,6 +1595,7 @@
 <translation id="693761253105515415">Задаване на код за достъп</translation>
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6950522403736391608">Скрити</translation>
+<translation id="6962809930976936328">Получаване на статистика с Gemini</translation>
 <translation id="6964300328304469089">Понастоящем сте избрали: <ph name="NAME" /> (<ph name="EMAIL" />). Изберете профил.</translation>
 <translation id="6964760285928603117">Премахване от групата</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1910,6 +1911,7 @@
 <translation id="8114753159095730575">Наличен е файл за изтегляне. Съответните опции са достъпни в долната част на екрана.</translation>
 <translation id="8123502380991596210">Скриване на „Новите неща“</translation>
 <translation id="8123953306357309250">Да се анулира ли синхронизирането? Можете да го включите по всяко време в настройките.</translation>
+<translation id="8130712116203026166">Дай ми обобщение в един ред и полезна статистика извън тази страница. Използвай кратък и непринуден тон. Ограничение: 100 думи.</translation>
 <translation id="81313319706244542">2. Докоснете „Пароли“.</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8132598642024322408">Сега цената е <ph name="PRICE" />, беше <ph name="PREVIOUS_PRICE" />.</translation>

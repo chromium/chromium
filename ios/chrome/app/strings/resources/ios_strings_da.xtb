@@ -1595,6 +1595,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="693761253105515415">Angiv en adgangskode</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6950522403736391608">Skjult</translation>
+<translation id="6962809930976936328">Få indsigt med Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> er valgt i øjeblikket. Vælg en konto.</translation>
 <translation id="6964760285928603117">Fjern fra gruppe</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1910,6 +1911,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8114753159095730575">Filer kan downloades. Se valgmulighederne nederst på skærmen.</translation>
 <translation id="8123502380991596210">Skjul Nyheder</translation>
 <translation id="8123953306357309250">Vil du annullere synkroniseringen? Du kan til enhver tid aktivere synkronisering i indstillingerne.</translation>
+<translation id="8130712116203026166">Giv mig en opsummering på én linje og nyttig indsigt, der går ud over denne side. Brug en kortfattet og afslappet tone. Begræns til 100 ord.</translation>
 <translation id="81313319706244542">2. Tryk på Adgangskoder</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8132598642024322408">Koster nu <ph name="PRICE" />. Førprisen var <ph name="PREVIOUS_PRICE" />.</translation>

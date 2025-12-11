@@ -1595,6 +1595,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="693761253105515415">Biztonsági kód beállítása</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6950522403736391608">Rejtett</translation>
+<translation id="6962809930976936328">Statisztikákat kérhet a Geminitől</translation>
 <translation id="6964300328304469089">Jelenleg kiválasztva: <ph name="NAME" />, <ph name="EMAIL" />. Válasszon fiókot.</translation>
 <translation id="6964760285928603117">Eltávolítás a csoportból</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1910,6 +1911,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8114753159095730575">A fájlletöltés megvalósítható. A beállításokat a képernyő alján nyithatja meg.</translation>
 <translation id="8123502380991596210">Az újdonságok elrejtése</translation>
 <translation id="8123953306357309250">Megszakítja a szinkronizálást? A szinkronizálás bármikor bekapcsolható a beállításokban.</translation>
+<translation id="8130712116203026166">Egy egysoros összefoglalót és hasznos statisztikákat kérek erről az oldalról. Használj tömör, kötetlen hangvételt. A terjedelem legfeljebb 100 szó legyen.</translation>
 <translation id="81313319706244542">2. Koppintson a Jelszavak elemre.</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8132598642024322408">Most <ph name="PRICE" />, korábban <ph name="PREVIOUS_PRICE" /> volt.</translation>

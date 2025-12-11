@@ -1595,6 +1595,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="693761253105515415">Angi adgangskode</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6950522403736391608">Skjult</translation>
+<translation id="6962809930976936328">Få statistikk med Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" /> (<ph name="EMAIL" />) er valgt. Velg en konto.</translation>
 <translation id="6964760285928603117">Fjern fra gruppen</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1910,6 +1911,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8114753159095730575">Filnedlasting er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="8123502380991596210">Skjul Hva er nytt?</translation>
 <translation id="8123953306357309250">Vil du avbryte synkroniseringen? Du kan når som helst slå på synkronisering i innstillingene.</translation>
+<translation id="8130712116203026166">Gi meg et sammendrag på én linje og nyttig statistikk utover denne siden. Bruk en kortfattet og uformell tone. Begrens det til 100 ord.</translation>
 <translation id="81313319706244542">2. Trykk på Passord</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8132598642024322408">Nå <ph name="PRICE" /> – før <ph name="PREVIOUS_PRICE" />.</translation>

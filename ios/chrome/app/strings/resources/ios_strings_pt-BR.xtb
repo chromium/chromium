@@ -1595,6 +1595,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="693761253105515415">Definir uma senha</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6950522403736391608">Oculto</translation>
+<translation id="6962809930976936328">Tenha ideias com o Gemini</translation>
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" /> Escolha uma conta.</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1910,6 +1911,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8114753159095730575">O download de arquivo está disponível. Opções disponíveis perto da parte inferior da tela.</translation>
 <translation id="8123502380991596210">Ocultar as Novidades</translation>
 <translation id="8123953306357309250">Cancelar sincronização? Ative a sincronização quando quiser nas configurações.</translation>
+<translation id="8130712116203026166">Faça um resumo de uma linha e apresente ideias úteis que vão além do conteúdo nesta página. Use um tom conciso e casual. Limite de 100 palavras.</translation>
 <translation id="81313319706244542">2. Toque em "Senhas"</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132598642024322408">De <ph name="PREVIOUS_PRICE" /> por <ph name="PRICE" />.</translation>

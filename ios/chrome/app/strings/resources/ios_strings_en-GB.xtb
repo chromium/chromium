@@ -1595,6 +1595,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="693761253105515415">Set a passcode</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6950522403736391608">Hidden</translation>
+<translation id="6962809930976936328">Get insights with Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> currently selected. Choose an account.</translation>
 <translation id="6964760285928603117">Remove from group</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1910,6 +1911,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
 <translation id="8123502380991596210">Hide What's new</translation>
 <translation id="8123953306357309250">Cancel sync? You can turn on sync at any time in settings.</translation>
+<translation id="8130712116203026166">Give me a one-line summary and useful insights beyond this page. Use a concise, casual tone. Limit to 100 words.</translation>
 <translation id="81313319706244542">2. Tap Passwords</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8132598642024322408">Now <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>

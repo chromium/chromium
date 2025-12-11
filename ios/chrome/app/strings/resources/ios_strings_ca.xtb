@@ -1595,6 +1595,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="693761253105515415">Estableix una contrasenya</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6950522403736391608">Amagades</translation>
+<translation id="6962809930976936328">Obtén informació detallada amb Gemini</translation>
 <translation id="6964300328304469089">Selecció actual: <ph name="NAME" />, <ph name="EMAIL" />. Tria un compte.</translation>
 <translation id="6964760285928603117">Suprimeix del grup</translation>
 <translation id="6965382102122355670">D'acord</translation>
@@ -1910,6 +1911,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8114753159095730575">La baixada de fitxers està disponible. Opcions disponibles a la part inferior de la pantalla.</translation>
 <translation id="8123502380991596210">Amaga l'opció Novetats</translation>
 <translation id="8123953306357309250">Vols cancel·lar la sincronització? Pots activar-la en qualsevol moment des de la configuració.</translation>
+<translation id="8130712116203026166">Fes-me un resum d'una línia i proporciona'm informació detallada útil que no s'inclogui en aquesta pàgina. Utilitza un to concís i informal. 100 paraules com a màxim.</translation>
 <translation id="81313319706244542">2. Toca Contrasenyes</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8132598642024322408">Ara val <ph name="PRICE" />, abans valia <ph name="PREVIOUS_PRICE" />.</translation>

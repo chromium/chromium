@@ -953,7 +953,7 @@
 <translation id="4691892551491778176">使用這項功能時，頁面內容和網址會傳送到 Google，但不會用於改良生成式 AI 模型。你可以隨時前往設定關閉這項功能。</translation>
 <translation id="4697240968720007067">只要按一下，輕鬆擁有 Google 精選應用程式</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
-<translation id="4709570498586527752">在不同時間提供你最需要的功能</translation>
+<translation id="4709570498586527752">視需要提示你最實用的功能</translation>
 <translation id="4717844083556844785">目前網頁處於無痕模式</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720530280568305198">你選取的項目已在新分頁中開啟</translation>
@@ -1595,6 +1595,7 @@
 <translation id="693761253105515415">請設定螢幕解鎖密碼</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6950522403736391608">隱藏</translation>
+<translation id="6962809930976936328">使用 Gemini 取得洞察資訊</translation>
 <translation id="6964300328304469089">目前已選取<ph name="NAME" />，<ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
 <translation id="6965382102122355670">確定</translation>
@@ -1910,6 +1911,7 @@
 <translation id="8114753159095730575">可下載檔案，相關選項位於畫面底部。</translation>
 <translation id="8123502380991596210">隱藏「新功能」</translation>
 <translation id="8123953306357309250">要取消同步處理嗎？你隨時可以在設定中開啟同步功能。</translation>
+<translation id="8130712116203026166">請提供一行摘要，以及這個頁面以外的實用洞察資訊。語氣簡潔輕鬆，以 100 個字詞為限。</translation>
 <translation id="81313319706244542">2. 輕觸「密碼」</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8132598642024322408">原價 <ph name="PREVIOUS_PRICE" />，現在只要 <ph name="PRICE" />，</translation>

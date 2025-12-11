@@ -1595,6 +1595,7 @@
 <translation id="693761253105515415">設定密碼</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6950522403736391608">隱藏</translation>
+<translation id="6962809930976936328">向 Gemini 索取分析</translation>
 <translation id="6964300328304469089">目前已選取<ph name="NAME" />，<ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
 <translation id="6965382102122355670">確定</translation>
@@ -1910,6 +1911,7 @@
 <translation id="8114753159095730575">您可以下載檔案。可用選項喺螢幕底部附近。</translation>
 <translation id="8123502380991596210">隱藏「最新資訊」</translation>
 <translation id="8123953306357309250">要取消同步功能嗎？你可隨時在設定中開啟同步功能。</translation>
+<translation id="8130712116203026166">我想要一行摘要，同埋喺呢頁以外嘅實用分析資料。語調要簡潔輕鬆，最多 100 個字。</translation>
 <translation id="81313319706244542">2. 輕按 [密碼]</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8132598642024322408">原價係 <ph name="PREVIOUS_PRICE" />，現售 <ph name="PRICE" />。</translation>

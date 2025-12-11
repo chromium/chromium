@@ -461,7 +461,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1294807885394205587">Questa procedura potrebbe richiedere alcuni minuti. Avvio del gestore di container.</translation>
 <translation id="12951065153783848">Il tuo account è gestito dalla tua organizzazione</translation>
 <translation id="1296410481664942178">Non mostrare Google Calendar</translation>
-<translation id="1296911687402551044">Blocca scheda selezionata</translation>
+<translation id="1296911687402551044">Fissa scheda selezionata</translation>
 <translation id="1297175357211070620">Destinazione</translation>
 <translation id="129770436432446029">Invia feedback su <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="129808599775632797">&amp;Modifiche</translation>
@@ -1654,7 +1654,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2111670510994270194">Nuova scheda a destra</translation>
 <translation id="2111778868023567359">Non vedrai più i gruppi di schede in questa pagina</translation>
 <translation id="2112554630428445878">Ti diamo il benvenuto <ph name="USERNAME" /></translation>
-<translation id="21133533946938348">Blocca scheda</translation>
+<translation id="21133533946938348">Fissa scheda</translation>
 <translation id="2113479184312716848">Apri &amp;file...</translation>
 <translation id="2113921862428609753">Accesso alle informazioni sull'autorità</translation>
 <translation id="2114145607116268663">Impossibile completare l'installazione. È necessario riavviare. Riavvia il computer e riprova. Il codice di errore è <ph name="ERROR" />.</translation>

@@ -1595,6 +1595,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="693761253105515415">Defina um código secreto</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6950522403736391608">Oculto</translation>
+<translation id="6962809930976936328">Ver estatísticas com o Gemini</translation>
 <translation id="6964300328304469089">Seleção atual: <ph name="NAME" />, <ph name="EMAIL" />. Selecione uma conta.</translation>
 <translation id="6964760285928603117">Remover do grupo</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1910,6 +1911,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8114753159095730575">A transferência de ficheiros está disponível. Opções disponíveis junto à parte inferior do ecrã.</translation>
 <translation id="8123502380991596210">Ocultar Novidades</translation>
 <translation id="8123953306357309250">Quer cancelar a sincronização? Pode ativar a sincronização em qualquer altura nas definições.</translation>
+<translation id="8130712116203026166">Dá-me um resumo de uma linha e estatísticas úteis além desta página. Usa um tom conciso e informal. Usa, no máximo, 100 palavras.</translation>
 <translation id="81313319706244542">2. Toque em Palavras-passe</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132598642024322408">Agora a <ph name="PRICE" />, anteriormente a <ph name="PREVIOUS_PRICE" />.</translation>

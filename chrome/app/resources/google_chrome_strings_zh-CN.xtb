@@ -118,7 +118,7 @@
 <translation id="22791603784558743">关闭 Chrome 开发者版中的 Gemini</translation>
 <translation id="2290014774651636340">缺少 Google API 密钥，因此 Google Chrome 的部分功能将无法使用。</translation>
 <translation id="2290095356545025170">确定要卸载 Google Chrome 浏览器吗？</translation>
-<translation id="2301513536169703857">如需在您的所有设备上获取密码、书签等信息，请登录 Chrome</translation>
+<translation id="2301513536169703857">登录 Chrome，在您的所有设备上同步密码、书签等信息</translation>
 <translation id="2307973900865360088">保留在程序坞中</translation>
 <translation id="2309047409763057870">这是 Google Chrome 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="2345992953227471816">Chrome 发现这些扩展程序包含恶意软件：</translation>
@@ -184,7 +184,7 @@
 <translation id="3003694935412297923">所有任务</translation>
 <translation id="3018957014024118866">同时删除 Chrome 中的数据 (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">重新启动以更新 &amp;ChromeOS Flex</translation>
-<translation id="3037517125981011456">显示让用户登录 Chrome 的提示</translation>
+<translation id="3037517125981011456">显示 Chrome 登录提示</translation>
 <translation id="3037838751736561277">Google Chrome处于后台运行模式。</translation>
 <translation id="3038232873781883849">正在等待安装…</translation>
 <translation id="3045032126857188731">译文语言：<ph name="LANGUAGE" /></translation>

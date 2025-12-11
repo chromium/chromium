@@ -1595,6 +1595,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="693761253105515415">Setează o parolă</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6950522403736391608">Ascuns</translation>
+<translation id="6962809930976936328">Obține informații cu Gemini</translation>
 <translation id="6964300328304469089">Ai selectat: <ph name="NAME" />, <ph name="EMAIL" />. Alege un cont.</translation>
 <translation id="6964760285928603117">Elimină din grup</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1910,6 +1911,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8114753159095730575">Descărcarea fișierelor este disponibilă. Opțiunile sunt disponibile în partea de jos a ecranului.</translation>
 <translation id="8123502380991596210">Ascunde Noutăți</translation>
 <translation id="8123953306357309250">Anulezi sincronizarea? Poți să activezi sincronizarea oricând în setări.</translation>
+<translation id="8130712116203026166">Afișează un rezumat de un rând și informații utile, pe lângă cele din această pagină. Folosește un ton concis și relaxat. Limita este de 100 de cuvinte.</translation>
 <translation id="81313319706244542">2. Atinge Parole</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8132598642024322408">Acum <ph name="PRICE" />, a fost <ph name="PREVIOUS_PRICE" />.</translation>

@@ -1595,6 +1595,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="693761253105515415">დააყენეთ საიდუმლო კოდი</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6950522403736391608">დამალული</translation>
+<translation id="6962809930976936328">მიიღეთ ანალიზი Gemini-ს გამოყენებით</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, ამჟამად არჩეულია <ph name="EMAIL" />. აირჩიეთ ანგარიში.</translation>
 <translation id="6964760285928603117">ჯგუფიდან ამოშლა</translation>
 <translation id="6965382102122355670">კარგი</translation>
@@ -1910,6 +1911,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8114753159095730575">შესაძლებელია ფაილის ჩამოტვირთვა. ვარიანტები ხელმისაწვდომია ეკრანის ქვედა ნაწილთან.</translation>
 <translation id="8123502380991596210">სიახლეების დამალვა</translation>
 <translation id="8123953306357309250">გსურთ სინქრონიზაციის გაუქმება? სინქრონიზაციის ჩართვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
+<translation id="8130712116203026166">მომაწოდე ამ გვერდის ერთსტრიქონიანი შეჯამება და სასარგებლო ანალიზი ამ გვერდის მიღმა. გამოიყენე ლაკონური, არაფორმალური ტონი. შეზღუდე 100 სიტყვამდე.</translation>
 <translation id="81313319706244542">2. შეეხეთ „პაროლებს“</translation>
 <translation id="8131740175452115882">დაადასტურება</translation>
 <translation id="8132598642024322408">ამჟამად <ph name="PRICE" />, იყო <ph name="PREVIOUS_PRICE" />.</translation>

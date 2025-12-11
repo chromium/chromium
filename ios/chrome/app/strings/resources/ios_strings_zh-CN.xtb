@@ -1324,7 +1324,7 @@
 <translation id="6038823991892265570">管理 Google 存储空间</translation>
 <translation id="6039429417015973673">标题：<ph name="TITLE" />；发布者：<ph name="PUBLISHER_INFORMATION" />；发布日期：<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">关闭</translation>
-<translation id="6042308850641462728">展开</translation>
+<translation id="6042308850641462728">更多</translation>
 <translation id="6045460247888249350">添加标题</translation>
 <translation id="6052269326659653305">切换个人资料</translation>
 <translation id="605721222689873409">YY</translation>
@@ -1595,6 +1595,7 @@
 <translation id="693761253105515415">设置密码</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6950522403736391608">已隐藏</translation>
+<translation id="6962809930976936328">利用 Gemini 获取数据洞见</translation>
 <translation id="6964300328304469089">目前选择的是：<ph name="NAME" />，<ph name="EMAIL" />。请选择一个账号。</translation>
 <translation id="6964760285928603117">从分组中移除</translation>
 <translation id="6965382102122355670">确定</translation>
@@ -1910,6 +1911,7 @@
 <translation id="8114753159095730575">已可下载文件。选项位于屏幕底部附近。</translation>
 <translation id="8123502380991596210">隐藏“新变化”</translation>
 <translation id="8123953306357309250">取消同步？您随时可在设置中开启同步功能。</translation>
+<translation id="8130712116203026166">提供一行摘要，以及比本页内容更深入的实用数据洞见。内容要简明扼要，语气要轻松自然。限制在 100 个字以内。</translation>
 <translation id="81313319706244542">2. 点按“密码”</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8132598642024322408">现价 <ph name="PRICE" />，原价 <ph name="PREVIOUS_PRICE" />。</translation>

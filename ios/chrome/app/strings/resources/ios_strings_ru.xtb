@@ -1595,6 +1595,7 @@
 <translation id="693761253105515415">Настройка кода доступа</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6950522403736391608">Скрытые</translation>
+<translation id="6962809930976936328">Полезная информация от Gemini</translation>
 <translation id="6964300328304469089">Выбор аккаунта. Сейчас выбран <ph name="EMAIL" /> (<ph name="NAME" />).</translation>
 <translation id="6964760285928603117">Удалить из группы</translation>
 <translation id="6965382102122355670">ОК</translation>
@@ -1910,6 +1911,7 @@
 <translation id="8114753159095730575">Файл доступен для скачивания. Параметры указаны в нижней части экрана.</translation>
 <translation id="8123502380991596210">Скрыть раздел "Что нового"</translation>
 <translation id="8123953306357309250">Отключить синхронизацию? Ее можно включить в настройках в любой момент.</translation>
+<translation id="8130712116203026166">Составь краткий пересказ и добавь полезные сведения, которые не указаны на этой странице. Пересказ должен быть небольшим и неформальным. Не более 100 слов.</translation>
 <translation id="81313319706244542">2. Выберите "Пароли".</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8132598642024322408">Новая цена: <ph name="PRICE" />, старая цена: <ph name="PREVIOUS_PRICE" />.</translation>

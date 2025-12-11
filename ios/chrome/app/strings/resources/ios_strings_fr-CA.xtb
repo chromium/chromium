@@ -1595,6 +1595,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="693761253105515415">Définir un code d'accès</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6950522403736391608">Masquées</translation>
+<translation id="6962809930976936328">Obtenir des informations avec Gemini</translation>
 <translation id="6964300328304469089">Actuellement sélectionnés : <ph name="NAME" />, <ph name="EMAIL" /> Sélectionnez un compte.</translation>
 <translation id="6964760285928603117">Supprimer du groupe</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1910,6 +1911,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8114753159095730575">Le téléchargement du fichier est disponible. Options présentées vers le bas de l’écran.</translation>
 <translation id="8123502380991596210">Masquer les nouveautés</translation>
 <translation id="8123953306357309250">Annuler la synchronisation? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>
+<translation id="8130712116203026166">Donne-moi un résumé d'une ligne et des informations utiles au-delà de cette page. Utilise un ton concis et décontracté. Limite le résumé à 100 mots.</translation>
 <translation id="81313319706244542">2. Appuyez sur Mots de passe</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8132598642024322408">Prix actuel : <ph name="PRICE" />; ancien prix : <ph name="PREVIOUS_PRICE" />.</translation>
