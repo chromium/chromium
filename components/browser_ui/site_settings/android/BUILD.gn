@@ -248,7 +248,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_file_type_24.xml",
     "java/res/drawable/ic_person_24dp.xml",
     "java/res/drawable/ic_timer.xml",
-    "java/res/drawable/incognito_24.xml",
     "java/res/drawable/settings_bluetooth.xml",
     "java/res/drawable/settings_v8.xml",
     "java/res/drawable/web_24.xml",

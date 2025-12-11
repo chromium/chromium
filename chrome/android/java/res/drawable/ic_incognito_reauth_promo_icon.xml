@@ -5,10 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!--TODO(crbug.com/40056462): Remove UnusedResource warning when in production -->
+<!--TODO(crbug.com/467416126): Migrate to material 3 style. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources"
     android:width="52dp"
     android:height="52dp"
     android:viewportWidth="52"
