@@ -403,12 +403,6 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
       extension.manifest_resource_id = IDR_BRAILLE_MANIFEST_MV3;
     }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (extension.manifest_resource_id == IDR_GOOGLE_XKB_MANIFEST) {
-      extension.manifest_resource_id = IDR_GOOGLE_XKB_MANIFEST_V3;
-    }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
     ComponentExtensionIME component_ime;
     component_ime.manifest =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

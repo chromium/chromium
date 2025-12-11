@@ -23,24 +23,14 @@
     "tts",
     "unlimitedStorage",
     "virtualKeyboardPrivate"
-{% if is_manifest_v3 == '1' %}
   ],
   "host_permissions": [
-{% else %}
-      ,
-{% endif %} 
     "https://clients4.google.com/",
     "https://dl.google.com/",
     "https://edgedl.me.gvt1.com/",
     "https://handwriting.googleapis.com/",
     "https://www.googleapis.com/"
   ],
-{% if is_manifest_v3 != '1' %}
-  "background": {
-    "page": "background.html",
-    "persistent": false
-  },
-{% endif %}
   "content_scripts": [
   ],
   "ime_path": "/usr/share/chromeos-assets/input_methods/input_tools",
@@ -1502,11 +1492,6 @@
       ]
     }
   ],
-{% if is_manifest_v3 == '1' %}
   "manifest_version": 3,
   "content_security_policy": {"extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; style-src 'unsafe-inline' chrome://theme"}
-{% else %}
-  "manifest_version": 2,
-  "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'; style-src 'unsafe-inline' chrome://theme"
-{% endif %}
 }
