@@ -360,7 +360,7 @@ void DataObject::NotifyItemListChanged() const {
 void DataObject::Trace(Visitor* visitor) const {
   visitor->Trace(item_list_);
   visitor->Trace(observers_);
-  visitor->Trace(dragged_isolated_file_system_impl_);
+  Supplementable::Trace(visitor);
 }
 
 // static

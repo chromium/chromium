@@ -34,10 +34,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -48,7 +48,6 @@ class KURL;
 class SystemClipboard;
 class WebDragData;
 class ExecutionContext;
-class DraggedIsolatedFileSystemImpl;
 
 enum class PasteMode;
 
@@ -56,8 +55,10 @@ enum class PasteMode;
 // during a drag-n-drop operation. This is the data that WebCore is aware
 // of and is not specific to a platform.
 class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
-                               public GarbageCollectedMixin {
+                               public Supplementable<DataObject, 1> {
  public:
+  enum class Supplements { kDraggedIsolatedFileSystemImpl = 0 };
+
   struct CORE_EXPORT Observer : public GarbageCollectedMixin {
     // Called whenever |item_list_| is modified. Note it can be called multiple
     // times for a single mutation. For example, DataObject::SetData() calls
@@ -139,16 +140,6 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
 
   WebDragData ToWebDragData();
 
-  ForwardDeclaredMember<DraggedIsolatedFileSystemImpl>
-  GetDraggedIsolatedFileSystemImpl() const {
-    return dragged_isolated_file_system_impl_;
-  }
-  void SetDraggedIsolatedFileSystemImpl(
-      ForwardDeclaredMember<DraggedIsolatedFileSystemImpl>
-          dragged_isolated_file_system_impl) {
-    dragged_isolated_file_system_impl_ = dragged_isolated_file_system_impl;
-  }
-
  private:
   DataObjectItem* FindStringItem(const String& type) const;
   bool InternalAddStringItem(DataObjectItem*);
@@ -162,9 +153,6 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
   // State of Shift/Ctrl/Alt/Meta keys and Left/Right/Middle mouse buttons
   int modifiers_;
   String filesystem_id_;
-
-  ForwardDeclaredMember<DraggedIsolatedFileSystemImpl>
-      dragged_isolated_file_system_impl_;
 };
 
 }  // namespace blink
