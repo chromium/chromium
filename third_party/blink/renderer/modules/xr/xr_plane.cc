@@ -81,6 +81,10 @@ std::optional<V8XRPlaneOrientation> XRPlane::orientation() const {
   return std::nullopt;
 }
 
+String XRPlane::semanticLabel() const {
+  return String();
+}
+
 double XRPlane::lastChangedTime() const {
   return last_changed_time_;
 }

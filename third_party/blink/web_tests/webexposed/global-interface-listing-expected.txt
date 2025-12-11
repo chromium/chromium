@@ -12838,6 +12838,7 @@ interface XRPlane
     getter orientation
     getter planeSpace
     getter polygon
+    getter semanticLabel
     method constructor
 interface XRPlaneSet
     attribute @@toStringTag
@@ -12944,6 +12945,7 @@ interface XRSession : EventTarget
     method constructor
     method end
     method getTrackedImageScores
+    method initiateRoomCapture
     method pauseDepthSensing
     method requestAnimationFrame
     method requestHitTestSource

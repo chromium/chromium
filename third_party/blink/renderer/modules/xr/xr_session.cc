@@ -2023,6 +2023,34 @@ XRSession::getTrackedImageScores(ScriptState* script_state,
   return promise;
 }
 
+ScriptPromise<IDLUndefined> XRSession::initiateRoomCapture(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (ended_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kSessionEnded);
+    return EmptyPromise();
+  }
+
+  if (has_called_room_capture_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "initiateRoomCapture already called.");
+    return EmptyPromise();
+  }
+
+  if (!IsFeatureEnabled(device::mojom::XRSessionFeature::PLANE_DETECTION)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        StrCat({kFeatureNotSupportedBySessionPrefix,
+                XRSessionFeatureToString(
+                    device::mojom::XRSessionFeature::PLANE_DETECTION)}));
+    return EmptyPromise();
+  }
+
+  has_called_room_capture_ = true;
+  return ToResolvedUndefinedPromise(script_state);
+}
+
 void XRSession::ProcessTrackedImagesData(
     const device::mojom::blink::XRTrackedImagesData* images_data) {
   DVLOG(3) << __func__;

@@ -45,6 +45,7 @@ class XRPlane : public ScriptWrappable {
 
   std::optional<V8XRPlaneOrientation> orientation() const;
   const FrozenArray<DOMPointReadOnly>& polygon() const;
+  String semanticLabel() const;
   double lastChangedTime() const;
 
   // Updates plane data from passed in |plane_data|. The resulting instance

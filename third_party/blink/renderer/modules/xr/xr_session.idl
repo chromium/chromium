@@ -93,6 +93,9 @@ enum XRReflectionFormat {
   [RaisesException]
   undefined resumeDepthSensing();
 
+  [RuntimeEnabled=WebXRPlaneDetection, CallWith=ScriptState, RaisesException]
+  Promise<undefined> initiateRoomCapture();
+
   [RaisesException]
   readonly attribute XRDepthUsage? depthUsage;
   [RaisesException]

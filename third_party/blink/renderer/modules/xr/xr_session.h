@@ -267,6 +267,9 @@ class XRSession final : public EventTarget,
       ScriptState* script_state,
       ExceptionState&);
 
+  ScriptPromise<IDLUndefined> initiateRoomCapture(ScriptState* script_state,
+                                                  ExceptionState&);
+
   // Called by JavaScript to manually end the session.
   ScriptPromise<IDLUndefined> end(ScriptState* script_state, ExceptionState&);
 
@@ -674,6 +677,8 @@ class XRSession final : public EventTarget,
 
   // Corresponds to mojo XRSession.supportsViewportScaling
   bool supports_viewport_scaling_ = false;
+
+  bool has_called_room_capture_ = false;
 
   std::unique_ptr<XRSessionViewportScaler> viewport_scaler_;
 
