@@ -1663,11 +1663,6 @@ BASE_FEATURE(kProjectorCustomThumbnail,
              "kProjectorCustomThumbnail",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to ignore policy setting for enabling Projector for managed
-// users.
-BASE_FEATURE(kProjectorManagedUserIgnorePolicy,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to show pseduo transcript that is shorter than the
 // threshold.
 BASE_FEATURE(kProjectorShowShortPseudoTranscript,
@@ -3168,10 +3163,6 @@ bool IsProjectorAppDebugMode() {
 
 bool IsProjectorCustomThumbnailEnabled() {
   return base::FeatureList::IsEnabled(kProjectorCustomThumbnail);
-}
-
-bool IsProjectorManagedUserIgnorePolicyEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorManagedUserIgnorePolicy);
 }
 
 bool IsProjectorShowShortPseudoTranscript() {

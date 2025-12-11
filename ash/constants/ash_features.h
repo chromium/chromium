@@ -746,8 +746,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorManagedUser);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorAppDebug);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorCustomThumbnail);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kProjectorManagedUserIgnorePolicy);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorShowShortPseudoTranscript);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorBleedingEdgeExperience);
@@ -1255,8 +1253,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorManagedUserEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAppDebugMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorCustomThumbnailEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsProjectorManagedUserIgnorePolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorShowShortPseudoTranscript();
 // TODO(b/288273641): Clean up the server speech recognition related flags.

@@ -67,10 +67,8 @@ bool IsProjectorAppEnabled(const Profile* profile) {
         ash::prefs::kProjectorDogfoodForFamilyLinkEnabled);
   }
 
-  // Projector for enterprise users is controlled by a combination of a feature
-  // flag and an enterprise policy.
-  return ash::features::IsProjectorManagedUserIgnorePolicyEnabled() ||
-         profile->GetPrefs()->GetBoolean(ash::prefs::kProjectorAllowByPolicy);
+  // Projector for enterprise users is controlled by an enterprise policy.
+  return profile->GetPrefs()->GetBoolean(ash::prefs::kProjectorAllowByPolicy);
 }
 
 bool IsMediaFile(const base::FilePath& path) {
