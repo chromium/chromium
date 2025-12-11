@@ -34,11 +34,13 @@ class WorkerBackingThread;
 // backing thread. The entire class is used for off-thread CSS Paint.
 class MODULES_EXPORT PaintWorkletProxyClient
     : public GarbageCollected<PaintWorkletProxyClient>,
+      public Supplement<WorkerClients>,
       public PaintWorkletPainter {
  public:
   // blink::Supplement hook to retrieve the PaintWorkletProxyClient for a given
   // WorkerClients.
-
+  static constexpr auto kSupplementIndex =
+      WorkerClients::Supplements::kPaintWorkletProxyClient;
   static PaintWorkletProxyClient* From(WorkerClients*);
 
   // Create the PaintWorkletProxyClient for a given PaintWorklet, represented by
@@ -110,8 +112,6 @@ class MODULES_EXPORT PaintWorkletProxyClient
   friend class PaintWorkletProxyClientTest;
   FRIEND_TEST_ALL_PREFIXES(PaintWorkletProxyClientTest,
                            PaintWorkletProxyClientConstruction);
-
-  Member<WorkerClients> worker_clients_;
 
   // Store the device pixel ratio here so it can be used off main thread
   double device_pixel_ratio_;

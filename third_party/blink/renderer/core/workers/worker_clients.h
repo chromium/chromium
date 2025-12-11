@@ -32,50 +32,34 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_CLIENTS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
-
-class AnimationWorkletProxyClient;
-class PaintWorkletProxyClient;
 
 // This is created on the main thread, passed to the worker thread and
 // attached to WorkerOrWorkletGlobalScope when it is created.
 // This class can be used to provide "client" implementations to workers or
 // worklets.
-class CORE_EXPORT WorkerClients final : public GarbageCollected<WorkerClients> {
+class CORE_EXPORT WorkerClients final
+    : public GarbageCollected<WorkerClients>,
+      public Supplementable<WorkerClients, 2> {
  public:
+  enum class Supplements {
+    kPaintWorkletProxyClient = 0,
+    kAnimationWorkletProxyClient = 1,
+  };
+
   WorkerClients() = default;
   WorkerClients(const WorkerClients&) = delete;
   WorkerClients& operator=(const WorkerClients&) = delete;
 
-  void Trace(Visitor* visitor) const;
-
-  ForwardDeclaredMember<AnimationWorkletProxyClient>
-  GetAnimationWorkletProxyClient() const {
-    return animation_worklet_proxy_client_;
+  void Trace(Visitor* visitor) const override {
+    Supplementable::Trace(visitor);
   }
-  void SetAnimationWorkletProxyClient(
-      ForwardDeclaredMember<AnimationWorkletProxyClient>
-          animation_worklet_proxy_client) {
-    animation_worklet_proxy_client_ = animation_worklet_proxy_client;
-  }
-
-  ForwardDeclaredMember<PaintWorkletProxyClient> GetPaintWorkletProxyClient()
-      const {
-    return paint_worklet_proxy_client_;
-  }
-  void SetPaintWorkletProxyClient(ForwardDeclaredMember<PaintWorkletProxyClient>
-                                      paint_worklet_proxy_client) {
-    paint_worklet_proxy_client_ = paint_worklet_proxy_client;
-  }
-
- private:
-  ForwardDeclaredMember<AnimationWorkletProxyClient>
-      animation_worklet_proxy_client_;
-  ForwardDeclaredMember<PaintWorkletProxyClient> paint_worklet_proxy_client_;
 };
+
+extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<WorkerClients>;
 
 }  // namespace blink
 

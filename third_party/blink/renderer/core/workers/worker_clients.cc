@@ -6,9 +6,6 @@
 
 namespace blink {
 
-void WorkerClients::Trace(Visitor* visitor) const {
-  visitor->Trace(animation_worklet_proxy_client_);
-  visitor->Trace(paint_worklet_proxy_client_);
-}
+template class CORE_TEMPLATE_EXPORT Supplement<WorkerClients>;
 
 }  // namespace blink
