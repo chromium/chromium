@@ -15,6 +15,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -76,6 +77,7 @@ public class ExtensionActionsUpdateHelperTest {
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
     private ModelList mModels;
+    private ExtensionActionsUpdateHelper mHelper;
 
     @Before
     public void setUp() {
@@ -124,7 +126,12 @@ public class ExtensionActionsUpdateHelperTest {
                             return new ListItem(ListItemType.EXTENSION_ACTION, model);
                         });
 
-        new ExtensionActionsUpdateHelper(mModels, mTask, mCurrentTabSupplier, mDelegate);
+        mHelper = new ExtensionActionsUpdateHelper(mModels, mTask, mCurrentTabSupplier, mDelegate);
+    }
+
+    @After
+    public void tearDown() {
+        mHelper.destroy();
     }
 
     @Test

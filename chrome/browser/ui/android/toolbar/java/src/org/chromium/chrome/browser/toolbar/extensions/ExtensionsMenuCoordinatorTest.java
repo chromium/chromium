@@ -13,6 +13,7 @@ import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -97,6 +98,11 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Ensure the tab / profile suppliers have triggered their initial callbacks.
         Shadows.shadowOf(Looper.getMainLooper()).idle();
+    }
+
+    @After
+    public void tearDown() {
+        mExtensionsMenuCoordinator.destroy();
     }
 
     @Test

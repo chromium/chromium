@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.KeyEvent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,6 +61,11 @@ public class FakeExtensionActionsBridgeTest {
         mBridge = ExtensionActionsBridge.get(mTask);
         assertEquals(mTaskModel.getBridge(), mBridge);
         mBridge.addObserver(mObserver);
+    }
+
+    @After
+    public void tearDown() {
+        mBridge.removeObserver(mObserver);
     }
 
     @Test
