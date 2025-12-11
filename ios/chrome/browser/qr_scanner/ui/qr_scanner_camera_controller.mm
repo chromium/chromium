@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
+#import "ios/chrome/browser/qr_scanner/ui/qr_scanner_camera_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/bind.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/qr_scanner/ui/qr_scanner_camera_controller_delegate.h"
+#import "ios/chrome/browser/qr_scanner/ui/qr_scanner_view.h"
 
 @interface QRScannerCameraController () <AVCaptureMetadataOutputObjectsDelegate>
 

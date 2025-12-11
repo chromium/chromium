@@ -2,49 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("ui") {
-  sources = [
-    "qr_scanner_camera_controller.h",
-    "qr_scanner_camera_controller.mm",
-    "qr_scanner_camera_controller_delegate.h",
-    "qr_scanner_view.h",
-    "qr_scanner_view.mm",
-    "qr_scanner_view_controller.h",
-    "qr_scanner_view_controller.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/version_info",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/scanner/ui_bundled",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
-    "//ios/chrome/common/ui/util",
-    "//ui/base",
-  ]
-  frameworks = [
-    "AVFoundation.framework",
-    "UIKit.framework",
-  ]
-}
-
-source_set("coordinator") {
-  sources = [
-    "qr_scanner_legacy_coordinator.h",
-    "qr_scanner_legacy_coordinator.mm",
-  ]
-  deps = [
-    ":ui",
-    "//base",
-    "//ios/chrome/browser/scanner/ui_bundled",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/public/commands",
-  ]
-}
-
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -77,13 +34,13 @@ source_set("eg_app_support+eg2") {
     "qr_scanner_app_interface.mm",
   ]
   deps = [
-    ":ui",
     "//base",
     "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/location_bar/ui_bundled",
     "//ios/chrome/browser/location_bar/ui_bundled:protocols",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/qr_scanner/ui",
     "//ios/chrome/browser/scanner/ui_bundled",
     "//ios/chrome/browser/scanner/ui_bundled:camera_state",
     "//ios/chrome/browser/search_engines/model",

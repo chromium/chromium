@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_QR_SCANNER_UI_QR_SCANNER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_QR_SCANNER_UI_QR_SCANNER_VIEW_CONTROLLER_H_
 
-#include "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
+#import "ios/chrome/browser/qr_scanner/ui/qr_scanner_camera_controller_delegate.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_view_controller.h"
 
 @protocol LoadQueryCommands;
@@ -41,4 +41,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_QR_SCANNER_UI_QR_SCANNER_VIEW_CONTROLLER_H_

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
+#import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h"
 
-#import <ostream>
-
-#import "base/check_op.h"
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_view_controller.h"
+#import "base/check.h"
+#import "ios/chrome/browser/qr_scanner/ui/qr_scanner_view_controller.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

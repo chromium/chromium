@@ -87,7 +87,7 @@ include_rules = [
   "+ios/chrome/browser/print/coordinator",
   "+ios/chrome/browser/promos_manager/model/features.h",
   "+ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator.h",
-  "+ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h",
+  "+ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h",
   "+ios/chrome/browser/reader_mode/coordinator",
   "+ios/chrome/browser/reader_mode/model",
   "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",

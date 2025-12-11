@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_app_interface.h"
+#import "ios/chrome/browser/qr_scanner/test/qr_scanner_app_interface.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_camera_controller.h"
-#import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_view_controller.h"
+#import "ios/chrome/browser/qr_scanner/ui/qr_scanner_camera_controller.h"
+#import "ios/chrome/browser/qr_scanner/ui/qr_scanner_view_controller.h"
 #import "ios/chrome/browser/scanner/ui_bundled/camera_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
