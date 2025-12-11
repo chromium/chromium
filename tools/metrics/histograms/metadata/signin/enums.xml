@@ -794,6 +794,9 @@ chromium-metrics-reviews@google.com.
   <int value="79" label="Enterprise Plus Address"/>
   <int value="80" label="Glic User Status"/>
   <int value="81" label="Devtools Gdp"/>
+  <int value="82" label="Ash Drive Integration"/>
+  <int value="83" label="Ash Boca Classroom Page Handler"/>
+  <int value="84" label="Ash Scanner Keyed Service"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

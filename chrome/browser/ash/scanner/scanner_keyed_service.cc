@@ -136,7 +136,7 @@ ScannerKeyedService::ScannerKeyedService(
 
     auto auth_service = std::make_unique<google_apis::AuthService>(
         identity_manager_, account_id, url_loader_factory,
-        std::vector<std::string>{GaiaConstants::kContactsOAuth2Scope});
+        signin::OAuthConsumerId::kAshScannerKeyedService);
     request_sender_ = std::make_unique<google_apis::RequestSender>(
         std::move(auth_service), url_loader_factory, blocking_task_runner,
         /*custom_user_agent=*/"", kTrafficAnnotation);

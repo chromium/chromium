@@ -330,20 +330,13 @@ void ClassroomPageHandlerImpl::OnListCourseWorkMaterialsFetched(
 // static
 std::unique_ptr<google_apis::RequestSender>
 ClassroomPageHandlerImpl::CreateRequestSender() {
-  std::vector<std::string> scopes = {
-      GaiaConstants::kClassroomReadOnlyRostersOAuth2Scope,
-      GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
-      GaiaConstants::kClassroomReadOnlyCourseWorkStudentsOAuth2Scope,
-      GaiaConstants::kClassroomProfileEmailOauth2Scope,
-      GaiaConstants::kClassroomProfilePhotoUrlScope,
-      GaiaConstants::kClassroomCourseWorkMaterialsOAuthScope,
-  };
   auto url_loader_factory = BocaAppClient::Get()->GetURLLoaderFactory();
   auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
   auto auth_service = std::make_unique<google_apis::AuthService>(
       identity_manager,
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      url_loader_factory, scopes);
+      url_loader_factory,
+      signin::OAuthConsumerId::kAshBocaClassroomPageHandler);
   return std::make_unique<google_apis::RequestSender>(
       std::move(auth_service), url_loader_factory,
       base::ThreadPool::CreateSequencedTaskRunner(

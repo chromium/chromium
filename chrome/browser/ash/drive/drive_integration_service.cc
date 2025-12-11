@@ -1702,10 +1702,9 @@ void DriveIntegrationService::GetReadOnlyAuthenticationToken(
     const CoreAccountId& account_id =
         identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
-    std::vector<std::string> scopes = {
-        GaiaConstants::kDriveReadOnlyOAuth2Scope};
     auth_service_ = std::make_unique<google_apis::AuthService>(
-        identity_manager, account_id, profile_->GetURLLoaderFactory(), scopes);
+        identity_manager, account_id, profile_->GetURLLoaderFactory(),
+        signin::OAuthConsumerId::kAshDriveIntegration);
   }
 
   auth_service_->StartAuthentication(std::move(callback));

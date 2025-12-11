@@ -110,6 +110,9 @@ constexpr char kAuthServiceTasksClientName[] = "auth_service_tasks_client";
 constexpr char kYouTubeMusicName[] = "youtube_music";
 constexpr char kContextualTasksName[] = "contextual_tasks";
 constexpr char kDevtoolsGdpName[] = "devtools_gdp_client";
+constexpr char kAshDriveIntegrationName[] = "ash_drive_integration";
+constexpr char kAshClassroomPageHandlerName[] = "ash_classroom_page_handler";
+constexpr char kAshScannerKeyedServiceName[] = "ash_scanner_keyed_service";
 
 }  // namespace
 
@@ -486,6 +489,24 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kDevtoolsGdpName,
           /*scopes=*/{GaiaConstants::kGdpOAuth2Scope});
+    case OAuthConsumerId::kAshDriveIntegration:
+      return OAuthConsumer(
+          /*name=*/kAshDriveIntegrationName,
+          /*scopes=*/{GaiaConstants::kDriveReadOnlyOAuth2Scope});
+    case OAuthConsumerId::kAshBocaClassroomPageHandler:
+      return OAuthConsumer(
+          /*name=*/kAshClassroomPageHandlerName,
+          /*scopes=*/{
+              GaiaConstants::kClassroomReadOnlyRostersOAuth2Scope,
+              GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
+              GaiaConstants::kClassroomReadOnlyCourseWorkStudentsOAuth2Scope,
+              GaiaConstants::kClassroomProfileEmailOauth2Scope,
+              GaiaConstants::kClassroomProfilePhotoUrlScope,
+              GaiaConstants::kClassroomCourseWorkMaterialsOAuthScope});
+    case OAuthConsumerId::kAshScannerKeyedService:
+      return OAuthConsumer(
+          /*name=*/kAshScannerKeyedServiceName,
+          /*scopes=*/{GaiaConstants::kContactsOAuth2Scope});
   }
 }
 
