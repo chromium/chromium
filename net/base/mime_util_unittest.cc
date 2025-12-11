@@ -47,6 +47,8 @@ TEST(MimeUtilTest, GetWellKnownMimeTypeFromExtension) {
       {FILE_PATH_LITERAL("ics"), "text/calendar"},
       {FILE_PATH_LITERAL("m3u8"), "application/x-mpegurl"},
       {FILE_PATH_LITERAL("csv"), "text/csv"},
+      {FILE_PATH_LITERAL("mkv"), "video/matroska"},
+      {FILE_PATH_LITERAL("mka"), "audio/matroska"},
       {FILE_PATH_LITERAL("not an extension / for sure"), nullptr},
       {containsNullByte, nullptr}};
 
@@ -106,6 +108,8 @@ TEST(MimeUtilTest, ExtensionTest) {
            "audio/mpegurl",    // System override for mac.
        }},
       {FILE_PATH_LITERAL("csv"), {"text/csv"}},
+      {FILE_PATH_LITERAL("mkv"), {"video/matroska"}},
+      {FILE_PATH_LITERAL("mka"), {"audio/matroska"}},
       {FILE_PATH_LITERAL("not an extension / for sure"), {}},
       {containsNullByte, {}}};
 
@@ -565,6 +569,8 @@ TEST(MimeUtilTest, TestGetExtensionsForMimeType) {
       {"message/", 0, nullptr, true},
       {"image/avif", 1, "avif"},
       {"image/bmp", 1, "bmp"},
+      {"video/matroska", 1, "mkv"},
+      {"audio/matroska", 1, "mka"},
       {"video/*", 6, "mp4"},
       {"video/*", 6, "mpeg"},
       {"audio/*", 6, "oga"},

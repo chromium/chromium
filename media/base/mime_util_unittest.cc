@@ -157,6 +157,9 @@ TEST(MimeUtilTest, CommonMediaMimeType) {
   EXPECT_TRUE(IsSupportedMediaMimeType("audio/mpeg"));
   EXPECT_TRUE(IsSupportedMediaMimeType("video/mp4"));
 
+  EXPECT_TRUE(IsSupportedMediaMimeType("audio/matroska"));
+  EXPECT_TRUE(IsSupportedMediaMimeType("video/matroska"));
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   EXPECT_TRUE(IsSupportedMediaMimeType("audio/x-m4a"));
   EXPECT_TRUE(IsSupportedMediaMimeType("video/x-m4v"));
