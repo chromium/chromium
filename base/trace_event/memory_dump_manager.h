@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
+#include "base/trace_event/measured_memory_dump_provider_info.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/memory_dump_provider_info.h"
@@ -199,7 +200,7 @@ class BASE_EXPORT MemoryDumpManager {
     // An ordered sequence of dump providers that have to be invoked to complete
     // the dump. This is a copy of |dump_providers_| at the beginning of a dump
     // and becomes empty at the end, when all dump providers have been invoked.
-    std::vector<scoped_refptr<MemoryDumpProviderInfo>> pending_dump_providers;
+    std::vector<MeasuredMemoryDumpProviderInfo> pending_dump_providers;
 
     // Callback passed to the initial call to CreateProcessDump().
     ProcessMemoryDumpCallback callback;
@@ -242,7 +243,7 @@ class BASE_EXPORT MemoryDumpManager {
 
   // Invokes OnMemoryDump() of the given MDP. Should be called on the MDP task
   // runner.
-  void InvokeOnMemoryDump(MemoryDumpProviderInfo* mdpinfo,
+  void InvokeOnMemoryDump(MeasuredMemoryDumpProviderInfo measured_mdpinfo,
                           ProcessMemoryDump* pmd);
 
   void FinishAsyncProcessDump(

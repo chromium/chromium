@@ -2437,6 +2437,8 @@ component("base") {
     "trace_event/log_message.h",
     "trace_event/malloc_dump_provider.cc",
     "trace_event/malloc_dump_provider.h",
+    "trace_event/measured_memory_dump_provider_info.cc",
+    "trace_event/measured_memory_dump_provider_info.h",
     "trace_event/memory_allocator_dump.cc",
     "trace_event/memory_allocator_dump.h",
     "trace_event/memory_dump_manager.cc",

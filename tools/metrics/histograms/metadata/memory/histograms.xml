@@ -1404,6 +1404,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.DumpProvider.FinalStatus.{Name}"
+    enum="MemoryDumpProviderStatus" expires_after="2026-03-12">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The status of an instance of {Name} when it finishes running or is skipped.
+    During a memory dump, a list of MemoryDumpProvider objects is queued to run
+    in sequence. This metric is logged for each object when it's destroyed, with
+    the reason it was destroyed. Usually this when it's removed from the queue
+    to run it, or to explicitly skip it. Objects can also be destroyed if
+    they're still in the queue when the queue is destroyed.
+  </summary>
+  <token key="Name" variants="MemoryDumpProviderName"/>
+</histogram>
+
+<histogram name="Memory.DumpProvider.FollowingProviders.{Name}" units="objects"
+    expires_after="2026-03-12">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The number of MemoryDumpProviders that are queued to run after an instance
+    of {Name}. Logged at the same time as Memory.DumpProvider.FinalStatus.
+  </summary>
+  <token key="Name" variants="MemoryDumpProviderName"/>
+</histogram>
+
+<histogram name="Memory.DumpProvider.MemoryDumpTime.{Name}"
+    units="microseconds" expires_after="2026-03-12">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The length of time an instance of MemoryDumpProvider {Name} spent executing.
+    Memory.DumpProvider.TotalTime, which includes the time it spent queued, will
+    also be logged when this is logged.
+
+    Note: this metric is only recorded on clients with a high-resolution clock.
+  </summary>
+  <token key="Name" variants="MemoryDumpProviderName"/>
+</histogram>
+
+<histogram name="Memory.DumpProvider.TotalTime.{Name}" units="ms"
+    expires_after="2026-03-12">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The length of time between an instance of MemoryDumpProvider {Name} being
+    queued for a memory dump, and Memory.DumpProvider.FinalStatus being recorded
+    for that instance. If FinalStatus was recorded because the instance finished
+    running, Memory.DumpProvider.MemoryDumpTime will also be recorded with the
+    time that it took to run.
+
+    Note: this metric is only recorded on clients with a high-resolution clock.
+  </summary>
+  <token key="Name" variants="MemoryDumpProviderName"/>
+</histogram>
+
 <histogram name="Memory.Experimental.AvailableMemoryMB" units="MB"
     expires_after="2025-11-16">
   <owner>anthonyvd@chromium.org</owner>
