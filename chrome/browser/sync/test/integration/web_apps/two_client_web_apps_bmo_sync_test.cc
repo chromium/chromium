@@ -57,12 +57,19 @@ std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
   return provider;
 }
 
-class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
+class TwoClientWebAppsBMOSyncTest
+    : public WebAppsSyncTestBase,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientWebAppsBMOSyncTest()
       : WebAppsSyncTestBase(TWO_CLIENT),
         fake_web_app_provider_creator_(
-            base::BindRepeating(&CreateFakeWebAppProvider)) {}
+            base::BindRepeating(&CreateFakeWebAppProvider)) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   TwoClientWebAppsBMOSyncTest(const TwoClientWebAppsBMOSyncTest&) = delete;
   TwoClientWebAppsBMOSyncTest& operator=(const TwoClientWebAppsBMOSyncTest&) =
@@ -80,6 +87,10 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
           WebAppProvider::GetForTest(profile));
     }
     return true;
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   bool AwaitWebAppQuiescence() {
@@ -170,11 +181,17 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   FakeWebAppProviderCreator fake_web_app_provider_creator_;
 };
 
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientWebAppsBMOSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
 // Test is flaky (crbug.com/1097050)
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        DISABLED_SyncDoubleInstallation) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -195,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        SyncDoubleInstallationDifferentNames) {
   ASSERT_TRUE(SetupClients());
 
@@ -228,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 #define MAYBE_SyncDoubleInstallationDifferentUserDisplayMode \
   SyncDoubleInstallationDifferentUserDisplayMode
 #endif
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        MAYBE_SyncDoubleInstallationDifferentUserDisplayMode) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(SetupSync());
@@ -260,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
             GetRegistrar(GetProfile(1)).GetAppUserDisplayMode(app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, DisplayMode) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
@@ -304,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 #else
 #define MAYBE_DoubleInstallWithUninstall DoubleInstallWithUninstall
 #endif
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        MAYBE_DoubleInstallWithUninstall) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(SetupSync());
@@ -328,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSynced) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, NotSynced) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
@@ -347,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSynced) {
   EXPECT_FALSE(GetRegistrar(GetProfile(1)).IsInRegistrar(app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
@@ -385,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
             GetRegistrar(GetProfile(1)).GetAppUserDisplayMode(app_id));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        PolicyAppPersistsUninstalledOnSync) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
@@ -424,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   EXPECT_FALSE(app->IsSynced());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingSynced) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, AppSortingSynced) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
@@ -450,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingSynced) {
 }
 
 // Test is flaky (crbug.com/1313368).
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        DISABLED_AppSortingFixCollisions) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
@@ -506,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 #else
 #define MAYBE_UninstallSynced UninstallSynced
 #endif
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, MAYBE_UninstallSynced) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, MAYBE_UninstallSynced) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
@@ -554,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, MAYBE_UninstallSynced) {
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
@@ -628,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
 #else
 #define MAYBE_NoShortcutsCreatedOnSync NoShortcutsCreatedOnSync
 #endif
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        MAYBE_NoShortcutsCreatedOnSync) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
