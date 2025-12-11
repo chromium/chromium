@@ -75,8 +75,9 @@ bool GetServiceFlags(std::string_view id_token,
   }
   for (const auto& flag_value : *service_flags_value_raw) {
     const std::string& flag = flag_value.GetString();
-    if (flag.size())
+    if (flag.size()) {
       out_service_flags->push_back(flag);
+    }
   }
   return true;
 }
