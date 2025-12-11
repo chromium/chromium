@@ -24,8 +24,8 @@
 
 namespace content {
 
-constexpr const int kTestProcessIdOrigin1 = 11;
-constexpr const int kTestProcessIdOrigin2 = 12;
+constexpr const ChildProcessId kTestProcessIdOrigin1(11);
+constexpr const ChildProcessId kTestProcessIdOrigin2(12);
 
 class DOMStorageContextWrapperTest : public testing::Test {
  public:
@@ -77,7 +77,7 @@ class DOMStorageContextWrapperTest : public testing::Test {
   }
 
   ChildProcessSecurityPolicyImpl::Handle CreateSecurityPolicyHandle(
-      int process_id) {
+      ChildProcessId process_id) {
     return ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(
         process_id);
   }

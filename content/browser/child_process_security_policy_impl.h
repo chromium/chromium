@@ -105,7 +105,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     bool CanAccessDataForOrigin(const url::Origin& origin);
 
     // Returns the original `child_id` used to create the handle.
-    int child_id() { return child_id_; }
+    ChildProcessId child_id() { return child_id_; }
 
    private:
     friend class ChildProcessSecurityPolicyImpl;
@@ -116,11 +116,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // Duplicate() call. Otherwise false. This is used to trigger special
     // behavior for handle duplication that is not allowed for Handles created
     // by other means.
-    Handle(int child_id, bool duplicating_handle);
+    Handle(ChildProcessId child_id, bool duplicating_handle);
 
     // The ID of the child process that this handle is associated with or
     // ChildProcessHost::kInvalidUniqueID if the handle is no longer valid.
-    int child_id_;
+    ChildProcessId child_id_;
   };
 
   ChildProcessSecurityPolicyImpl(const ChildProcessSecurityPolicyImpl&) =
@@ -385,13 +385,23 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // Upon creation, child processes should register themselves by calling this
   // this method exactly once. This call must be made on the UI thread.
-  void Add(int child_id, BrowserContext* browser_context);
+  void Add(ChildProcessId child_id, BrowserContext* browser_context);
+
+  // TODO(crbug.com/379869738) Remove this method when usages are ported.
+  inline void Add(int child_id, BrowserContext* browser_context) {
+    Add(ChildProcessId::FromUnsafeValue(child_id), browser_context);
+  }
 
   // Helper method for unit tests that calls Add() and
   // LockProcess() with an "allow_any_site" lock. This ensures that the process
   // policy is always in a state where it is valid to call
   // CanAccessDataForOrigin().
-  void AddForTesting(int child_id, BrowserContext* browser_context);
+  void AddForTesting(ChildProcessId child_id, BrowserContext* browser_context);
+
+  // TODO(crbug.com/379869738) Remove this method when usages are ported.
+  inline void AddForTesting(int child_id, BrowserContext* browser_context) {
+    AddForTesting(ChildProcessId::FromUnsafeValue(child_id), browser_context);
+  }
 
   // Upon destruction, child processes should unregister themselves by calling
   // this method exactly once. This call must be made on the UI thread.
@@ -402,7 +412,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // This UI -> IO task sequence ensures that any pending tasks, on the IO
   // thread, for this |child_id| are allowed to run before access is completely
   // revoked.
-  void Remove(int child_id);
+  void Remove(ChildProcessId child_id);
+
+  // TODO(crbug.com/379869738) Remove this method when usages are ported.
+  inline void Remove(int child_id) {
+    Remove(ChildProcessId::FromUnsafeValue(child_id));
+  }
 
   // Whenever the browser processes commands the child process to commit a URL,
   // it should call this method to grant the child process the capability to
@@ -489,18 +504,21 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // as determining which isolated origins pertain to it. |is_process_used|
   // indicates whether any content has been loaded in the process already.
   void LockProcess(const IsolationContext& isolation_context,
-                   int child_id,
+                   ChildProcessId child_id,
                    bool is_process_used,
                    const ProcessLock& process_lock);
 
   // Testing helper method that generates a lock_url from |url| and then
   // calls LockProcess() with that lock URL.
   void LockProcessForTesting(const IsolationContext& isolation_context,
-                             int child_id,
+                             ChildProcessId child_id,
                              const GURL& url);
 
   // Retrieves the current ProcessLock of process |child_id|.  Returns an empty
   // lock if the process does not exist or if it is not locked.
+  ProcessLock GetProcessLock(ChildProcessId child_id);
+
+  // TODO(crbug.com/379869738) Remove this method when usages are ported.
   ProcessLock GetProcessLock(int child_id);
 
   // Register FileSystem type and permission policy which should be used
@@ -571,7 +589,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Returns a valid Handle for any |child_id| that is present in
   // |security_state_|. Otherwise it returns a Handle that returns false for
   // all policy checks.
-  Handle CreateHandle(int child_id);
+  Handle CreateHandle(ChildProcessId child_id);
+
+  // TODO(crbug.com/379869738) Remove this method when usages are ported.
+  inline Handle CreateHandle(int child_id) {
+    return CreateHandle(ChildProcessId::FromUnsafeValue(child_id));
+  }
 
   // Returns true if we have seen an explicit Origin-Agent-Cluster header
   // (either opt-in or opt-out) for this |origin| in the given |browser_context|
@@ -610,14 +633,14 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // Allows tests to query the number of BrowsingInstanceIds associated with a
   // child process.
-  size_t BrowsingInstanceIdCountForTesting(int child_id);
+  size_t BrowsingInstanceIdCountForTesting(ChildProcessId child_id);
 
   void ClearRegisteredSchemeForTesting(const std::string& scheme);
 
   // Checks if the provided `url` matches any committed origin in the process
   // `child_id`. Currently only exposed for testing, since normally this check
   // happens within CanAccessMaybeOpaqueOrigin().
-  bool MatchesCommittedOriginForTesting(int child_id,
+  bool MatchesCommittedOriginForTesting(ChildProcessId child_id,
                                         const GURL& url,
                                         bool url_is_for_precursor_origin);
 
@@ -662,7 +685,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   class SecurityState;
 
   typedef std::set<std::string> SchemeSet;
-  typedef std::map<int, std::unique_ptr<SecurityState>> SecurityStateMap;
+  typedef std::map<ChildProcessId, std::unique_ptr<SecurityState>>
+      SecurityStateMap;
   typedef std::map<storage::FileSystemType, int> FileSystemPermissionPolicyMap;
 
   // This class holds an isolated origin along with information such as which
@@ -791,47 +815,48 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // Determines if certain permissions were granted for a file to given child
   // process. |permissions| is an internally defined bit-set.
-  bool ChildProcessHasPermissionsForFile(int child_id,
+  bool ChildProcessHasPermissionsForFile(ChildProcessId child_id,
                                          const base::FilePath& file,
                                          int permissions)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Grant a particular permission set for a file. |permissions| is an
   // internally defined bit-set.
-  void GrantPermissionsForFile(int child_id,
+  void GrantPermissionsForFile(ChildProcessId child_id,
                                const base::FilePath& file,
                                int permissions);
 
   // Grants access permission to the given isolated file system
   // identified by |filesystem_id|.  See comments for
   // ChildProcessSecurityPolicy::GrantReadFileSystem() for more details.
-  void GrantPermissionsForFileSystem(int child_id,
+  void GrantPermissionsForFileSystem(ChildProcessId child_id,
                                      const std::string& filesystem_id,
                                      int permission);
 
   // Determines if certain permissions were granted for a file. |permissions|
   // is an internally defined bit-set.
-  bool HasPermissionsForFile(int child_id,
+  bool HasPermissionsForFile(ChildProcessId child_id,
                              const base::FilePath& file,
                              int permissions);
 
   // Determines if certain permissions were granted for a file in FileSystem
   // API. |permissions| is an internally defined bit-set.
   bool HasPermissionsForFileSystemFile(
-      int child_id,
+      ChildProcessId child_id,
       const storage::FileSystemURL& filesystem_url,
       int permissions);
 
   // Determines if certain permissions were granted for a file system.
   // |permissions| is an internally defined bit-set.
-  bool HasPermissionsForFileSystem(int child_id,
+  bool HasPermissionsForFileSystem(ChildProcessId child_id,
                                    const std::string& filesystem_id,
                                    int permission);
 
   // Gets the SecurityState object associated with |child_id|.
   // Note: Returned object is only valid for the duration the caller holds
   // |lock_|.
-  SecurityState* GetSecurityState(int child_id) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  SecurityState* GetSecurityState(ChildProcessId child_id)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Convert a list of comma separated isolated origins in |pattern_list|,
   // specified either as wildcard origins, non-wildcard origins or a mix of the
@@ -855,11 +880,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                  IsolatedOriginSource source)
       EXCLUSIVE_LOCKS_REQUIRED(isolated_origins_lock_);
 
-  bool AddProcessReference(int child_id, bool duplicating_handle);
-  bool AddProcessReferenceLocked(int child_id, bool duplicating_handle)
+  bool AddProcessReference(ChildProcessId child_id, bool duplicating_handle);
+  bool AddProcessReferenceLocked(ChildProcessId child_id,
+                                 bool duplicating_handle)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void RemoveProcessReference(int child_id);
-  void RemoveProcessReferenceLocked(int child_id)
+  void RemoveProcessReference(ChildProcessId child_id);
+  void RemoveProcessReferenceLocked(ChildProcessId child_id)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Internal helper for RemoveAllStateForBrowsingInstance().
@@ -892,7 +918,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // what the process lock was expected to be (e.g., to be used in crash keys).
   //
   // This function must be called while already holding `lock_`.
-  bool PerformJailAndCitadelChecks(int child_id,
+  bool PerformJailAndCitadelChecks(ChildProcessId child_id,
                                    SecurityState* security_state,
                                    const GURL& url,
                                    bool url_is_precursor_of_opaque_origin,
@@ -902,7 +928,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Helper for public CanAccessOrigin overloads.
-  bool CanAccessMaybeOpaqueOrigin(int child_id,
+  bool CanAccessMaybeOpaqueOrigin(ChildProcessId child_id,
                                   const GURL& url,
                                   bool url_is_precursor_of_opaque_origin,
                                   AccessType access_type);
@@ -964,7 +990,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // This object and Handles created by this object increment/decrement
   // the counts in this map and only destroy a SecurityState object for a
   // process when its count goes to zero.
-  std::map<int, int> process_reference_counts_ GUARDED_BY(lock_);
+  std::map<ChildProcessId, int> process_reference_counts_ GUARDED_BY(lock_);
 
   // You must acquire this lock before reading or writing isolated_origins_.
   // You must not block while holding this lock.

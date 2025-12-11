@@ -83,7 +83,8 @@ class CodeCacheHostImplTest : public testing::Test,
     scoped_refptr<SiteInstanceImpl> site_instance =
         SiteInstanceImpl::CreateForTesting(&browser_context_, url);
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-        site_instance->GetIsolationContext(), process_id, false,
+        site_instance->GetIsolationContext(),
+        ChildProcessId::FromUnsafeValue(process_id), false,
         ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()));
 
     added_renderers_.push_back(process_id);

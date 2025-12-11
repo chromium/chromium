@@ -2166,13 +2166,23 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
     int process_id,
     const blink::LocalFrameToken& frame_token,
     mojo::ReportBadMessageCallback* process_mismatch_callback) {
+  return RenderFrameHostImpl::FromFrameToken(
+      ChildProcessId::FromUnsafeValue(process_id), frame_token,
+      process_mismatch_callback);
+}
+
+// static
+RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
+    ChildProcessId process_id,
+    const blink::LocalFrameToken& frame_token,
+    mojo::ReportBadMessageCallback* process_mismatch_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = GetTokenFrameMap().find(frame_token);
   if (it == GetTokenFrameMap().end()) {
     return nullptr;
   }
 
-  if (it->second->GetProcess()->GetDeprecatedID() != process_id) {
+  if (it->second->GetProcess()->GetID() != process_id) {
     if (process_mismatch_callback) {
       SYSLOG(WARNING)
           << "Denying illegal RenderFrameHost::FromFrameToken request.";

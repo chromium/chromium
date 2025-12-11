@@ -367,8 +367,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   static RenderFrameHostImpl* FromFrameToken(
       const GlobalRenderFrameHostToken& frame_token,
       mojo::ReportBadMessageCallback* process_mismatch_callback = nullptr);
+  // TODO(crbug.com/379869738) Remove this method when usages are ported.
   static RenderFrameHostImpl* FromFrameToken(
       int process_id,
+      const blink::LocalFrameToken& frame_token,
+      mojo::ReportBadMessageCallback* process_mismatch_callback = nullptr);
+  static RenderFrameHostImpl* FromFrameToken(
+      ChildProcessId process_id,
       const blink::LocalFrameToken& frame_token,
       mojo::ReportBadMessageCallback* process_mismatch_callback = nullptr);
   // Returns the `RenderFrameHostImpl` with the given `blink::DocumentToken`, or
