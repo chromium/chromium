@@ -2275,7 +2275,7 @@ BASE_FEATURE_PARAM(bool,
                    kServiceWorkerSyntheticResponseBypassSubresource,
                    &kServiceWorkerSyntheticResponse,
                    "bypass_subresource",
-                   false);
+                   true);
 
 // If enabled, force renderer process foregrounded from CommitNavigation to
 // DOMContentLoad (crbug/351953350).
