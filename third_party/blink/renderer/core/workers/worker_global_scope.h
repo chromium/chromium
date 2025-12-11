@@ -77,7 +77,6 @@ class WorkerLocation;
 struct WorkerMainScriptLoadParameters;
 class WorkerNavigator;
 class WorkerThread;
-class WorkerPerformance;
 
 template <typename T>
 class GlobalFetchImpl;
@@ -85,15 +84,13 @@ template <typename T>
 class GlobalCacheStorageImpl;
 template <typename T>
 class GlobalCookieStoreImpl;
-template <typename T, typename P>
-class GlobalPerformanceImpl;
 
 class CORE_EXPORT WorkerGlobalScope
     : public WorkerOrWorkletGlobalScope,
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public ActiveScriptWrappable<WorkerGlobalScope>,
-      public Supplementable<WorkerGlobalScope, 3>,
+      public Supplementable<WorkerGlobalScope, 4>,
       public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -101,7 +98,8 @@ class CORE_EXPORT WorkerGlobalScope
   enum class Supplements {
     kWorkerGlobalScopeCrypto = 0,
     kFontFaceSetWorker = 1,
-    kGlobalIndexedDBImpl = 2
+    kGlobalIndexedDBImpl = 2,
+    kGlobalPerformanceImpl = 3
   };
 
   ~WorkerGlobalScope() override;
@@ -321,18 +319,6 @@ class CORE_EXPORT WorkerGlobalScope
     global_cookie_store_impl_ = global_cookie_store_impl;
   }
 
-  ForwardDeclaredMember<
-      GlobalPerformanceImpl<WorkerGlobalScope, WorkerPerformance>>
-  GetGlobalPerformanceImpl() const {
-    return global_performance_impl_;
-  }
-  void SetGlobalPerformanceImpl(
-      ForwardDeclaredMember<
-          GlobalPerformanceImpl<WorkerGlobalScope, WorkerPerformance>>
-          global_performance_impl) {
-    global_performance_impl_ = global_performance_impl;
-  }
-
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
@@ -461,9 +447,6 @@ class CORE_EXPORT WorkerGlobalScope
       global_cache_storage_impl_;
   ForwardDeclaredMember<GlobalCookieStoreImpl<WorkerGlobalScope>>
       global_cookie_store_impl_;
-  ForwardDeclaredMember<
-      GlobalPerformanceImpl<WorkerGlobalScope, WorkerPerformance>>
-      global_performance_impl_;
 };
 
 template <>

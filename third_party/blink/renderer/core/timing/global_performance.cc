@@ -9,25 +9,32 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
+
+namespace {
 
 template <typename T, typename P>
 class GlobalPerformanceImpl final
     : public GarbageCollected<GlobalPerformanceImpl<T, P>>,
-      public GarbageCollectedMixin {
+      public Supplement<T> {
  public:
+  static constexpr auto kSupplementIndex =
+      T::Supplements::kGlobalPerformanceImpl;
+
   static GlobalPerformanceImpl& From(T& supplementable) {
     GlobalPerformanceImpl* supplement =
-        supplementable.GetGlobalPerformanceImpl();
+        Supplement<T>::template From<GlobalPerformanceImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalPerformanceImpl>();
-      supplementable.SetGlobalPerformanceImpl(supplement);
+      supplement = MakeGarbageCollected<GlobalPerformanceImpl>(supplementable);
+      Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return *supplement;
   }
 
-  GlobalPerformanceImpl() = default;
+  explicit GlobalPerformanceImpl(T& supplementable)
+      : Supplement<T>(supplementable) {}
 
   P* GetPerformance(T* supplementable) {
     if (!performance_) {
@@ -36,11 +43,16 @@ class GlobalPerformanceImpl final
     return performance_.Get();
   }
 
-  void Trace(Visitor* visitor) const override { visitor->Trace(performance_); }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(performance_);
+    Supplement<T>::Trace(visitor);
+  }
 
  private:
   mutable Member<P> performance_;
 };
+
+}  // namespace
 
 // static
 WindowPerformance* GlobalPerformance::performance(LocalDOMWindow& window) {

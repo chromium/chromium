@@ -99,7 +99,6 @@ class TrustedTypePolicyFactory;
 class V8FrameRequestCallback;
 struct WebPictureInPictureWindowOptions;
 class WindowAgent;
-class WindowPerformance;
 
 template <typename T>
 class GlobalFetchImpl;
@@ -107,8 +106,6 @@ template <typename T>
 class GlobalCacheStorageImpl;
 template <typename T>
 class GlobalCookieStoreImpl;
-template <typename T, typename P>
-class GlobalPerformanceImpl;
 
 namespace scheduler {
 class TaskAttributionInfo;
@@ -127,7 +124,7 @@ class CORE_EXPORT LocalDOMWindow final
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public WindowEventHandlers,
-      public Supplementable<LocalDOMWindow, 44> {
+      public Supplementable<LocalDOMWindow, 45> {
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
 
  public:
@@ -174,7 +171,8 @@ class CORE_EXPORT LocalDOMWindow final
     kDOMWindowStorageController = 40,
     kDOMWindowStorage = 41,
     kWindowSharedStorageImpl = 42,
-    kGlobalIndexedDBImpl = 43
+    kGlobalIndexedDBImpl = 43,
+    kGlobalPerformanceImpl = 44
   };
 
   class CORE_EXPORT EventListenerObserver : public GarbageCollectedMixin {
@@ -651,18 +649,6 @@ class CORE_EXPORT LocalDOMWindow final
     global_cookie_store_impl_ = global_cookie_store_impl;
   }
 
-  ForwardDeclaredMember<
-      GlobalPerformanceImpl<LocalDOMWindow, WindowPerformance>>
-  GetGlobalPerformanceImpl() const {
-    return global_performance_impl_;
-  }
-  void SetGlobalPerformanceImpl(
-      ForwardDeclaredMember<
-          GlobalPerformanceImpl<LocalDOMWindow, WindowPerformance>>
-          global_performance_impl) {
-    global_performance_impl_ = global_performance_impl;
-  }
-
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -798,9 +784,6 @@ class CORE_EXPORT LocalDOMWindow final
       global_cache_storage_impl_;
   ForwardDeclaredMember<GlobalCookieStoreImpl<LocalDOMWindow>>
       global_cookie_store_impl_;
-  ForwardDeclaredMember<
-      GlobalPerformanceImpl<LocalDOMWindow, WindowPerformance>>
-      global_performance_impl_;
 
   // If set, this window is a Document Picture in Picture window.
   // https://wicg.github.io/document-picture-in-picture/
