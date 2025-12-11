@@ -112,7 +112,7 @@ public class ContentFeatureList {
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),
                     AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS,
-                    false);
+                    true);
 
     public static final MutableFlagWithSafeDefault sAndroidCaretBrowsing =
             new MutableFlagWithSafeDefault(
