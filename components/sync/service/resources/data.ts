@@ -101,13 +101,10 @@ function serializeNode(node: SyncNode): string[] {
  * @return True if the type's checkbox is selected.
  */
 function isSelectedDatatype(type: string): boolean {
-  const typeCheckbox = document.querySelector<HTMLInputElement>(`#${type}`);
-  // Some types, such as 'Top level folder', appear in the list of nodes
-  // but not in the list of selectable items.
-  if (typeCheckbox == null) {
-    return false;
-  }
-  return typeCheckbox.checked;
+  const checkbox =
+      document.querySelector<HTMLInputElement>(`#${CSS.escape(type)}`);
+  assert(checkbox);
+  return checkbox.checked;
 }
 
 function makeBlobUrl(data: string): string {
@@ -171,10 +168,57 @@ function triggerDataDownload(nodesMap: SyncNodeMap) {
   anchor.click();
 }
 
+function onAllTypesCheckboxClicked(types: string[]) {
+  const allTypesCheckbox =
+      document.querySelector<HTMLInputElement>('#all-types');
+  assert(allTypesCheckbox);
+  const isChecked = allTypesCheckbox.checked;
+
+  types.forEach(type => {
+    const checkbox =
+        document.querySelector<HTMLInputElement>(`#${CSS.escape(type)}`);
+    assert(checkbox);
+    checkbox.checked = isChecked;
+  });
+
+  onIndividualTypeCheckboxClicked(types);
+}
+
+function onIndividualTypeCheckboxClicked(types: string[]) {
+  const allTypesCheckbox =
+      document.querySelector<HTMLInputElement>('#all-types');
+  assert(allTypesCheckbox);
+
+  const allChecked = types.every(isSelectedDatatype);
+  const someChecked = types.some(isSelectedDatatype);
+
+  allTypesCheckbox.checked = allChecked;
+  allTypesCheckbox.indeterminate = someChecked && !allChecked;
+}
+
 function createTypesCheckboxes(types: string[]) {
   const containerElt =
       document.querySelector<HTMLElement>('#node-type-checkboxes');
   assert(containerElt);
+
+  const allTypesDiv = document.createElement('div');
+
+  const allTypesCheckbox = document.createElement('input');
+  allTypesCheckbox.id = 'all-types';
+  allTypesCheckbox.type = 'checkbox';
+  allTypesCheckbox.checked = true;
+  allTypesCheckbox.addEventListener(
+      'click', () => onAllTypesCheckboxClicked(types.slice()));
+  allTypesDiv.appendChild(allTypesCheckbox);
+
+  const allTypesLabel = document.createElement('label');
+  // Assigning to label.for doesn't work.
+  allTypesLabel.setAttribute('for', allTypesCheckbox.id);
+  allTypesLabel.innerText = 'All types';
+  allTypesDiv.appendChild(allTypesLabel);
+
+  containerElt.appendChild(allTypesDiv);
+  containerElt.appendChild(document.createElement('hr'));
 
   types.map(function(type: string) {
     const div = document.createElement('div');
@@ -183,11 +227,13 @@ function createTypesCheckboxes(types: string[]) {
     checkbox.id = type;
     checkbox.type = 'checkbox';
     checkbox.checked = true;
+    checkbox.addEventListener(
+        'click', () => onIndividualTypeCheckboxClicked(types.slice()));
     div.appendChild(checkbox);
 
     const label = document.createElement('label');
     // Assigning to label.for doesn't work.
-    label.setAttribute('for', type);
+    label.setAttribute('for', checkbox.id);
     label.innerText = type;
     div.appendChild(label);
 
