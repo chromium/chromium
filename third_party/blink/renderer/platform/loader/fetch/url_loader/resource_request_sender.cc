@@ -281,11 +281,15 @@ int ResourceRequestSender::SendAsync(
       std::move(client), request->destination, KURL(request->url),
       std::move(resource_load_info_notifier_wrapper));
 
-  request_info_->resource_load_info_notifier_wrapper
-      ->NotifyResourceLoadInitiated(request_id, request->url, request->method,
-                                    request->referrer,
-                                    request_info_->request_destination,
-                                    request->priority, request->is_ad_tagged);
+  // In special cases such as HTML serialization,
+  // resource_load_info_notifier_wrapper is not set.
+  if (request_info_->resource_load_info_notifier_wrapper) {
+    request_info_->resource_load_info_notifier_wrapper
+        ->NotifyResourceLoadInitiated(request_id, request->url, request->method,
+                                      request->referrer,
+                                      request_info_->request_destination,
+                                      request->priority, request->is_ad_tagged);
+  }
 
   auto url_loader_client = std::make_unique<MojoURLLoaderClient>(
       this, loading_task_runner, url_loader_factory->BypassRedirectChecks(),
@@ -360,8 +364,12 @@ void ResourceRequestSender::DeletePendingRequest(
 
   if (request_info_->net_error == net::ERR_IO_PENDING) {
     request_info_->net_error = net::ERR_ABORTED;
-    request_info_->resource_load_info_notifier_wrapper
-        ->NotifyResourceLoadCanceled(request_info_->net_error);
+    // In special cases such as HTML serialization,
+    // resource_load_info_notifier_wrapper is not set.
+    if (request_info_->resource_load_info_notifier_wrapper) {
+      request_info_->resource_load_info_notifier_wrapper
+          ->NotifyResourceLoadCanceled(request_info_->net_error);
+    }
   }
 
   // Cancel loading.

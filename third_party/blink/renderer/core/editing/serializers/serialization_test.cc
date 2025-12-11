@@ -93,6 +93,34 @@ TEST_F(SerializationTest, CreateFragmentWithDataUrlCrash) {
   EXPECT_TRUE(strictly_processed_fragment);
 }
 
+// Regression test for https://crbug.com/464761431
+// A test to confirm that a crash does not occur even if an external URL
+// request is requested during serialization.
+TEST_F(SerializationTest, CreateFragmentWithDataExternalUrlCrash) {
+  const String html =
+      "<link rel=\"stylesheet\" href=\"https://example.com/1\">"
+      "<style></style>";
+  DocumentFragment* strictly_processed_fragment =
+      CreateStrictlyProcessedFragmentFromMarkupWithContext(
+          GetDocument(), html, 0, html.length(), KURL());
+  EXPECT_TRUE(strictly_processed_fragment);
+}
+
+// Regression test for https://crbug.com/464761431
+// A test to confirm that SingleRequestURLLoaderFactory returned by
+// EmptyLocalFrameClientWithFailingLoaderFactory is not used multiple times by
+// mistake.
+TEST_F(SerializationTest, CreateFragmentWithDataExternalUrlsCrash) {
+  const String html =
+      "<link rel=\"stylesheet\" href=\"https://example.com/1\">"
+      "<link rel=\"stylesheet\" href=\"https://example.com/2\">"
+      "<style></style>";
+  DocumentFragment* strictly_processed_fragment =
+      CreateStrictlyProcessedFragmentFromMarkupWithContext(
+          GetDocument(), html, 0, html.length(), KURL());
+  EXPECT_TRUE(strictly_processed_fragment);
+}
+
 // http://crbug.com/938590
 TEST_F(SerializationTest, Link) {
   InsertStyleElement(

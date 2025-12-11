@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -131,20 +132,15 @@ class EmptyLocalFrameClientWithFailingLoaderFactory final
  public:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
-    // TODO(crbug.com/1413912): CreateFragmentFromMarkupWithContext may
-    // call this method for data: URL resources. But ResourceLoader::Start()
-    // don't need to call GetURLLoaderFactory() for data: URL because
-    // ResourceLoader handles the data: URL resource load without the returned
-    // SharedURLLoaderFactory.
-    // Note: Non-data: URL resource can't be loaded because the security checks
-    // in BaseFetchContext::CanRequestInternal fails for non-data: URL
-    // resources.
     return base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
         BindOnce(
             [](const network::ResourceRequest& resource_request,
                mojo::PendingReceiver<network::mojom::URLLoader> receiver,
                mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-              NOTREACHED();
+              mojo::Remote<network::mojom::URLLoaderClient> remote(
+                  std::move(client));
+              remote->OnComplete(
+                  network::URLLoaderCompletionStatus(net::ERR_FAILED));
             }));
   }
 };
