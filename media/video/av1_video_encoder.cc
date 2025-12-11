@@ -170,7 +170,7 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
   config.g_error_resilient = 0;
 
   config.g_timebase.num = 1;
-  config.g_timebase.den = base::Time::kMicrosecondsPerSecond;
+  config.g_timebase.den = base::Time::kMillisecondsPerSecond;
 
   // Set the number of threads based on the image width and num of cores.
   config.g_threads = GetNumberOfThreadsForSoftwareEncoding(opts.frame_size);
@@ -531,7 +531,10 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   bool key_frame = encode_options.key_frame;
-  int64_t duration_us = GetFrameDuration(*frame).InMicroseconds();
+  // Use milliseconds for duration to avoid 32-bit overflow of timestamp
+  // in libaom.
+  int64_t duration_ms =
+      std::max(int64_t{1}, GetFrameDuration(*frame).InMilliseconds());
   last_frame_timestamp_ = frame->timestamp();
   if (last_frame_color_space_ != frame->ColorSpace()) {
     last_frame_color_space_ = frame->ColorSpace();
@@ -597,7 +600,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   // Use artificial timestamps, so the encoder will not be misled by frame's
   // fickle timestamps when doing rate control.
   auto error =
-      aom_codec_encode(codec_.get(), image, artificial_timestamp_, duration_us,
+      aom_codec_encode(codec_.get(), image, artificial_timestamp_, duration_ms,
                        key_frame ? AOM_EFLAG_FORCE_KF : 0);
   if (error != AOM_CODEC_OK) {
     auto msg = LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
@@ -605,7 +608,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
     return;
   }
-  if (!base::CheckAdd(artificial_timestamp_, duration_us)
+  if (!base::CheckAdd(artificial_timestamp_, duration_ms)
            .AssignIfValid(&artificial_timestamp_)) {
     std::move(done_cb).Run(EncoderStatus(
         EncoderStatus::Codes::kEncoderFailedEncode,

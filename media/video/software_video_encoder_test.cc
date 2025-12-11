@@ -321,6 +321,7 @@ class SoftwareVideoEncoderTest
 class H264VideoEncoderTest : public SoftwareVideoEncoderTest {};
 class SVCVideoEncoderTest : public SoftwareVideoEncoderTest {};
 class ManualSVCVideoEncoderTest : public SoftwareVideoEncoderTest {};
+class LargeTimestampOverflowTest : public SoftwareVideoEncoderTest {};
 
 TEST_P(SoftwareVideoEncoderTest, StopCallbackWrapping) {
   VideoEncoder::Options options = CreateDefaultOptions();
@@ -494,6 +495,35 @@ TEST_P(SoftwareVideoEncoderTest, PerFrameQpEncoding) {
   encoder_->Flush(ValidateStatusThenQuitCB());
   RunUntilQuit();
   EXPECT_EQ(outputs_count, total_frames_count);
+}
+
+TEST_P(LargeTimestampOverflowTest, LargeTimestampOverflow) {
+  VideoEncoder::Options options = CreateDefaultOptions();
+  options.frame_size = gfx::Size(320, 200);
+  // Set a very low framerate to generate large total durations.
+  // In microseconds (old timebase): 10,000,000,000 > UINT32_MAX.
+  // In milliseconds (new timebase): 10,000,000 < UINT32_MAX.
+  options.framerate = 1.0 / 1000.0;
+  int total_frames_count = 10;
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          std::optional<VideoEncoder::CodecDescription> desc) {
+        EXPECT_FALSE(output.data.empty());
+      });
+
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidateStatusThenQuitCB());
+  RunUntilQuit();
+
+  for (int i = 0; i < total_frames_count; i++) {
+    auto timestamp = i * base::Seconds(5000);
+    auto frame = CreateFrame(options.frame_size, pixel_format_, timestamp);
+    encoder_->Encode(std::move(frame), VideoEncoder::EncodeOptions(false),
+                     ValidatingStatusCB());
+  }
+
+  encoder_->Flush(ValidateStatusThenQuitCB());
+  RunUntilQuit();
 }
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
@@ -1416,6 +1446,13 @@ INSTANTIATE_TEST_SUITE_P(H264Generic,
                          ::testing::ValuesIn(kH264Params),
                          PrintTestParams);
 
+INSTANTIATE_TEST_SUITE_P(TimestampOverflowH264,
+                         LargeTimestampOverflowTest,
+                         ::testing::Values(SwVideoTestParams{
+                             VideoCodec::kH264, H264PROFILE_BASELINE,
+                             PIXEL_FORMAT_I420}),
+                         PrintTestParams);
+
 SwVideoTestParams kH264SVCParams[] = {
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, std::nullopt},
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420,
@@ -1477,6 +1514,13 @@ INSTANTIATE_TEST_SUITE_P(VpxTemporalSvc,
                          SVCVideoEncoderTest,
                          ::testing::ValuesIn(kVpxSVCParams),
                          PrintTestParams);
+
+INSTANTIATE_TEST_SUITE_P(TimestampOverflowVpx,
+                         LargeTimestampOverflowTest,
+                         ::testing::Values(SwVideoTestParams{
+                             VideoCodec::kVP9, VP9PROFILE_PROFILE0,
+                             PIXEL_FORMAT_I420}),
+                         PrintTestParams);
 #endif  // ENABLE_LIBVPX
 
 #if BUILDFLAG(ENABLE_LIBAOM)
@@ -1515,6 +1559,13 @@ INSTANTIATE_TEST_SUITE_P(Av1TemporalSvc,
 INSTANTIATE_TEST_SUITE_P(Av1ManualSvc,
                          ManualSVCVideoEncoderTest,
                          ::testing::ValuesIn(kAv1SVCParams),
+                         PrintTestParams);
+
+INSTANTIATE_TEST_SUITE_P(TimestampOverflowAv1,
+                         LargeTimestampOverflowTest,
+                         ::testing::Values(SwVideoTestParams{
+                             VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN,
+                             PIXEL_FORMAT_I420}),
                          PrintTestParams);
 #endif  // ENABLE_LIBAOM
 
