@@ -75,9 +75,6 @@ class OnDeviceSpeechRecognitionImpl
   bool CanRenderFrameHostUseOnDeviceSpeechRecognition();
 
 #if !BUILDFLAG(IS_ANDROID)
-  void InstallLanguageInternal(
-      const std::vector<std::string>& languages,
-      OnDeviceSpeechRecognitionImpl::InstallCallback callback);
   void ProcessLanguageInstallationUpdate(std::string_view language,
                                          bool installation_success);
   base::Value GetOnDeviceLanguagesDownloadedValue();
@@ -91,10 +88,6 @@ class OnDeviceSpeechRecognitionImpl
   // origin.
   media::mojom::AvailabilityStatus GetMaskedAvailabilityStatus(
       std::string_view language);
-
-  // Returns a delay when installing on-device speech recognition language packs
-  // to safeguard against fingerprinting resulting from timing the installation.
-  base::TimeDelta GetDownloadDelay(const std::vector<std::string>& languages);
 
   void OnModelClientAvailable(
       base::WeakPtr<optimization_guide::ModelClient> client);

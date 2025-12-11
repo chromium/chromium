@@ -4,11 +4,7 @@
 
 #include "chrome/browser/speech/on_device_speech_recognition_impl.h"
 
-#include "base/rand_util.h"
 #include "base/strings/string_util.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner.h"
-#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,17 +41,6 @@ bool IsLanguageInstallable(std::string_view language_code,
   return base::Contains(
       speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages(),
       language_code);
-}
-
-bool IsLanguageInstalled(std::string_view language_code) {
-  for (const auto& language : g_browser_process->local_state()->GetList(
-           prefs::kSodaRegisteredLanguagePacks)) {
-    if (language.GetString() == language_code) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 }  // namespace
@@ -147,55 +132,6 @@ void OnDeviceSpeechRecognitionImpl::Install(
     }
   }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&OnDeviceSpeechRecognitionImpl::InstallLanguageInternal,
-                     weak_ptr_factory_.GetWeakPtr(), languages,
-                     std::move(callback)),
-      GetDownloadDelay(languages));
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-void OnDeviceSpeechRecognitionImpl::OnSodaInstalled(
-    speech::LanguageCode language_code) {
-  ProcessLanguageInstallationUpdate(GetLanguageName(language_code),
-                                    /*installation_success=*/true);
-}
-
-void OnDeviceSpeechRecognitionImpl::OnSodaInstallError(
-    speech::LanguageCode language_code,
-    speech::SodaInstaller::ErrorCode error_code) {
-  ProcessLanguageInstallationUpdate(GetLanguageName(language_code),
-                                    /*installation_success=*/false);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-OnDeviceSpeechRecognitionImpl::OnDeviceSpeechRecognitionImpl(
-    content::RenderFrameHost* frame_host)
-    : content::DocumentUserData<OnDeviceSpeechRecognitionImpl>(frame_host) {
-#if !BUILDFLAG(IS_ANDROID)
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (soda_installer) {
-    soda_installer->AddObserver(this);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-bool OnDeviceSpeechRecognitionImpl::
-    CanRenderFrameHostUseOnDeviceSpeechRecognition() {
-  if (render_frame_host().GetStoragePartition() !=
-      render_frame_host().GetBrowserContext()->GetDefaultStoragePartition()) {
-    return !render_frame_host().GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
-  }
-
-  return true;
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-void OnDeviceSpeechRecognitionImpl::InstallLanguageInternal(
-    const std::vector<std::string>& languages,
-    OnDeviceSpeechRecognitionImpl::InstallCallback callback) {
   std::set<std::string> language_names_key;
   for (std::string_view subtag : languages) {
     std::optional<speech::SodaLanguagePackComponentConfig> lang_config =
@@ -255,7 +191,46 @@ void OnDeviceSpeechRecognitionImpl::InstallLanguageInternal(
   for (std::string_view language : language_names_key) {
     SetOnDeviceLanguageDownloaded(language);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void OnDeviceSpeechRecognitionImpl::OnSodaInstalled(
+    speech::LanguageCode language_code) {
+  ProcessLanguageInstallationUpdate(GetLanguageName(language_code),
+                                    /*installation_success=*/true);
+}
+
+void OnDeviceSpeechRecognitionImpl::OnSodaInstallError(
+    speech::LanguageCode language_code,
+    speech::SodaInstaller::ErrorCode error_code) {
+  ProcessLanguageInstallationUpdate(GetLanguageName(language_code),
+                                    /*installation_success=*/false);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+OnDeviceSpeechRecognitionImpl::OnDeviceSpeechRecognitionImpl(
+    content::RenderFrameHost* frame_host)
+    : content::DocumentUserData<OnDeviceSpeechRecognitionImpl>(frame_host) {
+#if !BUILDFLAG(IS_ANDROID)
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (soda_installer) {
+    soda_installer->AddObserver(this);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+bool OnDeviceSpeechRecognitionImpl::
+    CanRenderFrameHostUseOnDeviceSpeechRecognition() {
+  if (render_frame_host().GetStoragePartition() !=
+      render_frame_host().GetBrowserContext()->GetDefaultStoragePartition()) {
+    return !render_frame_host().GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
+  }
+
+  return true;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 
 void OnDeviceSpeechRecognitionImpl::ProcessLanguageInstallationUpdate(
     std::string_view language,
@@ -387,32 +362,6 @@ void OnDeviceSpeechRecognitionImpl::SetOnDeviceLanguageDownloaded(
 
   SetOnDeviceLanguagesDownloadedContentSetting(
       std::move(on_device_languages_downloaded_value));
-}
-
-base::TimeDelta OnDeviceSpeechRecognitionImpl::GetDownloadDelay(
-    const std::vector<std::string>& languages) {
-  for (std::string_view language_subtag : languages) {
-    std::optional<speech::SodaLanguagePackComponentConfig> lang_config =
-        speech::GetLanguageComponentConfigMatchingLanguageSubtag(
-            language_subtag);
-    if (!lang_config.has_value()) {
-      // If the subtag is invalid or doesn't map to a SODA language,
-      // skip it for delay calculation.
-      continue;
-    }
-    std::string_view soda_language_name = lang_config.value().language_name;
-
-    // Check if SODA is already installed for the given language. If it is and
-    // the origin isn't supposed to know that, then add a delay to simulate a
-    // real download before proceeding.
-    if (GetMaskedAvailabilityStatus(soda_language_name) ==
-            media::mojom::AvailabilityStatus::kDownloadable &&
-        IsLanguageInstalled(soda_language_name)) {
-      return base::RandTimeDelta(base::Seconds(2), base::Seconds(3));
-    }
-  }
-
-  return base::TimeDelta();
 }
 
 void OnDeviceSpeechRecognitionImpl::OnModelClientAvailable(
