@@ -6789,6 +6789,27 @@ TEST_P(TabStripModelTest, RemoveLeftTabInSplitActivatesRemainingTab) {
   ExpectSelectionIsExactly(tabstrip(), {0});
 }
 
+TEST_P(TabStripModelTest,
+       RemoveRightTabInSplitActivatesRemainingTabNotBackgroundTab) {
+  // Add 3 tabs to the tabstrip model. Tabs 0 and 2 are in a split view.
+  PrepareTabs(tabstrip(), 3);
+  tabstrip()->ActivateTabAt(0);
+
+  // Create split with tabs 0 and 2.
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabstrip()->ActivateTabAt(1);
+  EXPECT_EQ("0s 2s 1", GetTabStripStateString(tabstrip()));
+  EXPECT_EQ(tabstrip()->active_index(), 1);
+
+  // Close the right side of split (tab 2).
+  tabstrip()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
+
+  // Tab 0 (other split half) should be active, NOT tab 1 (background tab).
+  EXPECT_EQ(tabstrip()->active_index(), 0);
+  ExpectSelectionIsExactly(tabstrip(), {0});
+}
+
 TEST_P(TabStripModelTest, IteratorTest) {
   // Get the iterator without any tabs being present.
   TabStripModel::TabIterator it = tabstrip()->begin();

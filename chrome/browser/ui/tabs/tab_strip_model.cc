@@ -4414,6 +4414,8 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   std::optional<int> next_selected_index = DetermineNewSelectedIndex(tab);
   const bool removed_tab_is_split = tab->IsSplit();
   if (removed_tab_is_split) {
+    next_selected_index =
+        GetIndexOfTab(GetSplitData(tab->GetSplit().value())->ListTabs()[0]);
     RemoveSplitImpl(tab->GetSplit().value(),
                     SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
   }
