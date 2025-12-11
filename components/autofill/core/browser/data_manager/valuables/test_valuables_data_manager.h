@@ -22,6 +22,8 @@ class TestValuablesDataManager : public ValuablesDataManager {
   // cache.
   void CacheImage(const GURL& url, const gfx::Image& image);
 
+  bool IsAutofillPaymentMethodsEnabled() const override;
+
  private:
   std::unique_ptr<TestAutofillImageFetcher> owned_image_fetcher_;
 };

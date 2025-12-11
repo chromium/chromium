@@ -12,12 +12,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/browser/ui/mock_autofill_image_fetcher.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/webdata/common/web_database.h"
@@ -52,6 +54,7 @@ class ValuablesDataManagerTest : public testing::Test {
     valuables_table_ = table.get();
     helper_ =
         std::make_unique<AutofillWebDataServiceTestHelper>(std::move(table));
+    prefs_ = test::PrefServiceForTesting();
   }
 
   AutofillWebDataServiceTestHelper& helper() { return *helper_; }
@@ -64,10 +67,13 @@ class ValuablesDataManagerTest : public testing::Test {
 
   ValuablesTable& valuables_table() { return *valuables_table_; }
 
+  PrefService& prefs() { return *prefs_; }
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list{
       syncer::kSyncAutofillLoyaltyCard};
+  std::unique_ptr<PrefService> prefs_;
   NiceMock<MockAutofillImageFetcher> mock_image_fetcher_;
   raw_ptr<ValuablesTable> valuables_table_;
   std::unique_ptr<AutofillWebDataServiceTestHelper> helper_;
@@ -81,7 +87,7 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCards) {
 
   valuables_table().SetLoyaltyCards({card1, card2});
 
-  ValuablesDataManager valuables_data_manager(&webdata_service(),
+  ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
                                               &image_fetcher());
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(), IsEmpty());
   EXPECT_CALL(image_fetcher(),
@@ -118,7 +124,7 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCardsToSuggest) {
 
   valuables_table().SetLoyaltyCards({card1, card2, card3});
 
-  ValuablesDataManager valuables_data_manager(&webdata_service(),
+  ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
                                               &image_fetcher());
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(), IsEmpty());
   EXPECT_CALL(image_fetcher(), FetchValuableImagesForURLs(UnorderedElementsAre(
@@ -140,7 +146,7 @@ TEST_F(ValuablesDataManagerTest, GetLoyaltyCardById) {
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
   valuables_table().SetLoyaltyCards({card1, card2});
 
-  ValuablesDataManager valuables_data_manager(&webdata_service(),
+  ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
                                               &image_fetcher());
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(), IsEmpty());
   helper().WaitUntilIdle();
@@ -172,7 +178,7 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   }
   valuables_table().SetLoyaltyCards({card1});
 
-  ValuablesDataManager valuables_data_manager(&webdata_service(),
+  ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
                                               &image_fetcher());
   helper().WaitUntilIdle();
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(),
@@ -215,7 +221,7 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
 }
 
 TEST_F(ValuablesDataManagerTest, GetCachedValuableImageForUrl) {
-  ValuablesDataManager valuables_data_manager(&webdata_service(),
+  ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
                                               &image_fetcher());
   EXPECT_CALL(image_fetcher(), FetchValuableImagesForURLs(IsEmpty()));
   helper().WaitUntilIdle();
@@ -226,6 +232,42 @@ TEST_F(ValuablesDataManagerTest, GetCachedValuableImageForUrl) {
       GetCachedImageForUrl(
           expected_url, AutofillImageFetcherBase::ImageType::kValuableImage));
   valuables_data_manager.GetCachedValuableImageForUrl(expected_url);
+}
+
+class ValuablesDataManagerPaymentMethodsOffTest
+    : public ValuablesDataManagerTest {
+ public:
+  ValuablesDataManagerPaymentMethodsOffTest() {
+    prefs().SetBoolean(prefs::kAutofillCreditCardEnabled, false);
+  }
+};
+
+TEST_F(ValuablesDataManagerPaymentMethodsOffTest,
+       GetLoyaltyCardsWhenPaymentMethodsOff) {
+  const LoyaltyCard card1 = test::CreateLoyaltyCard();
+  const LoyaltyCard card2 = test::CreateLoyaltyCard2();
+
+  valuables_table().SetLoyaltyCards({card1, card2});
+
+  ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
+                                              &image_fetcher());
+  helper().WaitUntilIdle();
+
+  EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(), IsEmpty());
+  EXPECT_THAT(valuables_data_manager.GetLoyaltyCardsToSuggest(), IsEmpty());
+}
+
+TEST_F(ValuablesDataManagerPaymentMethodsOffTest,
+       GetLoyaltyCardByIdWhenPaymentMethodsOff) {
+  const LoyaltyCard card1 = test::CreateLoyaltyCard();
+  valuables_table().SetLoyaltyCards({card1});
+
+  ValuablesDataManager valuables_data_manager(&webdata_service(), &prefs(),
+                                              &image_fetcher());
+  helper().WaitUntilIdle();
+
+  EXPECT_THAT(valuables_data_manager.GetLoyaltyCardById(card1.id()),
+              testing::Eq(std::nullopt));
 }
 
 }  // namespace

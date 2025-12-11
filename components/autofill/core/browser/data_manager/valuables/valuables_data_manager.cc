@@ -4,12 +4,14 @@
 
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/sync/base/features.h"
 #include "components/webdata/common/web_data_results.h"
 #include "url/gurl.h"
@@ -18,9 +20,11 @@ namespace autofill {
 
 ValuablesDataManager::ValuablesDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
+    PrefService* pref_service,
     AutofillImageFetcherBase* image_fetcher)
     : image_fetcher_(image_fetcher),
-      webdata_service_(std::move(webdata_service)) {
+      webdata_service_(std::move(webdata_service)),
+      pref_service_(pref_service) {
   if (!webdata_service_) {
     // In some tests, there are no dbs.
     return;
@@ -34,11 +38,17 @@ ValuablesDataManager::ValuablesDataManager(
 ValuablesDataManager::~ValuablesDataManager() = default;
 
 std::vector<LoyaltyCard> ValuablesDataManager::GetLoyaltyCards() const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
   return loyalty_cards_;
 }
 
 std::vector<LoyaltyCard> ValuablesDataManager::GetLoyaltyCardsToSuggest()
     const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return {};
+  }
   // Compare function used when sorting loyalty cards by merchant name.
   const auto CompareByMerchantName = [](const LoyaltyCard& a,
                                         const LoyaltyCard& b) {
@@ -54,6 +64,9 @@ std::vector<LoyaltyCard> ValuablesDataManager::GetLoyaltyCardsToSuggest()
 
 std::optional<LoyaltyCard> ValuablesDataManager::GetLoyaltyCardById(
     const ValuableId& id) const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return std::nullopt;
+  }
   auto it = std::ranges::find(
       loyalty_cards_, id, [](const LoyaltyCard& card) { return card.id(); });
   if (it != loyalty_cards_.end()) {
@@ -72,6 +85,10 @@ const gfx::Image* ValuablesDataManager::GetCachedValuableImageForUrl(
   }
   return image_fetcher_->GetCachedImageForUrl(
       image_url, AutofillImageFetcherBase::ImageType::kValuableImage);
+}
+
+bool ValuablesDataManager::IsAutofillPaymentMethodsEnabled() const {
+  return prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
 }
 
 void ValuablesDataManager::OnDataRetrieved(

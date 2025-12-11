@@ -823,8 +823,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
                   autofill_web_data_service->GetDBTaskRunner(),
                   base::BindRepeating(
                       &AutofillValuableDelegateFromDataService,
-                      base::RetainedRef(autofill_web_data_service))),
-              pref_service_.value(), sync_service));
+                      base::RetainedRef(autofill_web_data_service)))));
     }
   }
 
@@ -846,8 +845,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
                 base::BindRepeating(
                     &AutofillValuableMetadataDelegateFromDataService,
                     base::RetainedRef(
-                        profile_autofill_web_data_service_.value()))),
-            pref_service_.value(), sync_service));
+                        profile_autofill_web_data_service_.value())))));
   }
 
 #endif

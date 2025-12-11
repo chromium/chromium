@@ -62,8 +62,8 @@ ValuablesDataManagerFactory::BuildServiceInstanceForBrowserContext(
     // WebDataServiceFactory::ServiceIsNULLWhileTesting() is true.
     return nullptr;
   }
-  return std::make_unique<ValuablesDataManager>(std::move(storage),
-                                                image_fetcher);
+  return std::make_unique<ValuablesDataManager>(
+      std::move(storage), profile->GetPrefs(), image_fetcher);
 }
 
 bool ValuablesDataManagerFactory::ServiceIsCreatedWithBrowserContext() const {
