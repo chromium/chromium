@@ -549,7 +549,7 @@
   </message>
 
   <!-- DeviceAuthentication titles-->
-  <if expr="is_macosx">
+  <if expr="is_macosx or is_chromeos">
     <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup, asking the user to authenticate using biometric or device unlock before filling. Note: MacOS has the wording 'Google Chrome is trying to' prepended onto the message during user auth, and it will add a period at the end.">
       verify it's you so it can fill in your payment info
     </message>

@@ -778,7 +778,7 @@ AutofillPrivateGetPayOverTimeIssuerListFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   PaymentsDataManager* paydm = payments_data_manager();
   if (!paydm || !paydm->is_payments_data_loaded()) {
     return RespondNow(Error(kErrorDataUnavailable));
@@ -810,14 +810,14 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error(kErrorDeviceAuthUnavailable));
-#endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 }
 
 // Update the Mandatory auth toggle pref and log whether the auth was successful
 // or not.
 void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
     UpdateMandatoryAuthTogglePref(bool reauth_succeeded) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   PaymentsDataManager* paydm = payments_data_manager();
   if (!paydm) {
     return;
@@ -855,7 +855,7 @@ ExtensionFunction::ResponseAction AutofillPrivateGetLocalCardFunction::Run() {
     LogMandatoryReauthSettingsPageEditCardEvent(
         MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     // Based on the result of the auth, we will be asynchronously returning the
     // card if the user can edit the local card.
     autofill_client()
@@ -920,14 +920,17 @@ void AutofillPrivateGetLocalCardFunction::ReturnCreditCard() {
 
 ExtensionFunction::ResponseAction
 AutofillPrivateCheckIfDeviceAuthAvailableFunction::Run() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/467173735): Check with ChromeOS team on the implementation
+  // details. It is still in active discussion with the ChromeOS team on how to
+  // implement this.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   autofill::ContentAutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
   if (client) {
     return RespondNow(WithArguments(autofill::IsDeviceAuthAvailable(
         client->GetDeviceAuthenticator().get())));
   }
-#endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   return RespondNow(Error(kErrorDeviceAuthUnavailable));
 }
 

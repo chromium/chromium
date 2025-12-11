@@ -41,7 +41,14 @@ namespace {
 
 class AutofillPrivateApiTest : public ExtensionApiTest {
  public:
-  AutofillPrivateApiTest() = default;
+  AutofillPrivateApiTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    // Enable the feature flag for this test.
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
   AutofillPrivateApiTest(const AutofillPrivateApiTest&) = delete;
   AutofillPrivateApiTest& operator=(const AutofillPrivateApiTest&) = delete;
   ~AutofillPrivateApiTest() override = default;
@@ -83,6 +90,9 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   content::BrowserContext* browser_context() {
     return GetActiveWebContents()->GetBrowserContext();
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;
@@ -328,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, logServerIbanLinkClicked) {
   histogram_tester.ExpectTotalCount("Autofill.ServerIbanLinkClicked", 1u);
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                        authenticateUserAndFlipMandatoryAuthToggle) {
   base::UserActionTester user_action_tester;

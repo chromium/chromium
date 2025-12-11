@@ -157,7 +157,7 @@ export class SettingsPaymentsSectionElement extends
       /**
        * Checks if we can use device authentication to authenticate the user.
        */
-      // <if expr="is_win or is_macosx">
+      // <if expr="is_win or is_macosx or is_chromeos">
       deviceAuthAvailable_: {
         type: Boolean,
         value() {
@@ -194,6 +194,16 @@ export class SettingsPaymentsSectionElement extends
         type: String,
         value() {
           return loadTimeData.getString('cardBenefitsToggleSublabel');
+        },
+      },
+
+      /**
+       * Checks if a mandatory reauth feature flag is enabled.
+       */
+      mandatoryReauthFeatureFlagEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('mandatoryReauthFeatureFlagEnabled');
         },
       },
 
@@ -244,7 +254,7 @@ export class SettingsPaymentsSectionElement extends
   declare private showLocalCreditCardRemoveConfirmationDialog_: boolean;
   declare private showLocalIbanRemoveConfirmationDialog_: boolean;
   declare private showVirtualCardUnenrollDialog_: boolean;
-  // <if expr="is_win or is_macosx">
+  // <if expr="is_win or is_macosx or is_chromeos">
   declare private deviceAuthAvailable_: boolean;
   // </if>
   declare private cvcStorageAvailable_: boolean;
@@ -257,6 +267,7 @@ export class SettingsPaymentsSectionElement extends
   declare private shouldShowPayOverTimeSettings_: boolean;
   declare private payOverTimeSublabel_: string;
   declare private isYourSavedInfoSubpage_: boolean;
+  declare private mandatoryReauthFeatureFlagEnabled_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -297,7 +308,7 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.setPersonalDataManagerListener(
         setPersonalDataListener);
 
-    // <if expr="is_win or is_macosx">
+    // <if expr="is_win or is_macosx or is_chromeos">
     this.paymentsManager_.checkIfDeviceAuthAvailable().then(
         result => this.deviceAuthAvailable_ = result);
     // </if>
@@ -621,7 +632,7 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.removeVirtualCard(event.detail);
   }
 
-  // <if expr="is_win or is_macosx">
+  // <if expr="is_win or is_macosx or is_chromeos">
   /**
    * Checks if we should disable the mandatory reauth toggle.
    * This method checks that one of the following conditions are met:

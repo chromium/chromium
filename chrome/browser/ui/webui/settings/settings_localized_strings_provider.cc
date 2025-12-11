@@ -1686,6 +1686,18 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("autofillCardBenefitsAvailable",
                           payments_data.IsCardBenefitsFeatureEnabled());
 
+  bool is_mandatory_reauth_feature_flag_enabled = false;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // The feature is already launched on Windows and Mac.
+  is_mandatory_reauth_feature_flag_enabled = true;
+#elif BUILDFLAG(IS_CHROMEOS)
+  is_mandatory_reauth_feature_flag_enabled = base::FeatureList::IsEnabled(
+      autofill::features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
+#endif
+  html_source->AddBoolean("mandatoryReauthFeatureFlagEnabled",
+                          is_mandatory_reauth_feature_flag_enabled);
+
   html_source->AddString(
       "cardBenefitsToggleSublabel",
       l10n_util::GetStringFUTF16(

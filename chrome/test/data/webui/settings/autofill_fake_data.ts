@@ -326,7 +326,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     PaymentsManagerProxy {
   private isValidIbanResult_: boolean = true;
   private isUserVerifyingPlatformAuthenticatorAvailable_: boolean|null = null;
-  // <if expr="is_win or is_macosx">
+  // <if expr="is_win or is_macosx or is_chromeos">
   private isDeviceAuthAvailable_: boolean = false;
   // </if>
 
@@ -445,14 +445,13 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     return Promise.resolve(null);
   }
 
-  // <if expr="is_win or is_macosx">
+  // <if expr="is_win or is_macosx or is_chromeos">
   setIsDeviceAuthAvailable(available: boolean) {
     this.isDeviceAuthAvailable_ = available;
   }
 
-  checkIfDeviceAuthAvailable() {
-    return Promise.resolve(this.isDeviceAuthAvailable_);
-  }
+  checkIfDeviceAuthAvailable: () => Promise<boolean> = () =>
+      Promise.resolve(this.isDeviceAuthAvailable_);
   // </if>
 
   bulkDeleteAllCvcs() {

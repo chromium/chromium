@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/browsing_data/core/features.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
@@ -55,7 +56,11 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   SettingsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {},
+        {
+#if BUILDFLAG(IS_CHROMEOS)
+            autofill::features::kAutofillEnablePaymentsMandatoryReauthChromeOs,
+#endif
+        },
         /*disabled_features=*/
         {
 #if BUILDFLAG(ENABLE_GLIC)
