@@ -335,9 +335,6 @@ class FfmpegVideoProcessor {
         // is in chrome-untrusted://.
         // TODO(pihsun): Separate util into multiple files so we can include
         // expandPath here.
-        // TODO(b/213408699): Separate files included in different scope
-        // (chrome://, chrome-untrusted://, worker) into different folder /
-        // tsconfig.json, so this can be caught at compile time.
         return '../../../js/lib/ffmpeg.wasm';
       },
       // This is from emscripten.
