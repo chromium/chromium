@@ -6,13 +6,72 @@
 
 #include <string_view>
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace wallet {
-
 namespace {
+
+bool IsLeapYear(int year) {
+  return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+// The flight date is the date of the departure.
+std::optional<std::string> GetFlightDate(
+    const std::string& date_of_flight_julian) {
+  int julian_day;
+  if (!base::StringToInt(date_of_flight_julian, &julian_day)) {
+    return std::nullopt;
+  }
+
+  // Julian day must be within 1-366 (inclusive of leap year extra day).
+  if (julian_day < 1 || julian_day > 366) {
+    return std::nullopt;
+  }
+
+  base::Time::Exploded now_exploded;
+  base::Time::Now().UTCExplode(&now_exploded);
+
+  int year = now_exploded.year;
+  int current_month = now_exploded.month;
+
+  // The flight date is in January, but the current month is December. This
+  // suggests that the flight will happen next year. The converse is used to
+  // assume the previous year, for a boarding pass which recently expired.
+  // Use local time to determine the current year as perceived by the user.
+  // We assume a +/- 1 month window for year inference, which is common
+  // practice for Wallet integrated flight dates.
+  constexpr int kJanuaryThreshold = 31;
+  constexpr int kDecemberThreshold = 334;  // Roughly Dec 1st.
+  if (julian_day <= kJanuaryThreshold && current_month == 12) {
+    year++;
+  } else if (julian_day > kDecemberThreshold && current_month == 1) {
+    year--;
+  }
+
+  if (julian_day == 366 && !IsLeapYear(year)) {
+    return std::nullopt;
+  }
+
+  base::Time::Exploded start_of_year_exploded = {};
+  start_of_year_exploded.year = year;
+  start_of_year_exploded.month = 1;
+  start_of_year_exploded.day_of_month = 1;
+
+  // Perform date calculation in UTC to avoid DST discontinuities.
+  base::Time start_of_year;
+  if (!base::Time::FromUTCExploded(start_of_year_exploded, &start_of_year)) {
+    return std::nullopt;
+  }
+
+  base::Time flight_date = start_of_year + base::Days(julian_day - 1);
+  return base::UnlocalizedTimeFormatWithPattern(flight_date, "yyyy-MM-dd",
+                                                icu::TimeZone::getGMT());
+}
 
 // Encapsulates a string value and provides safe sequential access to it.
 // Ensures that no access is made past the string buffer.
@@ -130,7 +189,14 @@ std::optional<BoardingPass> BoardingPass::FromBarcode(
   pass.destination = value.GetStripped(kDestinationLength);
   pass.airline = value.GetStripped(kAirlineLength);
   pass.flight_code = RemoveLeadingZeros(value.GetStripped(kFlightCodeLength));
-  pass.date = value.GetStripped(kDateLength);
+  std::optional<std::string> date =
+      GetFlightDate(value.GetStripped(kDateLength));
+  // The flight date is a mandatory field. If it's invalid or missing, the
+  // boarding pass is malformed and cannot be parsed.
+  if (!date) {
+    return std::nullopt;
+  }
+  pass.date = std::move(*date);
   pass.barcode = barcode;
 
   if (value.HasError()) {
