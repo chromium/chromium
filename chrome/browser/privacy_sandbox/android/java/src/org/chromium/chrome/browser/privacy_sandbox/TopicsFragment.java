@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -27,6 +28,7 @@ import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePref
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -257,6 +259,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         boolean topicsEnabled = isTopicsPrefEnabled(getProfile());
         boolean topicsEmpty = mCurrentTopicsCategory.getPreferenceCount() == 0;
 
+        updateIndexedPreferencesVisibility(topicsEnabled);
 
         // TODO(crbug.com/362973179): Set default values in xml.
         // Always not visible.
@@ -293,5 +296,48 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    TopicsFragment.class.getName(), R.xml.topics_preference);
+                    TopicsFragment.class.getName(), R.xml.topics_preference) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    indexData.removeEntry(getUniqueId(DISABLED_TOPICS_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(EMPTY_TOPICS_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(CURRENT_TOPICS_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(TOPICS_EXPLANATION_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(TOPICS_PAGE_FOOTER_PREFERENCE));
+                    indexData.removeEntry(getUniqueId(TOPICS_DISCLAIMER));
+
+                    updateIndexedPreferencesVisibility(isTopicsPrefEnabled(profile));
+                }
+            };
+
+    private static void updateIndexedPreferencesVisibility(boolean topicsEnabled) {
+        var indexData = SettingsIndexData.getInstance();
+        if (indexData == null) return;
+
+        String prefFrag = TopicsFragment.class.getName();
+        boolean hasRemovedEntries = false;
+        if (topicsEnabled) {
+            if (indexData.getEntryForKey(prefFrag, ACTIVE_TOPICS_PREFERENCE) == null
+                    || indexData.getEntryForKey(prefFrag, BLOCKED_TOPICS_PREFERENCE) == null
+                    || indexData.getEntryForKey(prefFrag, MANAGE_TOPICS_PREFERENCE) == null) {
+                indexData.setNeedsIndexing(true);
+            }
+        } else {
+            if (indexData.getEntryForKey(prefFrag, ACTIVE_TOPICS_PREFERENCE) != null
+                    || indexData.getEntryForKey(prefFrag, BLOCKED_TOPICS_PREFERENCE) != null
+                    || indexData.getEntryForKey(prefFrag, MANAGE_TOPICS_PREFERENCE) != null) {
+                // This ensures something was being removed, to avoid resolving the index
+                // unnecessarily.
+                hasRemovedEntries = true;
+            }
+            indexData.removeEntryForKey(prefFrag, ACTIVE_TOPICS_PREFERENCE);
+            indexData.removeEntryForKey(prefFrag, BLOCKED_TOPICS_PREFERENCE);
+            indexData.removeEntryForKey(prefFrag, MANAGE_TOPICS_PREFERENCE);
+        }
+
+        if (hasRemovedEntries) {
+            indexData.resolveIndex();
+        }
+    }
 }

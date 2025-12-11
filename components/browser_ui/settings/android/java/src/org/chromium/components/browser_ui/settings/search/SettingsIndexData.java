@@ -34,6 +34,10 @@ public class SettingsIndexData {
     private final Map<String, List<String>> mChildFragmentToParentKeys = new HashMap<>();
 
     private static @Nullable SettingsIndexData sInstance;
+    private static boolean sNeedsIndexing = true;
+
+    private static final String sMainSettingsClassName =
+            "org.chromium.chrome.browser.settings.MainSettings";
 
     @EnsuresNonNull("sInstance")
     public static SettingsIndexData createInstance() {
@@ -260,6 +264,18 @@ public class SettingsIndexData {
     }
 
     /**
+     * Gets a preference entry of a given key from the index, if exists.
+     *
+     * @param prefFragment Full class name of the Fragment where the key belongs.
+     * @param key Key name of the preference entry.
+     * @return entry The entry if it exists, null otherwise.
+     */
+    @Nullable
+    public Entry getEntryForKey(String prefFragment, String key) {
+        return getEntry(PreferenceParser.createUniqueId(prefFragment, key));
+    }
+
+    /**
      * Replaces an existing entry with a new one.
      *
      * @param id The ID of the {@link Entry} to replace.
@@ -316,14 +332,13 @@ public class SettingsIndexData {
     }
 
     /** Set the flag indicating the index became stale and needs reindexing. */
-    public void setNeedsIndexing() {
-        // TODO(crbug.com/456817438): Implement this.
+    public void setNeedsIndexing(boolean needsIndexing) {
+        sNeedsIndexing = needsIndexing;
     }
 
     /** Return whether the index data needs to be refreshed. */
     public boolean needsIndexing() {
-        // TODO(crbug.com/456817438): Implement this.
-        return false;
+        return sNeedsIndexing;
     }
 
     /**
@@ -333,6 +348,7 @@ public class SettingsIndexData {
     public void clear() {
         mEntries.clear();
         mChildFragmentToParentKeys.clear();
+        sNeedsIndexing = true;
     }
 
     /**
@@ -382,6 +398,11 @@ public class SettingsIndexData {
         for (String key : entriesToRemove) {
             removeEntry(key);
         }
+    }
+
+    /** Invokes {@link #resolveIndex} with MainSettings.class.getName(). */
+    public void resolveIndex() {
+        resolveIndex(sMainSettingsClassName);
     }
 
     /**

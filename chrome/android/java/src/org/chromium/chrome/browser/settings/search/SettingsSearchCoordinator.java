@@ -284,6 +284,8 @@ public class SettingsSearchCoordinator {
 
         // Resolve headers and remove any orphaned entries.
         mIndexData.resolveIndex(mainSettingsClassName);
+
+        mIndexData.setNeedsIndexing(false);
     }
 
     /**
