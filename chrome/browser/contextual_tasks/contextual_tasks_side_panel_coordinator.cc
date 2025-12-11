@@ -619,7 +619,7 @@ void ContextualTasksSidePanelCoordinator::UpdateContextualTaskUI() {
   content::WebContents* web_contents = web_view_->GetWebContents();
   content::WebUI* web_ui = web_contents ? web_contents->GetWebUI() : nullptr;
   ContextualTasksUI* contextual_tasks_ui = nullptr;
-  if (web_ui->GetController()) {
+  if (web_ui && web_ui->GetController()) {
     contextual_tasks_ui = web_ui->GetController()->GetAs<ContextualTasksUI>();
   }
 

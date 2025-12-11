@@ -135,6 +135,44 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   histogram_tester.ExpectUniqueSample("ContextualTasks.ActiveTasksCount", 1, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
+                       OnThreadLinkClicked_CreatesNewTabInSameGroup) {
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+
+  // Add a contextual-tasks tab and add it to a group.
+  ContextualTask task1 = contextual_tasks_controller->CreateTask();
+  chrome::AddTabAt(browser(),
+                   GURL("chrome://contextual-tasks/?task=" +
+                        task1.GetTaskId().AsLowercaseString()),
+                   -1, false);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* task_tab = tab_strip_model->GetActiveTab();
+  browser()->GetTabStripModel()->AddToNewGroup(
+      {tab_strip_model->GetIndexOfTab(task_tab)});
+  content::WaitForLoadStop(task_tab->GetContents());
+
+  ASSERT_TRUE(task_tab->GetGroup().has_value());
+  tab_groups::TabGroupId group_id = task_tab->GetGroup().value();
+
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
+  RunTestSequence(Do([&]() {
+                    // Fake a link click interception.
+                    const GURL clicked_url("https://google.com/");
+                    service->OnThreadLinkClicked(clicked_url, task1.GetTaskId(),
+                                                 task_tab->GetWeakPtr(),
+                                                 browser()->GetWeakPtr());
+                  }),
+                  WaitForShow(kContextualTasksSidePanelWebViewElementId));
+  ASSERT_EQ(tab_strip_model->GetActiveTab()->GetGroup(), group_id);
+}
+
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksUiServiceInteractiveUiTest,
     OnTaskChangedInPanel_SwitchAllTabAffiliation_ActivatesMostRecentTab) {
