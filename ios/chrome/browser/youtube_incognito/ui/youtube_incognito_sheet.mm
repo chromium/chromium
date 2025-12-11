@@ -46,7 +46,7 @@ NSString* const kPrimaryActionAccessibilityIdentifier =
 NSString* const kTitleAccessibilityIdentifier = @"TitleAccessibilityIdentifier";
 
 // Helpers copied from IncognitoView.mm
-// TODO(crbug.com/442531250): Merge the common utils between
+// TODO(crbug.com/467901302): Merge the common utils between
 // `YoutubeIncognitoSheet` and `IncognitoView`.
 UIFont* BodyFont() {
   return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
