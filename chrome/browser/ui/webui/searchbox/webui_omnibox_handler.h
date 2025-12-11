@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
@@ -23,7 +23,7 @@ class WebUI;
 }  // namespace content
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
-class WebuiOmniboxHandler : public SearchboxHandler,
+class WebuiOmniboxHandler : public ContextualSearchboxHandler,
                             OmniboxEditModel::Observer {
  public:
   WebuiOmniboxHandler(
@@ -74,6 +74,9 @@ class WebuiOmniboxHandler : public SearchboxHandler,
   void OnKeywordStateChanged(bool is_keyword_selected) override;
 
  private:
+  // ContextualSearchboxHandler:
+  int GetContextMenuMaxTabSuggestions() override;
+
   // Observe `OmniboxEditModel` for updates that require updating the views.
   base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>
       edit_model_observation_{this};

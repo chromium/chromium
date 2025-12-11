@@ -83,6 +83,10 @@ ContextualOmniboxClient::GetLensOverlaySuggestInputs() const {
              : std::nullopt;
 }
 
+int ContextualSearchboxHandler::GetContextMenuMaxTabSuggestions() {
+  return ntp_composebox::kContextMenuMaxTabSuggestions.Get();
+}
+
 void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   std::vector<searchbox::mojom::TabInfoPtr> tabs;
 
@@ -138,9 +142,8 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
 
   // Sort the tabs by last active time, and truncate to the maximum number of
   // tabs to return.
-  int max_tab_suggestions =
-      std::min(static_cast<int>(tabs.size()),
-               ntp_composebox::kContextMenuMaxTabSuggestions.Get());
+  int max_tab_suggestions = std::min(static_cast<int>(tabs.size()),
+                                     GetContextMenuMaxTabSuggestions());
   std::partial_sort(tabs.begin(), tabs.begin() + max_tab_suggestions,
                     tabs.end(),
                     [](const searchbox::mojom::TabInfoPtr& a,
