@@ -104,6 +104,7 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
  private:
   friend class VpnConfigurationImpl;
   friend class chromeos::VpnProviderApiTest;
+  friend class chromeos::VpnService;
   friend class TestShillControllerAsh;
 
   using StringToConfigurationMap =
@@ -118,10 +119,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
   // and |configuration_name|.
   static std::string GetKey(const std::string& extension_id,
                             const std::string& configuration_name);
-
-  // Creates and adds the configuration to the internal store.
-  VpnConfiguration* CreateConfigurationInternal(
-      const std::string& configuration_name);
 
   // Removes configuration from the internal store and destroys it.
   void DestroyConfigurationInternal(VpnConfiguration*);

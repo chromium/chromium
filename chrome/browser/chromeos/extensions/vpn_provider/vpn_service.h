@@ -125,18 +125,14 @@ class VpnService : public extensions::api::VpnServiceInterface,
   // EventRouter::Observer:
   void OnListenerAdded(const extensions::EventListenerInfo&) override;
 
-  // Owns all configurations. Key is a hash of |extension_id| and
-  // |configuration_name|. This is public temporarily while we are dismantling
-  // the crosapi VpnService (crbug.com/365902693).
-  using StringToOwnedConfigurationMap = std::map<
-      std::string,
-      std::unique_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration>>;
-  StringToOwnedConfigurationMap key_to_configuration_map_;
+  class VpnConfiguration;
 
  private:
   friend class VpnProviderApiTest;
   friend class VpnServiceForExtension;
   friend class VpnServiceFactory;
+  // We are dismantling the crosapi VpnService (crbug.com/365902693).
+  friend class crosapi::VpnServiceForExtensionAsh;
 
   static crosapi::VpnServiceAsh* GetVpnService();
 
@@ -154,6 +150,17 @@ class VpnService : public extensions::api::VpnServiceInterface,
   void SendOnPlatformMessageToExtension(const std::string& extension_id,
                                         const std::string& configuration_name,
                                         uint32_t platform_message);
+
+  crosapi::VpnServiceForExtensionAsh::VpnConfiguration*
+  CreateConfigurationInternal(const std::string& extension_id,
+                              const std::string& configuration_name);
+
+  // Owns all configurations. Key is a hash of |extension_id| and
+  // |configuration_name|.
+  using StringToOwnedConfigurationMap = std::map<
+      std::string,
+      std::unique_ptr<crosapi::VpnServiceForExtensionAsh::VpnConfiguration>>;
+  StringToOwnedConfigurationMap key_to_configuration_map_;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

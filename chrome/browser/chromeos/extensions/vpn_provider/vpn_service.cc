@@ -81,6 +81,81 @@ bool IsVpnProvider(const extensions::Extension* extension) {
 
 }  // namespace
 
+class VpnService::VpnConfiguration
+    : public crosapi::VpnServiceForExtensionAsh::VpnConfiguration {
+ public:
+  VpnConfiguration(const std::string& extension_id,
+                   const std::string& configuration_name,
+                   const std::string& key,
+                   VpnService* vpn_service)
+      : extension_id_(extension_id),
+        configuration_name_(configuration_name),
+        key_(key),
+        object_path_(shill::kObjectPathBase + key),
+        vpn_service_(std::move(vpn_service)) {}
+
+  const std::string& extension_id() const { return extension_id_; }
+  // VpnServiceAsh::VpnConfiguration:
+  const std::string& configuration_name() const override {
+    return configuration_name_;
+  }
+  const std::string& key() const override { return key_; }
+  const std::string& object_path() const override { return object_path_; }
+  const std::optional<std::string>& service_path() const override {
+    return service_path_;
+  }
+  void set_service_path(std::string service_path) override {
+    service_path_ = std::move(service_path);
+  }
+
+  // ash::ShillThirdPartyVpnObserver:
+  void OnPacketReceived(const std::vector<char>& data) override;
+  void OnPlatformMessage(uint32_t platform_message) override;
+
+ private:
+  const std::string extension_id_;
+  const std::string configuration_name_;
+  const std::string key_;
+  const std::string object_path_;
+  std::optional<std::string> service_path_;
+
+  // |this| is owned by VpnService.
+  raw_ptr<VpnService> vpn_service_ = nullptr;
+};
+
+void VpnService::VpnConfiguration::OnPacketReceived(
+    const std::vector<char>& data) {
+  DCHECK(vpn_service_);
+  vpn_service_->GetVpnService()
+      ->GetVpnServiceForExtension(extension_id())
+      ->DispatchOnPacketReceivedEvent(data);
+}
+
+void VpnService::VpnConfiguration::OnPlatformMessage(
+    uint32_t platform_message) {
+  DCHECK(vpn_service_);
+  DCHECK_GE(static_cast<uint32_t>(api_vpn::PlatformMessage::kMaxValue),
+            platform_message);
+
+  if (platform_message ==
+      base::to_underlying(api_vpn::PlatformMessage::kConnected)) {
+    vpn_service_->GetVpnService()
+        ->GetVpnServiceForExtension(extension_id())
+        ->SetActiveConfiguration(this);
+  } else if (platform_message ==
+                 base::to_underlying(api_vpn::PlatformMessage::kDisconnected) ||
+             platform_message ==
+                 base::to_underlying(api_vpn::PlatformMessage::kError)) {
+    vpn_service_->GetVpnService()
+        ->GetVpnServiceForExtension(extension_id())
+        ->SetActiveConfiguration(nullptr);
+  }
+
+  vpn_service_->GetVpnService()
+      ->GetVpnServiceForExtension(extension_id())
+      ->DispatchOnPlatformMessageEvent(configuration_name(), platform_message);
+}
+
 VpnServiceForExtension::VpnServiceForExtension(
     const std::string& extension_id,
     content::BrowserContext* browser_context)
@@ -317,6 +392,18 @@ void VpnService::OnExtensionUnloaded(
   if (destroy_configurations) {
     extension_id_to_service_.erase(extension->id());
   }
+}
+
+crosapi::VpnServiceForExtensionAsh::VpnConfiguration*
+VpnService::CreateConfigurationInternal(const std::string& extension_id,
+                                        const std::string& configuration_name) {
+  const std::string key = crosapi::VpnServiceForExtensionAsh::GetKey(
+      extension_id, configuration_name);
+  auto configuration = std::make_unique<VpnConfiguration>(
+      extension_id, configuration_name, key, this);
+  auto* ptr = configuration.get();
+  key_to_configuration_map_.emplace(key, std::move(configuration));
+  return ptr;
 }
 
 void VpnService::OnListenerAdded(const extensions::EventListenerInfo& details) {
