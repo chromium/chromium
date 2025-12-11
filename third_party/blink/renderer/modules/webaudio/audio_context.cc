@@ -423,6 +423,27 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
     sample_rate = context_options->sampleRate();
   }
 
+  std::optional<uint32_t> render_quantum_frames = 128;
+  if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled() &&
+      context_options->hasRenderSizeHint()) {
+    const auto* hint = context_options->renderSizeHint();
+    switch (hint->GetContentType()) {
+      case V8UnionAudioContextRenderSizeCategoryOrUnsignedLong::ContentType::
+          kUnsignedLong:
+        render_quantum_frames = audio_utilities::GetClampedRenderQuantumFrames(
+            hint->GetAsUnsignedLong());
+        break;
+      case V8UnionAudioContextRenderSizeCategoryOrUnsignedLong::ContentType::
+          kAudioContextRenderSizeCategory:
+        if (hint->GetAsAudioContextRenderSizeCategory() ==
+            V8AudioContextRenderSizeCategory::Enum::kHardware) {
+          // Use `nullopt` to indicate a "hardware" hint.
+          render_quantum_frames.reset();
+        }
+        break;
+    }
+  }
+
   // The empty string means the default audio device.
   auto frame_token = window.GetLocalFrameToken();
   WebAudioSinkDescriptor sink_descriptor(g_empty_string, frame_token);
@@ -459,15 +480,6 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
   }
 
   SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.AudioContext.CreateTime");
-  uint32_t render_quantum_frames = 128;
-  if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled() &&
-      context_options->hasRenderSizeHint()) {
-    if (context_options->renderSizeHint()->IsUnsignedLong()) {
-      render_quantum_frames = audio_utilities::GetClampedRenderQuantumFrames(
-          context_options->renderSizeHint()->GetAsUnsignedLong());
-    }
-  }
-
   AudioContext* audio_context = MakeGarbageCollected<AudioContext>(
       window, latency_hint, sample_rate, sink_descriptor,
       update_echo_cancellation_on_first_start, render_quantum_frames);
@@ -511,10 +523,10 @@ AudioContext::AudioContext(LocalDOMWindow& window,
                            std::optional<float> sample_rate,
                            WebAudioSinkDescriptor sink_descriptor,
                            bool update_echo_cancellation_on_first_start,
-                           uint32_t render_quantum_frames)
+                           std::optional<uint32_t> render_quantum_frames)
     : BaseAudioContext(&window,
                        ContextType::kRealtimeContext,
-                       render_quantum_frames),
+                       render_quantum_frames.value_or(128)),
       FrameVisibilityObserver(GetLocalFrame()),
       PageVisibilityObserver(GetPageFromFrame()),
       context_id_(context_id++),

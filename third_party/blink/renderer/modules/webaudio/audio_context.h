@@ -117,7 +117,7 @@ class MODULES_EXPORT AudioContext final
                std::optional<float> sample_rate,
                WebAudioSinkDescriptor sink_descriptor,
                bool update_echo_cancellation_on_first_start,
-               uint32_t render_quantum_frames);
+               std::optional<uint32_t> render_quantum_frames);
   AudioContext(const AudioContext&) = delete;
   AudioContext& operator=(const AudioContext&) = delete;
   ~AudioContext() override;
