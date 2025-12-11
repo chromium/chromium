@@ -640,6 +640,11 @@ void ContentAutofillDriver::SuppressAutomaticRefills(const FillId& fill_id) {
                  &AutofillManager::SuppressAutomaticRefills, fill_id);
 }
 
+void ContentAutofillDriver::RequestRefill(const FillId& fill_id) {
+  RouteToManager(*this, router(), &AutofillDriverRouter::RequestRefill,
+                 &AutofillManager::RequestRefill, fill_id);
+}
+
 void ContentAutofillDriver::FocusOnFormField(const FormData& form,
                                              FieldRendererId field_id) {
   auto focus_no_longer_on_form = [](autofill::AutofillDriver& target) {

@@ -202,6 +202,10 @@ class AutofillDriverRouter {
   void SuppressAutomaticRefills(RoutedCallback<const FillId&> callback,
                                 AutofillDriver& source,
                                 const FillId& fill_id);
+  // This event is broadcast to all drivers.
+  void RequestRefill(RoutedCallback<const FillId&> callback,
+                     AutofillDriver& source,
+                     const FillId& fill_id);
   void JavaScriptChangedAutofilledValue(
       RoutedCallback<const FormData&,
                      const FieldGlobalId&,

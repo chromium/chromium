@@ -326,6 +326,14 @@ void AutofillDriverRouter::SuppressAutomaticRefills(
                [&](AutofillDriver& driver) { callback(driver, fill_id); });
 }
 
+void AutofillDriverRouter::RequestRefill(RoutedCallback<const FillId&> callback,
+                                         AutofillDriver& source,
+                                         const FillId& fill_id) {
+  // We don't know which AutofillManager caused the fill with `fill_id`.
+  ForEachFrame(form_forest_,
+               [&](AutofillDriver& driver) { callback(driver, fill_id); });
+}
+
 void AutofillDriverRouter::FocusOnNonFormField(RoutedCallback<> callback,
                                                AutofillDriver& source) {
   // Suppresses FocusOnNonFormField() if the focus has already moved to a

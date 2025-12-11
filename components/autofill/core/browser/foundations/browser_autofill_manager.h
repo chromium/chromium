@@ -271,6 +271,7 @@ class BrowserAutofillManager : public AutofillManager {
                               const FieldGlobalId& field_id) override;
   void OnDidAutofillFormImpl(const FormData& form) override;
   void SuppressAutomaticRefillsImpl(const FillId& fill_id) override;
+  void RequestRefillImpl(const FillId& fill_id) override;
   void OnDidEndTextFieldEditingImpl() override;
   void OnHidePopupImpl() override;
   void OnSelectFieldOptionsDidChangeImpl(

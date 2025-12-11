@@ -91,6 +91,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               SuppressAutomaticRefills,
               (const FillId& fill_id),
               (override));
+  MOCK_METHOD(void, RequestRefill, (const FillId& fill_id), (override));
   MOCK_METHOD(void, FocusOnNonFormField, (), (override));
   MOCK_METHOD(void,
               FocusOnFormField,

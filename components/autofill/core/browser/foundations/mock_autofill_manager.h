@@ -36,6 +36,7 @@ class MockAutofillManager : public AutofillManager {
               SuppressAutomaticRefillsImpl,
               (const FillId& fill_id),
               (override));
+  MOCK_METHOD(void, RequestRefillImpl, (const FillId& fill_id), (override));
   MOCK_METHOD(void, OnDidEndTextFieldEditingImpl, (), (override));
   MOCK_METHOD(void, OnHidePopupImpl, (), (override));
   MOCK_METHOD(void,

@@ -2186,6 +2186,10 @@ void BrowserAutofillManager::SuppressAutomaticRefillsImpl(
   form_filler_->SuppressAutomaticRefills(fill_id);
 }
 
+void BrowserAutofillManager::RequestRefillImpl(const FillId& fill_id) {
+  form_filler_->MaybeTriggerProgrammaticRefill(fill_id);
+}
+
 void BrowserAutofillManager::DidShowSuggestions(
     base::span<const Suggestion> suggestions,
     const FormData& form,

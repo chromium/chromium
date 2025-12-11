@@ -130,6 +130,11 @@ interface AutofillDriver {
   // event and may therefore programmatically trigger a refill.
   SuppressAutomaticRefills(FillId fill_id);
 
+  // Requests a refill of the initial fill `fill_id`. The browser process may
+  // either ignore this request or respond with a
+  // mojom::AutofillAgent::ApplyFieldsAction() message with the same `fill_id`.
+  RequestRefill(FillId fill_id);
+
   // Sent when a field was in autofilled state but JavaScript modified the
   // value.
   //

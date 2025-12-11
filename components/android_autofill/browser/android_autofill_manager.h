@@ -47,6 +47,8 @@ class AndroidAutofillManager : public AutofillManager,
 
   void SuppressAutomaticRefillsImpl(const FillId& fill_id) override {}
 
+  void RequestRefillImpl(const FillId& fill_id) override {}
+
   void OnDidEndTextFieldEditingImpl() override {}
   void OnHidePopupImpl() override;
   void OnSelectFieldOptionsDidChangeImpl(

@@ -111,6 +111,8 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void SuppressAutomaticRefills(const FillId& fill_id) override {}
 
+  void RequestRefill(const FillId& fill_id) override {}
+
   void FocusOnNonFormField() override {}
 
   void FocusOnFormField(const FormData& form,

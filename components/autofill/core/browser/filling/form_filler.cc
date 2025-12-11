@@ -1038,6 +1038,10 @@ void FormFiller::SuppressAutomaticRefills(const FillId& fill_id) {
   refill_context->allows_automatic_refill = false;
 }
 
+void FormFiller::MaybeTriggerProgrammaticRefill(const FillId& fill_id) {
+  NOTIMPLEMENTED();
+}
+
 void FormFiller::MaybeTriggerAutomaticRefill(
     const FormData& form,
     const FormStructure& form_structure,

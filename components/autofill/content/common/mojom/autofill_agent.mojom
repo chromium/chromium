@@ -33,7 +33,6 @@ interface AutofillAgent {
   // discretion of the browser process whether to honor the request. For
   // example, the browser process ignores refill requests after a certain
   // timeout.
-  // TODO(crbug.com/466333215): Add RequestRefill().
   ApplyFieldsAction(FormActionType action_type,
                     ActionPersistence action_persistence,
                     array<FormFieldData_FillData> fields,

@@ -427,6 +427,9 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void SuppressAutomaticRefills(const FillId& fill_id) override {
     DeferMsg(&mojom::AutofillDriver::SuppressAutomaticRefills, fill_id);
   }
+  void RequestRefill(const FillId& fill_id) override {
+    DeferMsg(&mojom::AutofillDriver::RequestRefill, fill_id);
+  }
   void FocusOnNonFormField() override {
     DeferMsg(&mojom::AutofillDriver::FocusOnNonFormField);
   }

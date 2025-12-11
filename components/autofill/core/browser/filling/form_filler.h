@@ -171,8 +171,14 @@ class FormFiller {
   // programmatically trigger a refill.
   void SuppressAutomaticRefills(const FillId& fill_id);
 
-  // May or may not trigger a refill operation on `form`. `field` and
-  // `old_value` are only needed when `refill_trigger_reason` is
+  // May or may not trigger a refill of `fill_id`. Programmatic refills (unlike
+  // automatic refills) are initiated by JavaScript.
+  void MaybeTriggerProgrammaticRefill(const FillId& fill_id);
+
+  // May or may not trigger a refill operation on `form`. Automatic refills
+  // (unlike programmatic refills) are caused by dynamic changes in the DOM.
+  //
+  // `field` and `old_value` are only needed when `refill_trigger_reason` is
   // `RefillTriggerReason::kExpirationDateFormatted`, and in that case `field`
   // is the one that was reformatted and `old_value` is the value `field` had
   // before the reformatting.
