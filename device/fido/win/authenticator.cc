@@ -381,8 +381,7 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
         FidoRequestHandlerBase::RecognizedCredential::kUnknown);
     return;
   }
-  if (base::FeatureList::IsEnabled(kWebAuthenticationFixWindowsHelloRdp) &&
-      credentials.empty() && fido::win::IsRemoteDesktopSession()) {
+  if (credentials.empty() && fido::win::IsRemoteDesktopSession()) {
     // Windows credential enumeration does not work under RDP yet, returning an
     // empty credential list. Since we cannot tell if there are credentials or
     // not, treat this the same as enumeration not being supported.

@@ -164,12 +164,6 @@ BASE_DECLARE_FEATURE(kAuthenticatorPasswordsOnlyImmediateRequests);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnNewRefreshFlow);
 
-// If enabled, treats an empty enumeration of Windows Hello credentials the same
-// as enumeration not being supported. This works around an issue where Windows
-// Hello fails to enumerate credentials under RDP.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthenticationFixWindowsHelloRdp);
-
 // When running an assertion operation, sends the enclave a hash of the client
 // data JSON instead of the full contents.
 COMPONENT_EXPORT(FIDO_PUBLIC)

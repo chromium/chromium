@@ -67,13 +67,6 @@ constexpr char kUserDisplayName2[] = "Chloe";
 class WinAuthenticatorTest : public testing::Test,
                              WinWebAuthnApiAuthenticator::TestObserver {
  public:
-  WinAuthenticatorTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnHelloSignal,
-         device::kWebAuthenticationFixWindowsHelloRdp},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     fake_webauthn_api_ = std::make_unique<FakeWinWebAuthnApi>();
     fake_webauthn_api_->set_supports_silent_discovery(true);
@@ -118,7 +111,8 @@ class WinAuthenticatorTest : public testing::Test,
   base::test::TaskEnvironment task_environment;
   base::RunLoop signal_unknown_credential_run_loop_;
   base::RunLoop signal_all_accepted_credentials_run_loop_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnHelloSignal};
 };
 
 // Tests getting credential information for an empty allow-list request that has
