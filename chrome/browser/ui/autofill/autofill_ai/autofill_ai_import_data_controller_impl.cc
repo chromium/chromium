@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_string_utils.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -190,55 +191,7 @@ AutofillAiImportDataControllerImpl::GetUpdatedAttributesDetails() const {
 }
 
 std::u16string AutofillAiImportDataControllerImpl::GetDialogTitle() const {
-  if (IsSavePrompt()) {
-    switch (new_entity_->type().name()) {
-      case EntityTypeName::kDriversLicense:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kKnownTravelerNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kNationalIdCard:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kPassport:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kRedressNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kVehicle:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kFlightReservation:
-        NOTREACHED() << "Entity is read only and doesn't support save prompts.";
-    }
-  } else {
-    switch (new_entity_->type().name()) {
-      case EntityTypeName::kDriversLicense:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kKnownTravelerNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_UPDATE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kNationalIdCard:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_UPDATE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kPassport:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kRedressNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_UPDATE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kVehicle:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE);
-      case EntityTypeName::kFlightReservation:
-        NOTREACHED()
-            << "Entity is read only and doesn't support update prompts.";
-    }
-  }
-  NOTREACHED();
+  return GetPromptTitle(new_entity_->type().name(), IsSavePrompt());
 }
 
 bool AutofillAiImportDataControllerImpl::IsWalletableEntity() const {

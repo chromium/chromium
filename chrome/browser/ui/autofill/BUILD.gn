@@ -9,6 +9,24 @@ import("//components/signin/features.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
+source_set("autofill_ai_string_utils") {
+  sources = [ "autofill_ai/autofill_ai_import_string_utils.h" ]
+  public_deps = [
+    "//components/autofill/core/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("autofill_ai_string_utils_impl") {
+  sources = [ "autofill_ai/autofill_ai_import_string_utils.cc" ]
+  public_deps = [
+    ":autofill_ai_string_utils",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings_grit",
+    "//ui/base",
+  ]
+}
+
 source_set("autofill") {
   sources = [
     "autofill_bubble_base.h",
@@ -30,6 +48,7 @@ source_set("autofill") {
   ]
 
   public_deps = [
+    ":autofill_ai_string_utils",
     "//base",
     "//base:i18n",
     "//chrome/browser:global_features",
@@ -141,6 +160,7 @@ source_set("impl") {
 
   deps = [
     ":autofill",
+    ":autofill_ai_string_utils_impl",
     "//chrome/browser:browser_process",
     "//chrome/browser/autofill",
     "//chrome/browser/history",
