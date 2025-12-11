@@ -11,6 +11,8 @@
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -38,6 +41,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 }  // anonymous namespace
 
 @interface LocationBarBadgeMediator () <CRWWebStateObserver,
+                                        InfobarBadgeTabHelperObserving,
                                         WebStateListObserving>
 @end
 
@@ -61,6 +65,14 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   raw_ptr<PrefService> _prefService;
   // Gemini service
   raw_ptr<BwgService> _geminiService;
+  // Bridge for the InfobarBadgeTabHelper observation.
+  std::unique_ptr<InfobarBadgeTabHelperObserverBridge>
+      _infobarBadgeObserverBridge;
+  std::unique_ptr<base::ScopedObservation<InfobarBadgeTabHelper,
+                                          InfobarBadgeTabHelperObserverBridge>>
+      _infobarBadgeObservation;
+  // Whether there currently are any Infobar badges being shown.
+  BOOL _infobarBadgesCurrentlyShown;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -77,6 +89,20 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     if (_activeWebState) {
       _activeWebState->AddObserver(_webStateObserver.get());
     }
+    if (IsLocationBarBadgeMigrationEnabled()) {
+      // Setup InfobarBadgeTabHelper observation.
+      _infobarBadgeObserverBridge =
+          std::make_unique<InfobarBadgeTabHelperObserverBridge>(self);
+      _infobarBadgeObservation = std::make_unique<base::ScopedObservation<
+          InfobarBadgeTabHelper, InfobarBadgeTabHelperObserverBridge>>(
+          _infobarBadgeObserverBridge.get());
+
+      if (_activeWebState) {
+        _infobarBadgeObservation->Observe(
+            InfobarBadgeTabHelper::GetOrCreateForWebState(_activeWebState));
+      }
+    }
+
     _tracker = tracker;
     _prefService = prefService;
     _geminiService = geminiService;
@@ -94,6 +120,12 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     _webStateList = nullptr;
   }
 
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    _infobarBadgeObservation->Reset();
+    _infobarBadgeObservation.reset();
+    _infobarBadgeObserverBridge.reset();
+  }
+
   _promoStartTimer = nullptr;
   _promoEndTimer = nullptr;
   _tracker = nil;
@@ -107,9 +139,26 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
-  if (status.active_web_state_change()) {
-    [self updateActiveWebState:status.new_active_web_state];
+  // Return early if the active web state is the same as before the change.
+  if (!status.active_web_state_change()) {
+    return;
   }
+
+  if (IsLocationBarBadgeMigrationEnabled()) {
+    // De-register observer bridge for the old WebState's InfobarBadgeTabHelper.
+    _infobarBadgeObservation->Reset();
+  }
+
+  // Return early if no new webstates are active.
+  if (!status.new_active_web_state) {
+    if (_activeWebState) {
+      _activeWebState->RemoveObserver(_webStateObserver.get());
+      _activeWebState = nil;
+    }
+    return;
+  }
+
+  [self updateActiveWebState:status.new_active_web_state];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -123,6 +172,42 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   DCHECK_EQ(_activeWebState, webState);
   _activeWebState->RemoveObserver(_webStateObserver.get());
   _activeWebState = nullptr;
+}
+
+#pragma mark - InfobarBadgeTabHelperObserving
+
+- (void)infobarBadgesUpdated:(InfobarBadgeTabHelper*)tabHelper {
+  // Return early if the notification doesn't come from the currently active
+  // webstate's tab helper.
+  raw_ptr<web::WebState> active_web_state = _webStateList->GetActiveWebState();
+  if (!active_web_state || active_web_state->IsBeingDestroyed()) {
+    return;
+  }
+  if (tabHelper !=
+      InfobarBadgeTabHelper::GetOrCreateForWebState(active_web_state)) {
+    return;
+  }
+
+  size_t badgesCount = tabHelper->GetInfobarBadgesCount();
+
+  BOOL infobarBadgesCurrentlyShown = badgesCount > 0;
+
+  // Disable contextual panel separator when Proactive Suggestions Framework is
+  // enabled to prevent conflicts.
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    infobarBadgesCurrentlyShown = NO;
+  }
+
+  if (_infobarBadgesCurrentlyShown == infobarBadgesCurrentlyShown) {
+    return;
+  }
+  _infobarBadgesCurrentlyShown = infobarBadgesCurrentlyShown;
+
+  if (_infobarBadgesCurrentlyShown) {
+    // TODO(crbug.com/454351425): Add dismissEntrypointIPHAnimated.
+  }
+
+  [self.consumer setInfobarBadgesCurrentlyShown:_infobarBadgesCurrentlyShown];
 }
 
 #pragma mark - LocationBarBadgeCommands
@@ -258,16 +343,20 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 
 // Update `_activeWebState` to ensure the active WebState is observed.
 - (void)updateActiveWebState:(web::WebState*)webState {
-  if (_activeWebState == webState) {
-    return;
-  }
   if (_activeWebState) {
     _activeWebState->RemoveObserver(_webStateObserver.get());
   }
+
   _activeWebState = webState;
-  if (_activeWebState) {
-    _activeWebState->AddObserver(_webStateObserver.get());
+  _activeWebState->AddObserver(_webStateObserver.get());
+
+  if (!IsLocationBarBadgeMigrationEnabled()) {
+    return;
   }
+
+  // Register observer bridge for the new WebState's InfobarBadgeTabHelper.
+  _infobarBadgeObservation->Observe(
+      InfobarBadgeTabHelper::GetOrCreateForWebState(_activeWebState));
 }
 
 // Checks FET (Feature Engagement Tracker) criteria for a given `badgeType`. By
