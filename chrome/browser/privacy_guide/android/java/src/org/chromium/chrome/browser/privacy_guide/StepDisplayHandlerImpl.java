@@ -37,9 +37,8 @@ class StepDisplayHandlerImpl implements StepDisplayHandler {
 
     @Override
     public boolean shouldDisplayCookies() {
-        boolean allowCookies =
-                WebsitePreferenceBridge.isCategoryEnabled(mProfile, ContentSettingsType.COOKIES);
-        return !PrivacyGuideUtils.trackingProtectionUiEnabled(mProfile) && allowCookies;
+        // Only show third-party cookies step if first-party cookies are allowed.
+        return WebsitePreferenceBridge.isCategoryEnabled(mProfile, ContentSettingsType.COOKIES);
     }
 
     @Override

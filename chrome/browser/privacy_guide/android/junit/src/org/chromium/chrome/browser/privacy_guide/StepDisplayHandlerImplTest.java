@@ -19,9 +19,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -47,7 +44,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
  * compressed if @ParameterizedTest from JUnit5 can be used.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class StepDisplayHandlerImplTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -140,13 +136,6 @@ public class StepDisplayHandlerImplTest {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         when(mHistorySyncHelper.isHistorySyncDisabledByCustodian()).thenReturn(true);
         assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
-    public void hidesCookiesWhenTrackingProtection3pcdEnabled() {
-        setCookieState(CookieControlsMode.BLOCK_THIRD_PARTY, true);
-        assertFalse(mStepDisplayHandler.shouldDisplayCookies());
     }
 
     @Test
