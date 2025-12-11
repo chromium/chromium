@@ -310,9 +310,8 @@ void SodaInstallerImplChromeOS::UninstallLanguage(std::string_view language,
   // Remove from retry list in case it's in there.
   retry_languages_to_install_.erase(language);
   if (language_info == available_languages_.end()) {
-    LOG(ERROR) << "Unable to uninstall language " << language
-               << " as it is not in the list of available languages.";
-    NOTREACHED(base::NotFatalUntil::M145);
+    LOG(DFATAL) << "Unable to uninstall language " << language
+                << " as it is not in the list of available languages.";
     return;
   }
   const auto& dlc_name = language_info->second.dlc_name;
