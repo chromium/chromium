@@ -22,7 +22,8 @@ AbortSignalRegistry* AbortSignalRegistry::From(ExecutionContext& context) {
 }
 
 AbortSignalRegistry::AbortSignalRegistry(ExecutionContext& context)
-    : ExecutionContextLifecycleObserver(&context) {}
+    : ExecutionContextLifecycleObserver(&context),
+      execution_context_(context) {}
 
 AbortSignalRegistry::~AbortSignalRegistry() = default;
 
@@ -30,6 +31,7 @@ void AbortSignalRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(event_listener_signals_);
   visitor->Trace(signals_registered_for_abort_);
   visitor->Trace(signals_registered_for_priority_);
+  visitor->Trace(execution_context_);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

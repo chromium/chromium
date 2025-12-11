@@ -43,6 +43,7 @@ PressureObserverManager* PressureObserverManager::From(
 
 PressureObserverManager::PressureObserverManager(ExecutionContext* context)
     : ExecutionContextLifecycleStateObserver(context),
+      execution_context_(*context),
       pressure_manager_(context) {
   UpdateStateIfNeeded();
   for (const auto& source : PressureObserver::knownSources()) {
@@ -104,6 +105,7 @@ void PressureObserverManager::Trace(Visitor* visitor) const {
   visitor->Trace(pressure_manager_);
   visitor->Trace(source_to_client_);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
+  visitor->Trace(execution_context_);
 }
 
 void PressureObserverManager::EnsureConnection(

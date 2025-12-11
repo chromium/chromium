@@ -289,11 +289,14 @@ ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
 ImageBitmapFactories& ImageBitmapFactories::From(ExecutionContext& context) {
   ImageBitmapFactories* supplement = context.GetImageBitmapFactories();
   if (!supplement) {
-    supplement = MakeGarbageCollected<ImageBitmapFactories>();
+    supplement = MakeGarbageCollected<ImageBitmapFactories>(context);
     context.SetImageBitmapFactories(supplement);
   }
   return *supplement;
 }
+
+ImageBitmapFactories::ImageBitmapFactories(ExecutionContext& context)
+    : execution_context_(context) {}
 
 void ImageBitmapFactories::AddLoader(ImageBitmapLoader* loader) {
   pending_loaders_.insert(loader);
@@ -306,6 +309,7 @@ void ImageBitmapFactories::DidFinishLoading(ImageBitmapLoader* loader) {
 
 void ImageBitmapFactories::Trace(Visitor* visitor) const {
   visitor->Trace(pending_loaders_);
+  visitor->Trace(execution_context_);
 }
 
 ImageBitmapFactories::ImageBitmapLoader::ImageBitmapLoader(

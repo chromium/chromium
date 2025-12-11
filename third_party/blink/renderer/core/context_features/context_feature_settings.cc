@@ -6,8 +6,12 @@
 
 #include "base/memory/protected_memory.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
 namespace blink {
+
+ContextFeatureSettings::ContextFeatureSettings(ExecutionContext& context)
+    : execution_context_(context) {}
 
 DEFINE_PROTECTED_DATA base::ProtectedMemory<bool>
     ContextFeatureSettings::mojo_js_allowed_;
@@ -18,7 +22,7 @@ ContextFeatureSettings* ContextFeatureSettings::From(
     CreationMode creation_mode) {
   ContextFeatureSettings* settings = context->GetContextFeatureSettings();
   if (!settings && creation_mode == CreationMode::kCreateIfNotExists) {
-    settings = MakeGarbageCollected<ContextFeatureSettings>();
+    settings = MakeGarbageCollected<ContextFeatureSettings>(*context);
     context->SetContextFeatureSettings(settings);
   }
   return settings;
@@ -46,6 +50,10 @@ void ContextFeatureSettings::CrashIfMojoJSNotAllowed() {
   CHECK(*mojo_js_allowed_);
 }
 
+void ContextFeatureSettings::Trace(Visitor* visitor) const {
+  visitor->Trace(execution_context_);
+}
+
 bool ContextFeatureSettings::isMojoJSEnabled() const {
   if (enable_mojo_js_) {
     // If enable_mojo_js_ is true and mojo_js_allowed_ isn't also true, then it
@@ -56,7 +64,5 @@ bool ContextFeatureSettings::isMojoJSEnabled() const {
   }
   return enable_mojo_js_;
 }
-
-void ContextFeatureSettings::Trace(Visitor* visitor) const {}
 
 }  // namespace blink

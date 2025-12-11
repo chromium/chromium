@@ -38,14 +38,15 @@ class ParsedFeaturePolicies final
   static ParsedFeaturePolicies& From(ExecutionContext& context) {
     ParsedFeaturePolicies* policies = context.GetParsedFeaturePolicies();
     if (!policies) {
-      policies = MakeGarbageCollected<ParsedFeaturePolicies>();
+      policies = MakeGarbageCollected<ParsedFeaturePolicies>(context);
       context.SetParsedFeaturePolicies(policies);
     }
     return *policies;
   }
 
-  ParsedFeaturePolicies()
-      : policies_(static_cast<size_t>(
+  explicit ParsedFeaturePolicies(ExecutionContext& context)
+      : execution_context_(context),
+        policies_(static_cast<size_t>(
                       network::mojom::PermissionsPolicyFeature::kMaxValue) +
                   1) {}
 
@@ -58,9 +59,13 @@ class ParsedFeaturePolicies final
     return false;
   }
 
-  void Trace(Visitor* visitor) const override {}
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(execution_context_);
+  }
 
  private:
+  Member<ExecutionContext> execution_context_;
+
   // Tracks which permissions policies have already been parsed, so as not to
   // count them multiple times.
   Vector<bool> policies_;

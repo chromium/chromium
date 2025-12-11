@@ -82,13 +82,14 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
     CHECK(!context.IsWorkletGlobalScope());
     DOMTimerCoordinator* coordinator = context.GetDOMTimerCoordinator();
     if (!coordinator) {
-      coordinator = MakeGarbageCollected<DOMTimerCoordinator>();
+      coordinator = MakeGarbageCollected<DOMTimerCoordinator>(context);
       context.SetDOMTimerCoordinator(coordinator);
     }
     return *coordinator;
   }
 
-  DOMTimerCoordinator() = default;
+  explicit DOMTimerCoordinator(ExecutionContext& context)
+      : execution_context_(context) {}
 
   int Install(DOMTimer* timer) {
     int timeout_id = NextID();
@@ -120,7 +121,10 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
   // deeper timer nesting level, see DOMTimer::DOMTimer.
   void SetTimerNestingLevel(int level) { timer_nesting_level_ = level; }
 
-  void Trace(Visitor* visitor) const final { visitor->Trace(timers_); }
+  void Trace(Visitor* visitor) const final {
+    visitor->Trace(timers_);
+    visitor->Trace(execution_context_);
+  }
 
  private:
   int NextID() {
@@ -137,6 +141,7 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
     }
   }
 
+  Member<ExecutionContext> execution_context_;
   HeapHashMap<int, Member<DOMTimer>> timers_;
   int circular_sequential_id_ = 0;
   int timer_nesting_level_ = 0;

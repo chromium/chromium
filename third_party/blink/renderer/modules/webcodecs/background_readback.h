@@ -33,7 +33,8 @@ class MODULES_EXPORT BackgroundReadback
       base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
   using ReadbackDoneCallback = base::OnceCallback<void(bool)>;
 
-  explicit BackgroundReadback(base::PassKey<BackgroundReadback> key);
+  explicit BackgroundReadback(base::PassKey<BackgroundReadback> key,
+                              ExecutionContext& context);
   virtual ~BackgroundReadback();
 
   static BackgroundReadback* From(ExecutionContext& context);
@@ -49,7 +50,9 @@ class MODULES_EXPORT BackgroundReadback
       base::span<uint8_t> dest_buffer,
       ReadbackDoneCallback done_cb);
 
-  void Trace(Visitor* visitor) const override {}
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(execution_context_);
+  }
 
  private:
   void ReadbackOnThread(scoped_refptr<media::VideoFrame> txt_frame,
@@ -85,6 +88,8 @@ class MODULES_EXPORT BackgroundReadback
       base::span<uint8_t> dest_buffer,
       ReadbackDoneCallback done_cb,
       bool success);
+
+  Member<ExecutionContext> execution_context_;
 
   // Lives and dies on the worker thread.
   scoped_refptr<SyncReadbackThread> sync_readback_impl_;

@@ -74,15 +74,16 @@ class ExecutionContextClipboardEventState
       ExecutionContextClipboardEventState* supplement =
           execution_context.GetExecutionContextClipboardEventState();
       if (!supplement) {
-        supplement =
-            MakeGarbageCollected<ExecutionContextClipboardEventState>();
+        supplement = MakeGarbageCollected<ExecutionContextClipboardEventState>(
+            execution_context);
         execution_context.SetExecutionContextClipboardEventState(supplement);
       }
       return *supplement;
     }
   }
 
-  ExecutionContextClipboardEventState() = default;
+  ExecutionContextClipboardEventState(ExecutionContext& execution_context)
+      : execution_context_(execution_context) {}
   virtual ~ExecutionContextClipboardEventState() = default;
 
   struct State {
@@ -100,9 +101,12 @@ class ExecutionContextClipboardEventState
 
   const State& GetState() const { return state_; }
 
-  void Trace(Visitor* visitor) const override {}
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(execution_context_);
+  }
 
  private:
+  Member<ExecutionContext> execution_context_;
   State state_;
 };
 

@@ -18,9 +18,12 @@ class CrosKiosk : public ScriptWrappable, public GarbageCollectedMixin {
  public:
   static CrosKiosk& From(ExecutionContext&);
 
-  CrosKiosk() = default;
+  explicit CrosKiosk(ExecutionContext&);
 
   void Trace(Visitor*) const override;
+
+ private:
+  Member<ExecutionContext> execution_context_;
 };
 
 }  // namespace blink

@@ -42,6 +42,8 @@ class CORE_EXPORT FileBackedBlobFactoryDispatcher
 
   mojom::blink::FileBackedBlobFactory* GetFileBackedBlobFactory();
 
+  Member<ExecutionContext> execution_context_;
+
   HeapMojoAssociatedRemote<mojom::blink::FileBackedBlobFactory> frame_remote_;
 
   HeapMojoRemote<mojom::blink::FileBackedBlobFactory> worker_remote_;
