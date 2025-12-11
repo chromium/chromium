@@ -4944,6 +4944,71 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ExcludedOverrideRuleWithPac) {
 }
 
 TEST_F(ConfiguredProxyResolutionServiceTest,
+       MatchingOverrideRuleWithHostNotApplyingSync) {
+  auto config = ProxyConfig::CreateDirect();
+  auto override_rule = CreateOverrideRule(
+      kMatchingRule, CreateProxyList(kProxy1), kDnsHost1,
+      ProxyOverrideRule::DnsProbeCondition::Result::kNotFound);
+  override_rule.dns_conditions.push_back(
+      ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+          .host = url::SchemeHostPort(GURL(kDnsHost2)),
+          .result = ProxyOverrideRule::DnsProbeCondition::Result::kNotFound});
+  config.set_proxy_override_rules({override_rule});
+
+  mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  mock_host_resolver_->set_synchronous_mode(true);
+
+  // No need to add an entry for kDnsHost2, as the cached result for kDnsHost1
+  // will already fail its condition synchronously and get the rule skipped.
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  RecordingNetLogObserver net_log_observer;
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request,
+      NetLogWithSource::Make(NetLogSourceType::NONE), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_FALSE(request);
+  EXPECT_FALSE(callback.have_result());
+  EXPECT_TRUE(info.is_direct());
+
+  const auto& entries = net_log_observer.GetEntries();
+  EXPECT_EQ(entries.size(), 8U);
+  EXPECT_TRUE(LogContainsBeginEvent(entries, 0,
+                                    NetLogEventType::PROXY_RESOLUTION_SERVICE));
+  EXPECT_TRUE(LogContainsBeginEvent(
+      entries, 1, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEvent(entries, 2,
+                               NetLogEventType::PROXY_OVERRIDE_HOST_RESOLUTION,
+                               NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 3, NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 4, NetLogEventType::PROXY_OVERRIDE_END_HOST_RESOLUTION,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(
+      entries, 5, NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES));
+  EXPECT_TRUE(LogContainsEvent(
+      entries, 6, NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
+      NetLogEventPhase::NONE));
+  EXPECT_TRUE(LogContainsEndEvent(entries, 7,
+                                  NetLogEventType::PROXY_RESOLUTION_SERVICE));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
        OverrideRuleWithoutHostAppliedSync) {
   auto proxy_list = CreateProxyList(kProxy1);
   auto config = ProxyConfig::CreateDirect();
@@ -5059,6 +5124,180 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
       NetLogEventPhase::NONE));
   EXPECT_TRUE(LogContainsEndEvent(entries, 8,
                                   NetLogEventType::PROXY_RESOLUTION_SERVICE));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       MultipleOverrideRuleWithHostSecondResolutionCompletedAfterRequest) {
+  auto config = ProxyConfig::CreateDirect();
+  auto proxy_list1 = CreateProxyList(kProxy1);
+  auto override_rule1 =
+      CreateOverrideRule(kMatchingRule, proxy_list1, kDnsHost1);
+  auto override_rule2 =
+      CreateOverrideRule(kMatchingRule, CreateProxyList(kProxy2), kDnsHost2);
+
+  config.set_proxy_override_rules({override_rule1, override_rule2});
+
+  mock_host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 2U);
+  ASSERT_EQ(mock_host_resolver_->request_host(1U), "host1.test");
+
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+  mock_host_resolver_->ResolveNow(1U);
+
+  // Completion of the DNS resolution for the first request is sufficient to
+  // complete the proxy resolution; no need to block on the resolution of the
+  // second DNS lookup.
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(info.proxy_list().Equals(proxy_list1));
+
+  // Resolution of the second DNS request after completion shouldn't crash.
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  AddDnsEntry(GURL(kDnsHost2), "2.3.4.5");
+  mock_host_resolver_->ResolveOnlyRequestNow();
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithHostTwoRequestsSameNak) {
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info1;
+  TestCompletionCallback callback1;
+  std::unique_ptr<ProxyResolutionRequest> request1;
+  auto nak = NetworkAnonymizationKey::CreateSameSite(
+      net::SchemefulSite(GURL(kMatchingUrl)));
+  int rv = service.ResolveProxy(GURL(kMatchingUrl), std::string(), nak, &info1,
+                                callback1.callback(), &request1,
+                                NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request1);
+  ASSERT_FALSE(callback1.have_result());
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
+  EXPECT_EQ(mock_host_resolver_->request_priority(1U), DEFAULT_PRIORITY);
+
+  ProxyInfo info2;
+  TestCompletionCallback callback2;
+  std::unique_ptr<ProxyResolutionRequest> request2;
+  rv = service.ResolveProxy(GURL(kMatchingUrl), std::string(), nak, &info2,
+                            callback2.callback(), &request2, NetLogWithSource(),
+                            HIGHEST);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request2);
+  ASSERT_FALSE(callback2.have_result());
+
+  // There should only be one pending DNS resolution request.
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
+  EXPECT_EQ(mock_host_resolver_->request_priority(1U), HIGHEST);
+
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+  mock_host_resolver_->ResolveOnlyRequestNow();
+
+  EXPECT_THAT(callback1.WaitForResult(), IsOk());
+  EXPECT_TRUE(info1.proxy_list().Equals(proxy_list));
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  EXPECT_TRUE(info2.proxy_list().Equals(proxy_list));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       OverrideRuleWithHostTwoRequestsDifferentNak) {
+  ProxyConfig config = ProxyConfig::CreateDirect();
+  auto proxy_list = CreateProxyList(kProxy1);
+  config.set_proxy_override_rules(
+      {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  mock_host_resolver_->set_ondemand_mode(true);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info1;
+  TestCompletionCallback callback1;
+  std::unique_ptr<ProxyResolutionRequest> request1;
+  auto nak1 = NetworkAnonymizationKey::CreateSameSite(
+      net::SchemefulSite(GURL(kMatchingUrl)));
+  int rv = service.ResolveProxy(GURL(kMatchingUrl), std::string(), nak1, &info1,
+                                callback1.callback(), &request1,
+                                NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request1);
+  ASSERT_FALSE(callback1.have_result());
+
+  ProxyInfo info2;
+  TestCompletionCallback callback2;
+  std::unique_ptr<ProxyResolutionRequest> request2;
+  auto nak2 = NetworkAnonymizationKey::CreateCrossSite(
+      net::SchemefulSite(GURL(kMatchingUrl)));
+  rv = service.ResolveProxy(GURL(kMatchingUrl), std::string(), nak2, &info2,
+                            callback2.callback(), &request2, NetLogWithSource(),
+                            DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request2);
+  ASSERT_FALSE(callback2.have_result());
+
+  // There should be two pending DNS resolution request due to the different
+  // NAKs.
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  ASSERT_EQ(mock_host_resolver_->last_id(), 2U);
+
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+
+  // Resolve the second request first.
+  mock_host_resolver_->ResolveNow(2U);
+
+  EXPECT_THAT(callback2.WaitForResult(), IsOk());
+  EXPECT_TRUE(info2.proxy_list().Equals(proxy_list));
+
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+  mock_host_resolver_->ResolveNow(1U);
+
+  EXPECT_THAT(callback1.WaitForResult(), IsOk());
+  EXPECT_TRUE(info1.proxy_list().Equals(proxy_list));
+
+  EXPECT_FALSE(mock_host_resolver_->has_pending_requests());
 }
 
 TEST_F(ConfiguredProxyResolutionServiceTest,
@@ -5332,7 +5571,12 @@ TEST_F(ConfiguredProxyResolutionServiceTest, OverrideRuleWithHostCancelled) {
   // Cancel the request.
   request.reset();
 
-  EXPECT_FALSE(mock_host_resolver_->has_pending_requests());
+  // The DNS resolution request should still be pending.
+  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
+
+  // Resolving that request should not lead to a crash.
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+  mock_host_resolver_->ResolveOnlyRequestNow();
 
   auto entries = net_log_observer.GetEntries();
   EXPECT_EQ(entries.size(), 7U);
@@ -5480,6 +5724,61 @@ TEST_F(
       NetLogEventPhase::NONE));
   EXPECT_TRUE(LogContainsEndEvent(entries, 15,
                                   NetLogEventType::PROXY_RESOLUTION_SERVICE));
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       ThreeOverrideRulesWithPartiallySharedDnsHosts) {
+  auto proxy_list1 = CreateProxyList(kProxy1);
+  auto override_rule1 = CreateOverrideRule(kMatchingRule, proxy_list1);
+  override_rule1.dns_conditions.emplace_back(
+      url::SchemeHostPort(GURL(kDnsHost1)),
+      ProxyOverrideRule::DnsProbeCondition::Result::kNotFound);
+
+  auto override_rule2 = CreateOverrideRule(kMatchingRule, proxy_list1);
+  override_rule2.dns_conditions.emplace_back(
+      url::SchemeHostPort(GURL(kDnsHost2)),
+      ProxyOverrideRule::DnsProbeCondition::Result::kResolved);
+
+  // This rule uses the same DNS host as the first rule. Its position,
+  // immediately following a rule with a different DNS host, is crucial. This
+  // sequencing forces the rule to be evaluated (not skipped).
+  auto proxy_list2 = CreateProxyList(kProxy2);
+  auto override_rule3 = CreateOverrideRule(kMatchingRule, proxy_list2);
+  override_rule2.dns_conditions.emplace_back(
+      url::SchemeHostPort(GURL(kDnsHost1)),
+      ProxyOverrideRule::DnsProbeCondition::Result::kResolved);
+
+  auto config = ProxyConfig::CreateDirect();
+  config.set_proxy_override_rules({std::move(override_rule1),
+                                   std::move(override_rule2),
+                                   std::move(override_rule3)});
+
+  mock_host_resolver_ = std::make_unique<MockHostResolver>();
+  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
+  AddDnsEntry(GURL(kDnsHost2), ERR_NAME_NOT_RESOLVED);
+
+  auto config_service =
+      std::make_unique<MockProxyConfigService>(std::move(config));
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+
+  ConfiguredProxyResolutionService service(
+      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
+      /*net_log=*/nullptr,
+      /*quick_check_enabled=*/true);
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  int rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), NetworkAnonymizationKey(), &info,
+      callback.callback(), &request, NetLogWithSource(), DEFAULT_PRIORITY);
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+
+  ASSERT_FALSE(callback.have_result());
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  EXPECT_TRUE(info.proxy_list().Equals(proxy_list2));
 }
 
 TEST_F(ConfiguredProxyResolutionServiceTest,

@@ -851,6 +851,8 @@ component("net") {
     "proxy_resolution/proxy_resolver_factory.cc",
     "proxy_resolution/proxy_resolver_factory.h",
     "proxy_resolution/proxy_retry_info.h",
+    "proxy_resolution/resolve_host_request.cc",
+    "proxy_resolution/resolve_host_request.h",
     "quic/address_utils.h",
     "quic/bidirectional_stream_quic_impl.cc",
     "quic/bidirectional_stream_quic_impl.h",

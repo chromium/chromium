@@ -6,7 +6,6 @@
 
 #include <optional>
 #include <utility>
-#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -18,6 +17,32 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
+
+namespace {
+
+bool CheckDnsCondition(
+    const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition,
+    const ResolveHostResult& dns_result) {
+  switch (dns_condition.result) {
+    case ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kNotFound:
+      return dns_result.is_address_list_empty;
+    case ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kResolved:
+      return !dns_result.is_address_list_empty;
+  }
+}
+
+base::Value::Dict CreateEndHostResolutionNetLogParams(
+    const url::SchemeHostPort& host,
+    const ResolveHostResult& result,
+    bool was_resolved_sync) {
+  base::Value::Dict dict;
+  dict.Set("host", host.Serialize());
+  dict.Set("was_resolved_sync", was_resolved_sync);
+  result.AddToDict(dict);
+  return dict;
+}
+
+}  // namespace
 
 ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
     ConfiguredProxyResolutionService* service,
@@ -63,65 +88,45 @@ int ConfiguredProxyResolutionRequest::Start() {
   if (!service_->config_->value().proxy_override_rules().empty()) {
     net_log_.BeginEvent(NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES);
 
-    auto* host_resolver = service_->GetHostResolverForOverrideRules();
-    CHECK(host_resolver);
-
     for (const auto& rule : service_->config_->value().proxy_override_rules()) {
       if (rule.MatchesDestination(url_)) {
-        // TODO(crbug.com/454638342): Add optimization to skip marking a rule as
-        // applicable if we can already discard it based on cached DNS
-        // resolution state (and avoid starting actual DNS resolution that is
-        // not needed).
-        applicable_override_rules_.push(rule);
-
+        bool skip_rule = false;
         for (const auto& dns_condition : rule.dns_conditions) {
-          if (!dns_results_.contains(dns_condition.host)) {
-            HostResolver::ResolveHostParameters parameters;
-            parameters.initial_priority = priority_;
-
-            auto sub_net_log = NetLogWithSource::Make(
-                net_log_.net_log(),
-                NetLogSourceType::PROXY_OVERRIDE_HOST_RESOLUTION);
-            auto request = host_resolver->CreateRequest(
-                dns_condition.host, network_anonymization_key_, sub_net_log,
-                parameters);
-
-            // Link the two net log sources together.
-            sub_net_log.AddEventReferencingSource(
-                NetLogEventType::PROXY_OVERRIDE_HOST_RESOLUTION,
-                net_log_.source());
+          // DNS resolution requests are keyed by the host and the network
+          // anonymization key, but not by listeners. This means that a given
+          // request may end up as listener multiple times for the same DNS host
+          // resolution requests (e.g. if the same host is in multiple rules).
+          // This is fine, as long as `OnDnsHostResolved` knows how to handle
+          // multiple calls for the same host.
+          auto result = service_->RequestHostResolution(
+              dns_condition, weak_factory_.GetWeakPtr(),
+              network_anonymization_key_, net_log_, priority_);
+          if (result) {
             net_log_.AddEvent(
-                NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION, [&] {
-                  base::Value::Dict dict;
-                  sub_net_log.source().AddToEventParameters(dict);
-                  dict.Set("dns_condition", dns_condition.ToDict());
-                  return dict;
+                NetLogEventType::PROXY_OVERRIDE_END_HOST_RESOLUTION, [&] {
+                  return CreateEndHostResolutionNetLogParams(
+                      dns_condition.host, result.value(),
+                      /*was_resolved_sync=*/true);
                 });
 
-            int rv = request->Start(base::BindOnce(
-                &ConfiguredProxyResolutionRequest::OnDnsHostResolved,
-                base::Unretained(this), dns_condition.host));
-            if (rv != ERR_IO_PENDING) {
-              auto result = ResolveHostResult(rv, *request);
-              net_log_.AddEvent(
-                  NetLogEventType::PROXY_OVERRIDE_END_HOST_RESOLUTION, [&] {
-                    base::Value::Dict dict;
-                    dict.Set("host", dns_condition.host.Serialize());
-                    dict.Set("was_resolved_sync", true);
-                    result.AddToDict(dict);
-                    return dict;
-                  });
-              dns_results_.emplace(dns_condition.host, std::move(result));
-            } else {
-              dns_results_.emplace(dns_condition.host, std::move(request));
+            if (!CheckDnsCondition(dns_condition, result.value())) {
+              // No need to trigger DNS resolutions for the remaining hosts
+              // in this rule, as it does not apply.
+              skip_rule = true;
+              break;
             }
+
+            dns_results_.emplace(dns_condition.host, result.value());
           }
+        }
+        if (!skip_rule) {
+          applicable_override_rules_.push(rule);
         }
       }
     }
 
     if (applicable_override_rules_.empty()) {
-      // Not override rules applied.
+      // No override rules applied.
       net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES);
     }
   }
@@ -145,7 +150,7 @@ void ConfiguredProxyResolutionRequest::
 void ConfiguredProxyResolutionRequest::Cancel() {
   net_log_.AddEvent(NetLogEventType::CANCELLED);
 
-  if (!dns_results_.empty()) {
+  if (!applicable_override_rules_.empty()) {
     net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULES);
   }
 
@@ -216,18 +221,6 @@ void ConfiguredProxyResolutionRequest::QueryComplete(int result_code) {
   std::move(callback).Run(result_code);
 }
 
-ConfiguredProxyResolutionRequest::ResolveHostResult::ResolveHostResult(
-    int result_code,
-    const HostResolver::ResolveHostRequest& completed_request)
-    : result_code(result_code),
-      is_address_list_empty(completed_request.GetAddressResults().empty()) {}
-
-void ConfiguredProxyResolutionRequest::ResolveHostResult::AddToDict(
-    base::Value::Dict& dict) const {
-  dict.Set("net_error", result_code);
-  dict.Set("is_address_list_empty", is_address_list_empty);
-}
-
 int ConfiguredProxyResolutionRequest::ContinueProxyResolution() {
   if (!applicable_override_rules_.empty()) {
     int rv = EvaluateApplicableOverrideRules();
@@ -258,23 +251,25 @@ int ConfiguredProxyResolutionRequest::ContinueProxyResolution() {
 
 void ConfiguredProxyResolutionRequest::OnDnsHostResolved(
     const url::SchemeHostPort& host,
-    int result_code) {
-  auto dns_result_it = dns_results_.find(host);
-  CHECK(
-      std::holds_alternative<std::unique_ptr<HostResolver::ResolveHostRequest>>(
-          dns_result_it->second));
-  auto request =
-      std::move(std::get<std::unique_ptr<HostResolver::ResolveHostRequest>>(
-          dns_result_it->second));
-  CHECK(request);
-  dns_result_it->second.emplace<ResolveHostResult>(result_code, *request);
+    const ResolveHostResult& result) {
+  if (applicable_override_rules_.empty()) {
+    // DNS resolution is only required for override rules. Ignore these function
+    // calls if the current request is not resolving override rules.
+    return;
+  }
+
+  // Using `try_emplace` as this line may be hit multiple times for the same
+  // host (see comment in `Start`).
+  auto [unused, inserted] = dns_results_.try_emplace(host, result);
+  // Entry already existed, likely with the same value as before. Same value or
+  // not, we keep the old result, so there's nothing else to do.
+  if (!inserted) {
+    return;
+  }
 
   net_log_.AddEvent(NetLogEventType::PROXY_OVERRIDE_END_HOST_RESOLUTION, [&] {
-    base::Value::Dict dict;
-    dict.Set("host", host.Serialize());
-    dict.Set("was_resolved_sync", false);
-    std::get<ResolveHostResult>(dns_result_it->second).AddToDict(dict);
-    return dict;
+    return CreateEndHostResolutionNetLogParams(host, result,
+                                               /*was_resolved_sync=*/false);
   });
 
   if (!service_ || !service_->IsReady()) {
@@ -300,15 +295,16 @@ int ConfiguredProxyResolutionRequest::EvaluateApplicableOverrideRules() {
     // Not having any conditions means they are all satisfied.
     bool conditions_satisfied = true;
     for (const auto& dns_condition : applicable_rule.dns_conditions) {
-      const auto& dns_result = dns_results_.at(dns_condition.host);
-      if (std::holds_alternative<
-              std::unique_ptr<HostResolver::ResolveHostRequest>>(dns_result)) {
+      // If no results are found in the DNS results map, it means that the DNS
+      // resolution request owned by the service is still pending.
+      auto dns_result_it = dns_results_.find(dns_condition.host);
+      if (dns_result_it == dns_results_.end()) {
         return ERR_IO_PENDING;
       }
+
       conditions_satisfied =
           conditions_satisfied &&
-          CheckDnsCondition(dns_condition,
-                            std::get<ResolveHostResult>(dns_result));
+          CheckDnsCondition(dns_condition, dns_result_it->second);
     }
 
     if (conditions_satisfied) {
@@ -333,18 +329,6 @@ void ConfiguredProxyResolutionRequest::Reset() {
   resolve_job_.reset();
   applicable_override_rules_ = base::queue<ProxyConfig::ProxyOverrideRule>();
   dns_results_.clear();
-}
-
-// static
-bool ConfiguredProxyResolutionRequest::CheckDnsCondition(
-    const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition,
-    const ConfiguredProxyResolutionRequest::ResolveHostResult& dns_result) {
-  switch (dns_condition.result) {
-    case ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kNotFound:
-      return dns_result.is_address_list_empty;
-    case ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::kResolved:
-      return !dns_result.is_address_list_empty;
-  }
 }
 
 }  // namespace net
