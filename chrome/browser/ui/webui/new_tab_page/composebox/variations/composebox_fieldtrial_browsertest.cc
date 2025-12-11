@@ -269,8 +269,7 @@ INSTANTIATE_TEST_SUITE_P(,
                              // Values for the generic realbox next feature.
                              ::testing::Values(true, false)));
 
-// TODO(crbug.com/467751950): Update and re-enable test.
-IN_PROC_BROWSER_TEST_P(NtpRealboxNextFieldTrialBrowserTest, DISABLED_Test) {
+IN_PROC_BROWSER_TEST_P(NtpRealboxNextFieldTrialBrowserTest, Test) {
   bool expected = GetExpectedEnabled();
   if (!base::FeatureList::IsEnabled(ntp_realbox::kNtpRealboxNext)) {
     expected = false;
