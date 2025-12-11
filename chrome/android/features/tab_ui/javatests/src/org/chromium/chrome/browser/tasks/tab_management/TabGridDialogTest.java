@@ -1671,6 +1671,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "TODO(crbug.com/468062507)")
     public void testStripDialog_TabListEditorCloseAll_NoCustomHomepage() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Create a tab group with 2 tabs.
