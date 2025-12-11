@@ -877,7 +877,30 @@ void SingleDeprecatedPolicyToMultipleNewPolicyHandler::ApplyPolicySettings(
   NOTREACHED();
 }
 
-// CloudOnlyPolicyHandler implementation ---------------------------------------
+// ConfigurationPolicyChecker implementation -----------------------------------
+ConfigurationPolicyChecker::ConfigurationPolicyChecker(
+    std::unique_ptr<NamedPolicyHandler> handler)
+    : NamedPolicyHandler(handler->policy_name()),
+      policy_handler_(std::move(handler)) {}
+
+ConfigurationPolicyChecker::~ConfigurationPolicyChecker() = default;
+
+void ConfigurationPolicyChecker::ApplyPolicySettingsWithParameters(
+    const policy::PolicyMap& policies,
+    const policy::PolicyHandlerParameters& parameters,
+    PrefValueMap* prefs) {
+  policy_handler_->ApplyPolicySettingsWithParameters(policies, parameters,
+                                                     prefs);
+}
+
+void ConfigurationPolicyChecker::ApplyPolicySettings(
+    /* policies */ const policy::PolicyMap&,
+    /* prefs */ PrefValueMap*) {
+  NOTREACHED();
+}
+
+// CloudOnlyPolicyHandler implementation
+// ---------------------------------------
 
 namespace {
 
@@ -941,18 +964,31 @@ bool CloudOnlyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
              : false;
 }
 
-// CloudUserOnlyPolicyHandler implementation
+// CloudOnlyPolicyChecker implementation
 // ---------------------------------------
-
-CloudUserOnlyPolicyHandler::CloudUserOnlyPolicyHandler(
+CloudOnlyPolicyChecker::CloudOnlyPolicyChecker(
     std::unique_ptr<NamedPolicyHandler> policy_handler)
-    : NamedPolicyHandler(policy_handler->policy_name()),
-      policy_handler_(std::move(policy_handler)) {}
+    : ConfigurationPolicyChecker(std::move(policy_handler)) {}
 
-CloudUserOnlyPolicyHandler::~CloudUserOnlyPolicyHandler() = default;
+CloudOnlyPolicyChecker::~CloudOnlyPolicyChecker() = default;
+
+bool CloudOnlyPolicyChecker::CheckPolicySettings(const PolicyMap& policies,
+                                                 PolicyErrorMap* errors) {
+  return CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(
+             policy_handler_->policy_name(), policies, errors) &&
+         policy_handler_->CheckPolicySettings(policies, errors);
+}
+
+// CloudUserOnlyPolicyChecker implementation
+// ---------------------------------------
+CloudUserOnlyPolicyChecker::CloudUserOnlyPolicyChecker(
+    std::unique_ptr<NamedPolicyHandler> policy_handler)
+    : ConfigurationPolicyChecker(std::move(policy_handler)) {}
+
+CloudUserOnlyPolicyChecker::~CloudUserOnlyPolicyChecker() = default;
 
 // static
-bool CloudUserOnlyPolicyHandler::CheckUserOnlyPolicySettings(
+bool CloudUserOnlyPolicyChecker::CheckUserOnlyPolicySettings(
     const char* policy_name,
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
@@ -972,24 +1008,11 @@ bool CloudUserOnlyPolicyHandler::CheckUserOnlyPolicySettings(
   return true;
 }
 
-bool CloudUserOnlyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
+bool CloudUserOnlyPolicyChecker::CheckPolicySettings(const PolicyMap& policies,
                                                      PolicyErrorMap* errors) {
-  return CheckUserOnlyPolicySettings(policy_name(), policies, errors) &&
+  return CloudUserOnlyPolicyChecker::CheckUserOnlyPolicySettings(
+             policy_handler_->policy_name(), policies, errors) &&
          policy_handler_->CheckPolicySettings(policies, errors);
-}
-
-void CloudUserOnlyPolicyHandler::ApplyPolicySettingsWithParameters(
-    const policy::PolicyMap& policies,
-    const policy::PolicyHandlerParameters& parameters,
-    PrefValueMap* prefs) {
-  policy_handler_->ApplyPolicySettingsWithParameters(policies, parameters,
-                                                     prefs);
-}
-
-void CloudUserOnlyPolicyHandler::ApplyPolicySettings(
-    const policy::PolicyMap& /* policies */,
-    PrefValueMap* /* prefs */) {
-  NOTREACHED();
 }
 
 URLPolicyHandler::URLPolicyHandler(const char* policy_name,

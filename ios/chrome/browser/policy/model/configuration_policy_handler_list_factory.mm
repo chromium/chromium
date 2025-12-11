@@ -290,7 +290,7 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<policy::GenAiDefaultSettingsPolicyHandler>(
           std::move(gen_ai_default_policies)));
 
-  handlers->AddHandler(std::make_unique<policy::CloudUserOnlyPolicyHandler>(
+  handlers->AddHandler(std::make_unique<policy::CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(
           policy::key::kTabGroupSharingSettings,
           collaboration::prefs::kSharedTabGroupsManagedAccountSetting,

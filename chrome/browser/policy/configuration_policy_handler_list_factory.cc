@@ -2925,11 +2925,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
               key::kProfileSeparationSettings,
               key::kProfileSeparationDataMigrationSettings,
               key::kProfileSeparationDomainExceptionList}));
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(key::kProfileSeparationSettings,
                                             prefs::kProfileSeparationSettings,
                                             base::Value::Type::INTEGER)));
-
 
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       std::make_unique<SimplePolicyHandler>(
@@ -2949,14 +2948,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kEnterpriseCustomLabelForBrowser,
       prefs::kEnterpriseCustomLabelForBrowser, base::Value::Type::STRING));
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(
           key::kEnterpriseCustomLabel, prefs::kEnterpriseCustomLabelForProfile,
           base::Value::Type::STRING)));
 
   handlers->AddHandler(std::make_unique<URLPolicyHandler>(
       key::kEnterpriseLogoUrlForBrowser, prefs::kEnterpriseLogoUrlForBrowser));
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<URLPolicyHandler>(key::kEnterpriseLogoUrl,
                                          prefs::kEnterpriseLogoUrlForProfile)));
 
@@ -3006,12 +3005,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kForceBrowserSignin, prefs::kForceBrowserSignin,
       base::Value::Type::BOOLEAN));
 
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(
           key::kUserSecuritySignalsReporting,
           enterprise_reporting::kUserSecuritySignalsReporting,
           base::Value::Type::BOOLEAN)));
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(
           key::kUserSecurityAuthenticatedReporting,
           enterprise_reporting::kUserSecurityAuthenticatedReporting,
@@ -3520,7 +3519,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           std::move(gen_ai_default_policies))));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(
           key::kTabGroupSharingSettings,
           collaboration::prefs::kSharedTabGroupsManagedAccountSetting,
@@ -3536,7 +3535,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(
           key::kCacheEncryptionEnabled,
           enterprise_connectors::kCacheEncryptionEnabledPref,
