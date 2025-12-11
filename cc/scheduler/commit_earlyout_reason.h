@@ -10,12 +10,17 @@
 
 namespace cc {
 
+// LINT.IfChange(CommitEarlyOutReason)
 enum class CommitEarlyOutReason {
   kAbortedNotVisible,
   kAbortedDeferredMainFrameUpdate,
   kAbortedDeferredCommit,
   kFinishedNoUpdates,
+  // Not an early out case, this is only for metrics.
+  kNoEarlyOut,
+  kMaxValue = kNoEarlyOut,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/compositing/enums.xml:CommitEarlyOutReason)
 
 inline const char* CommitEarlyOutReasonToString(CommitEarlyOutReason reason) {
   switch (reason) {
@@ -27,6 +32,8 @@ inline const char* CommitEarlyOutReasonToString(CommitEarlyOutReason reason) {
       return "CommitEarlyOutReason::kAbortedDeferredCommit";
     case CommitEarlyOutReason::kFinishedNoUpdates:
       return "CommitEarlyOutReason::kFinishedNoUpdates";
+    case CommitEarlyOutReason::kNoEarlyOut:
+      return "CommitEarlyOutReason::kNoEarlyOut";
   }
   NOTREACHED();
 }

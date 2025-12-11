@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "cc/scheduler/commit_earlyout_reason.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -1769,6 +1770,9 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
       case CommitEarlyOutReason::kFinishedNoUpdates:
         WillCommit(/*commit_had_no_updates=*/true);
         break;
+      case CommitEarlyOutReason::kNoEarlyOut:
+        // Not a real case, only used for metrics.
+        NOTREACHED();
     }
   } else {
     DCHECK(settings_.main_frame_before_commit_enabled);
@@ -1784,6 +1788,9 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
       case CommitEarlyOutReason::kFinishedNoUpdates:
         commit_count_++;
         break;
+      case CommitEarlyOutReason::kNoEarlyOut:
+        // Not a real case, only used for metrics.
+        NOTREACHED();
     }
   }
 }

@@ -46,6 +46,18 @@ chromium-metrics-reviews@google.com.
 
 <!--LINT.ThenChange(//cc/scheduler/scheduler_state_machine.cc:BeginImplFrameDeadlineMode) -->
 
+<!--LINT.IfChange(CommitEarlyOutReason) -->
+
+<enum name="BeginMainFrameMainResult">
+  <int value="0" label="AbortedNotVisible"/>
+  <int value="1" label="AbortedDeferredMainFrameUpdate"/>
+  <int value="2" label="AbortedDeferredCommit"/>
+  <int value="3" label="FinishedNoUpdates"/>
+  <int value="4" label="NoEarlyOut"/>
+</enum>
+
+<!--LINT.ThenChange(//cc/scheduler/commit_earlyout_reason.h:CommitEarlyOutReason) -->
+
 <enum name="CALayerResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown failure"/>

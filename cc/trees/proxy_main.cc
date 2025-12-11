@@ -25,6 +25,7 @@
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/resources/ui_resource_manager.h"
+#include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/trees/latency_info_swap_promise.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
@@ -37,6 +38,7 @@
 #include "cc/trees/trace_utils.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
@@ -144,6 +146,15 @@ void ProxyMain::BeginMainFrame(
     std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
   DCHECK(IsMainThread());
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
+  // Record the final status, subsampled. Use an RAII object as this function
+  // has many early returns.
+  CommitEarlyOutReason reason = CommitEarlyOutReason::kNoEarlyOut;
+  absl::Cleanup maybe_record_metric = [&] {
+    if (base::ShouldRecordSubsampledMetric(.01)) {
+      UMA_HISTOGRAM_ENUMERATION("Compositing.BeginMainFrame.MainResult",
+                                reason);
+    }
+  };
 
   base::TimeTicks begin_main_frame_start_time = base::TimeTicks::Now();
   main_frames_in_flight_++;
@@ -200,11 +211,11 @@ void ProxyMain::BeginMainFrame(
     // Discard event metrics.
     layer_tree_host_->ClearEventsMetrics();
     std::vector<std::unique_ptr<SwapPromise>> empty_swap_promises;
+    reason = CommitEarlyOutReason::kAbortedNotVisible;
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
-                       base::Unretained(proxy_impl_.get()),
-                       CommitEarlyOutReason::kAbortedNotVisible,
+                       base::Unretained(proxy_impl_.get()), reason,
                        begin_main_frame_start_time,
                        std::move(empty_swap_promises),
                        false /* scroll_and_viewport_changes_synced */));
@@ -233,11 +244,11 @@ void ProxyMain::BeginMainFrame(
     // events metrics are not discarded so that they can be reported if the
     // commit happens in the future.
     std::vector<std::unique_ptr<SwapPromise>> empty_swap_promises;
+    reason = CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate;
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
-                       base::Unretained(proxy_impl_.get()),
-                       CommitEarlyOutReason::kAbortedDeferredMainFrameUpdate,
+                       base::Unretained(proxy_impl_.get()), reason,
                        begin_main_frame_start_time,
                        std::move(empty_swap_promises),
                        false /* scroll_and_viewport_changes_synced */));
@@ -346,10 +357,10 @@ void ProxyMain::BeginMainFrame(
     // events metrics are not discarded so that they can be reported if the
     // commit happens in the future.
     std::vector<std::unique_ptr<SwapPromise>> empty_swap_promises;
+    reason = CommitEarlyOutReason::kAbortedDeferredCommit;
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
-                                  base::Unretained(proxy_impl_.get()),
-                                  CommitEarlyOutReason::kAbortedDeferredCommit,
+                                  base::Unretained(proxy_impl_.get()), reason,
                                   begin_main_frame_start_time,
                                   std::move(empty_swap_promises),
                                   scroll_and_viewport_changes_synced));
@@ -439,11 +450,11 @@ void ProxyMain::BeginMainFrame(
 
     // We can only be here if !skip_commits, so we did do a scroll and
     // viewport sync.
+    reason = CommitEarlyOutReason::kFinishedNoUpdates;
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
-                       base::Unretained(proxy_impl_.get()),
-                       CommitEarlyOutReason::kFinishedNoUpdates,
+                       base::Unretained(proxy_impl_.get()), reason,
                        begin_main_frame_start_time, std::move(swap_promises),
                        true /* scroll_and_viewport_changes_synced */));
 

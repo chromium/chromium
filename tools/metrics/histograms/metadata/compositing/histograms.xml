@@ -97,6 +97,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.BeginMainFrame.MainResult"
+    enum="BeginMainFrameMainResult" expires_after="2026-06-30">
+  <owner>lizeb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <summary>
+    Records the outcome of BeginMainFrame, at a subsampled rate. This is
+    intended to understand the fraction of main frame updates that are aborted.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Browser.BeginFrame.Produced.Duration.Subsampled"
     units="microseconds" expires_after="2026-05-10">
   <owner>acondor@chromium.org</owner>
