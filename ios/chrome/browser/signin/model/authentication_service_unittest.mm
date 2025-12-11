@@ -705,9 +705,7 @@ TEST_P(AuthenticationServiceTest, HandleMDMNotification) {
 
 // Tests that MDM notification is suppressed for scope limited errors.
 TEST_P(AuthenticationServiceTest, HandleMDMNotificationSuppressed) {
-  base::test::ScopedFeatureList feature_list;
   base::HistogramTester histogram_tester;
-  feature_list.InitAndEnableFeature(switches::kAllowlistScopesForMdmErrors);
   authentication_service()->SignIn(identity(0),
                                    signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();

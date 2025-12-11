@@ -46,10 +46,6 @@ extern const char kForceFreDefaultBrowserStep[];
 // the first run after a restore operation.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAccountRetrievalWaitsForRestoration);
-// Feature to allowlist certain scopes for which mdm errors will be shown. All
-// other scopes will be ignored.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kAllowlistScopesForMdmErrors);
 #endif
 
 #if BUILDFLAG(IS_WIN)
