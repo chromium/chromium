@@ -6,60 +6,45 @@
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
-    <script src="../resources/audioparam-testing.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let sampleRate = 48000;
-      let renderFrames = 1000;
+    <script>
+      const sampleRate = 48000;
+      const renderFrames = 1000;
 
-      let audit = Audit.createTaskRunner();
-
-      audit.define('long duration', (task, should) => {
+      promise_test(async () => {
         // We only need to generate a small number of frames for this test.
-        let context = new OfflineAudioContext(1, renderFrames, sampleRate);
-        let src = context.createBufferSource();
+        const context = new OfflineAudioContext(1, renderFrames, sampleRate);
 
-        // Constant source of amplitude 1, looping.
-        src.buffer = createConstantBuffer(context, 1, 1);
-        src.loop = true;
+        // Constant source of amplitude 1.
+        const src = new ConstantSourceNode(context, { offset: 1 });
 
         // Automate the gain with a setValueCurve with a very long duration.
         // The duration should produce a frame number greater than 2^64 (larger
         // than the largest size_t value).
-        let gain = context.createGain();
-        let duration = Math.pow(2, 64);
-        let curve = Float32Array.from([0, 1]);
+        const gain = new GainNode(context);
+        const duration = Math.pow(2, 64);
+        const curve = Float32Array.from([0, 1]);
         gain.gain.setValueCurveAtTime(curve, 0, duration);
 
-        // Create the graph and go!
-        src.connect(gain);
-        gain.connect(context.destination);
+        src.connect(gain).connect(context.destination);
         src.start();
 
-        context.startRendering()
-            .then(function(result) {
-              // Find the maximum value of the buffer.
-              let max = Math.max.apply(null, result.getChannelData(0));
+        const result = await context.startRendering();
 
-              // The automation does linear interpolation between 0 and 1 from
-              // time 0 to duration. Hence the max value of the interpolation
-              // occurs at the end of the rendering.  Compute this value.
+        // Find the maximum value of the buffer.
+        const max = Math.max.apply(null, result.getChannelData(0));
 
-              let expectedMax = (renderFrames / sampleRate) * (1 / duration);
+        // The automation does linear interpolation between 0 and 1 from
+        // time 0 to duration. Hence the max value of the interpolation
+        // occurs at the end of the rendering.  Compute this value.
+        const expectedMax = (renderFrames / sampleRate) * (1 / duration);
 
-              let message =
-                  'setValueCurve([' + curve + '], 0, ' + duration + ')';
-
-              should(max, 'Max amplitude of ' + message)
-                  .beLessThanOrEqualTo(expectedMax);
-            })
-            .then(() => task.done());
-      });
-
-      audit.run();
+        assert_less_than_equal(
+            max,
+            expectedMax,
+            `Max amplitude of setValueCurve([${curve}], 0, ${duration})`);
+      }, 'long duration');
     </script>
   </body>
 </html>
