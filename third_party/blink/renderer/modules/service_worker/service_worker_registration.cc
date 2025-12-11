@@ -354,16 +354,7 @@ void ServiceWorkerRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  visitor->Trace(background_fetch_bridge_);
-  visitor->Trace(cookie_store_manager_);
-  visitor->Trace(payment_app_service_worker_registration_);
-  visitor->Trace(push_messaging_bridge_);
-  visitor->Trace(push_provider_);
-  visitor->Trace(service_worker_registration_background_fetch_);
-  visitor->Trace(service_worker_registration_content_index_);
-  visitor->Trace(service_worker_registration_notifications_);
-  visitor->Trace(service_worker_registration_push_);
-  visitor->Trace(service_worker_registration_sync_);
+  Supplementable::Trace(visitor);
 }
 
 void ServiceWorkerRegistration::ContextDestroyed() {

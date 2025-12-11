@@ -11,18 +11,19 @@ namespace blink {
 
 ServiceWorkerRegistrationContentIndex::ServiceWorkerRegistrationContentIndex(
     ServiceWorkerRegistration* registration)
-    : service_worker_registration_(*registration) {}
+    : Supplement(*registration) {}
 
 ServiceWorkerRegistrationContentIndex&
 ServiceWorkerRegistrationContentIndex::From(
     ServiceWorkerRegistration& registration) {
   ServiceWorkerRegistrationContentIndex* supplement =
-      registration.GetServiceWorkerRegistrationContentIndex();
+      Supplement<ServiceWorkerRegistration>::From<
+          ServiceWorkerRegistrationContentIndex>(registration);
 
   if (!supplement) {
     supplement = MakeGarbageCollected<ServiceWorkerRegistrationContentIndex>(
         &registration);
-    registration.SetServiceWorkerRegistrationContentIndex(supplement);
+    ProvideTo(registration, supplement);
   }
 
   return *supplement;
@@ -36,10 +37,10 @@ ContentIndex* ServiceWorkerRegistrationContentIndex::index(
 ContentIndex* ServiceWorkerRegistrationContentIndex::index() {
   if (!content_index_) {
     ExecutionContext* execution_context =
-        service_worker_registration_->GetExecutionContext();
+        GetSupplementable()->GetExecutionContext();
     // TODO(falken): Consider defining a task source in the spec for this event.
     content_index_ = MakeGarbageCollected<ContentIndex>(
-        service_worker_registration_,
+        GetSupplementable(),
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   }
 
@@ -48,7 +49,7 @@ ContentIndex* ServiceWorkerRegistrationContentIndex::index() {
 
 void ServiceWorkerRegistrationContentIndex::Trace(Visitor* visitor) const {
   visitor->Trace(content_index_);
-  visitor->Trace(service_worker_registration_);
+  Supplement<ServiceWorkerRegistration>::Trace(visitor);
 }
 
 }  // namespace blink

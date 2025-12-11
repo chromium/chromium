@@ -17,8 +17,10 @@ class ServiceWorkerRegistration;
 
 class PaymentAppServiceWorkerRegistration final
     : public GarbageCollected<PaymentAppServiceWorkerRegistration>,
-      public GarbageCollectedMixin {
+      public Supplement<ServiceWorkerRegistration> {
  public:
+  static const unsigned kSupplementIndex;
+
   explicit PaymentAppServiceWorkerRegistration(ServiceWorkerRegistration*);
 
   PaymentAppServiceWorkerRegistration(
@@ -38,7 +40,6 @@ class PaymentAppServiceWorkerRegistration final
   void Trace(Visitor*) const override;
 
  private:
-  Member<ServiceWorkerRegistration> service_worker_registration_;
   Member<PaymentManager> payment_manager_;
 };
 

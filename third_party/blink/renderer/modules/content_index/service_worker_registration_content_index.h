@@ -15,8 +15,11 @@ class ContentIndex;
 
 class ServiceWorkerRegistrationContentIndex final
     : public GarbageCollected<ServiceWorkerRegistrationContentIndex>,
-      public GarbageCollectedMixin {
+      public Supplement<ServiceWorkerRegistration> {
  public:
+  static constexpr auto kSupplementIndex = ServiceWorkerRegistration::
+      Supplements::kServiceWorkerRegistrationContentIndex;
+
   explicit ServiceWorkerRegistrationContentIndex(
       ServiceWorkerRegistration* registration);
 
@@ -34,7 +37,6 @@ class ServiceWorkerRegistrationContentIndex final
   void Trace(Visitor* visitor) const override;
 
  private:
-  Member<ServiceWorkerRegistration> service_worker_registration_;
   Member<ContentIndex> content_index_;
 };
 

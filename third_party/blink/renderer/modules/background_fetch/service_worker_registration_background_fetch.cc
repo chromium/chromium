@@ -12,7 +12,7 @@ namespace blink {
 ServiceWorkerRegistrationBackgroundFetch::
     ServiceWorkerRegistrationBackgroundFetch(
         ServiceWorkerRegistration* registration)
-    : service_worker_registration_(*registration) {}
+    : Supplement(*registration) {}
 
 ServiceWorkerRegistrationBackgroundFetch::
     ~ServiceWorkerRegistrationBackgroundFetch() = default;
@@ -21,12 +21,13 @@ ServiceWorkerRegistrationBackgroundFetch&
 ServiceWorkerRegistrationBackgroundFetch::From(
     ServiceWorkerRegistration& registration) {
   ServiceWorkerRegistrationBackgroundFetch* supplement =
-      registration.GetServiceWorkerRegistrationBackgroundFetch();
+      Supplement<ServiceWorkerRegistration>::From<
+          ServiceWorkerRegistrationBackgroundFetch>(registration);
 
   if (!supplement) {
     supplement = MakeGarbageCollected<ServiceWorkerRegistrationBackgroundFetch>(
         &registration);
-    registration.SetServiceWorkerRegistrationBackgroundFetch(supplement);
+    ProvideTo(registration, supplement);
   }
 
   return *supplement;
@@ -42,8 +43,8 @@ ServiceWorkerRegistrationBackgroundFetch::backgroundFetch(
 BackgroundFetchManager*
 ServiceWorkerRegistrationBackgroundFetch::backgroundFetch() {
   if (!background_fetch_manager_) {
-    background_fetch_manager_ = MakeGarbageCollected<BackgroundFetchManager>(
-        service_worker_registration_);
+    background_fetch_manager_ =
+        MakeGarbageCollected<BackgroundFetchManager>(GetSupplementable());
   }
 
   return background_fetch_manager_.Get();
@@ -51,7 +52,7 @@ ServiceWorkerRegistrationBackgroundFetch::backgroundFetch() {
 
 void ServiceWorkerRegistrationBackgroundFetch::Trace(Visitor* visitor) const {
   visitor->Trace(background_fetch_manager_);
-  visitor->Trace(service_worker_registration_);
+  Supplement<ServiceWorkerRegistration>::Trace(visitor);
 }
 
 }  // namespace blink

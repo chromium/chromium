@@ -23,18 +23,19 @@
 namespace blink {
 
 PushProvider::PushProvider(ServiceWorkerRegistration& registration)
-    : service_worker_registration_(registration),
+    : Supplement<ServiceWorkerRegistration>(registration),
       push_messaging_manager_(registration.GetExecutionContext()) {}
 
 // static
 PushProvider* PushProvider::From(ServiceWorkerRegistration* registration) {
   DCHECK(registration);
 
-  PushProvider* provider = registration->GetPushProvider();
+  PushProvider* provider =
+      Supplement<ServiceWorkerRegistration>::From<PushProvider>(registration);
 
   if (!provider) {
     provider = MakeGarbageCollected<PushProvider>(*registration);
-    registration->SetPushProvider(provider);
+    ProvideTo(*registration, provider);
   }
 
   return provider;
@@ -43,10 +44,11 @@ PushProvider* PushProvider::From(ServiceWorkerRegistration* registration) {
 // static
 mojom::blink::PushMessaging* PushProvider::GetPushMessagingRemote() {
   if (!push_messaging_manager_.is_bound()) {
-    service_worker_registration_->GetExecutionContext()
+    GetSupplementable()
+        ->GetExecutionContext()
         ->GetBrowserInterfaceBroker()
         .GetInterface(push_messaging_manager_.BindNewPipeAndPassReceiver(
-            service_worker_registration_->GetExecutionContext()->GetTaskRunner(
+            GetSupplementable()->GetExecutionContext()->GetTaskRunner(
                 TaskType::kMiscPlatformAPI)));
   }
 
@@ -63,8 +65,8 @@ void PushProvider::Subscribe(
       mojo::ConvertTo<mojom::blink::PushSubscriptionOptionsPtr>(options);
 
   GetPushMessagingRemote()->Subscribe(
-      service_worker_registration_->RegistrationId(),
-      std::move(content_options_ptr), user_gesture,
+      GetSupplementable()->RegistrationId(), std::move(content_options_ptr),
+      user_gesture,
       BindOnce(&PushProvider::DidSubscribe, WrapPersistent(this),
                WrapPersistent(resolver)));
 }
@@ -82,8 +84,8 @@ void PushProvider::DidSubscribe(
       status == mojom::blink::PushRegistrationStatus::SUCCESS_FROM_CACHE) {
     DCHECK(subscription);
 
-    resolver->Resolve(PushSubscription::Create(std::move(subscription),
-                                               service_worker_registration_));
+    resolver->Resolve(
+        PushSubscription::Create(std::move(subscription), GetSupplementable()));
   } else {
     resolver->Reject(PushError::CreateException(
         PushRegistrationStatusToPushErrorType(status),
@@ -95,7 +97,7 @@ void PushProvider::Unsubscribe(ScriptPromiseResolver<IDLBoolean>* resolver) {
   DCHECK(resolver);
 
   GetPushMessagingRemote()->Unsubscribe(
-      service_worker_registration_->RegistrationId(),
+      GetSupplementable()->RegistrationId(),
       BindOnce(&PushProvider::DidUnsubscribe, WrapPersistent(this),
                WrapPersistent(resolver)));
 }
@@ -119,14 +121,14 @@ void PushProvider::GetSubscription(
   DCHECK(resolver);
 
   GetPushMessagingRemote()->GetSubscription(
-      service_worker_registration_->RegistrationId(),
+      GetSupplementable()->RegistrationId(),
       BindOnce(&PushProvider::DidGetSubscription, WrapPersistent(this),
                WrapPersistent(resolver)));
 }
 
 void PushProvider::Trace(Visitor* visitor) const {
   visitor->Trace(push_messaging_manager_);
-  visitor->Trace(service_worker_registration_);
+  Supplement::Trace(visitor);
 }
 
 void PushProvider::DidGetSubscription(
@@ -138,8 +140,8 @@ void PushProvider::DidGetSubscription(
   if (status == mojom::blink::PushGetRegistrationStatus::SUCCESS) {
     DCHECK(subscription);
 
-    resolver->Resolve(PushSubscription::Create(std::move(subscription),
-                                               service_worker_registration_));
+    resolver->Resolve(
+        PushSubscription::Create(std::move(subscription), GetSupplementable()));
   } else {
     // We are only expecting an error if we can't find a registration.
     resolver->Resolve(nullptr);

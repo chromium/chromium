@@ -15,8 +15,11 @@ class BackgroundFetchManager;
 
 class ServiceWorkerRegistrationBackgroundFetch final
     : public GarbageCollected<ServiceWorkerRegistrationBackgroundFetch>,
-      public GarbageCollectedMixin {
+      public Supplement<ServiceWorkerRegistration> {
  public:
+  static constexpr auto kSupplementIndex = ServiceWorkerRegistration::
+      Supplements::kServiceWorkerRegistrationBackgroundFetch;
+
   explicit ServiceWorkerRegistrationBackgroundFetch(
       ServiceWorkerRegistration* registration);
 
@@ -37,7 +40,6 @@ class ServiceWorkerRegistrationBackgroundFetch final
   void Trace(Visitor* visitor) const override;
 
  private:
-  Member<ServiceWorkerRegistration> service_worker_registration_;
   Member<BackgroundFetchManager> background_fetch_manager_;
 };
 

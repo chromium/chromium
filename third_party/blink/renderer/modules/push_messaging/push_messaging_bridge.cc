@@ -28,12 +28,14 @@ PushMessagingBridge* PushMessagingBridge::From(
   DCHECK(service_worker_registration);
 
   PushMessagingBridge* bridge =
-      service_worker_registration->GetPushMessagingBridge();
+      Supplement<ServiceWorkerRegistration>::From<PushMessagingBridge>(
+          service_worker_registration);
 
   if (!bridge) {
     bridge =
         MakeGarbageCollected<PushMessagingBridge>(*service_worker_registration);
-    service_worker_registration->SetPushMessagingBridge(bridge);
+    Supplement<ServiceWorkerRegistration>::ProvideTo(
+        *service_worker_registration, bridge);
   }
 
   return bridge;
@@ -41,7 +43,7 @@ PushMessagingBridge* PushMessagingBridge::From(
 
 PushMessagingBridge::PushMessagingBridge(
     ServiceWorkerRegistration& registration)
-    : service_worker_registration_(registration),
+    : Supplement<ServiceWorkerRegistration>(registration),
       permission_service_(registration.GetExecutionContext()) {}
 
 PushMessagingBridge::~PushMessagingBridge() = default;
@@ -82,7 +84,7 @@ ScriptPromise<V8PermissionState> PushMessagingBridge::GetPermissionState(
 
 void PushMessagingBridge::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
-  visitor->Trace(service_worker_registration_);
+  Supplement<ServiceWorkerRegistration>::Trace(visitor);
 }
 
 void PushMessagingBridge::DidGetPermissionState(
