@@ -116,33 +116,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     virtual ~SyncTokenClient() = default;
   };
 
-  // This class will allow VF clients to be able to get CPU mapped memory and
-  // other metadata either from MappableSI backing the VF.
-  // TODO(crbug.com/40263579): Have clients directly interact with
-  // ClientSharedImage::ScopedMapping and remove this.
-  class MEDIA_EXPORT ScopedMapping {
-   public:
-    explicit ScopedMapping(
-        std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping);
-    ~ScopedMapping();
-
-    // Returns a span pointing to the plane's memory.
-    base::span<uint8_t> GetMemoryAsSpan(uint32_t plane_index) {
-      return scoped_mapping_->GetMemoryForPlane(plane_index);
-    }
-
-    // Returns plane stride.
-    size_t Stride(uint32_t plane_index) {
-      return scoped_mapping_->Stride(plane_index);
-    }
-
-    // Returns the size of the buffer.
-    gfx::Size Size() { return scoped_mapping_->Size(); }
-
-   private:
-    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping_;
-  };
-
   enum class FrameControlType {
     kNone,
     kEos,
@@ -759,13 +732,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void MakeScopedMappingForGpuMemoryBuffer(
-      base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
-          result_cb,
-      bool success) const;
-#endif
 
   // Return the alignment for the whole frame, calculated as the max of the
   // alignment for each individual plane.

@@ -1735,12 +1735,4 @@ std::vector<size_t> VideoFrame::CalculatePlaneSize() const {
   return CalculatePlaneSize(layout_);
 }
 
-VideoFrame::ScopedMapping::ScopedMapping(
-    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping)
-    : scoped_mapping_(std::move(scoped_mapping)) {
-  CHECK(scoped_mapping_);
-}
-
-VideoFrame::ScopedMapping::~ScopedMapping() = default;
-
 }  // namespace media
