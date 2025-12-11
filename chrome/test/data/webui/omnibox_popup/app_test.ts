@@ -103,7 +103,7 @@ suite('AppTest', function() {
     await microtasksFinished();
 
     // Ensure dropdown shows.
-    assertTrue(isVisible(app.$.matches));
+    assertTrue(isVisible(app.getDropdown()));
 
     // Set autocomplete result with no visible matches.
     const hiddenResult: AutocompleteResult = createAutocompleteResult({
@@ -116,12 +116,12 @@ suite('AppTest', function() {
     await microtasksFinished();
 
     // Ensure dropdown hides.
-    assertFalse(isVisible(app.$.matches));
+    assertFalse(isVisible(app.getDropdown()));
 
     // Force dropdown to show again.
     testProxy.page.autocompleteResultChanged(shownResult);
     await microtasksFinished();
-    assertTrue(isVisible(app.$.matches));
+    assertTrue(isVisible(app.getDropdown()));
 
     // Set autocomplete result with no matches.
     const noResult: AutocompleteResult =
@@ -130,7 +130,7 @@ suite('AppTest', function() {
     await microtasksFinished();
 
     // Ensure dropdown hides.
-    assertFalse(isVisible(app.$.matches));
+    assertFalse(isVisible(app.getDropdown()));
   });
 
   suite('TallSearchbox', () => {

@@ -9,7 +9,7 @@ import type {OmniboxPopupAppElement} from './app.js';
 export function getHtml(this: OmniboxPopupAppElement) {
   // clang-format off
   const searchboxDropdown = html`
-<cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
+<cr-searchbox-dropdown part="searchbox-dropdown"
     exportparts="dropdown-content"
     role="listbox" .result="${this.result_}"
     ?can-show-secondary-side="${this.canShowSecondarySide}"
