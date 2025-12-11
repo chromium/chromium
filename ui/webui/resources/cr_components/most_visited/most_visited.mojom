@@ -57,6 +57,8 @@ interface MostVisitedPageHandler {
   ReorderMostVisitedTile(MostVisitedTile tile, uint8 new_pos);
   // Replaces the tiles with the default tile set.
   RestoreMostVisitedDefaults(ntp_tiles.mojom.TileSource source);
+  // Undoes the auto removal of the most tiles due to inactivity.
+  UndoMostVisitedAutoRemoval();
   // Undoes the last action done to the tiles (add, delete, reorder, restore
   // or update).
   UndoMostVisitedTileAction(ntp_tiles.mojom.TileSource source);

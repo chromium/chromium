@@ -167,6 +167,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       tiles_: {type: Array, state: true},
       toastContent_: {type: String, state: true},
       toastSource_: {type: Number, state: true},
+      autoRemovalInProgress_: {type: Boolean, state: true},
 
       expandableTilesEnabled: {type: Boolean, reflect: true},
       maxTilesBeforeShowMore: {type: Number, reflect: true},
@@ -213,6 +214,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private accessor maxVisibleColumnCount_: number = 0;
   protected accessor tiles_: MostVisitedTile[] = [];
   protected accessor toastSource_: TileSource = TileSource.CUSTOM_LINKS;
+  protected accessor autoRemovalInProgress_: boolean = false;
   protected accessor visible_: boolean = false;
   private adding_: boolean = false;
   private callbackRouter_: MostVisitedPageCallbackRouter;
@@ -1105,6 +1107,14 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.pageHandler_.undoMostVisitedTileAction(this.toastSource_);
   }
 
+  protected onUndoAutoRemovalClick_() {
+    if (!this.$.toastManager.isToastOpen || this.$.toastManager.slottedHidden) {
+      return;
+    }
+    this.$.toastManager.hide();
+    this.pageHandler_.undoMostVisitedAutoRemoval();
+  }
+
   protected onTouchStart_(e: TouchEvent) {
     if (this.reordering_) {
       return;
@@ -1155,7 +1165,17 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
+  // TODO(crbug.com/467437715): Make private and bind to listener once browser
+  // side is ready.
+  autoRemovalToast() {
+    this.autoRemovalInProgress_ = true;
+    this.$.toastManager.show(
+        loadTimeData.getString('shortcutsInactivityRemovalMsg'),
+        /* hideSlotted= */ false);
+  }
+
   private toast_(msgId: string, showButtons: boolean, source: TileSource) {
+    this.autoRemovalInProgress_ = false;
     this.toastSource_ = source;
     this.$.toastManager.show(loadTimeData.getString(msgId), !showButtons);
   }

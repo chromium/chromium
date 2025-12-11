@@ -2253,3 +2253,56 @@ suite('EnterpriseShortcuts', () => {
         $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
   });
 });
+
+suite('ShortcutsAutoRemovalToast', () => {
+  setup(async () => {
+    await setUpTest();
+  });
+
+  test('toast shown with Undo auto removal button', async () => {
+    // TODO(crbug.com/467437715): Call this via the callback router once the
+    // browser side is ready.
+    mostVisited.autoRemovalToast();
+    await microtasksFinished();
+    assertTrue(mostVisited.$.toastManager.isToastOpen);
+
+    // Check undo auto removal button is visible.
+    const undoAutoRemovalButton =
+        mostVisited.shadowRoot.querySelector<HTMLElement>('#undoAutoRemoval');
+    assertTrue(!!undoAutoRemovalButton);
+    assertFalse(undoAutoRemovalButton.hidden);
+
+    // Check other buttons are removed from the DOM.
+    const undoButton =
+        mostVisited.shadowRoot.querySelector<HTMLElement>('#undo');
+    assertEquals(null, undoButton);
+    const restoreButton =
+        mostVisited.shadowRoot.querySelector<HTMLElement>('#restore');
+    assertEquals(null, restoreButton);
+  });
+
+  test('toast undo auto removal button', async () => {
+    // Check toast is not open initially.
+    assertFalse(mostVisited.$.toastManager.isToastOpen);
+
+    // Check toast is open after auto removal event.
+    // TODO(crbug.com/467437715): Call this via the callback router once the
+    // browser side is ready.
+    mostVisited.autoRemovalToast();
+    await microtasksFinished();
+    assertTrue(mostVisited.$.toastManager.isToastOpen);
+
+    // Check undo auto removal button is visible.
+    const undoAutoRemovalButton =
+        mostVisited.shadowRoot.querySelector<HTMLElement>('#undoAutoRemoval');
+    assertTrue(!!undoAutoRemovalButton);
+    assertFalse(undoAutoRemovalButton.hidden);
+
+    // Check undo auto removal button click calls the handler and closes the
+    // toast.
+    const wait = handler.whenCalled('undoMostVisitedAutoRemoval');
+    undoAutoRemovalButton.click();
+    await wait;
+    assertFalse(mostVisited.$.toastManager.isToastOpen);
+  });
+});
