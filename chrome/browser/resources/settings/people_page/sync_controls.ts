@@ -471,7 +471,8 @@ export class SettingsSyncControlsElement extends
     return !!this.syncStatus.hasError &&
         this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
         this.syncStatus.statusAction !==
-        StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS;
+        StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS &&
+        this.syncStatus.statusAction !== StatusAction.CONFIRM_SYNC_SETTINGS;
   }
 }
 

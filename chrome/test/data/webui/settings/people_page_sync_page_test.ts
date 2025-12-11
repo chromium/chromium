@@ -218,6 +218,21 @@ suite('SyncSettings', function() {
     assertTrue(syncSection.hidden);
   });
 
+  // Regression test for crbug.com/467318495.
+  test('SyncSectionLayout_SyncNotConfirmed', function() {
+    const syncSection =
+        syncPage.shadowRoot!.querySelector<HTMLElement>('#sync-section')!;
+
+    webUIListenerCallback('sync-status-changed', {
+      signedInState: SignedInState.SYNCING,
+      disabled: false,
+      hasError: true,
+      statusAction: StatusAction.CONFIRM_SYNC_SETTINGS,
+    });
+    flush();
+    assertFalse(syncSection.hidden);
+  });
+
   test('LoadingAndTimeout', function() {
     const configurePage = syncPage.shadowRoot!.querySelector<HTMLElement>(
         '#' + PageStatus.CONFIGURE)!;
