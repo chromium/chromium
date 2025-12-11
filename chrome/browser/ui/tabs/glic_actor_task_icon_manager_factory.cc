@@ -5,15 +5,10 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace tabs {
 using actor::ActorKeyedServiceFactory;
-using glic::GlicKeyedServiceFactory;
 
 // static
 GlicActorTaskIconManagerFactory*
@@ -32,17 +27,14 @@ GlicActorTaskIconManager* GlicActorTaskIconManagerFactory::GetForProfile(
 GlicActorTaskIconManagerFactory::GlicActorTaskIconManagerFactory()
     : ProfileKeyedServiceFactory("GlicActorTaskIconManager") {
   DependsOn(ActorKeyedServiceFactory::GetInstance());
-  DependsOn(GlicKeyedServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
 GlicActorTaskIconManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  auto* glic_service = glic::GlicKeyedService::Get(context);
   return std::make_unique<GlicActorTaskIconManager>(
-      profile, ActorKeyedServiceFactory::GetActorKeyedService(context),
-      glic_service->window_controller());
+      profile, ActorKeyedServiceFactory::GetActorKeyedService(context));
 }
 
 }  // namespace tabs

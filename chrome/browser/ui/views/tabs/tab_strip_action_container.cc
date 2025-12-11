@@ -666,21 +666,6 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
 
     if (glic_actor_task_icon_->GetIsShowingNudge()) {
       icon_manager->ClearStoppedTasks();
-      // If a nudge is showing, activate the last actuated tab on click of the
-      // Task Icon.
-      if (tabs::TabInterface* last_updated_tab =
-              icon_manager->GetLastUpdatedTab()) {
-        TabStripModel* tab_strip_model =
-            tab_strip_controller_->GetBrowserWindowInterface()
-                ->GetTabStripModel();
-        int tab_index = tab_strip_model->GetIndexOfTab(last_updated_tab);
-
-        // In the case where the tab is currently detached (such as being moved
-        // between windows), the tab may not have an index.
-        if (tab_index != TabStripModel::kNoTab) {
-          tab_strip_model->ActivateTabAt(tab_index);
-        }
-      }
     }
   }
 }

@@ -27,7 +27,6 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #endif
@@ -74,11 +73,10 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<KeyedService> BuildGlicActorTaskIconManager(
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
-    window_controller_ = std::make_unique<glic::MockGlicWindowController>();
     auto* actor_service =
         actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_.get());
     auto manager = std::make_unique<tabs::GlicActorTaskIconManager>(
-        profile, actor_service, *window_controller_.get());
+        profile, actor_service);
     return std::move(manager);
   }
 
@@ -97,7 +95,6 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
     actor_task_list_bubble_controller_.reset();
     browser_window_interface_.reset();
     profile_.reset();
-    window_controller_.reset();
     anchor_widget_.reset();
 #endif
     ChromeViewsTestBase::TearDown();
@@ -127,7 +124,6 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::MockGlicWindowController> window_controller_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ActorTaskListBubbleController>
       actor_task_list_bubble_controller_;

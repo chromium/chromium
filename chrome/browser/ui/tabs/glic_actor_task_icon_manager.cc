@@ -22,17 +22,11 @@ namespace tabs {
 using actor::ActorKeyedService;
 using ActorTaskNudgeState = actor::ui::ActorTaskNudgeState;
 using actor::ActorTask;
-using glic::GlicWindowController;
-using glic::Host;
-using glic::mojom::CurrentView;
 
 GlicActorTaskIconManager::GlicActorTaskIconManager(
     Profile* profile,
-    actor::ActorKeyedService* actor_service,
-    glic::GlicWindowController& window_controller)
-    : profile_(profile),
-      actor_service_(actor_service),
-      window_controller_(window_controller) {
+    actor::ActorKeyedService* actor_service)
+    : profile_(profile), actor_service_(actor_service) {
   CHECK(actor_service);
   RegisterSubscriptions();
 }
@@ -40,15 +34,6 @@ GlicActorTaskIconManager::GlicActorTaskIconManager(
 GlicActorTaskIconManager::~GlicActorTaskIconManager() = default;
 
 void GlicActorTaskIconManager::RegisterSubscriptions() {
-  // Get the glic::GlicInstance associated with the task.
-  glic::GlicInstance* instance =
-      window_controller_->GetInstanceForTab(GetLastUpdatedTab());
-
-  if (instance) {
-    callback_subscriptions_.push_back(instance->RegisterStateChange(
-        base::BindRepeating(&GlicActorTaskIconManager::OnInstanceStateChange,
-                            base::Unretained(this))));
-  }
   callback_subscriptions_.push_back(
       actor::ActorKeyedService::Get(profile_)
           ->GetActorUiStateManager()
@@ -64,26 +49,10 @@ void GlicActorTaskIconManager::RegisterSubscriptions() {
                                   base::Unretained(this))));
 }
 
-void GlicActorTaskIconManager::OnInstanceStateChange(bool is_showing,
-                                                     CurrentView current_view) {
-  UpdateTaskIcon(is_showing, current_view);
-}
-
 void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   current_task_id_ = task_id;
-
-  // TODO(crbug.com/444706814): Delete instance code once task icon path is
-  // removed.
-  glic::GlicInstance* instance = window_controller_->GetInstanceForTab(
-      GetLastUpdatedTabForTaskId(task_id));
-
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
-    UpdateTaskListBubble(task_id);
-    UpdateTaskNudge();
-  } else if (instance) {
-    UpdateTaskIcon(instance->IsShowing(),
-                   instance->host().GetPrimaryCurrentView());
-  }
+  UpdateTaskListBubble(task_id);
+  UpdateTaskNudge();
 }
 
 // TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
@@ -107,50 +76,6 @@ void GlicActorTaskIconManager::ClearStoppedTasks() {
 
 void GlicActorTaskIconManager::Shutdown() {}
 
-void GlicActorTaskIconManager::UpdateTaskIcon(bool is_showing,
-                                              CurrentView current_view) {
-  auto active_tasks = actor_service_->GetActiveTasks();
-  auto paused_or_yielded_actor_tasks =
-      actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
-        return (task.GetState() == actor::ActorTask::State::kPausedByActor ||
-                task.GetState() == actor::ActorTask::State::kWaitingOnUser);
-      });
-  auto old_state = current_actor_task_icon_state_;
-  // If there are no active tasks and no recently completed tasks, we can hide
-  // the task icon.
-  if (active_tasks.empty() && !has_unprocessed_completed_tasks_ &&
-      !has_unprocessed_failed_tasks_) {
-    current_actor_task_icon_state_ = {
-        .is_visible = false,
-        .text = ActorTaskIconState::Text::kDefault,
-    };
-    if (old_state != current_actor_task_icon_state_) {
-      task_icon_state_change_callback_list_.Notify(
-          is_showing, current_view, current_actor_task_icon_state_);
-    }
-    return;
-  }
-
-  // If the task isn't inactive, the task icon will always be visible.
-  current_actor_task_icon_state_.is_visible = true;
-
-  // Apply text state change.
-  if (!paused_or_yielded_actor_tasks.empty() || has_unprocessed_failed_tasks_) {
-    current_actor_task_icon_state_.text =
-        ActorTaskIconState::Text::kNeedsAttention;
-  } else if (has_unprocessed_completed_tasks_) {
-    current_actor_task_icon_state_.text =
-        ActorTaskIconState::Text::kCompleteTasks;
-  } else {
-    // If no tasks needing attention or completed, reset the icon.
-    current_actor_task_icon_state_.text = ActorTaskIconState::Text::kDefault;
-  }
-  if (old_state != current_actor_task_icon_state_) {
-    task_icon_state_change_callback_list_.Notify(
-        is_showing, current_view, current_actor_task_icon_state_);
-  }
-}
-
 void GlicActorTaskIconManager::UpdateTaskNudge() {
   auto active_tasks = actor_service_->GetActiveTasks();
   // TODO(b/440770955): Replace has_unprocessed_completed_tasks_ with a
@@ -163,7 +88,6 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
       });
 
   ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
-  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
     if (!paused_or_yielded_actor_tasks.empty() &&
         !actor_task_list_bubble_rows_.empty()) {
       current_actor_task_nudge_state_.text =
@@ -175,21 +99,6 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
       current_actor_task_nudge_state_.text =
           ActorTaskNudgeState::Text::kDefault;
     }
-  }
-  // TODO(crbug.com/458391262) revisit or cleanup implementation here for m144.
-  else {
-    if (!paused_or_yielded_actor_tasks.empty()) {
-      current_actor_task_nudge_state_.text =
-          ActorTaskNudgeState::Text::kNeedsAttention;
-    } else if (has_unprocessed_completed_tasks_) {
-      current_actor_task_nudge_state_.text =
-          ActorTaskNudgeState::Text::kCompleteTasks;
-    } else {
-      // If no tasks needing attention or completed, hide the nudge.
-      current_actor_task_nudge_state_.text =
-          ActorTaskNudgeState::Text::kDefault;
-    }
-  }
 
   if (old_state != current_actor_task_nudge_state_) {
     task_nudge_state_change_callback_list_.Notify(
@@ -218,12 +127,6 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
 }
 
 base::CallbackListSubscription
-GlicActorTaskIconManager::RegisterTaskIconStateChange(
-    TaskIconStateChangeCallback callback) {
-  return task_icon_state_change_callback_list_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription
 GlicActorTaskIconManager::RegisterTaskNudgeStateChange(
     TaskNudgeChangeCallback callback) {
   return task_nudge_state_change_callback_list_.Add(std::move(callback));
@@ -235,27 +138,9 @@ GlicActorTaskIconManager::RegisterTaskListBubbleStateChange(
   return task_list_bubble_change_callback_list_.Add(std::move(callback));
 }
 
-ActorTaskIconState GlicActorTaskIconManager::GetCurrentActorTaskIconState()
-    const {
-  return current_actor_task_icon_state_;
-}
-
 ActorTaskNudgeState GlicActorTaskIconManager::GetCurrentActorTaskNudgeState()
     const {
   return current_actor_task_nudge_state_;
-}
-
-// TODO(crbug.com/431015299): Clean up after redesign is launched.
-raw_ptr<tabs::TabInterface> GlicActorTaskIconManager::GetLastUpdatedTab() {
-  if (!current_task_id_ || !actor_service_->GetTask(current_task_id_)) {
-    return nullptr;
-  }
-  actor::ActorTask* task = actor_service_->GetTask(current_task_id_);
-
-  actor::ActorTask::TabHandleSet tabs = task->GetLastActedTabs();
-
-  // TODO(crbug.com/441064175): Will need to be updated for multi-tab actuation.
-  return tabs.empty() ? nullptr : tabs.begin()->Get();
 }
 
 raw_ptr<tabs::TabInterface>
