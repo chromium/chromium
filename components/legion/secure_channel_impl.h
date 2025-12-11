@@ -71,7 +71,7 @@ class SecureChannelImpl : public SecureChannel {
   // encrypted requests.
   void OnAttestationResponse(const oak::session::v1::AttestResponse& response);
   void OnHandshakeMessageReady(
-      oak::session::v1::HandshakeRequest handshake_request);
+      std::optional<oak::session::v1::HandshakeRequest> handshake_request);
   void OnHandshakeResponse(const oak::session::v1::HandshakeResponse& response);
   void OnHandshakeVerification(bool handshake_verified);
   void OnEncryptedResponse(const oak::session::v1::EncryptedMessage& response);

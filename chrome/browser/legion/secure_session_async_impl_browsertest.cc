@@ -80,9 +80,14 @@ class SecureSessionAsyncImplBrowserTest : public InProcessBrowserTest {
  protected:
   void PerformValidHandshake(TestServerSecureSession& server_session) {
     auto client_handshake_request = [&]() {
-      base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+      base::test::TestFuture<std::optional<oak::session::v1::HandshakeRequest>>
+          future;
       client_session_->GetHandshakeMessage(future.GetCallback());
-      return future.Get();
+
+      auto result = future.Get();
+      CHECK(result.has_value());
+
+      return result.value();
     }();
 
     auto server_handshake_response = server_session.ProcessHandshake(
@@ -143,11 +148,15 @@ IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
                        GetHandshakeMessageSucceeds) {
-  base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+  base::test::TestFuture<std::optional<oak::session::v1::HandshakeRequest>>
+      future;
   client_session_->GetHandshakeMessage(future.GetCallback());
-  auto request = future.Get();
 
-  EXPECT_TRUE(request.has_noise_handshake_message());
+  auto result = future.Get();
+  ASSERT_TRUE(result.has_value());
+
+  auto request = result.value();
+  ASSERT_TRUE(request.has_noise_handshake_message());
 
   const auto& noise_msg = request.noise_handshake_message();
   EXPECT_EQ(noise_msg.ephemeral_public_key().size(), kP256X962Length);
@@ -159,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
   // Though the result is not used, it's important to call GetHandshakeMessage()
   // before ProcessHandshakeResponse().
   {
-    base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+    base::test::TestFuture<std::optional<oak::session::v1::HandshakeRequest>>
+        future;
     client_session_->GetHandshakeMessage(future.GetCallback());
     ASSERT_TRUE(future.Wait());
   }
@@ -182,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
   // Though the result is not used, it's important to call GetHandshakeMessage()
   // before ProcessHandshakeResponse().
   {
-    base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+    base::test::TestFuture<std::optional<oak::session::v1::HandshakeRequest>>
+        future;
     client_session_->GetHandshakeMessage(future.GetCallback());
     ASSERT_TRUE(future.Wait());
   }
@@ -221,9 +232,14 @@ IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
                        ProcessHandshakeResponseNonEmptyPlaintext) {
   auto client_handshake_request = [&]() {
-    base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
+    base::test::TestFuture<std::optional<oak::session::v1::HandshakeRequest>>
+        future;
     client_session_->GetHandshakeMessage(future.GetCallback());
-    return future.Get();
+
+    auto result = future.Get();
+    CHECK(result.has_value());
+
+    return result.value();
   }();
 
   TestServerSecureSession server_session;

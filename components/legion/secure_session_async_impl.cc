@@ -95,12 +95,15 @@ SecureSessionAsyncImpl::SecureSessionAsyncImpl()
 SecureSessionAsyncImpl::~SecureSessionAsyncImpl() = default;
 
 void SecureSessionAsyncImpl::GetHandshakeMessage(
-    SecureSession::GetHandshakeMessageOnceCallback callback) {
+    SecureSession::GetHandshakeMessageOnceCallback original_callback) {
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(original_callback), std::nullopt);
+
   service_->InitiateHandshake(base::BindOnce(
       [](GetHandshakeMessageOnceCallback callback, HandshakeMessage message) {
         std::move(callback).Run(ConvertToRequestProto(message));
       },
-      std::move(callback)));
+      std::move(wrapped_callback)));
 }
 
 void SecureSessionAsyncImpl::ProcessHandshakeResponse(

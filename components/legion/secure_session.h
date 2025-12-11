@@ -25,8 +25,8 @@ namespace legion {
 // decryption.
 class SecureSession {
  public:
-  using GetHandshakeMessageOnceCallback =
-      base::OnceCallback<void(oak::session::v1::HandshakeRequest)>;
+  using GetHandshakeMessageOnceCallback = base::OnceCallback<void(
+      std::optional<oak::session::v1::HandshakeRequest>)>;
 
   using ProcessHandshakeResponseOnceCallback = base::OnceCallback<void(bool)>;
 

@@ -81,6 +81,14 @@ class SecureSessionAsyncImplTest : public ::testing::Test {
   std::unique_ptr<SecureSessionAsyncImpl> secure_session_;
 };
 
+TEST_F(SecureSessionAsyncImplTest, GetHandshakeMessageDisconnect) {
+  base::test::TestFuture<std::optional<oak::session::v1::HandshakeRequest>>
+      future;
+  secure_session_->GetHandshakeMessage(future.GetCallback());
+  fake_oak_session_service_.reset();
+  EXPECT_FALSE(future.Get().has_value());
+}
+
 TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseDisconnect) {
   base::test::TestFuture<bool> future;
 

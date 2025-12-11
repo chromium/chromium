@@ -192,10 +192,20 @@ void SecureChannelImpl::OnAttestationResponse(
 }
 
 void SecureChannelImpl::OnHandshakeMessageReady(
-    oak::session::v1::HandshakeRequest handshake_request) {
+    std::optional<oak::session::v1::HandshakeRequest> handshake_request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK_EQ(state_, State::kWaitingHandshakeMessage);
+
+  if (!handshake_request.has_value()) {
+    DLOG(ERROR) << "Failed to generate handshake request.";
+    base::UmaHistogramMediumTimes(
+        "Legion.SecureChannel.GetHandshakeMessageLatency.Error",
+        base::TimeTicks::Now() -
+            state_entry_times_[State::kPerformingHandshake]);
+    FailAllRequestsAndClose(ErrorCode::kHandshakeFailed);
+    return;
+  }
 
   base::UmaHistogramMediumTimes(
       "Legion.SecureChannel.GetHandshakeMessageLatency.Success",
@@ -207,7 +217,7 @@ void SecureChannelImpl::OnHandshakeMessageReady(
 
   DVLOG(1) << "Sending handshake request.";
   oak::session::v1::SessionRequest request;
-  *request.mutable_handshake_request() = std::move(handshake_request);
+  *request.mutable_handshake_request() = std::move(handshake_request.value());
   Send(request);
 }
 
