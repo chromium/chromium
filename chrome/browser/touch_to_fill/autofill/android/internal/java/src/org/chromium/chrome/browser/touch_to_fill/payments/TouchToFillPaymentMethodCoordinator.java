@@ -59,7 +59,8 @@ import java.util.function.Function;
  * credit card to be filled into the focused form.
  */
 public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMethodComponent {
-    private final TouchToFillPaymentMethodMediator mMediator = new TouchToFillPaymentMethodMediator();
+    private final TouchToFillPaymentMethodMediator mMediator =
+            new TouchToFillPaymentMethodMediator();
     private PropertyModel mTouchToFillPaymentMethodModel;
     private Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
             mCardImageFunction;

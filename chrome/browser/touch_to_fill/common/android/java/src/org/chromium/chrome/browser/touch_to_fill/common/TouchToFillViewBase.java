@@ -38,7 +38,7 @@ import java.util.Set;
 /** This is a base class for the Touch to Fill View classes. */
 @NullMarked
 public abstract class TouchToFillViewBase implements BottomSheetContent {
-    private static final int MAX_FULLY_VISIBLE_CREDENTIAL_COUNT = 3;
+    public static final int MAX_FULLY_VISIBLE_SUGGESTION_COUNT = 3;
 
     private final BottomSheetController mBottomSheetController;
     private final RelativeLayout mContentView;
@@ -282,7 +282,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
                 // If we want to show only the initial items, the footer should remain hidden.
                 return totalHeight + getConclusiveMarginHeightPx();
             }
-            if (showOnlyInitialItems && visibleItems > MAX_FULLY_VISIBLE_CREDENTIAL_COUNT) {
+            if (showOnlyInitialItems && visibleItems > MAX_FULLY_VISIBLE_SUGGESTION_COUNT) {
                 // If the current item is the last to be shown, skip remaining elements and margins.
                 totalHeight += getHeightWithMarginsPx(child, true);
                 return totalHeight;
