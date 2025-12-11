@@ -35,6 +35,10 @@
       "namespace": "http://www.w3.org/1998/Math/MathML",
       "attributes": [
         {
+          "name": "fence",
+          "namespace": null
+        },
+        {
           "name": "form",
           "namespace": null
         },
@@ -60,6 +64,10 @@
         },
         {
           "name": "rspace",
+          "namespace": null
+        },
+        {
+          "name": "separator",
           "namespace": null
         },
         {
@@ -1046,6 +1054,10 @@
           "namespace": null
         },
         {
+          "name": "side",
+          "namespace": null
+        },
+        {
           "name": "spacing",
           "namespace": null
         },
@@ -1289,6 +1301,10 @@
       "namespace": null
     },
     {
+      "name": "text-overflow",
+      "namespace": null
+    },
+    {
       "name": "text-rendering",
       "namespace": null
     },
@@ -1314,6 +1330,10 @@
     },
     {
       "name": "visibility",
+      "namespace": null
+    },
+    {
+      "name": "white-space",
       "namespace": null
     },
     {

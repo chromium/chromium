@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Get the expected default config
-  assert_equals: config.attributes.length expected 58 but got 56
-Harness: the test ran to completion.
-
