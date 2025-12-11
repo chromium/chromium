@@ -48,7 +48,6 @@ class ChromeLabsBubbleView;
 class ColorPickerViewTest;
 class ContentSettingBubbleContents;
 class CriticalNotificationBubbleView;
-class CrostiniAnsibleSoftwareConfigView;
 class CrostiniExpiredContainerWarningView;
 class CrostiniForceCloseView;
 class CrostiniPackageInstallFailureView;
@@ -794,7 +793,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::ColorPickerViewTest;
   friend class ::ContentSettingBubbleContents;
   friend class ::CriticalNotificationBubbleView;
-  friend class ::CrostiniAnsibleSoftwareConfigView;
   friend class ::CrostiniExpiredContainerWarningView;
   friend class ::CrostiniForceCloseView;
   friend class ::CrostiniPackageInstallFailureView;

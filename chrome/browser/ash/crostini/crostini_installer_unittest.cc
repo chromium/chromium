@@ -13,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
@@ -249,47 +248,6 @@ TEST_F(CrostiniInstallerTest, InstallFlow) {
       << "Installer should recover to installable state";
 }
 
-TEST_F(CrostiniInstallerTest, InstallFlowWithAnsibleInfra) {
-  MockAnsibleManagementService* mock_ansible_management_service =
-      AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
-          profile_.get());
-  AnsibleManagementTestHelper test_helper(profile_.get());
-  test_helper.SetUpAnsiblePlaybookPreference();
-
-  EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
-  ON_CALL(*mock_ansible_management_service, ConfigureContainer)
-      .WillByDefault([](const guest_os::GuestId& conatiner_id,
-                        base::FilePath playbook,
-                        base::OnceCallback<void(bool success)> callback) {
-        std::move(callback).Run(true);
-      });
-
-  double last_progress = 0.0;
-  auto greater_equal_last_progress = Truly(
-      [&last_progress](double progress) { return progress >= last_progress; });
-
-  ExpectationSet expectation_set;
-  expectation_set +=
-      EXPECT_CALL(mock_callbacks_,
-                  OnProgress(_, AllOf(greater_equal_last_progress, Le(1.0))))
-          .WillRepeatedly(SaveArg<1>(&last_progress));
-  // |OnProgress()| should not happens after |OnFinished()|
-  EXPECT_CALL(mock_callbacks_, OnFinished(InstallerError::kNone))
-      .After(expectation_set);
-
-  Install();
-
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectUniqueSample(
-      "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample32>(
-          CrostiniInstaller::SetupResult::kSuccess),
-      1);
-
-  EXPECT_TRUE(crostini_installer_->CanInstall())
-      << "Installer should recover to installable state";
-}
-
 TEST_F(CrostiniInstallerTest, CancelBeforeStart) {
   crostini_installer_->CancelBeforeStart();
 
@@ -378,40 +336,6 @@ TEST_F(CrostiniInstallerTest, InstallerError) {
       1);
   histogram_tester_.ExpectTotalCount("Crostini.Setup.Started", 1);
   histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", 0);
-
-  EXPECT_TRUE(crostini_installer_->CanInstall())
-      << "Installer should recover to installable state";
-}
-
-TEST_F(CrostiniInstallerTest, InstallerErrorWhileConfiguring) {
-  MockAnsibleManagementService* mock_ansible_management_service =
-      AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
-          profile_.get());
-  AnsibleManagementTestHelper test_helper(profile_.get());
-  test_helper.SetUpAnsiblePlaybookPreference();
-
-  EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
-  ON_CALL(*mock_ansible_management_service, ConfigureContainer)
-      .WillByDefault([](const guest_os::GuestId& container_id,
-                        base::FilePath playbook,
-                        base::OnceCallback<void(bool success)> callback) {
-        std::move(callback).Run(false);
-      });
-  Expectation expect_progresses =
-      EXPECT_CALL(mock_callbacks_, OnProgress(_, _)).Times(AnyNumber());
-  // |OnProgress()| should not happens after |OnFinished()|
-  EXPECT_CALL(mock_callbacks_,
-              OnFinished(InstallerError::kErrorConfiguringContainer))
-      .After(expect_progresses);
-
-  Install();
-
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectUniqueSample(
-      "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample32>(
-          CrostiniInstaller::SetupResult::kErrorConfiguringContainer),
-      1);
 
   EXPECT_TRUE(crostini_installer_->CanInstall())
       << "Installer should recover to installable state";

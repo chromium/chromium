@@ -4962,27 +4962,6 @@
   <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_UPGRADE_BUTTON" desc="Button to begin upgrading the crostini container after warning that the OS version in their crostini container is unsupported">
     Upgrade
   </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_LABEL" desc="Label for dialog warning user of unavailable Linux container until software configurations are applied.">
-    Configuring Linux
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_SUBTEXT" desc="Description for dialog warning user of unavailable Linux container until software configurations are applied.">
-    Linux is currently being configured. Configuration will take a few minutes.
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_LABEL" desc="Label for Crostini software config dialog when there is an error in Ansible playbook application or installation.">
-    Error configuring Linux
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_SUBTEXT" desc="Text shown for Crostini software config dialog when there is an error in Ansible playbook application or installation.">
-    There was an error while configuring Linux.
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_OFFLINE_LABEL" desc="Label for dialog warning user of missing internet connection required for container configuration.">
-    <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is offline
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_OFFLINE_SUBTEXT" desc="Text shown for Crostini software config dialog when there is an error in Ansible playbook application or installation due to missing internet connection.">
-    Could not configure Linux. Connect to the internet and try again.
-  </message>
-  <message name="IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_RETRY_BUTTON" desc="Retry button of the Crostini software config dialog that starts the configuration steps again.">
-    Retry
-  </message>
   <message name="IDS_CROSTINI_SHUT_DOWN_LINUX_MENU_ITEM" desc="Text shown in the context menu for the Linux terminal app, allowing users to shut down the Linux virtual machine.">
     Shut down Linux
   </message>

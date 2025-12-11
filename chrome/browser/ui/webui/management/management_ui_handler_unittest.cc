@@ -438,7 +438,6 @@ class ManagementUIHandlerTests :
     bool managed_browser;
     bool managed_device;
     std::string device_domain;
-    base::FilePath crostini_ansible_playbook_filepath;
     bool insights_extension_enabled;
     bool legacy_tech_reporting_enabled;
     bool real_time_url_check_connector_enabled;
@@ -592,9 +591,6 @@ class ManagementUIHandlerTests :
           std::make_unique<base::Value>(std::move(allowlist)));
     }
 
-    profile_->GetPrefs()->SetFilePath(
-        crostini::prefs::kCrostiniAnsiblePlaybookFilePath,
-        GetTestConfig().crostini_ansible_playbook_filepath);
     crostini_features()->set_is_allowed_now(true);
 
     profile_->GetPrefs()->SetBoolean(
@@ -1245,32 +1241,6 @@ TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
       {kManagementReportExtensions, "extension"},
       {kManagementReportAndroidApplications, "android application"},
       {kManagementReportDlpEvents, "dlp events"},
-      {kManagementReportLoginLogout, "login-logout"},
-      {kManagementReportFileEvents, "file events"}};
-
-  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
-}
-
-TEST_F(ManagementUIHandlerTests,
-       AllEnabledCrostiniAnsiblePlaybookDeviceReportingInfo) {
-  ResetTestConfig(true);
-  GetTestConfig().report_dlp_events = false;
-  GetTestConfig().crostini_ansible_playbook_filepath = base::FilePath("/tmp/");
-  const base::Value::List info = SetUpForReportingInfo();
-  const std::map<std::string, std::string> expected_elements = {
-      {kManagementReportActivityTimes, "device activity"},
-      {kManagementReportNetworkData, "device"},
-      {kManagementReportDeviceAudioStatus, "device"},
-      {kManagementReportDevicePeripherals, "peripherals"},
-      {kManagementReportHardwareData, "device statistics"},
-      {kManagementReportCrashReports, "crash report"},
-      {kManagementReportAppInfoAndActivity, "app info and activity"},
-      {kManagementLogUploadEnabled, "logs"},
-      {kManagementPrinting, "print"},
-      {kManagementCrostiniContainerConfiguration, "crostini"},
-      {kManagementExtensionReportUsername, "username"},
-      {kManagementReportExtensions, "extension"},
-      {kManagementReportAndroidApplications, "android application"},
       {kManagementReportLoginLogout, "login-logout"},
       {kManagementReportFileEvents, "file events"}};
 

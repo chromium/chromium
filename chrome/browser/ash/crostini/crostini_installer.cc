@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -235,14 +234,6 @@ void CrostiniInstaller::Install(CrostiniManager::RestartOptions options,
   progress_callback_ = std::move(progress_callback);
   result_callback_ = std::move(result_callback);
 
-  // Check if there's additional setup required in the case of enterprise
-  // specifying an Ansible playbook to be run for a pre-determined configuration
-  // on the container.
-  if (ShouldConfigureDefaultContainer(profile_)) {
-    restart_options_.ansible_playbook = profile_->GetPrefs()->GetFilePath(
-        prefs::kCrostiniAnsiblePlaybookFilePath);
-  }
-
   install_start_time_ = base::TimeTicks::Now();
   require_cleanup_ = true;
   free_disk_space_ = kUninitializedDiskSpace;
@@ -411,7 +402,6 @@ void CrostiniInstaller::RunProgressCallback() {
     case InstallerState::kConfigureContainer:
       state_start_mark = 0.79;
       state_end_mark = 1;
-      // Ansible installation and playbook application.
       state_max_time = base::Seconds(140 + 300);
       break;
     default:

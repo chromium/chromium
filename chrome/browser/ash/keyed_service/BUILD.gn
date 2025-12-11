@@ -42,7 +42,6 @@ static_library("keyed_service") {
     "//chrome/browser/ash/concierge_helper",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crostini",
-    "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/crostini/throttle",
     "//chrome/browser/ash/data_migration",
     "//chrome/browser/ash/early_prefs",

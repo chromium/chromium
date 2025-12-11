@@ -214,7 +214,6 @@ class CrostiniManager : public KeyedService,
     std::optional<int64_t> disk_size_bytes;
     std::optional<std::string> image_server_url;
     std::optional<std::string> image_alias;
-    std::optional<base::FilePath> ansible_playbook;
 
     RestartOptions();
     ~RestartOptions();
@@ -593,9 +592,6 @@ class CrostiniManager : public KeyedService,
       override;
   void OnPendingAppListUpdates(
       const vm_tools::cicerone::PendingAppListUpdatesSignal& signal) override;
-  void OnApplyAnsiblePlaybookProgress(
-      const vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal& signal)
-      override;
   void OnUpgradeContainerProgress(
       const vm_tools::cicerone::UpgradeContainerProgressSignal& signal)
       override;

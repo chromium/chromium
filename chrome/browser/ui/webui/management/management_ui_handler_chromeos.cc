@@ -293,14 +293,8 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   }
 
   if (crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
-    if (!profile->GetPrefs()
-             ->GetFilePath(crostini::prefs::kCrostiniAnsiblePlaybookFilePath)
-             .empty()) {
-      AddDeviceReportingElement(report_sources,
-                                kManagementCrostiniContainerConfiguration,
-                                DeviceReportingType::kCrostini);
-    } else if (profile->GetPrefs()->GetBoolean(
-                   crostini::prefs::kReportCrostiniUsageEnabled)) {
+    if (profile->GetPrefs()->GetBoolean(
+            crostini::prefs::kReportCrostiniUsageEnabled)) {
       AddDeviceReportingElement(report_sources, kManagementCrostini,
                                 DeviceReportingType::kCrostini);
     }

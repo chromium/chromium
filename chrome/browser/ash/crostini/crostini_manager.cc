@@ -39,8 +39,6 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/baguette_installer.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
@@ -630,17 +628,6 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   // If arc sideloading is enabled, configure the container for that.
   crostini_manager_->ConfigureForArcSideload();
 
-  if (requests_[0].options.ansible_playbook.has_value()) {
-    // Check to see if there's any additional configuration via Ansible
-    // required.
-    StartStage(mojom::InstallerState::kConfigureContainer);
-    AnsibleManagementServiceFactory::GetForProfile(profile_)
-        ->ConfigureContainer(
-            container_id_, requests_[0].options.ansible_playbook.value(),
-            base::BindOnce(&CrostiniRestarter::OnConfigureContainerFinished,
-                           weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
   // If default termina/penguin, then sshfs mount and reshare folders, else we
   // are finished. Because the session tracker update and this method are racing
   // on the same thread we do the update async once the session tracker is
@@ -3432,17 +3419,6 @@ void CrostiniManager::OnUninstallPackageProgress(
   }
 }
 
-void CrostiniManager::OnApplyAnsiblePlaybookProgress(
-    const vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal& signal) {
-  if (signal.owner_id() != owner_id_) {
-    return;
-  }
-
-  // TODO(okalitova): Add an observer.
-  AnsibleManagementServiceFactory::GetForProfile(profile_)
-      ->OnApplyAnsiblePlaybookProgress(signal);
-}
-
 void CrostiniManager::OnUpgradeContainerProgress(
     const vm_tools::cicerone::UpgradeContainerProgressSignal& signal) {
   if (signal.owner_id() != owner_id_) {
@@ -4738,11 +4714,6 @@ bool CrostiniManager::RegisterCreateOptions(
     new_create_options.Set(prefs::kCrostiniCreateOptionsImageAliasKey,
                            base::Value(options.image_alias.value()));
   }
-  if (options.ansible_playbook.has_value()) {
-    new_create_options.Set(
-        prefs::kCrostiniCreateOptionsAnsiblePlaybookKey,
-        base::Value(options.ansible_playbook.value().value()));
-  }
   new_create_options.Set(prefs::kCrostiniCreateOptionsUsedKey,
                          base::Value(false));
 
@@ -4823,10 +4794,6 @@ bool CrostiniManager::FetchCreateOptions(const guest_os::GuestId& container_id,
   if (create_options.Find(prefs::kCrostiniCreateOptionsImageAliasKey)) {
     options->image_alias =
         *create_options.FindString(prefs::kCrostiniCreateOptionsImageAliasKey);
-  }
-  if (create_options.Find(prefs::kCrostiniCreateOptionsAnsiblePlaybookKey)) {
-    options->ansible_playbook = base::FilePath(*create_options.FindString(
-        prefs::kCrostiniCreateOptionsAnsiblePlaybookKey));
   }
 
   return *create_options.FindBool(prefs::kCrostiniCreateOptionsUsedKey);

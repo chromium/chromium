@@ -39,7 +39,6 @@
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/ash/concierge_helper/concierge_helper_service.h"
 #include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/ash/crostini/crostini_metrics_service.h"
@@ -165,7 +164,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ConciergeHelperServiceFactory::GetInstance();
   crosapi::KeystoreServiceFactoryAsh::GetInstance();
   CrosSpeechRecognitionServiceFactory::EnsureFactoryBuilt();
-  crostini::AnsibleManagementServiceFactory::GetInstance();
   crostini::CrostiniExportImportFactory::GetInstance();
   crostini::CrostiniInstallerFactory::GetInstance();
   crostini::CrostiniMetricsService::Factory::GetInstance();

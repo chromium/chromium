@@ -848,11 +848,6 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
     options.image_alias = image_alias;
     VLOG(1) << "image_alias = " << image_alias;
   }
-  if (!container_file.empty() &&
-      container_file.Extension() == FILE_PATH_LITERAL(".yaml")) {
-    options.ansible_playbook = container_file;
-    VLOG(1) << "ansible_playbook = " << container_file;
-  }
 
   crostini::CrostiniManager::GetForProfile(profile_)
       ->RestartCrostiniWithOptions(

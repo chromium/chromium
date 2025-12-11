@@ -189,11 +189,9 @@ bool IsCrostiniRunning(Profile* profile) {
 }
 
 bool ShouldConfigureDefaultContainer(Profile* profile) {
-  const base::FilePath ansible_playbook_file_path =
-      profile->GetPrefs()->GetFilePath(prefs::kCrostiniAnsiblePlaybookFilePath);
   bool default_container_configured = profile->GetPrefs()->GetBoolean(
       prefs::kCrostiniDefaultContainerConfigured);
-  return !default_container_configured && !ansible_playbook_file_path.empty();
+  return !default_container_configured;
 }
 
 bool ShouldAllowContainerUpgrade(Profile* profile) {
