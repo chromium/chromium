@@ -1590,25 +1590,33 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.FocusResultedInNavigation" enum="BooleanNavigated"
-    expires_after="2026-07-01">
+<histogram name="Omnibox.FocusResultedInNavigation{Usage}"
+    enum="FocusResultedInNavigationTypes" expires_after="2026-07-01">
   <owner>ender@google.com</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
     This records whether user initiated navigation after focusing the Omnibox
-    versus switches focus elsewhere without navigating. This metric includes
-    accidental focus-then-losing-focus events, including brief ones. It also
-    includes ones in which the user did not type any text or otherwise engage
-    with the Omnibox. E.g., the user tabbing through all top Chrome UI controls
-    will cause this metric to be recorded. If the user switches focus from the
-    Chrome window to another window while the Omnibox is focussed, that also
-    counts as a loss of focus.
+    versus switches focus elsewhere without navigating in the {Usage} case. This
+    metric includes accidental focus-then-losing-focus events, including brief
+    ones. It also includes ones in which the user did not type any text or
+    otherwise engage with the Omnibox. E.g., the user tabbing through all top
+    Chrome UI controls will cause this metric to be recorded. If the user
+    switches focus from the Chrome window to another window while the Omnibox is
+    focused, that also counts as a loss of focus.
+
+    On Android variants with attachments are recorded as of M144.
 
     This metric is not recorded for the Realbox interactions.
 
     Recorded every time the Omnibox focus is cleared.
   </summary>
+  <token key="Usage">
+    <variant name="" summary="Overall"/>
+    <variant name=".AIMode" summary="AI Mode"/>
+    <variant name=".ImageGeneration" summary="Image generation"/>
+    <variant name=".Search" summary="Search"/>
+  </token>
 </histogram>
 
 <histogram name="Omnibox.FocusToCutOrCopyAllTextTime" units="ms"

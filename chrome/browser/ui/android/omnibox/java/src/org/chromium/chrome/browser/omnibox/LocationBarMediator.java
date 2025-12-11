@@ -951,6 +951,7 @@ class LocationBarMediator
                 }
             }
 
+            mAutocompleteCoordinator.onUrlAnimationFinished(mUrlHasFocus);
             for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
                 listener.onUrlAnimationFinished(mUrlHasFocus);
             }
@@ -996,6 +997,15 @@ class LocationBarMediator
         if (hasFocus) {
             mUrlFocusedWithoutAnimations = false;
         }
+
+        // Propagate signals to AutocompleteCoordinator ahead of everyone else.
+        // Autocomplete requires certain signals, such as AutocompleteRequestType
+        // and PageClassification to be correct throughout from the moment the focus
+        // is gained to the moment the focus is lost.
+        //
+        // This call is permitted to happen before anyone else is activated, and
+        // must be called before everyone else cleans up.
+        mAutocompleteCoordinator.onUrlFocusChange(hasFocus);
 
         for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
             listener.onUrlFocusChange(hasFocus);

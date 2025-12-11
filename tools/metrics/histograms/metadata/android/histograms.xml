@@ -4063,6 +4063,7 @@ chromium-metrics-reviews@google.com.
     User chooses to navigate somewhere or abandons the interaction.
   </summary>
   <token key="PageClass">
+    <variant name="ComposeBox" summary="the Compose Box"/>
     <variant name="NTP" summary="the New Tab Page"/>
     <variant name="Other" summary="a website"/>
     <variant name="SRP" summary="the Search Results Page"/>
