@@ -38,8 +38,9 @@ typedef void* PlatformPixelFormatObj;
 PlatformPixelFormatObj g_discrete_pixel_format_obj = nullptr;
 
 void ForceDiscreteGPU() {
-  if (g_discrete_pixel_format_obj)
+  if (g_discrete_pixel_format_obj) {
     return;
+  }
 #if BUILDFLAG(IS_MAC)
   CGLPixelFormatAttribute attribs[1];
   attribs[0] = static_cast<CGLPixelFormatAttribute>(0);
@@ -49,14 +50,14 @@ void ForceDiscreteGPU() {
 #endif  // BUILDFLAG(IS_MAC)
 }
 
-}  // namespace anonymous
+}  // namespace
 
 bool SwitchableGPUsSupported(const GPUInfo& gpu_info,
                              const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_MAC)
   if (command_line.HasSwitch(switches::kUseGL) &&
       (command_line.GetSwitchValueASCII(switches::kUseGL) !=
-           gl::kGLImplementationANGLEName)) {
+       gl::kGLImplementationANGLEName)) {
     return false;
   }
   // Always allow offline renderers on ARM-based macs.

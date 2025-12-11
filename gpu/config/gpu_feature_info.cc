@@ -12,8 +12,9 @@
 namespace gpu {
 
 GpuFeatureInfo::GpuFeatureInfo() {
-  for (auto& status : status_values)
+  for (auto& status : status_values) {
     status = kGpuFeatureStatusUndefined;
+  }
 }
 
 GpuFeatureInfo::GpuFeatureInfo(const GpuFeatureInfo&) = default;
