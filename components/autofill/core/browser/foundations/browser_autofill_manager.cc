@@ -2333,7 +2333,12 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
   client().GetSingleFieldFillRouter().OnSingleFieldSuggestionSelected(
       suggestion);
 
-  AutofillField* autofill_trigger_field = GetAutofillField(form_id, field_id);
+  FormStructure* form_structure = FindCachedFormById(form_id, /*pass_key=*/{});
+  if (!form_structure) {
+    return;
+  }
+  AutofillField* autofill_trigger_field =
+      form_structure->GetFieldById(field_id);
   if (!autofill_trigger_field) {
     return;
   }
@@ -2853,18 +2858,6 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
       FormStructure::RetrieveFromCacheReason::kFormImport);
 
   return submitted_form;
-}
-
-AutofillField* BrowserAutofillManager::GetAutofillField(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id) {
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form_id, field_id, &form_structure,
-                             &autofill_field)) {
-    return nullptr;
-  }
-  return autofill_field;
 }
 
 autofill_metrics::CreditCardFormEventLogger&

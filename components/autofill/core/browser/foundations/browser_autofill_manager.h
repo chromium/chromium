@@ -332,11 +332,6 @@ class BrowserAutofillManager : public AutofillManager {
     fast_checkout_delegate_ = std::move(fast_checkout_delegate);
   }
 
-  // Returns the field corresponding to `form_id` and `field_id` that can be
-  // autofilled. Returns NULL if the field cannot be autofilled.
-  [[nodiscard]] AutofillField* GetAutofillField(const FormGlobalId& form_id,
-                                                const FieldGlobalId& field_id);
-
   // This reference is not stable over the lifetime of BrowserAutofillManager.
   virtual autofill_metrics::CreditCardFormEventLogger&
   GetCreditCardFormEventLogger();

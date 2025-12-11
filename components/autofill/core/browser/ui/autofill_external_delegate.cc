@@ -307,8 +307,12 @@ void AutofillExternalDelegate::OnQuery(
 }
 
 const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
-  return manager_->GetAutofillField(query_form_.global_id(),
-                                    query_field_.global_id());
+  const FormStructure* form_structure =
+      manager_->FindCachedFormById(query_form_.global_id());
+  if (!form_structure) {
+    return nullptr;
+  }
+  return form_structure->GetFieldById(query_field_.global_id());
 }
 
 void AutofillExternalDelegate::OnSuggestionsReturned(
