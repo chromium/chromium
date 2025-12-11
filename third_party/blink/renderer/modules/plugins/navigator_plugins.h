@@ -16,8 +16,10 @@ class LocalDOMWindow;
 class Navigator;
 
 class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
-                               public GarbageCollectedMixin {
+                               public Supplement<Navigator> {
  public:
+  static const unsigned kSupplementIndex;
+
   static NavigatorPlugins& From(Navigator&);
   static NavigatorPlugins* ToNavigatorPlugins(Navigator&);
 
@@ -36,7 +38,6 @@ class NavigatorPlugins final : public GarbageCollected<NavigatorPlugins>,
   DOMMimeTypeArray* mimeTypes(LocalDOMWindow*) const;
   bool pdfViewerEnabled(LocalDOMWindow* window) const;
 
-  Member<Navigator> navigator_;
   mutable Member<DOMPluginArray> plugins_;
   mutable Member<DOMMimeTypeArray> mime_types_;
 };

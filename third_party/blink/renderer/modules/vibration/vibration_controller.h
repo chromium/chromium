@@ -37,11 +37,13 @@ class V8UnionUnsignedLongOrUnsignedLongSequence;
 
 class MODULES_EXPORT VibrationController final
     : public GarbageCollected<VibrationController>,
+      public Supplement<Navigator>,
       public ExecutionContextLifecycleObserver,
       public PageVisibilityObserver {
  public:
   using VibrationPattern = Vector<unsigned>;
 
+  static const unsigned kSupplementIndex;
   static VibrationController& From(Navigator&);
 
   static bool vibrate(Navigator&, unsigned time);
@@ -80,8 +82,6 @@ class MODULES_EXPORT VibrationController final
   void PageVisibilityChanged() override;
 
   bool Vibrate(const VibrationPattern&);
-
-  Member<Navigator> navigator_;
 
   // Remote to VibrationManager mojo interface. This is reset in
   // |contextDestroyed| and must not be called or recreated after it is reset.

@@ -34,11 +34,12 @@ class V8MediaSessionPlaybackState;
 
 class MODULES_EXPORT MediaSession final
     : public ScriptWrappable,
-      public blink::mojom::blink::MediaSessionClient,
-      public GarbageCollectedMixin {
+      public Supplement<Navigator>,
+      public blink::mojom::blink::MediaSessionClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
   static MediaSession* mediaSession(Navigator&);
   explicit MediaSession(Navigator&);
 
@@ -85,8 +86,6 @@ class MODULES_EXPORT MediaSession final
 
   // Returns null if the associated window is detached.
   mojom::blink::MediaSessionService* GetService();
-
-  Member<Navigator> navigator_;
 
   raw_ptr<const base::TickClock, DanglingUntriaged> clock_ = nullptr;
 

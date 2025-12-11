@@ -22,19 +22,20 @@
 namespace blink {
 
 NavigatorBeacon::NavigatorBeacon(Navigator& navigator)
-    : navigator_(navigator) {}
+    : Supplement<Navigator>(navigator) {}
 
 NavigatorBeacon::~NavigatorBeacon() = default;
 
 void NavigatorBeacon::Trace(Visitor* visitor) const {
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 NavigatorBeacon& NavigatorBeacon::From(Navigator& navigator) {
-  NavigatorBeacon* supplement = navigator.GetNavigatorBeacon();
+  NavigatorBeacon* supplement =
+      Supplement<Navigator>::From<NavigatorBeacon>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorBeacon>(navigator);
-    navigator.SetNavigatorBeacon(supplement);
+    ProvideTo(navigator, supplement);
   }
   return *supplement;
 }
@@ -54,7 +55,7 @@ bool NavigatorBeacon::CanSendBeacon(ExecutionContext* context,
   }
 
   // If detached, do not allow sending a Beacon.
-  return navigator_->DomWindow();
+  return GetSupplementable()->DomWindow();
 }
 
 bool NavigatorBeacon::sendBeacon(
@@ -79,7 +80,7 @@ bool NavigatorBeacon::SendBeaconImpl(
   }
 
   bool allowed;
-  LocalFrame* frame = navigator_->DomWindow()->GetFrame();
+  LocalFrame* frame = GetSupplementable()->DomWindow()->GetFrame();
   if (data) {
     switch (data->GetContentType()) {
       case V8UnionReadableStreamOrXMLHttpRequestBodyInit::ContentType::

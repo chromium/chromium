@@ -19,10 +19,12 @@ class Navigator;
 
 class WindowControlsOverlay final
     : public EventTarget,
+      public Supplement<Navigator>,
       public WindowControlsOverlayChangedDelegate {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
   // Web Exposed as navigator.windowControlsOverlay
   static WindowControlsOverlay* windowControlsOverlay(Navigator& navigator);
 
@@ -46,9 +48,6 @@ class WindowControlsOverlay final
   void WindowControlsOverlayChanged(const gfx::Rect&) final;
 
   void Trace(Visitor*) const override;
-
- private:
-  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/preferences/navigator_preferences.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_receiver.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_request.h"
@@ -28,18 +27,23 @@ bool IsOutermostDocument(LocalDOMWindow* window) {
 }  // namespace
 
 // static
+const unsigned Presentation::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kPresentation);
+
+// static
 Presentation* Presentation::presentation(Navigator& navigator) {
   if (!navigator.DomWindow())
     return nullptr;
-  Presentation* presentation = navigator.GetPresentation();
+  auto* presentation = Supplement<Navigator>::From<Presentation>(navigator);
   if (!presentation) {
     presentation = MakeGarbageCollected<Presentation>(navigator);
-    navigator.SetPresentation(presentation);
+    ProvideTo(navigator, presentation);
   }
   return presentation;
 }
 
-Presentation::Presentation(Navigator& navigator) : navigator_(navigator) {
+Presentation::Presentation(Navigator& navigator)
+    : Supplement<Navigator>(navigator) {
   PresentationController::From(*navigator.DomWindow())->SetPresentation(this);
   MaybeInitReceiver();
 }
@@ -48,7 +52,7 @@ void Presentation::Trace(Visitor* visitor) const {
   visitor->Trace(default_request_);
   visitor->Trace(receiver_);
   ScriptWrappable::Trace(visitor);
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 PresentationRequest* Presentation::defaultRequest() const {
@@ -58,7 +62,7 @@ PresentationRequest* Presentation::defaultRequest() const {
 void Presentation::setDefaultRequest(PresentationRequest* request) {
   default_request_ = request;
 
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
 
@@ -68,7 +72,7 @@ void Presentation::setDefaultRequest(PresentationRequest* request) {
 }
 
 void Presentation::MaybeInitReceiver() {
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!receiver_ && window && IsOutermostDocument(window) &&
       window->GetFrame()->GetSettings()->GetPresentationReceiver()) {
     receiver_ = MakeGarbageCollected<PresentationReceiver>(window);

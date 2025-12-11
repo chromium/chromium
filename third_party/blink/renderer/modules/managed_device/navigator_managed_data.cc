@@ -54,21 +54,25 @@ bool AreDeviceAttributesAllowedByPermissionsPolicy(ExecutionContext* context) {
 
 }  // namespace
 
+const unsigned NavigatorManagedData::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kNavigatorManagedData);
+
 NavigatorManagedData* NavigatorManagedData::managed(Navigator& navigator) {
   if (!navigator.DomWindow())
     return nullptr;
 
-  NavigatorManagedData* device_service = navigator.GetNavigatorManagedData();
+  NavigatorManagedData* device_service =
+      Supplement<Navigator>::From<NavigatorManagedData>(navigator);
   if (!device_service) {
     device_service = MakeGarbageCollected<NavigatorManagedData>(navigator);
-    navigator.SetNavigatorManagedData(device_service);
+    ProvideTo(navigator, device_service);
   }
   return device_service;
 }
 
 NavigatorManagedData::NavigatorManagedData(Navigator& navigator)
     : ActiveScriptWrappable<NavigatorManagedData>({}),
-      navigator_(navigator),
+      Supplement<Navigator>(navigator),
       device_api_service_(navigator.DomWindow()),
       managed_configuration_service_(navigator.DomWindow()),
       configuration_observer_(this, navigator.DomWindow()) {}
@@ -78,7 +82,7 @@ const AtomicString& NavigatorManagedData::InterfaceName() const {
 }
 
 ExecutionContext* NavigatorManagedData::GetExecutionContext() const {
-  return navigator_->DomWindow();
+  return GetSupplementable()->DomWindow();
 }
 
 bool NavigatorManagedData::HasPendingActivity() const {
@@ -90,7 +94,7 @@ bool NavigatorManagedData::HasPendingActivity() const {
 void NavigatorManagedData::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
 
   visitor->Trace(device_api_service_);
   visitor->Trace(managed_configuration_service_);

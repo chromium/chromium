@@ -18,7 +18,7 @@ class LoginStatusOptions;
 
 // Methods to let websites tell the browser about their login status.
 class MODULES_EXPORT NavigatorLogin : public ScriptWrappable,
-                                      public GarbageCollectedMixin {
+                                      public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -34,9 +34,6 @@ class MODULES_EXPORT NavigatorLogin : public ScriptWrappable,
                                         const LoginStatusOptions* options);
 
   void Trace(Visitor*) const override;
-
- private:
-  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

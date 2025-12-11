@@ -23,8 +23,11 @@ class ScriptState;
 // NavigatorWebInstall::From() via install().
 class MODULES_EXPORT NavigatorWebInstall final
     : public GarbageCollected<NavigatorWebInstall>,
-      public GarbageCollectedMixin {
+      public Supplement<Navigator> {
  public:
+  static constexpr auto kSupplementIndex =
+      Navigator::Supplements::kNavigatorWebInstall;
+
   explicit NavigatorWebInstall(Navigator& navigator);
   ~NavigatorWebInstall() = default;
 
@@ -64,7 +67,6 @@ class MODULES_EXPORT NavigatorWebInstall final
   bool IsInstallUrlValid(const String& install_url);
   KURL ValidateAndResolveManifestId(const String& manifest_id);
 
-  Member<Navigator> navigator_;
   HeapMojoRemote<mojom::blink::WebInstallService> service_;
 };
 

@@ -21,22 +21,26 @@
 
 namespace blink {
 
+// static
+const unsigned Clipboard::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kClipboard);
+
 Clipboard* Clipboard::clipboard(Navigator& navigator) {
-  Clipboard* clipboard = navigator.GetClipboard();
+  Clipboard* clipboard = Supplement<Navigator>::From<Clipboard>(navigator);
   if (!clipboard) {
     clipboard = MakeGarbageCollected<Clipboard>(navigator);
-    navigator.SetClipboard(clipboard);
+    ProvideTo(navigator, clipboard);
   }
   return clipboard;
 }
 
-Clipboard::Clipboard(Navigator& navigator) : navigator_(navigator) {}
+Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
 ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
     ScriptState* script_state,
     ClipboardReadOptions* options,
     ExceptionState& exception_state) {
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
   if (local_frame && local_frame->IsAdScriptInStack()) {
     UseCounter::Count(GetExecutionContext(),
@@ -49,7 +53,7 @@ ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
 
 ScriptPromise<IDLString> Clipboard::readText(ScriptState* script_state,
                                              ExceptionState& exception_state) {
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
   if (local_frame && local_frame->IsAdScriptInStack()) {
     UseCounter::Count(GetExecutionContext(),
@@ -75,7 +79,7 @@ void Clipboard::AddedEventListener(
                     WebFeature::kClipboardChangeEventAddListener);
 
   if (!clipboard_change_event_controller_) {
-    Navigator& navigator = *navigator_;
+    Navigator& navigator = *GetSupplementable();
     if (navigator.DomWindow()) {
       clipboard_change_event_controller_ =
           MakeGarbageCollected<ClipboardChangeEventController>(navigator, this);
@@ -125,7 +129,7 @@ const AtomicString& Clipboard::InterfaceName() const {
 }
 
 ExecutionContext* Clipboard::GetExecutionContext() const {
-  return navigator_->DomWindow();
+  return GetSupplementable()->DomWindow();
 }
 
 // static
@@ -147,7 +151,7 @@ String Clipboard::ParseWebCustomFormat(const String& format) {
 
 void Clipboard::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
   visitor->Trace(clipboard_change_event_controller_);
 }
 

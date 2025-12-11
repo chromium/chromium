@@ -21,7 +21,7 @@ class PresentationRequest;
 // See https://w3c.github.io/presentation-api/#navigatorpresentation for
 // details.
 class Presentation final : public ScriptWrappable,
-                           public GarbageCollectedMixin {
+                           public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -38,8 +38,6 @@ class Presentation final : public ScriptWrappable,
 
  private:
   void MaybeInitReceiver();
-
-  Member<Navigator> navigator_;
 
   // Default PresentationRequest used by the embedder.
   Member<PresentationRequest> default_request_;

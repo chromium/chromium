@@ -141,17 +141,21 @@ mojom::blink::MediaSessionPlaybackState EnumToMediaSessionPlaybackState(
 
 }  // anonymous namespace
 
+const unsigned MediaSession::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kMediaSession);
+
 MediaSession* MediaSession::mediaSession(Navigator& navigator) {
-  MediaSession* supplement = navigator.GetMediaSession();
+  MediaSession* supplement =
+      Supplement<Navigator>::From<MediaSession>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<MediaSession>(navigator);
-    navigator.SetMediaSession(supplement);
+    ProvideTo(navigator, supplement);
   }
   return supplement;
 }
 
 MediaSession::MediaSession(Navigator& navigator)
-    : navigator_(navigator),
+    : Supplement<Navigator>(navigator),
       clock_(base::DefaultTickClock::GetInstance()),
       playback_state_(mojom::blink::MediaSessionPlaybackState::NONE),
       service_(navigator.GetExecutionContext()),
@@ -195,7 +199,7 @@ void MediaSession::OnMetadataChanged() {
 
   // OnMetadataChanged() is called from a timer. The Window/ExecutionContext
   // might detaches in the meantime. See https://crbug.com/1269522
-  ExecutionContext* context = navigator_->DomWindow();
+  ExecutionContext* context = GetSupplementable()->DomWindow();
   if (!context)
     return;
 
@@ -208,7 +212,7 @@ void MediaSession::setActionHandler(const V8MediaSessionAction& action,
                                     ExceptionState& exception_state) {
   auto action_value = action.AsEnum();
   if (action_value == V8MediaSessionAction::Enum::kSkipad) {
-    LocalDOMWindow* window = navigator_->DomWindow();
+    LocalDOMWindow* window = GetSupplementable()->DomWindow();
     if (!RuntimeEnabledFeatures::SkipAdEnabled(window)) {
       exception_state.ThrowTypeError(
           "The provided value 'skipad' is not a valid enum "
@@ -220,7 +224,7 @@ void MediaSession::setActionHandler(const V8MediaSessionAction& action,
   }
 
   if (action_value == V8MediaSessionAction::Enum::kEnterpictureinpicture) {
-    UseCounter::Count(navigator_->DomWindow(),
+    UseCounter::Count(GetSupplementable()->DomWindow(),
                       WebFeature::kMediaSessionEnterPictureInPicture);
   }
 
@@ -396,7 +400,7 @@ mojom::blink::MediaSessionService* MediaSession::GetService() {
   if (service_) {
     return service_.get();
   }
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window) {
     return nullptr;
   }
@@ -413,7 +417,7 @@ mojom::blink::MediaSessionService* MediaSession::GetService() {
 void MediaSession::DidReceiveAction(
     media_session::mojom::blink::MediaSessionAction action,
     mojom::blink::MediaSessionActionDetailsPtr details) {
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
   LocalFrame::NotifyUserActivation(
@@ -440,7 +444,7 @@ void MediaSession::Trace(Visitor* visitor) const {
   visitor->Trace(action_handlers_);
   visitor->Trace(service_);
   ScriptWrappable::Trace(visitor);
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink

@@ -33,24 +33,28 @@ BASE_FEATURE(kShowKeyboardIfLastPageHadGesture,
 }  // namespace
 
 // static
+const unsigned VirtualKeyboard::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kVirtualKeyboard);
+
+// static
 VirtualKeyboard* VirtualKeyboard::virtualKeyboard(Navigator& navigator) {
-  VirtualKeyboard* keyboard = navigator.GetVirtualKeyboard();
+  auto* keyboard = Supplement<Navigator>::From<VirtualKeyboard>(navigator);
   if (!keyboard) {
     keyboard = MakeGarbageCollected<VirtualKeyboard>(navigator);
-    navigator.SetVirtualKeyboard(keyboard);
+    ProvideTo(navigator, keyboard);
   }
   return keyboard;
 }
 
 VirtualKeyboard::VirtualKeyboard(Navigator& navigator)
-    : VirtualKeyboardOverlayChangedObserver(
-          navigator.DomWindow() ? navigator.DomWindow()->GetFrame() : nullptr),
-      navigator_(navigator) {
+    : Supplement<Navigator>(navigator),
+      VirtualKeyboardOverlayChangedObserver(
+          navigator.DomWindow() ? navigator.DomWindow()->GetFrame() : nullptr) {
   bounding_rect_ = DOMRect::Create();
 }
 
 ExecutionContext* VirtualKeyboard::GetExecutionContext() const {
-  return navigator_->DomWindow();
+  return GetSupplementable()->DomWindow();
 }
 
 const AtomicString& VirtualKeyboard::InterfaceName() const {
@@ -60,7 +64,7 @@ const AtomicString& VirtualKeyboard::InterfaceName() const {
 VirtualKeyboard::~VirtualKeyboard() = default;
 
 bool VirtualKeyboard::overlaysContent() const {
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return false;
 
@@ -80,7 +84,7 @@ DOMRect* VirtualKeyboard::boundingRect() const {
 }
 
 void VirtualKeyboard::setOverlaysContent(bool overlays_content) {
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
 
@@ -108,7 +112,7 @@ void VirtualKeyboard::setOverlaysContent(bool overlays_content) {
 void VirtualKeyboard::VirtualKeyboardOverlayChanged(
     const gfx::Rect& keyboard_rect) {
   TRACE_EVENT0("vk", "VirtualKeyboard::VirtualKeyboardOverlayChanged");
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
 
@@ -133,7 +137,7 @@ void VirtualKeyboard::VirtualKeyboardOverlayChanged(
 
 void VirtualKeyboard::show() {
   TRACE_EVENT0("vk", "VirtualKeyboard::show");
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
 
@@ -158,7 +162,7 @@ void VirtualKeyboard::show() {
 
 void VirtualKeyboard::hide() {
   TRACE_EVENT0("vk", "VirtualKeyboard::hide");
-  LocalDOMWindow* window = navigator_->DomWindow();
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
 
@@ -168,8 +172,8 @@ void VirtualKeyboard::hide() {
 
 void VirtualKeyboard::Trace(Visitor* visitor) const {
   visitor->Trace(bounding_rect_);
-  visitor->Trace(navigator_);
   EventTarget::Trace(visitor);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink

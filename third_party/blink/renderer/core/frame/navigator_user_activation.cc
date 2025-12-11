@@ -10,10 +10,11 @@
 namespace blink {
 
 NavigatorUserActivation& NavigatorUserActivation::From(Navigator& navigator) {
-  NavigatorUserActivation* supplement = navigator.GetNavigatorUserActivation();
+  NavigatorUserActivation* supplement =
+      Supplement<Navigator>::From<NavigatorUserActivation>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorUserActivation>(navigator);
-    navigator.SetNavigatorUserActivation(supplement);
+    ProvideTo(navigator, supplement);
   }
   return *supplement;
 }
@@ -28,11 +29,11 @@ UserActivation* NavigatorUserActivation::userActivation() {
 
 void NavigatorUserActivation::Trace(Visitor* visitor) const {
   visitor->Trace(user_activation_);
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 NavigatorUserActivation::NavigatorUserActivation(Navigator& navigator)
-    : navigator_(navigator) {
+    : Supplement(navigator) {
   user_activation_ =
       MakeGarbageCollected<UserActivation>(navigator.DomWindow());
 }

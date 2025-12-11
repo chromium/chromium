@@ -1130,6 +1130,10 @@ void LogResidentKeyRequirement(PublicKeyCredentialCreationOptions* public_key) {
 
 }  // namespace
 
+const unsigned AuthenticationCredentialsContainer::kSupplementIndex =
+    static_cast<unsigned>(
+        Navigator::Supplements::kAuthenticationCredentialsContainer);
+
 DOMException* AuthenticatorStatusToDOMException(
     AuthenticatorStatus status,
     const WebAuthnDOMExceptionDetailsPtr& dom_exception_details) {
@@ -1358,18 +1362,19 @@ class AuthenticationCredentialsContainer::PublicKeyRequestAbortAlgorithm final
 CredentialsContainer* AuthenticationCredentialsContainer::credentials(
     Navigator& navigator) {
   AuthenticationCredentialsContainer* credentials =
-      navigator.GetAuthenticationCredentialsContainer();
+      Supplement<Navigator>::From<AuthenticationCredentialsContainer>(
+          navigator);
   if (!credentials) {
     credentials =
         MakeGarbageCollected<AuthenticationCredentialsContainer>(navigator);
-    navigator.SetAuthenticationCredentialsContainer(credentials);
+    ProvideTo(navigator, credentials);
   }
   return credentials;
 }
 
 AuthenticationCredentialsContainer::AuthenticationCredentialsContainer(
     Navigator& navigator)
-    : navigator_(navigator) {}
+    : Supplement<Navigator>(navigator) {}
 
 ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     ScriptState* script_state,
@@ -2023,7 +2028,7 @@ AuthenticationCredentialsContainer::preventSilentAccess(
 }
 
 void AuthenticationCredentialsContainer::Trace(Visitor* visitor) const {
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
   CredentialsContainer::Trace(visitor);
 }
 

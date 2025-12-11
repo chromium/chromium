@@ -68,16 +68,17 @@ void OnQueryHandwritingRecognizer(
 
 HandwritingRecognitionService::HandwritingRecognitionService(
     Navigator& navigator)
-    : navigator_(navigator), remote_service_(navigator.GetExecutionContext()) {}
+    : Supplement<Navigator>(navigator),
+      remote_service_(navigator.GetExecutionContext()) {}
 
 // static
 HandwritingRecognitionService& HandwritingRecognitionService::From(
     Navigator& navigator) {
   HandwritingRecognitionService* supplement =
-      navigator.GetHandwritingRecognitionService();
+      Supplement<Navigator>::From<HandwritingRecognitionService>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<HandwritingRecognitionService>(navigator);
-    navigator.SetHandwritingRecognitionService(supplement);
+    ProvideTo(navigator, supplement);
   }
   return *supplement;
 }
@@ -107,7 +108,7 @@ bool HandwritingRecognitionService::BootstrapMojoConnectionIfNeeded(
   // the ScriptState passed in may not be guaranteed to match the execution
   // context associated with this navigator, especially with
   // cross-browsing-context calls.
-  auto* execution_context = navigator_->GetExecutionContext();
+  auto* execution_context = GetSupplementable()->GetExecutionContext();
   if (!remote_service_.is_bound()) {
     execution_context->GetBrowserInterfaceBroker().GetInterface(
         remote_service_.BindNewPipeAndPassReceiver(
@@ -181,7 +182,7 @@ HandwritingRecognitionService::QueryHandwritingRecognizer(
 
 void HandwritingRecognitionService::Trace(Visitor* visitor) const {
   visitor->Trace(remote_service_);
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink

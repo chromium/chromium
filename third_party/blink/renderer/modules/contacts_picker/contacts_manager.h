@@ -26,7 +26,7 @@ class V8ContactProperty;
 
 // Represents an the ContactManager, providing access to Contacts.
 class ContactsManager final : public ScriptWrappable,
-                              public GarbageCollectedMixin {
+                              public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -56,8 +56,6 @@ class ContactsManager final : public ScriptWrappable,
       std::optional<Vector<mojom::blink::ContactInfoPtr>> contacts);
 
   const Vector<V8ContactProperty>& GetProperties(ScriptState* script_state);
-
-  Member<Navigator> navigator_;
 
   // Created lazily.
   HeapMojoRemote<mojom::blink::ContactsManager> contacts_manager_;

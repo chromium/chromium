@@ -23,10 +23,11 @@ class SubAppsAddParams;
 class SubAppsListResult;
 class V8SubAppsResultCode;
 
-class SubApps : public ScriptWrappable, public GarbageCollectedMixin {
+class SubApps : public ScriptWrappable, public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
   static SubApps* subApps(Navigator&);
 
   explicit SubApps(Navigator&);
@@ -54,7 +55,6 @@ class SubApps : public ScriptWrappable, public GarbageCollectedMixin {
   void OnConnectionError();
   bool CheckPreconditionsMaybeThrow(ScriptState*, ExceptionState&);
 
-  Member<Navigator> navigator_;
   HeapMojoRemote<mojom::blink::SubAppsService> service_;
 };
 

@@ -177,10 +177,11 @@ void NavigatorShare::ShareClientImpl::OnConnectionError() {
 }
 
 NavigatorShare& NavigatorShare::From(Navigator& navigator) {
-  NavigatorShare* supplement = navigator.GetNavigatorShare();
+  NavigatorShare* supplement =
+      Supplement<Navigator>::From<NavigatorShare>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorShare>(navigator);
-    navigator.SetNavigatorShare(supplement);
+    ProvideTo(navigator, supplement);
   }
   return *supplement;
 }
@@ -188,8 +189,11 @@ NavigatorShare& NavigatorShare::From(Navigator& navigator) {
 void NavigatorShare::Trace(Visitor* visitor) const {
   visitor->Trace(service_remote_);
   visitor->Trace(clients_);
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
 }
+
+const unsigned NavigatorShare::kSupplementIndex =
+    static_cast<unsigned>(Navigator::Supplements::kNavigatorShare);
 
 bool NavigatorShare::canShare(ScriptState* script_state,
                               const ShareData* data) {

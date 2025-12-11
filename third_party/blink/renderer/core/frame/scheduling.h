@@ -18,19 +18,17 @@ class Navigator;
 
 // Low-level scheduling primitives for JS scheduler implementations.
 class CORE_EXPORT Scheduling : public ScriptWrappable,
-                               public GarbageCollectedMixin {
+                               public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
   static Scheduling* scheduling(Navigator&);
   explicit Scheduling(Navigator&);
 
   bool isInputPending(const IsInputPendingOptions* options) const;
 
   void Trace(Visitor*) const override;
-
- private:
-  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

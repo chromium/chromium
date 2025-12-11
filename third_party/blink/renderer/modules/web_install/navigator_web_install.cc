@@ -47,7 +47,8 @@ void OnInstallResponse(ScriptPromiseResolver<WebInstallResult>* resolver,
 }
 
 NavigatorWebInstall::NavigatorWebInstall(Navigator& navigator)
-    : navigator_(navigator), service_(navigator.GetExecutionContext()) {}
+    : Supplement<Navigator>(navigator),
+      service_(navigator.GetExecutionContext()) {}
 
 // static:
 ScriptPromise<WebInstallResult> NavigatorWebInstall::install(
@@ -92,7 +93,7 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
     return ScriptPromise<WebInstallResult>();
   }
 
-  auto* frame = navigator_->DomWindow()->GetFrame();
+  auto* frame = GetSupplementable()->DomWindow()->GetFrame();
   if (!LocalFrame::ConsumeTransientUserActivation(frame)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
@@ -146,16 +147,16 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
 
 void NavigatorWebInstall::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 NavigatorWebInstall& NavigatorWebInstall::From(Navigator& navigator) {
   NavigatorWebInstall* navigator_web_install =
-      navigator.GetNavigatorWebInstall();
+      Supplement<Navigator>::From<NavigatorWebInstall>(navigator);
   if (!navigator_web_install) {
     navigator_web_install =
         MakeGarbageCollected<NavigatorWebInstall>(navigator);
-    navigator.SetNavigatorWebInstall(navigator_web_install);
+    ProvideTo(navigator, navigator_web_install);
   }
   return *navigator_web_install;
 }
@@ -163,7 +164,7 @@ NavigatorWebInstall& NavigatorWebInstall::From(Navigator& navigator) {
 HeapMojoRemote<mojom::blink::WebInstallService>&
 NavigatorWebInstall::GetService() {
   if (!service_.is_bound()) {
-    auto* context = navigator_->GetExecutionContext();
+    auto* context = GetSupplementable()->GetExecutionContext();
     context->GetBrowserInterfaceBroker().GetInterface(
         service_.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
@@ -193,7 +194,7 @@ bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
     return false;
   }
 
-  Navigator* const navigator = navigator_;
+  Navigator* const navigator = GetSupplementable();
 
   if (!navigator->DomWindow()) {
     exception_state.ThrowDOMException(
@@ -245,7 +246,8 @@ KURL NavigatorWebInstall::ValidateAndResolveManifestId(
     return resolved;
   }
 
-  KURL document_url = navigator_->DomWindow()->GetFrame()->GetDocument()->Url();
+  KURL document_url =
+      GetSupplementable()->DomWindow()->GetFrame()->GetDocument()->Url();
   KURL origin = KURL(SecurityOrigin::Create(document_url)->ToString());
 
   resolved = KURL(origin, manifest_id);

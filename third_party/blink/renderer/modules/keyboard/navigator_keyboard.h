@@ -15,8 +15,10 @@ class Keyboard;
 
 // Navigator supplement which exposes keyboard related functionality.
 class NavigatorKeyboard final : public GarbageCollected<NavigatorKeyboard>,
-                                public GarbageCollectedMixin {
+                                public Supplement<Navigator> {
  public:
+  static constexpr auto kSupplementIndex =
+      Navigator::Supplements::kNavigatorKeyboard;
   static Keyboard* keyboard(Navigator&);
 
   explicit NavigatorKeyboard(Navigator&);
@@ -27,7 +29,6 @@ class NavigatorKeyboard final : public GarbageCollected<NavigatorKeyboard>,
   void Trace(Visitor*) const override;
 
  private:
-  Member<Navigator> navigator_;
   Member<Keyboard> keyboard_;
 };
 

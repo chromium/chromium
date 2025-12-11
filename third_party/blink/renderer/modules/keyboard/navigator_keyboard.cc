@@ -12,22 +12,24 @@
 namespace blink {
 
 NavigatorKeyboard::NavigatorKeyboard(Navigator& navigator)
-    : navigator_(navigator),
-      keyboard_(MakeGarbageCollected<Keyboard>(navigator_->DomWindow())) {}
+    : Supplement<Navigator>(navigator),
+      keyboard_(
+          MakeGarbageCollected<Keyboard>(GetSupplementable()->DomWindow())) {}
 
 // static
 Keyboard* NavigatorKeyboard::keyboard(Navigator& navigator) {
-  NavigatorKeyboard* supplement = navigator.GetNavigatorKeyboard();
+  NavigatorKeyboard* supplement =
+      Supplement<Navigator>::From<NavigatorKeyboard>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorKeyboard>(navigator);
-    navigator.SetNavigatorKeyboard(supplement);
+    ProvideTo(navigator, supplement);
   }
   return supplement->keyboard_.Get();
 }
 
 void NavigatorKeyboard::Trace(Visitor* visitor) const {
   visitor->Trace(keyboard_);
-  visitor->Trace(navigator_);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink

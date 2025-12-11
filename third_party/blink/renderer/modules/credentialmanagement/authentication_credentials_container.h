@@ -32,8 +32,9 @@ DOMException* AuthenticatorStatusToDOMException(
 
 class MODULES_EXPORT AuthenticationCredentialsContainer final
     : public CredentialsContainer,
-      public GarbageCollectedMixin {
+      public Supplement<Navigator> {
  public:
+  static const unsigned kSupplementIndex;
   static CredentialsContainer* credentials(Navigator&);
   explicit AuthenticationCredentialsContainer(Navigator&);
 
@@ -68,8 +69,6 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
 
   class OtpRequestAbortAlgorithm;
   class PublicKeyRequestAbortAlgorithm;
-
-  Member<Navigator> navigator_;
 };
 
 }  // namespace blink
