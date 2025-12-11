@@ -14740,9 +14740,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledJustInTime",
+                    "name": "EnabledRetroactive",
                     "params": {
-                        "is_retroactive": "false"
+                        "is_retroactive": "true"
                     },
                     "enable_features": [
                         "InvalidateSearchEngineChoiceOnDeviceRestoreDetection"

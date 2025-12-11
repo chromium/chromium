@@ -29,7 +29,12 @@ const char kForceSearchEngineChoiceScreen[] =
 // Invalidates old search engine choices when Chrome detects that it has been
 // transferred to a new device.
 BASE_FEATURE(kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 const base::FeatureParam<bool> kInvalidateChoiceOnRestoreIsRetroactive{
     /*feature=*/&kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
