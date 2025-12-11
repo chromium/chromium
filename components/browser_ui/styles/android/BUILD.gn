@@ -240,6 +240,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_speed.xml",
     "java/res/drawable/ic_speed_24.xml",
     "java/res/drawable/ic_stop_white_24dp.xml",
+    "java/res/drawable/ic_sync_saved_locally_24dp.xml",
     "java/res/drawable/ic_tune_24dp.xml",
     "java/res/drawable/ic_update_grey.xml",
     "java/res/drawable/ic_videocam_24dp.xml",

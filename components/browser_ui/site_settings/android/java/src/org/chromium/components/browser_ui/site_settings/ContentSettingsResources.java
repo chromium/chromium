@@ -489,11 +489,11 @@ public class ContentSettingsResources {
                         R.string.website_settings_popups_redirects_allow,
                         R.string.website_settings_popups_redirects_block);
 
-                // PROTECTED_MEDIA_IDENTIFIER uses 3-state preference so some values are not used.
-                // If 3-state becomes more common we should update localMaps to support it better.
+            // PROTECTED_MEDIA_IDENTIFIER uses 3-state preference so some values are not used.
+            // If 3-state becomes more common we should update localMaps to support it better.
             case ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER:
                 return new ResourceItem(
-                        R.drawable.permission_protected_media,
+                        R.drawable.ic_sync_saved_locally_24dp,
                         R.string.protected_content,
                         ContentSetting.ASK,
                         ContentSetting.BLOCK,
