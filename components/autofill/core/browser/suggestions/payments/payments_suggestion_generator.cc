@@ -320,11 +320,8 @@ void SetSuggestionLabelsForCard(
               .payments_data_manager()
               .IsCardEligibleForBenefits(credit_card)) {
         labels.push_back({*benefit_label});
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillEnableCardBenefitsIph)) {
-          suggestion.iph_metadata = Suggestion::IPHMetadata(
-              &feature_engagement::kIPHAutofillCreditCardBenefitFeature);
-        }
+        suggestion.iph_metadata = Suggestion::IPHMetadata(
+            &feature_engagement::kIPHAutofillCreditCardBenefitFeature);
       }
     }
     if (!ShouldUseNewFopDisplay()) {

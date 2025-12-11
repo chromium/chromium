@@ -835,12 +835,6 @@ inline constexpr char kAutofillEnableCardBenefitsForBmoDescription[] =
     "When enabled, card benefits offered by BMO will be shown in Autofill "
     "suggestions.";
 
-inline constexpr char kAutofillEnableCardBenefitsIphName[] =
-    "Enable showing in-process help UI for card benefits";
-inline constexpr char kAutofillEnableCardBenefitsIphDescription[] =
-    "When enabled, in-process help UI will be shown for Autofill card "
-    "suggestions with benefits.";
-
 inline constexpr char kAutofillEnableCardBenefitsSyncName[] =
     "Enable syncing card benefits";
 inline constexpr char kAutofillEnableCardBenefitsSyncDescription[] =

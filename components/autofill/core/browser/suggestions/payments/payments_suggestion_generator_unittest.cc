@@ -316,7 +316,6 @@ class AutofillCreditCardBenefitsLabelTest
         {{features::kAutofillEnableCardBenefitsForAmericanExpress, true},
          {features::kAutofillEnableCardBenefitsForBmo, true},
          {features::kAutofillEnableFlatRateCardBenefitsFromCurinos, true},
-         {features::kAutofillEnableCardBenefitsIph, true},
          {features::kAutofillEnableNewFopDisplayDesktop, true},
          {features::kAutofillEnableFlatRateCardBenefitsBlocklist, true}});
 
@@ -486,21 +485,6 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                 /*card_linked_offer_available=*/false)
                 .iph_metadata.feature,
             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
-}
-
-// Checks that `feature` is set to null when the flag is off.
-TEST_P(AutofillCreditCardBenefitsLabelTest,
-       BenefitSuggestionFeatureForIph_IsNullWhenFlagIsDisabled) {
-  base::test::ScopedFeatureList disable_benefits_iph;
-  disable_benefits_iph.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutofillEnableCardBenefitsIph});
-  EXPECT_EQ(CreateCreditCardSuggestionForTest(
-                card(), autofill_client(), CREDIT_CARD_NUMBER,
-                /*virtual_card_option=*/false,
-                /*card_linked_offer_available=*/false)
-                .iph_metadata.feature,
-            nullptr);
 }
 
 // Checks that `feature` is set to null when the card is not eligible
