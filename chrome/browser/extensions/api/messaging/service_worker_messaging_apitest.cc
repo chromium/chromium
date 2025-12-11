@@ -186,14 +186,21 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
          })");
   test_dir.WriteFile(FILE_PATH_LITERAL("service_worker_background.js"),
                      R"(chrome.runtime.onConnect.addListener((port) => {
+           self.port = port;
            console.log('background: runtime.onConnect');
            chrome.test.assertNoLastError();
-           chrome.test.notifyPass();
+           port.postMessage('connected');
          });
          chrome.test.notifyPass();
       )");
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
                      R"(var port = chrome.runtime.connect({name:"foo"});
+         port.onMessage.addListener((msg) => {
+           if (msg === 'connected') {
+             // Wait for the worker to ack the connection.
+             chrome.test.notifyPass();
+           }
+         });
          port.onDisconnect.addListener(() => {
            console.log('content script: port.onDisconnect');
            chrome.test.assertNoLastError();
@@ -216,7 +223,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
       embedded_test_server()->GetURL("example.com", "/extensions/body1.html");
   ASSERT_TRUE(NavigateToURL(web_contents, url));
 
-  // Wait for the content script to connect to the worker's port.
+  // Wait for the round-trip handshake (connect -> postMessage -> onMessage) to
+  // complete. This ensures the port is fully established.
+  // See crbug.com/440533605.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   // Stop the service worker, this will disconnect the port.
