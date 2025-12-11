@@ -756,4 +756,8 @@ void ContextualTasksSidePanelCoordinator::CloseLensSessionsForTask(
   }
 }
 
+size_t ContextualTasksSidePanelCoordinator::GetNumberOfActiveTasks() const {
+  return task_id_to_web_contents_cache_.size();
+}
+
 }  // namespace contextual_tasks
