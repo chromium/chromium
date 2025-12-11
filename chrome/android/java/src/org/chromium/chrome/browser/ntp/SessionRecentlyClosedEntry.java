@@ -16,7 +16,7 @@ public class SessionRecentlyClosedEntry extends RecentlyClosedEntry {
      * @param sessionId The Session ID of this entry.
      * @param timestamp The milliseconds since the Unix Epoch this entry was created.
      */
-    protected SessionRecentlyClosedEntry(int sessionId, long timestamp) {
+    public SessionRecentlyClosedEntry(int sessionId, long timestamp) {
         super(timestamp);
         mSessionId = sessionId;
     }

@@ -32,6 +32,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Bulk" summary="RecentlyClosedBulkEvent"/>
   <variant name="Group" summary="RecentlyClosedGroup"/>
   <variant name="Tab" summary="RecentlyClosedTab"/>
+  <variant name="Window" summary="RecentlyClosedWindow"/>
 </variants>
 
 <variants name="SplitViewMenuSource">
@@ -2824,10 +2825,11 @@ chromium-metrics-reviews@google.com.
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
-    The number of distinct entries from TabRestoreService of
-    {RecentlyClosedType} type that were restored in one Recent Tabs page session
-    on Android. This is recorded when destroying the Recent Tabs page if any
-    entires of {RecentlyClosedType} type were shown.
+    The number of distinct entries of {RecentlyClosedType} that were restored in
+    one Recent Tabs page session on Android. Entries may come from
+    TabRestoreService (Tab, Group, BulkEvent) or from MultiInstanceManager
+    (Window). This is recorded when destroying the Recent Tabs page if any
+    entries of {RecentlyClosedType} type were shown.
   </summary>
   <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
 </histogram>
@@ -2837,9 +2839,10 @@ chromium-metrics-reviews@google.com.
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
-    The number of distinct entries from TabRestoreService of
-    {RecentlyClosedType} type shown in one Recent Tabs page session on Android.
-    This is recorded when destroying the Recent Tabs page.
+    The number of distinct entries of {RecentlyClosedType} shown in the Recent
+    Tabs page on Android. Entries may come from TabRestoreService (Tab, Group,
+    BulkEvent) or from MultiInstanceManager (Window). This is recorded when
+    destroying the Recent Tabs page.
   </summary>
   <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
 </histogram>

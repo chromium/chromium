@@ -87,6 +87,7 @@ public class RecentTabsManager
 
     private final Map<Integer, Boolean> mGroupSessionIdsRestored = new HashMap<>();
     private final Map<Integer, Boolean> mBulkSessionIdsRestored = new HashMap<>();
+    private final Map<Integer, Boolean> mWindowInstanceIdsRestored = new HashMap<>();
 
     /**
      * Create an RecentTabsManager to be used with RecentTabsPage and RecentTabsRowAdapter.
@@ -196,6 +197,7 @@ public class RecentTabsManager
         recordEntries("Tab", mTabSessionIdsRestored);
         recordEntries("Group", mGroupSessionIdsRestored);
         recordEntries("Bulk", mBulkSessionIdsRestored);
+        recordEntries("Window", mWindowInstanceIdsRestored);
 
         mSyncService.removeSyncStateChangedListener(this);
         if (mSigninPromoCoordinator != null) {
@@ -224,7 +226,6 @@ public class RecentTabsManager
 
     private void updateRecentlyClosedEntries(List<RecentlyClosedEntry> entries) {
         for (RecentlyClosedEntry entry : entries) {
-            assert entry instanceof SessionRecentlyClosedEntry;
             if (entry instanceof RecentlyClosedTab closedTab
                     && !mTabSessionIdsRestored.containsKey(closedTab.getSessionId())) {
                 mTabSessionIdsRestored.put(closedTab.getSessionId(), false);
@@ -234,6 +235,9 @@ public class RecentTabsManager
             } else if (entry instanceof RecentlyClosedBulkEvent closedBulkEvent
                     && !mBulkSessionIdsRestored.containsKey(closedBulkEvent.getSessionId())) {
                 mBulkSessionIdsRestored.put(closedBulkEvent.getSessionId(), false);
+            } else if (entry instanceof RecentlyClosedWindow closedWindow
+                    && !mWindowInstanceIdsRestored.containsKey(closedWindow.getInstanceId())) {
+                mWindowInstanceIdsRestored.put(closedWindow.getInstanceId(), false);
             }
         }
         onUpdateDone();
@@ -294,6 +298,7 @@ public class RecentTabsManager
      * @param entry The entry to open.
      */
     public void openRecentlyClosedEntry(RecentlyClosedEntry entry) {
+        // TODO(crbug.com/444680856): implement open closed window logic.
         if (mIsDestroyed) return;
 
         assert !(entry instanceof RecentlyClosedTab)
