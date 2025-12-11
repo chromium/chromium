@@ -297,7 +297,6 @@ class MenuButtonMediator implements AppMenuObserver {
         mPropertyModel.set(
                 MenuButtonProperties.THEME,
                 new ThemeProperty(activityFocusTintList, brandedColorScheme));
-        updateBackground(brandedColorScheme);
     }
 
     /**
