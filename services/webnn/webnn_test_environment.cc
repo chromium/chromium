@@ -14,7 +14,9 @@ namespace webnn::test {
 WebNNTestEnvironment::WebNNTestEnvironment(
     WebNNContextProviderImpl::WebNNStatus status,
     WebNNContextProviderImpl::LoseAllContextsCallback
-        lose_all_contexts_callback) {
+        lose_all_contexts_callback,
+    std::unique_ptr<base::test::TaskEnvironment> task_environment)
+    : task_environment_(std::move(task_environment)) {
   gpu::GpuFeatureInfo gpu_feature_info;
   gpu::GPUInfo gpu_info;
 
@@ -51,11 +53,10 @@ WebNNTestEnvironment::WebNNTestEnvironment(
   std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
   context_provider_ = WebNNContextProviderImpl::Create(
       /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
-      std::move(gpu_info), /*shared_image_manager=*/nullptr,
-      std::move(lose_all_contexts_callback),
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      g_webnn_scheduler.get(), kFakeClientIdForTesting,
-      mojo::SharedRemote(std::move(gpu_host_proxy)));
+      std::move(gpu_info),
+      /*shared_image_manager=*/nullptr, std::move(lose_all_contexts_callback),
+      task_environment_->GetMainThreadTaskRunner(), g_webnn_scheduler.get(),
+      kFakeClientIdForTesting, mojo::SharedRemote(std::move(gpu_host_proxy)));
 }
 
 void WebNNTestEnvironment::BindWebNNContextProvider(

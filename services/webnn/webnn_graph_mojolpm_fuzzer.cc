@@ -52,13 +52,8 @@ struct InitGlobals {
     TestTimeouts::Initialize();
 
     base::test::AllowCheckIsTestForTesting();
-
-    task_environment = std::make_unique<base::test::TaskEnvironment>(
-        base::test::TaskEnvironment::MainThreadType::DEFAULT,
-        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   }
 
-  std::unique_ptr<base::test::TaskEnvironment> task_environment;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -99,6 +94,8 @@ class WebnnGraphLPMFuzzer {
   bool IsFinished() {
     return action_index_ > 100 || action_index_ >= testcase_->actions_size();
   }
+
+  void RunUntilIdle() { webnn_test_environment_.RunUntilIdle(); }
 
  private:
   mojo_base::BigBuffer GenerateBytes(size_t byte_size) {
@@ -303,7 +300,7 @@ DEFINE_BINARY_PROTO_FUZZER(
   }
   // Ensure that any tasks scheduled by `webnn_graph_fuzzer_instance` are
   // executed before it is freed. See https://crbug.com/441020155.
-  init_globals->task_environment->RunUntilIdle();
+  webnn_graph_fuzzer_instance.RunUntilIdle();
 }
 
 }  // namespace

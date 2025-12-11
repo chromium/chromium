@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -34,8 +33,8 @@
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/tensor_impl_dml.h"
-#include "services/webnn/dml/test_base.h"
 #include "services/webnn/dml/utils.h"
+#include "services/webnn/webnn_test_utils.h"
 #include "ui/gfx/win/d3d_shared_fence.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -82,7 +81,7 @@ struct CreateTensorSuccess {
 };
 
 #if BUILDFLAG(IS_WIN)
-class WebNNTensorImplBackendTest : public dml::TestBase {
+class WebNNTensorImplBackendTest : public testing::Test {
  public:
   WebNNTensorImplBackendTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -106,7 +105,7 @@ class WebNNTensorImplBackendTest : public dml::TestBase {
 };
 
 void WebNNTensorImplBackendTest::SetUp() {
-  SKIP_TEST_IF(!dml::UseGPUInTests());
+  SKIP_TEST_IF(!UseGPUInTests());
 
   dml::Adapter::EnableDebugLayerForTesting();
   auto adapter_creation_result = dml::Adapter::GetGpuInstanceForTesting();
@@ -136,7 +135,6 @@ class WebNNTensorImplBackendTest : public testing::Test {
   CreateWebNNContext();
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
   WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };
@@ -169,7 +167,6 @@ class WebNNTensorImplBackendTest : public testing::Test {
   CreateWebNNContext();
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
   WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };

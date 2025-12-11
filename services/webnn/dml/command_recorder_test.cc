@@ -14,6 +14,7 @@
 #include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/dml/utils.h"
+#include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webnn::dml {

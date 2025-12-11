@@ -4,15 +4,9 @@
 
 #include "services/webnn/dml/test_base.h"
 
-#include "base/command_line.h"
-#include "ui/gl/gl_switches.h"
+#include "services/webnn/webnn_test_utils.h"
 
 namespace webnn::dml {
-
-bool UseGPUInTests() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kUseGpuInTests);
-}
 
 void TestBase::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());

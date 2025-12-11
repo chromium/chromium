@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/buildflags.h"
@@ -42,6 +41,10 @@ class WebNNContextProviderImplTest : public testing::Test {
   WebNNContextProviderImplTest& operator=(const WebNNContextProviderImplTest&) =
       delete;
 
+  test::WebNNTestEnvironment& test_environment() {
+    return webnn_test_environment_;
+  }
+
  protected:
   WebNNContextProviderImplTest()
       : scoped_feature_list_(
@@ -49,8 +52,8 @@ class WebNNContextProviderImplTest : public testing::Test {
   ~WebNNContextProviderImplTest() override = default;
 
  private:
+  test::WebNNTestEnvironment webnn_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(WebNNContextProviderImplTest, NotSupported) {
@@ -63,8 +66,7 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
 
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
-  test::WebNNTestEnvironment webnn_test_environment;
-  webnn_test_environment.BindWebNNContextProvider(
+  test_environment().BindWebNNContextProvider(
       provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
@@ -88,8 +90,15 @@ class WebNNContextProviderImplTest : public testing::Test {
   WebNNContextProviderImplTest& operator=(const WebNNContextProviderImplTest&) =
       delete;
 
+  test::WebNNTestEnvironment& test_environment() {
+    return webnn_test_environment_;
+  }
+
  protected:
-  WebNNContextProviderImplTest() {
+  explicit WebNNContextProviderImplTest(
+      WebNNContextProviderImpl::WebNNStatus status =
+          WebNNContextProviderImpl::WebNNStatus::kWebNNEnabled)
+      : webnn_test_environment_(status) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{webnn::mojom::features::
                                   kWebMachineLearningNeuralNetwork,
@@ -98,15 +107,39 @@ class WebNNContextProviderImplTest : public testing::Test {
   }
   ~WebNNContextProviderImplTest() override = default;
 
+  test::WebNNTestEnvironment webnn_test_environment_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+};
+
+class WebNNContextProviderImplTestWithGpuDisabled
+    : public WebNNContextProviderImplTest {
+ protected:
+  WebNNContextProviderImplTestWithGpuDisabled()
+      : WebNNContextProviderImplTest(
+            WebNNContextProviderImpl::WebNNStatus::kWebNNGpuDisabled) {}
+};
+
+class WebNNContextProviderImplTestWithNpuDisabled
+    : public WebNNContextProviderImplTest {
+ protected:
+  WebNNContextProviderImplTestWithNpuDisabled()
+      : WebNNContextProviderImplTest(
+            WebNNContextProviderImpl::WebNNStatus::kWebNNNpuDisabled) {}
+};
+
+class WebNNContextProviderImplTestWithGpuFeatureStatusDisabled
+    : public WebNNContextProviderImplTest {
+ protected:
+  WebNNContextProviderImplTestWithGpuFeatureStatusDisabled()
+      : WebNNContextProviderImplTest(WebNNContextProviderImpl::WebNNStatus::
+                                         kWebNNGpuFeatureStatusDisabled) {}
 };
 
 TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-  test::WebNNTestEnvironment webnn_test_environment;
-  webnn_test_environment.BindWebNNContextProvider(
+  test_environment().BindWebNNContextProvider(
       provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
@@ -123,11 +156,9 @@ TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
 // Checking for GPU/NPU compatibility is Windows-specific because only the
 // DirectML implementation unconditionally depends on a GPU/NPU.
 
-TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
+TEST_F(WebNNContextProviderImplTestWithGpuDisabled, GPUNotSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-  test::WebNNTestEnvironment webnn_test_environment(
-      WebNNContextProviderImpl::WebNNStatus::kWebNNGpuDisabled);
-  webnn_test_environment.BindWebNNContextProvider(
+  test_environment().BindWebNNContextProvider(
       provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
@@ -144,11 +175,9 @@ TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
             "DirectML: WebNN is blocklisted for GPU.");
 }
 
-TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
+TEST_F(WebNNContextProviderImplTestWithNpuDisabled, NPUNotSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-  test::WebNNTestEnvironment webnn_test_environment(
-      WebNNContextProviderImpl::WebNNStatus::kWebNNNpuDisabled);
-  webnn_test_environment.BindWebNNContextProvider(
+  test_environment().BindWebNNContextProvider(
       provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
@@ -165,11 +194,10 @@ TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
             "DirectML: WebNN is blocklisted for NPU.");
 }
 
-TEST_F(WebNNContextProviderImplTest, GpuFeatureStatusDisabled) {
+TEST_F(WebNNContextProviderImplTestWithGpuFeatureStatusDisabled,
+       GpuFeatureStatusDisabled) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-  test::WebNNTestEnvironment webnn_test_environment(
-      WebNNContextProviderImpl::WebNNStatus::kWebNNGpuFeatureStatusDisabled);
-  webnn_test_environment.BindWebNNContextProvider(
+  test_environment().BindWebNNContextProvider(
       provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
