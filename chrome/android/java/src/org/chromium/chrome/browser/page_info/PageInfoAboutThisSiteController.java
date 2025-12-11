@@ -150,11 +150,11 @@ public class PageInfoAboutThisSiteController {
     }
 
     private void openInNewTab(String url) {
-        assumeNonNull(mTabCreator)
-                .createNewTab(
-                        new LoadUrlParams(url, PageTransition.LINK),
-                        TabLaunchType.FROM_LINK,
-                        TabUtils.fromWebContents(mWebContents));
+        if (mTabCreator == null) return;
+        mTabCreator.createNewTab(
+                new LoadUrlParams(url, PageTransition.LINK),
+                TabLaunchType.FROM_LINK,
+                TabUtils.fromWebContents(mWebContents));
     }
 
     private void setupRow() {

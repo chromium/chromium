@@ -297,4 +297,28 @@ public class PageInfoAboutThisSiteTest {
 
         closeBottomSheet();
     }
+
+    @Test
+    @MediumTest
+    public void testAboutThisSiteRowWithNullTabCreator() throws TimeoutException {
+        mockResponse(createDescription());
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        Tab tab = mActivityTestRule.getActivityTab();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new ChromePageInfo(
+                                    activity.getModalDialogManagerSupplier(),
+                                    null,
+                                    PageInfoController.OpenedFromSource.TOOLBAR,
+                                    null,
+                                    () -> null,
+                                    null)
+                            .show(tab, ChromePageInfoHighlight.noHighlight());
+                });
+        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()), true);
+
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
+        verify(mMockAboutThisSiteJni).onAboutThisSiteRowClicked(true);
+        dismissPageInfo();
+    }
 }
