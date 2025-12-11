@@ -61,6 +61,9 @@ enum MetricsServiceType {
   kCrashpad,
 };
 
+// Timeout for waiting on preference updates to propagate.
+constexpr base::TimeDelta kWaitForPrefUpdateTimeout = base::Seconds(5);
+
 // Matcher for the Clear Browsing Data cell on the Privacy screen.
 id<GREYMatcher> ClearBrowsingDataCell() {
   return ButtonWithAccessibilityLabelId(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
@@ -213,16 +216,32 @@ id<GREYMatcher> SafariImportButton() {
 - (void)assertMetricsServiceEnabled:(MetricsServiceType)serviceType {
   switch (serviceType) {
     case kMetrics:
-      GREYAssertTrue([SettingsAppInterface isMetricsRecordingEnabled],
-                     @"Metrics recording should be enabled.");
-      GREYAssertTrue([SettingsAppInterface isMetricsReportingEnabled],
-                     @"Metrics reporting should be enabled.");
+      GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                     kWaitForPrefUpdateTimeout,
+                     ^bool {
+                       return [SettingsAppInterface isMetricsRecordingEnabled];
+                     }),
+                 @"Metrics recording should be enabled.");
+      GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                     kWaitForPrefUpdateTimeout,
+                     ^bool {
+                       return [SettingsAppInterface isMetricsReportingEnabled];
+                     }),
+                 @"Metrics reporting should be enabled.");
       break;
     case kCrashpad:
-      GREYAssertTrue([SettingsAppInterface isCrashpadEnabled],
-                     @"Crashpad should be enabled.");
-      GREYAssertTrue([SettingsAppInterface isCrashpadReportingEnabled],
-                     @"Crashpad reporting should be enabled.");
+      GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                     kWaitForPrefUpdateTimeout,
+                     ^bool {
+                       return [SettingsAppInterface isCrashpadEnabled];
+                     }),
+                 @"Crashpad should be enabled.");
+      GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                     kWaitForPrefUpdateTimeout,
+                     ^bool {
+                       return [SettingsAppInterface isCrashpadReportingEnabled];
+                     }),
+                 @"Crashpad reporting should be enabled.");
       break;
   }
 }
@@ -231,16 +250,28 @@ id<GREYMatcher> SafariImportButton() {
 - (void)assertMetricsServiceDisabled:(MetricsServiceType)serviceType {
   switch (serviceType) {
     case kMetrics: {
-      GREYAssertFalse([SettingsAppInterface isMetricsRecordingEnabled],
-                      @"Metrics recording should be disabled.");
-      GREYAssertFalse([SettingsAppInterface isMetricsReportingEnabled],
-                      @"Metrics reporting should be disabled.");
+      GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                     kWaitForPrefUpdateTimeout,
+                     ^bool {
+                       return ![SettingsAppInterface isMetricsRecordingEnabled];
+                     }),
+                 @"Metrics recording should be disabled.");
+      GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                     kWaitForPrefUpdateTimeout,
+                     ^bool {
+                       return ![SettingsAppInterface isMetricsReportingEnabled];
+                     }),
+                 @"Metrics reporting should be disabled.");
       break;
     }
     case kCrashpad: {
       // Crashpad is always enabled.
-      GREYAssertTrue([SettingsAppInterface isCrashpadEnabled],
-                     @"Crashpad should be enabled.");
+      GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                     kWaitForPrefUpdateTimeout,
+                     ^bool {
+                       return [SettingsAppInterface isCrashpadEnabled];
+                     }),
+                 @"Crashpad should be enabled.");
       break;
     }
   }
@@ -356,21 +387,14 @@ id<GREYMatcher> SafariImportButton() {
 
 // Verifies that metrics reporting works properly under possible settings of the
 // preference kMetricsReportingEnabled.
-// TODO(crbug.com/382632442): Test disabled.
-- (void)DISABLED_testMetricsReporting {
+- (void)testMetricsReporting {
   [self assertsMetricsPrefsForService:kMetrics];
 }
 
 // Verifies that crashpad reporting works properly under possible settings of
 // the preference `kMetricsReportingEnabled`.
 // NOTE: crashpad only allows uploading for non-first-launch runs.
-// TODO(crbug.com/382632442): Test disabled on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testCrashpadReporting DISABLED_testCrashpadReporting
-#else
-#define MAYBE_testCrashpadReporting testCrashpadReporting
-#endif
-- (void)MAYBE_testCrashpadReporting {
+- (void)testCrashpadReporting {
   [self assertsMetricsPrefsForService:kCrashpad];
 }
 
