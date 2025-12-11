@@ -770,8 +770,6 @@ BASE_FEATURE(kFeatureManagementTimeOfDayWallpaper,
 // user first login.
 BASE_FEATURE(kFederatedService, base::FEATURE_ENABLED_BY_DEFAULT);
 
-
-
 // Enables scheduling of launcher query federated analytics version 2 tasks.
 BASE_FEATURE(kFederatedLauncherQueryAnalyticsVersion2Task,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1663,13 +1661,6 @@ BASE_FEATURE(kProjectorCustomThumbnail,
              "kProjectorCustomThumbnail",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to show pseduo transcript that is shorter than the
-// threshold.
-BASE_FEATURE(kProjectorShowShortPseudoTranscript,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-
-
 // Controls whether the transcript muting feature is enabled.
 BASE_FEATURE(kProjectorMuting, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1879,8 +1870,7 @@ BASE_FEATURE(kSingleCaCertVerificationPhase1, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use a single CA cert for the EAP network if CA cert was selected, no
 // fallback.
-BASE_FEATURE(kSingleCaCertVerificationPhase2,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSingleCaCertVerificationPhase2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling/disabling the Sunfish feature.
 BASE_FEATURE(kSunfishFeature, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2643,8 +2633,6 @@ bool IsFastPairSavedDevicesStrictOptInEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSavedDevicesStrictOptIn);
 }
 
-
-
 bool IsFileManagerFuseBoxDebugEnabled() {
   return base::FeatureList::IsEnabled(kFuseBoxDebug);
 }
@@ -2853,7 +2841,6 @@ bool IsInternalServerSideSpeechRecognitionEnabled() {
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
-
 
 bool IsInternalServerSideSpeechRecognitionEnabledByFinch() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -3159,10 +3146,6 @@ bool IsProjectorAppDebugMode() {
 
 bool IsProjectorCustomThumbnailEnabled() {
   return base::FeatureList::IsEnabled(kProjectorCustomThumbnail);
-}
-
-bool IsProjectorShowShortPseudoTranscript() {
-  return base::FeatureList::IsEnabled(kProjectorShowShortPseudoTranscript);
 }
 
 bool IsProjectorServerSideRecognitionFallbackImplEnabled() {
