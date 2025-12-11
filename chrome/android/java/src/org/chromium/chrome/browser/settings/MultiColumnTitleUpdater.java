@@ -246,8 +246,17 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         int contentOffset =
                 view.getResources().getDimensionPixelSize(R.dimen.settings_detailed_title_offset);
 
+        int endMargin =
+                view.getResources()
+                        .getDimensionPixelSize(R.dimen.settings_two_column_layout_margin);
+        // The size of help icon. This needs to be consistent with the one set
+        // at SettingsActivity.onCreateOptionsMenu.
+        int helpIconSize =
+                view.getResources().getDimensionPixelSize(R.dimen.settings_help_icon_size);
+
         var params = (ViewGroup.MarginLayoutParams) mContainer.getLayoutParams();
         params.setMarginStart(headerViewWidth + dividerWidth + contentOffset);
+        params.setMarginEnd(endMargin + helpIconSize);
         mContainer.setLayoutParams(params);
         mContainer.invalidate();
     }
