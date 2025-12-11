@@ -15,6 +15,8 @@ desc: |-
 
   This policy also doesn't control <ph name="GOOGLE_GEMINI_PRODUCT_NAME">Google Gemini</ph> integration which can be disabled by <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph>.
 
+  If this policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy.
+
   For more information on data handling for generative AI features, please see https://support.google.com/chrome/a?p=generative_ai_settings.
 default: 0
 example_value: 1
