@@ -357,8 +357,8 @@ TabDragController::Liveness TabDragController::Init(
     TabDragContext* source_context,
     TabSlotView* source_view,
     const std::vector<TabSlotView*>& dragging_views,
-    const gfx::Point& mouse_offset,
-    int source_view_offset,
+    const gfx::Point& offset_from_first_dragged_view,
+    const gfx::Point& offset_from_source_view,
     ui::ListSelectionModel initial_selection_model,
     ui::mojom::DragEventSource event_source) {
   DCHECK(!dragging_views.empty());
@@ -391,8 +391,8 @@ TabDragController::Liveness TabDragController::Init(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ref->can_release_capture_ = false;
 #endif
-  ref->start_point_in_screen_ =
-      gfx::Point(source_view_offset, mouse_offset.y());
+  ref->start_point_in_screen_ = gfx::Point(offset_from_source_view.x(),
+                                           offset_from_first_dragged_view.y());
   views::View::ConvertPointToScreen(source_view,
                                     &(ref->start_point_in_screen_));
   ref->event_source_ = event_source;
@@ -471,7 +471,7 @@ TabDragController::Liveness TabDragController::Init(
   if (source_view->width() > 0) {
     ref->offset_to_width_ratio_ =
         static_cast<float>(
-            source_view->GetMirroredXInView(source_view_offset)) /
+            source_view->GetMirroredXInView(offset_from_source_view.x())) /
         source_view->width();
   }
   ref->initial_selection_model_ = std::move(initial_selection_model);
