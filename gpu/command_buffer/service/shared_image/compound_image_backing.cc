@@ -144,12 +144,13 @@ class WrappedGLTextureCompoundImageRepresentation
     AccessMode access_mode =
         mode == kReadAccessMode ? AccessMode::kRead : AccessMode::kWrite;
     compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode);
+    access_mode_ = access_mode;
     return wrapped_->BeginAccess(mode);
   }
 
-  void EndAccess() final {
+  void EndAccess() override {
     wrapped_->EndAccess();
-    compound_backing()->NotifyEndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
   }
 
   gpu::TextureBase* GetTextureBase(int plane_index) final {
@@ -166,6 +167,7 @@ class WrappedGLTextureCompoundImageRepresentation
 
  private:
   std::unique_ptr<GLTextureImageRepresentation> wrapped_;
+  AccessMode access_mode_ = AccessMode::kNone;
 };
 
 class WrappedGLTexturePassthroughCompoundImageRepresentation
@@ -186,15 +188,16 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
   }
 
   // GLTexturePassthroughImageRepresentation implementation.
-  bool BeginAccess(GLenum mode) final {
+  bool BeginAccess(GLenum mode) override {
     AccessMode access_mode =
         mode == kReadAccessMode ? AccessMode::kRead : AccessMode::kWrite;
     compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode);
+    access_mode_ = access_mode;
     return wrapped_->BeginAccess(mode);
   }
-  void EndAccess() final {
+  void EndAccess() override {
     wrapped_->EndAccess();
-    compound_backing()->NotifyEndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
   }
 
   gpu::TextureBase* GetTextureBase(int plane_index) final {
@@ -212,6 +215,7 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
 
  private:
   std::unique_ptr<GLTexturePassthroughImageRepresentation> wrapped_;
+  AccessMode access_mode_ = AccessMode::kNone;
 };
 
 class WrappedSkiaGaneshCompoundImageRepresentation
@@ -261,7 +265,8 @@ class WrappedSkiaGaneshCompoundImageRepresentation
   }
   void EndWriteAccess() final {
     wrapped_->EndWriteAccess();
-    compound_backing()->NotifyEndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(),
+                                        AccessMode::kWrite);
   }
 
   std::vector<sk_sp<GrPromiseImageTexture>> BeginReadAccess(
@@ -275,7 +280,7 @@ class WrappedSkiaGaneshCompoundImageRepresentation
   }
   void EndReadAccess() final {
     wrapped_->EndReadAccess();
-    compound_backing()->NotifyEndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
   }
 
  private:
@@ -318,7 +323,8 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
   }
   void EndWriteAccess() final {
     wrapped_->EndWriteAccess();
-    compound_backing()->NotifyEndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(),
+                                        AccessMode::kWrite);
   }
 
   std::vector<scoped_refptr<GraphiteTextureHolder>> BeginReadAccess() final {
@@ -328,7 +334,7 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
   }
   void EndReadAccess() final {
     wrapped_->EndReadAccess();
-    compound_backing()->NotifyEndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
   }
 
  private:
@@ -353,22 +359,24 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
 
   // DawnImageRepresentation implementation.
   wgpu::Texture BeginAccess(wgpu::TextureUsage webgpu_usage,
-                            wgpu::TextureUsage internal_usage) final {
+                            wgpu::TextureUsage internal_usage) override {
     AccessMode access_mode =
         webgpu_usage & kWriteUsage ? AccessMode::kWrite : AccessMode::kRead;
     if (internal_usage & kWriteUsage) {
       access_mode = AccessMode::kWrite;
     }
     compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode);
+    access_mode_ = access_mode;
     return wrapped_->BeginAccess(webgpu_usage, internal_usage);
   }
-  void EndAccess() final {
+  void EndAccess() override {
     wrapped_->EndAccess();
-    compound_backing()->NotifyEndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
   }
 
  private:
   std::unique_ptr<DawnImageRepresentation> wrapped_;
+  AccessMode access_mode_ = AccessMode::kNone;
 };
 
 class WrappedDawnBufferCompoundImageRepresentation
@@ -389,17 +397,22 @@ class WrappedDawnBufferCompoundImageRepresentation
     return static_cast<CompoundImageBacking*>(backing());
   }
 
-  wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) final {
+  wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) override {
     AccessMode access_mode = usage & wgpu::BufferUsage::MapWrite
                                  ? AccessMode::kWrite
                                  : AccessMode::kRead;
     compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode);
+    access_mode_ = access_mode;
     return wrapped_->BeginAccess(usage);
   }
 
-  void EndAccess() final { wrapped_->EndAccess(); }
+  void EndAccess() override {
+    wrapped_->EndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
+  }
 
   std::unique_ptr<DawnBufferRepresentation> wrapped_;
+  AccessMode access_mode_ = AccessMode::kNone;
 };
 
 class WrappedOverlayCompoundImageRepresentation
@@ -428,7 +441,7 @@ class WrappedOverlayCompoundImageRepresentation
   }
   void EndReadAccess(gfx::GpuFenceHandle release_fence) final {
     wrapped_->EndReadAccess(std::move(release_fence));
-    compound_backing()->NotifyEndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(), AccessMode::kRead);
   }
 #if BUILDFLAG(IS_ANDROID)
   AHardwareBuffer* GetAHardwareBuffer() final {
@@ -491,13 +504,17 @@ class WrappedWebNNTensorCompoundImageRepresentation
     return static_cast<CompoundImageBacking*>(backing());
   }
 
-  bool BeginAccess() final {
+  bool BeginAccess() override {
     compound_backing()->NotifyBeginAccess(wrapped_->backing(),
                                           AccessMode::kWrite);
     return wrapped_->BeginAccess();
   }
 
-  void EndAccess() final { wrapped_->EndAccess(); }
+  void EndAccess() final {
+    wrapped_->EndAccess();
+    compound_backing()->NotifyEndAccess(wrapped_->backing(),
+                                        AccessMode::kWrite);
+  }
 
   std::unique_ptr<WebNNTensorRepresentation> wrapped_;
 };
@@ -758,11 +775,6 @@ CompoundImageBacking::~CompoundImageBacking() {
 
 void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
                                              RepresentationAccessMode mode) {
-  // Store the current access mode and the backing being accessed. These are
-  // used by `NotifyEndAccess()` to propagate the cleared rect if it was a
-  // write access.
-  access_mode_ = mode;
-  access_backing_ = backing;
   ElementHolder* access_element = GetElement(backing);
   if (!access_element) {
     LOG(ERROR) << "backing not in the element list.";
@@ -813,19 +825,18 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
   }
 }
 
-void CompoundImageBacking::NotifyEndAccess() {
+void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
+                                           RepresentationAccessMode mode) {
+  CHECK(backing);
+
   // If the last access was a write and an underlying backing was accessed,
   // propagate its cleared rect to the compound backing if it's different.
-  if (access_mode_ == RepresentationAccessMode::kWrite && access_backing_) {
-    auto cleared_rect = access_backing_->ClearedRect();
+  if (mode == RepresentationAccessMode::kWrite) {
+    auto cleared_rect = backing->ClearedRect();
     if (cleared_rect != ClearedRect()) {
       ClearTrackingSharedImageBacking::SetClearedRect(cleared_rect);
     }
   }
-
-  // Reset access tracking after the access ends.
-  access_mode_ = RepresentationAccessMode::kNone;
-  access_backing_ = nullptr;
 }
 
 SharedImageBackingType CompoundImageBacking::GetType() const {
@@ -910,8 +921,9 @@ void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   // Propagate the cleared rect to all underlying backings. This is important
   // because SetClearedRect can be called on a CompoundImageBacking without a
   // preceding BeginAccess call (e.g. in WebGPU's AssociateMailbox with the
-  // WEBGPU_MAILBOX_DISCARD flag). In such cases, `access_backing_` would be
-  // null, so we must ensure all potential backings are updated.
+  // WEBGPU_MAILBOX_DISCARD flag). In such cases, it is hard to know which
+  // backing is currently being accessed. so we must ensure all potential
+  // backings are updated
   for (auto& element : elements_) {
     if (element.backing) {
       element.backing->SetClearedRect(cleared_rect);

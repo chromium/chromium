@@ -113,7 +113,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // Called by wrapped representations during EndAccess(). This will update the
   // CompoundImageBacking's clear rect with the accessed backing's clear rect it
   // the access was a write access.
-  void NotifyEndAccess();
+  void NotifyEndAccess(SharedImageBacking* backing,
+                       RepresentationAccessMode mode);
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
@@ -341,15 +342,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_;
   scoped_refptr<SharedImageCopyManager> copy_manager_;
   bool has_shm_backing_ = false;
-
-  // Tracks the current access mode (read/write) of the compound backing. This
-  // is used by `NotifyEndAccess()` to determine if the cleared rect needs to be
-  // propagated.
-  RepresentationAccessMode access_mode_ = RepresentationAccessMode::kNone;
-
-  // Points to the specific underlying backing that is currently being accessed.
-  // Used by `NotifyEndAccess()` to retrieve the correct cleared rect.
-  raw_ptr<SharedImageBacking> access_backing_ = nullptr;
 };
 
 }  // namespace gpu
