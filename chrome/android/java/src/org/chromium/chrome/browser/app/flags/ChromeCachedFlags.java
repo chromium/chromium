@@ -192,4 +192,10 @@ public class ChromeCachedFlags {
 
         return cachedFlag.isEnabled();
     }
+
+    @CalledByNative
+    @AnyThread
+    static boolean isInitFeatureListEarlyFeatureParamEnabled() {
+        return ChromeFeatureList.sInitFeatureListEarly.getValue();
+    }
 }
