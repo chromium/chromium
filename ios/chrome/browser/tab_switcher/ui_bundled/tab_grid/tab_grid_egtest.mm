@@ -695,40 +695,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
 }
 
-// Tests that the user interface style is respected after a drag and drop.
-// TODO(crbug.com/368385383): Test flaky on iOS.
-- (void)DISABLED_testTraitCollection {
-  [ChromeEarlGrey loadURL:_URL1];
-  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
-  [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey loadURL:_URL2];
-  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
-
-  [ChromeEarlGreyUI openTabGrid];
-
-  GREYAssert(chrome_test_util::LongPressCellAndDragToOffsetOf(
-                 IdentifierForCellAtIndex(0), 0, IdentifierForCellAtIndex(1), 0,
-                 CGVectorMake(0.5, 0.5)),
-             @"Failed to DND cell on window");
-
-  GREYMatchesBlock match = ^BOOL(UIView* element) {
-    return element.traitCollection.userInterfaceStyle ==
-           UIUserInterfaceStyleLight;
-  };
-
-  GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
-    [description appendText:@"Wrong style"];
-  };
-
-  id<GREYMatcher> matcher =
-      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:match
-                                           descriptionBlock:describe];
-
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          IdentifierForCellAtIndex(0))]
-      assertWithMatcher:matcher];
-}
-
 // Tests that dragging and dropping cell1 onto cell2 creates a group with the
 // title of cell2.
 - (void)testDragAndDropCreatesGroup {
