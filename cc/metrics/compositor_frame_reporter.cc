@@ -986,12 +986,13 @@ void CompositorFrameReporter::StartStageUpdateDisplayTree(
     SubmitInfo& submit_info) {
   // TODO(crbug.com/445970842):
   // If main the main frame has been aborted, the impl_frame_finish_time() might
-  // be after the UpdateLayerTree has already been sent over.
-  if (!main_frame_abort_time_.has_value()) {
-    DCHECK(impl_frame_finish_time() < submit_info.time);
-  }
+  // be after the UpdateLayerTree has already been sent over. Investigate this
+  // call site to ensure impl_frame_finish_time is the correct activation time
+  // for the TreesInViz path.
+  base::TimeTicks activate_time =
+      std::min(impl_frame_finish_time(), submit_info.time);
   StartStage(StageType::kEndActivateToSubmitUpdateDisplayTree,
-             impl_frame_finish_time());
+             activate_time.is_min() ? base::TimeTicks::Now() : activate_time);
   SetTreesInVizBranchTime(submit_info.time);
 }
 
