@@ -91,9 +91,9 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
       alert_indicator_(
           AddChildView(std::make_unique<AlertIndicatorButton>(this))),
       close_button_(AddChildView(std::make_unique<TabCloseButton>(
-          // TODO(crbug.com/460536208): Implement callbacks.
-          views::Button::PressedCallback(
-              base::DoNothingAs<void(const ui::Event&)>()),
+          base::BindRepeating(&VerticalTabView::CloseButtonPressed,
+                              base::Unretained(this)),
+          // TODO(crbug.com/467733947): Hook up metrics logging callback.
           base::DoNothingAs<void(views::View*, const ui::MouseEvent&)>()))),
       hover_controller_(gfx::Animation::ShouldRenderRichAnimation()
                             ? std::make_unique<GlowHoverController>(this)
@@ -439,6 +439,11 @@ void VerticalTabView::UpdateContrastRatioValues() {
   radial_highlight_opacity_ = radial_highlight_opacity;
 
   SchedulePaint();
+}
+
+void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
+  // TODO(crbug.com/467735166): Log tab closing UMAs.
+  collection_node_->GetController()->CloseTab(GetTabInterface());
 }
 
 bool VerticalTabView::IsHoverAnimationActive() const {

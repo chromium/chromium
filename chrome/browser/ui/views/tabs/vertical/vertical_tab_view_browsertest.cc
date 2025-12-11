@@ -25,6 +25,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/label.h"
 
 class TestWebContentsObserver : public content::WebContentsObserver {
@@ -232,6 +233,35 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
                                     ui::EF_NONE, ui::EF_NONE);
   tab_view->OnMouseExitedForTesting(mouse_exited_event);
   EXPECT_FALSE(close_button->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonPressed) {
+  // Add a second tab.
+  NavigateToURLWithDisposition(browser(), GURL(url::kAboutBlankURL),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
+  RootTabCollectionNode root_node(
+      browser()->tab_strip_model(),
+      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
+          &views::View::AddChildView, base::Unretained(parent_view.get())));
+  root_node.SetController(vertical_tab_strip_controller());
+
+  // The second tab is the second child of the unpinned collection which is the
+  // second child of the root node.
+  TabCollectionNode* tab_node = root_node.children()[1]->children()[1].get();
+  VerticalTabView* tab_view =
+      static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
+  TabCloseButton* close_button = tab_view->close_button_for_testing();
+  ASSERT_TRUE(close_button->GetVisible());
+
+  // Expect there to be two tabs initially.
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  // After pressing the close button, there should only be 1 tab remaining.
+  close_button->button_controller()->NotifyClick();
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
 // TODO(crbug.com/465540287): Determine how to test the background changing
