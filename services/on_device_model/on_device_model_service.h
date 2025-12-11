@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "build/build_config.h"

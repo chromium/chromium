@@ -11,7 +11,6 @@
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/cdm/cdm_type.h"

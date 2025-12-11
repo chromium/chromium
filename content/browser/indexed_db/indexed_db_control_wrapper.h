@@ -7,7 +7,6 @@
 
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequence_bound.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"

@@ -15,7 +15,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"

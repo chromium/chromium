@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "base/token.h"
 #include "base/trace_event/named_trigger.h"
