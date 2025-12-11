@@ -96,6 +96,8 @@ static_library("autofill") {
       "android/autofill_profile_bridge.h",
       "android/entity_data_manager_android.cc",
       "android/entity_data_manager_android.h",
+      "android/entity_type_android.cc",
+      "android/entity_type_android.h",
       "android/personal_data_manager_android.cc",
       "android/personal_data_manager_android.h",
       "android/phone_number_util_android.cc",
