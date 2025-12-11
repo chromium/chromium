@@ -25,6 +25,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/webauthn/enclave_keys_waiter.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
@@ -276,6 +277,20 @@ void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval(
 
 void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval() {
   SimulateTrustedVaultKeyRetrieval(kSecurityDomainSecret, kSecretVersion);
+}
+
+void EnclaveAuthenticatorTestBase::
+    SimulateOpportunisticTrustedVaultKeyRetrieval() {
+  EnclaveKeysWaiter enclave_keys_waiter(&enclave_manager());
+  // Performing key retrieval without acquiring a lock via
+  // `EnclaveManager::GetStoreKeysLock()`. The absence of acquired lock
+  // indicates an opportunistic key retrieval logic. In this case (if either a
+  // system UV or a usable GPM PIN is present) Enclave Manager stores keys and
+  // adds device to account.
+  SimulateTrustedVaultKeyRetrieval();
+  EXPECT_EQ(enclave_keys_waiter.Wait(),
+            EnclaveManager::OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowSucceeded);
 }
 
 void EnclaveAuthenticatorTestBase::SetMockVaultConnectionOnRequestDelegate(

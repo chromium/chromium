@@ -99,6 +99,7 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   void SimulateTrustedVaultKeyRetrieval(
       base::span<const uint8_t> trusted_vault_key,
       int trusted_vault_key_version);
+  void SimulateOpportunisticTrustedVaultKeyRetrieval();
 
   // Convenience methods for setting up the mock trusted vault connection:
   void SetMockVaultConnectionOnRequestDelegate(

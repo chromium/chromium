@@ -237,6 +237,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   // EnclaveManager::Observer:
   void OnKeysStored() override;
+  void OnOutOfContextRecoveryCompletion(
+      EnclaveManager::OutOfContextRecoveryOutcome outcome) override;
 
   // Called when the local device has been added to the security domain.
   void OnDeviceAdded(bool success);
@@ -316,6 +318,9 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // Configures the user-visible method of authenticating for security domain
   // recovery.
   void ShowSecurityDomainRecoveryUI();
+
+  void RefreshStateAndRepeatOperation();
+  bool ShouldRefreshState();
 
   content::WebContents* web_contents() const;
 
@@ -411,6 +416,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   // Whether the user confirmed GPM PIN creation in the flow.
   bool gpm_pin_creation_confirmed_ = false;
+
+  bool is_state_stale_ = false;
 
   // The gaia id of the user at the time the account state was downloaded.
   GaiaId user_gaia_id_;

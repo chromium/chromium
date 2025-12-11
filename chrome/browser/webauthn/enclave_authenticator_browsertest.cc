@@ -1355,6 +1355,208 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
+// Regression test for https://crbug.com/465139934 ("Chrome crashes after
+// unlocking passkeys in a different browser tab").
+IN_PROC_BROWSER_TEST_F(
+    EnclaveAuthenticatorBrowserTest,
+    MakeCredential_WhenPasskeysUnlockedViaExplicitFlowInOtherTab) {
+  // Starting from the passkey locked state.
+  SetTrustedVaultRecoverable();
+  EnableUVKeySupport();
+
+  // Opening a browser tab and perforing the passkey creation operation there.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+  // Since passkeys are locked, the passkey creation operation triggers the
+  // passkey unlock flow.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+  model_observer()->WaitForStep();
+
+  // After the first step of the given passkey unlock flow we are simulating
+  // the concurrent passkey unlocking: storing a key from an explicit flow and
+  // adding device to account.
+  {
+    // The acquired lock indicates to Enclave Manager that the keys are being
+    // retrieved via explicit key retrieval flow.
+    auto store_keys_lock = enclave_manager().GetStoreKeysLock();
+    SimulateTrustedVaultKeyRetrieval();
+    base::test::TestFuture<bool> add_future;
+    enclave_manager().AddDeviceToAccount(std::nullopt,
+                                         add_future.GetCallback());
+    EXPECT_TRUE(add_future.Wait());
+    EXPECT_TRUE(add_future.Get());
+  }
+
+  // Resuming the passkey creation flow.
+  dialog_model()->OnTrustThisComputer();
+  // Since passkeys are already unlocked, GPM Enclave Controller is supposed to
+  // restart the passkey creation operation (so the expected step is
+  // `kGPMCreatePasskey`).
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMCreatePasskey();
+  // And it is expected that the passkey can be successfully created.
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
+// Regression test for https://crbug.com/465139934 ("Chrome crashes after
+// unlocking passkeys in a different browser tab").
+IN_PROC_BROWSER_TEST_F(
+    EnclaveAuthenticatorBrowserTest,
+    MakeCredential_WhenPasskeysUnlockedViaOpportunisticFlowInOtherTab) {
+  // Starting from the passkey locked state.
+  SetTrustedVaultRecoverable();
+  EnableUVKeySupport();
+
+  // Opening a browser tab and perforing the passkey creation operation there.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+  // Since passkeys are locked, the passkey creation operation triggers the
+  // passkey unlock flow.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+  model_observer()->WaitForStep();
+
+  // After the first step of the given passkey unlock flow we are simulating
+  // the concurrent passkey unlocking: storing a key from an opportunistic flow.
+  // As a part of opportunistic key retrieval flow Enclave Manager adds device
+  // to account.
+  SimulateOpportunisticTrustedVaultKeyRetrieval();
+
+  // Resuming the passkey creation flow.
+  dialog_model()->OnTrustThisComputer();
+  // Since passkeys are already unlocked, GPM Enclave Controller is supposed to
+  // restart the passkey creation operation (so the expected step is
+  // `kGPMCreatePasskey`).
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMCreatePasskey();
+  // And it is expected that the passkey can be successfully created.
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
+// Regression test for https://crbug.com/465139934 ("Chrome crashes after
+// unlocking passkeys in a different browser tab"). This test simulates
+// unlocking passkeys and creating a GPM PIN, with concurrent unlocking of
+// passkeys during the PIN creation.
+IN_PROC_BROWSER_TEST_F(
+    EnclaveAuthenticatorBrowserTest,
+    MakeCredential_AndCreateGpmPin_WhenPasskeysUnlockedViaOpportunisticFlowInOtherTab) {
+  // Starting from the passkey locked state and empty security domain (for
+  // ensuring that we will be prompted to create a PIN).
+  EnableUVKeySupport();
+  SetTrustedVaultEmpty();
+
+  // Opening a browser tab and perforing the passkey creation operation there.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+  // Since passkeys are locked and there are no security domain members, the
+  // passkey creation operation triggers the PIN creation flow.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMCreatePasskey();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  model_observer()->WaitForStep();
+
+  // After the PIN creation prompt we are simulating the concurrent passkey
+  // unlocking: storing a key from an opportunistic flow. As a part of
+  // opportunistic key retrieval flow Enclave Manager adds device to account.
+  SetTrustedVaultRecoverable();
+  SimulateOpportunisticTrustedVaultKeyRetrieval();
+
+  // Resuming the passkey and PIN creation flow.
+  dialog_model()->OnGPMPinEntered(u"123456");
+  // Since passkeys are already unlocked, GPM Enclave Controller is supposed to
+  // restart the passkey creation operation (so the expected step is
+  // `kGPMCreatePasskey`).
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMCreatePasskey();
+  // And it is expected that the passkey can be successfully created.
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
+// Regression test for https://crbug.com/445161563 ("Chrome on Linux crashes
+// after removing passkey access in GPM settings").
+// TODO(http://crbug.com/467196933) Fix this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MakeCredential_WhenPasskeysBecomingUnregistered \
+  DISABLED_MakeCredential_WhenPasskeysBecomingUnregistered
+#else
+#define MAYBE_MakeCredential_WhenPasskeysBecomingUnregistered \
+  MakeCredential_WhenPasskeysBecomingUnregistered
+#endif
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MAYBE_MakeCredential_WhenPasskeysBecomingUnregistered) {
+  // Starting from the passkeys unlocked state.
+  EnableUVKeySupport();
+  SetTrustedVaultRecoverable();
+  SimulateOpportunisticTrustedVaultKeyRetrieval();
+
+  // Opening a browser tab and perforing the passkey creation operation there.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+  // Since passkeys are unlocked, the expected step is `kGPMCreatePasskey`.
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+
+  // After the first step of the given passkey creation flow we are simulating
+  // the concurrent removal of the passkey access by clearing registration of
+  // Enclave Manager.
+  enclave_manager().ClearRegistrationForTesting();
+  // But we are keeping the trusted vault recoverable.
+  SetTrustedVaultRecoverable();
+
+  // Resuming the passkey creation flow.
+  dialog_model()->OnGPMCreatePasskey();
+  // GPM Enclave Controller is supposed to recognize that passkeys are locked
+  // now, and the passkey creation operation must be restarted. Since passkeys
+  // are locked, the user will need to unlock passkeys (so the expected step is
+  // `kTrustThisComputerCreation`).
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+  model_observer()->WaitForStep();
+  dialog_model()->OnTrustThisComputer();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+  model_observer()->WaitForStep();
+  // Unlocking passkeys by performing explicit key retrieval.
+  {
+    auto store_keys_lock = enclave_manager().GetStoreKeysLock();
+    SimulateTrustedVaultKeyRetrieval();
+  }
+  model_observer()->WaitForStep();
+  // And it is expected that the passkey can be successfully created.
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
+
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                        MakeCredential_RecoverWithLSKF_Success) {
   /* Test script:

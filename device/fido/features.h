@@ -192,6 +192,10 @@ BASE_DECLARE_FEATURE(kWebAuthnOpportunisticRetrieval);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthenticationWindowsHints);
 
+// Enables the logic of refreshing the state of GPM Enclave Controller.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnEnableRefreshingStateOfGpmEnclaveController);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

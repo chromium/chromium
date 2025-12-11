@@ -239,4 +239,8 @@ BASE_FEATURE(kWebAuthnOpportunisticRetrieval, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enabled by default in M143. Remove in or after M146.
 BASE_FEATURE(kWebAuthenticationWindowsHints, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled by default in M144. Remove in or after M147.
+BASE_FEATURE(kWebAuthnEnableRefreshingStateOfGpmEnclaveController,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device
