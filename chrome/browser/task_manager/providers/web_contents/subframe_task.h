@@ -14,6 +14,8 @@ class SiteInstance;
 class WebContents;
 }  // namespace content
 
+class Profile;
+
 namespace task_manager {
 
 // Defines a concrete renderer task that can represent processes hosting
@@ -36,6 +38,8 @@ class SubframeTask : public RendererTask {
 
  private:
   std::u16string GetTitle();
+
+  int GetMessageId(Profile* profile);
 
   raw_ptr<content::SiteInstance, DanglingUntriaged> site_instance_;
 

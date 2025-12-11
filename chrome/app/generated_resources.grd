@@ -5142,6 +5142,14 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_TASK_MANAGER_BACK_FORWARD_CACHE_INCOGNITO_SUBFRAME_PREFIX" desc="The prefix for an Incognito out-of-process-iframe row stored in the Back/Forward Cache">
         Incognito Back/Forward Cached Subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL">$1<ex>http://www.google.com</ex></ph>
       </message>
+      <if expr="enable_pdf">
+        <message name="IDS_TASK_MANAGER_PDF_SUBFRAME_PREFIX" desc="The prefix for a PDF subframe row in the Task Manager">
+          PDF Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://example.com/document.pdf</ex></ph>
+        </message>
+        <message name="IDS_TASK_MANAGER_PDF_SUBFRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito PDF subframe row in the Task Manager">
+          Incognito PDF Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://example.com/document.pdf</ex></ph>
+        </message>
+      </if>
       <message name="IDS_TASK_MANAGER_PORTAL_PREFIX" desc="The prefix for a portal row in the Task Manager (these processes are created when portals is enabled)">
         Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
       </message>
