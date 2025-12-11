@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/share_extension/model/share_extension_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -86,18 +87,25 @@ void OnProfileLoaded(std::unique_ptr<T> adder,
 }
 
 template <typename Adder, typename... Args>
-void AddDataToProfileByGaiaID(const GaiaId& gaiaID, Args&&... args) {
-  std::optional<std::string> profileName =
-      GetApplicationContext()
-          ->GetAccountProfileMapper()
-          ->FindProfileNameForGaiaID(gaiaID);
+void AddDataToProfileByGaiaID(const GaiaId& gaia_id, Args&&... args) {
+  std::optional<std::string> profile_name;
+  if ([gaia_id.ToNSString() isEqualToString:app_group::kNoAccount]) {
+    profile_name = GetApplicationContext()
+                       ->GetProfileManager()
+                       ->GetProfileAttributesStorage()
+                       ->GetPersonalProfileName();
+  } else {
+    profile_name = GetApplicationContext()
+                       ->GetAccountProfileMapper()
+                       ->FindProfileNameForGaiaID(gaia_id);
+  }
 
-  if (profileName.has_value()) {
-    ProfileManagerIOS* profileManager =
+  if (profile_name.has_value()) {
+    ProfileManagerIOS* profile_manager =
         GetApplicationContext()->GetProfileManager();
     auto adder = std::make_unique<Adder>(std::forward<Args>(args)...);
-    profileManager->LoadProfileAsync(
-        *profileName,
+    profile_manager->LoadProfileAsync(
+        *profile_name,
         base::BindOnce(&OnProfileLoaded<Adder>, std::move(adder)));
   }
 }
