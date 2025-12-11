@@ -280,7 +280,7 @@ CloudUploadPromptPrefsHandlerFactory::BuildServiceInstanceForBrowserContext(
   if (!IsProfileEnterpriseManaged(Profile::FromBrowserContext(context))) {
     return nullptr;
   }
-  CHECK(features::IsUploadOfficeToCloudForEnterpriseEnabled() &&
+  CHECK(features::IsUploadOfficeToCloudEnabled() &&
         features::IsUploadOfficeToCloudSyncEnabled());
   return CloudUploadPromptPrefsHandler::Create(
       Profile::FromBrowserContext(context));

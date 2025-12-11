@@ -201,11 +201,6 @@ bool IsQuickShareV2Enabled() {
 // Enables the Office files upload workflow to improve Office files support.
 BASE_FEATURE(kUploadOfficeToCloud, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the Office files upload workflow for enterprise users to improve
-// Office files support.
-BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables syncing of user's Office files upload workflow preferences for
 // enterprise users, such as whether to ask before moving files to the cloud.
 BASE_FEATURE(kUploadOfficeToCloudSync, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -449,11 +444,6 @@ bool IsQuickAnswersV2SettingsSubToggleEnabled() {
 
 bool IsUploadOfficeToCloudEnabled() {
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
-}
-
-bool IsUploadOfficeToCloudForEnterpriseEnabled() {
-  return base::FeatureList::IsEnabled(kUploadOfficeToCloud) &&
-         base::FeatureList::IsEnabled(kUploadOfficeToCloudForEnterprise);
 }
 
 bool IsUploadOfficeToCloudSyncEnabled() {

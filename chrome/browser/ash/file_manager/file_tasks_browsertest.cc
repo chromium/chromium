@@ -922,10 +922,8 @@ class WithEnterpriseFlag : public TestAccountBrowserTest {
  public:
   explicit WithEnterpriseFlag(bool is_managed)
       : TestAccountBrowserTest(is_managed ? kEnterprise : kNonManaged) {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kUploadOfficeToCloud,
-         chromeos::features::kUploadOfficeToCloudForEnterprise},
-        {});
+    feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud},
+                                   {});
   }
 
  private:
@@ -939,8 +937,7 @@ class NonManagedAccountWithEnterpriseFlag : public WithEnterpriseFlag {
 };
 
 // Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns true when a
-// non-managed user is logged in and both |kUploadOfficeToCloud| and
-// |kUploadOfficeToCloudForEnterprise| are enabled.
+// non-managed user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
   ASSERT_TRUE(
@@ -1097,10 +1094,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
 class EnterpriseAccountWithEnterpriseFlag : public TestAccountBrowserTest {
  public:
   EnterpriseAccountWithEnterpriseFlag() : TestAccountBrowserTest(kEnterprise) {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kUploadOfficeToCloud,
-         chromeos::features::kUploadOfficeToCloudForEnterprise},
-        {});
+    feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud},
+                                   {});
   }
 
  private:
@@ -1108,8 +1103,7 @@ class EnterpriseAccountWithEnterpriseFlag : public TestAccountBrowserTest {
 };
 
 // Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns true when an
-// enterprise user is logged in and both |kUploadOfficeToCloud| and
-// |kUploadOfficeToCloudForEnterprise| are enabled.
+// enterprise user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(EnterpriseAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
   ASSERT_TRUE(
@@ -1137,10 +1131,8 @@ IN_PROC_BROWSER_TEST_F(ChildAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
 class ChildAccountWithEnterpriseFlag : public TestAccountBrowserTest {
  public:
   ChildAccountWithEnterpriseFlag() : TestAccountBrowserTest(kChild) {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kUploadOfficeToCloud,
-         chromeos::features::kUploadOfficeToCloudForEnterprise},
-        {});
+    feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud},
+                                   {});
   }
 
  private:
@@ -1148,8 +1140,7 @@ class ChildAccountWithEnterpriseFlag : public TestAccountBrowserTest {
 };
 
 // Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when a
-// child user is logged in and both |kUploadOfficeToCloud| and
-// |kUploadOfficeToCloudForEnterprise| are enabled.
+// child user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(ChildAccountWithEnterpriseFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
   ASSERT_FALSE(

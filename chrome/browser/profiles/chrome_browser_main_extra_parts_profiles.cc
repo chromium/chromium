@@ -798,10 +798,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::CertificateProviderServiceFactory::GetInstance();
-  if (chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
     chromeos::cloud_upload::CloudUploadPrefsWatcherFactory::GetInstance();
   }
-  if (chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled() &&
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
       chromeos::features::IsUploadOfficeToCloudSyncEnabled()) {
     chromeos::cloud_upload::CloudUploadPromptPrefsHandlerFactory::GetInstance();
   }

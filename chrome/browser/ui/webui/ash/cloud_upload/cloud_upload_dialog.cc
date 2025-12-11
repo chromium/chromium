@@ -1184,7 +1184,7 @@ void CloudOpenTask::ShowDialog(
   if (resulting_tasks) {
     SetTaskArgs(args, std::move(resulting_tasks));
 
-    if (chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+    if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
       const auto& file_handler_dialog_args =
           args->dialog_specific_args->get_file_handler_dialog_args();
       // When there is only one possible task (Microsoft or Google) and no

@@ -264,10 +264,8 @@ auto IsOpenInOfficeTask() {
 class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
  public:
   FileHandlerDialogBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kUploadOfficeToCloud,
-         chromeos::features::kUploadOfficeToCloudForEnterprise},
-        {});
+    feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud},
+                                   {});
   }
 
   explicit FileHandlerDialogBrowserTest(int num_tasks)

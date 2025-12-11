@@ -10,8 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/buildflag.h"
 
-namespace chromeos {
-namespace features {
+namespace chromeos::features {
 
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file. If a feature is
@@ -109,8 +108,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kQuickShareV2);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kUploadOfficeToCloud);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-BASE_DECLARE_FEATURE(kUploadOfficeToCloudForEnterprise);
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kUploadOfficeToCloudSync);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise);
@@ -193,8 +190,6 @@ bool IsQuickShareV2Enabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsUploadOfficeToCloudForEnterpriseEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudSyncEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoft365ScopeExtensionsEnabled();
@@ -205,7 +200,6 @@ bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsFeatureManagementHistoryEmbeddingEnabled();
 
-}  // namespace features
-}  // namespace chromeos
+}  // namespace chromeos::features
 
 #endif  // CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_

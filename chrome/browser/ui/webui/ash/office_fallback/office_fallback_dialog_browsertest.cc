@@ -81,8 +81,7 @@ class OfficeFallbackDialogBrowserTest : public InProcessBrowserTest {
   OfficeFallbackDialogBrowserTest() {
     feature_list_.InitWithFeatures(
         {chromeos::features::kUploadOfficeToCloud,
-         chromeos::features::kMicrosoftOneDriveIntegrationForEnterprise,
-         chromeos::features::kUploadOfficeToCloudForEnterprise},
+         chromeos::features::kMicrosoftOneDriveIntegrationForEnterprise},
         {});
   }
 
