@@ -48,9 +48,6 @@ id<GREYMatcher> StarButton();
 // Matcher for the Edit button in the Bookmark context menu.
 id<GREYMatcher> BookmarksContextMenuEditButton();
 
-// Matcher for the Delete button on the bookmarks UI.
-id<GREYMatcher> BookmarksDeleteSwipeButton();
-
 // Matcher for the DONE button on the bookmarks UI.
 id<GREYMatcher> BookmarksHomeDoneButton();
 

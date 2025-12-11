@@ -16,11 +16,11 @@
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::BookmarksDeleteSwipeButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::BookmarksSaveEditFolderButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -472,7 +472,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:SwipeToShowDeleteButton()];
 
   // Verify we have a delete button.
-  [[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
+  [[EarlGrey selectElementWithMatcher:[ChromeMatchersAppInterface
+                                          swipeActionDeleteButton]]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -492,7 +493,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:SwipeToShowDeleteButton()];
 
   // Verify we have a delete button.
-  [[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
+  [[EarlGrey selectElementWithMatcher:[ChromeMatchersAppInterface
+                                          swipeActionDeleteButton]]
       assertWithMatcher:grey_notNil()];
 }
 
