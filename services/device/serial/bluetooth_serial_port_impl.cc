@@ -115,6 +115,8 @@ void BluetoothSerialPortImpl::OnSocketConnected(
 void BluetoothSerialPortImpl::OnSocketConnectedError(
     const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SERIAL_LOG(DEBUG) << "Bluetooth Serial: Failed to connect socket: address: "
+                    << address_ << ", message: " << message;
   BLUETOOTH_LOG(ERROR) << "Failed to connect socket: address: " << address_
                        << ", message: " << message;
   std::move(open_callback_).Run(mojo::NullRemote());
@@ -306,6 +308,8 @@ void BluetoothSerialPortImpl::OnBluetoothSocketReceiveError(
     BluetoothSocket::ErrorReason error_reason,
     const std::string& error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SERIAL_LOG(DEBUG) << "Bluetooth Serial: Receive error: address: " << address_
+                    << ", message: " << error_message;
 
   read_pending_ = false;
   ResetPendingWriteBuffer();
@@ -426,6 +430,8 @@ void BluetoothSerialPortImpl::OnBluetoothSocketSend(int num_bytes_sent) {
 void BluetoothSerialPortImpl::OnBluetoothSocketSendError(
     const std::string& error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SERIAL_LOG(DEBUG) << "Bluetooth Serial: Send error: address: " << address_
+                    << ", message: " << error_message;
 
   write_pending_ = false;
   flush_next_write_ = false;
