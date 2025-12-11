@@ -256,20 +256,14 @@ void OpenAddressManualFillView() {
 #define MAYBE_testOpeningIncognitoTabsDoNotLeak testOpeningIncognitoTabsDoNotLeak
 #endif  // TARGET_OS_SIMULATOR
 - (void)MAYBE_testOpeningIncognitoTabsDoNotLeak {
-  // TODO(crbug.com/443950620): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   [AutofillAppInterface saveExampleProfile];
 
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   std::string webViewText("Profile form");
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+      performAction:chrome_test_util::TapWebElementUnverified([ElementSelector
+                        selectorWithElementID:kFormElementCity])];
 
   // Verify the profiles icon is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
@@ -283,7 +277,8 @@ void OpenAddressManualFillView() {
   [ChromeEarlGrey waitForWebStateContainingText:webViewText];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+      performAction:chrome_test_util::TapWebElementUnverified([ElementSelector
+                        selectorWithElementID:kFormElementCity])];
 
   // Verify the profiles icon is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
@@ -299,7 +294,8 @@ void OpenAddressManualFillView() {
   // Bring up the keyboard by tapping the city, which is the element before the
   // picker.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+      performAction:chrome_test_util::TapWebElementUnverified([ElementSelector
+                        selectorWithElementID:kFormElementCity])];
 
   // Verify the profiles icon is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
@@ -315,7 +311,8 @@ void OpenAddressManualFillView() {
   // Bring up the keyboard by tapping the city, which is the element before the
   // picker.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+      performAction:chrome_test_util::TapWebElementUnverified([ElementSelector
+                        selectorWithElementID:kFormElementCity])];
 
   // Open a  regular tab.
   [ChromeEarlGrey openNewTab];
@@ -325,7 +322,8 @@ void OpenAddressManualFillView() {
   // Bring up the keyboard by tapping the city, which is the element before the
   // picker.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormElementCity)];
+      performAction:chrome_test_util::TapWebElementUnverified([ElementSelector
+                        selectorWithElementID:kFormElementCity])];
 
   // This will fail if there is more than one profiles icon in the hierarchy.
   [[EarlGrey selectElementWithMatcher:manual_fill::FormSuggestionViewMatcher()]
