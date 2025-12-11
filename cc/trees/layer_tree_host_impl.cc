@@ -2625,11 +2625,7 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
       metadata.frame_token,
       active_tree_->TakeSuccessfulPresentationCallbacks());
 
-  if (input_delegate_) {
-    metadata.is_handling_interaction =
-        GetActivelyScrollingType() != ActivelyScrollingType::kNone ||
-        input_delegate_->IsHandlingTouchSequence();
-  }
+  metadata.is_handling_interaction = IsHandlingInteraction();
 
   auto active_types = FrameSequenceTrackerActiveTypes();
   metadata.is_handling_animation = HasMainThreadAnimation(active_types) ||
@@ -4001,6 +3997,19 @@ ActivelyScrollingType LayerTreeHostImpl::GetActivelyScrollingType() const {
   if (!input_delegate_)
     return ActivelyScrollingType::kNone;
   return input_delegate_->GetActivelyScrollingType();
+}
+
+bool LayerTreeHostImpl::IsHandlingInteraction() const {
+  if (settings().trees_in_viz_in_viz_process) {
+    return is_handling_interaction_from_client_;
+  }
+
+  if (input_delegate_) {
+    return GetActivelyScrollingType() != ActivelyScrollingType::kNone ||
+           input_delegate_->IsHandlingTouchSequence();
+  }
+
+  return false;
 }
 
 bool LayerTreeHostImpl::IsCurrentScrollMainRepainted() const {

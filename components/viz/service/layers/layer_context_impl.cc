@@ -1860,6 +1860,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   host_impl_->set_send_frame_token_to_embedder(
       update->send_frame_token_to_embedder);
+  host_impl_->set_is_handling_interaction_from_client(
+      update->is_handling_interaction);
 
   {
     TRACE_EVENT1("viz", "DeserializeTilings", "TilingCount",

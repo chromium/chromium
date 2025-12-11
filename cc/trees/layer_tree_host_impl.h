@@ -656,6 +656,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool IsPinchGestureActive() const;
   // See comment in equivalent InputHandler method for what this means.
   ActivelyScrollingType GetActivelyScrollingType() const;
+  bool IsHandlingInteraction() const;
   bool IsCurrentScrollMainRepainted() const;
   bool ScrollAffectsScrollHandler() const;
   void SetExternalPinchGestureActive(bool active);
@@ -896,6 +897,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   }
   bool send_frame_token_to_embedder() const {
     return send_frame_token_to_embedder_;
+  }
+  void set_is_handling_interaction_from_client(bool is_handling_interaction) {
+    DCHECK(settings().trees_in_viz_in_viz_process);
+    is_handling_interaction_from_client_ = is_handling_interaction;
   }
 
  protected:
@@ -1400,6 +1405,12 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // GenerateCompositorFrame() in viz is skipped, therefore, we need to
   // pass it from renderer to viz.
   bool send_frame_token_to_embedder_ = false;
+
+  // Only used in TreesInViz mode. Stores whether the client is handling an
+  // interaction (e.g. scroll or touch). This is required because the
+  // InputDelegate, which normally provides this information, is not present
+  // in the Viz process.
+  bool is_handling_interaction_from_client_ = false;
 
   // Settings whether we dump generated compositor frame during DrawLayers.
   // They are for debug purposes for TreesInViz and TreeAnimationsInViz.
