@@ -211,7 +211,7 @@ class LensSearchController {
   const LensOverlayController* lens_overlay_controller() const;
 
   // Returns the LensOverlayQueryController.
-  lens::LensOverlayQueryController* lens_overlay_query_controller();
+  virtual lens::LensOverlayQueryController* lens_overlay_query_controller();
 
   // Returns the LensQueryFlowRouter.
   lens::LensQueryFlowRouter* query_router();
@@ -232,7 +232,7 @@ class LensSearchController {
   lens::LensOverlayEventHandler* lens_overlay_event_handler();
 
   // Returns the LensSearchContextualizationController.
-  lens::LensSearchContextualizationController*
+  virtual lens::LensSearchContextualizationController*
   lens_search_contextualization_controller();
 
   // Returns the LensSessionMetricsLogger.

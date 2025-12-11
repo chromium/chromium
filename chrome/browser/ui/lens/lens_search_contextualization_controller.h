@@ -199,6 +199,10 @@ class LensSearchContextualizationController {
   // Returns the most recent viewport screenshot.
   const SkBitmap& viewport_screenshot() { return viewport_screenshot_; }
 
+  void set_viewport_screenshot_for_testing(const SkBitmap& bitmap) {
+    viewport_screenshot_ = bitmap;
+  }
+
  protected:
   // The page context eligibility API if it has been fetched. Can be nullptr.
   // This is marked protected so that it can be accessed by the test

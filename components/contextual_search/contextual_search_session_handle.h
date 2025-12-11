@@ -43,7 +43,7 @@ class ContextualSearchSessionHandle {
   ContextualSearchSessionHandle(ContextualSearchSessionHandle&&) = delete;
   ContextualSearchSessionHandle& operator=(ContextualSearchSessionHandle&&) =
       delete;
-  ~ContextualSearchSessionHandle();
+  virtual ~ContextualSearchSessionHandle();
 
   // Provides a WeakPtr to this instance. The caller is responsible to only use
   // this on the same sequence that the `ContextualSearchSessionHandle` is
@@ -61,7 +61,7 @@ class ContextualSearchSessionHandle {
   ContextualSearchMetricsRecorder* GetMetricsRecorder() const;
 
   // Notifies the session handle that the session has started.
-  void NotifySessionStarted();
+  virtual void NotifySessionStarted();
 
   // Notifies the session handle that the session has been abandoned.
   void NotifySessionAbandoned();
@@ -86,7 +86,7 @@ class ContextualSearchSessionHandle {
 
   // Starts the tab context upload flow for the given file token using the
   // tab context stored in the contextual input data.
-  void StartTabContextUploadFlow(
+  virtual void StartTabContextUploadFlow(
       const base::UnguessableToken& file_token,
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
       std::optional<lens::ImageEncodingOptions> image_options);
@@ -101,7 +101,7 @@ class ContextualSearchSessionHandle {
   void ClearFiles();
 
   // Returns the search url for a new query for opening.
-  GURL CreateSearchUrl(
+  virtual GURL CreateSearchUrl(
       std::unique_ptr<contextual_search::ContextualSearchContextController::
                           CreateSearchUrlRequestInfo> search_url_request_info);
 
@@ -133,6 +133,7 @@ class ContextualSearchSessionHandle {
 
  private:
   friend class ContextualSearchService;
+  friend class MockContextualSearchSessionHandle;
 
   ContextualSearchSessionHandle(base::WeakPtr<ContextualSearchService> service,
                                 const SessionId& session_id);

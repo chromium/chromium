@@ -54,6 +54,11 @@ lens::Text CreateTestText(const std::vector<std::string>& words) {
 
 }  // namespace
 
+MockLensSearchController::MockLensSearchController(tabs::TabInterface* tab)
+    : LensSearchController(tab) {}
+
+MockLensSearchController::~MockLensSearchController() = default;
+
 std::unique_ptr<LensOverlayController>
 TestLensSearchController::CreateLensOverlayController(
     tabs::TabInterface* tab,

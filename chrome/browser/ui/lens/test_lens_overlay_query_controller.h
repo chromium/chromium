@@ -5,10 +5,72 @@
 #ifndef CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
+#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
-#include "lens_overlay_query_controller.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace lens {
+
+// The commas used within the std::map type caus the C++ macros to fail.
+// This is a workaround to allow the map to be used in the mock method
+// signatures by defining the type outside of the mock method.
+using AdditionalQueryParamsMap = std::map<std::string, std::string>;
+
+class MockLensOverlayQueryController : public LensOverlayQueryController {
+ public:
+  explicit MockLensOverlayQueryController(
+      lens::LensOverlayGen204Controller* gen204_controller);
+  ~MockLensOverlayQueryController() override;
+
+  MOCK_METHOD(void,
+              StartQueryFlow,
+              (const SkBitmap&,
+               GURL,
+               std::optional<std::string>,
+               std::vector<lens::mojom::CenterRotatedBoxPtr>,
+               base::span<const lens::PageContent>,
+               lens::MimeType,
+               std::optional<uint32_t>,
+               float,
+               base::TimeTicks),
+              (override));
+
+  MOCK_METHOD(void,
+              SendRegionSearch,
+              (base::Time,
+               lens::mojom::CenterRotatedBoxPtr,
+               lens::LensOverlaySelectionType,
+               AdditionalQueryParamsMap,
+               std::optional<SkBitmap>),
+              (override));
+
+  MOCK_METHOD(void,
+              SendTextOnlyQuery,
+              (base::Time,
+               const std::string&,
+               lens::LensOverlaySelectionType,
+               AdditionalQueryParamsMap),
+              (override));
+
+  MOCK_METHOD(void,
+              SendContextualTextQuery,
+              (base::Time,
+               const std::string&,
+               lens::LensOverlaySelectionType,
+               AdditionalQueryParamsMap),
+              (override));
+
+  MOCK_METHOD(void,
+              SendMultimodalRequest,
+              (base::Time,
+               lens::mojom::CenterRotatedBoxPtr,
+               const std::string&,
+               lens::LensOverlaySelectionType,
+               AdditionalQueryParamsMap,
+               std::optional<SkBitmap>),
+              (override));
+};
 
 class FakeEndpointFetcher : public endpoint_fetcher::EndpointFetcher {
  public:
