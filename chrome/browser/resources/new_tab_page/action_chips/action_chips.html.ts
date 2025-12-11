@@ -14,13 +14,13 @@ export function getHtml(this: ActionChipsElement) {
     ${
       this.actionChips_.map(
           (chip: ActionChip) => html`
-      <button id="${this.getId(chip) || nothing}"
+      <button id="${this.getId_(chip) || nothing}"
         class="action-chip"
         @click="${() => this.handleClick_(chip)}">
         <div class="action-chip-icon-container ${
               this.getAdditionalIconClasses_(chip)}">
           ${
-              this.getId(chip) === 'tab-context' ?
+              this.getId_(chip) === 'tab-context' ?
                   html`<img class='action-chip-recent-tab-favicon'
                 src="${this.getMostRecentTabFaviconUrl_(chip)}">` :
                   ''}

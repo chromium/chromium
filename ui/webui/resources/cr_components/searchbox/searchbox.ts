@@ -11,9 +11,13 @@ import '//resources/cr_components/composebox/error_scrim.js';
 import '//resources/cr_components/search/animated_glow.js';
 
 import type {ComposeboxFile, ContextualUpload, FileUpload, TabUpload} from '//resources/cr_components/composebox/common.js';
+import {GlifAnimationState} from '//resources/cr_components/composebox/context_menu_entrypoint.js';
 import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {ComposeboxMode} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
+import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
+import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
+import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -27,9 +31,6 @@ import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHand
 import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
-import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
-import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
-import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 
 import {getCss} from './searchbox.css.js';
 import {getHtml} from './searchbox.html.js';
@@ -101,7 +102,7 @@ export class PlaceholderTextCycler {
 
     this.placeholderTextsCurrentIndex_ = 0;
     this.input_.placeholder =
-            this.placeholderTexts_[this.placeholderTextsCurrentIndex_]!;
+        this.placeholderTexts_[this.placeholderTextsCurrentIndex_]!;
   }
 
   private animate_(state: AnimationState) {
@@ -283,8 +284,8 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
       },
 
-      ntpNextFeaturesEnabled: {
-        type: Boolean,
+      contextMenuGlifAnimationState: {
+        type: String,
         reflect: true,
       },
 
@@ -419,7 +420,8 @@ export class SearchboxElement extends SearchboxElementBase implements
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor searchboxLayoutMode: string = '';
   accessor ntpRealboxNextEnabled: boolean = false;
-  accessor ntpNextFeaturesEnabled: boolean = false;
+  accessor contextMenuGlifAnimationState: GlifAnimationState =
+      GlifAnimationState.INELIGIBLE;
   accessor cyclingPlaceholders: boolean = false;
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
@@ -799,7 +801,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected onInputPaste_(e: ClipboardEvent) {
-    if (this.ntpRealboxNextEnabled && e.clipboardData?.files && e.clipboardData.files.length > 0) {
+    if (this.ntpRealboxNextEnabled && e.clipboardData?.files &&
+        e.clipboardData.files.length > 0) {
       const files = Array.from(e.clipboardData.files);
       if (files.length > 0) {
         e.preventDefault();
@@ -903,8 +906,7 @@ export class SearchboxElement extends SearchboxElementBase implements
           this.$.input.focus();
         }
       } else if (
-          this.isThumbnailDeletable_ &&
-          this.$.input.selectionStart === 0 &&
+          this.isThumbnailDeletable_ && this.$.input.selectionStart === 0 &&
           this.$.input.selectionEnd === 0 &&
           this.$.input === this.shadowRoot.activeElement &&
           (e.key === 'Backspace' || (e.key === 'Tab' && e.shiftKey))) {
@@ -1064,8 +1066,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected addFileContext_(e: CustomEvent<{
-      files: File[],
-      onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
+    files: File[],
+    onContextAdded: (files: Map<UnguessableToken, ComposeboxFile>) => void,
   }>) {
     const uploads: ContextualUpload[] = [];
     for (const file of e.detail.files) {
@@ -1078,8 +1080,11 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected addTabContext_(e: CustomEvent<{
-      id: number, title: string, url: Url, delayUpload: boolean,
-      onContextAdded: (file: ComposeboxFile) => void,
+    id: number,
+    title: string,
+    url: Url,
+    delayUpload: boolean,
+    onContextAdded: (file: ComposeboxFile) => void,
   }>) {
     const attachment: TabUpload = {
       tabId: e.detail.id,
