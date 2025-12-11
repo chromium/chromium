@@ -47,6 +47,8 @@ class MODULES_EXPORT BrowsingTopicsDocumentSupplement
   void Trace(Visitor* visitor) const override;
 
  private:
+  Member<Document> document_;
+
   // Mojo remote used to query the browsing topics.
   HeapMojoRemote<mojom::blink::BrowsingTopicsDocumentService> document_host_;
 };

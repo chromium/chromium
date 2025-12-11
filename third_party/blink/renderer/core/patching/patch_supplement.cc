@@ -209,7 +209,7 @@ PatchSupplement* PatchSupplement::FromIfExists(const Document& document) {
 PatchSupplement* PatchSupplement::From(Document& document) {
   auto* supplement = document.GetPatchSupplement();
   if (!supplement) {
-    supplement = MakeGarbageCollected<PatchSupplement>();
+    supplement = MakeGarbageCollected<PatchSupplement>(document);
     document.SetPatchSupplement(supplement);
   }
   return supplement;
@@ -274,6 +274,7 @@ WritableStream* PatchSupplement::CreateSubtreePatchStream(
 }
 
 void PatchSupplement::Trace(Visitor* visitor) const {
+  visitor->Trace(document_);
   visitor->Trace(patches_);
 }
 

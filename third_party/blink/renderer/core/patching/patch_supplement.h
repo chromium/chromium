@@ -21,7 +21,7 @@ class WritableStream;
 class PatchSupplement : public GarbageCollected<PatchSupplement>,
                         public GarbageCollectedMixin {
  public:
-  PatchSupplement() = default;
+  explicit PatchSupplement(Document& document) : document_(document) {}
 
   // Supplement functionality.
   static PatchSupplement* From(Document&);
@@ -38,6 +38,7 @@ class PatchSupplement : public GarbageCollected<PatchSupplement>,
   WritableStream* CreateSubtreePatchStream(ScriptState*, ContainerNode& target);
 
  private:
+  Member<Document> document_;
   std::optional<size_t> IndexOfPatch(const Node& target);
   // TODO(nrosenthal): multiple patches per destination
   HeapVector<Member<Patch>> patches_;

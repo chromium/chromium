@@ -56,10 +56,11 @@ class CORE_EXPORT DocumentXPathEvaluator final
                                const ScriptValue&,
                                ExceptionState&);
 
-  DocumentXPathEvaluator() = default;
+  explicit DocumentXPathEvaluator(Document&);
   void Trace(Visitor*) const override;
 
  private:
+  Member<Document> document_;
   Member<XPathEvaluator> xpath_evaluator_;
 };
 
