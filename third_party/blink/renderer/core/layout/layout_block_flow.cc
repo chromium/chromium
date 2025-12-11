@@ -286,14 +286,12 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
   // into the anonymous block.
   LayoutObject* prev = old_child->PreviousSibling();
   LayoutObject* next = old_child->NextSibling();
-  bool merged_anonymous_blocks = false;
   if (prev && next && !old_child->IsInline()) {
     auto* prev_block_flow = DynamicTo<LayoutBlockFlow>(prev);
     auto* next_block_flow = DynamicTo<LayoutBlockFlow>(next);
     if (prev_block_flow && next_block_flow &&
         prev_block_flow->MergeSiblingContiguousAnonymousBlock(
             next_block_flow)) {
-      merged_anonymous_blocks = true;
       next = nullptr;
     } else if (prev_block_flow && IsMergeableAnonymousBlock(prev_block_flow)) {
       // The previous sibling is anonymous. Scan the next siblings and reparent
@@ -337,15 +335,14 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     return;
   }
 
-  LayoutObject* child = prev ? prev : next;
-  auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-  if (child_block_flow && !child_block_flow->PreviousSibling() &&
-      !child_block_flow->NextSibling()) {
+  if (FirstChild() == LastChild()) {
     // If the removal has knocked us down to containing only a single anonymous
-    // box we can go ahead and pull the content right back up into our
-    // box.
-    if (merged_anonymous_blocks || IsMergeableAnonymousBlock(child_block_flow))
-      CollapseAnonymousBlockChild(child_block_flow);
+    // box we can go ahead and pull the content right back up into our box.
+    if (auto* child_block_flow = DynamicTo<LayoutBlockFlow>(FirstChild())) {
+      if (IsMergeableAnonymousBlock(child_block_flow)) {
+        CollapseAnonymousBlockChild(child_block_flow);
+      }
+    }
   }
 
   if (FirstChild() && !BeingDestroyed() &&
