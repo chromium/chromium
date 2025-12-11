@@ -271,6 +271,46 @@ TEST_F(NameFieldParserTest, LastNamePrefixWithTwoLastNames) {
   ClassifyAndVerify(ParseResult::kParsed);
 }
 
+// Tests that "Last name, First name" sequence is parsed correctly.
+TEST_F(NameFieldParserTest, LastNameFirstName) {
+  AddTextFormFieldData("last_name", "Last Name", NAME_LAST);
+  AddTextFormFieldData("first_name", "First Name", NAME_FIRST);
+
+  ClassifyAndVerify(ParseResult::kParsed);
+}
+
+// Tests that "Last name, First name" sequence is parsed correctly when fields
+// are labeled "Name" and "First name" respectively.
+TEST_F(NameFieldParserTest, LastNameFirstNameWithLastNameBeingGeneric) {
+  AddTextFormFieldData("name", "Name", NAME_LAST);
+  AddTextFormFieldData("vorname", "Vorname", NAME_FIRST);
+
+  ClassifyAndVerify(ParseResult::kParsed);
+}
+
+// Tests that "ParseSurnameNameLabelSequence()" parses first and last name
+// fields as "UNKNOWN_TYPE", when fields are "name, first_name, last_name" and
+// "name" matches "NAME_GENERIC".
+// Note: In a complete form parsing logic, first and last name fields should be
+// correctly classified as "NAME_FIRST" and "NAME_LAST" respectively.
+TEST_F(NameFieldParserTest,
+       LastNameFirstNameWhereCreditCardNameIsMatchedGenericName) {
+  AddTextFormFieldData("name", "Name on Card", NAME_FULL);
+  AddTextFormFieldData("first_name", "First Name", UNKNOWN_TYPE);
+  AddTextFormFieldData("last_name", "Last Name", UNKNOWN_TYPE);
+
+  ClassifyAndVerify(ParseResult::kParsed);
+}
+
+// Tests that "ParseSurnameNameLabelSequence()" parses full name field as
+// "UNKNOWN_TYPE", when generic name field is followed by full name.
+TEST_F(NameFieldParserTest, LastNameFirstNameWithGenericNameFollowedByFullName) {
+  AddTextFormFieldData("name", "Name on Doorbell", NAME_FULL);
+  AddTextFormFieldData("full_name", "Full Name", UNKNOWN_TYPE);
+
+  ClassifyAndVerify(ParseResult::kParsed);
+}
+
 }  // namespace
 
 }  // namespace autofill

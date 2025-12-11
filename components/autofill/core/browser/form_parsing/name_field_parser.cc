@@ -76,6 +76,12 @@ class FirstLastNameField : public NameFieldParser {
       ParsingContext& context,
       AutofillScanner& scanner);
 
+  // Tries to match a series of name fields that follows the pattern "Surname,
+  // Name".
+  static std::unique_ptr<FirstLastNameField> ParseSurnameNameLabelSequence(
+      ParsingContext& context,
+      AutofillScanner& scanner);
+
   // Tries to match a series of fields with a shared label: The first field
   // needs to have a unspecific name label followed by up to two fields without
   // a label.
@@ -313,6 +319,72 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
 }
 
 std::unique_ptr<FirstLastNameField>
+FirstLastNameField::ParseSurnameNameLabelSequence(ParsingContext& context,
+                                                  AutofillScanner& scanner) {
+  // Some pages have a label that corresponds to a last name followed by a first
+  // name label.
+  // Example: Last Name [      ] First Name [      ]
+  auto v = base::WrapUnique(new FirstLastNameField());
+  AutofillScanner::Position position = scanner.GetPosition();
+
+  bool should_ignore = ParseField(context, scanner, "NAME_IGNORED") ||
+                       ParseField(context, scanner, "ADDRESS_NAME_IGNORED");
+  scanner.Restore(position);
+
+  if (should_ignore) {
+    return nullptr;
+  }
+
+  ParseField(context, scanner, "LAST_NAME", &v->last_name_);
+
+  bool classified_as_name_generic = false;
+  if (!v->last_name_ &&
+      ParseField(context, scanner, "NAME_GENERIC", &v->last_name_)) {
+    classified_as_name_generic = true;
+  }
+
+  if (!v->last_name_) {
+    scanner.Restore(position);
+    return nullptr;
+  }
+
+  if (classified_as_name_generic) {
+    AutofillScanner::Position peek_position = scanner.GetPosition();
+    // Peek ahead to see what follows NAME_GENERIC match.
+    // If a full name or first and last name sequence comes next, this often
+    // means that the NAME_GENERIC match was associated with a
+    // CREDIT_CARD_NAME_FULL field of a preceding credit card form, and the
+    // FULL_NAME or FIRST_NAME, LAST_NAME belongs to a shipping or billing
+    // address that follows the credit card form.
+    //
+    // E.g. the "NAME_GENERIC, FIRST_NAME, LAST_NAME" sequence can match cases
+    // where first field has a 'Name on card' label, where name will match
+    // NAME_GENERIC and the following two fields are "FIRST_NAME, LAST_NAME".
+    bool is_followed_by_full_name = ParseField(context, scanner, "FULL_NAME");
+    scanner.Restore(peek_position);
+
+    bool is_followed_by_first_and_last_name =
+        ParseField(context, scanner, "FIRST_NAME") &&
+        ParseField(context, scanner, "LAST_NAME");
+    scanner.Restore(peek_position);
+
+    if (is_followed_by_full_name || is_followed_by_first_and_last_name) {
+      scanner.Restore(position);
+      return nullptr;
+    }
+  }
+
+  // If followed by first name, it means parser has matched a last name and
+  // first name sequence.
+  if (ParseField(context, scanner, "FIRST_NAME", &v->first_name_)) {
+    return v;
+  }
+
+  scanner.Restore(position);
+  return nullptr;
+}
+
+std::unique_ptr<FirstLastNameField>
 FirstLastNameField::ParseSharedNameLabelSequence(ParsingContext& context,
                                                  AutofillScanner& scanner) {
   // Some pages (e.g. Overstock_comBilling.html, SmithsonianCheckout.html)
@@ -440,6 +512,10 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::Parse(
   }
   if (!field) {
     field = ParseSpecificComponentSequence(context, scanner);
+  }
+  if (!field && base::FeatureList::IsEnabled(
+                    features::kAutofillAddressParseSurnameNameSequence)) {
+    field = ParseSurnameNameLabelSequence(context, scanner);
   }
   return field;
 }
