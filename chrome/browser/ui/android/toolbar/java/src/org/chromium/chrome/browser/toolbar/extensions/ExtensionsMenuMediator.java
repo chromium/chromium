@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.View;
 
-import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -38,11 +37,8 @@ class ExtensionsMenuMediator implements Destroyable {
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
     private final Context mContext;
     private final ChromeAndroidTask mTask;
-    private final ObservableSupplier<@Nullable Profile> mProfileSupplier;
     private final Runnable mOnUpdateFinishedRunnable;
-    private final Callback<Boolean> mOnExtensionsAvailableCallback;
     private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
-    private final Callback<@Nullable Profile> mProfileUpdatedCallback = this::onProfileUpdated;
     private final View mRootView;
 
     public ExtensionsMenuMediator(
@@ -52,14 +48,10 @@ class ExtensionsMenuMediator implements Destroyable {
             NullableObservableSupplier<Tab> currentTabSupplier,
             ModelList extensionModels,
             Runnable onUpdateFinishedRunnable,
-            Callback<Boolean> onExtensionsAvailableCallback,
             View rootView) {
         mTask = task;
-        mProfileSupplier = profileSupplier;
-        mProfileSupplier.addObserver(mProfileUpdatedCallback);
 
         mOnUpdateFinishedRunnable = onUpdateFinishedRunnable;
-        mOnExtensionsAvailableCallback = onExtensionsAvailableCallback;
         mContext = context;
         mRootView = rootView;
 
@@ -100,13 +92,6 @@ class ExtensionsMenuMediator implements Destroyable {
         }
     }
 
-    private void onProfileUpdated(@Nullable Profile profile) {
-        // TODO(crbug.com/422307625): Remove this check once extensions are ready for dogfooding.
-        boolean extensionsSupported =
-                profile != null ? ExtensionActionsBridge.extensionsEnabled(profile) : false;
-        mOnExtensionsAvailableCallback.onResult(extensionsSupported);
-    }
-
     private void onPrimaryClick(ListMenuButton buttonView, String actionId) {
         Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
         if (currentTab == null) {
@@ -133,7 +118,6 @@ class ExtensionsMenuMediator implements Destroyable {
     @Override
     public void destroy() {
         mExtensionActionsUpdateHelper.destroy();
-        mProfileSupplier.removeObserver(mProfileUpdatedCallback);
     }
 
     private class ActionsUpdateDelegate

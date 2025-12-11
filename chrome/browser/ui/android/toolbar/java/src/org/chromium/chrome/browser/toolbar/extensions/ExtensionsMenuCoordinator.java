@@ -14,8 +14,6 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.divider.MaterialDivider;
-
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -51,7 +49,6 @@ import org.chromium.ui.widget.RectProvider;
 public class ExtensionsMenuCoordinator implements Destroyable {
     private final Context mContext;
     private final ListMenuButton mExtensionsMenuButton;
-    private final MaterialDivider mExtensionsMenuTabSwitcherDivider;
     private final ThemeColorProvider mThemeColorProvider;
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final TabCreator mTabCreator;
@@ -70,8 +67,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
      *
      * @param context The context for this component.
      * @param extensionsMenuButton The puzzle icon in the toolbar.
-     * @param extensionsMenuTabSwitcherDivider The divider between the extensions menu and the tab
-     *     switcher.
      * @param themeColorProvider The provider for theme colors.
      * @param taskSupplier Supplies the {@link ChromeAndroidTask}.
      * @param profileSupplier Supplies the current {@link Profile}.
@@ -81,7 +76,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
     public ExtensionsMenuCoordinator(
             Context context,
             ListMenuButton extensionsMenuButton,
-            MaterialDivider extensionsMenuTabSwitcherDivider,
             ThemeColorProvider themeColorProvider,
             ChromeAndroidTask task,
             ObservableSupplier<@Nullable Profile> profileSupplier,
@@ -95,8 +89,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
         mExtensionsMenuButton.setOnClickListener(view -> mShouldShowMenuOnInit = true);
         mExtensionsMenuButton.setMenuMaxWidth(
                 context.getResources().getDimensionPixelSize(R.dimen.extension_menu_max_width));
-
-        mExtensionsMenuTabSwitcherDivider = extensionsMenuTabSwitcherDivider;
 
         mThemeColorProvider = themeColorProvider;
         mThemeColorProvider.addTintObserver(mTintObserver);
@@ -159,11 +151,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                                 }
                                 mShouldShowMenuOnInit = false;
                             }
-                        },
-                        (extensionsSupported) -> {
-                            int visibility = extensionsSupported ? View.VISIBLE : View.GONE;
-                            mExtensionsMenuButton.setVisibility(visibility);
-                            mExtensionsMenuTabSwitcherDivider.setVisibility(visibility);
                         },
                         mExtensionsMenuButton.getRootView());
     }

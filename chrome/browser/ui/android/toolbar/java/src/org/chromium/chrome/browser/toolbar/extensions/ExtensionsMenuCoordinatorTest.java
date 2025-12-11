@@ -13,8 +13,6 @@ import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.divider.MaterialDivider;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,7 +56,6 @@ public class ExtensionsMenuCoordinatorTest {
     private final ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier =
             new ObservableSupplierImpl<>();
     private ListMenuButton mExtensionsMenuButton;
-    private MaterialDivider mExtensionsMenuTabSwitcherDivider;
     @Mock private TabCreator mTabCreator;
     @Mock private ChromeAndroidTask mTask;
     @Mock private Profile mProfile;
@@ -82,7 +79,6 @@ public class ExtensionsMenuCoordinatorTest {
         mContext = activity;
 
         mExtensionsMenuButton = new ListMenuButton(activity, null);
-        mExtensionsMenuTabSwitcherDivider = new MaterialDivider(activity);
         activity.setContentView(mExtensionsMenuButton);
 
         mProfileModel = mBridge.getOrCreateProfileModel(mProfile);
@@ -97,7 +93,6 @@ public class ExtensionsMenuCoordinatorTest {
                 new ExtensionsMenuCoordinator(
                         mContext,
                         mExtensionsMenuButton,
-                        mExtensionsMenuTabSwitcherDivider,
                         mThemeColorProvider,
                         mTask,
                         mProfileSupplier,
@@ -119,7 +114,6 @@ public class ExtensionsMenuCoordinatorTest {
                 new ExtensionsMenuCoordinator(
                         mContext,
                         mExtensionsMenuButton,
-                        mExtensionsMenuTabSwitcherDivider,
                         mThemeColorProvider,
                         mTask,
                         mProfileSupplier,
