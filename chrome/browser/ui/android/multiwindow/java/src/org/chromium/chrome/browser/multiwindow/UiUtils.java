@@ -131,10 +131,12 @@ public class UiUtils {
     // IncognitoUtils function
     @Deprecated
     public static boolean isIncognitoAsWindowEnabled() {
+        // TODO(crbug.com/467768341): Clean up the desktop form factor check once the bug is fixed.
         return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                        ContextUtils.getApplicationContext())
-                && !DeviceInfo.isAutomotive();
+                && ((DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                        ContextUtils.getApplicationContext())
+                                && !DeviceInfo.isAutomotive())
+                        || DeviceInfo.isDesktop());
     }
 
     /**

@@ -75,10 +75,12 @@ public class IncognitoUtils {
      * @return Whether incognito tabs should open in a separate window.
      */
     public static boolean shouldOpenIncognitoAsWindow() {
+        // TODO(crbug.com/467768341): Clean up the desktop form factor check once the bug is fixed.
         return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                        ContextUtils.getApplicationContext())
-                && !DeviceInfo.isAutomotive();
+                && ((DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                        ContextUtils.getApplicationContext())
+                                && !DeviceInfo.isAutomotive())
+                        || DeviceInfo.isDesktop());
     }
 
     /**
