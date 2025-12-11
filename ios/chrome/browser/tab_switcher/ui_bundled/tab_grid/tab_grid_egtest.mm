@@ -1045,13 +1045,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging all tab grid items to another window.
-// TODO(crbug.com/431223435): Re-enable test on iOS 18.
+// TODO(crbug.com/431223435): Re-enable test.
 - (void)DISABLED_testDragAndDropAllItemsToOtherWindow {
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/428898427): Re-enable test on iOS 26.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
   }
