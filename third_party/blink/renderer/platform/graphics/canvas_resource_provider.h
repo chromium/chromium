@@ -457,7 +457,7 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
                                        SkAlphaType alpha_type,
                                        const gfx::ColorSpace& color_space);
 
-  ~CanvasResourceProviderExternalBitmap() override = default;
+  ~CanvasResourceProviderExternalBitmap() override;
 
   bool IsGpuContextLost() const override;
   bool IsValid() const override;
@@ -488,6 +488,11 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
       ImageOrientation orientation) override;
+
+ private:
+  class SoftwareImageProvider;
+
+  std::unique_ptr<SoftwareImageProvider> image_provider_;
 };
 
 // * Renders to a SharedImage, which manages memory internally.
