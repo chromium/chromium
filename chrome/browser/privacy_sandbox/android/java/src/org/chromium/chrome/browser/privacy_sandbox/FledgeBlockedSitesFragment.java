@@ -105,7 +105,7 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
             FledgePreference preference =
                     new FledgePreference(getContext(), site, mLargeIconBridge);
             preference.setImage(
-                    R.drawable.ic_add,
+                    R.drawable.ic_add_24dp,
                     getResources()
                             .getString(R.string.settings_fledge_page_allow_site_a11y_label, site));
             preference.setDividerAllowedBelow(false);

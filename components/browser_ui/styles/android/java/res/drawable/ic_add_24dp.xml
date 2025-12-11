@@ -8,10 +8,10 @@ found in the LICENSE file.
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24.0"
-    android:viewportHeight="24.0"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
     android:tint="@macro/default_icon_color">
     <path
         android:fillColor="@android:color/white"
-        android:pathData="M19,13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        android:pathData="M440,520L200,520v-80h240v-240h80v240h240v80L520,520v240h-80v-240Z" />
 </vector>

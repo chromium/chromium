@@ -90,7 +90,7 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
         for (Topic topic : blockedTopics) {
             TopicPreference preference = new TopicPreference(getContext(), topic);
             preference.setImage(
-                    R.drawable.ic_add,
+                    R.drawable.ic_add_24dp,
                     getResources()
                             .getString(
                                     R.string.privacy_sandbox_add_interest_button_description,

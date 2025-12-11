@@ -167,7 +167,7 @@ public class ModalDialogViewRenderTest {
                 /* forceWrapContentHeight= */ true);
         final Drawable icon =
                 UiUtils.getTintedDrawable(
-                        sActivity, R.drawable.ic_add, R.color.default_icon_color_tint_list);
+                        sActivity, R.drawable.ic_add_24dp, R.color.default_icon_color_tint_list);
         createModel(
                 mModelBuilder
                         .with(ModalDialogProperties.TITLE, mResources, R.string.title)
@@ -192,7 +192,7 @@ public class ModalDialogViewRenderTest {
         // Load the title icon
         final Drawable icon =
                 UiUtils.getTintedDrawable(
-                        sActivity, R.drawable.ic_add, R.color.default_icon_color_tint_list);
+                        sActivity, R.drawable.ic_add_24dp, R.color.default_icon_color_tint_list);
 
         createModel(
                 mModelBuilder
@@ -466,7 +466,7 @@ public class ModalDialogViewRenderTest {
 
         final Drawable icon1 =
                 UiUtils.getTintedDrawable(
-                        sActivity, R.drawable.ic_add, R.color.default_icon_color_tint_list);
+                        sActivity, R.drawable.ic_add_24dp, R.color.default_icon_color_tint_list);
         final Drawable icon2 =
                 UiUtils.getTintedDrawable(
                         sActivity, R.drawable.ic_globe_24dp, R.color.default_icon_color_tint_list);

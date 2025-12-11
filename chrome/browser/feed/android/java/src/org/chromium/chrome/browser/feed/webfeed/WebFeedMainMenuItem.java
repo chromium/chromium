@@ -205,7 +205,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         showEnabledChipView(
                 mFollowChipView,
                 mContext.getText(R.string.menu_follow),
-                R.drawable.ic_add,
+                R.drawable.ic_add_24dp,
                 (view) -> {
                     Callback<FollowResults> onFollowComplete =
                             result -> {

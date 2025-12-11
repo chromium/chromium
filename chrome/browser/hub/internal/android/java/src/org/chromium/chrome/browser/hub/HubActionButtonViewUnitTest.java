@@ -117,7 +117,7 @@ public class HubActionButtonViewUnitTest {
     private FullButtonData makeTestButtonData() {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
-                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add_24dp);
         return new DelegateButtonData(displayButtonData, mOnButton);
     }
 

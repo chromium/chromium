@@ -16,7 +16,7 @@ found in the LICENSE file.
     android:paddingBottom="@dimen/fast_checkout_detail_sheet_padding_vertical"
     android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1"
     android:textAlignment="viewStart"
-    android:drawableStart="@drawable/ic_add"
+    android:drawableStart="@drawable/ic_add_24dp"
     android:drawablePadding="@dimen/fast_checkout_detail_sheet_footer_icon_margin_horizontal"
     app:drawableWidth="24dp"
     app:drawableHeight="24dp"

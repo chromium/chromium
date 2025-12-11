@@ -22,7 +22,7 @@ found in the LICENSE file.
       android:background="@drawable/list_item_background_bottom">
     <ImageView
         android:id="@+id/favicon"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/ic_add_24dp"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="@dimen/instance_switcher_dialog_favicon_start_margin"
