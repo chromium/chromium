@@ -270,7 +270,8 @@ void GlicE2ETest::MaybeStartWebPageReplayForRecordingPath(
       base::MakeAbsoluteFilePath(root_path.Append(kRecordingDirectoryPath));
   base::FilePath recording_path = recording_dir_path.Append(
       base::FilePath::FromUTF8Unsafe(recording_filename));
-  if (test_mode_ == kReplay) {
+  if (test_mode_ == kReplay ||
+      (test_mode_ == kRealBackend && use_wpr_for_real_backend_)) {
     CHECK(base::PathExists(recording_path))
         << recording_filename << " does not exist.";
   }
