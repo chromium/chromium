@@ -1531,6 +1531,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // Check the max instance count in a day for every state update if needed.
         long timestamp = prefs.readLong(ChromePreferenceKeys.MULTI_INSTANCE_MAX_COUNT_TIME, 0);
         int maxCount = prefs.readInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT, 0);
+        int maxActiveCount =
+                prefs.readInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_ACTIVE_INSTANCE_COUNT, 0);
         int incognitoMaxCount =
                 prefs.readInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT_INCOGNITO, 0);
         long current = System.currentTimeMillis();
@@ -1540,6 +1542,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 RecordHistogram.recordExactLinearHistogram(
                         "Android.MultiInstance.MaxInstanceCount",
                         maxCount,
+                        TabWindowManager.MAX_SELECTORS + 1);
+                RecordHistogram.recordExactLinearHistogram(
+                        "Android.MultiInstance.MaxActiveInstanceCount",
+                        maxActiveCount,
                         TabWindowManager.MAX_SELECTORS + 1);
                 if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
                     RecordHistogram.recordExactLinearHistogram(
@@ -1551,9 +1557,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_MAX_COUNT_TIME, current);
             // Reset the count to 0 to be ready to obtain the max count for the next 24-hour period.
             maxCount = 0;
+            maxActiveCount = 0;
             incognitoMaxCount = 0;
         }
-        // TODO(crbug.com/454366549): Add metric to record the max active instance count.
         int instanceCount =
                 MultiWindowUtils.getInstanceCountWithFallback(
                         MultiInstanceManager.PersistedInstanceType.ANY);
@@ -1561,6 +1567,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ false);
         if (instanceCount > maxCount) {
             prefs.writeInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT, instanceCount);
+        }
+        int activeInstanceCount =
+                MultiWindowUtils.getInstanceCountWithFallback(
+                        MultiInstanceManager.PersistedInstanceType.ACTIVE);
+        if (activeInstanceCount > maxActiveCount) {
+            prefs.writeInt(
+                    ChromePreferenceKeys.MULTI_INSTANCE_MAX_ACTIVE_INSTANCE_COUNT,
+                    activeInstanceCount);
         }
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()
                 && incognitoInstanceCount > incognitoMaxCount) {

@@ -518,6 +518,9 @@ public final class ChromePreferenceKeys {
 
     // Start timestamp of 1-day period for measuring the max count of instances used simultaneously.
     public static final String MULTI_INSTANCE_MAX_COUNT_TIME = "Chrome.MultiInstance.MaxCountTime";
+    // Max count of active Chrome instances used in a day.
+    public static final String MULTI_INSTANCE_MAX_ACTIVE_INSTANCE_COUNT =
+            "Chrome.MultiInstance.MaxActiveInstanceCount";
     // Max count of Chrome instances used in a day.
     public static final String MULTI_INSTANCE_MAX_INSTANCE_COUNT =
             "Chrome.MultiInstance.MaxInstanceCount";
@@ -1238,6 +1241,7 @@ public final class ChromePreferenceKeys {
                 MULTI_INSTANCE_IS_INCOGNITO_SELECTED.pattern(),
                 MULTI_INSTANCE_INCOGNITO_TAB_COUNT.pattern(),
                 MULTI_INSTANCE_MAX_COUNT_TIME,
+                MULTI_INSTANCE_MAX_ACTIVE_INSTANCE_COUNT,
                 MULTI_INSTANCE_MAX_INSTANCE_COUNT,
                 MULTI_INSTANCE_MAX_INSTANCE_COUNT_INCOGNITO,
                 MULTI_INSTANCE_LAST_ACCESSED_TIME.pattern(),
