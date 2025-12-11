@@ -258,9 +258,19 @@ BASE_FEATURE(kNtpTabGroupsModuleZeroState,
              "kNtpTabGroupsModuleZeroState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, stale features will be auto-removed from the NTP.
-BASE_FEATURE(kNtpFeatureOptimization,
-             "kNtpFeatureOptimization",
+// If enabled, stale modules will be auto-removed from the NTP.
+BASE_FEATURE(kNtpFeatureOptimizationModuleRemoval,
+             "kNtpFeatureOptimizationModuleRemoval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, stale shortcuts will be auto-removed from the NTP.
+BASE_FEATURE(kNtpFeatureOptimizationShortcutsRemoval,
+             "kNtpFeatureOptimizationShortcutsRemoval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the dismiss module buttons will be removed from the NTP modules.
+BASE_FEATURE(kNtpFeatureOptimizationDismissModulesRemoval,
+             "kNtpFeatureOptimizationDismissModulesRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kNtpModuleIgnoredCriteriaThreshold[] =
@@ -459,30 +469,24 @@ const base::FeatureParam<size_t> kNtpTabGroupsModuleMaxGroupCountParam(
     "kNtpTabGroupsModuleMaxGroupCountParam",
     4);
 
-const base::FeatureParam<bool> kEnableStaleShortcutsAutoRemoval(
-    &ntp_features::kNtpFeatureOptimization,
-    "EnableStaleShortcutsAutoRemoval",
-    false);
-const base::FeatureParam<bool> kEnableStaleModulesAutoRemoval(
-    &ntp_features::kNtpFeatureOptimization,
-    "EnableStaleModulesAutoRemoval",
-    false);
-const base::FeatureParam<base::TimeDelta> kMinStalenessUpdateTimeInterval(
-    &ntp_features::kNtpFeatureOptimization,
-    "MinStalenessUpdateTimeInterval",
-    base::Days(1));
+const base::FeatureParam<base::TimeDelta>
+    kShortcutsMinStalenessUpdateTimeInterval(
+        &ntp_features::kNtpFeatureOptimizationShortcutsRemoval,
+        "ShortcutsMinStalenessUpdateTimeInterval",
+        base::Days(1));
 const base::FeatureParam<int> kStaleShortcutsCountThreshold(
-    &ntp_features::kNtpFeatureOptimization,
+    &ntp_features::kNtpFeatureOptimizationShortcutsRemoval,
     "StaleShortcutsCountThreshold",
     60);
+
+const base::FeatureParam<base::TimeDelta> kModuleMinStalenessUpdateTimeInterval(
+    &ntp_features::kNtpFeatureOptimizationModuleRemoval,
+    "ModuleMinStalenessUpdateTimeInterval",
+    base::Days(1));
 const base::FeatureParam<int> kStaleModulesCountThreshold(
-    &ntp_features::kNtpFeatureOptimization,
+    &ntp_features::kNtpFeatureOptimizationModuleRemoval,
     "StaleModulesCountThreshold",
     14);
-const base::FeatureParam<bool> kRemoveDismissModules(
-    &ntp_features::kNtpFeatureOptimization,
-    "RemoveDismissModules",
-    false);
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
