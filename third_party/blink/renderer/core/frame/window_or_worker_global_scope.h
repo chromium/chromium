@@ -44,9 +44,6 @@ namespace blink {
 
 class GlobalCrypto;
 
-template <typename T>
-class GlobalFetchImpl;
-
 class CORE_EXPORT WindowOrWorkerGlobalScope : public GarbageCollectedMixin {
  public:
   bool crossOriginIsolated();
@@ -59,24 +56,13 @@ class CORE_EXPORT WindowOrWorkerGlobalScope : public GarbageCollectedMixin {
     global_crypto_ = global_crypto;
   }
 
-  ForwardDeclaredMember<GlobalFetchImpl<WindowOrWorkerGlobalScope>>
-  GetGlobalFetchImpl() const {
-    return global_fetch_impl_;
-  }
-  void SetGlobalFetchImpl(
-      ForwardDeclaredMember<GlobalFetchImpl<WindowOrWorkerGlobalScope>>
-          global_fetch_impl) {
-    global_fetch_impl_ = global_fetch_impl;
-  }
-
   void Trace(Visitor*) const override;
 
+ protected:
   virtual ExecutionContext* GetExecutionContext() const = 0;
 
  private:
   ForwardDeclaredMember<GlobalCrypto> global_crypto_;
-  ForwardDeclaredMember<GlobalFetchImpl<WindowOrWorkerGlobalScope>>
-      global_fetch_impl_;
 };
 
 }  // namespace blink

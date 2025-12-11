@@ -81,6 +81,8 @@ class WorkerPerformance;
 class FontFaceSetWorker;
 
 template <typename T>
+class GlobalFetchImpl;
+template <typename T>
 class GlobalCacheStorageImpl;
 template <typename T>
 class GlobalCookieStoreImpl;
@@ -283,6 +285,16 @@ class CORE_EXPORT WorkerGlobalScope
     return top_level_frame_security_origin_.get();
   }
 
+  ForwardDeclaredMember<GlobalFetchImpl<WorkerGlobalScope>> GetGlobalFetchImpl()
+      const {
+    return global_fetch_impl_;
+  }
+  void SetGlobalFetchImpl(
+      ForwardDeclaredMember<GlobalFetchImpl<WorkerGlobalScope>>
+          global_fetch_impl) {
+    global_fetch_impl_ = global_fetch_impl;
+  }
+
   ForwardDeclaredMember<GlobalCacheStorageImpl<WorkerGlobalScope>>
   GetGlobalCacheStorageImpl() const {
     return global_cache_storage_impl_;
@@ -445,6 +457,7 @@ class CORE_EXPORT WorkerGlobalScope
   // origin.
   scoped_refptr<const SecurityOrigin> top_level_frame_security_origin_;
 
+  ForwardDeclaredMember<GlobalFetchImpl<WorkerGlobalScope>> global_fetch_impl_;
   ForwardDeclaredMember<GlobalCacheStorageImpl<WorkerGlobalScope>>
       global_cache_storage_impl_;
   ForwardDeclaredMember<GlobalCookieStoreImpl<WorkerGlobalScope>>

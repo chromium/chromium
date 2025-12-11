@@ -143,6 +143,8 @@ class WindowScreenDetails;
 class WindowSharedStorageImpl;
 
 template <typename T>
+class GlobalFetchImpl;
+template <typename T>
 class GlobalCacheStorageImpl;
 template <typename T>
 class GlobalCookieStoreImpl;
@@ -612,6 +614,15 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   }
 
   void requestResize(ExceptionState&);
+
+  ForwardDeclaredMember<GlobalFetchImpl<LocalDOMWindow>> GetGlobalFetchImpl()
+      const {
+    return global_fetch_impl_;
+  }
+  void SetGlobalFetchImpl(ForwardDeclaredMember<GlobalFetchImpl<LocalDOMWindow>>
+                              global_fetch_impl) {
+    global_fetch_impl_ = global_fetch_impl;
+  }
 
   ForwardDeclaredMember<GlobalCacheStorageImpl<LocalDOMWindow>>
   GetGlobalCacheStorageImpl() const {
@@ -1117,6 +1128,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   Member<SoftNavigationHeuristics> soft_navigation_heuristics_;
 
+  ForwardDeclaredMember<GlobalFetchImpl<LocalDOMWindow>> global_fetch_impl_;
   ForwardDeclaredMember<GlobalCacheStorageImpl<LocalDOMWindow>>
       global_cache_storage_impl_;
   ForwardDeclaredMember<GlobalCookieStoreImpl<LocalDOMWindow>>
