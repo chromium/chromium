@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.preference.Preference;
@@ -23,6 +24,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /**
  * Fragment to manage the Contextual Search Settings in Chrome Settings, and to explain to the user
@@ -74,6 +76,7 @@ public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment
                     ContextualSearchPolicy.setContextualSearchState(profile, (boolean) newValue);
                     ContextualSearchUma.logMainPreferenceChange((boolean) newValue);
                     seeBetterResultsSwitch.setVisible((boolean) newValue);
+                    updateSeeBetterResultsVisibility((boolean) newValue);
                     return true;
                 });
 
@@ -106,5 +109,36 @@ public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     ContextualSearchSettingsFragment.class.getName(),
-                    R.xml.contextual_search_preferences);
+                    R.xml.contextual_search_preferences) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    indexData.removeEntry(getUniqueId(PREF_CONTEXTUAL_SEARCH_DESCRIPTION));
+
+                    if (ContextualSearchPolicy.isContextualSearchDisabled(profile)) {
+                        indexData.removeEntry(getUniqueId(PREF_WAS_FULLY_ENABLED_SWITCH));
+                    }
+                }
+            };
+
+    private static void updateSeeBetterResultsVisibility(boolean isVisible) {
+        SettingsIndexData indexData = SettingsIndexData.getInstance();
+        if (indexData == null) return;
+
+        String prefFrag = ContextualSearchSettingsFragment.class.getName();
+
+        if (isVisible) {
+            indexData.addEntryForKey(
+                    prefFrag,
+                    PREF_WAS_FULLY_ENABLED_SWITCH,
+                    R.string.contextual_search_see_better_results_title);
+            indexData.updateEntrySummaryForKey(
+                    prefFrag,
+                    PREF_WAS_FULLY_ENABLED_SWITCH,
+                    R.string.contextual_search_see_better_results_summary);
+            indexData.resolveIndex();
+        } else {
+            indexData.removeEntryForKey(prefFrag, PREF_WAS_FULLY_ENABLED_SWITCH);
+        }
+    }
 }

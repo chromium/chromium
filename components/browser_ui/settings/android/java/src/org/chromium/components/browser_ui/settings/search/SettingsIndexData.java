@@ -307,6 +307,24 @@ public class SettingsIndexData {
     }
 
     /**
+     * Updates the summary of the entry.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param summaryId String resource ID of the summary. * @throws IllegalStateException If a
+     *     preference with the same key does not exist in the index.
+     */
+    public void updateEntrySummaryForKey(String prefFragment, String key, int summaryId) {
+        String id = PreferenceParser.createUniqueId(prefFragment, key);
+        var entry = getEntry(id);
+        if (entry == null) {
+            throw new IllegalStateException("Existing ID cannot be found: " + id);
+        }
+        String summary = ContextUtils.getApplicationContext().getString(summaryId);
+        updateEntry(id, new Entry.Builder(entry).setSummary(summary).build());
+    }
+
+    /**
      * Removes a preference entry from the index.
      *
      * <p>This method should be used when a link to a fragment is being hidden from one screen, but
