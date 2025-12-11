@@ -283,7 +283,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                     @SuppressLint("ClickableViewAccessibility")
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN) return false;
+                        if (event.getAction() != MotionEvent.ACTION_UP) return false;
                         assert mMediator != null;
                         mMediator.setUserToggleHeaderAsOverlay(
                                 !mMediator.getUserToggleHeaderAsOverlay());
@@ -450,13 +450,18 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
     List<Rect> collectControlPositions() {
         assert mView != null;
 
+        View relativeLayout = mView.findViewById(R.id.web_app_header_relative);
         final var areas = new ArrayList<Rect>();
         if (mReloadButtonCoordinator != null && mReloadButtonCoordinator.isVisible()) {
-            areas.add(mReloadButtonCoordinator.getHitRect());
+            Rect rect = mReloadButtonCoordinator.getHitRect();
+            mView.offsetDescendantRectToMyCoords(relativeLayout, rect);
+            areas.add(rect);
         }
 
         if (mBackButtonCoordinator != null && mBackButtonCoordinator.isVisible()) {
-            areas.add(mBackButtonCoordinator.getHitRect());
+            Rect rect = mBackButtonCoordinator.getHitRect();
+            mView.offsetDescendantRectToMyCoords(relativeLayout, rect);
+            areas.add(rect);
         }
 
         // getHitRect() provides coordinates relative to its parent View. Use
@@ -464,8 +469,6 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         View rightAlignedWrapper = mView.findViewById(R.id.right_aligned_wrapper);
         if (mMenuButtonCoordinator != null && mMenuButtonCoordinator.isVisible()) {
             Rect rect = mMenuButtonCoordinator.getHitRect();
-            View menuDescendent = mView.findViewById(R.id.menu_button_wrapper);
-            mView.offsetDescendantRectToMyCoords(menuDescendent, rect);
             mView.offsetDescendantRectToMyCoords(rightAlignedWrapper, rect);
             areas.add(rect);
         }

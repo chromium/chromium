@@ -16,6 +16,7 @@ found in the LICENSE file.
     android:outlineProvider="none" >
 
     <RelativeLayout
+        android:id="@+id/web_app_header_relative"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/web_app_header_min_height">
