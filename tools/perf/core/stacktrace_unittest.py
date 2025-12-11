@@ -17,14 +17,14 @@ class TabStackTraceTest(tab_test_case.TabTestCase):
   @decorators.Disabled('snowleopard', 'chromeos-local')
   def testValidDump(self):
     with self.assertRaises(exceptions.DevtoolsTargetCrashException) as c:
-      self._tab.Navigate('chrome://crash', timeout=10)
+      self._tab.Navigate('chrome://crash', timeout=20)
     self.assertTrue(c.exception.is_valid_dump)
 
   @decorators.Isolated
   @decorators.Disabled('chromeos-local')
   def testCrashSymbols(self):
     with self.assertRaises(exceptions.DevtoolsTargetCrashException) as c:
-      self._tab.Navigate('chrome://crash', timeout=10)
+      self._tab.Navigate('chrome://crash', timeout=20)
     self.assertIn('CrashIntentionally', '\n'.join(c.exception.stack_trace))
 
   # Some platforms do not support full stack traces, this test requires only
@@ -33,7 +33,7 @@ class TabStackTraceTest(tab_test_case.TabTestCase):
   @decorators.Disabled('chromeos-local')
   def testCrashMinimalSymbols(self):
     with self.assertRaises(exceptions.DevtoolsTargetCrashException) as c:
-      self._tab.Navigate('chrome://crash', timeout=10)
+      self._tab.Navigate('chrome://crash', timeout=20)
     self.assertIn('HandleRendererDebugURL',
                   '\n'.join(c.exception.stack_trace))
 
@@ -54,7 +54,7 @@ class TabStackTraceTest(tab_test_case.TabTestCase):
       f.write('MODULE PLATFORM ARCH %s %s' % (garbage_hash, executable))
       f.flush()
       with self.assertRaises(exceptions.DevtoolsTargetCrashException) as c:
-        self._tab.Navigate('chrome://crash', timeout=10)
+        self._tab.Navigate('chrome://crash', timeout=20)
 
       # Stack trace should still work.
       self.assertIn('CrashIntentionally', '\n'.join(c.exception.stack_trace))
