@@ -36,7 +36,8 @@ class MODULES_EXPORT PaintWorkletProxyClient
     : public GarbageCollected<PaintWorkletProxyClient>,
       public PaintWorkletPainter {
  public:
-  // Hook to etrieve the PaintWorkletProxyClient for a given WorkerClients.
+  // blink::Supplement hook to retrieve the PaintWorkletProxyClient for a given
+  // WorkerClients.
 
   static PaintWorkletProxyClient* From(WorkerClients*);
 
