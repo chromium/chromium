@@ -87,7 +87,7 @@ void ContextualCueingPageData::FindMatchingConfig() {
   bool needs_pdf_page_count = false;
   bool needs_page_content = false;
   for (const auto& config : metadata_.cueing_configurations()) {
-    if (!config.has_cue_label()) {
+    if (!config.has_cue_label() && !config.has_dynamic_cue_label()) {
       continue;
     }
     auto decision = DidMatchCueingConditions(config);
@@ -97,13 +97,14 @@ void ContextualCueingPageData::FindMatchingConfig() {
             .Run(base::ok(CueingResult{config.dynamic_cue_label(),
                                        config.default_text(),
                                        /*is_dynamic=*/true}));
-      } else {
+        return;
+      } else if (config.has_cue_label()) {
         std::move(cueing_decision_callback_)
             .Run(base::ok(CueingResult{config.cue_label(),
                                        /*prompt_suggestion=*/"",
                                        /*is_dynamic=*/false}));
+        return;
       }
-      return;
     } else if (decision == kNeedsPdfPageCount) {
       needs_pdf_page_count = true;
     } else if (decision == kNeedsPageContent) {
