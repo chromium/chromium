@@ -23,7 +23,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.tab.TabArchiver.Observer;
@@ -240,23 +239,18 @@ public class TabArchiverImpl implements TabArchiver {
             tabs.add(tab);
         }
 
-        final boolean tabGroupDeclutterEnabled =
-                ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled();
-        final int autodeleteTaskCount = tabGroupDeclutterEnabled ? 2 : 1;
+        final int autodeleteTaskCount = 2;
         final AtomicInteger autodeleteTasksRemaining = new AtomicInteger(autodeleteTaskCount);
 
         deleteArchivedTabsIfEligibleAsync(tabs, startTimeMs, autodeleteTasksRemaining);
 
-        if (tabGroupDeclutterEnabled) {
-            for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
-                SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
-                if (savedTabGroup != null && savedTabGroup.archivalTimeMs != null) {
-                    tabGroups.add(savedTabGroup);
-                }
+        for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
+            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
+            if (savedTabGroup != null && savedTabGroup.archivalTimeMs != null) {
+                tabGroups.add(savedTabGroup);
             }
-            deleteArchivedTabGroupsIfEligibleAsync(
-                    tabGroups, startTimeMs, autodeleteTasksRemaining);
         }
+        deleteArchivedTabGroupsIfEligibleAsync(tabGroups, startTimeMs, autodeleteTasksRemaining);
     }
 
     @Override
@@ -272,8 +266,7 @@ public class TabArchiverImpl implements TabArchiver {
         for (Tab tab : tabs) {
             // Do not add tabs that are part of tab groups to the archived tab model.
             @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
-                    && tabGroupId != null) {
+            if (tabGroupId != null) {
                 archivedTabGroupIds.add(tabGroupId);
                 continue;
             }
@@ -285,8 +278,7 @@ public class TabArchiverImpl implements TabArchiver {
             singleTabsToClose.add(tab);
         }
 
-        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
-                && mTabGroupSyncService != null) {
+        if (mTabGroupSyncService != null) {
             int archivedTabGroups = 0;
             for (Token tabGroupId : archivedTabGroupIds) {
                 LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
@@ -310,18 +302,16 @@ public class TabArchiverImpl implements TabArchiver {
                 .closeTabs(
                         TabClosureParams.closeTabs(singleTabsToClose).allowUndo(false).build(),
                         /* allowDialog= */ false);
-        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
-            for (Token tabGroupId : archivedTabGroupIds) {
-                tabModel.getTabRemover()
-                        .closeTabs(
-                                assumeNonNull(
-                                                TabClosureParams.forCloseTabGroup(
-                                                        regularTabGroupModelFilter, tabGroupId))
-                                        .hideTabGroups(true)
-                                        .allowUndo(false)
-                                        .build(),
-                                /* allowDialog= */ false);
-            }
+        for (Token tabGroupId : archivedTabGroupIds) {
+            tabModel.getTabRemover()
+                    .closeTabs(
+                            assumeNonNull(
+                                            TabClosureParams.forCloseTabGroup(
+                                                    regularTabGroupModelFilter, tabGroupId))
+                                    .hideTabGroups(true)
+                                    .allowUndo(false)
+                                    .build(),
+                            /* allowDialog= */ false);
         }
 
         RecordHistogram.recordCount1000Histogram("Tabs.TabArchived.TabCount", tabCount);
@@ -529,22 +519,18 @@ public class TabArchiverImpl implements TabArchiver {
             Map<Token, Boolean> groupIdToArchiveEligibilityMap,
             Map<GURL, Long> tabUrlToLastActiveTimestampMap,
             Tab tab) {
-        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
-            // Create a map between group id tokens and their archive eligibility. If a group has
-            // not been checked yet, check all related tabs and assign a status so that tabs with
-            // that group id token can be bypassed in future iterations of this checking cycle.
-            Token tabGroupId = tab.getTabGroupId();
-            if (groupIdToArchiveEligibilityMap.containsKey(tabGroupId)) {
-                return groupIdToArchiveEligibilityMap.get(tabGroupId);
-            } else {
-                boolean isTabGroupEligibleForArchive =
-                        isTabGroupEligibleForArchive(
-                                regularTabGroupModelFilter, tabUrlToLastActiveTimestampMap, tab);
-                groupIdToArchiveEligibilityMap.put(tabGroupId, isTabGroupEligibleForArchive);
-                return isTabGroupEligibleForArchive;
-            }
+        // Create a map between group id tokens and their archive eligibility. If a group has
+        // not been checked yet, check all related tabs and assign a status so that tabs with
+        // that group id token can be bypassed in future iterations of this checking cycle.
+        Token tabGroupId = tab.getTabGroupId();
+        if (groupIdToArchiveEligibilityMap.containsKey(tabGroupId)) {
+            return groupIdToArchiveEligibilityMap.get(tabGroupId);
         } else {
-            return false;
+            boolean isTabGroupEligibleForArchive =
+                    isTabGroupEligibleForArchive(
+                            regularTabGroupModelFilter, tabUrlToLastActiveTimestampMap, tab);
+            groupIdToArchiveEligibilityMap.put(tabGroupId, isTabGroupEligibleForArchive);
+            return isTabGroupEligibleForArchive;
         }
     }
 
@@ -717,9 +703,6 @@ public class TabArchiverImpl implements TabArchiver {
     // Determine if the user was active during the declutter inactivity period by checking all tabs
     // in the tab model to see if the youngest tab is outside of that threshold.
     private boolean isUserActive(TabModel model) {
-        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
-            return true;
-        }
 
         long lastActiveTabTimestamp = 0L;
         for (Tab tab : model) {

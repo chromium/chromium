@@ -30,7 +30,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
@@ -670,12 +669,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         if (tab == null) return false;
 
         Token groupId = tab.getTabGroupId();
-
-        // Tab groups can only be archived when this feature is enabled.
-        if (groupId != null
-                && !ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
-            return false;
-        }
 
         // Check if the tab is in a shared group.
         return groupId == null || !hasCollaboration(tabToBeArchived);

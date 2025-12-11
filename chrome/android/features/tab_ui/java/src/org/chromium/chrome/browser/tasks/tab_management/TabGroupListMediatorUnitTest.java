@@ -879,10 +879,7 @@ public class TabGroupListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.DATA_SHARING,
-        ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS
-    })
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testTabGroupRemovedMessageCardsAndTabGroupsOrdering_ByRecency() {
         List<PersistentMessage> messageList =
                 List.of(

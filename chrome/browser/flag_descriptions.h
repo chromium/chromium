@@ -4956,11 +4956,6 @@ inline constexpr char kAndroidSurfaceColorUpdateName[] =
 inline constexpr char kAndroidSurfaceColorUpdateDescription[] =
     "If enabled, updates the android surface colors for toolbar/omnibox.";
 
-inline constexpr char kAndroidTabDeclutterArchiveTabGroupsName[] =
-    "Archive all inactive tab groups.";
-inline constexpr char kAndroidTabDeclutterArchiveTabGroupsDescription[] =
-    "Enables auto-archival of inactive tab groups and their inactive tabs.";
-
 inline constexpr char kAndroidTabDeclutterPerformanceImprovementsName[] =
     "Android Tab Declutter performance improvements";
 inline constexpr char kAndroidTabDeclutterPerformanceImprovementsDescription[] =

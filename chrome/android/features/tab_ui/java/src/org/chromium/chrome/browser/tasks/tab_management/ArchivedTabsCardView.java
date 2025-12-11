@@ -20,7 +20,6 @@ import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -139,10 +138,6 @@ public class ArchivedTabsCardView extends FrameLayout {
     /** Sets the subtitle text based on the archive time delta. */
     private void setSubtitleText() {
         mSubtitleView.setText(
-                getResources()
-                        .getString(
-                                ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
-                                        ? R.string.archived_tab_card_subtitle_with_tab_groups
-                                        : R.string.archived_tab_card_subtitle));
+                getResources().getString(R.string.archived_tab_card_subtitle_with_tab_groups));
     }
 }

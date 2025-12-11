@@ -301,11 +301,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         } else {
             rescueArchivedTabs(orchestrator);
         }
-
-        // If the flag is turned off, clear all {@link SavedTabGroup}s of possible archived status.
-        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
-            rescueArchivedTabGroups();
-        }
     }
 
     /** Unregisters an orchestrator when it's destroyed. */

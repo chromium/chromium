@@ -44,7 +44,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -953,10 +952,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                 R.string.archived_tab_iph_card_subtitle_autodelete_section,
                                 autoDeleteTimeDeltaMonths)
                         : "";
-        int iphCardSubtitleRes =
-                ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
-                        ? R.string.archived_tab_iph_card_subtitle_with_tab_groups
-                        : R.string.archived_tab_iph_card_subtitle;
+        int iphCardSubtitleRes = R.string.archived_tab_iph_card_subtitle_with_tab_groups;
         String description =
                 context.getString(
                         iphCardSubtitleRes, archiveTimeDeltaDays, autoDeleteTitle, settingsTitle);
@@ -973,8 +969,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     private List<String> getArchivedTabGroupSyncIds() {
-        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
-                || mTabGroupSyncService == null) {
+        if (mTabGroupSyncService == null) {
             return Collections.emptyList();
         }
 

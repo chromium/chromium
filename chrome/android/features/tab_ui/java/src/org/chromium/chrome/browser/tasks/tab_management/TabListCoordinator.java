@@ -310,24 +310,22 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         return group;
                     },
                     TabGridViewBinder::bindTab);
-            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
-                // If the need arises based on diverging functionality between tabs and tab
-                // groups, an alternative view binder and model can be implemented.
-                mAdapter.registerType(
-                        UiType.TAB_GROUP,
-                        parent -> {
-                            ViewGroup group =
-                                    (ViewGroup)
-                                            LayoutInflater.from(activity)
-                                                    .inflate(
-                                                            R.layout.tab_grid_card_item,
-                                                            parentView,
-                                                            false);
-                            group.setClickable(true);
-                            return group;
-                        },
-                        TabGridViewBinder::bindTab);
-            }
+            // If the need arises based on diverging functionality between tabs and tab
+            // groups, an alternative view binder and model can be implemented.
+            mAdapter.registerType(
+                    UiType.TAB_GROUP,
+                    parent -> {
+                        ViewGroup group =
+                                (ViewGroup)
+                                        LayoutInflater.from(activity)
+                                                .inflate(
+                                                        R.layout.tab_grid_card_item,
+                                                        parentView,
+                                                        false);
+                        group.setClickable(true);
+                        return group;
+                    },
+                    TabGridViewBinder::bindTab);
 
             recyclerListener =
                     (holder) -> {
