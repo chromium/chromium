@@ -14,7 +14,9 @@ import android.app.KeyguardManager;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +27,9 @@ import org.robolectric.shadows.ShadowKeyguardManager;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowNotification;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.ScreenOffBroadcastReceiver;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
@@ -68,6 +73,17 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
                         RuntimeEnvironment.getApplication()
                                 .getSystemService(Context.KEYGUARD_SERVICE);
         mShadowKeyguardManager = Shadows.shadowOf(keyguardManager);
+
+        ScreenOffBroadcastReceiver.getInstance();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+    }
+
+    @After
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        ScreenOffBroadcastReceiver.resetForTesting();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
     }
 
     @Test
@@ -163,7 +179,8 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
     private void simulateScreenLock() {
         // Simulate the system state for screen off/locked
         mShadowKeyguardManager.setKeyguardLocked(true);
-        MediaSessionHelper.simulateScreenOffForTesting();
+        ContextUtils.getApplicationContext().sendBroadcast(new Intent(Intent.ACTION_SCREEN_OFF));
+        Shadows.shadowOf(Looper.getMainLooper()).runToEndOfTasks();
         ShadowLooper.idleMainLooper();
     }
 

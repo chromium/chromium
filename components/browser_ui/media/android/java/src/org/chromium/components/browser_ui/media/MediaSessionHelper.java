@@ -8,10 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.Build;
@@ -19,13 +17,11 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ObserverList;
+import org.chromium.base.ScreenOffBroadcastReceiver;
 import org.chromium.base.SysUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -91,71 +87,18 @@ public class MediaSessionHelper implements MediaImageCallback {
     // static getter {@link MediaSession#fromWebContents()}.
     @VisibleForTesting public static @Nullable MediaSession sOverriddenMediaSession;
 
-    private interface ScreenOffObserver {
-        void onScreenOff();
-    }
-
-    private final ScreenOffObserver mScreenOffObserver =
-            new ScreenOffObserver() {
-                @Override
-                public void onScreenOff() {
-                    if (mHideNotificationDelayedTask != null) {
-                        hideNotificationImmediately();
-                    }
+    // Used to hide the notification immediately when the screen is turned off, if we are currently
+    // waiting to hide it (e.g. because the media became uncontrollable).
+    // This is safe to do because `mHideNotificationDelayedTask` is cleared whenever we show a new
+    // notification or if the media becomes controllable again. Thus, if
+    // `mHideNotificationDelayedTask` is non-null here, we know for sure that we are still in the
+    // "waiting to hide" state for this specific session and it hasn't recovered.
+    private final ScreenOffBroadcastReceiver.ScreenOffListener mHideNotificationOnScreenOff =
+            (context, intent) -> {
+                if (mHideNotificationDelayedTask != null) {
+                    hideNotificationImmediately();
                 }
             };
-
-    /**
-     * Manages a single static BroadcastReceiver for ACTION_SCREEN_OFF and dispatches events to
-     * registered ScreenOffObservers.
-     *
-     * <p>The underlying ObserverList is not thread-safe and asserts that all its methods are called
-     * on the thread it was created on (i.e., the main thread).
-     */
-    private static class ScreenOffReceiverManager {
-        private static final ObserverList<ScreenOffObserver> sScreenOffObservers =
-                new ObserverList<>();
-
-        private static final BroadcastReceiver sScreenOffReceiver =
-                new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
-                            for (ScreenOffObserver observer : sScreenOffObservers) {
-                                observer.onScreenOff();
-                            }
-                        }
-                    }
-                };
-
-        /**
-         * Adds an observer to the list. The BroadcastReceiver will be registered when the first
-         * observer is added. Must be called on the main thread.
-         */
-        @MainThread
-        public static void addObserver(ScreenOffObserver observer) {
-            ThreadUtils.assertOnUiThread();
-            if (sScreenOffObservers.isEmpty()) {
-                ContextUtils.registerProtectedBroadcastReceiver(
-                        ContextUtils.getApplicationContext(),
-                        sScreenOffReceiver,
-                        new IntentFilter(Intent.ACTION_SCREEN_OFF));
-            }
-            sScreenOffObservers.addObserver(observer);
-        }
-
-        /**
-         * Removes an observer from the list. The BroadcastReceiver will be unregistered when the
-         * last observer is removed. Must be called on the main thread.
-         */
-        @MainThread
-        public static void removeObserver(ScreenOffObserver observer) {
-            ThreadUtils.assertOnUiThread();
-            if (sScreenOffObservers.removeObserver(observer) && sScreenOffObservers.isEmpty()) {
-                ContextUtils.getApplicationContext().unregisterReceiver(sScreenOffReceiver);
-            }
-        }
-    }
 
     private final MediaNotificationListener mControlsListener =
             new MediaNotificationListener() {
@@ -506,7 +449,7 @@ public class MediaSessionHelper implements MediaImageCallback {
             mPreviousVolumeControlStream = activity.getVolumeControlStream();
         }
 
-        ScreenOffReceiverManager.addObserver(mScreenOffObserver);
+        ScreenOffBroadcastReceiver.addListener(mHideNotificationOnScreenOff);
     }
 
     /**
@@ -520,14 +463,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         mWebContentsObserver = null;
         if (mLargeIconBridge != null) mLargeIconBridge.destroy();
         mLargeIconBridge = null;
-        ScreenOffReceiverManager.removeObserver(mScreenOffObserver);
-    }
-
-    public static void simulateScreenOffForTesting() {
-        ThreadUtils.assertOnUiThread();
-        for (ScreenOffObserver observer : ScreenOffReceiverManager.sScreenOffObservers) {
-            observer.onScreenOff();
-        }
+        ScreenOffBroadcastReceiver.removeListener(mHideNotificationOnScreenOff);
     }
 
     /**
