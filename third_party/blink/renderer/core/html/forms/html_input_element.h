@@ -133,7 +133,6 @@ class CORE_EXPORT HTMLInputElement
       bool,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       WebAutofillState = WebAutofillState::kNotFilled);
-  void DispatchChangeEventIfNeeded();
   void DispatchInputAndChangeEventIfNeeded();
 
   // 'indeterminate' is a state independent of the checked state that causes the

@@ -1084,11 +1084,6 @@ bool HTMLInputElement::HasBeenPasswordField() const {
   return has_been_password_field_;
 }
 
-void HTMLInputElement::DispatchChangeEventIfNeeded() {
-  if (isConnected() && input_type_->ShouldSendChangeEventAfterCheckedChanged())
-    DispatchChangeEvent();
-}
-
 void HTMLInputElement::DispatchInputAndChangeEventIfNeeded() {
   if (isConnected() &&
       input_type_->ShouldSendChangeEventAfterCheckedChanged()) {
