@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event_controller.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -292,8 +293,9 @@ WorkerSettings* WorkerFetchContext::GetWorkerSettings() const {
   return scope ? scope->GetWorkerSettings() : nullptr;
 }
 
-bool WorkerFetchContext::AllowRunningInsecureContent(bool enabled_per_settings,
-                                                     const KURL& url) const {
+bool WorkerFetchContext::AllowRunningInsecureContent(
+    bool enabled_per_settings,
+    const KURL& url) const {
   if (!global_scope_->ContentSettingsClient())
     return enabled_per_settings;
   return global_scope_->ContentSettingsClient()->AllowRunningInsecureContent(

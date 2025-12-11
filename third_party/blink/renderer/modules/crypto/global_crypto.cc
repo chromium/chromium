@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/crypto/crypto.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 

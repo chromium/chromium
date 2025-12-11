@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "ui/display/mojom/screen_orientation.mojom-blink.h"
 #include "ui/gfx/geometry/rect.h"
 

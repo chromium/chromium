@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/script_tools/model_context.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_testing.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
