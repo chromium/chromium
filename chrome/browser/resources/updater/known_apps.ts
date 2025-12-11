@@ -25,9 +25,11 @@ export function getKnownApps(): Map<string, string[]> {
 }
 
 /**
- * Produces a map of app IDs to app names.
+ * Produces a map of app IDs to app names as the inverse of getKnownApps.
  */
-export function getKnownAppNamesById() {
-  return new Map<string, string>([...getKnownApps().entries()].flatMap(
-      ([appName, appIds]) => appIds.map((appId) => [appId, appName])));
+export function getKnownAppNamesById(): Map<string, string> {
+  return new Map<string, string>(
+      Array.from(getKnownApps().entries())
+          .flatMap(
+              ([appName, appIds]) => appIds.map(appId => [appId, appName])));
 }

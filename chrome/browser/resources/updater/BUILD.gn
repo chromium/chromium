@@ -18,16 +18,19 @@ build_webui("build") {
     "app.html.ts",
     "app.ts",
     "event_history.ts",
-    "known_apps.ts",
     "event_list/filter_bar.html.ts",
     "event_list/filter_bar.ts",
+    "event_list/filter_dialog.html.ts",
+    "event_list/filter_dialog.ts",
     "event_list/raw_event_details.html.ts",
     "event_list/raw_event_details.ts",
     "icons.html.ts",
+    "known_apps.ts",
   ]
   css_files = [
     "app.css",
     "event_list/filter_bar.css",
+    "event_list/filter_dialog.css",
     "event_list/raw_event_details.css",
   ]
 

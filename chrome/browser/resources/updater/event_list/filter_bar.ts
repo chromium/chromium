@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './filter_dialog.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
@@ -11,15 +12,18 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '../icons.html.js';
 
-import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {assertNotReachedCase} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {localizeEventType, localizeUpdateOutcome} from '../event_history.js';
 import type {CommonUpdateOutcome, EventType} from '../event_history.js';
 
 import {getCss} from './filter_bar.css.js';
 import {getHtml} from './filter_bar.html.js';
+import type {FilterMenuState} from './filter_dialog.js';
 
 const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
   year: 'numeric',
@@ -40,7 +44,27 @@ export interface FilterSettings {
   endDateFilter: Date|null;
 }
 
-export type FilterCategory = 'app'|'event'|'outcome'|'date';
+export enum FilterCategory {
+  APP = 'app',
+  EVENT = 'event',
+  OUTCOME = 'outcome',
+  DATE = 'date',
+}
+
+/**
+ * Returns the filter category associated with an element via the
+ * data-filter-category property.
+ */
+export function getFilterCategoryForTarget(target: HTMLElement):
+    FilterCategory {
+  return target.dataset['filterCategory'] as FilterCategory;
+}
+
+export interface FilterBarElement {
+  $: {
+    filterBarInputContainer: HTMLElement,
+  };
+}
 
 export class FilterBarElement extends CrLitElement {
   static get is() {
@@ -61,15 +85,11 @@ export class FilterBarElement extends CrLitElement {
       filterOrder: {type: Array},
       filterMenuState: {type: String},
       menuHost: {type: String},
-      appSearch: {type: String},
-      pendingAppSelections: {type: Object},
-      pendingEventTypeSelections: {type: Object},
-      pendingUpdateOutcomeSelections: {type: Object},
-      pendingStartDateFilter: {type: Object},
-      pendingEndDateFilter: {type: Object},
       focusReturnElement: {type: Object},
     };
   }
+
+  private eventTracker: EventTracker = new EventTracker();
 
   accessor filterSettings: FilterSettings = {
     activeAppFilters: (() => {
@@ -86,248 +106,197 @@ export class FilterBarElement extends CrLitElement {
     startDateFilter: null,
     endDateFilter: null,
   };
-  accessor filterOrder: FilterCategory[] = [];
-  accessor filterMenuState: 'closed'|'type'|'app'|'event'|'date'|'outcome' =
-      'closed';
-  accessor menuHost: 'chip'|'input' = 'input';
-  accessor appSearch = '';
-  accessor pendingAppSelections = new Set<string>();
-  accessor pendingEventTypeSelections = new Set<EventType>();
-  accessor pendingUpdateOutcomeSelections = new Set<CommonUpdateOutcome>();
-  accessor pendingStartDateFilter: Date|null = null;
-  accessor pendingEndDateFilter: Date|null = null;
-  accessor focusReturnElement: HTMLElement|null = null;
+  protected accessor filterOrder: FilterCategory[] = [];
+  protected accessor filterMenuState: FilterMenuState = 'closed';
+  protected accessor menuHost: 'chip'|'input' = 'input';
 
-  openFilterMenu() {
-    if (this.menuHost === 'input' && this.filterMenuState !== 'closed') {
+  private accessor focusReturnElement: HTMLElement|null = null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.eventTracker.add(document, 'click', (e: MouseEvent) => {
+      if (this.filterMenuState === 'closed') {
+        return;
+      }
+      const path = e.composedPath() as Array<EventTarget|HTMLElement>;
+      if (path.some(el => el === this.$.filterBarInputContainer)) {
+        return;
+      }
+      if (path.some(el => {
+            return el instanceof HTMLElement &&
+                (el.classList.contains('chip') ||
+                 el.tagName === 'FILTER-DIALOG');
+          })) {
+        return;
+      }
       this.closeFilterMenu();
-      return;
+    });
+    if (this.filterOrder.length === 0) {
+      const initialFilterOrder: FilterCategory[] = [];
+      if (this.filterSettings.activeAppFilters.size > 0) {
+        initialFilterOrder.push(FilterCategory.APP);
+      }
+      if (this.filterSettings.activeEventTypeFilters.size > 0) {
+        initialFilterOrder.push(FilterCategory.DATE);
+      }
+      if (this.filterSettings.activeUpdateOutcomeFilters.size > 0) {
+        initialFilterOrder.push(FilterCategory.EVENT);
+      }
+      if (this.filterSettings.startDateFilter ||
+          this.filterSettings.endDateFilter) {
+        initialFilterOrder.push(FilterCategory.DATE);
+      }
+      this.filterOrder = initialFilterOrder;
     }
-    this.focusReturnElement = this.shadowRoot.activeElement as HTMLElement;
-    this.menuHost = 'input';
-    this.filterMenuState = 'type';
-    this.appSearch = '';
-    this.pendingAppSelections = new Set<string>();
-    this.pendingEventTypeSelections = new Set<EventType>();
-    this.pendingUpdateOutcomeSelections = new Set<CommonUpdateOutcome>();
   }
 
-  closeFilterMenu() {
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker.removeAll();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('filterSettings')) {
+      this.updateFilterOrder(
+          FilterCategory.APP, this.filterSettings.activeAppFilters.size > 0);
+      this.updateFilterOrder(
+          FilterCategory.EVENT,
+          this.filterSettings.activeEventTypeFilters.size > 0);
+      this.updateFilterOrder(
+          FilterCategory.OUTCOME,
+          this.filterSettings.activeUpdateOutcomeFilters.size > 0);
+      this.updateFilterOrder(
+          FilterCategory.DATE,
+          !!(this.filterSettings.startDateFilter ||
+             this.filterSettings.endDateFilter));
+    }
+  }
+
+
+  protected async onRemoveFilterClick(e: Event) {
+    const category = getFilterCategoryForTarget(e.target as HTMLElement);
+    this.updateFilterOrder(category, false);
+    switch (category) {
+      case FilterCategory.APP:
+        this.filterSettings.activeAppFilters.clear();
+        break;
+      case FilterCategory.EVENT:
+        this.filterSettings.activeEventTypeFilters.clear();
+        break;
+      case FilterCategory.OUTCOME:
+        this.filterSettings.activeUpdateOutcomeFilters.clear();
+        break;
+      case FilterCategory.DATE:
+        this.filterSettings.startDateFilter = null;
+        this.filterSettings.endDateFilter = null;
+        break;
+      default:
+        assertNotReachedCase(category);
+    }
+    await this.onFiltersChanged();
+  }
+
+  protected onChipClick(e: MouseEvent) {
+    // Prevent opening the menu if the close button was clicked
+    const target = e.target as HTMLElement;
+    if (target.tagName !== 'CR-ICON-BUTTON') {
+      this.editFilter(getFilterCategoryForTarget(target));
+    }
+  }
+
+  protected onChipKeydown(e: KeyboardEvent) {
+    const target = e.target as HTMLElement;
+    if ((e.key === 'Enter' || e.key === ' ') && target.tagName !== 'BUTTON') {
+      this.editFilter(getFilterCategoryForTarget(target));
+    }
+  }
+
+
+  protected getFilterLabel(category: FilterCategory): string {
+    switch (category) {
+      case FilterCategory.APP:
+        return loadTimeData.getStringF(
+            'filterChipApp',
+            Array.from(this.filterSettings.activeAppFilters).join(', '));
+      case FilterCategory.EVENT:
+        return loadTimeData.getStringF(
+            'filterChipEventType',
+            Array.from(this.filterSettings.activeEventTypeFilters)
+                .map(localizeEventType)
+                .join(', '));
+      case FilterCategory.OUTCOME:
+        return loadTimeData.getStringF(
+            'filterChipUpdateOutcome',
+            Array.from(this.filterSettings.activeUpdateOutcomeFilters)
+                .map(localizeUpdateOutcome)
+                .join(', '));
+      case FilterCategory.DATE:
+        return loadTimeData.getStringF(
+            'filterChipDate', this.getDateFilterString());
+      default:
+        assertNotReachedCase(category);
+    }
+  }
+
+  protected editFilter(category: FilterCategory) {
+    this.focusReturnElement = this.shadowRoot.activeElement as HTMLElement;
+    this.menuHost = 'chip';
+    this.filterMenuState = category;
+  }
+
+  protected closeFilterMenu() {
     this.filterMenuState = 'closed';
     this.focusReturnElement?.focus();
     this.focusReturnElement = null;
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-    document.addEventListener('click', this.handleClickOutside);
-    if (this.filterOrder.length === 0) {
-      const initialFilterOrder: FilterCategory[] = [];
-      if (this.filterSettings.activeAppFilters.size > 0) {
-        initialFilterOrder.push('app');
-      }
-      if (this.filterSettings.activeEventTypeFilters.size > 0) {
-        initialFilterOrder.push('event');
-      }
-      if (this.filterSettings.activeUpdateOutcomeFilters.size > 0) {
-        initialFilterOrder.push('outcome');
-      }
-      if (this.filterSettings.startDateFilter ||
-          this.filterSettings.endDateFilter) {
-        initialFilterOrder.push('date');
-      }
-      this.filterOrder = initialFilterOrder;
-    }
-  }
-  override disconnectedCallback() {
-    document.removeEventListener('click', this.handleClickOutside);
-    super.disconnectedCallback();
-  }
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has('filterSettings')) {
-      this.updateFilterOrder(
-          'app',
-          this.filterSettings.activeAppFilters.size > 0,
-      );
-      this.updateFilterOrder(
-          'event',
-          this.filterSettings.activeEventTypeFilters.size > 0,
-      );
-      this.updateFilterOrder(
-          'outcome',
-          this.filterSettings.activeUpdateOutcomeFilters.size > 0,
-      );
-      this.updateFilterOrder(
-          'date',
-          !!(this.filterSettings.startDateFilter ||
-             this.filterSettings.endDateFilter),
-      );
-    }
-  }
-
-  override updated(changedProperties: PropertyValues) {
-    if (changedProperties.has('filterMenuState') &&
-        this.filterMenuState !== 'closed') {
-      const focusTarget = this.renderRoot.querySelector<HTMLElement>(
-          '.filter-menu-input, .filter-menu-item, .filter-menu-date-inputs input',
-      );
-      focusTarget?.focus();
-    }
-  }
-
-  private readonly handleClickOutside = (e: MouseEvent) => {
-    if (this.filterMenuState === 'closed') {
-      return;
-    }
-    const path = e.composedPath() as Array<EventTarget|HTMLElement>;
-    if (path.some(
-            (el) => el ===
-                this.shadowRoot.getElementById('filter-bar-input-container')!,
-            )) {
-      return;
-    }
-    if (path.some(
-            (el) => el instanceof HTMLElement &&
-                (el.classList.contains('chip') ||
-                 el.classList.contains('filter-menu')),
-            )) {
-      return;
-    }
-    this.closeFilterMenu();
-  };
-
-  handleAppSearchKeydown(e: KeyboardEvent) {
-    if (e.key === 'Enter') {
-      const input = e.target as HTMLInputElement;
-      if (input.value) {
-        this.pendingAppSelections.add(input.value);
-        this.appSearch = '';
-        this.requestUpdate();
-      }
-    }
-  }
-
-  onAppCheckboxChange(e: Event, appName: string) {
-    const checkbox = e.target as HTMLInputElement;
-    if (checkbox.checked) {
-      this.pendingAppSelections.add(appName);
-    } else {
-      this.pendingAppSelections.delete(appName);
-    }
-    this.requestUpdate();
-  }
-
-  onEventTypeCheckboxChange(e: Event, eventType: EventType) {
-    const checkbox = e.target as CrCheckboxElement;
-    if (checkbox.checked) {
-      this.pendingEventTypeSelections.add(eventType);
-    } else {
-      this.pendingEventTypeSelections.delete(eventType);
-    }
-    this.requestUpdate();
-  }
-
-  onUpdateOutcomeCheckboxChange(e: Event, outcome: CommonUpdateOutcome) {
-    const checkbox = e.target as HTMLInputElement;
-    if (checkbox.checked) {
-      this.pendingUpdateOutcomeSelections.add(outcome);
-    } else {
-      this.pendingUpdateOutcomeSelections.delete(outcome);
-    }
-    this.requestUpdate();
-  }
-
-  updateFilterOrder(category: FilterCategory, active: boolean) {
+  protected updateFilterOrder(category: FilterCategory, active: boolean) {
     const index = this.filterOrder.indexOf(category);
     if (active && index === -1) {
       this.filterOrder = [...this.filterOrder, category];
     } else if (!active && index !== -1) {
-      this.filterOrder = this.filterOrder.filter((f) => f !== category);
+      this.filterOrder = this.filterOrder.filter(f => f !== category);
     }
   }
 
-  applyAppFilters() {
-    this.updateFilterOrder('app', this.pendingAppSelections.size > 0);
-    this.filterSettings.activeAppFilters = new Set(this.pendingAppSelections);
-    this.closeFilterMenu();
-    this.dispatchFiltersChanged();
+  protected onTypeSelectionChanged(e: CustomEvent<FilterMenuState>) {
+    this.filterMenuState = e.detail;
   }
 
-  applyEventTypeFilters() {
-    this.updateFilterOrder('event', this.pendingEventTypeSelections.size > 0);
-    this.filterSettings.activeEventTypeFilters = new Set(
-        this.pendingEventTypeSelections,
-    );
+  protected async onAppFilterChanged(e: CustomEvent<Set<string>>) {
+    this.updateFilterOrder(FilterCategory.APP, e.detail.size > 0);
+    this.filterSettings.activeAppFilters = new Set(e.detail);
     this.closeFilterMenu();
-    this.dispatchFiltersChanged();
+    await this.onFiltersChanged();
   }
 
-  applyUpdateOutcomeFilters() {
+  protected async onEventTypeFilterChanged(e: CustomEvent<Set<EventType>>) {
+    this.updateFilterOrder(FilterCategory.EVENT, e.detail.size > 0);
+    this.filterSettings.activeEventTypeFilters = new Set(e.detail);
+    this.closeFilterMenu();
+    await this.onFiltersChanged();
+  }
+
+  protected async onUpdateOutcomeFilterChanged(
+      e: CustomEvent<Set<CommonUpdateOutcome>>) {
+    this.updateFilterOrder(FilterCategory.OUTCOME, e.detail.size > 0);
+    this.filterSettings.activeUpdateOutcomeFilters = new Set(e.detail);
+    this.closeFilterMenu();
+    await this.onFiltersChanged();
+  }
+
+  protected async onDateFilterChanged(
+      e: CustomEvent<{start: Date | null, end: Date|null}>) {
     this.updateFilterOrder(
-        'outcome',
-        this.pendingUpdateOutcomeSelections.size > 0,
-    );
-    this.filterSettings.activeUpdateOutcomeFilters = new Set(
-        this.pendingUpdateOutcomeSelections,
-    );
+        FilterCategory.DATE, !!(e.detail.start || e.detail.end));
+    this.filterSettings.startDateFilter = e.detail.start;
+    this.filterSettings.endDateFilter = e.detail.end;
     this.closeFilterMenu();
-    this.dispatchFiltersChanged();
+    await this.onFiltersChanged();
   }
 
-  applyDateFilters() {
-    this.updateFilterOrder(
-        'date',
-        !!(this.pendingStartDateFilter || this.pendingEndDateFilter),
-    );
-    this.filterSettings.startDateFilter = this.pendingStartDateFilter;
-    this.filterSettings.endDateFilter = this.pendingEndDateFilter;
-    this.closeFilterMenu();
-    this.dispatchFiltersChanged();
-  }
-
-  editDateFilter() {
-    this.focusReturnElement = this.shadowRoot.activeElement as HTMLElement;
-    this.menuHost = 'chip';
-    this.filterMenuState = 'date';
-    this.pendingStartDateFilter = this.filterSettings.startDateFilter;
-    this.pendingEndDateFilter = this.filterSettings.endDateFilter;
-  }
-
-  editAppFilter() {
-    this.focusReturnElement = this.shadowRoot.activeElement as HTMLElement;
-    this.menuHost = 'chip';
-    this.filterMenuState = 'app';
-    this.pendingAppSelections = new Set(this.filterSettings.activeAppFilters);
-    this.appSearch = '';
-  }
-
-  editEventTypeFilter() {
-    this.focusReturnElement = this.shadowRoot.activeElement as HTMLElement;
-    this.menuHost = 'chip';
-    this.filterMenuState = 'event';
-    this.pendingEventTypeSelections = new Set(
-        this.filterSettings.activeEventTypeFilters,
-    );
-  }
-
-  editUpdateOutcomeFilter() {
-    this.focusReturnElement = this.shadowRoot.activeElement as HTMLElement;
-    this.menuHost = 'chip';
-    this.filterMenuState = 'outcome';
-    this.pendingUpdateOutcomeSelections = new Set(
-        this.filterSettings.activeUpdateOutcomeFilters,
-    );
-  }
-
-  handleChipKeydown(e: KeyboardEvent, editFilter: () => void) {
-    if ((e.key === 'Enter' || e.key === ' ') &&
-        (e.target as HTMLElement).tagName !== 'BUTTON') {
-      editFilter();
-    }
-  }
-
-  getDateFilterString(): string {
+  protected getDateFilterString(): string {
     const format = (d: Date) => DATE_FORMATTER.format(d);
     const start = this.filterSettings.startDateFilter ?
         format(this.filterSettings.startDateFilter) :
@@ -347,60 +316,42 @@ export class FilterBarElement extends CrLitElement {
     return '';
   }
 
-  dispatchFiltersChanged() {
-    this.dispatchEvent(
-        new CustomEvent<FilterSettings>('filters-changed', {
-          detail: this.filterSettings,
-          bubbles: true,
-          composed: true,
-        }),
-    );
+  private async onFiltersChanged() {
+    await this.updateComplete;
+    this.fire('filters-changed', this.filterSettings);
     this.requestUpdate();
   }
 
-  handleMenuKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
-      this.closeFilterMenu();
-    } else if (e.key === 'Tab') {
-      this.handleFocusTrap(e);
-    }
-  }
-
-  private handleFocusTrap(e: KeyboardEvent) {
-    const filterMenu = e.currentTarget as HTMLElement;
-    const focusableElements: HTMLElement[] = Array.from(
-        filterMenu.querySelectorAll(
-            'input, cr-checkbox, cr-button, [tabindex="0"]'),
-    );
-
-    if (focusableElements.length === 0) {
-      return;
-    }
-
-    const firstFocusableElement = focusableElements[0];
-    const lastFocusableElement =
-        focusableElements[focusableElements.length - 1];
-    const activeElement = this.shadowRoot.activeElement as HTMLElement;
-
-    if (e.shiftKey) {
-      if (activeElement === firstFocusableElement) {
-        lastFocusableElement?.focus();
-        e.preventDefault();
-      }
-    } else if (activeElement === lastFocusableElement) {
-      firstFocusableElement?.focus();
-      e.preventDefault();
-    }
-  }
-
-  clearAllFilters() {
+  protected async onClearFiltersClick() {
     this.filterSettings.activeAppFilters.clear();
     this.filterSettings.activeEventTypeFilters.clear();
     this.filterSettings.activeUpdateOutcomeFilters.clear();
     this.filterSettings.startDateFilter = null;
     this.filterSettings.endDateFilter = null;
     this.filterOrder = [];
-    this.dispatchFiltersChanged();
+    await this.onFiltersChanged();
+  }
+
+  protected isEditingViaInput(category: FilterCategory): boolean {
+    return this.filterMenuState === category && this.menuHost === 'input';
+  }
+
+  protected isEditingViaChip(category: FilterCategory): boolean {
+    return this.filterMenuState === category && this.menuHost === 'chip';
+  }
+
+  protected onAddFilterClick() {
+    if (this.menuHost === 'input' && this.filterMenuState !== 'closed') {
+      this.closeFilterMenu();
+      return;
+    }
+    this.focusReturnElement = this.shadowRoot.activeElement as HTMLElement;
+    this.menuHost = 'input';
+    this.filterMenuState = 'type';
+  }
+
+  protected onFilterDialogClose() {
+    this.closeFilterMenu();
   }
 }
 

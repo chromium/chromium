@@ -1,0 +1,101 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  /* Neutral, subtle border for filter bar, input fields, and buttons */
+  --filter-border-color: var(--google-grey-300);
+  /* Background for filter menu input */
+  --filter-menu-input-background: rgb(225, 227, 225);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --filter-border-color: var(--google-grey-700);
+    --filter-menu-input-background: rgb(68, 71, 70);
+  }
+}
+
+.filter-menu-date-inputs {
+  padding: 8px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-menu-date-inputs input[type='datetime-local'] {
+  border: 1px solid var(--filter-border-color);
+  padding: 4px;
+  border-radius: 4px;
+}
+
+label {
+  margin: 0 4px;
+}
+
+.filter-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  background: var(--cr-menu-background-color);
+  border: 1px solid var(--filter-border-color);
+  border-radius: 4px;
+  box-shadow: var(--cr-elevation-2);
+  z-index: 10;
+  min-width: 200px;
+  padding: 8px 0;
+  margin: 4px 0 0 0;
+}
+
+.filter-menu-item {
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-menu-item:hover {
+  background: var(--cr-hover-background-color);
+}
+
+.filter-menu-item input[type='checkbox'] {
+  margin-inline-end: 8px;
+}
+
+.filter-menu-input {
+  border: 0;
+  border-bottom: 1px solid var(--filter-border-color);
+  padding: 8px 16px;
+  margin-bottom: 8px;
+  width: calc(100% - 32px);
+  outline: none;
+  display: block;
+  margin-inline-start: auto;
+  margin-inline-end: auto;
+  background-color: var(--filter-menu-input-background);
+  color: var(--cr-secondary-text-color);
+}
+
+.filter-menu-input:focus {
+  border-bottom-color: var(--cr-link-color);
+}
+
+.filter-menu-section-header {
+  padding: 8px 16px;
+  font-weight: bold;
+  color: var(--cr-secondary-text-color);
+  font-size: 0.9em;
+}
+
+.filter-menu-footer {
+  border-top: 1px solid var(--filter-border-color);
+  padding: 8px 16px 0 16px;
+  text-align: end;
+  margin-top: 8px;
+}
