@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.sync.settings;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
@@ -42,6 +44,7 @@ import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -107,7 +110,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
 
         mAllowSignin = (ChromeSwitchPreference) findPreference(PREF_ALLOW_SIGNIN);
 
-        if (getProfile().isChild()) {
+        if (!shouldShowAllowSignIn(getProfile())) {
             // Do not display option to allow / disallow sign-in for supervised accounts since
             // these require the user to be signed-in and syncing.
             mAllowSignin.setVisible(false);
@@ -131,14 +134,14 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         mUrlKeyedAnonymizedData.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
         mContextualSearch = findPreference(PREF_CONTEXTUAL_SEARCH);
-        if (!ContextualSearchFieldTrial.isEnabled()) {
+        if (!shouldShowContextualSearch()) {
             removePreference(getPreferenceScreen(), mContextualSearch);
             mContextualSearch = null;
         }
 
         mPriceTrackingAnnotations =
                 (ChromeSwitchPreference) findPreference(PREF_PRICE_TRACKING_ANNOTATIONS);
-        if (!PriceTrackingFeatures.allowUsersToDisablePriceAnnotations(getProfile())) {
+        if (!shouldShowPriceTrackingAnnotations(getProfile())) {
             removePreference(getPreferenceScreen(), mPriceTrackingAnnotations);
             mPriceTrackingAnnotations = null;
         } else {
@@ -147,8 +150,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         }
 
         mPriceNotificationSection = findPreference(PREF_PRICE_NOTIFICATION_SECTION);
-        if (CommerceFeatureUtils.isShoppingListEligible(
-                ShoppingServiceFactory.getForProfile(getProfile()))) {
+        if (shouldShowPriceNotificationSection(getProfile())) {
             mPriceNotificationSection.setVisible(true);
         } else {
             removePreference(getPreferenceScreen(), mPriceNotificationSection);
@@ -263,7 +265,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                     PriceTrackingUtilities.isTrackPricesOnTabsEnabled(getProfile()));
         }
         if (mUsageStatsReporting != null) {
-            if (mPrefService.getBoolean(Pref.USAGE_STATS_ENABLED)) {
+            if (shouldShowUsageStatsReporting(mPrefService)) {
                 mUsageStatsReporting.setOnPreferenceClickListener(
                         preference -> {
                             UsageStatsConsentDialog.create(
@@ -283,6 +285,27 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 mUsageStatsReporting = null;
             }
         }
+    }
+
+    private static boolean shouldShowAllowSignIn(Profile profile) {
+        return !profile.isChild();
+    }
+
+    private static boolean shouldShowContextualSearch() {
+        return ContextualSearchFieldTrial.isEnabled();
+    }
+
+    private static boolean shouldShowPriceTrackingAnnotations(Profile profile) {
+        return PriceTrackingFeatures.allowUsersToDisablePriceAnnotations(profile);
+    }
+
+    private static boolean shouldShowPriceNotificationSection(Profile profile) {
+        return CommerceFeatureUtils.isShoppingListEligible(
+                ShoppingServiceFactory.getForProfile(profile));
+    }
+
+    private static boolean shouldShowUsageStatsReporting(PrefService prefService) {
+        return prefService.getBoolean(Pref.USAGE_STATS_ENABLED);
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
@@ -319,8 +342,30 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         return "google_services";
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    GoogleServicesSettings.class.getName(), R.xml.google_services_preferences);
+                    GoogleServicesSettings.class.getName(), R.xml.google_services_preferences) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    if (!shouldShowAllowSignIn(profile)) {
+                        indexData.removeEntry(getUniqueId(PREF_ALLOW_SIGNIN));
+                    }
+
+                    if (!shouldShowContextualSearch()) {
+                        indexData.removeEntry(getUniqueId(PREF_CONTEXTUAL_SEARCH));
+                    }
+
+                    if (!shouldShowPriceTrackingAnnotations(profile)) {
+                        indexData.removeEntry(getUniqueId(PREF_PRICE_TRACKING_ANNOTATIONS));
+                    }
+
+                    if (!shouldShowPriceNotificationSection(profile)) {
+                        indexData.removeEntry(getUniqueId(PREF_PRICE_NOTIFICATION_SECTION));
+                    }
+                    if (!shouldShowUsageStatsReporting(UserPrefs.get(profile))) {
+                        indexData.removeEntry(getUniqueId(PREF_USAGE_STATS_REPORTING));
+                    }
+                }
+            };
 }
