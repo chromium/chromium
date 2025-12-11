@@ -17388,6 +17388,24 @@
             ]
         }
     ],
+    "OnBeginFrameThrottleVideo": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OnBeginFrameThrottleVideo"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDeviceNotificationContentDetectionModelv2": [
         {
             "platforms": [
