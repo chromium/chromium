@@ -345,18 +345,8 @@ bool PrivacySandboxSettingsDelegate::
 
   // Respect user preferences.
 
-  auto* tracking_protection_settings =
-      TrackingProtectionSettingsFactory::GetForProfile(profile_);
-  if (tracking_protection_settings &&
-      tracking_protection_settings->AreAllThirdPartyCookiesBlocked()) {
-    return false;
-  }
-
-  const auto cookie_controls_mode =
-      static_cast<content_settings::CookieControlsMode>(
-          profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode));
-
-  if (cookie_controls_mode ==
+  if (static_cast<content_settings::CookieControlsMode>(
+          profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
       content_settings::CookieControlsMode::kBlockThirdParty) {
     return false;
   }

@@ -664,7 +664,6 @@ struct ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase {
   bool is_profile_onboarded = false;
   content_settings::CookieControlsMode cookie_controls_mode_pref =
       content_settings::CookieControlsMode::kOff;
-  bool block_all_3pc_toggle_enabled = false;
   bool expected;
 };
 
@@ -689,12 +688,6 @@ const ThirdPartyCookiesBlockedByCookieDeprecationExperimentTestCase
             .is_profile_onboarded = true,
             .cookie_controls_mode_pref =
                 content_settings::CookieControlsMode::kBlockThirdParty,
-            .expected = false,
-        },
-        {
-            .is_client_eligible = true,
-            .is_profile_onboarded = true,
-            .block_all_3pc_toggle_enabled = true,
             .expected = false,
         },
 };
@@ -733,8 +726,6 @@ TEST_P(ThirdPartyCookiesBlockedByCookieDeprecationExperimentTest,
 
   prefs()->SetInteger(prefs::kCookieControlsMode,
                       static_cast<int>(test_case.cookie_controls_mode_pref));
-  prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
-                      test_case.block_all_3pc_toggle_enabled);
 
   EXPECT_CALL(*experiment_manager(), IsClientEligible)
       .WillOnce(::testing::Return(test_case.is_client_eligible));
