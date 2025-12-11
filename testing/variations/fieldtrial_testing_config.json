@@ -13044,21 +13044,6 @@
             ]
         }
     ],
-    "IOSAutofillRefillForForms": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillRefillForFormsIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillReportFormSubmissionErrors": [
         {
             "platforms": [
