@@ -519,10 +519,9 @@ cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(
   } else if (image.IsLazyDecoded()) {
     resampling = GetDefaultInterpolationQuality();
   } else {
-    resampling = ComputeInterpolationQuality(
-        SkScalarToFloat(src.width()), SkScalarToFloat(src.height()),
-        SkScalarToFloat(dest.width()), SkScalarToFloat(dest.height()),
-        image.FirstFrameIsComplete());
+    resampling = ComputeInterpolationQuality(src.width(), src.height(),
+                                             dest.width(), dest.height(),
+                                             image.FirstFrameIsComplete());
 
     if (resampling == kInterpolationNone) {
       // FIXME: This is to not break tests (it results in the filter bitmap flag

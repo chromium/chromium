@@ -175,7 +175,7 @@ float SkFontGetWidthForGlyph(const SkFont& font, Glyph glyph) {
   if (!font.isSubpixel())
     sk_width = SkScalarRoundToInt(sk_width);
 
-  return SkScalarToFloat(sk_width);
+  return sk_width;
 }
 
 hb_position_t SkiaScalarToHarfBuzzPosition(SkScalar value) {

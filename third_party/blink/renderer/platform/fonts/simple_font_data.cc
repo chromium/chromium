@@ -169,7 +169,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   if (metrics_override.line_gap_override) {
     line_gap = *metrics_override.line_gap_override * platform_data_->size();
   } else {
-    line_gap = SkScalarToFloat(metrics.fLeading);
+    line_gap = metrics.fLeading;
   }
   font_metrics_.SetLineGap(line_gap);
   font_metrics_.SetLineSpacing(lroundf(ascent) + lroundf(descent) +
@@ -201,7 +201,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 
 #if !BUILDFLAG(IS_APPLE)
   if (metrics.fAvgCharWidth) {
-    avg_char_width_ = SkScalarToFloat(metrics.fAvgCharWidth);
+    avg_char_width_ = metrics.fAvgCharWidth;
   } else {
 #endif
     avg_char_width_ = x_height;
