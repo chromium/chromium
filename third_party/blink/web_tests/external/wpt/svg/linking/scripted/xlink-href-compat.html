@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<title>SVGURIReference.href IDL semantics</title>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
+<title>XLink 'href' backwards compatibility</title>
+<link rel="help" href="https://svgwg.org/svg2-draft/linking.html#XLinkRefAttrs">
+<link rel="help" href="https://svgwg.org/svg2-draft/linking.html#linkRefAttrs">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <script>
 const svgNs = 'http://www.w3.org/2000/svg';
 const xlinkNs = 'http://www.w3.org/1999/xlink';
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(null, 'href', 'foo');
     assert_true(element.hasAttributeNS(null, 'href'), '"href" exists');
     assert_false(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" does not exist');
@@ -20,7 +22,7 @@ test(function() {
 }, document.title+', IDL href backed by "href" after setAttribute(href).');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(xlinkNs, 'href', 'foo');
     assert_false(element.hasAttributeNS(null, 'href'), '"href" does not exist');
     assert_true(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" exists');
@@ -33,7 +35,7 @@ test(function() {
 }, document.title+', IDL href backed by "xlink:href" after setAttribute(xlink:href).');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.href.baseVal = 'foo';
     assert_false(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" does not exist');
     assert_true(element.hasAttributeNS(null, 'href'), '"href" exists');
@@ -41,7 +43,7 @@ test(function() {
 }, document.title+', IDL href backed by "href" after baseVal setter.');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.href.baseVal = 'foo';
     assert_false(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" does not exist');
     assert_true(element.hasAttributeNS(null, 'href'), '"href" exists');
@@ -55,7 +57,7 @@ test(function() {
 }, document.title+', IDL href reflects "href"; setAttribute(xlink:href) does not override baseVal setter.');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(xlinkNs, 'href', 'baz');
     element.href.baseVal = 'foo';
     assert_false(element.hasAttributeNS(null, 'href'), '"href" does not exist');
@@ -72,7 +74,7 @@ test(function() {
 }, document.title+', IDL href prefers "href" over "xlink:href" after setAttribute(href) overrides.');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(xlinkNs, 'href', 'foo');
     assert_false(element.hasAttributeNS(null, 'href'), '"href" does not exist');
     assert_true(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" exists');
@@ -84,7 +86,7 @@ test(function() {
 }, document.title+', IDL href reflects "xlink:href"; setAttribute(xlink:href) w/ NS-prefix.');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(null, 'href', 'foo');
     element.setAttributeNS(xlinkNs, 'href', 'bar');
     assert_true(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" exists');
@@ -98,7 +100,7 @@ test(function() {
 }, document.title+', IDL href reflects "xlink:href" after removeAttribute(href).');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(null, 'href', 'foo');
     element.setAttributeNS(xlinkNs, 'href', 'bar');
     assert_true(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" exists');
@@ -112,7 +114,7 @@ test(function() {
 }, document.title+', IDL href reflects "xlink:href"; removeAttribute(xlink:href) has no effect.');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(xlinkNs, 'href', 'bar');
     assert_false(element.hasAttributeNS(null, 'href'), '"href" does not exist');
     assert_true(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" exists');
@@ -124,7 +126,7 @@ test(function() {
 }, document.title+', IDL href reflects "xlink:href"; removeAttribute(xlink:href) resets to default.');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(xlinkNs, 'xlink:href', 'bar');
     assert_false(element.hasAttributeNS(null, 'href'), '"href" does not exist');
     assert_true(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" exists');
@@ -136,7 +138,7 @@ test(function() {
 }, document.title+', IDL href reflects "xlink:href"; removeAttribute(xlink:href) w/o NS-prefix resets to default.');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(xlinkNs, 'xlink:href', 'bar');
     assert_false(element.hasAttributeNS(null, 'href'), '"href" does not exist');
     assert_true(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" exists');
@@ -145,7 +147,7 @@ test(function() {
 }, document.title+', href.animVal reflects "xlink:href" when it is set.');
 
 test(function() {
-    var element = document.createElementNS(svgNs, 'a');
+    const element = document.createElementNS(svgNs, 'a');
     element.setAttributeNS(null, 'href', 'bar');
     assert_true(element.hasAttributeNS(null, 'href'), '"href" exists');
     assert_false(element.hasAttributeNS(xlinkNs, 'href'), '"xlink:href" does not exist');
