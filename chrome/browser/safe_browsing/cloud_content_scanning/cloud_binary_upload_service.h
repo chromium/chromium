@@ -39,7 +39,8 @@ class CloudBinaryUploadService : public BinaryUploadService {
   void MaybeUploadForDeepScanning(
       std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request)
       override;
-  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override;
+  void MaybeAcknowledge(
+      std::unique_ptr<enterprise_connectors::BinaryUploadAck> ack) override;
   void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override;
   base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
 

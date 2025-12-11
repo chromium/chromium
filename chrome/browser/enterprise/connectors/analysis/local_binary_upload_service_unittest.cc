@@ -176,7 +176,7 @@ TEST_F(LocalBinaryUploadServiceTest, ClientCreatedFromMaybeAcknowledge) {
   settings.local_path = config.name;
   settings.user_specific = config.user_specific;
 
-  auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
+  auto ack = std::make_unique<BinaryUploadAck>(
       CloudOrLocalAnalysisSettings(std::move(settings)));
   lbus.MaybeAcknowledge(std::move(ack));
 
@@ -193,7 +193,7 @@ TEST_F(LocalBinaryUploadServiceTest, ClientDestroyedWhenAckStatusIsAbnormal) {
   settings.local_path = config.name;
   settings.user_specific = config.user_specific;
 
-  auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
+  auto ack = std::make_unique<BinaryUploadAck>(
       CloudOrLocalAnalysisSettings(std::move(settings)));
   lbus.MaybeAcknowledge(std::move(ack));
 

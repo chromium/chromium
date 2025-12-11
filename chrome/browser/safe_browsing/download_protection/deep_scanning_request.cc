@@ -988,7 +988,7 @@ void DeepScanningRequest::AcknowledgeRequest(
   auto final_action = GetFinalAction(event_result);
 
   for (auto& token : request_tokens_) {
-    auto ack = std::make_unique<BinaryUploadService::Ack>(
+    auto ack = std::make_unique<enterprise_connectors::BinaryUploadAck>(
         analysis_settings_.cloud_or_local_settings);
     ack->set_request_token(token);
     ack->set_status(

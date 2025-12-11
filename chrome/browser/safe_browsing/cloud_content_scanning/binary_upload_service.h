@@ -55,20 +55,6 @@ class BinaryUploadService : public KeyedService {
     Request& operator=(Request&&) = delete;
   };
 
-  // A class to encapsulate the a request acknowledgement. This class will
-  // provide all the functionality needed to generate a
-  // ContentAnalysisAcknowledgement.
-  class Ack : public enterprise_connectors::BinaryUploadAck {
-   public:
-    explicit Ack(enterprise_connectors::CloudOrLocalAnalysisSettings settings)
-        : enterprise_connectors::BinaryUploadAck(std::move(settings)) {}
-    ~Ack() override = default;
-    Ack(const Ack&) = delete;
-    Ack& operator=(const Ack&) = delete;
-    Ack(Ack&&) = delete;
-    Ack& operator=(Ack&&) = delete;
-  };
-
   // A class to encapsulate requests to cancel.  Any request that match the
   // given criteria is canceled.  This is best effort only, in some cases
   // requests may have already started and can no longer be canceled.
@@ -109,7 +95,8 @@ class BinaryUploadService : public KeyedService {
       std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request) = 0;
 
   // Send an acknowledgement for the request with the given token.
-  virtual void MaybeAcknowledge(std::unique_ptr<Ack> ack) = 0;
+  virtual void MaybeAcknowledge(
+      std::unique_ptr<enterprise_connectors::BinaryUploadAck> ack) = 0;
 
   // Cancel any requests that match the given criteria .  This is a best effort
   // approach only, since it is possible that requests have been started in a

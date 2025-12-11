@@ -33,7 +33,7 @@ content_analysis::sdk::Client::Config SDKConfigFromRequest(
 
 // Build a content analysis SDK client config based on the ack being sent.
 content_analysis::sdk::Client::Config SDKConfigFromAck(
-    const safe_browsing::BinaryUploadService::Ack* ack) {
+    const BinaryUploadAck* ack) {
   return {ack->cloud_or_local_settings().local_path(),
           ack->cloud_or_local_settings().user_specific()};
 }
@@ -264,9 +264,10 @@ void LocalBinaryUploadService::MaybeUploadForDeepScanning(
   }
 }
 
-void LocalBinaryUploadService::MaybeAcknowledge(std::unique_ptr<Ack> ack) {
+void LocalBinaryUploadService::MaybeAcknowledge(
+    std::unique_ptr<BinaryUploadAck> ack) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Ack* ack_ptr = ack.get();
+  auto ack_ptr = ack.get();
   DoSendAck(
       ContentAnalysisSdkManager::Get()->GetClient(SDKConfigFromAck(ack_ptr)),
       std::move(ack));
@@ -533,7 +534,7 @@ void LocalBinaryUploadService::HandleResponse(
 
 void LocalBinaryUploadService::DoSendAck(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Ack> ack) {
+    std::unique_ptr<BinaryUploadAck> ack) {
   if (!wrapped || !wrapped->client()) {
     return;
   }
@@ -713,8 +714,8 @@ void LocalBinaryUploadService::OnTimeout(Request::Id id) {
         info, enterprise_connectors::ScanRequestUploadResult::kTimeout,
         ContentAnalysisResponse());
 
-    std::unique_ptr<Ack> ack =
-        std::make_unique<Ack>(info.request->cloud_or_local_settings());
+    auto ack = std::make_unique<BinaryUploadAck>(
+        info.request->cloud_or_local_settings());
     ack->set_request_token(info.request->request_token());
     ack->set_status(
         enterprise_connectors::ContentAnalysisAcknowledgement::TOO_LATE);

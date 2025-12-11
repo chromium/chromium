@@ -71,7 +71,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // Send the given file contents to local partners for deep scanning.
   void MaybeUploadForDeepScanning(
       std::unique_ptr<BinaryUploadRequest> request) override;
-  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override;
+  void MaybeAcknowledge(std::unique_ptr<BinaryUploadAck> ack) override;
   void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override;
   base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
 
@@ -159,7 +159,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // Starts a local content analysis ack request.
   void DoSendAck(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Ack> ack);
+      std::unique_ptr<BinaryUploadAck> ack);
 
   // Starts a local content analysis cancel request.
   void DoSendCancel(

@@ -154,7 +154,8 @@ class FakeBinaryUploadService : public BinaryUploadService {
     }
   }
 
-  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {
+  void MaybeAcknowledge(
+      std::unique_ptr<enterprise_connectors::BinaryUploadAck> ack) override {
     EXPECT_EQ(final_action_, ack->ack().final_action());
     ++num_acks_;
     ASSERT_TRUE(base::Contains(requests_tokens_, ack->ack().request_token()));

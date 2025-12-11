@@ -125,7 +125,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
   bool blocking() { return blocking_; }
 
  private:
-  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {
+  void MaybeAcknowledge(std::unique_ptr<BinaryUploadAck> ack) override {
     EXPECT_TRUE(ack);
 
     ++ack_count_;

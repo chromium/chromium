@@ -916,7 +916,7 @@ void ContentAnalysisDelegate::AckAllRequests() {
     // the agent never received the request for some reason (size, encryption,
     // etc.) so it doesn't make sense to send an ack.
     if (!token_and_action.first.empty()) {
-      auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
+      auto ack = std::make_unique<BinaryUploadAck>(
           data_.settings.cloud_or_local_settings);
       ack->set_request_token(token_and_action.first);
       ack->set_status(ContentAnalysisAcknowledgement::SUCCESS);
