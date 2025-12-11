@@ -112,6 +112,11 @@ export default [
       // https://google.github.io/styleguide/jsguide.html#features-objects-use-trailing-comma
       'comma-dangle': ['error', 'always-multiline'],
 
+      // https://google.github.io/styleguide/jsguide.html#features-switch-statements
+      // https://google.github.io/styleguide/tsguide.html#switch-statements
+      'default-case': 'error',
+      'default-case-last': 'error',
+
       curly: ['error', 'multi-line', 'consistent'],
       'new-parens': 'error',
       'no-array-constructor': 'error',
@@ -223,10 +228,6 @@ export default [
     },
 
     rules: {
-      // https://google.github.io/styleguide/tsguide.html#switch-statements
-      'default-case': 'error',
-      'default-case-last': 'error',
-
       'no-unused-vars': 'off',
 
       '@typescript-eslint/no-unused-vars': [
