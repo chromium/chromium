@@ -9962,8 +9962,6 @@ crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_
 crbug.com/464191951 [ Mac ] http/tests/devtools/elements/inspect-pointer-events-none.js [ Pass Timeout ]
 crbug.com/464220937 [ Mac ] http/tests/devtools/elements/inspect-pseudo-element.js [ Failure Pass ]
 
-crbug.com/407749531 http/tests/devtools/a11y-axe-core/application-panel/app-manifest-view-a11y-test.js [ Failure Pass ]
-
 # Gardener 2025-11-28
 crbug.com/464388023 [ Mac ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure Pass ]
 crbug.com/464400408 wpt_internal/code-cache/code-cache-after-304.window.html [ Failure Pass ]
