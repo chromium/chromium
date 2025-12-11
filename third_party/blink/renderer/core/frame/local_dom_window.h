@@ -143,6 +143,8 @@ class WindowScreenDetails;
 class WindowSharedStorageImpl;
 
 template <typename T>
+class GlobalCacheStorageImpl;
+template <typename T>
 class GlobalCookieStoreImpl;
 template <typename T, typename P>
 class GlobalPerformanceImpl;
@@ -610,6 +612,16 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   }
 
   void requestResize(ExceptionState&);
+
+  ForwardDeclaredMember<GlobalCacheStorageImpl<LocalDOMWindow>>
+  GetGlobalCacheStorageImpl() const {
+    return global_cache_storage_impl_;
+  }
+  void SetGlobalCacheStorageImpl(
+      ForwardDeclaredMember<GlobalCacheStorageImpl<LocalDOMWindow>>
+          global_cache_storage_impl) {
+    global_cache_storage_impl_ = global_cache_storage_impl;
+  }
 
   ForwardDeclaredMember<GlobalCookieStoreImpl<LocalDOMWindow>>
   GetGlobalCookieStoreImpl() const {
@@ -1105,6 +1117,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   Member<SoftNavigationHeuristics> soft_navigation_heuristics_;
 
+  ForwardDeclaredMember<GlobalCacheStorageImpl<LocalDOMWindow>>
+      global_cache_storage_impl_;
   ForwardDeclaredMember<GlobalCookieStoreImpl<LocalDOMWindow>>
       global_cookie_store_impl_;
   ForwardDeclaredMember<

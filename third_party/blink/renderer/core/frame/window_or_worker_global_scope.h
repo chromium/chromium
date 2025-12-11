@@ -42,7 +42,6 @@
 
 namespace blink {
 
-class GlobalCacheStorage;
 class GlobalCrypto;
 
 template <typename T>
@@ -52,14 +51,6 @@ class CORE_EXPORT WindowOrWorkerGlobalScope : public GarbageCollectedMixin {
  public:
   bool crossOriginIsolated();
   String crossOriginEmbedderPolicy();
-
-  ForwardDeclaredMember<GlobalCacheStorage> GetGlobalCacheStorage() const {
-    return global_cache_storage_;
-  }
-  void SetGlobalCacheStorage(
-      ForwardDeclaredMember<GlobalCacheStorage> global_cache_storage) {
-    global_cache_storage_ = global_cache_storage;
-  }
 
   ForwardDeclaredMember<GlobalCrypto> GetGlobalCrypto() const {
     return global_crypto_;
@@ -83,7 +74,6 @@ class CORE_EXPORT WindowOrWorkerGlobalScope : public GarbageCollectedMixin {
   virtual ExecutionContext* GetExecutionContext() const = 0;
 
  private:
-  ForwardDeclaredMember<GlobalCacheStorage> global_cache_storage_;
   ForwardDeclaredMember<GlobalCrypto> global_crypto_;
   ForwardDeclaredMember<GlobalFetchImpl<WindowOrWorkerGlobalScope>>
       global_fetch_impl_;
