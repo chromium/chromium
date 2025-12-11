@@ -809,8 +809,6 @@ static_library("ui") {
       "android/android_about_app_info.h",
       "android/autofill/authenticator_selection_dialog_view_android.cc",
       "android/autofill/authenticator_selection_dialog_view_android.h",
-      "android/autofill/autofill_accessibility_utils.cc",
-      "android/autofill/autofill_accessibility_utils.h",
       "android/autofill/autofill_cvc_save_message_delegate.cc",
       "android/autofill/autofill_cvc_save_message_delegate.h",
       "android/autofill/autofill_error_dialog_view_android.cc",

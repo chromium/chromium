@@ -13,7 +13,6 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "chrome/browser/fast_checkout/fast_checkout_accessibility_service_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_delegate_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
@@ -67,49 +66,6 @@ const autofill::AutofillField* GetFieldToFill(
   return nullptr;
 }
 
-bool IsNameOrAddress(autofill::FieldTypeGroup type_group) {
-  return type_group == autofill::FieldTypeGroup::kName ||
-         type_group == autofill::FieldTypeGroup::kAddress;
-}
-
-// Returns `true` if `form` is considered an address form containing only an
-// `email` field but no `name` or `address` fields.
-bool IsEmailForm(const autofill::FormStructure& form) {
-  // `kAddressForm` includes email fields.
-  bool is_address_form =
-      form.GetFormTypes().contains(autofill::FormType::kAddressForm);
-  bool has_name_or_address_field = std::ranges::any_of(
-      form.fields(), [](const std::unique_ptr<autofill::AutofillField>& field) {
-        return std::ranges::any_of(field->Type().GetGroups(),
-                                   &IsNameOrAddress) &&
-               IsVisibleTextField(*field);
-      });
-  bool has_focusable_email_field = std::ranges::any_of(
-      form.fields(), [](const std::unique_ptr<autofill::AutofillField>& field) {
-        return field->Type().GetGroups().contains(
-                   autofill::FieldTypeGroup::kEmail) &&
-               IsVisibleTextField(*field);
-      });
-  return is_address_form && has_focusable_email_field &&
-         !has_name_or_address_field;
-}
-
-// Returns `true` if `form_signature`'s form is in `forms` and is an email form.
-bool ContainsEmailFormWithSignature(const autofill::AutofillManager& manager,
-                                    autofill::FormSignature form_signature) {
-  // It is possible to have multiple forms with the same form signature on the
-  // same page where only some are visible to the user. An example could be
-  // shipping and billing address forms. For that reason the `IsEmailForm`
-  // check must not be returned directly to avoid a premature return as we
-  // don't have any control over the order of `forms`.
-  bool success = false;
-  manager.ForEachCachedForm([&](const autofill::FormStructure& form) {
-    success = success ||
-              (form.form_signature() == form_signature && IsEmailForm(form));
-  });
-  return success;
-}
-
 FastCheckoutDelegateImpl* GetDelegate(autofill::AutofillManager& manager) {
   auto& bam = static_cast<autofill::BrowserAutofillManager&>(manager);
   return static_cast<FastCheckoutDelegateImpl*>(bam.fast_checkout_delegate());
@@ -129,8 +85,6 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
           autofill_client_,
           fetcher_,
           personal_data_helper_.get())),
-      accessibility_service_(
-          std::make_unique<FastCheckoutAccessibilityServiceImpl>()),
       keyboard_suppressor_(
           client,
           base::BindRepeating([](autofill::AutofillManager& manager) {
@@ -573,7 +527,6 @@ void FastCheckoutClientImpl::UpdateFillingStates() {
       // filling mode and there's an address form in `kFilling` state that it
       // got filled.
       filling_state = FillingState::kFilled;
-      A11yAnnounce(form_signature, /*is_credit_card_form=*/false);
     } else if (form_type == autofill::FormType::kCreditCardForm) {
       auto address_form_id =
           std::make_pair(form_signature, autofill::FormType::kAddressForm);
@@ -588,34 +541,8 @@ void FastCheckoutClientImpl::UpdateFillingStates() {
         // while no address form of the same signature is in `kFilling` state -
         // that it got filled.
         filling_state = FillingState::kFilled;
-        A11yAnnounce(form_signature, /*is_credit_card_form=*/true);
       }
     }
-  }
-}
-
-void FastCheckoutClientImpl::A11yAnnounce(
-    autofill::FormSignature form_signature,
-    bool is_credit_card_form) {
-  if (is_credit_card_form) {
-    if (const autofill::CreditCard* credit_card = GetSelectedCreditCard()) {
-      accessibility_service_->Announce(l10n_util::GetStringFUTF16(
-          IDS_FAST_CHECKOUT_A11Y_CREDIT_CARD_FORM_FILLED,
-          credit_card->HasNonEmptyValidNickname()
-              ? credit_card->nickname()
-              : credit_card->NetworkAndLastFourDigits()));
-    }
-    return;
-  }
-
-  if (ContainsEmailFormWithSignature(*autofill_manager_, form_signature)) {
-    accessibility_service_->Announce(
-        l10n_util::GetStringUTF16(IDS_FAST_CHECKOUT_A11Y_EMAIL_FILLED));
-  } else if (const autofill::AutofillProfile* autofill_profile =
-                 GetSelectedAutofillProfile()) {
-    accessibility_service_->Announce(l10n_util::GetStringFUTF16(
-        IDS_FAST_CHECKOUT_A11Y_ADDRESS_FORM_FILLED,
-        base::UTF8ToUTF16(autofill_profile->profile_label())));
   }
 }
 

@@ -20,7 +20,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"

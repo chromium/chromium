@@ -120,7 +120,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/usb/UsbNotificationServiceImpl.java",
   "java/src/org/chromium/chrome/browser/app/xsurface_provider/ProcessScopeDependencyProviderFactoryImpl.java",
   "java/src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragment.java",
-  "java/src/org/chromium/chrome/browser/autofill/AutofillAccessibilityUtils.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowPrompt.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillFallbackSurfaceLauncher.java",

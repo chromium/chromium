@@ -227,15 +227,6 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
               ());
 };
 
-class MockFastCheckoutAccessibilityService
-    : public FastCheckoutAccessibilityService {
- public:
-  MockFastCheckoutAccessibilityService() = default;
-  ~MockFastCheckoutAccessibilityService() override = default;
-
-  MOCK_METHOD(void, Announce, (const std::u16string&), (override));
-};
-
 }  // namespace
 // The anonymous namespace needs to end here because of `friend`ships between
 // the tests and the production code.
@@ -288,12 +279,6 @@ class DISABLED_FastCheckoutClientImplTest
 
     test_client_->autofill_client_ = autofill_client();
 
-    auto accessibility_service =
-        std::make_unique<NiceMock<MockFastCheckoutAccessibilityService>>();
-    accessibility_service_ = accessibility_service.get();
-    fast_checkout_client()->accessibility_service_ =
-        std::move(accessibility_service);
-
     // Creates the AutofillDriver and AutofillManager.
     NavigateAndCommit(GURL("about:blank"));
     autofill_manager()->set_fast_checkout_delegate(
@@ -319,10 +304,6 @@ class DISABLED_FastCheckoutClientImplTest
 
   MockBrowserAutofillManager* autofill_manager() {
     return autofill_manager_injector_[web_contents()];
-  }
-
-  MockFastCheckoutAccessibilityService* accessibility_service() {
-    return accessibility_service_;
   }
 
   MockFastCheckoutDelegate& fast_checkout_delegate() {
@@ -456,7 +437,6 @@ class DISABLED_FastCheckoutClientImplTest
   std::unique_ptr<TestFastCheckoutClientImpl> test_client_;
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
   raw_ptr<MockFastCheckoutTriggerValidator> validator_;
-  raw_ptr<MockFastCheckoutAccessibilityService> accessibility_service_;
   FormData some_form_data_ =
       autofill::test::CreateTestCreditCardFormData(/*is_https=*/true,
                                                    /*use_month_type=*/false);
@@ -1033,7 +1013,6 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   std::u16string announcement_text =
       kAutofillProfileLabel + u" address form filled.";
 
-  EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
   fast_checkout_client()->OnAfterDidAutofillForm(*autofill_manager(),
                                                  address_form->global_id());
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
@@ -1048,7 +1027,6 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   StartRunAndSelectOptions({address_form->form_signature()});
   std::u16string announcement_text = u"Email filled.";
 
-  EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
   fast_checkout_client()->OnAfterDidAutofillForm(*autofill_manager(),
                                                  address_form->global_id());
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
@@ -1070,7 +1048,6 @@ TEST_F(
                                                      *credit_card, u"123");
   std::u16string announcement_text = kCreditCardNickname + u" filled.";
 
-  EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
   fast_checkout_client()->OnAfterDidAutofillForm(*autofill_manager(),
                                                  credit_card_form->global_id());
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
