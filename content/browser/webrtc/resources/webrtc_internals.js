@@ -295,7 +295,7 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
   }
   addRtcStatsEvent(
     update.type,
-    getPeerConnectionId(update),
+    peerConnectionElement.id,
     value,
     update.timestamp
   );
