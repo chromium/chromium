@@ -7020,7 +7020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.UnitConversion.DetectedMeasurements" units="measurements"
-    expires_after="2025-05-11">
+    expires_after="2026-05-11">
   <owner>erahmaoui@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -7030,7 +7030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.UnitConversion.{Type}" enum="UnitChangeTypes"
-    expires_after="2024-12-30">
+    expires_after="2026-05-11">
   <owner>erahmaoui@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
