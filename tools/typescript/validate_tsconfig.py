@@ -159,8 +159,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, platform):
 
   # Specific exceptions for directories that are still migrating to TS.
   migrating_directories = [
-      # TODO(crbug.com/41484340): Migrate to TypeScript.
-      'chrome/browser/resources/device_log',
       # TODO(crbug.com/385341235): Migrate inspect to TypeScript.
       'chrome/browser/resources/inspect',
       'chrome/browser/resources/net_internals',
