@@ -30,6 +30,9 @@ BASE_FEATURE(kAlignPdfDefaultPrintSettingsWithHTML,
 // Use the CUPS IPP printing backend instead of the original CUPS backend that
 // calls the deprecated PPD API.
 BASE_FEATURE(kCupsIppPrintingBackend, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use the XDG Print Portal for the system print dialog.
+BASE_FEATURE(kLinuxXdgPrintPortal, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)

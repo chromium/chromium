@@ -6,11 +6,17 @@
 #define CHROME_BROWSER_UI_VIEWS_CHROME_BROWSER_MAIN_EXTRA_PARTS_VIEWS_LINUX_H_
 
 #include <memory>
+#include <optional>
 
 #include "build/build_config.h"
 #include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/display/display_observer.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "printing/printing_context_linux.h"
+#endif
 
 namespace ui {
 class LinuxUiGetter;
@@ -47,6 +53,10 @@ class ChromeBrowserMainExtraPartsViewsLinux
   std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
 #if BUILDFLAG(USE_DBUS)
   std::unique_ptr<ui::DarkModeManagerLinux> dark_mode_manager_;
+#endif
+#if BUILDFLAG(ENABLE_PRINTING)
+  std::unique_ptr<printing::PrintingContextLinux::PrintDialogFactory>
+      print_dialog_factory_;
 #endif
 };
 

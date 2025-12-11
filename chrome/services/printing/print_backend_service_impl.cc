@@ -50,6 +50,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/no_destructor.h"
+#include "components/printing/common/print_dialog_linux_factory.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate_stub.h"
 #include "ui/linux/linux_ui_factory.h"
@@ -473,6 +474,7 @@ void PrintBackendServiceImpl::Init(
   // are using `TestPrintingContext`.
   InstantiateLinuxUiDelegate();
   ui::LinuxUi::SetInstance(ui::GetDefaultLinuxUi());
+  print_dialog_factory_ = std::make_unique<PrintDialogLinuxFactory>();
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)

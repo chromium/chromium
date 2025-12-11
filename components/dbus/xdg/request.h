@@ -36,8 +36,9 @@ enum class COMPONENT_EXPORT(COMPONENTS_DBUS) ResponseError {
 
 using Dictionary = std::map<std::string, dbus_utils::Variant>;
 
+using Results = base::expected<Dictionary, ResponseError>;
 using ResponseCallback = base::OnceCallback<void(
-    /*results=*/base::expected<Dictionary, ResponseError>)>;
+    /*results=*/Results)>;
 
 class COMPONENT_EXPORT(COMPONENTS_DBUS) Request {
  public:

@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/dbus",
+  "+components/strings/grit/components_strings.h",
+  "+dbus",
+  "+ui/aura",
+  "+ui/base",
+  "+ui/linux",
+]

@@ -21,6 +21,10 @@
 #include "chrome/browser/ui/views/dark_mode_manager_linux.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "components/printing/common/print_dialog_linux_factory.h"
+#endif
+
 namespace {
 
 class LinuxUiGetterImpl : public ui::LinuxUiGetter {
@@ -57,6 +61,11 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
     // implementation). Start observing them once it's initialized.
     ui::CursorFactory::GetInstance()->ObserveThemeChanges();
   }
+
+#if BUILDFLAG(ENABLE_PRINTING)
+  print_dialog_factory_ = std::make_unique<printing::PrintDialogLinuxFactory>();
+#endif
+
 #if BUILDFLAG(USE_DBUS)
   dark_mode_manager_ = std::make_unique<ui::DarkModeManagerLinux>();
 #endif
