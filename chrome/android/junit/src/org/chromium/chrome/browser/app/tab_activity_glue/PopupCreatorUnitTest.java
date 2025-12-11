@@ -93,6 +93,7 @@ public class PopupCreatorUnitTest {
 
         PopupCreator.setReparentingTaskForTesting(mReparentingTask);
         PopupCreator.setInsetsForecastForTesting(Insets.NONE);
+        PopupCreator.initializePopupIntentCreator();
 
         doReturn(DISPLAY_ID).when(mDisplay).getDisplayId();
         doReturn(DENSITY).when(mDisplay).getDipScale();

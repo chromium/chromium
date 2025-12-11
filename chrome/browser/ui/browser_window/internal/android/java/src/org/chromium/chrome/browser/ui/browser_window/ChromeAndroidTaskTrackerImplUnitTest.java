@@ -146,10 +146,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         var intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mContext).startActivity(intentCaptor.capture());
         Intent intent = intentCaptor.getValue();
+        assertNotNull(intent);
         assertTrue(intent.hasExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID));
-        assertEquals(
-                9 /* CustomTabsUiType.POPUP */,
-                intent.getIntExtra("org.chromium.chrome.browser.customtabs.EXTRA_UI_TYPE", -1));
     }
 
     @Test

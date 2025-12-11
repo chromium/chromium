@@ -322,6 +322,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/android/content:java",
       "//chrome/browser/android/cookies:java",
       "//chrome/browser/android/crypto:java",
+      "//chrome/browser/android/customtabs:java",
       "//chrome/browser/android/customtabs/branding:java",
       "//chrome/browser/android/extensions:java",
       "//chrome/browser/android/intents:java",

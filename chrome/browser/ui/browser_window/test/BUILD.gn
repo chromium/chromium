@@ -17,6 +17,7 @@ if (is_android) {
       "//base:base_java",
       "//base:flagged_apis_java",
       "//build/android:build_java",
+      "//chrome/browser/android/customtabs:java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tabmodel:java",

@@ -32,10 +32,14 @@ import androidx.annotation.RequiresApi;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Promise;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.customtabs.PopupIntentCreator;
+import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -345,6 +349,23 @@ public final class ChromeAndroidTaskUnitTestSupport {
         return mockAndroidBrowserWindowNatives;
     }
 
+    /** Mocks {@link PopupIntentCreator}. */
+    private static void mockPopupIntentCreator() {
+        PopupIntentCreator mockCreator = mock(PopupIntentCreator.class);
+        when(mockCreator.createPopupIntent(any(), anyBoolean()))
+                .thenAnswer(
+                        invocation -> {
+                            Intent intent = new Intent();
+                            // Prevents crashing in IntentUtils#addTrustedIntentExtras().
+                            intent.setPackage(
+                                    ContextUtils.getApplicationContext().getPackageName());
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            return intent;
+                        });
+        PopupIntentCreatorProvider.setInstance(mockCreator);
+        ResettersForTesting.register(() -> PopupIntentCreatorProvider.resetInstanceForTesting());
+    }
+
     static ChromeAndroidTask.PendingTaskInfo createPendingTaskInfo() {
         return createPendingTaskInfo(createMockAndroidBrowserWindowCreateParams());
     }
@@ -392,6 +413,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(mockParams.getProfile()).thenReturn(mockProfile);
         when(mockParams.getInitialBounds()).thenReturn(launchBounds);
         when(mockParams.getInitialShowState()).thenReturn(showState);
+        mockPopupIntentCreator();
 
         return mockParams;
     }

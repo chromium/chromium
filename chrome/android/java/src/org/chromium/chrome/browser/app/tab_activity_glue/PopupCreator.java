@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.app.tab_activity_glue;
 
 import static android.view.Display.INVALID_DISPLAY;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
@@ -33,6 +35,8 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.PopupIntentCreator;
+import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,7 +51,7 @@ import org.chromium.ui.insets.WindowInsetsUtils;
 
 /** Handles launching new popup windows as CCTs and Document Picture-in-Picture windows. */
 @NullMarked
-public class PopupCreator {
+public class PopupCreator implements PopupIntentCreator {
     public static final String EXTRA_REQUESTED_WINDOW_FEATURES =
             "chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES";
 
@@ -56,15 +60,43 @@ public class PopupCreator {
     private static @Nullable ReparentingTask sReparentingTaskForTesting;
     private static @Nullable Insets sInsetsForecastForTesting;
 
-    public static void moveTabToNewPopup(Tab tab, WindowFeatures windowFeatures) {
+    /**
+     * Initializes {@link PopupIntentCreator} with top-level dependencies so lower-level code can
+     * obtain a popup Intent via {@link PopupIntentCreator#createPopupIntent}.
+     */
+    public static void initializePopupIntentCreator() {
+        if (PopupIntentCreatorProvider.getInstance() != null) {
+            return;
+        }
+        PopupIntentCreatorProvider.setInstance(new PopupCreator());
+    }
+
+    @Override
+    public Intent createPopupIntent(@Nullable WindowFeatures windowFeatures, boolean isIncognito) {
         Intent intent = initializePopupIntent();
-        ActivityOptions activityOptions =
-                createPopupActivityOptions(windowFeatures, tab.getWindowAndroid());
-        intent.putExtra(EXTRA_REQUESTED_WINDOW_FEATURES, windowFeatures.toBundle());
-        if (tab.isIncognitoBranded()) {
+        if (windowFeatures != null) {
+            intent.putExtra(EXTRA_REQUESTED_WINDOW_FEATURES, windowFeatures.toBundle());
+        }
+        if (isIncognito) {
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                     intent, IncognitoCctCallerId.CONTEXTUAL_POPUP);
         }
+        return intent;
+    }
+
+    /**
+     * Moves the given {@link Tab} to a new Custom Tab popup window.
+     *
+     * @param tab The {@link Tab} to move.
+     * @param windowFeatures The {@link WindowFeatures} to use for the new Custom Tab popup window.
+     */
+    public static void moveTabToNewPopup(Tab tab, WindowFeatures windowFeatures) {
+        initializePopupIntentCreator();
+        var popupIntentCreator = assertNonNull(PopupIntentCreatorProvider.getInstance());
+        Intent intent =
+                popupIntentCreator.createPopupIntent(windowFeatures, tab.isIncognitoBranded());
+        ActivityOptions activityOptions =
+                createPopupActivityOptions(windowFeatures, tab.getWindowAndroid());
 
         getReparentingTask(tab)
                 .begin(
