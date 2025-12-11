@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -57,6 +58,7 @@ void CharacterData::setData(const String& data) {
   SetDataAndUpdate(data, TextDiffRange::Replace(0, old_length, data.length()),
                    kUpdateFromNonParser);
   GetDocument().DidRemoveText(*this, 0, old_length);
+  SoftNavigationHeuristics::ModifiedNode(this);
 }
 
 String CharacterData::substringData(unsigned offset,
