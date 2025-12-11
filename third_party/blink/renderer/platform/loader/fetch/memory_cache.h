@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_coordinator/memory_consumer_registration.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -220,8 +221,7 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   MemoryPressureListenerRegistration memory_pressure_listener_registration_;
 
-  std::unique_ptr<base::MemoryConsumerRegistration>
-      memory_consumer_registration_;
+  MemoryConsumerRegistration memory_consumer_registration_;
 
   // The number of bytes currently consumed by resources in the cache.
   size_t size_ = 0;

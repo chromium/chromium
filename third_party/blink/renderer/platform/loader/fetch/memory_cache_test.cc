@@ -409,12 +409,16 @@ TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSize) {
 
   // Change the memory limit. This will reduce the max size to zero, but not
   // clear anything yet.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(0);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      0, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
   EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
 
   // ReleaseMemory notification. This actually calls PruneStrongReferences();
-  test_memory_consumer_registry_.NotifyReleaseMemory();
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
   EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
 }

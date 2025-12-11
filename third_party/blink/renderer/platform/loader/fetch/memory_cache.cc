@@ -210,14 +210,11 @@ MemoryCache::MemoryCache(
           base::MemoryPressureListenerTag::kMemoryCache,
           this),
       memory_consumer_registration_(
-          (base::SingleThreadTaskRunner::GetMainThreadDefault()
-               ->RunsTasksInCurrentSequence() &&
-           base::MemoryConsumerRegistry::Exists())
-              ? std::make_unique<base::MemoryConsumerRegistration>(
-                    "MemoryCache",
-                    kMemoryCacheTraits,
-                    this)
-              : nullptr),
+          "MemoryCache",
+          kMemoryCacheTraits,
+          this,
+          MemoryConsumerRegistration::CheckUnregister::kDisabled,
+          MemoryConsumerRegistration::CheckRegistryExists::kDisabled),
       strong_references_max_size_(
           features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get()),
       strong_references_prune_duration_(
@@ -237,6 +234,7 @@ void MemoryCache::Trace(Visitor* visitor) const {
 
 void MemoryCache::Dispose() {
   memory_pressure_listener_registration_.Dispose();
+  memory_consumer_registration_.Dispose();
 }
 
 KURL MemoryCache::RemoveFragmentIdentifierIfNeeded(const KURL& original_url) {
