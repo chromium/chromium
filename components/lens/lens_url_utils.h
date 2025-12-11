@@ -88,6 +88,13 @@ std::string VitQueryParamValueForMediaType(
 std::map<std::string, std::string> GetParametersMapWithoutQuery(
     const GURL& url);
 
+// Returns a map of all the common search query parameters required to enable
+// the lens overlay results in the side panel.
+std::map<std::string, std::string> GetCommonSearchParametersMap(
+    const std::string& country_code,
+    bool use_dark_mode,
+    bool is_side_panel);
+
 // Returns |url_to_modify| with all the common search query parameters required
 // to enable the lens overlay results in the side panel.
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,

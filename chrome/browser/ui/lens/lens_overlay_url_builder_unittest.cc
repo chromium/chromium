@@ -164,7 +164,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURL) {
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;
   std::string expected_url =
-      base::StringPrintf("%s?source=chrome.cr.menu&q=%s&gsc=2&hl=%s&cs=0",
+      base::StringPrintf("%s?source=chrome.cr.menu&q=%s&cs=0&gsc=2&hl=%s",
                          kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(StripQuerySubmissionTimeAndClientUploadDurationParam(
@@ -182,8 +182,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLForLensTextSelection) {
   std::string text_query = "Apples";
   std::map<std::string, std::string> additional_params;
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&q=%s&lns_fp=1&lns_mode=text&lns_surface=42&gsc="
-      "2&hl=%s&cs=0",
+      "%s?source=chrome.cr.menu&q=%s&lns_fp=1&lns_mode=text&lns_surface=42&cs="
+      "0&gsc=2&hl=%s",
       kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(StripQuerySubmissionTimeAndClientUploadDurationParam(
@@ -215,7 +215,7 @@ TEST_F(LensOverlayUrlBuilderTest,
   std::map<std::string, std::string> additional_params;
 
   std::string expected_url =
-      base::StringPrintf("%s?source=chrome.cr.menu&q=%s&gsc=2&hl=%s&cs=0",
+      base::StringPrintf("%s?source=chrome.cr.menu&q=%s&cs=0&gsc=2&hl=%s",
                          kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(
@@ -234,7 +234,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrlAndTitle) {
   std::map<std::string, std::string> additional_params;
 
   std::string expected_url =
-      base::StringPrintf("%s?source=chrome.cr.menu&q=%s&gsc=2&hl=%s&cs=0",
+      base::StringPrintf("%s?source=chrome.cr.menu&q=%s&cs=0&gsc=2&hl=%s",
                          kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(
@@ -253,7 +253,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWithPageUrl) {
   std::map<std::string, std::string> additional_params;
 
   std::string expected_url =
-      base::StringPrintf("%s?source=chrome.cr.menu&q=%s&gsc=2&hl=%s&cs=0",
+      base::StringPrintf("%s?source=chrome.cr.menu&q=%s&cs=0&gsc=2&hl=%s",
                          kResultsSearchBaseUrl, text_query.c_str(), kLanguage);
 
   EXPECT_EQ(StripQuerySubmissionTimeAndClientUploadDurationParam(
@@ -270,7 +270,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLEmpty) {
   std::string text_query = "";
   std::map<std::string, std::string> additional_params;
   std::string expected_url =
-      base::StringPrintf("%s?source=chrome.cr.menu&q=&gsc=2&hl=%s&cs=0",
+      base::StringPrintf("%s?source=chrome.cr.menu&q=&cs=0&gsc=2&hl=%s",
                          kResultsSearchBaseUrl, kLanguage);
 
   EXPECT_EQ(StripQuerySubmissionTimeAndClientUploadDurationParam(
@@ -290,7 +290,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLPunctuation) {
   std::string escaped_text_query =
       base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&q=%s&gsc=2&hl=%s&cs=0", kResultsSearchBaseUrl,
+      "%s?source=chrome.cr.menu&q=%s&cs=0&gsc=2&hl=%s", kResultsSearchBaseUrl,
       escaped_text_query.c_str(), kLanguage);
 
   EXPECT_EQ(StripQuerySubmissionTimeAndClientUploadDurationParam(
@@ -310,7 +310,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildTextOnlySearchURLWhitespace) {
   std::string escaped_text_query =
       base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&q=%s&gsc=2&hl=%s&cs=0", kResultsSearchBaseUrl,
+      "%s?source=chrome.cr.menu&q=%s&cs=0&gsc=2&hl=%s", kResultsSearchBaseUrl,
       escaped_text_query.c_str(), kLanguage);
 
   EXPECT_EQ(StripQuerySubmissionTimeAndClientUploadDurationParam(
@@ -341,7 +341,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLEmptyClusterInfo) {
   request_id->set_image_sequence_id(image_sequence_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=%s&lns_mode=mu&"
+      "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=%s&lns_mode=mu&"
       "lns_fp=1&lns_surface=42&gsessionid=&udm=24&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       EncodeRequestId(request_id.get()).c_str());
@@ -375,7 +375,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithSessionId) {
   request_id->set_image_sequence_id(image_sequence_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=%s&lns_mode=mu&"
+      "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=%s&lns_mode=mu&"
       "lns_fp=1&lns_surface=42&gsessionid=%s&udm=24&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       search_session_id.c_str(), EncodeRequestId(request_id.get()).c_str());
@@ -413,7 +413,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithNoTextQuery) {
                         &encoded_request_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=&lns_mode=un&"
+      "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=&lns_mode=un&"
       "lns_fp=1&lns_surface=42&gsessionid=%s&udm=26&vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());
@@ -452,7 +452,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
                         &encoded_request_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&param=value&gsc=2&hl=%s&cs=0&q=&lns_"
+      "%s?source=chrome.cr.menu&param=value&cs=0&gsc=2&hl=%s&q=&lns_"
       "mode=un&lns_fp=1&lns_surface=42&gsessionid=%s&udm=26&"
       "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
@@ -495,7 +495,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildMultimodalSearchURLWithVideoContext) {
                         &encoded_request_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=%s&lns_"
+      "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=%s&lns_"
       "mode=mu&lns_fp=1&lns_surface=42&gsessionid=%s&udm=24&"
       "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
@@ -534,7 +534,7 @@ TEST_F(LensOverlayUrlBuilderTest,
                         &encoded_request_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=&lns_"
+      "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=&lns_"
       "mode=un&lns_fp=1&lns_surface=42&gsessionid=%s&udm=26&"
       "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
@@ -592,7 +592,7 @@ TEST_F(LensOverlayUrlBuilderTest,
                         &encoded_request_id);
 
   std::string expected_url = base::StringPrintf(
-      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=%s&lns_"
+      "%s?source=chrome.cr.menu&cs=0&gsc=2&hl=%s&q=%s&lns_"
       "mode=mu&lns_fp=1&lns_surface=42&gsessionid=%s&udm=24&"
       "vsrid=%s",
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),

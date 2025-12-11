@@ -184,16 +184,31 @@ std::map<std::string, std::string> GetParametersMapWithoutQuery(
   return additional_query_parameters;
 }
 
+std::map<std::string, std::string> GetCommonSearchParametersMap(
+    const std::string& country_code,
+    bool use_dark_mode,
+    bool is_side_panel) {
+  std::map<std::string, std::string> params;
+  params.insert({kChromeSidePanelParameterKey,
+                 is_side_panel
+                     ? lens::features::GetLensOverlayGscQueryParamValue()
+                     : ""});
+  params.insert({kLanguageCodeParameterKey, country_code});
+  params.insert({kDarkModeParameterKey, use_dark_mode
+                                            ? kDarkModeParameterDarkValue
+                                            : kDarkModeParameterLightValue});
+  return params;
+}
+
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        const std::string& country_code,
                                        bool use_dark_mode) {
   GURL new_url = url_to_modify;
-  new_url = net::AppendOrReplaceQueryParameter(
-      new_url, kChromeSidePanelParameterKey,
-      lens::features::GetLensOverlayGscQueryParamValue());
-  new_url = net::AppendOrReplaceQueryParameter(
-      new_url, kLanguageCodeParameterKey, country_code);
-  new_url = AppendDarkModeParamToURL(new_url, use_dark_mode);
+  for (const auto& [key, value] :
+       GetCommonSearchParametersMap(country_code, use_dark_mode,
+                                    /*is_side_panel=*/true)) {
+    new_url = net::AppendOrReplaceQueryParameter(new_url, key, value);
+  }
   return new_url;
 }
 

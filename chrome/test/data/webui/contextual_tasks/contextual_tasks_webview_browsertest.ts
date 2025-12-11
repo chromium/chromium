@@ -62,6 +62,69 @@ suite('ContextualTasksWebviewTest', function() {
     assertEquals(`Bearer fake_token`, authHeader.value);
   });
 
+  test('webview removes gsc param when in tab', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    proxy.handler.setIsShownInTab(true);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const threadFrame =
+        appElement.shadowRoot.querySelector<chrome.webviewTag.WebView>(
+            '#threadFrame');
+    assertTrue(!!threadFrame, 'Thread frame not found');
+
+    const completionPromise = new Promise<void>(resolve => {
+      const listener = (details: any) => {
+        threadFrame.request.onBeforeSendHeaders.removeListener(listener);
+        const url = new URL(details.url);
+        assertEquals(
+            null, url.searchParams.get('gsc'), 'gsc param should not be set');
+        resolve();
+        return {};
+      };
+
+      threadFrame.request.onBeforeSendHeaders.addListener(
+          listener, {urls: ['<all_urls>']}, ['requestHeaders']);
+    });
+
+    threadFrame.src = 'https://www.google.com/?gsc=2';
+    await completionPromise;
+  });
+
+  test('webview adds gsc param when in side panel', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    proxy.handler.setIsShownInTab(false);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const threadFrame =
+        appElement.shadowRoot.querySelector<chrome.webviewTag.WebView>(
+            '#threadFrame');
+    assertTrue(!!threadFrame, 'Thread frame not found');
+
+    const completionPromise = new Promise<void>(resolve => {
+      const listener = (details: any) => {
+        threadFrame.request.onBeforeSendHeaders.removeListener(listener);
+        const url = new URL(details.url);
+        assertEquals('2', url.searchParams.get('gsc'));
+        resolve();
+        return {};
+      };
+
+      threadFrame.request.onBeforeSendHeaders.addListener(
+          listener, {urls: ['<all_urls>']}, ['requestHeaders']);
+    });
+
+    threadFrame.src = 'https://www.google.com/';
+    await completionPromise;
+  });
+
   test('webview adds user agent to request headers', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
