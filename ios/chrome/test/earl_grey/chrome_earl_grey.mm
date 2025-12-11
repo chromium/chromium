@@ -1744,7 +1744,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [self verifyStringCopied:text];
 }
 
-- (void)verifyOpenInNewTabActionWithURL:(const std::string&)URL {
+- (void)verifyOpenInNewTabActionWithURL:(const GURL&)URL {
 #if TARGET_OS_SIMULATOR
   // Synchronization off due to an infinite spinner.
   ScopedSynchronizationDisabler disabler;
@@ -1760,8 +1760,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
   [self waitForMainTabCount:oldRegularTabCount + 1];
   [self waitForIncognitoTabCount:oldIncognitoTabCount];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(URL)]
-      assertWithMatcher:grey_notNil()];
+  [self waitForWebStateVisibleURL:URL];
 }
 
 - (void)verifyOpenInNewWindowActionWithContent:(const std::string&)content {
@@ -1772,7 +1771,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGrey waitForWebStateContainingText:content inWindowWithNumber:1];
 }
 
-- (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL {
+- (void)verifyOpenInIncognitoActionWithURL:(const GURL&)URL {
   // Check tab count prior to execution.
   NSUInteger oldRegularTabCount = [ChromeEarlGreyAppInterface mainTabCount];
   NSUInteger oldIncognitoTabCount =
@@ -1786,9 +1785,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
   [self waitForIncognitoTabCount:oldIncognitoTabCount + 1];
   [self waitForMainTabCount:oldRegularTabCount];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(URL)]
-      assertWithMatcher:grey_notNil()];
+  [self waitForWebStateVisibleURL:URL];
 }
 
 - (void)verifyShareActionWithURL:(const GURL&)URL

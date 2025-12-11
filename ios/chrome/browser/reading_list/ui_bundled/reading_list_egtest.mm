@@ -1242,8 +1242,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // Select "Open in New Tab" and confirm that new tab is opened with selected
   // URL.
-  [ChromeEarlGrey
-      verifyOpenInNewTabActionWithURL:distillablePageURL.GetContent()];
+  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:distillablePageURL];
 }
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu
@@ -1263,8 +1262,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // Select "Open in Incognito" and confirm that new tab is opened with selected
   // URL.
-  [ChromeEarlGrey
-      verifyOpenInIncognitoActionWithURL:distillablePageURL.GetContent()];
+  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:distillablePageURL];
 }
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.

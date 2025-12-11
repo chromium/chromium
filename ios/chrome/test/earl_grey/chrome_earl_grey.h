@@ -924,16 +924,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)verifyCopyLinkActionWithText:(NSString*)text;
 
 // Taps on the Open in New Tab context menu action and waits for the `URL` to be
-// present in the omnibox.
-- (void)verifyOpenInNewTabActionWithURL:(const std::string&)URL;
+// present the URL of the current tab.
+- (void)verifyOpenInNewTabActionWithURL:(const GURL&)URL;
 
 // Taps on the Open in New Window context menu action and waits for the
 // `content` to be present in webview.
 - (void)verifyOpenInNewWindowActionWithContent:(const std::string&)content;
 
 // Taps on the Open in Incognito context menu action and waits for the `URL` to
-// be present in the omnibox.
-- (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL;
+// be present the URL of the current tab.
+- (void)verifyOpenInIncognitoActionWithURL:(const GURL&)URL;
 
 // Taps on the Share context menu action and validates that the ActivityView
 // was brought up with the correct title in its header. The title starts as the

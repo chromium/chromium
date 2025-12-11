@@ -237,7 +237,7 @@ id<GREYMatcher> CarouselMatcher() {
   [self focusOmniboxFromWebPageZero];
   [self longPressMostVisitedTile:tile1];
 
-  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:page1ServerURL.GetContent()];
+  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:page1ServerURL];
 }
 
 // Tests the "Open in New Incognito Tab" action of the carousel context menu.
@@ -250,8 +250,7 @@ id<GREYMatcher> CarouselMatcher() {
   [self focusOmniboxFromWebPageZero];
   [self longPressMostVisitedTile:tile1];
 
-  [ChromeEarlGrey
-      verifyOpenInIncognitoActionWithURL:page1ServerURL.GetContent()];
+  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:page1ServerURL];
 }
 
 #pragma mark - Helpers

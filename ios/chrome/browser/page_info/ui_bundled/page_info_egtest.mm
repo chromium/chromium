@@ -824,7 +824,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Select "Open in New Tab" and confirm that new tab is opened with selected
   // URL.
-  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:kURLExternalWebsiteString];
+  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:kURLExternalWebsite];
 
   // Assert that the Context Menu Last Visited History Entry Actions metric is
   // populated.
@@ -927,7 +927,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
   // Select "Open in New Incognito Tab" and confirm that new tab is opened in
   // incognito with the selected URL.
-  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:kURLExternalWebsiteString];
+  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:kURLExternalWebsite];
 
   // Assert that the Context Menu Last Visited History Entry Actions metric is
   // populated.
