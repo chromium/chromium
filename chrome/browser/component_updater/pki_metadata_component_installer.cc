@@ -41,6 +41,7 @@
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
+#include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -162,33 +163,6 @@ std::vector<net::SHA256HashValue> SHA256HashValueArrayFromProtoBytes(
     }
   }
   return hashes;
-}
-
-std::vector<uint8_t> MakeTrustAnchorIdForRange(
-    base::span<const uint8_t> base_id,
-    uint64_t last_landmark) {
-  constexpr size_t kMaxBase128Uint64Size = 10;
-  bssl::ScopedCBB cbb;
-  CHECK(CBB_init(cbb.get(),
-                 /*initial_capacity=*/base_id.size() + kMaxBase128Uint64Size) &&
-        CBB_add_bytes(cbb.get(), base_id.data(), base_id.size()) &&
-        CBB_add_asn1_oid_component(cbb.get(), last_landmark) &&
-        CBB_flush(cbb.get()));
-
-  // SAFETY: CBB_data(cbb) returns a pointer to the written data with length
-  // CBB_len(cbb).
-  return base::ToVector(UNSAFE_BUFFERS(
-      base::span<const uint8_t>(CBB_data(cbb.get()), CBB_len(cbb.get()))));
-}
-
-std::string TaiToString(base::span<const uint8_t> trust_anchor_id) {
-  CBS cbs;
-  CBS_init(&cbs, trust_anchor_id.data(), trust_anchor_id.size());
-  bssl::UniquePtr<char> text(CBS_asn1_relative_oid_to_text(&cbs));
-  if (text) {
-    return std::string(text.get());
-  }
-  return std::string();
 }
 
 }  // namespace
@@ -336,16 +310,20 @@ void PKIMetadataComponentInstallerService::UpdateTrustAnchorIDsImpl() {
          mtc_log_id_landmark_trust_anchor_ids_) {
       if (crs_trusted_mtc_logids_.contains(signatureless_tai.anchor_log_id)) {
         DVLOG(1) << "using signatureless TAI "
-                 << TaiToString(signatureless_tai.landmark_trust_anchor_id)
+                 << net::x509_util::RelativeOidToString(
+                        signatureless_tai.landmark_trust_anchor_id)
                  << " for trusted MTC Anchor log_id="
-                 << TaiToString(signatureless_tai.anchor_log_id);
+                 << net::x509_util::RelativeOidToString(
+                        signatureless_tai.anchor_log_id);
         mtc_trust_anchor_ids.push_back(
             signatureless_tai.landmark_trust_anchor_id);
       } else {
         DVLOG(1) << "ignoring signatureless TAI "
-                 << TaiToString(signatureless_tai.landmark_trust_anchor_id)
+                 << net::x509_util::RelativeOidToString(
+                        signatureless_tai.landmark_trust_anchor_id)
                  << " as no trusted MTC Anchor found with log_id="
-                 << TaiToString(signatureless_tai.anchor_log_id);
+                 << net::x509_util::RelativeOidToString(
+                        signatureless_tai.anchor_log_id);
       }
     }
   }
@@ -368,6 +346,11 @@ void PKIMetadataComponentInstallerService::UpdateCRSTrustAnchorIDs(
     return;
   }
 
+  // TODO(crbug.com/465497426): These methods should check the version
+  // constraints and not advertise Trust Anchor IDs for anchors that can't work
+  // on the running chrome version (refactor IsAnchorTrustedOnThisChromeVersion
+  // from cert_verifier_service_factory.cc to somewhere it can be used by
+  // both.)
   std::vector<std::vector<uint8_t>> crs_trust_anchor_ids;
   for (const auto& anchor : message->trust_anchors()) {
     if (anchor.has_trust_anchor_id()) {
@@ -456,9 +439,9 @@ bool PKIMetadataComponentInstallerService::UpdateMtcMetadataTrustAnchorIDs(
     MtcLogIdAndLandmarkTrustAnchorId tai_entry;
     tai_entry.anchor_log_id =
         base::ToVector(base::as_byte_span(anchor_data.log_id()));
-    tai_entry.landmark_trust_anchor_id =
-        MakeTrustAnchorIdForRange(base::as_byte_span(tai_range.base_id()),
-                                  tai_range.last_landmark_inclusive());
+    tai_entry.landmark_trust_anchor_id = net::x509_util::AppendOidComponent(
+        base::as_byte_span(tai_range.base_id()),
+        tai_range.last_landmark_inclusive());
     mtc_log_id_signatureless_trust_anchor_ids.push_back(std::move(tai_entry));
   }
 

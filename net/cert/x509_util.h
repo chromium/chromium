@@ -187,6 +187,16 @@ NET_EXPORT bool SignatureVerifierInitWithCertificate(
 NET_EXPORT_PRIVATE bool HasRsaPkcs1Sha1Signature(
     const CRYPTO_BUFFER* cert_buffer);
 
+// Given a DER-encoded OID or Relative-OID, appends a single OID component and
+// returns the result.
+NET_EXPORT std::vector<uint8_t> AppendOidComponent(
+    base::span<const uint8_t> oid,
+    uint64_t component);
+
+// Returns the textual representation of a DER-encoded Relative-OID.
+NET_EXPORT std::string RelativeOidToString(
+    base::span<const uint8_t> relative_oid);
+
 }  // namespace x509_util
 
 }  // namespace net

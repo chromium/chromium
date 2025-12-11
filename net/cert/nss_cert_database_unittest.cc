@@ -693,6 +693,7 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
           /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -735,6 +736,7 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
           /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -778,6 +780,7 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert_SelfSigned_Trusted) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
           /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -826,6 +829,7 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
           /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -873,6 +877,7 @@ TEST_F(CertDatabaseNSSTest, ImportCaAndServerCert_DistrustServer) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
           /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -936,6 +941,7 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
           /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -1006,6 +1012,7 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa2) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
           /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -1074,6 +1081,7 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa3) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
           /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;
@@ -1142,6 +1150,7 @@ TEST_F(CertDatabaseNSSTest, TrustIntermediateCa4) {
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
           /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
           /*instance_params=*/{}, std::nullopt));
   int flags = 0;
   CertVerifyResult verify_result;

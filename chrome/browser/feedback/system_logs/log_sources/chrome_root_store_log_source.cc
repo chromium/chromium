@@ -4,6 +4,7 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_root_store_log_source.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/net/x509_certificate_model.h"
 #include "components/feedback/system_logs/system_logs_source.h"
@@ -35,6 +36,16 @@ void PopulateChromeRootStoreLogsAsync(
         net::x509_util::CreateCryptoBuffer(cert_info->cert));
     entry += "hash: " + cert_info->sha256hash_hex +
              "  name: " + model.GetTitle() + "\n";
+  }
+  if (info->mtc_metadata_update_time) {
+    entry += "\n\nMTC metadata update_time: " +
+             base::TimeFormatAsIso8601(*info->mtc_metadata_update_time) +
+             "\n\n";
+  }
+  for (auto const& mtc_info : info->root_mtc_info) {
+    entry += "log_id: " + mtc_info->log_id_text +
+             " landmarks: " + mtc_info->min_landmark_id_text + " .. " +
+             mtc_info->last_landmark_id_text + "\n";
   }
   response->emplace(kChromeRootStoreKey, std::move(entry));
   std::move(callback).Run(std::move(response));

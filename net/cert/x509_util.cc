@@ -562,4 +562,30 @@ bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {
          *signature_algorithm == bssl::SignatureAlgorithm::kRsaPkcs1Sha1;
 }
 
+std::vector<uint8_t> AppendOidComponent(base::span<const uint8_t> oid,
+                                        uint64_t component) {
+  constexpr size_t kMaxBase128Uint64Size = 10;
+  bssl::ScopedCBB cbb;
+  CHECK(CBB_init(cbb.get(),
+                 /*initial_capacity=*/oid.size() + kMaxBase128Uint64Size) &&
+        CBB_add_bytes(cbb.get(), oid.data(), oid.size()) &&
+        CBB_add_asn1_oid_component(cbb.get(), component) &&
+        CBB_flush(cbb.get()));
+
+  // SAFETY: CBB_data(cbb) returns a pointer to the written data with length
+  // CBB_len(cbb).
+  return base::ToVector(UNSAFE_BUFFERS(
+      base::span<const uint8_t>(CBB_data(cbb.get()), CBB_len(cbb.get()))));
+}
+
+std::string RelativeOidToString(base::span<const uint8_t> relative_oid) {
+  CBS cbs;
+  CBS_init(&cbs, relative_oid.data(), relative_oid.size());
+  bssl::UniquePtr<char> text(CBS_asn1_relative_oid_to_text(&cbs));
+  if (text) {
+    return std::string(text.get());
+  }
+  return std::string();
+}
+
 }  // namespace net::x509_util

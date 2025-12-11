@@ -230,6 +230,9 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
       trust_store_chrome->GetConstraintsForCert(other_parsed.get()).empty());
 }
 
+// TODO(crbug.com/452986179): test verifying MTCs from the root store data, MTC
+// anchor constraints, etc, once implemented.
+
 TEST(TrustStoreChromeTestNoFixture, EnforceAnchorExpiryAndConstraints) {
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
       TrustStoreChrome::CreateTrustStoreForTesting(
@@ -283,7 +286,8 @@ TEST(TrustStoreChromeTestNoFixture,
       std::optional<ChromeRootStoreData> root_store_data =
           ChromeRootStoreData::CreateFromRootStoreProto(root_store);
       ASSERT_TRUE(root_store_data);
-      TrustStoreChrome trust_store_chrome(root_store_data.value());
+      TrustStoreChrome trust_store_chrome(&root_store_data.value(),
+                                          /*mtc_metadata=*/nullptr);
 
       std::shared_ptr<const bssl::ParsedCertificate> parsed =
           ToParsedCertificate(*root);
@@ -427,7 +431,8 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoAdditionalCertsAsTrustAnchors) {
       std::optional<ChromeRootStoreData> root_store_data =
           ChromeRootStoreData::CreateFromRootStoreProto(root_store);
       ASSERT_TRUE(root_store_data);
-      TrustStoreChrome trust_store_chrome(root_store_data.value());
+      TrustStoreChrome trust_store_chrome(&root_store_data.value(),
+                                          /*mtc_metadata=*/nullptr);
 
       std::shared_ptr<const bssl::ParsedCertificate> parsed =
           ToParsedCertificate(*root);
@@ -461,7 +466,8 @@ TEST(TrustStoreChromeTestNoFixture,
   std::optional<ChromeRootStoreData> root_store_data =
       ChromeRootStoreData::CreateFromRootStoreProto(root_store);
   ASSERT_TRUE(root_store_data);
-  TrustStoreChrome trust_store_chrome(root_store_data.value());
+  TrustStoreChrome trust_store_chrome(&root_store_data.value(),
+                                      /*mtc_metadata=*/nullptr);
 
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
       ToParsedCertificate(*root);
@@ -488,7 +494,8 @@ TEST(TrustStoreChromeTestNoFixture, LoadProtoNonAnchorsAreNotTrusted) {
   std::optional<ChromeRootStoreData> root_store_data =
       ChromeRootStoreData::CreateFromRootStoreProto(root_store);
   ASSERT_TRUE(root_store_data);
-  TrustStoreChrome trust_store_chrome(root_store_data.value());
+  TrustStoreChrome trust_store_chrome(&root_store_data.value(),
+                                      /*mtc_metadata=*/nullptr);
 
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
       ToParsedCertificate(*root);

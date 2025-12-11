@@ -43,12 +43,18 @@ struct ChromeRootCertInfo {
   array<uint8> cert;
 };
 
+struct ChromeRootMerkleTreeCertInfo {
+  string log_id_text;
+  string min_landmark_id_text;
+  string last_landmark_id_text;
+};
+
 // Information about the Chrome Root Store
 struct ChromeRootStoreInfo {
   int64 version;
   array<ChromeRootCertInfo> root_cert_info;
-  // TODO(crbug.com/462227032): include MTC anchor info here, and show it in
-  // the certificate manager UI.
+  mojo_base.mojom.Time? mtc_metadata_update_time;
+  array<ChromeRootMerkleTreeCertInfo> root_mtc_info;
 };
 
 [EnableIf=is_platform_root_store_info_supported]

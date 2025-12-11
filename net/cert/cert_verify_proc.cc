@@ -420,11 +420,12 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinWithChromeRootStore(
     std::unique_ptr<CTVerifier> ct_verifier,
     scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
     const ChromeRootStoreData* root_store_data,
+    const ChromeRootStoreMtcMetadata* root_store_mtc_metadata,
     const InstanceParams instance_params,
     std::optional<network_time::TimeTracker> time_tracker) {
   std::unique_ptr<TrustStoreChrome> chrome_root =
-      root_store_data ? std::make_unique<TrustStoreChrome>(*root_store_data)
-                      : std::make_unique<TrustStoreChrome>();
+      std::make_unique<TrustStoreChrome>(root_store_data,
+                                         root_store_mtc_metadata);
   return CreateCertVerifyProcBuiltin(
       std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
       std::move(ct_policy_enforcer),

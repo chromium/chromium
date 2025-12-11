@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "crypto/hash.h"
@@ -27,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verify_result.h"
@@ -499,6 +501,157 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
       net::x509_util::CreateCryptoBuffer(info_ptr->root_cert_info[0]->cert)
           .get(),
       root->GetCertBuffer()));
+}
+
+void SetFakeProtoTrustedSubtreeData(
+    chrome_root_store::MtcAnchorData* mtc_anchor_metadata) {
+  chrome_root_store::MtcSubTree* subtree =
+      mtc_anchor_metadata->add_trusted_subtrees();
+  subtree->set_start_inclusive(1);
+  subtree->set_end_exclusive(2);
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
+  hash.fill(0);
+  subtree->set_hash(base::as_string_view(hash));
+}
+
+TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithMerkleTreeCertAnchors) {
+  base::test::ScopedFeatureList feature_list_{net::features::kVerifyMTCs};
+
+  // Create leaf and root certs.
+  base::test::TaskEnvironment task_environment;
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+
+  base::Time now = base::Time::Now();
+  base::Time now_truncated_to_seconds =
+      base::Time::FromMillisecondsSinceUnixEpoch(
+          now.InMillisecondsSinceUnixEpoch() / 1000 * 1000);
+  leaf->SetValidity(now - base::Days(1), now + base::Days(1));
+
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  int64_t kRootStoreVersion = net::CompiledChromeRootStoreVersion() + 1;
+
+  {
+    // Create updated Chrome Root Store with a regular anchor and 2 MTC anchors.
+    chrome_root_store::RootStore root_store;
+    root_store.set_version_major(kRootStoreVersion);
+    chrome_root_store::TrustAnchor* anchor = root_store.add_trust_anchors();
+    anchor->set_der(root->GetDER());
+
+    // Two anchors that will have matching MTC metadata
+    chrome_root_store::MtcAnchor* mtc_anchor = root_store.add_mtc_anchors();
+    mtc_anchor->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor->set_tls_trust_anchor(true);
+
+    mtc_anchor = root_store.add_mtc_anchors();
+    mtc_anchor->set_log_id({0x21, 0x22});
+    mtc_anchor->set_tls_trust_anchor(true);
+
+    // One anchor that doesn't match the MTC metadata.
+    mtc_anchor = root_store.add_mtc_anchors();
+    mtc_anchor->set_log_id({0x31, 0x32});
+    mtc_anchor->set_tls_trust_anchor(true);
+
+    // Feed factory the new Chrome Root Store.
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateChromeRootStore(
+        mojo_base::ProtoWrapper(root_store), update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
+
+  {
+    cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
+    base::RunLoop request_completed_run_loop;
+    cv_service_factory_remote->GetChromeRootStoreInfo(
+        base::BindOnce(&GetRootStoreInfo, &info_ptr,
+                       request_completed_run_loop.QuitClosure()));
+    request_completed_run_loop.Run();
+    ASSERT_TRUE(info_ptr);
+    EXPECT_EQ(info_ptr->version, kRootStoreVersion);
+    ASSERT_EQ(info_ptr->root_cert_info.size(), 1u);
+
+    EXPECT_EQ(info_ptr->mtc_metadata_update_time, std::nullopt);
+    ASSERT_EQ(info_ptr->root_mtc_info.size(), 0u);
+  }
+
+  {
+    // Now create MTC Metadata proto as well.
+    chrome_root_store::MtcMetadata mtc_metadata_proto;
+    mtc_metadata_proto.set_update_time_seconds(
+        now.InMillisecondsSinceUnixEpoch() / 1000);
+
+    // Two anchor metadatas that match the MTC anchors above.
+    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
+        mtc_metadata_proto.add_mtc_anchor_data();
+    mtc_anchor_metadata->set_log_id({0x01, 0x02, 0x03});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+        {0x04, 0x05});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_min_active_landmark_inclusive(1);
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_last_landmark_inclusive(42);
+    SetFakeProtoTrustedSubtreeData(mtc_anchor_metadata);
+
+    mtc_anchor_metadata = mtc_metadata_proto.add_mtc_anchor_data();
+    mtc_anchor_metadata->set_log_id({0x21, 0x22});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+        {0x24, 0x25});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_min_active_landmark_inclusive(21);
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_last_landmark_inclusive(242);
+    SetFakeProtoTrustedSubtreeData(mtc_anchor_metadata);
+
+    // One anchor metadata that doesn't match the MTC anchors above.
+    mtc_anchor_metadata = mtc_metadata_proto.add_mtc_anchor_data();
+    mtc_anchor_metadata->set_log_id({0x41, 0x42});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
+        {0x44, 0x45});
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_min_active_landmark_inclusive(41);
+    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
+        ->set_last_landmark_inclusive(442);
+    SetFakeProtoTrustedSubtreeData(mtc_anchor_metadata);
+
+    // Feed factory the new MTC metadata.
+    base::RunLoop update_run_loop;
+    cv_service_factory_impl.UpdateMtcMetadata(
+        mojo_base::ProtoWrapper(mtc_metadata_proto),
+        update_run_loop.QuitClosure());
+    update_run_loop.Run();
+  }
+
+  {
+    cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
+    base::RunLoop request_completed_run_loop;
+    cv_service_factory_remote->GetChromeRootStoreInfo(
+        base::BindOnce(&GetRootStoreInfo, &info_ptr,
+                       request_completed_run_loop.QuitClosure()));
+    request_completed_run_loop.Run();
+    ASSERT_TRUE(info_ptr);
+    EXPECT_EQ(info_ptr->version, kRootStoreVersion);
+    ASSERT_EQ(info_ptr->root_cert_info.size(), 1u);
+
+    EXPECT_EQ(info_ptr->mtc_metadata_update_time, now_truncated_to_seconds);
+
+    // root_mtc_info only includes anchors that were present in both the root
+    // store mtc_anchors and the mtc metadata.
+    ASSERT_EQ(info_ptr->root_mtc_info.size(), 2u);
+    {
+      const auto& mtc_info = *info_ptr->root_mtc_info[0];
+      EXPECT_EQ(mtc_info.log_id_text, "1.2.3");
+      EXPECT_EQ(mtc_info.min_landmark_id_text, "4.5.1");
+      EXPECT_EQ(mtc_info.last_landmark_id_text, "4.5.42");
+    }
+    {
+      const auto& mtc_info = *info_ptr->root_mtc_info[1];
+      EXPECT_EQ(mtc_info.log_id_text, "33.34");
+      EXPECT_EQ(mtc_info.min_landmark_id_text, "36.37.21");
+      EXPECT_EQ(mtc_info.last_landmark_id_text, "36.37.242");
+    }
+  }
 }
 
 std::string CurVersionString() {
