@@ -2471,7 +2471,7 @@ TEST_P(SharedDictionaryManagerTest, DeleteExpiredDictionariesOnGetDictionary) {
 
   task_environment_.FastForwardBy(base::Seconds(10));
 
-  WriteDictionary(storage.get(), GURL("https://origin.test/d1"), "p2*",
+  WriteDictionary(storage.get(), GURL("https://origin.test/d2"), "p2*",
                   {kTestData2}, /*additional_options=*/",expires=5",
                   /*additional_header=*/"cache-control:max-age=5\n");
 
@@ -2488,10 +2488,14 @@ TEST_P(SharedDictionaryManagerTest, DeleteExpiredDictionariesOnGetDictionary) {
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
+  // All expired dictionaries within the same isolation key will be removed
+  // when the isolation key is scanned for matches, even if the specific
+  // match itself is not expired.
+  EXPECT_EQ(2u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
   EXPECT_TRUE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
                                          mojom::RequestDestination::kEmpty));
 
-  EXPECT_EQ(2u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
+  EXPECT_EQ(1u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
   EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p2?"),
                                           mojom::RequestDestination::kEmpty));
   EXPECT_EQ(1u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
@@ -2504,6 +2508,47 @@ TEST_P(SharedDictionaryManagerTest, DeleteExpiredDictionariesOnGetDictionary) {
   EXPECT_FALSE(storage->GetDictionarySync(GURL("https://origin.test/p1?"),
                                           mojom::RequestDestination::kEmpty));
   EXPECT_TRUE(GetSharedDictionaryInfo(manager.get(), isolation_key).empty());
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       ExpiredDictionariesNotConsideredWhenMatching) {
+  net::SharedDictionaryIsolationKey isolation_key(
+      url::Origin::Create(GURL("https://frame.test/")),
+      net::SchemefulSite(GURL("https://target.test")));
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  WriteDictionary(storage.get(), GURL("https://origin.test/d1"), "p1*",
+                  {kTestData1}, /*additional_options=*/",expires=20,id=\"d1\"",
+                  /*additional_header=*/"cache-control:max-age=20\n");
+
+  // More-specific match for the same resource but expires before the
+  // less-specific match.
+  WriteDictionary(storage.get(), GURL("https://origin.test/d2"), "p1**",
+                  {kTestData2}, /*additional_options=*/",expires=5,id=\"d2\"",
+                  /*additional_header=*/"cache-control:max-age=5\n");
+
+  if (GetManagerType() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(4));
+
+  scoped_refptr<net::SharedDictionary> match = storage->GetDictionarySync(
+      GURL("https://origin.test/p1?"), mojom::RequestDestination::kEmpty);
+  EXPECT_TRUE(match);
+  EXPECT_EQ("d2", match->id());
+  EXPECT_EQ(2u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  scoped_refptr<net::SharedDictionary> match2 = storage->GetDictionarySync(
+      GURL("https://origin.test/p1?"), mojom::RequestDestination::kEmpty);
+  EXPECT_TRUE(match2);
+  EXPECT_EQ("d1", match2->id());
+  EXPECT_EQ(1u, GetSharedDictionaryInfo(manager.get(), isolation_key).size());
 }
 
 TEST_P(SharedDictionaryManagerTest, DictionaryEquality) {

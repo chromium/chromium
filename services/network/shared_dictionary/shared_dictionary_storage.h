@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_STORAGE_H_
 
+#include <list>
 #include <map>
 #include <set>
 #include <string>
@@ -125,15 +126,24 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
         std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
                  DictionaryInfoType>>& dictionary_info_map,
     const GURL& url,
-    mojom::RequestDestination destination) {
+    mojom::RequestDestination destination,
+    std::list<DictionaryInfoType*>& expired_entries) {
   auto it = dictionary_info_map.find(url::SchemeHostPort(url));
   if (it == dictionary_info_map.end()) {
     return nullptr;
   }
+  base::Time now = base::Time::Now();
   DictionaryInfoType* matched_info = nullptr;
   for (auto& item : it->second) {
     DictionaryInfoType& info = item.second;
     CHECK(std::make_tuple(info.match(), info.match_dest()) == item.first);
+
+    // Keep track of (but don't match) expired entries.
+    if (info.response_time() + info.expiration() <= now) {
+      expired_entries.push_back(&info);
+      continue;
+    }
+
     if (matched_info &&
         ((matched_info->match().size() > info.match().size()) ||
          (matched_info->match().size() == info.match().size() &&

@@ -4,6 +4,7 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_storage_in_memory.h"
 
+#include <list>
 #include <map>
 
 #include "base/functional/bind.h"
@@ -34,18 +35,19 @@ scoped_refptr<net::SharedDictionary>
 SharedDictionaryStorageInMemory::GetDictionarySync(
     const GURL& url,
     mojom::RequestDestination destination) {
+  std::list<DictionaryInfo*> expired_entries;
   DictionaryInfo* info = GetMatchingDictionaryFromDictionaryInfoMap(
-      dictionary_info_map_, url, destination);
+      dictionary_info_map_, url, destination, expired_entries);
+
+  for (DictionaryInfo* expired_entry : expired_entries) {
+    DeleteDictionary(url::SchemeHostPort(expired_entry->url()),
+                     expired_entry->match(), expired_entry->match_dest());
+  }
 
   if (!info) {
     return nullptr;
   }
 
-  if (info->response_time() + info->expiration() <= base::Time::Now()) {
-    DeleteDictionary(url::SchemeHostPort(info->url()), info->match(),
-                     info->match_dest());
-    return nullptr;
-  }
   info->set_last_used_time(base::Time::Now());
   return info->dictionary();
 }

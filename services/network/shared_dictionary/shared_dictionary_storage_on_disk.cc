@@ -4,6 +4,8 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 
+#include <list>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -196,14 +198,16 @@ SharedDictionaryStorageOnDisk::GetDictionarySyncInternal(
   if (!manager_) {
     return nullptr;
   }
+
+  std::list<WrappedDictionaryInfo*> expired_entries;
   net::SharedDictionaryInfo* info = GetMatchingDictionaryFromDictionaryInfoMap(
-      dictionary_info_map_, url, destination);
-  if (!info) {
-    return nullptr;
+      dictionary_info_map_, url, destination, expired_entries);
+
+  if (!expired_entries.empty()) {
+    manager_->MaybePostExpiredDictionaryDeletionTask();
   }
 
-  if (info->response_time() + info->expiration() <= base::Time::Now()) {
-    manager_->MaybePostExpiredDictionaryDeletionTask();
+  if (!info) {
     return nullptr;
   }
 
