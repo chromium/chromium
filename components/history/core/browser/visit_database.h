@@ -379,6 +379,11 @@ class VisitDatabase {
   // Called by the derived classes to migrate the older visits table which
   // doesn't have the `app_id` column.
   bool MigrateVisitsAddAppId();
+
+  // Helper to prepare the SQL statement and bind parameters for visible visits.
+  bool PrepareVisibleVisitsQuery(const QueryOptions& options,
+                                 std::optional<URLID> url_id_to_bind,
+                                 sql::Statement& out_statement);
 };
 
 // Columns, in order, of the visit table.
