@@ -203,6 +203,20 @@ void GlicZeroStateSuggestionsManager::
         bool is_first_run,
         const std::vector<std::string>& supported_tools,
         const TabDataChange& tab_data_change) {
+  TabDataChangeCauseSet eligible_causes = {
+      TabDataChangeCause::kSameDocNavigation,
+      TabDataChangeCause::kCrossDocNavigation, TabDataChangeCause::kTabChanged};
+  if (base::FeatureList::IsEnabled(
+          kRefreshZeroStateSuggestionsOnFocusedTabChange)) {
+    // Allow for visibility to be a change to refresh suggestions on if focused
+    // tab change suggestion refresh is enabled.
+    eligible_causes.Put(TabDataChangeCause::kVisibility);
+  }
+  if (!tab_data_change.causes.HasAny(eligible_causes)) {
+    // Not an eligible change cause, do not refresh suggestions.
+    return;
+  }
+
   NotifyZeroStateSuggestionsOnPinnedTabChanged(
       is_first_run, supported_tools, sharing_manager_->GetPinnedTabs());
 }
