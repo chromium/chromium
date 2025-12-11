@@ -147,8 +147,13 @@ class KeystoneInstallTest : public testing::Test {
       }
     } while (read_this_pass > 0);
 
-    ASSERT_TRUE(proc.WaitForExitWithTimeout(
-        std::max(deadline - base::Time::Now(), base::TimeDelta()), exit_code));
+    base::TimeDelta remaining =
+        std::max(deadline - base::Time::Now(), base::TimeDelta());
+    if (proc.WaitForExitWithTimeout(remaining, exit_code)) {
+      return;
+    };
+    proc.Terminate(1, false);
+    FAIL() << "KeystoneInstallTest::RunExecutable timed out.";
   }
 
   void RunInstallScript(int exit_code) {
