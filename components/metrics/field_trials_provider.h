@@ -38,6 +38,12 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
   // version, and form factor.
   static void UpdateAppliedSeedHasActiveLimitedLayer(bool has_limited_layer);
 
+  // Resets the global variable described in the function comment of
+  // UpdateAppliedSeedHasActiveLimitedLayer() because it can be set only once.
+  // This reset is needed on platforms in which global state carries over from
+  // one test into subsequent tests.
+  static void ClearSeedHasActiveLimitedLayerForTesting();
+
   // metrics::MetricsProvider:
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;

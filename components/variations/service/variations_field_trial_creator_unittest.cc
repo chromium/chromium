@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/client_info.h"
+#include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
@@ -481,6 +482,10 @@ class FieldTrialCreatorTest : public ::testing::Test {
     // Do not use the static field trial testing config data. Perform the
     // "real" feature and field trial setup.
     DisableTestingConfig();
+  }
+
+  void TearDown() override {
+    FieldTrialsProvider::ClearSeedHasActiveLimitedLayerForTesting();
   }
 
   PrefService* local_state() { return &local_state_; }

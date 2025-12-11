@@ -44,6 +44,11 @@ void FieldTrialsProvider::UpdateAppliedSeedHasActiveLimitedLayer(
   g_seed_has_active_limited_layer = has_limited_layer;
 }
 
+// static
+void FieldTrialsProvider::ClearSeedHasActiveLimitedLayerForTesting() {
+  g_seed_has_active_limited_layer = std::nullopt;
+}
+
 void FieldTrialsProvider::GetFieldTrialIds(
     std::vector<ActiveGroupId>* field_trial_ids) const {
   // As the trial groups are included in metrics reports, we must not include
