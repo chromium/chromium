@@ -1,0 +1,334 @@
+# Initialize Factory
+actions {
+  new_idb_factory {
+    id: 0
+  }
+}
+
+# Run Thread
+actions {
+  run_thread {
+    id: Bucket
+  }
+}
+
+# Reset Database
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    reset {
+    }
+  }
+}
+
+# Open Database
+actions {
+  idb_factory_remote_action {
+    id: 0
+    m_open {
+      m_client: 0
+      m_database_callbacks: 0
+      m_name {
+        new {
+          id: 0
+          m_data {
+            values { value: 100 } # 'd'
+            values { value: 98 }  # 'b'
+          }
+        }
+      }
+      m_version: 1
+      m_version_change_transaction_receiver: 0
+      m_transaction_id: 1
+      m_priority: 0
+    }
+  }
+}
+
+# Create Object Store
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_create_object_store {
+      m_object_store_id: 1
+      m_name {
+        new {
+          id: 0
+          m_data {
+            values { value: 115 } # 's'
+            values { value: 116 } # 't'
+            values { value: 111 } # 'o'
+            values { value: 114 } # 'r'
+            values { value: 101 } # 'e'
+          }
+        }
+      }
+      m_key_path {
+        new {
+          id: 0
+          m_data {
+            new {
+              id: 0
+              m_string {
+                new {
+                  id: 0
+                  m_data {
+                    values { value: 107 } # 'k'
+                    values { value: 101 } # 'e'
+                    values { value: 121 } # 'y'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      m_auto_increment: true
+    }
+  }
+}
+
+# Create Index (MultiEntry=True)
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    m_create_index {
+      m_transaction_id: 1
+      m_object_store_id: 1
+      m_index {
+        new {
+          id: 0
+          m_id: 100
+          m_name {
+            new {
+              id: 0
+              m_data {
+                values { value: 105 } # 'i'
+                values { value: 110 } # 'n'
+                values { value: 100 } # 'd'
+                values { value: 101 } # 'e'
+                values { value: 120 } # 'x'
+              }
+            }
+          }
+          m_key_path {
+            new {
+              id: 0
+              m_data {
+                new {
+                  id: 0
+                  m_string {
+                    new {
+                      id: 0
+                      m_data {
+                        values { value: 105 } # 'i'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          m_unique: false
+          m_multi_entry: true
+        }
+      }
+    }
+  }
+}
+
+# Put Record 1 (Key: 1, Index Keys: [5.0, 10.0, 15.0, 20.0])
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_put {
+      m_object_store_id: 1
+      m_value {
+        new {
+          id: 0
+          m_bits {
+            new {
+              id: 0
+              m_bytes {
+                values { value: 1 }
+              }
+            }
+          }
+          m_external_objects {
+          }
+        }
+      }
+      m_key {
+        new {
+          id: 0
+          m_other_none: true
+        }
+      }
+      m_mode: 0 # AddOrUpdate
+      m_index_keys {
+        values {
+          value {
+            new {
+              id: 0
+              m_index_id: 100
+              m_index_keys {
+                values { value { new { id: 0 m_number: 5.0 } } }
+                values { value { new { id: 0 m_number: 10.0 } } }
+                values { value { new { id: 0 m_number: 15.0 } } }
+                values { value { new { id: 0 m_number: 20.0 } } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Put Record 2 (Key: 2, Index Keys: [15.0, 20.0, 25.0, 30.0])
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_put {
+      m_object_store_id: 1
+      m_value {
+        new {
+          id: 0
+          m_bits {
+            new {
+              id: 0
+              m_bytes {
+                values { value: 2 }
+              }
+            }
+          }
+          m_external_objects {
+          }
+        }
+      }
+      m_key {
+        new {
+          id: 0
+          m_other_none: true
+        }
+      }
+      m_mode: 0 # AddOrUpdate
+      m_index_keys {
+        values {
+          value {
+            new {
+              id: 0
+              m_index_id: 100
+              m_index_keys {
+                values { value { new { id: 0 m_number: 15.0 } } }
+                values { value { new { id: 0 m_number: 20.0 } } }
+                values { value { new { id: 0 m_number: 25.0 } } }
+                values { value { new { id: 0 m_number: 30.0 } } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Commit Transaction
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_commit {
+      m_num_errors_handled: 0
+    }
+  }
+}
+
+# Open Cursor on Index (PrevNoDuplicate, KeyOnly=True, Range=(0.0, 30.0))
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    m_open_cursor {
+      m_transaction_id: 1
+      m_object_store_id: 1
+      m_index_id: 100
+      m_key_range {
+        new {
+          id: 0
+          m_lower { new { id: 0 m_number: 0.0 } }
+          m_upper { new { id: 0 m_number: 30.0 } }
+          m_lower_open: true
+          m_upper_open: true
+        }
+      }
+      m_direction: 3 # PrevNoDuplicate
+      m_key_only: true
+      m_task_type: 0 # Normal
+    }
+  }
+}
+
+# Cursor Continue
+actions {
+  idb_cursor_associated_remote_action {
+    id: 0
+    m_continue {
+      m_key { new { id: 0 m_other_none: true } }
+      m_primary_key { new { id: 0 m_other_none: true } }
+    }
+  }
+}
+
+# Cursor Advance
+actions {
+  idb_cursor_associated_remote_action {
+    id: 0
+    m_advance {
+      m_count: 4
+    }
+  }
+}
+
+# Cursor Continue to specific key
+actions {
+  idb_cursor_associated_remote_action {
+    id: 0
+    m_continue {
+      m_key { new { id: 0 m_number: 15.0 } }
+      m_primary_key { new { id: 0 m_other_none: true } }
+    }
+  }
+}
+
+# Cursor Prefetch
+actions {
+  idb_cursor_associated_remote_action {
+    id: 0
+    m_prefetch {
+      m_count: 8
+    }
+  }
+}
+
+# Cursor Prefetch Reset
+actions {
+  idb_cursor_associated_remote_action {
+    id: 0
+    m_prefetch_reset {
+      m_used_prefetches: 1
+    }
+  }
+}
+
+sequences {
+  action_indexes: [
+    0, 3, 1, 4, 1, 5, 1,
+    6, 6, 6, 6, 6, # 5 records with index keys [5, 10, 15, 20]
+    7, 7, 7, 7, 7, # 5 records with index keys [15, 20, 25, 30]
+    1, 9, 1, 1, 1, 13, 1, 14, 1, 12, 1, 10, 1, 11,
+    1, 8, 1, 2
+  ]
+}
+
+sequence_indexes: [0]
+in_memory: false
+use_sqlite: false

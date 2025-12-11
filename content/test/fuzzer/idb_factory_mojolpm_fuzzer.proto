@@ -37,6 +37,8 @@ message Action {
         idb_database_associated_remote_action = 4;
     mojolpm.blink.mojom.IDBTransaction.AssociatedRemoteAction
         idb_transaction_associated_remote_action = 5;
+    mojolpm.blink.mojom.IDBCursor.AssociatedRemoteAction
+        idb_cursor_associated_remote_action = 6;
   }
 }
 

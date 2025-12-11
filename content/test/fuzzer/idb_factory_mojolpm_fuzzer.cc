@@ -256,6 +256,11 @@ void IdbFactoryTestcase::RunAction(const ProtoAction& action,
           action.idb_transaction_associated_remote_action());
       break;
 
+    case ProtoAction::kIdbCursorAssociatedRemoteAction:
+      mojolpm::HandleAssociatedRemoteAction(
+          action.idb_cursor_associated_remote_action());
+      break;
+
     case ProtoAction::ACTION_NOT_SET:
       break;
   }
