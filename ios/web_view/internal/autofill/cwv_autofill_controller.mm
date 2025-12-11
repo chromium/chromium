@@ -736,8 +736,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
 }
 
 - (void)handleParsedForms:
-            (const std::vector<
-                raw_ptr<autofill::FormStructure, VectorExperimental>>&)forms
+            (const std::vector<raw_ref<const autofill::FormStructure>>&)forms
                   inFrame:(web::WebFrame*)frame {
   if (![_delegate respondsToSelector:@selector(autofillController:
                                                      didFindForms:frameID:)]) {
@@ -745,7 +744,7 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   }
 
   NSMutableArray<CWVAutofillForm*>* autofillForms = [NSMutableArray array];
-  for (autofill::FormStructure* form : forms) {
+  for (const raw_ref<const autofill::FormStructure>& form : forms) {
     CWVAutofillForm* autofillForm =
         [[CWVAutofillForm alloc] initWithFormStructure:*form];
     [autofillForms addObject:autofillForm];

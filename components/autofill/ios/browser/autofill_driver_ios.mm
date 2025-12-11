@@ -719,11 +719,12 @@ void AutofillDriverIOS::OnAfterFormsSeen(
   if (updated_forms.empty()) {
     return;
   }
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> form_structures;
+  std::vector<raw_ref<const FormStructure>> form_structures;
   form_structures.reserve(updated_forms.size());
   for (const FormGlobalId& form : updated_forms) {
-    if (FormStructure* form_structure = manager.FindCachedFormById(form)) {
-      form_structures.push_back(form_structure);
+    if (const FormStructure* form_structure =
+            manager.FindCachedFormById(form)) {
+      form_structures.emplace_back(*form_structure);
     }
   }
   if (web::WebFrame* frame = web_frame()) {

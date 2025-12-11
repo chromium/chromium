@@ -537,8 +537,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 }
 
 - (void)handleParsedForms:
-            (const std::vector<
-                raw_ptr<autofill::FormStructure, VectorExperimental>>&)forms
+            (const std::vector<raw_ref<const autofill::FormStructure>>&)forms
                   inFrame:(web::WebFrame*)frame {
 }
 
