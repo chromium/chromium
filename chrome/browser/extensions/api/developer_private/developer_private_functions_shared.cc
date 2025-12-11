@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions_shared.h"
 
 #include "base/barrier_closure.h"
+#include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
@@ -1642,6 +1643,10 @@ void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted() {
     ExtensionRegistrar::Get(profile_)->UninstallExtension(
         extension_id, UNINSTALL_REASON_USER_INITIATED, nullptr);
   }
+  // TODO(crbug.com/463124104): Crash keys for `response_callback_` crashes.
+  SCOPED_CRASH_KEY_BOOL("ext", "EF_DP_dialog_did_respond", did_respond());
+  SCOPED_CRASH_KEY_BOOL("ext", "EF_DP_dialog_resp_cb_null",
+                        response_callback_is_null());
   Respond(NoArguments());
 }
 
