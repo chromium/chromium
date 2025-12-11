@@ -437,7 +437,6 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
 void NearbyShareSessionImpl::OnTimerFired() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(b/191232397): Handle error case.
   LOG(ERROR) << "ARC window didn't get initialized within "
              << kWindowInitializationTimeout.InSeconds() << " second(s).";
   UpdateNearbyShareWindowFound(false);
