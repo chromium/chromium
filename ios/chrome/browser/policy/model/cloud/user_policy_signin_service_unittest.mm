@@ -345,48 +345,6 @@ TEST_F(UserPolicySigninServiceTest, DontRegister_BecauseUnmanagedAccount) {
 }
 
 // Tests that the registration for user policy and the initialization of the
-// user policy manager can be done when the user is signed in.
-TEST_F(UserPolicySigninServiceTest, RegisterAndInitializeManage_AtInit) {
-  // Set the user as signed in.
-  AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable(kManagedTestUser);
-  identity_test_env()->SetPrimaryAccount(kManagedTestUser,
-                                         signin::ConsentLevel::kSignin);
-
-  // Mark the store as loaded to allow registration during the initialization of
-  // the user policy service.
-  mock_store_->NotifyStoreLoaded();
-
-  // Initialize the UserPolicySigninService while the user is signed in and is
-  // eligible for user policy. This will kick off the asynchronous registration
-  // process.
-  InitUserPolicySigninService();
-
-  // Run the delayed task to start the registration by fast forwarding the task
-  // runner clock.
-  task_environment_.FastForwardBy(
-      GetTryRegistrationDelayFromPrefs(profile_->GetPrefs()));
-
-  // Do the pending registration that was queued in the initialization of the
-  // service.
-  DoPendingRegistration(/*with_dm_token=*/true,
-                        /*with_oauth_token_success=*/true);
-  // Verify that the client is registered after the initialization.
-  ASSERT_TRUE(manager_->core()->client()->is_registered());
-
-  // Expect the UserCloudPolicyManager to be initialized when creating the
-  // service because the user is signed in and eligible for user policy.
-  EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
-  ASSERT_TRUE(manager_->core()->service());
-
-  // Expect sign-out to clear the policy from the store and shutdown the
-  // UserCloudPolicyManager.
-  EXPECT_CALL(*mock_store_, Clear());
-  identity_test_env()->ClearPrimaryAccount();
-  ASSERT_FALSE(manager_->core()->service());
-}
-
-// Tests that the registration for user policy and the initialization of the
 // user policy manager is done when the user is signed in.
 TEST_F(UserPolicySigninServiceTest, RegisterAndInitializeManager_AtInit) {
   // Set the user as signed in.
