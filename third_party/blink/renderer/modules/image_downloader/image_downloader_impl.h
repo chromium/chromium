@@ -23,9 +23,12 @@ class MultiResolutionImageResourceFetcher;
 class WebString;
 
 class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
+                                  public Supplement<LocalFrame>,
                                   public ExecutionContextLifecycleObserver,
                                   public mojom::blink::ImageDownloader {
  public:
+  static const unsigned kSupplementIndex;
+
   explicit ImageDownloaderImpl(LocalFrame&);
 
   ImageDownloaderImpl(const ImageDownloaderImpl&) = delete;
@@ -99,8 +102,6 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
 
   typedef Vector<std::unique_ptr<MultiResolutionImageResourceFetcher>>
       ImageResourceFetcherList;
-
-  Member<LocalFrame> local_frame_;
 
   // ImageResourceFetchers schedule via FetchImage.
   ImageResourceFetcherList image_fetchers_;

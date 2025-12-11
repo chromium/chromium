@@ -122,7 +122,6 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
-#include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_backend_impl.h"
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 #include "third_party/blink/renderer/core/editing/surrounding_text.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
@@ -535,10 +534,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(browser_interface_broker_proxy_);
   visitor->Trace(frame_visibility_observers_);
   visitor->Trace(window_controls_overlay_changed_delegate_);
-  visitor->Trace(image_downloader_impl_);
-  visitor->Trace(remote_object_gateway_factory_impl_);
-  visitor->Trace(remote_object_gateway_impl_);
-  visitor->Trace(text_suggestion_backend_impl_);
   Frame::Trace(visitor);
   Supplementable::Trace(visitor);
 }
@@ -822,11 +817,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   probe::FrameDetachedFromParent(this, type);
 
   std::fill(supplements_.begin(), supplements_.end(), nullptr);
-  image_downloader_impl_ = nullptr;
-  remote_object_gateway_factory_impl_ = nullptr;
-  remote_object_gateway_impl_ = nullptr;
-  text_suggestion_backend_impl_ = nullptr;
-
   frame_scheduler_.reset();
   mojo_handler_->DidDetachFrame();
   WeakIdentifierMap<LocalFrame>::NotifyObjectDestroyed(this);

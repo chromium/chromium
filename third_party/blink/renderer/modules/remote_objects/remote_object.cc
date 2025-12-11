@@ -299,7 +299,7 @@ v8::Local<v8::Value> MojomToJSValue(
 
 RemoteObject::RemoteObject(RemoteObjectGatewayImpl* gateway, int32_t object_id)
     : gateway_(gateway),
-      object_(gateway->GetLocalFrame()->DomWindow()),
+      object_(gateway->GetSupplementable()->DomWindow()),
       object_id_(object_id) {}
 
 void RemoteObject::Trace(cppgc::Visitor* visitor) const {
@@ -411,7 +411,7 @@ void RemoteObject::EnsureRemoteIsBound() {
   if (!object_.is_bound()) {
     gateway_->BindRemoteObjectReceiver(
         object_id_, object_.BindNewPipeAndPassReceiver(
-                        gateway_->GetLocalFrame()->GetTaskRunner(
+                        gateway_->GetSupplementable()->GetTaskRunner(
                             TaskType::kMiscPlatformAPI)));
   }
 }

@@ -63,10 +63,6 @@ class ForwardDeclaredMember {
   ForwardDeclaredMember(ForwardDeclaredMember&&) = default;
   ForwardDeclaredMember& operator=(const ForwardDeclaredMember&) = default;
   ForwardDeclaredMember& operator=(ForwardDeclaredMember&&) = default;
-  ForwardDeclaredMember& operator=(nullptr_t) {
-    obj_ = nullptr;
-    return *this;
-  }
   void Trace(Visitor* visitor) const { visitor->Trace(obj_); }
 
   // These are only usable by those who have the full definition of T,
