@@ -89,6 +89,9 @@ declare namespace chrome {
     // Whether the phrase highlighting feature flag is enabled.
     let isPhraseHighlightingEnabled: boolean;
 
+    // Whether the line focus feature flag is enabled.
+    let isLineFocusEnabled: boolean;
+
     // Indicates if this page is a Google doc.
     let isGoogleDocs: boolean;
 
