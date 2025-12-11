@@ -9,7 +9,8 @@ const CalculatorModifier = Object.freeze({
   kNone: Object.freeze({postfix: '', multiplier: 1}),
   kMillisecondsFromSeconds:
       Object.freeze({postfix: '_in_ms', multiplier: 1000}),
-  kBytesToBits: Object.freeze({bitrate: true, multiplier: 8}),
+  kBytesToBits: Object.freeze({bitrate: true, multiplier: 8, round: true}),
+  kRounded: Object.freeze({round: true}),
 });
 
 class Metric {
@@ -95,6 +96,9 @@ class DateCalculator {
   }
   calculate(id, previousReport, currentReport) {
     const timestamp = currentReport.get(id)[this.metric];
+    if (!timestamp) {
+      return undefined;
+    }
     const date = new Date(timestamp + this.timestampOffsetMs);
     return date.toLocaleString();
   }
@@ -123,10 +127,14 @@ class RateCalculator {
   }
 
   calculate(id, previousReport, currentReport) {
-    return RateCalculator.calculateRate(
+    const result = RateCalculator.calculateRate(
                id, previousReport, currentReport, this.accumulativeMetric,
                this.samplesMetric) *
         this.modifier.multiplier;
+    if (this.modifier.round) {
+      return Math.round(result);
+    }
+    return result;
   }
 
   static calculateRate(
@@ -370,11 +378,14 @@ export class StatsRatesCalculator {
         retransmittedBytesSent: new RateCalculator(
             'retransmittedBytesSent', 'timestamp',
             CalculatorModifier.kBytesToBits),
-        packetsSent: new RateCalculator('packetsSent', 'timestamp'),
+        packetsSent: new RateCalculator('packetsSent', 'timestamp',
+            CalculatorModifier.kRounded),
         packetsSentWithEct1:
-            new RateCalculator('packetsSentWithEct1', 'timestamp'),
+            new RateCalculator('packetsSentWithEct1', 'timestamp',
+                               CalculatorModifier.kRounded),
         retransmittedPacketsSent:
-            new RateCalculator('retransmittedPacketsSent', 'timestamp'),
+            new RateCalculator('retransmittedPacketsSent', 'timestamp',
+                               CalculatorModifier.kRounded),
         totalPacketSendDelay: new RateCalculator(
             'totalPacketSendDelay', 'packetsSent',
             CalculatorModifier.kMillisecondsFromSeconds),
@@ -406,22 +417,31 @@ export class StatsRatesCalculator {
         fecBytesReceived: new RateCalculator(
             'fecBytesReceived', 'timestamp',
             CalculatorModifier.kBytesToBits),
-        packetsReceived: new RateCalculator('packetsReceived', 'timestamp'),
+        packetsReceived: new RateCalculator('packetsReceived', 'timestamp',
+            CalculatorModifier.kRounded),
         packetsReceivedWithEct1:
-          new RateCalculator('packetsReceivedWithEct1', 'timestamp'),
+          new RateCalculator('packetsReceivedWithEct1', 'timestamp',
+            CalculatorModifier.kRounded),
         packetsReceivedWithCe:
-          new RateCalculator('packetsReceivedWithCe', 'timestamp'),
+          new RateCalculator('packetsReceivedWithCe', 'timestamp',
+            CalculatorModifier.kRounded),
         packetsReportedAsLost:
-          new RateCalculator('packetsReportedAsLost', 'timestamp'),
+          new RateCalculator('packetsReportedAsLost', 'timestamp',
+            CalculatorModifier.kRounded),
         packetsReportedAsLostButRecovered:
-          new RateCalculator('packetsReportedAsLostButRecovered', 'timestamp'),
-        packetsDiscarded: new RateCalculator('packetsDiscarded', 'timestamp'),
+          new RateCalculator('packetsReportedAsLostButRecovered', 'timestamp',
+            CalculatorModifier.kRounded),
+        packetsDiscarded: new RateCalculator('packetsDiscarded', 'timestamp',
+            CalculatorModifier.kRounded),
         retransmittedPacketsReceived:
-          new RateCalculator('retransmittedPacketsReceived', 'timestamp'),
+          new RateCalculator('retransmittedPacketsReceived', 'timestamp',
+            CalculatorModifier.kRounded),
         fecPacketsReceived:
-          new RateCalculator('fecPacketsReceived', 'timestamp'),
+          new RateCalculator('fecPacketsReceived', 'timestamp',
+            CalculatorModifier.kRounded),
         fecPacketsDiscarded:
-          new RateCalculator('fecPacketsDiscarded', 'timestamp'),
+          new RateCalculator('fecPacketsDiscarded', 'timestamp',
+            CalculatorModifier.kRounded),
         framesReceived: [
           new RateCalculator('framesReceived', 'timestamp'),
           new DifferenceCalculator('framesReceived',
@@ -482,19 +502,19 @@ export class StatsRatesCalculator {
                                'roundTripTimeMeasurements'),
         packetsReceivedWithEct1:
             new RateCalculator('packetsReceivedWithEct1',
-                               'timestamp'),
+                               'timestamp', CalculatorModifier.kRounded),
         packetsReceivedWithCe:
             new RateCalculator('packetsReceivedWithCe',
-                               'timestamp'),
+                               'timestamp', CalculatorModifier.kRounded),
         packetsReportedAsLost:
             new RateCalculator('packetsReportedAsLost',
-                               'timestamp'),
+                               'timestamp', CalculatorModifier.kRounded),
         packetsReportedAsLostButRecovered:
             new RateCalculator('packetsReportedAsLostButRecovered',
-                               'timestamp'),
+                               'timestamp', CalculatorModifier.kRounded),
         packetsWithBleachedEct1Marking:
             new RateCalculator('packetsWithBleachedEct1Marking',
-                               'timestamp'),
+                               'timestamp', CalculatorModifier.kRounded),
       },
       'remote-outbound-rtp': {
         remoteTimestamp: new DateCalculator('remoteTimestamp'),
@@ -508,9 +528,9 @@ export class StatsRatesCalculator {
         bytesReceived: new RateCalculator(
             'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
         packetsSent: new RateCalculator(
-            'packetsSent', 'timestamp'),
+            'packetsSent', 'timestamp', CalculatorModifier.kRounded),
         packetsReceived: new RateCalculator(
-            'packetsReceived', 'timestamp'),
+            'packetsReceived', 'timestamp', CalculatorModifier.kRounded),
         ccfbMessagesSent: new RateCalculator(
             'ccfbMessagesSent', 'timestamp'),
         ccfbMessagesReceived: new RateCalculator(
@@ -522,9 +542,9 @@ export class StatsRatesCalculator {
         bytesReceived: new RateCalculator(
             'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
         packetsSent: new RateCalculator(
-            'packetsSent', 'timestamp'),
+            'packetsSent', 'timestamp', CalculatorModifier.kRounded),
         packetsReceived: new RateCalculator(
-            'packetsReceived', 'timestamp'),
+            'packetsReceived', 'timestamp', CalculatorModifier.kRounded),
         totalRoundTripTime:
             new RateCalculator('totalRoundTripTime', 'responsesReceived'),
         lastPacketReceivedTimestamp: new DateCalculator(
