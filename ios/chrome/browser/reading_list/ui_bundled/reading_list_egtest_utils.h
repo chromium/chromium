@@ -29,6 +29,9 @@ id<GREYMatcher> VisibleLocalItemIcon(NSString* title);
 // Opens the reading list.
 void OpenReadingList();
 
+// Opens the reading list with a test browser.
+void OpenTestReadingList();
+
 // Opens a URL and add it to the Reading List, without dismissing the snackbar.
 void AddURLToReadingListWithoutSnackbarDismiss(const GURL& URL);
 

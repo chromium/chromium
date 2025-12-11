@@ -49,6 +49,7 @@
 + (void)startOmniboxCoordinator;
 + (void)startSearchWhatYouSeePromoCoordinator;
 + (void)startSnackbarCoordinator;
++ (void)startReadingListCoordinator;
 
 // Stops the currently started coordinator.
 + (void)stopCoordinator;

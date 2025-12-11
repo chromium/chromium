@@ -35,6 +35,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -45,6 +46,7 @@
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/reload_type.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/base/network_change_notifier.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -56,12 +58,16 @@
 
 using base::test::ios::kWaitForUIElementTimeout;
 using chrome_test_util::DeleteButton;
+using chrome_test_util::OpenLinkInIncognitoButton;
+using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::ReadingListMarkAsReadButton;
 using chrome_test_util::ReadingListMarkAsUnreadButton;
 using chrome_test_util::SwipeActionDeleteButton;
+using chrome_test_util::ToolbarButtonWithID;
 using reading_list_test_utils::AddedToLocalReadingListSnackbar;
 using reading_list_test_utils::OpenReadingList;
+using reading_list_test_utils::OpenTestReadingList;
 using reading_list_test_utils::VisibleReadingListItem;
 
 namespace {
@@ -255,7 +261,7 @@ void AddLotOfEntriesAndEnterEdit() {
                                  read:NO],
                   @"Unable to add Reading List item");
   }
-  OpenReadingList();
+  OpenTestReadingList();
 
   TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
 }
@@ -283,7 +289,7 @@ void AddEntriesAndOpenReadingList() {
                                           read:NO],
       @"Unable to add Reading List item");
 
-  OpenReadingList();
+  OpenTestReadingList();
 }
 
 void AddEntriesAndEnterEdit() {
@@ -489,6 +495,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 - (void)tearDownHelper {
+  [ChromeCoordinatorAppInterface reset];
   [ChromeEarlGrey stopWatcher];
   [super tearDownHelper];
   [ReadingListAppInterface resetConnectionType];
@@ -779,7 +786,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                                          title:kUnreadTitle
                                           read:NO],
       @"Unable to add Reading List entry.");
-  OpenReadingList();
+  OpenTestReadingList();
 
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteButtonID);
   AssertToolbarButtonNotVisibleWithID(kReadingListToolbarDeleteAllReadButtonID);
@@ -887,6 +894,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 - (void)testDeleteEntries {
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle2);
+  // This Check is necessary as there is an animation when prior to entering the
+  // edit mode.
+  if (iOS26_OR_ABOVE()) {
+    id<GREYMatcher> toolbarButtonMatcher =
+        chrome_test_util::ToolbarButtonWithID(
+            kReadingListToolbarDeleteButtonID);
+    [ChromeEarlGrey
+        waitForSufficientlyVisibleElementWithMatcher:toolbarButtonMatcher];
+  }
 
   AssertToolbarButtonVisibleWithID(kReadingListToolbarDeleteButtonID);
   AssertToolbarButtonVisibleWithID(kReadingListToolbarCancelButtonID);
@@ -1146,7 +1162,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                   @"Unable to add Reading List entry.");
   }
 
-  OpenReadingList();
+  OpenTestReadingList();
 
   // Make sure the Reading List view is not empty. Therefore, the illustration,
   // title and subtitles shoud not be present.
@@ -1187,7 +1203,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                                          title:kUnreadTitle
                                           read:NO],
       @"Unable to add Reading List entry.");
-  OpenReadingList();
+  OpenTestReadingList();
 
   // Check that the TableView is presented.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
@@ -1237,12 +1253,16 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   }
 #endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
-  [self addURLToReadingList:distillablePageURL];
+  [self addURLToTestReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
 
   // Select "Open in New Tab" and confirm that new tab is opened with selected
   // URL.
-  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:distillablePageURL];
+  [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
+      performAction:grey_tap()];
+  GREYAssertEqualObjects(ChromeCoordinatorAppInterface.lastURLLoaded,
+                         net::NSURLWithGURL(distillablePageURL),
+                         @"distillablePageURL should have loaded.");
 }
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu
@@ -1257,12 +1277,19 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   }
 #endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
-  [self addURLToReadingList:distillablePageURL];
+  [self addURLToTestReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
 
   // Select "Open in Incognito" and confirm that new tab is opened with selected
   // URL.
-  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:distillablePageURL];
+  [[EarlGrey selectElementWithMatcher:OpenLinkInIncognitoButton()]
+      performAction:grey_tap()];
+
+  GREYAssertEqualObjects(ChromeCoordinatorAppInterface.lastURLLoaded,
+                         net::NSURLWithGURL(distillablePageURL),
+                         @"distillablePageURL should have loaded.");
+  GREYAssert(ChromeCoordinatorAppInterface.lastURLLoadedInIncognito,
+             @"distillablePageURL should have loaded in incognito");
 }
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
@@ -1329,7 +1356,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   }
 #endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
-  [self addURLToReadingList:distillablePageURL];
+  [self addURLToTestReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
 
   [ChromeEarlGrey verifyShareActionWithURL:distillablePageURL
@@ -1347,7 +1374,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   }
 #endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
-  [self addURLToReadingList:distillablePageURL];
+  [self addURLToTestReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
 
   [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
@@ -1402,7 +1429,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
-  OpenReadingList();
+  OpenTestReadingList();
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
@@ -1730,6 +1757,20 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   [ChromeEarlGrey closeCurrentTab];
   [ChromeEarlGrey openNewTab];
   OpenReadingList();
+}
+
+- (void)addURLToTestReadingList:(const GURL&)URL {
+  [ReadingListAppInterface forceConnectionToWifi];
+
+  // Open http://potato
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  AddCurrentPageToReadingList();
+
+  [ChromeEarlGrey closeCurrentTab];
+  [ChromeEarlGrey openNewTab];
+  OpenTestReadingList();
 }
 
 @end
