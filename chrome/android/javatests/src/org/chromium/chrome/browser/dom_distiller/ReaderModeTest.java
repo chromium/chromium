@@ -133,9 +133,8 @@ public class ReaderModeTest {
     @MediumTest
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testReaderModePromptShownForIncognitoTabs() {
-        mPage = mActivityTestRule.startOnBlankPage();
         // Note: For BrApp messages are only used on incognito tabs. Regular tabs use the MTB.
-        mPage = mPage.openNewIncognitoTabOrWindowFast().loadWebPageProgrammatically(mURL);
+        mPage = mActivityTestRule.startOnIncognitoBlankPage().loadWebPageProgrammatically(mURL);
         waitForReaderModeMessage();
     }
 
