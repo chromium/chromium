@@ -177,7 +177,7 @@
         Unable to add attachments
       </message>
       <message name="IDS_OMNIBOX_CREATE_IMAGE" desc="The text displayed in the omnibox attachments popup. When clicked - enables image creation." formatter_data="android_java">
-        Create Image
+        Create image
       </message>
       <message name="IDS_OMNIBOX_EMPTY_HINT_FOR_IMAGE_GENERATION" desc="The text displayed in the omnibox when it is empty and image generation is selected." formatter_data="android_java">
         Describe your image
