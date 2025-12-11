@@ -11,7 +11,6 @@
 
 @protocol PasswordDetailsHandler;
 @protocol PasswordDetailsTableViewControllerDelegate;
-@protocol ReauthenticationProtocol;
 
 // Screen which shows password details and allows to edit it.
 @interface PasswordDetailsTableViewController
@@ -30,10 +29,6 @@
 // Delegate for CredentialDetails related actions e.g. Password editing.
 @property(nonatomic, weak) id<PasswordDetailsTableViewControllerDelegate>
     delegate;
-
-// Module containing the reauthentication mechanism for interactions
-// with password.
-@property(nonatomic, weak) id<ReauthenticationProtocol> reauthModule;
 
 // Called by coordinator when the user confirmed password editing from alert.
 - (void)passwordEditingConfirmed;

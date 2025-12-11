@@ -194,7 +194,6 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
       HandlerForProtocol(dispatcher, ApplicationCommands);
   self.viewController.snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  self.viewController.reauthModule = self.reauthenticationModule;
   if (self.openInEditMode) {
     [self.viewController editButtonPressed];
   }

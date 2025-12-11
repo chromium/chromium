@@ -229,7 +229,6 @@ class PasswordDetailsTableViewControllerTest
         [[PasswordDetailsTableViewController alloc] init];
     controller.handler = handler_;
     controller.delegate = delegate_;
-    controller.reauthModule = reauthentication_module_;
     controller.snackbarHandler = snack_bar_;
     return controller;
   }
