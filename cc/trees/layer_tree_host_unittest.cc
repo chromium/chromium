@@ -4437,8 +4437,15 @@ class LayerTreeHostTestUIResource : public LayerTreeHostTest {
         ASSERT_EQ(2u, sii->shared_image_count());
         break;
       case 2:
-        // One texture left after one deletion.
-        ASSERT_EQ(1u, sii->shared_image_count());
+        if (TreesInViz()) {
+          // In TreesInViz mode, client can not delete its resource until the
+          // export count is 0, which onlt happens when viz sends an ack back.
+          // The image count will be reduced at later frames.
+          ASSERT_EQ(2u, sii->shared_image_count());
+        } else {
+          // One texture left after one deletion.
+          ASSERT_EQ(1u, sii->shared_image_count());
+        }
         break;
       case 3:
         // Resource manager state should not change when delete is called on an
@@ -4463,6 +4470,10 @@ class LayerTreeHostTestUIResource : public LayerTreeHostTest {
   void CreateResource() {
     ui_resources_[num_ui_resources_++] =
         FakeScopedUIResource::Create(layer_tree_host()->GetUIResourceManager());
+  }
+
+  bool TreesInViz() {
+    return base::FeatureList::IsEnabled(features::kTreesInViz);
   }
 
   std::array<std::unique_ptr<FakeScopedUIResource>, 5> ui_resources_;

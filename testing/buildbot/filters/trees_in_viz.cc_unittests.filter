@@ -42,14 +42,3 @@
 # explained above.
 -UIResourceLostEviction.RunMultiThread_DelegatingRenderer
 -UIResourceLostEviction.RunSingleThread_DelegatingRenderer
-
-# TODO(crbug.com/438242521): This test is failing for similar reasons as above
-# where a no damage frame is present with UI resource changes and hence is sent
-# to Viz resulting in incrementing the export count on resouce in Renderer.
-# When Renderer deletes its UI resource via DeleteUIResource(), it sends an IPC
-# to Viz also for the resource deletion. Renderer can not immediately delete
-# its UI resource until the export count of resource is 0 which only happens
-# when Viz sends an ack back for the resource deletion request which Renderer
-# sends. Due to this, test expectations on shared image count can not be met at
-# the intended frame and might happen at later frames.
--LayerTreeHostTestUIResource.RunMultiThread_DelegatingRenderer
