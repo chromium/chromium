@@ -556,21 +556,27 @@ input[type="search" i]::-webkit-search-results-decoration {
   margin: auto 3px auto 2px;
 }
 
-input,
-input[type="email" i],
-input[type="number" i],
-input[type="password" i],
-input[type="search" i],
-input[type="tel" i],
-input[type="text" i],
-input[type="url" i] {
-  @supports blink-feature(AppearanceBase) {
-    padding-block: -internal-auto-base(1px, unset);
-    padding-inline: -internal-auto-base(2px, unset);
-  }
-  @supports not blink-feature(AppearanceBase) {
+/* Specifying all of the type attributes in the selector below does not seem
+ * necessary and causes a performance issue when combined with
+ * -internal-auto-base(), so the AppearanceBase one does not include the type
+ * attribute selectors. */
+@supports not blink-feature(AppearanceBase) {
+  input,
+  input[type="email" i],
+  input[type="number" i],
+  input[type="password" i],
+  input[type="search" i],
+  input[type="tel" i],
+  input[type="text" i],
+  input[type="url" i] {
     padding-block: 1px;
     padding-inline: 2px;
+  }
+}
+@supports blink-feature(AppearanceBase) {
+  input {
+    padding-block: -internal-auto-base(1px, unset);
+    padding-inline: -internal-auto-base(2px, unset);
   }
 }
 
