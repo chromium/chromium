@@ -61,7 +61,6 @@ class FindBarController : public content::WebContentsObserver,
   // content::WebContentsObserver:
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
-  void AboutToBeDiscarded(content::WebContents* new_contents) override;
 
   // find_in_page::FindResultObserver:
   void OnFindEmptyText(content::WebContents* web_contents) override;

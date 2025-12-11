@@ -210,14 +210,6 @@ void FindBarController::HandleActiveTabChanged(
   }
 }
 
-// `FindBarController` should be observing the active tab's contents at all
-// times.
-// On ChromeOS it's possible the active tab's contents are discarded, so the
-// observation must be updated.
-void FindBarController::AboutToBeDiscarded(content::WebContents* new_contents) {
-  ChangeWebContents(new_contents);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // FindBarController, content::WebContentsObserver implementation:
 
@@ -337,7 +329,21 @@ std::u16string FindBarController::GetSelectedText() {
 
 void FindBarController::UpdatePageAction() {
   CHECK(IsPageActionMigrated(PageActionIconType::kFind));
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  // On ChromeOS it's possible that the active tab's contents are discarded.
+  // The tab may be null during discarding, which triggers a visibility change
+  // that leads to this. Changing web contents before discarding does not work
+  // either because the replacement contents don't have the required tab helpers
+  // set up.
+  //
+  // TODO(crbug.com/461909461): This is a bandaid fix. Instead, the
+  // FindBarController should properly handle tab discarding events by
+  // unregistering observations, and ensuring they get it gets re-registered
+  // when the tab has valid contents after the discard.
+  if (!tab) {
+    return;
+  }
 
   tabs::TabFeatures* tab_features = tab->GetTabFeatures();
   if (!tab_features) {
