@@ -197,7 +197,13 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
     closedTabGroupView = nil
 
     super.viewWillTransition(to: size, with: coordinator)
-    weak var weakSelf = self
+
+    #if swift(>=6.2.1)
+      weak let weakSelf = self
+    #else
+      weak var weakSelf = self
+    #endif
+
     coordinator.animate(alongsideTransition: nil) { _ in
       // The tab cell size must be updated after the transition completes.
       // Otherwise the collection view width won't be updated.
@@ -793,7 +799,12 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
           // On iOS 16, when the scroll animation and the insert animation
           // occur simultaneously, the resulting animation lacks of
           // smoothness.
-          weak var weakSelf = self
+          #if swift(>=6.2.1)
+            weak let weakSelf = self
+          #else
+            weak var weakSelf = self
+          #endif
+
           targetedScrollOffsetiOS16 = offset
           DispatchQueue.main.asyncAfter(
             deadline: .now() + TabStripConstants.CollectionView.scrollDelayAfterInsert
@@ -1114,7 +1125,13 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
 
       // Drop synchronously if local object is available.
       if item.dragItem.localObject != nil {
-        weak var weakSelf = self
+
+        #if swift(>=6.2.1)
+          weak let weakSelf = self
+        #else
+          weak var weakSelf = self
+        #endif
+
         coordinator.drop(item.dragItem, toItemAt: dropIndexPath).addCompletion {
           _ in
           weakSelf?.dropAnimationInProgress = false

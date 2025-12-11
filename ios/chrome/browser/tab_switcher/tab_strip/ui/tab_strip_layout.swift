@@ -97,7 +97,13 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     if updatedConstant != newTabButtonLeadingConstraint?.constant {
       newTabButtonLeadingConstraint?.constant = updatedConstant
-      weak var weakSelf = self
+
+      #if swift(>=6.2.1)
+        weak let weakSelf = self
+      #else
+        weak var weakSelf = self
+      #endif
+
       UIView.animate(
         withDuration: TabStripConstants.NewTabButton.constraintUpdateAnimationDuration, delay: 0.0,
         options: .curveEaseOut,
