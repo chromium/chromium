@@ -46,22 +46,17 @@ void LayoutTable::Trace(Visitor* visitor) const {
   LayoutBlock::Trace(visitor);
 }
 
-// https://drafts.csswg.org/css-tables-3/#fixup-algorithm
-// 3.2. If the box’s parent is an inline, run-in, or ruby box (or any box that
-// would perform inlinification of its children), then an inline-table box must
-// be generated; otherwise it must be a table box.
-bool LayoutTable::ShouldCreateInlineAnonymous(const LayoutObject& parent) {
-  return parent.IsLayoutInline();
-}
-
 LayoutTable* LayoutTable::CreateAnonymousWithParent(
     const LayoutObject& parent) {
-  const ComputedStyle& parent_style = parent.StyleRef();
+  // https://drafts.csswg.org/css-tables-3/#fixup-algorithm
+  // 3.2. If the box’s parent is an inline, run-in, or ruby box (or any box that
+  // would perform inlinification of its children), then an inline-table box
+  // must be generated; otherwise it must be a table box.
+  const EDisplay display =
+      parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable;
   const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
-          parent_style, ShouldCreateInlineAnonymous(parent)
-                            ? EDisplay::kInlineTable
-                            : EDisplay::kTable);
+          parent.StyleRef(), display);
   auto* new_table = MakeGarbageCollected<LayoutTable>(nullptr);
   new_table->SetDocumentForAnonymous(&parent.GetDocument());
   new_table->SetStyle(new_style);
