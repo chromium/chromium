@@ -36,8 +36,11 @@ public class SettingsIndexData {
     private static @Nullable SettingsIndexData sInstance;
     private static boolean sNeedsIndexing = true;
 
+    // LINT.IfChange(MainSettingsClassName)
     private static final String sMainSettingsClassName =
             "org.chromium.chrome.browser.settings.MainSettings";
+
+    // LINT.ThenChange(//chrome/android/chrome_java_sources.gni:MainSettingsBuildRule)
 
     @EnsuresNonNull("sInstance")
     public static SettingsIndexData createInstance() {

@@ -997,7 +997,11 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/services/gcm/GCMNativeBackgroundTask.java",
   "java/src/org/chromium/chrome/browser/services/gcm/GcmUma.java",
   "java/src/org/chromium/chrome/browser/settings/FragmentDependencyProvider.java",
+
+  # LINT.IfChange(MainSettingsBuildRule)
   "java/src/org/chromium/chrome/browser/settings/MainSettings.java",
+
+  # LINT.ThenChange(//components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/search/SettingsIndexData.java:MainSettingsClassName)
   "java/src/org/chromium/chrome/browser/settings/MultiColumnSettings.java",
   "java/src/org/chromium/chrome/browser/settings/MultiColumnTitleUpdater.java",
   "java/src/org/chromium/chrome/browser/settings/SelectionDecoration.java",
