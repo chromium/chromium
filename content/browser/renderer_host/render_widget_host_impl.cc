@@ -2154,9 +2154,8 @@ RenderWidgetHostImpl::GetWidgetInputHandler() {
 void RenderWidgetHostImpl::NotifyScreenInfoChanged() {
   // The resize message (which may not happen immediately) will carry with it
   // the screen info as well as the new size (if the screen has changed scale
-  // factor). Force sending the new visual properties even if there is one in
-  // flight to ensure proper IPC ordering for features like the Fullscreen API.
-  SynchronizeVisualPropertiesIgnoringPendingAck();
+  // factor).
+  SynchronizeVisualProperties();
 
   // The device scale factor will be same for all the views contained by the
   // primary main frame, so just set it once.
