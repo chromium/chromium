@@ -1713,26 +1713,31 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
 
   if (current_resource_) {
     CHECK(current_resource_->id);
-    gfx::RectF uv_crop(gfx::SizeF(1, 1));
+    gfx::RectF tex_coord_rect(gfx::SizeF(1, 1));
     if (!state_.basic_state.crop.IsEmpty()) {
       // The crop rectangle is a post-transformation rectangle. To get the UV
       // coordinates, we need to convert it to normalized buffer coordinates and
       // pass them through the inverse of the buffer transformation.
-      uv_crop = gfx::RectF(state_.basic_state.crop);
+      tex_coord_rect = gfx::RectF(state_.basic_state.crop);
       gfx::Size transformed_buffer_size(ToTransformedSize(
           current_resource_->GetSize(), state_.basic_state.buffer_transform));
       if (!transformed_buffer_size.IsEmpty()) {
-        uv_crop.InvScale(transformed_buffer_size.width(),
-                         transformed_buffer_size.height());
+        tex_coord_rect.InvScale(transformed_buffer_size.width(),
+                                transformed_buffer_size.height());
       }
-      uv_crop = buffer_transform_.InverseMapRect(uv_crop).value_or(uv_crop);
+      tex_coord_rect = buffer_transform_.InverseMapRect(tex_coord_rect)
+                           .value_or(tex_coord_rect);
     }
 
+    const gfx::Size resource_size = current_resource_->GetSize();
+    tex_coord_rect.Scale(resource_size.width(), resource_size.height());
+
     SkColor4f background_color = SkColors::kTransparent;
-    if (state_.basic_state.background_color.has_value())
+    if (state_.basic_state.background_color.has_value()) {
       background_color = state_.basic_state.background_color.value();
-    else if (current_resource_has_alpha_ && are_contents_opaque)
+    } else if (current_resource_has_alpha_ && are_contents_opaque) {
       background_color = SkColors::kBlack;  // Avoid writing alpha < 1
+    }
 
     if (state_.basic_state.alpha != 0.0f) {
       // Our historical implementation of the wayland blending protocol is to
@@ -1750,12 +1755,14 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                          /*layer_id=*/0u, /*fast_rounded_corner=*/false);
       viz::TextureDrawQuad* texture_quad =
           render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-      texture_quad->SetNew(
-          quad_state, quad_rect, quad_rect,
-          /* needs_blending=*/!are_contents_opaque, current_resource_->id,
-          uv_crop.origin(), uv_crop.bottom_right(), background_color,
-          /* nearest*/ false, state_.basic_state.only_visible_on_secure_output,
-          gfx::ProtectedVideoType::kClear);
+      texture_quad->SetNew(quad_state, quad_rect, quad_rect,
+                           /* needs_blending=*/!are_contents_opaque,
+                           current_resource_->id, tex_coord_rect.origin(),
+                           tex_coord_rect.bottom_right(), background_color,
+                           /* nearest*/ false,
+                           state_.basic_state.only_visible_on_secure_output,
+                           gfx::ProtectedVideoType::kClear,
+                           /*is_tex_coords_normalized=*/false);
 
       if (force_rgbx_for_opaque) {
         UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.ForceRGBAForOpaque", true);
