@@ -1526,7 +1526,6 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
   match.GetKeywordUIState(service,
                           controller_->client()->IsHistoryEmbeddingsEnabled(),
                           &keyword, &keyword_placeholder, &is_keyword_hint);
-  OnPopupResultChanged();
 
   if (!is_keyword_selected() && !is_keyword_hint && !keyword.empty()) {
     // We just entered keyword mode, so remove the keyword from the input.
@@ -1544,6 +1543,11 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
                      /*is_temporary_text=*/false, match.inline_autocompletion,
                      keyword, keyword_placeholder, is_keyword_hint,
                      match.additional_text, match);
+
+  // Notify observers after the match has been safely copied to |current_match_|
+  // in OnPopupDataChanged(). This prevents use-after-free if observers
+  // invalidate the autocomplete results. See https://crbug.com/462736555.
+  OnPopupResultChanged();
 }
 
 // static

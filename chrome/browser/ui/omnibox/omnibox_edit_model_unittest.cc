@@ -1734,3 +1734,59 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabledPopupOpened) {
   histogram_tester.ExpectBucketCount(
       "Omnibox.AimEntrypoint.Activated.UserTextPresent", false, 1);
 }
+
+// Test observer that clears results when OnContentsChanged is called,
+// simulating how popup views can invalidate results when closing.
+// This reproduces the crash in https://crbug.com/462736555.
+class ResultClearingObserver : public OmniboxEditModel::Observer {
+ public:
+  explicit ResultClearingObserver(AutocompleteResult* result)
+      : result_(result) {}
+
+  void OnSelectionChanged(OmniboxPopupSelection,
+                          OmniboxPopupSelection) override {}
+  void OnMatchIconUpdated(size_t) override {}
+  void OnContentsChanged() override {
+    // Simulate what can happen when popup closes - clear results.
+    // This invalidates any references to matches in the result.
+    result_->Reset();
+  }
+  void OnKeywordStateChanged(bool) override {}
+
+ private:
+  raw_ptr<AutocompleteResult> result_;
+};
+
+// Regression test for https://crbug.com/462736555.
+// Verifies that OnCurrentMatchChanged() does not crash when an observer
+// clears the autocomplete results during the OnContentsChanged notification.
+TEST_F(OmniboxEditModelPopupTest,
+       OnCurrentMatchChangedDoesNotCrashWhenObserverClearsResults) {
+  // Set up a match with additional_info (the field that triggers the crash).
+  ACMatches matches;
+  AutocompleteMatch match(nullptr, 1000, false,
+                          AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match.allowed_to_be_default_match = true;
+  match.additional_info["key"] = "value";
+  matches.push_back(match);
+
+  auto* result = &AutocompleteControllerPublishedResult();
+  AutocompleteInput input(u"test", metrics::OmniboxEventProto::NTP,
+                          TestSchemeClassifier());
+  result->AppendMatches(matches);
+  result->SortAndCull(input, /*template_url_service=*/nullptr,
+                      triggered_feature_service(), /*is_lens_active=*/false,
+                      /*can_show_contextual_suggestions=*/false,
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
+
+  // Add observer that clears results when notified.
+  ResultClearingObserver observer(result);
+  model()->AddObserver(&observer);
+
+  // This should NOT crash even though the observer clears results.
+  // Before the fix, this would crash with a use-after-free when copying
+  // match.additional_info after OnPopupResultChanged() invalidated the match.
+  model()->OnCurrentMatchChanged();
+
+  model()->RemoveObserver(&observer);
+}
