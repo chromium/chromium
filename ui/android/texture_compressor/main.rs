@@ -11,12 +11,41 @@ use std::fs;
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 use std::path::Path;
+use std::time::{Duration, Instant};
 
 use bytemuck::cast_slice;
 
 use texture_compressor::{compress_etc1, decompress_etc1};
 
 const ETC1_BLOCK_SIZE: u32 = 8;
+const BENCHMARK_RUNS: u32 = 100;
+
+pub struct BenchmarkStats {
+    pub average: f64,
+    pub std_dev: f64,
+}
+
+impl BenchmarkStats {
+    fn from_timings(execution_timings: &[Duration]) -> BenchmarkStats {
+        let num_runs = execution_timings.len();
+        assert_ne!(num_runs, 0);
+        let execution_timings_ms =
+            execution_timings.iter().map(|timings| timings.as_secs_f64() * 1000.0);
+
+        let total_ms: f64 = execution_timings_ms.clone().sum();
+        let average = total_ms / num_runs as f64;
+
+        let sum_squared_diffs: f64 = execution_timings_ms
+            .clone()
+            .map(|time_ms| {
+                let diff = time_ms - average;
+                diff * diff
+            })
+            .sum();
+        let variance = if num_runs > 1 { sum_squared_diffs / (num_runs - 1) as f64 } else { 0.0 };
+        BenchmarkStats { average: average, std_dev: variance.sqrt() }
+    }
+}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -65,14 +94,34 @@ fn main() {
 
     let mut output_rgba = vec![0u32; (first_frame.height * first_frame.width) as usize];
 
-    decompress_etc1(
-        &etc1_data,
-        &mut output_rgba,
-        first_frame.width,
-        first_frame.height,
-        etc1_data_width,
-        first_frame.width,
-    );
+    let mut decompress = || {
+        decompress_etc1(
+            &etc1_data,
+            &mut output_rgba,
+            first_frame.width,
+            first_frame.height,
+            etc1_data_width,
+            first_frame.width,
+        )
+    };
+
+    println!("Warming up");
+    decompress();
+
+    println!("Benchmarking");
+    let execution_timing = (0..BENCHMARK_RUNS)
+        .map(|_| {
+            let start = Instant::now();
+            decompress();
+            start.elapsed()
+        })
+        .collect::<Vec<_>>();
+
+    let decode_stats = BenchmarkStats::from_timings(&execution_timing);
+
+    println!("Ran decompress_etc1() {} times.", BENCHMARK_RUNS);
+    println!("Average time: {:?} [ms]", decode_stats.average);
+    println!("Standard deviation: {:?} [ms]", decode_stats.std_dev);
 
     let mut encoder = png::Encoder::new(
         BufWriter::new(File::create(output_path).expect("Failed to create output file")),
