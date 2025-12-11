@@ -164,19 +164,20 @@ void NinePatchThumbScrollbarLayerImpl::AppendTrackAndButtonsQuads(
   ValidateQuadResources(quad);
 }
 
-void NinePatchThumbScrollbarLayerImpl::SetThumbThickness(int thumb_thickness) {
+void NinePatchThumbScrollbarLayerImpl::SetThumbThickness(
+    int32_t thumb_thickness) {
   if (thumb_thickness_ == thumb_thickness)
     return;
   thumb_thickness_ = thumb_thickness;
   NoteLayerPropertyChanged();
 }
 
-int NinePatchThumbScrollbarLayerImpl::ThumbThickness() const {
+int32_t NinePatchThumbScrollbarLayerImpl::ThumbThickness() const {
   return thumb_thickness_;
 }
 
 void NinePatchThumbScrollbarLayerImpl::SetMinimumThumbLength(
-    int minimum_thumb_length) {
+    int32_t minimum_thumb_length) {
   if (minimum_thumb_length_ == minimum_thumb_length) {
     return;
   }
@@ -184,22 +185,22 @@ void NinePatchThumbScrollbarLayerImpl::SetMinimumThumbLength(
   NoteLayerPropertyChanged();
 }
 
-int NinePatchThumbScrollbarLayerImpl::MinimumThumbLength() const {
+int32_t NinePatchThumbScrollbarLayerImpl::MinimumThumbLength() const {
   return minimum_thumb_length_;
 }
 
-void NinePatchThumbScrollbarLayerImpl::SetTrackStart(int track_start) {
+void NinePatchThumbScrollbarLayerImpl::SetTrackStart(int32_t track_start) {
   if (track_start_ == track_start)
     return;
   track_start_ = track_start;
   NoteLayerPropertyChanged();
 }
 
-int NinePatchThumbScrollbarLayerImpl::TrackStart() const {
+int32_t NinePatchThumbScrollbarLayerImpl::TrackStart() const {
   return track_start_;
 }
 
-void NinePatchThumbScrollbarLayerImpl::SetTrackLength(int track_length) {
+void NinePatchThumbScrollbarLayerImpl::SetTrackLength(int32_t track_length) {
   if (track_length_ == track_length)
     return;
   track_length_ = track_length;

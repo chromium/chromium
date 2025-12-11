@@ -339,7 +339,7 @@ bool ScrollbarLayerImplBase::IsFluentOverlayScrollbarEnabled() const {
   return layer_tree_impl()->settings().enable_fluent_overlay_scrollbar;
 }
 
-int ScrollbarLayerImplBase::ThumbLength() const {
+int32_t ScrollbarLayerImplBase::ThumbLength() const {
   return ScrollUtils::CalculateScrollbarThumbLength(
       scroll_layer_length(), clip_layer_length(), TrackLength(),
       MinimumThumbLength());
