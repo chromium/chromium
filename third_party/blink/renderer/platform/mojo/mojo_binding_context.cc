@@ -6,53 +6,54 @@
 
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/mojo/browser_interface_broker_proxy_impl.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
+namespace {
+
 class MojoJSInterfaceBrokerWrapper final
     : public GarbageCollected<MojoJSInterfaceBrokerWrapper>,
-      public GarbageCollectedMixin {
+      public Supplement<MojoBindingContext> {
  public:
+  static constexpr auto kSupplementIndex =
+      MojoBindingContext::Supplements::kMojoJSInterfaceBrokerWrapper;
+
   explicit MojoJSInterfaceBrokerWrapper(MojoBindingContext& context)
-      : mojo_binding_context_(context), impl_(&context) {}
+      : Supplement(context), impl_(&context) {}
   BrowserInterfaceBrokerProxyImpl& impl() { return impl_; }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(impl_);
-    visitor->Trace(mojo_binding_context_);
+    Supplement::Trace(visitor);
   }
 
  private:
-  Member<MojoBindingContext> mojo_binding_context_;
   BrowserInterfaceBrokerProxyImpl impl_;
 };
 
+}  // namespace
+
 bool MojoBindingContext::ShouldUseMojoJSInterfaceBroker() const {
-  return GetMojoJSInterfaceBrokerWrapper();
+  return RequireSupplement<MojoJSInterfaceBrokerWrapper>();
 }
 
 const BrowserInterfaceBrokerProxy&
 MojoBindingContext::GetMojoJSInterfaceBroker() const {
-  auto* wrapper = GetMojoJSInterfaceBrokerWrapper();
+  auto* wrapper = RequireSupplement<MojoJSInterfaceBrokerWrapper>();
   CHECK(wrapper);
   return wrapper->impl();
 }
 
 void MojoBindingContext::SetMojoJSInterfaceBroker(
     mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> broker_remote) {
-  auto* wrapper = GetMojoJSInterfaceBrokerWrapper();
+  auto* wrapper = RequireSupplement<MojoJSInterfaceBrokerWrapper>();
   if (!wrapper) {
     wrapper = MakeGarbageCollected<MojoJSInterfaceBrokerWrapper>(*this);
-    SetMojoJSInterfaceBrokerWrapper(wrapper);
+    ProvideSupplement(wrapper);
   }
   wrapper->impl().Bind(std::move(broker_remote),
                        GetTaskRunner(TaskType::kInternalDefault));
-}
-
-void MojoBindingContext::Trace(Visitor* visitor) const {
-  ContextLifecycleNotifier::Trace(visitor);
-  visitor->Trace(mojo_jsinterface_broker_wrapper_);
-  visitor->Trace(p2p_socket_dispatcher_);
 }
 
 }  // namespace blink
