@@ -46,8 +46,9 @@ bool BlobStorageRegistry::HasEntry(const std::string& uuid) const {
 
 BlobEntry* BlobStorageRegistry::GetEntry(const std::string& uuid) {
   auto found = blob_map_.find(uuid);
-  if (found == blob_map_.end())
+  if (found == blob_map_.end()) {
     return nullptr;
+  }
   return found->second.get();
 }
 

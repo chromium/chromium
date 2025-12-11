@@ -15,8 +15,9 @@ bool MockSpecialStoragePolicy::IsStorageProtected(const GURL& origin) {
 }
 
 bool MockSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
-  if (all_unlimited_)
+  if (all_unlimited_) {
     return true;
+  }
   return base::Contains(unlimited_, origin);
 }
 

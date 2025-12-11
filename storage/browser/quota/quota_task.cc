@@ -49,8 +49,9 @@ void QuotaTask::Abort() {
 
 void QuotaTask::DeleteSoon() {
   DCHECK(original_task_runner_->BelongsToCurrentThread());
-  if (delete_scheduled_)
+  if (delete_scheduled_) {
     return;
+  }
   delete_scheduled_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                 this);
