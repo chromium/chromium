@@ -358,8 +358,7 @@ TEST_F(MemoryCacheStrongReferenceTest, ResourceTimeout) {
 
   ASSERT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
   MemoryCache::Get()->strong_references_prune_duration_ = base::Milliseconds(1);
-  MemoryCache::Get()->SavePageResourceStrongReferences(
-      HeapVector<Member<Resource>>{resource});
+  MemoryCache::Get()->SaveStrongReference(resource);
   ASSERT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
 
   (*MemoryCache::Get()->strong_references_.begin())

@@ -157,9 +157,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "strong_reference_prune_delay",
                    kDefaultStrongReferencePruneDelay);
 
-static constexpr char kPageSavedResourceStrongReferenceSize[] =
-    "Blink.MemoryCache.PageSavedResourceStrongReferenceSize2";
-
 ScopedMemoryCacheForTesting::ScopedMemoryCacheForTesting(
     Persistent<MemoryCache> cache) {
   if (!g_memory_cache) {
@@ -582,6 +579,11 @@ void MemoryCache::OnUpdateMemoryLimit() {
       memory_limit_ratio();
 }
 
+bool MemoryCache::HasStrongReferenceForTesting(Resource* resource) const {
+  return strong_references_.Contains(resource) ||
+         tiered_strong_references_.Contains(resource);
+}
+
 void MemoryCache::SaveTieredStrongReference(Resource* resource) {
   if (tiered_strong_references_.Contains(resource)) {
     return;
@@ -591,19 +593,8 @@ void MemoryCache::SaveTieredStrongReference(Resource* resource) {
   tiered_strong_references_.push_back(resource);
 }
 
-void MemoryCache::SavePageResourceStrongReferences(
-    HeapVector<Member<Resource>> resources) {
-  DCHECK(base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference));
-  base::UmaHistogramCustomCounts(kPageSavedResourceStrongReferenceSize,
-                                 resources.size(), 0, 200, 50);
-  for (Resource* resource : resources) {
-    resource->UpdateMemoryCacheLastAccessedTime();
-    strong_references_.AppendOrMoveToLast(resource);
-  }
-  PruneStrongReferences();
-}
-
 void MemoryCache::SaveStrongReference(Resource* resource) {
+  DCHECK(base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference));
   resource->UpdateMemoryCacheLastAccessedTime();
   if (base::FeatureList::IsEnabled(features::kMemoryCacheIntelligentPruning)) {
     CHECK(strong_references_.empty());
@@ -612,6 +603,7 @@ void MemoryCache::SaveStrongReference(Resource* resource) {
     CHECK(tiered_strong_references_.empty());
     strong_references_.AppendOrMoveToLast(resource);
   }
+  PruneStrongReferences();
 }
 
 void MemoryCache::PruneTieredStrongReferences() {

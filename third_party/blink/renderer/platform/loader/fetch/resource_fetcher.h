@@ -101,8 +101,7 @@ struct ResourceLoaderOptions;
 // keep a ResourceFetcher alive past detach if scripts still reference the
 // Document.
 class PLATFORM_EXPORT ResourceFetcher
-    : public GarbageCollected<ResourceFetcher>,
-      public base::MemoryPressureListener {
+    : public GarbageCollected<ResourceFetcher> {
   USING_PRE_FINALIZER(ResourceFetcher, ClearPreloads);
 
  public:
@@ -135,7 +134,7 @@ class PLATFORM_EXPORT ResourceFetcher
   explicit ResourceFetcher(const ResourceFetcherInit&);
   ResourceFetcher(const ResourceFetcher&) = delete;
   ResourceFetcher& operator=(const ResourceFetcher&) = delete;
-  ~ResourceFetcher() override;
+  ~ResourceFetcher();
   void Trace(Visitor*) const;
 
   // - This function returns the same object throughout this fetcher's
@@ -218,9 +217,6 @@ class PLATFORM_EXPORT ResourceFetcher
   const DocumentResourceMap& AllResources() const {
     return cached_resources_map_;
   }
-
-  const HeapHashSet<Member<Resource>> MoveResourceStrongReferences();
-  bool HasStrongReferenceForTesting(Resource* resource);
 
   enum class ImageLoadBlockingPolicy {
     kDefault,
@@ -378,9 +374,6 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void CancelWebBundleSubresourceLoadersFor(
       const base::UnguessableToken& web_bundle_token);
-
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   void MaybeRecordLCPPSubresourceMetrics(const KURL& document_url);
 
@@ -650,11 +643,6 @@ class PLATFORM_EXPORT ResourceFetcher
   // that have not been previously emulated.
   DocumentResourceMap emulated_load_started_for_inspector_resources_map_;
 
-  // document_resource_strong_refs_ keeps strong references for fonts, images,
-  // scripts and stylesheets within their freshness lifetime.
-  HeapHashSet<Member<Resource>> document_resource_strong_refs_;
-  size_t document_resource_strong_refs_total_size_ = 0;
-
   // |not_loaded_image_resources_| is a subset of all image resources for the
   // document where |Resource::IsLoaded| might be false. The is used for
   // performance optimizations and might still contain images which are actually
@@ -737,8 +725,6 @@ class PLATFORM_EXPORT ResourceFetcher
 
   // The accumulated time taken by `DidLoadResourceFromMemoryCache()`.
   base::TimeDelta total_taken_time_for_did_load_resource_from_memory_cache_;
-
-  MemoryPressureListenerRegistration memory_pressure_listener_registration_;
 };
 
 class ResourceCacheValidationSuppressor {

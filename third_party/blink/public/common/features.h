@@ -1619,10 +1619,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kRestrictSpellingAndGrammarHighlightsChangedSelection);
 
-// Whether the ResourceFetcher should store strong references too.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kResourceFetcherStoresStrongReferences);
-
 // Aggregated flag for the restriction on HTTP Link headers on subresource
 // responses. See crbug.com/417529151 for details.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRestrictLinkHeaderOnSubresource);

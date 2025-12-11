@@ -76,9 +76,7 @@ class FontResourceStrongReferenceTest : public FontResourceTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kMemoryCacheStrongReference,
-         features::kResourceFetcherStoresStrongReferences},
-        {});
+        {features::kMemoryCacheStrongReference}, {});
     FontResourceTest::SetUp();
   }
 
@@ -344,11 +342,7 @@ TEST_F(FontResourceStrongReferenceTest, FontResourceStrongReference) {
   url_test_helpers::ServeAsynchronousRequests();
   ASSERT_TRUE(resource);
 
-  auto strong_referenced_resources = fetcher->MoveResourceStrongReferences();
-  ASSERT_EQ(strong_referenced_resources.size(), 1u);
-
-  strong_referenced_resources = fetcher->MoveResourceStrongReferences();
-  ASSERT_EQ(strong_referenced_resources.size(), 0u);
+  ASSERT_TRUE(MemoryCache::Get()->HasStrongReferenceForTesting(resource));
 }
 
 TEST_F(FontResourceStrongReferenceTest, FollowCacheControl) {
@@ -378,8 +372,8 @@ TEST_F(FontResourceStrongReferenceTest, FollowCacheControl) {
   url_test_helpers::ServeAsynchronousRequests();
   ASSERT_TRUE(resource_no_store);
 
-  auto strong_referenced_resources = fetcher->MoveResourceStrongReferences();
-  ASSERT_EQ(strong_referenced_resources.size(), 0u);
+  ASSERT_FALSE(
+      MemoryCache::Get()->HasStrongReferenceForTesting(resource_no_store));
 }
 
 namespace {

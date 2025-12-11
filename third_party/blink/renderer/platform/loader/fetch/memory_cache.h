@@ -163,11 +163,6 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   size_t size() const { return size_; }
 
-  // Called by the loader to notify that a new page is being loaded.
-  // The strong references the memory cache is holding for the current page
-  // will be moved to the previous generation.
-  void SavePageResourceStrongReferences(HeapVector<Member<Resource>> resources);
-
   void SaveStrongReference(Resource* resource);
 
   // Take memory usage snapshot for tracing.
@@ -179,6 +174,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // base::MemoryConsumer:
   void OnReleaseMemory() override;
   void OnUpdateMemoryLimit() override;
+
+  bool HasStrongReferenceForTesting(Resource*) const;
 
  private:
   // A URL-based map of all resources that are in the cache (including the

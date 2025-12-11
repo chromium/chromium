@@ -1674,12 +1674,6 @@ bool FrameLoader::ShouldClose(bool is_reload) {
     descendant_frame->GetDocument()->BeforeUnloadDoneWillUnload();
   }
 
-  if (!frame_->IsDetached() && frame_->IsOutermostMainFrame() &&
-      base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference)) {
-    MemoryCache::Get()->SavePageResourceStrongReferences(
-        frame_->AllResourcesUnderFrame());
-  }
-
   if (!is_reload) {
     // Records only when a non-reload navigation occurs.
     base::UmaHistogramMediumTimes(
