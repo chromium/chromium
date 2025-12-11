@@ -29,7 +29,15 @@ import java.util.function.Function;
  */
 @NullMarked
 public class FakeExtensionActionsBridge {
-    /** A map of task IDs to their corresponding {@link TaskModel}. */
+    /**
+     * A map of task IDs to their corresponding {@link TaskModel}.
+     *
+     * <p>Task IDs is a concept internal to this class, identifying a {@link ChromeAndroidTask} that
+     * is associated with {@link TaskModel}. It is defined to be identical to the native browser
+     * window interface pointer as returned by {@link
+     * ChromeAndroidTask#getOrCreateNativeBrowserWindowPtr()}. We ensure that it is non-zero to
+     * avoid potential bugs with mocked {@link ChromeAndroidTask}.
+     */
     private final TreeMap<Long, TaskModel> mTaskModels = new TreeMap<>();
 
     public FakeExtensionActionsBridge() {}
@@ -74,17 +82,11 @@ public class FakeExtensionActionsBridge {
         mTaskModels.clear();
     }
 
-    /** Computes the long ID for the given {@link ChromeAndroidTask}. */
+    /** Computes the task ID for the given {@link ChromeAndroidTask}. */
     private static long computeTaskId(ChromeAndroidTask task) {
-        long id = task.getOrCreateNativeBrowserWindowPtr();
-        if (id == 0) {
-            // ChromeAndroidTask must be a mock because this should never happen for a real
-            // ChromeAndroidTask object, so use a hash code instead. We compute the ID so that it
-            // never collide with real BrowserWindowInterface pointers, assuming that they're
-            // aligned by 4 or 8 bytes.
-            id = ((long) System.identityHashCode(task) << 2) | 1;
-        }
-        return id;
+        long taskId = task.getOrCreateNativeBrowserWindowPtr();
+        assert taskId != 0 : "ChromeAndroidTask#getOrCreateNativeBrowserWindowPtr() returned 0";
+        return taskId;
     }
 
     /** Creates a new transparent icon. */
@@ -116,6 +118,7 @@ public class FakeExtensionActionsBridge {
 
         private TaskModel(ChromeAndroidTask task) {
             mTask = task;
+            // Use the task ID as the native bridge pointer.
             mBridge = new ExtensionActionsBridge(computeTaskId(task));
         }
 
