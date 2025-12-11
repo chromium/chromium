@@ -121,8 +121,7 @@ TEST_F(AudioProcessMlModelForwarderTest,
           OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR));
 }
 
-// TODO(crbug.com/464181367): Fix and re-enable the test.
-TEST_F(AudioProcessMlModelForwarderTest, DISABLED_ForwardUpdates) {
+TEST_F(AudioProcessMlModelForwarderTest, ForwardUpdates) {
   forwarder_->Initialize(model_provider_);
   forwarder_->OnAudioProcessLaunched(std::move(remote_ml_model_manager_));
 
@@ -142,12 +141,11 @@ TEST_F(AudioProcessMlModelForwarderTest, DISABLED_ForwardUpdates) {
   // Forward "stop serving" signal.
   EXPECT_CALL(ml_model_manager_, StopServingResidualEchoEstimationModel())
       .Times(1);
-  model_provider_.UpdateModelImmediatelyForTesting(
+  model_provider_.RemoveModel(
       optimization_guide::proto::
-          OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR,
-      nullptr);
+          OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR);
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return !forwarder_->HasPendingTasksForTesting(); }));
+      [&]() { return !forwarder_->HasModelForTesting(); }));
 
   // Forward another model file.
   EXPECT_CALL(ml_model_manager_, SetResidualEchoEstimationModel(testing::_))
@@ -216,11 +214,18 @@ TEST_F(AudioProcessMlModelForwarderTest,
       [&]() { return !forwarder_->HasPendingTasksForTesting(); }));
 }
 
-// TODO(crbug.com/464181367): Fix and re-enable the test.
 TEST_F(AudioProcessMlModelForwarderTest,
-       DISABLED_HandleStopServingSignalAfterAudioProcessCrash) {
+       HandleStopServingSignalAfterAudioProcessCrash) {
+  // Set up the forwarder with a model file.
   forwarder_->Initialize(model_provider_);
   forwarder_->OnAudioProcessLaunched(std::move(remote_ml_model_manager_));
+  model_provider_.UpdateModelImmediatelyForTesting(
+      optimization_guide::proto::
+          OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR,
+      CreateModelInfo());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return forwarder_->HasModelForTesting(); }));
+  testing::Mock::VerifyAndClearExpectations(&ml_model_manager_);
 
   // Simulate a crash by invalidating the receiver.
   ml_model_manager_.ResetReceiver();
@@ -234,12 +239,11 @@ TEST_F(AudioProcessMlModelForwarderTest,
       .Times(0);
 
   // Send a model update to stop serving models.
-  model_provider_.UpdateModelImmediatelyForTesting(
+  model_provider_.RemoveModel(
       optimization_guide::proto::
-          OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR,
-      nullptr);
+          OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR);
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return !forwarder_->HasPendingTasksForTesting(); }));
+      [&]() { return !forwarder_->HasModelForTesting(); }));
 }
 
 }  // namespace

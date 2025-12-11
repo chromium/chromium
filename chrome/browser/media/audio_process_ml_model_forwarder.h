@@ -70,6 +70,7 @@ class AudioProcessMlModelForwarder
   bool HasBoundAudioProcessRemoteForTesting() const {
     return audio_process_model_manager_.is_bound();
   }
+  bool HasModelForTesting() const { return !model_path_.empty(); }
 
  private:
   // optimization_guide::OptimizationTargetModelObserver:
