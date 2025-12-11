@@ -1091,6 +1091,8 @@ const char* FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum) {
       return "uniform_buffer_standard_layout";
     case wgpu::WGSLLanguageFeatureName::SubgroupId:
       return "subgroup_id";
+    case wgpu::WGSLLanguageFeatureName::SubgroupUniformity:
+      return "subgroup_uniformity";
 
     // Non-standard.
     case wgpu::WGSLLanguageFeatureName::ChromiumTestingUnimplemented:
