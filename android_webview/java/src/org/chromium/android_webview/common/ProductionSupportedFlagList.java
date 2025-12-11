@@ -1144,6 +1144,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.ANDROID_MEDIA_INSERTION,
                 "When enabled, IMEs should be able to insert media content such as images, gifs and"
-                        + " stickers.")
+                        + " stickers."),
+        Flag.baseFeature(
+                BlinkFeatures.STICKY_USER_ACTIVATION_ACROSS_SAME_ORIGIN_NAVIGATION,
+                "When enabled, sticky user activations are preserved for same-origin top frame"
+                        + " navigations."),
     };
 }
