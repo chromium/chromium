@@ -239,6 +239,35 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
         verify(mWindowInsetsController, never()).setSystemBarsAppearance(anyInt(), anyInt());
     }
 
+    @Test
+    public void testSetStatusBarColor_forceLightIconColor() {
+        initEdgeToEdgeColorHelper();
+
+        // When status bar color is white, icons color will be dark.
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.WHITE);
+        verify(mWindowInsetsController)
+                .setSystemBarsAppearance(
+                        APPEARANCE_LIGHT_STATUS_BARS, APPEARANCE_LIGHT_STATUS_BARS);
+
+        // Verifies that status bar icon color is reverted to the default, white or light grey.
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.WHITE, /* forceLightIconColor= */ true);
+        verify(mWindowInsetsController).setSystemBarsAppearance(0, APPEARANCE_LIGHT_STATUS_BARS);
+    }
+
+    @Test
+    public void testSetStatusBarColor_skipWithSameParameters() {
+        initEdgeToEdgeColorHelper();
+
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.WHITE, /* forceLightIconColor= */ true);
+        verify(mWindowInsetsController).setSystemBarsAppearance(0, APPEARANCE_LIGHT_STATUS_BARS);
+
+        clearInvocations(mWindowInsetsController);
+        // Verifies that WindowInsetsController won't set system bar appearance again if the same
+        // parameters are passed from setStatusBarColor().
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.WHITE, /* forceLightIconColor= */ true);
+        verify(mWindowInsetsController, never()).setSystemBarsAppearance(anyInt(), anyInt());
+    }
+
     private void initEdgeToEdgeColorHelper() {
         mEdgeToEdgeColorHelper =
                 new EdgeToEdgeSystemBarColorHelper(

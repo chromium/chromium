@@ -21,10 +21,26 @@ public abstract class BaseSystemBarColorHelper implements SystemBarColorHelper {
     protected @ColorInt int mNavBarColor = Color.TRANSPARENT;
     protected @ColorInt int mNavBarDividerColor = Color.TRANSPARENT;
 
+    // The mForceLightStatusBarColor is used in the child class.
+    protected boolean mForceLightStatusBarColor;
+
     @Override
     public void setStatusBarColor(@ColorInt int color) {
-        if (color == getStatusBarColor()) return;
+        setStatusBarColorImpl(color, /* forceLightIconColor= */ false);
+    }
+
+    @Override
+    public void setStatusBarColor(@ColorInt int color, boolean forceLightIconColor) {
+        setStatusBarColorImpl(color, forceLightIconColor);
+    }
+
+    private void setStatusBarColorImpl(@ColorInt int color, boolean forceLightIconColor) {
+        if (color == getStatusBarColor() && mForceLightStatusBarColor == forceLightIconColor) {
+            return;
+        }
+
         mStatusBarColor = color;
+        mForceLightStatusBarColor = forceLightIconColor;
         applyStatusBarColor();
     }
 
@@ -61,6 +77,12 @@ public abstract class BaseSystemBarColorHelper implements SystemBarColorHelper {
         UiUtils.setStatusBarIconColor(
                 rootView,
                 ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(statusBarColor)));
+    }
+
+    /** Sets the status bar icons to light. */
+    protected static void updateStatusBarWithLightIconColor(View rootView) {
+        // We don't use the default light status bar with dark icons.
+        UiUtils.setStatusBarIconColor(rootView, /* lightStatusBar= */ false);
     }
 
     /**

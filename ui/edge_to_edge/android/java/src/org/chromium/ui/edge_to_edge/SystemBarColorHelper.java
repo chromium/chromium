@@ -23,6 +23,17 @@ public interface SystemBarColorHelper extends Destroyable {
     /** Set the status bar color. */
     void setStatusBarColor(@ColorInt int color);
 
+    /**
+     * Set the status bar color.
+     *
+     * @param color The status bar color.
+     * @param forceLightIconColor whether to use light status bar icon color without checking the
+     *     new status bar color.
+     */
+    default void setStatusBarColor(@ColorInt int color, boolean forceLightIconColor) {
+        setStatusBarColor(color);
+    }
+
     /** Set the navigation bar color. */
     void setNavigationBarColor(@ColorInt int color);
 

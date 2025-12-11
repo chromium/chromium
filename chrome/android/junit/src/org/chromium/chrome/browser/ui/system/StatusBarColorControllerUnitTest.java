@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui.system;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -85,10 +87,23 @@ public class StatusBarColorControllerUnitTest {
     @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testSetStatusBarColor_EdgeToEdgeEnabled() {
         StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mActivity, Color.BLUE);
-        verify(mSystemBarColorHelper).setStatusBarColor(Color.BLUE);
+        verify(mSystemBarColorHelper).setStatusBarColor(Color.BLUE, false);
 
         StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mActivity, Color.RED);
-        verify(mSystemBarColorHelper).setStatusBarColor(Color.RED);
+        verify(mSystemBarColorHelper).setStatusBarColor(Color.RED, false);
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    @Config(sdk = 30) // Min version needed for e2e everywhere
+    public void testSetStatusBarColor_EdgeToEdgeEnabled_UseLightIconColor() {
+        StatusBarColorController.setStatusBarColor(
+                mSystemBarColorHelper, mActivity, Color.BLUE, /* forceLightIconColor= */ true);
+        verify(mSystemBarColorHelper).setStatusBarColor(Color.BLUE, true);
+
+        StatusBarColorController.setStatusBarColor(
+                mSystemBarColorHelper, mActivity, Color.RED, /* forceLightIconColor= */ true);
+        verify(mSystemBarColorHelper).setStatusBarColor(Color.RED, true);
     }
 
     @Test
@@ -261,16 +276,10 @@ public class StatusBarColorControllerUnitTest {
                 mStatusBarColorController.getBackgroundColorForNtpForTesting());
 
         mStatusBarColorController.onToolbarExpandingOnNtp(true);
-        assertEquals(
-                mActivity.getColor(
-                        R.color.status_bar_background_color_on_ntp_with_toolbar_expanding),
-                mStatusBarColorController.getBackgroundColorForNtpForTesting());
+        assertFalse(mStatusBarColorController.getForceLightIconColorForNtpForTesting());
 
         mStatusBarColorController.onToolbarExpandingOnNtp(false);
-        assertEquals(
-                mActivity.getColor(
-                        R.color.status_bar_background_color_on_ntp_with_toolbar_collapsed),
-                mStatusBarColorController.getBackgroundColorForNtpForTesting());
+        assertTrue(mStatusBarColorController.getForceLightIconColorForNtpForTesting());
     }
 
     @Test
@@ -286,10 +295,7 @@ public class StatusBarColorControllerUnitTest {
                 mStatusBarColorController.getBackgroundColorForNtpForTesting());
 
         mStatusBarColorController.onBackgroundImageChangedImpl();
-        assertEquals(
-                mActivity.getColor(
-                        R.color.status_bar_background_color_on_ntp_with_toolbar_collapsed),
-                mStatusBarColorController.getBackgroundColorForNtpForTesting());
+        assertTrue(mStatusBarColorController.getForceLightIconColorForNtpForTesting());
     }
 
     private void initialize(boolean isTablet, boolean isInDesktopWindow) {

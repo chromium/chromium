@@ -108,8 +108,12 @@ public class StatusBarColorController
     private boolean mToolbarColorChanged;
     private @ColorInt int mToolbarColor;
     private @ColorInt int mBackgroundColorForNtp;
-    private final @ColorInt int mAdjustedBackgroundColorForNtpWithToolbarExpanding;
-    private final @ColorInt int mAdjustedBackgroundColorForNtpWithToolbarCollapsed;
+
+    // A flag to force using a light status bar icon color for NTP. When a customized background
+    // image is set for NTP, a light status bar icon color is used. However, when NTP is scrolling
+    // up and the toolbar is expanding, the status bar icon will be changed to dark, i.e, the same
+    // color of the location bar icons.
+    private boolean mForceLightIconColorForNtp;
 
     private @Nullable TabModelSelector mTabModelSelector;
     private CallbackController mCallbackController = new CallbackController();
@@ -185,16 +189,6 @@ public class StatusBarColorController
 
         mBackgroundColorForNtp =
                 ContextCompat.getColor(activity, R.color.home_surface_background_color);
-        // In light mode, when toolbar is expending, we want to tint status bar icon color from
-        // white to black, i.e, the same color of the location bar icons. To change icon tint to
-        // black, we need to set the background of status bar as white. In the dark mode, the
-        // background of status bar is set to black.
-        mAdjustedBackgroundColorForNtpWithToolbarExpanding =
-                activity.getColor(
-                        R.color.status_bar_background_color_on_ntp_with_toolbar_expanding);
-        mAdjustedBackgroundColorForNtpWithToolbarCollapsed =
-                activity.getColor(
-                        R.color.status_bar_background_color_on_ntp_with_toolbar_collapsed);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 
         // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.
@@ -339,9 +333,9 @@ public class StatusBarColorController
 
     /** Called when the background image of the NTP has changed. */
     public void onBackgroundImageChangedImpl() {
-        if (mBackgroundColorForNtp == mAdjustedBackgroundColorForNtpWithToolbarCollapsed) return;
+        if (mForceLightIconColorForNtp) return;
 
-        mBackgroundColorForNtp = mAdjustedBackgroundColorForNtpWithToolbarCollapsed;
+        mForceLightIconColorForNtp = true;
         updateStatusBarColor();
     }
 
@@ -392,9 +386,9 @@ public class StatusBarColorController
     @Override
     public void onToolbarExpandingOnNtp(boolean isToolbarExpanding) {
         if (isToolbarExpanding) {
-            mBackgroundColorForNtp = mAdjustedBackgroundColorForNtpWithToolbarExpanding;
+            mForceLightIconColorForNtp = false;
         } else {
-            mBackgroundColorForNtp = mAdjustedBackgroundColorForNtpWithToolbarCollapsed;
+            mForceLightIconColorForNtp = true;
         }
         updateStatusBarColor();
     }
@@ -472,7 +466,11 @@ public class StatusBarColorController
     /** Calculate and update the status bar's color. */
     public void updateStatusBarColor() {
         @ColorInt int statusBarColor = calculateFinalStatusBarColor();
-        setStatusBarColor(mEdgeToEdgeSystemBarColorHelper, mActivity, statusBarColor);
+        setStatusBarColor(
+                mEdgeToEdgeSystemBarColorHelper,
+                mActivity,
+                statusBarColor,
+                mForceLightIconColorForNtp && isStandardNtp());
     }
 
     /**
@@ -576,12 +574,31 @@ public class StatusBarColorController
             @Nullable EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             Activity activity,
             @ColorInt int color) {
+        setStatusBarColor(
+                edgeToEdgeSystemBarColorHelper, activity, color, /* forceLightIconColor= */ false);
+    }
+
+    /**
+     * Set device status bar to a given color. Also, set the status bar icons to a dark color if
+     * needed.
+     *
+     * @param edgeToEdgeSystemBarColorHelper The interface that draws system bar color for Edge to
+     *     Edge.
+     * @param activity The current Activity.
+     * @param color The color that the status bar should be set to.
+     * @param forceLightIconColor Force to use light icon color.
+     */
+    public static void setStatusBarColor(
+            @Nullable EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
+            Activity activity,
+            @ColorInt int color,
+            boolean forceLightIconColor) {
         Window window = activity.getWindow();
         final View root = window.getDecorView().getRootView();
         boolean needsDarkStatusBarIcons = !ColorUtils.shouldUseLightForegroundOnBackground(color);
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()
                 && edgeToEdgeSystemBarColorHelper != null) {
-            edgeToEdgeSystemBarColorHelper.setStatusBarColor(color);
+            edgeToEdgeSystemBarColorHelper.setStatusBarColor(color, forceLightIconColor);
         } else {
             UiUtils.setStatusBarIconColor(root, needsDarkStatusBarIcons);
             UiUtils.setStatusBarColor(window, color);
@@ -652,5 +669,9 @@ public class StatusBarColorController
     @ColorInt
     int getBackgroundColorForNtpForTesting() {
         return mBackgroundColorForNtp;
+    }
+
+    public boolean getForceLightIconColorForNtpForTesting() {
+        return mForceLightIconColorForNtp;
     }
 }
