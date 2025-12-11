@@ -37,12 +37,6 @@
 // as they need access to the definition of the class. Foo thus remains entirely
 // opaque to its container.
 //
-// Diamond inheritance causes some problems for our casting; if you inherit
-// from two or more classes that in turn inherit from GarbageCollectedMixin,
-// the compiler will not known which GarbageCollectedMixin you meant. In this
-// case, you'll need to choose one of the bases arbitrarily and give that
-// as the second template argument (“Via”).
-//
 // If you do not have layering violation problems, you do not need
 // ForwardDeclaredMember<>. Just forward-declare as usual and #include its
 // header file in your .cc file (where you also implement Trace()).
@@ -55,7 +49,7 @@
 
 namespace blink {
 
-template <class T, class Via = T>
+template <class T>
 class ForwardDeclaredMember {
   DISALLOW_NEW();
 
@@ -80,11 +74,11 @@ class ForwardDeclaredMember {
   // the pointer correctly.
 
   // NOLINTNEXTLINE
-  ForwardDeclaredMember(T* obj) : obj_(static_cast<Via*>(obj)) {}
+  ForwardDeclaredMember(T* obj) : obj_(obj) {}
   // NOLINTNEXTLINE
-  operator T*() const { return static_cast<T*>(static_cast<Via*>(obj_.Get())); }
+  operator T*() const { return static_cast<T*>(obj_.Get()); }
   ForwardDeclaredMember& operator=(T* obj) {
-    obj_ = static_cast<GarbageCollectedMixin*>(static_cast<Via*>(obj));
+    obj_ = static_cast<GarbageCollectedMixin*>(obj);
     return *this;
   }
 

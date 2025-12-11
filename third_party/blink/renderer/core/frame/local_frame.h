@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_unique_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image_skia.h"
@@ -173,8 +174,6 @@ class ImageDownloaderImpl;
 class RemoteObjectGatewayFactoryImpl;
 class RemoteObjectGatewayImpl;
 class TextSuggestionBackendImpl;
-class DevToolsFrontendImpl;
-class InspectorFrontendClient;
 
 namespace v8_compile_hints {
 class V8LocalCompileHintsProducer;
@@ -197,8 +196,11 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 class CORE_EXPORT LocalFrame final
     : public Frame,
       public FrameScheduler::Delegate,
-      public BackForwardCacheLoaderHelperImpl::Delegate {
+      public BackForwardCacheLoaderHelperImpl::Delegate,
+      public Supplementable<LocalFrame, 1> {
  public:
+  enum class Supplements { kDevToolsFrontendImpl = 0 };
+
   // Returns the LocalFrame instance for the given |frame_token|.
   static LocalFrame* FromFrameToken(const LocalFrameToken& frame_token);
 
@@ -1016,16 +1018,6 @@ class CORE_EXPORT LocalFrame final
     remote_object_gateway_impl_ = remote_object_gateway_impl;
   }
 
-  ForwardDeclaredMember<DevToolsFrontendImpl, InspectorFrontendClient>
-  GetDevToolsFrontendImpl() const {
-    return dev_tools_frontend_impl_;
-  }
-  void SetDevToolsFrontendImpl(
-      ForwardDeclaredMember<DevToolsFrontendImpl, InspectorFrontendClient>
-          dev_tools_frontend_impl) {
-    dev_tools_frontend_impl_ = dev_tools_frontend_impl;
-  }
-
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -1307,8 +1299,6 @@ class CORE_EXPORT LocalFrame final
   ForwardDeclaredMember<RemoteObjectGatewayFactoryImpl>
       remote_object_gateway_factory_impl_;
   ForwardDeclaredMember<RemoteObjectGatewayImpl> remote_object_gateway_impl_;
-  ForwardDeclaredMember<DevToolsFrontendImpl, InspectorFrontendClient>
-      dev_tools_frontend_impl_;
 
   void OnStorageAccessCallback(base::OnceCallback<void(bool)> callback,
                                mojom::blink::StorageTypeAccessed storage_type,
