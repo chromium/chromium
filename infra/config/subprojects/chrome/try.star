@@ -183,6 +183,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-trogdor-chrome",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-volteer-chrome",
 )
 
