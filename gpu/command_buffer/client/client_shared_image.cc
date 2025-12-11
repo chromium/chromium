@@ -548,7 +548,14 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::MakeUnowned() {
 ExportedSharedImage ClientSharedImage::Export(bool with_buffer_handle) {
   if (creation_sync_token_.HasData() &&
       !creation_sync_token_.verified_flush()) {
-    sii_holder_->Get()->VerifySyncToken(creation_sync_token_);
+    auto sii = sii_holder_->Get();
+    // TODO(crbug.com/40286368): We should let ClientSharedImage hold a strong
+    // SharedImageInterface reference to ensure `sii` is always valid.
+    if (sii) {
+      sii->VerifySyncToken(creation_sync_token_);
+    } else {
+      creation_sync_token_ = gpu::SyncToken();
+    }
   }
   std::optional<gfx::GpuMemoryBufferHandle> buffer_handle;
   std::optional<gfx::BufferUsage> buffer_usage;
