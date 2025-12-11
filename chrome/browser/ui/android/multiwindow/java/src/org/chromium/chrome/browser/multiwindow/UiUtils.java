@@ -73,7 +73,7 @@ public class UiUtils {
                 isIncognitoAsWindowEnabled()
                         ? mContext.getResources()
                                 .getDrawable(R.drawable.ic_incognito_24dp, mContext.getTheme())
-                        : getTintedIcon(R.drawable.incognito_simple);
+                        : getTintedIcon(R.drawable.ic_incognito_fill_24dp);
         mGlobeFavicon = getTintedIcon(R.drawable.ic_globe_24dp);
         mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
     }
