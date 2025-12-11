@@ -8,6 +8,7 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-html {
-  background-color: white;
+:host {
+  color: var(--cr-primary-text-color)
 }
+
