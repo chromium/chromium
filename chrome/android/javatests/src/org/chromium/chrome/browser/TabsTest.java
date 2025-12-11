@@ -27,7 +27,6 @@ import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.View;
 
-import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -520,7 +519,7 @@ public class TabsTest {
             TabUiTestHelper.enterTabSwitcher(cta);
 
             // Switch back to the tab view from the tab-switcher mode.
-            Espresso.pressBack();
+            TabUiTestHelper.leaveTabSwitcher(cta);
 
             assertEquals(
                     "URL mismatch after switching back to the tab from tab-switch mode",
@@ -643,7 +642,8 @@ public class TabsTest {
         final View urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         final TabModel model =
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
-        final Tab oldTab = TabModelUtils.getCurrentTab(model);
+        final Tab oldTab =
+                ThreadUtils.runOnUiThreadBlocking(() -> TabModelUtils.getCurrentTab(model));
 
         assertNotNull("Tab should have a view", oldTab.getView());
 
