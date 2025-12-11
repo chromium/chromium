@@ -75,7 +75,7 @@ public interface ObservableSupplier<T extends @Nullable Object>
     @SuppressWarnings("Unchecked")
     default NonNullObservableSupplier<T> asNonNull() {
         // Cast from monotonic non-null -> non-null.
-        assert !Boolean.TRUE.equals(((BaseObservableSupplierImpl<?>) this).mAllowSetToNull)
+        assert !Boolean.TRUE.equals(BaseObservableSupplierImpl.allowsSetToNull(this))
                 : "Cannot cast a non-monotonic supplier to a NonNull one.";
         assert get() != null : "Supplier is monotonic, but does not yet have a value.";
         return (NonNullObservableSupplier<T>) this;

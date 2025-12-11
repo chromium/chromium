@@ -49,7 +49,7 @@ public class TabBrowserControlsConstraintsHelperTest {
 
     private TabBrowserControlsConstraintsHelper mHelper;
     private TabObserver mRegisteredTabObserver;
-    private TestVisibilityDelegate mVisibilityDelegate;
+    private BrowserControlsVisibilityDelegate mVisibilityDelegate;
 
     @Before
     public void setUp() {
@@ -63,7 +63,7 @@ public class TabBrowserControlsConstraintsHelperTest {
         Mockito.when(mTab.getTabObservers())
                 .thenAnswer(invocation -> observers.rewindableIterator());
 
-        mVisibilityDelegate = new TestVisibilityDelegate();
+        mVisibilityDelegate = new BrowserControlsVisibilityDelegate();
         Mockito.when(mDelegateFactory.createBrowserControlsVisibilityDelegate(Mockito.any()))
                 .thenReturn(mVisibilityDelegate);
     }
@@ -141,7 +141,8 @@ public class TabBrowserControlsConstraintsHelperTest {
         verifyUpdateState(BrowserControlsState.HIDDEN, false);
 
         TabDelegateFactory newDelegateFactory = Mockito.mock(TabDelegateFactory.class);
-        TestVisibilityDelegate newVisibilityDelegate = new TestVisibilityDelegate();
+        BrowserControlsVisibilityDelegate newVisibilityDelegate =
+                new BrowserControlsVisibilityDelegate();
         Mockito.when(mTab.getDelegateFactory()).thenReturn(newDelegateFactory);
         Mockito.when(newDelegateFactory.createBrowserControlsVisibilityDelegate(Mockito.any()))
                 .thenReturn(newVisibilityDelegate);
@@ -276,11 +277,5 @@ public class TabBrowserControlsConstraintsHelperTest {
                         Mockito.anyBoolean(),
                         captor.capture());
         Mockito.clearInvocations(mJniMock);
-    }
-
-    private static class TestVisibilityDelegate extends BrowserControlsVisibilityDelegate {
-        public TestVisibilityDelegate() {
-            super(BrowserControlsState.BOTH);
-        }
     }
 }

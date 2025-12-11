@@ -48,7 +48,6 @@ public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserContro
      */
     public BrowserStateBrowserControlsVisibilityDelegate(
             NonNullObservableSupplier<Boolean> persistentFullscreenMode) {
-        super(BrowserControlsState.BOTH);
         mTokenHolder = new TokenHolder(this::updateVisibilityConstraints);
         mPersistentFullscreenMode = persistentFullscreenMode;
         persistentFullscreenMode.addObserver((persistentMode) -> updateVisibilityConstraints());

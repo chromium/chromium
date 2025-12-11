@@ -26,7 +26,6 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
      */
     public ComposedBrowserControlsVisibilityDelegate(
             BrowserControlsVisibilityDelegate... delegates) {
-        super(BrowserControlsState.BOTH);
         mDelegates = new ArrayList<>(Arrays.asList(delegates));
         mConstraintsUpdatedCallback = (constraints) -> super.set(calculateVisibilityConstraints());
         // We start initially with no observers and we don't actively update the set() value here.
@@ -83,7 +82,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public void set(@BrowserControlsState Integer value) {
+    public void set(@BrowserControlsState int value) {
         // Allow set(...) to be called only via super.set().
         assert false : "Calling set on the composed delegate is not allowed.";
         super.set(value);

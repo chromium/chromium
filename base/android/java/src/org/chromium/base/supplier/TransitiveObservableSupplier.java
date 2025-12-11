@@ -103,8 +103,7 @@ class TransitiveObservableSupplier<
         // Ensure that if we are non-null or monotonic, that the transitive supplier is non-null or
         // monotonic.
         assert !Boolean.FALSE.equals(mAllowSetToNull)
-                        || !Boolean.TRUE.equals(
-                                ((BaseObservableSupplierImpl<?>) other).mAllowSetToNull)
+                        || !Boolean.TRUE.equals(BaseObservableSupplierImpl.allowsSetToNull(other))
                 : "Root supplier set as non-null, but the transitive one is not.";
     }
 

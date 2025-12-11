@@ -51,7 +51,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -225,7 +225,8 @@ public class ToolbarPhoneTest {
                             new MenuButtonCoordinator(
                                     mActivityTestRule.getActivity(),
                                     new OneshotSupplierImpl<>(),
-                                    new TestControlsVisibilityDelegate(),
+                                    new BrowserStateBrowserControlsVisibilityDelegate(
+                                            ObservableSuppliers.alwaysFalse()),
                                     mActivityTestRule.getActivity().getWindowAndroid(),
                                     mFocusFunction,
                                     mRequestRenderRunnable,
@@ -724,12 +725,5 @@ public class ToolbarPhoneTest {
                     mToolbar.onUrlFocusChange(true);
                     assertTrue(mToolbar.isAnimationRunningForTesting());
                 });
-    }
-
-    private static class TestControlsVisibilityDelegate
-            extends BrowserStateBrowserControlsVisibilityDelegate {
-        public TestControlsVisibilityDelegate() {
-            super(new ObservableSupplierImpl<>(false));
-        }
     }
 }

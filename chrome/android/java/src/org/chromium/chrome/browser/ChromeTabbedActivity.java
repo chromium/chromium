@@ -4666,8 +4666,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         super.onEnterVr();
         mControlContainer.setVisibility(View.INVISIBLE);
         if (mVrBrowserControlsVisibilityDelegate == null) {
-            mVrBrowserControlsVisibilityDelegate =
-                    new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH);
+            mVrBrowserControlsVisibilityDelegate = new BrowserControlsVisibilityDelegate();
             getAppBrowserControlsVisibilityDelegate()
                     .addDelegate(mVrBrowserControlsVisibilityDelegate);
         }

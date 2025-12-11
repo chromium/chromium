@@ -43,4 +43,17 @@ class BaseObservableSupplierImpl<T extends @Nullable Object>
     public boolean hasObservers() {
         return false;
     }
+
+    /**
+     * If |thing| is a BaseObservableSupplierImpl, returns mAllowSetToNull. Otherwise, returns
+     * whether |thing| is an instance of ObservableSupplier. E.g. this assumes that classes that do
+     * not extend BaseObservableSupplierImpl will no implement conflicting interfaces like
+     * ObservableSupplierImpl does.
+     */
+    static <T> @Nullable Boolean allowsSetToNull(NullableObservableSupplier<T> thing) {
+        if (thing instanceof BaseObservableSupplierImpl<T> impl) {
+            return impl.mAllowSetToNull;
+        }
+        return !(thing instanceof ObservableSupplier<T>);
+    }
 }

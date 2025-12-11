@@ -90,10 +90,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
      * @param tab The associated {@link Tab}.
      */
     public TabStateBrowserControlsVisibilityDelegate(Tab tab) {
-        super(BrowserControlsState.BOTH);
-
         mTab = (TabImpl) tab;
-
         mTab.addObserver(
                 new EmptyTabObserver() {
                     @SuppressLint("HandlerLeak")
