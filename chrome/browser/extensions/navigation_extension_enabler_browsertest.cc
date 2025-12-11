@@ -13,7 +13,6 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -25,12 +24,15 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 #include "content/public/common/url_constants.h"
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -132,8 +134,10 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   }
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that visiting an url associated with a disabled hosted app offers to
 // re-enable it.
+// NOTE: Hosted apps are not supported on Android.
 IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
                        PromptToReEnableHostedAppOnNavigation) {
   // Load a hosted app and disable it for a permissions increase.
@@ -167,6 +171,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
                     disable_reason::DISABLE_PERMISSIONS_INCREASE));
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Verify that navigating a subframe to an enabled -> disabled -> enabled
 // extension URL doesn't result in a renderer process termination.  See
