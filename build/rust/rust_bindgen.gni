@@ -73,18 +73,6 @@ if (!use_chromium_rust_toolchain &&
 # * C++ header: //build/rust/tests/bindgen_cpp_test
 template("rust_bindgen") {
   _rust_bindgen_generator_target_name = target_name + "_generator"
-  _copy_target_name = target_name + "_copy"
-
-  # `_output_dir` needs to be identical to `output_dir` in
-  # `rust_bindgen_generator.gni`
-  _output_dir = "${target_gen_dir}/${target_name}"
-  _output_bindings_rs = "${_output_dir}/bindings.rs"
-  _output_lib_rs = "${_output_dir}/lib.rs"
-
-  copy(_copy_target_name) {
-    sources = [ "//build/rust/gni_impl/rust_bindgen_crate_root.rs.template" ]
-    outputs = [ _output_lib_rs ]
-  }
 
   _wrap_static_fns = false
   if (defined(invoker.wrap_static_fns) && invoker.wrap_static_fns) {
@@ -121,25 +109,23 @@ template("rust_bindgen") {
     output_name = "bindings"
   }
 
+  # Calculate `_generated_bindings_rs`.
+  _bindgen_outputs = get_target_outputs(":$_rust_bindgen_generator_target_name")
+  _bindgen_rs_outputs = filter_include(_bindgen_outputs, [ "*.rs" ])
+  assert(len(_bindgen_rs_outputs) == 1)
+  _generated_bindings_rs = _bindgen_rs_outputs[0]
+
   rust_static_library(target_name) {
-    forward_variables_from(invoker,
-                           TESTONLY_AND_VISIBILITY + [
-                                 "crate_name",
-                                 "cpp",
-                               ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "crate_name" ])
 
     if (defined(_crate_name)) {
       crate_name = _crate_name
     }
-    crate_root = _output_lib_rs
-    sources = [
-      "$_output_bindings_rs",
-      crate_root,
-    ]
-    bindgen_deps = [ ":$_rust_bindgen_generator_target_name" ]
+    crate_root = _generated_bindings_rs
+    sources = [ crate_root ]
     allow_unsafe = true
 
-    deps = [ ":$_copy_target_name" ]
+    deps = [ ":$_rust_bindgen_generator_target_name" ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
@@ -149,13 +135,15 @@ template("rust_bindgen") {
       deps += [ ":${_rust_bindgen_generator_target_name}_static_fns" ]
     }
 
-    if (defined(cpp) && cpp) {
-      # This cfg is used to control the bindings public export.
-      rustflags = [
-        "--cfg",
-        "cpp",
-      ]
-    }
+    rustflags = [
+      # Don't warn about unused code in the generated bindings.
+      "-Adead_code",
+
+      # Don't warn about C/C++-style names.
+      "-Anon_snake_case",
+      "-Anon_camel_case_types",
+      "-Anon_upper_case_globals",
+    ]
 
     # The generated crate doesn't need these dependencies.
     # And avoiding them avoids dependency cycles.

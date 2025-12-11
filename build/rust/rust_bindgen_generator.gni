@@ -124,7 +124,7 @@ template("rust_bindgen_generator") {
     visibility = [ "//third_party/*" ]
     if (defined(_library_name)) {
       # Allow the copy target to be able to depend on the generated file.
-      visibility += [ ":${_library_name}_${_bindgen_target_name}_copy" ]
+      visibility += [ ":${_library_name}" ]
     }
 
     if (_wrap_static_fns) {
@@ -305,7 +305,7 @@ template("rust_bindgen_generator") {
       # option is to tell bindgen to ignore all CFI ignorelists.
       args += [ "-fno-sanitize-ignorelist" ]
     }
-    if (!defined(_library_name)) {
+    if (!defined(_library_name) || !_wrap_static_fns) {
       not_needed([ _bindgen_target_name ])
     }
   }

@@ -8,7 +8,7 @@ chromium::import! {
 
 use log::Level::{Debug, Error, Info, Trace, Warn};
 use log::{LevelFilter, Metadata, Record};
-use log_severity::logging::{LOGGING_ERROR, LOGGING_INFO, LOGGING_WARNING};
+use log_severity::root::logging::{LOGGING_ERROR, LOGGING_INFO, LOGGING_WARNING};
 use std::ffi::CString;
 use std::pin::Pin;
 

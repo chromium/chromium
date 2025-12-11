@@ -30,7 +30,7 @@
 /// using an allocator from C++.
 #[cfg(rust_allocator_uses_allocator_impls_h)]
 mod cpp_allocator {
-    use allocator_impls_ffi::rust_allocator_internal as ffi;
+    use allocator_impls_ffi::root::rust_allocator_internal as ffi;
     use std::alloc::{GlobalAlloc, Layout};
 
     struct Allocator;
@@ -81,7 +81,7 @@ mod rust_allocator {
 ///
 /// TODO(https://crbug.com/410596442): Stop using internal features here.
 mod both_allocators {
-    use alloc_error_handler_impl_ffi::rust_allocator_internal as ffi;
+    use alloc_error_handler_impl_ffi::root::rust_allocator_internal as ffi;
 
     /// As part of rustc's contract for using `#[global_allocator]` without
     /// rustc-generated shims we must define this symbol, since we are opting in
