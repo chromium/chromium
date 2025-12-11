@@ -1,9 +1,9 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GRID_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GRID_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_SCENE_COORDINATOR_SCENE_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_SCENE_COORDINATOR_SCENE_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/root_coordinator/root_coordinator.h"
@@ -13,7 +13,8 @@
 class Browser;
 @protocol TabGridCoordinatorDelegate;
 
-@interface TabGridCoordinator : RootCoordinator
+// Coordinator for the scene, managing the top-level UI.
+@interface SceneCoordinator : RootCoordinator
 
 - (instancetype)initWithApplicationCommandEndpoint:
                     (id<ApplicationCommands>)applicationCommandEndpoint
@@ -26,23 +27,17 @@ class Browser;
 
 @property(nonatomic, weak) id<TabGridCoordinatorDelegate> delegate;
 
+// Proxy properties for TabGridCoordinator.
+@property(nonatomic, readonly, strong) UIViewController* activeViewController;
+
 // Updates the incognito browser. Should only be sets when both the current
 // incognito browser and the new incognito browser are either nil or contain no
 // tabs. This must be called after the incognito browser has been deleted
 // because the incognito profile is deleted.
 @property(nonatomic, assign) Browser* incognitoBrowser;
 
-// The view controller, if any, that is active.
-@property(nonatomic, readonly, strong) UIViewController* activeViewController;
-
-// If this property is YES, calls to `showTabSwitcher:completion:` and
-// `showTabViewController:completion:` will present the given view controllers
-// without animation.  This should only be used by unittests.
-@property(nonatomic, readwrite, assign) BOOL animationsDisabledForTesting;
-
-// If this property is YES, it means the tab grid is the main user interface at
-// the moment.
-@property(nonatomic, readonly, getter=isTabGridActive) BOOL tabGridActive;
+// YES if the Tab Grid is currently being shown.
+- (BOOL)isTabGridActive;
 
 // Stops all child coordinators then calls `completion`. `completion` is called
 // whether or not child coordinators exist.
@@ -62,4 +57,4 @@ class Browser;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GRID_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_SCENE_COORDINATOR_SCENE_COORDINATOR_H_

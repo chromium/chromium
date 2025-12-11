@@ -126,6 +126,7 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
 #import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
+#import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -497,7 +498,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 // The main coordinator to manage the main view controller. This property should
 // not be accessed before the browser has started up to the FOREGROUND stage.
-@property(nonatomic, strong) TabGridCoordinator* mainCoordinator;
+@property(nonatomic, strong) SceneCoordinator* mainCoordinator;
 
 // YES while activating a new browser (often leading to dismissing the tab
 // switcher.
@@ -1408,7 +1409,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
       _webStateListForwardingObserver.get());
   _mainWebStateObserver->Observe(self.mainInterface.browser->GetWebStateList());
 
-  _mainCoordinator = [[TabGridCoordinator alloc]
+  _mainCoordinator = [[SceneCoordinator alloc]
       initWithApplicationCommandEndpoint:self
                           regularBrowser:self.mainInterface.browser
                          inactiveBrowser:self.mainInterface.inactiveBrowser
@@ -2206,7 +2207,7 @@ using UserFeedbackDataCallback =
           dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
           dispatch_get_main_queue(), ^{
             DiamondPrototypeStartNewTab(
-                self.mainCoordinator.tabGridActive, command.inIncognito,
+                self.mainCoordinator.isTabGridActive, command.inIncognito,
                 self.mainInterface.browser, self.incognitoInterface.browser,
                 self.mainCoordinator.activeViewController);
           });
