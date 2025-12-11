@@ -226,14 +226,12 @@ void CheckChipButtonsOfLocalCard() {
   autofill::CreditCard card = autofill::test::GetCreditCard();
   std::string locale = l10n_util::GetLocaleOverride();
 
-  if (base::ios::IsRunningOnIOS18OrLater()) {
-  } else {
-    // On iOS 17.5, a rendering issue in tests prevents some cells from
-    // displaying correctly. This scroll action ensures their proper visibility.
-    [[EarlGrey
-        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
-        performAction:grey_scrollInDirection(kGREYDirectionDown, 10)];
-  }
+  // A rendering issue in tests prevents some cells from displaying correctly.
+  // This scroll action ensures their proper visibility.
+  [[[EarlGrey
+      selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   [[EarlGrey selectElementWithMatcher:LocalCardNumberChipButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -346,10 +344,9 @@ void DismissPaymentBottomSheet() {
       @"Unexpected histogram error for number of visible suggestions.");
 }
 
-// TODO(crbug.com/460721951): Test is failing on ios-simulator and device.
 // Tests that the saved card chip buttons are all visible in the card
 // table view controller, and that they have the right accessibility label.
-- (void)DISABLED_testCardChipButtonsAreAllVisible {
+- (void)testCardChipButtonsAreAllVisible {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
