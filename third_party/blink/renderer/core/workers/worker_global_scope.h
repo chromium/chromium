@@ -78,8 +78,6 @@ struct WorkerMainScriptLoadParameters;
 class WorkerNavigator;
 class WorkerThread;
 class WorkerPerformance;
-class FontFaceSetWorker;
-class WorkerGlobalScopeCrypto;
 
 template <typename T>
 class GlobalFetchImpl;
@@ -97,10 +95,16 @@ class CORE_EXPORT WorkerGlobalScope
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public ActiveScriptWrappable<WorkerGlobalScope>,
+      public Supplementable<WorkerGlobalScope, 2>,
       public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class Supplements {
+    kWorkerGlobalScopeCrypto = 0,
+    kFontFaceSetWorker = 1
+  };
+
   ~WorkerGlobalScope() override;
 
   // DOMOriginUtils overrides:
@@ -340,22 +344,6 @@ class CORE_EXPORT WorkerGlobalScope
     global_indexed_db_impl_ = global_indexed_db_impl;
   }
 
-  FontFaceSetWorker* GetFontFaceSetWorker() const {
-    return font_face_set_worker_;
-  }
-  void SetFontFaceSetWorker(FontFaceSetWorker* font_face_set_worker) {
-    font_face_set_worker_ = font_face_set_worker;
-  }
-
-  ForwardDeclaredMember<WorkerGlobalScopeCrypto> GetWorkerGlobalScopeCrypto()
-      const {
-    return worker_global_scope_crypto_;
-  }
-  void SetWorkerGlobalScopeCrypto(ForwardDeclaredMember<WorkerGlobalScopeCrypto>
-                                      worker_global_scope_crypto) {
-    worker_global_scope_crypto_ = worker_global_scope_crypto;
-  }
-
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
@@ -489,9 +477,6 @@ class CORE_EXPORT WorkerGlobalScope
       global_performance_impl_;
   ForwardDeclaredMember<GlobalIndexedDBImpl<WorkerGlobalScope>>
       global_indexed_db_impl_;
-
-  Member<FontFaceSetWorker> font_face_set_worker_;
-  ForwardDeclaredMember<WorkerGlobalScopeCrypto> worker_global_scope_crypto_;
 };
 
 template <>

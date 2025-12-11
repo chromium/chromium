@@ -24,7 +24,7 @@
 namespace blink {
 
 FontFaceSetWorker::FontFaceSetWorker(WorkerGlobalScope& worker)
-    : FontFaceSet(worker), worker_global_scope_(worker) {}
+    : FontFaceSet(worker), Supplement<WorkerGlobalScope>(worker) {}
 
 FontFaceSetWorker::~FontFaceSetWorker() = default;
 
@@ -88,17 +88,18 @@ const Font* FontFaceSetWorker::ResolveFontStyle(const String& font_string) {
 }
 
 FontFaceSetWorker* FontFaceSetWorker::From(WorkerGlobalScope& worker) {
-  FontFaceSetWorker* fonts = worker.GetFontFaceSetWorker();
+  FontFaceSetWorker* fonts =
+      Supplement<WorkerGlobalScope>::From<FontFaceSetWorker>(worker);
   if (!fonts) {
     fonts = MakeGarbageCollected<FontFaceSetWorker>(worker);
-    worker.SetFontFaceSetWorker(fonts);
+    ProvideTo(worker, fonts);
   }
 
   return fonts;
 }
 
 void FontFaceSetWorker::Trace(Visitor* visitor) const {
-  visitor->Trace(worker_global_scope_);
+  Supplement<WorkerGlobalScope>::Trace(visitor);
   FontFaceSet::Trace(visitor);
 }
 
