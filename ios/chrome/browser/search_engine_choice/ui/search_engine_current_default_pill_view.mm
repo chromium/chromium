@@ -30,9 +30,6 @@ constexpr CGFloat kCurrentDefaultPillBorderWidth = 1.;
     label.translatesAutoresizingMaskIntoConstraints = NO;
     label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
     label.adjustsFontForContentSizeCategory = YES;
-    // TODO(crbug.com/458252292): Need to remove
-    // IDS_SEARCH_ENGINE_CHOICE_CURRENT_DEFAULT_SEARCH_ENGINE_PREPEND string, in
-    // M145.
     label.text = l10n_util::GetNSString(
         IDS_SEARCH_ENGINE_CHOICE_CURRENT_DEFAULT_SEARCH_ENGINE);
     label.textColor = [UIColor colorNamed:kTextSecondaryColor];
