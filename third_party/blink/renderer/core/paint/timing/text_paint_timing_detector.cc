@@ -78,6 +78,10 @@ void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
       texts_queued_for_paint_time_.erase(it);
     }
   }
+  if (const TextRecord* record = ltp_manager_.LargestIgnoredText();
+      record && record->GetNode() == object.GetNode()) {
+    ltp_manager_.TakeLargestIgnoredText();
+  }
 }
 
 void TextPaintTimingDetector::ResetPaintTrackingOnInteraction(
@@ -210,7 +214,7 @@ void TextPaintTimingDetector::StopRecordingLargestTextPaint() {
 }
 
 void TextPaintTimingDetector::ReportLargestIgnoredText() {
-  TextRecord* record = ltp_manager_.PopLargestIgnoredText();
+  TextRecord* record = ltp_manager_.TakeLargestIgnoredText();
   // If the content has been removed, abort. It was never visible.
   if (!record || !record->GetNode() || !record->GetNode()->GetLayoutObject()) {
     return;

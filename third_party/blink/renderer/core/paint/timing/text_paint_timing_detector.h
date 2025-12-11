@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_TEXT_PAINT_TIMING_DETECTOR_H_
 
 #include <memory>
+#include <utility>
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -47,9 +48,10 @@ class CORE_EXPORT LargestTextPaintManager final {
   // Return the text LCP candidate and whether the candidate has changed.
   std::pair<TextRecord*, bool> UpdateMetricsCandidate();
 
-  Member<TextRecord> PopLargestIgnoredText() {
-    return std::move(largest_ignored_text_);
+  TextRecord* TakeLargestIgnoredText() {
+    return std::exchange(largest_ignored_text_, nullptr);
   }
+  const TextRecord* LargestIgnoredText() const { return largest_ignored_text_; }
 
   void Trace(Visitor*) const;
 

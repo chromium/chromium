@@ -105,6 +105,10 @@ class TextPaintTimingDetectorTest : public testing::Test {
     return CountRecordedSize() + TextQueuedForPaintTimeSize(GetFrameView());
   }
 
+  bool HasLargestIgnoredText() {
+    return !!GetLargestTextPaintManager().LargestIgnoredText();
+  }
+
   void SimulateInputEvent() {
     GetPaintTimingDetector().NotifyInputEvent(WebInputEvent::Type::kMouseDown);
   }
@@ -867,12 +871,14 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML) {
     <div>Text</div>
   )HTML");
   CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
+  EXPECT_TRUE(HasLargestIgnoredText());
 
   // Change the opacity of documentElement, now the img should be a candidate.
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
                                                 AtomicString("opacity: 1"));
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_TRUE(TextRecordOfLargestTextPaint());
+  EXPECT_FALSE(HasLargestIgnoredText());
 }
 
 TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML2) {
@@ -952,6 +958,27 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLWithInput) {
       PaintTiming::From(GetDocument())
           .FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
   EXPECT_FALSE(fcp_timestamp.is_null());
+}
+
+TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLRemoveElement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      :root {
+        opacity: 0;
+        will-change: opacity;
+      }
+    </style>
+    <div id="target">Text</div>
+  )HTML");
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
+  EXPECT_TRUE(HasLargestIgnoredText());
+
+  RemoveElement(GetElement("target"));
+  EXPECT_FALSE(HasLargestIgnoredText());
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("opacity: 1"));
+  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
+  EXPECT_FALSE(TextRecordOfLargestTextPaint());
 }
 
 TEST_F(TextPaintTimingDetectorTest,

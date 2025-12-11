@@ -156,6 +156,10 @@ void ImagePaintTimingDetector::NotifyImageRemoved(
     const MediaTiming* media_timing) {
   records_manager_.RemoveRecord(
       MediaRecordId::GenerateHash(&object, media_timing));
+  if (const ImageRecord* record = records_manager_.LargestIgnoredImage();
+      record && record->GetMediaTiming() == media_timing) {
+    records_manager_.TakeLargestIgnoredImage();
+  }
 }
 
 void ImagePaintTimingDetector::StopRecordEntries() {
@@ -528,11 +532,10 @@ bool ImageRecordsManager::ReportLargestIgnoredImage(
   if (!largest_ignored_image_) {
     return false;
   }
-  Node* node = largest_ignored_image_->GetNode();
-  if (!node || !node->GetLayoutObject() ||
-      !largest_ignored_image_->GetMediaTiming()) {
+  ImageRecord* record = TakeLargestIgnoredImage();
+  Node* node = record->GetNode();
+  if (!node || !node->GetLayoutObject() || !record->GetMediaTiming()) {
     // The image has been removed, so we have no content to report.
-    largest_ignored_image_ = nullptr;
     return false;
   }
 
@@ -551,8 +554,6 @@ bool ImageRecordsManager::ReportLargestIgnoredImage(
     return false;
   }
 
-  ImageRecord* record = largest_ignored_image_.Get();
-  CHECK(record);
   recorded_images_.insert(record->Hash());
   AddPendingImage(record, is_recording_lcp);
   OnImageLoadedInternal(record, current_frame_index);

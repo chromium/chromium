@@ -10,6 +10,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_IMAGE_PAINT_TIMING_DETECTOR_H_
 
 #include <optional>
+#include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -152,6 +153,13 @@ class CORE_EXPORT ImageRecordsManager {
     CHECK(record);
     record->SetFrameIndex(current_frame_index);
     images_queued_for_paint_time_.push_back(record);
+  }
+
+  ImageRecord* TakeLargestIgnoredImage() {
+    return std::exchange(largest_ignored_image_, nullptr);
+  }
+  const ImageRecord* LargestIgnoredImage() const {
+    return largest_ignored_image_;
   }
 
   void OnImageLoadedInternal(ImageRecord*, uint32_t current_frame_index);
