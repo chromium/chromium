@@ -82,15 +82,13 @@ template <typename T>
 class GlobalFetchImpl;
 template <typename T>
 class GlobalCacheStorageImpl;
-template <typename T>
-class GlobalCookieStoreImpl;
 
 class CORE_EXPORT WorkerGlobalScope
     : public WorkerOrWorkletGlobalScope,
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public ActiveScriptWrappable<WorkerGlobalScope>,
-      public Supplementable<WorkerGlobalScope, 4>,
+      public Supplementable<WorkerGlobalScope, 5>,
       public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -99,7 +97,8 @@ class CORE_EXPORT WorkerGlobalScope
     kWorkerGlobalScopeCrypto = 0,
     kFontFaceSetWorker = 1,
     kGlobalIndexedDBImpl = 2,
-    kGlobalPerformanceImpl = 3
+    kGlobalCookieStoreImpl = 3,
+    kGlobalPerformanceImpl = 4
   };
 
   ~WorkerGlobalScope() override;
@@ -309,16 +308,6 @@ class CORE_EXPORT WorkerGlobalScope
     global_cache_storage_impl_ = global_cache_storage_impl;
   }
 
-  ForwardDeclaredMember<GlobalCookieStoreImpl<WorkerGlobalScope>>
-  GetGlobalCookieStoreImpl() const {
-    return global_cookie_store_impl_;
-  }
-  void SetGlobalCookieStoreImpl(
-      ForwardDeclaredMember<GlobalCookieStoreImpl<WorkerGlobalScope>>
-          global_cookie_store_impl) {
-    global_cookie_store_impl_ = global_cookie_store_impl;
-  }
-
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
@@ -445,8 +434,6 @@ class CORE_EXPORT WorkerGlobalScope
   ForwardDeclaredMember<GlobalFetchImpl<WorkerGlobalScope>> global_fetch_impl_;
   ForwardDeclaredMember<GlobalCacheStorageImpl<WorkerGlobalScope>>
       global_cache_storage_impl_;
-  ForwardDeclaredMember<GlobalCookieStoreImpl<WorkerGlobalScope>>
-      global_cookie_store_impl_;
 };
 
 template <>

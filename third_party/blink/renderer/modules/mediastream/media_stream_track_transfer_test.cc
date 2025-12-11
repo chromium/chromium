@@ -116,7 +116,7 @@ class ScopedMockUserMediaClient {
                                                                original_.Get());
       } else {
         window->Supplementable<LocalDOMWindow,
-                               45>::RemoveSupplement<UserMediaClient>();
+                               46>::RemoveSupplement<UserMediaClient>();
       }
     }
   }

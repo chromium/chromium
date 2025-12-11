@@ -20,22 +20,28 @@
 
 namespace blink {
 
+namespace {
+
 template <typename T>
 class GlobalCookieStoreImpl final
     : public GarbageCollected<GlobalCookieStoreImpl<T>>,
-      public GarbageCollectedMixin {
+      public Supplement<T> {
  public:
+  static constexpr auto kSupplementIndex =
+      T::Supplements::kGlobalCookieStoreImpl;
+
   static GlobalCookieStoreImpl& From(T& supplementable) {
     GlobalCookieStoreImpl* supplement =
-        supplementable.GetGlobalCookieStoreImpl();
+        Supplement<T>::template From<GlobalCookieStoreImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalCookieStoreImpl>();
-      supplementable.SetGlobalCookieStoreImpl(supplement);
+      supplement = MakeGarbageCollected<GlobalCookieStoreImpl>(supplementable);
+      Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return *supplement;
   }
 
-  GlobalCookieStoreImpl() = default;
+  explicit GlobalCookieStoreImpl(T& supplementable)
+      : Supplement<T>(supplementable) {}
 
   CookieStore* GetCookieStore(T& scope) {
     if (!cookie_store_) {
@@ -56,11 +62,16 @@ class GlobalCookieStoreImpl final
     return cookie_store_.Get();
   }
 
-  void Trace(Visitor* visitor) const override { visitor->Trace(cookie_store_); }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(cookie_store_);
+    Supplement<T>::Trace(visitor);
+  }
 
  private:
   Member<CookieStore> cookie_store_;
 };
+
+}  // namespace
 
 // static
 CookieStore* GlobalCookieStore::cookieStore(LocalDOMWindow& window) {
