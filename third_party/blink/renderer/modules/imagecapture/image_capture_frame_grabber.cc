@@ -181,7 +181,7 @@ static sk_sp<SkImage> ConvertFrame(media::VideoFrame* frame) {
   if (frame->storage_type() ==
       media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
-    auto scoped_mapping = frame->MapSharedImageDEPRECATED();
+    auto scoped_mapping = frame->shared_image()->Map();
     if (!scoped_mapping) {
       DLOG(ERROR) << "Failed to get the mapped memory.";
       return nullptr;
@@ -191,13 +191,14 @@ static sk_sp<SkImage> ConvertFrame(media::VideoFrame* frame) {
     DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
     size_t y_stride = scoped_mapping->Stride(media::VideoFrame::Plane::kY);
     size_t uv_stride = scoped_mapping->Stride(media::VideoFrame::Plane::kUV);
-    auto y_plane = scoped_mapping->GetMemoryAsSpan(media::VideoFrame::Plane::kY)
-                       .subspan(frame->visible_rect().x() +
-                                (frame->visible_rect().y() * y_stride));
+    auto y_plane =
+        scoped_mapping->GetMemoryForPlane(media::VideoFrame::Plane::kY)
+            .subspan(frame->visible_rect().x() +
+                     (frame->visible_rect().y() * y_stride));
     // UV plane of NV12 has 2-byte pixel width, with half chroma subsampling
     // both horizontally and vertically.
     auto uv_plane =
-        scoped_mapping->GetMemoryAsSpan(media::VideoFrame::Plane::kUV)
+        scoped_mapping->GetMemoryForPlane(media::VideoFrame::Plane::kUV)
             .subspan(((frame->visible_rect().x() * 2) / 2) +
                      ((frame->visible_rect().y() / 2) * uv_stride));
 
