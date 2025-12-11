@@ -167,7 +167,7 @@ cq_build_perf_builder(
     gn_args = gn_args.config(configs = ["try/android-arm64-rel", "reclient", "no_siso"]),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "android",
+        category = "build perf|android",
         short_name = "ninja",
     ),
     siso_enabled = False,
@@ -206,7 +206,7 @@ cq_build_perf_builder(
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "android",
+        category = "build perf|android",
         short_name = "siso",
     ),
 )
@@ -235,7 +235,7 @@ cq_build_perf_builder(
     gn_args = gn_args.config(configs = ["try/linux-rel", "reclient", "no_siso"]),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "linux",
+        category = "build perf|linux",
         short_name = "ninja",
     ),
     siso_enabled = False,
@@ -267,7 +267,7 @@ cq_build_perf_builder(
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "linux",
+        category = "build perf|linux",
         short_name = "siso",
     ),
 )
@@ -295,7 +295,7 @@ cq_build_perf_builder(
     gn_args = gn_args.config(configs = ["try/win-rel", "reclient", "no_siso"]),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "windows",
+        category = "build perf|windows",
         short_name = "ninja",
     ),
     siso_enabled = False,
@@ -327,7 +327,7 @@ cq_build_perf_builder(
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "windows",
+        category = "build perf|windows",
         short_name = "siso",
     ),
 )
@@ -358,7 +358,7 @@ ci_build_perf_builder(
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "windows",
+        category = "build perf|windows",
         short_name = "sisoci",
     ),
     siso_configs = ["builder"],
@@ -391,7 +391,7 @@ cq_build_perf_builder(
     gn_args = gn_args.config(configs = ["try/linux-chromeos-rel", "reclient", "no_siso"]),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "cros",
+        category = "build perf|cros",
         short_name = "ninja",
     ),
     siso_enabled = False,
@@ -424,7 +424,7 @@ cq_build_perf_builder(
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "cros",
+        category = "build perf|cros",
         short_name = "siso",
     ),
 )
@@ -455,7 +455,7 @@ cq_build_perf_builder(
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "mac",
+        category = "build perf|mac",
         short_name = "ninja",
     ),
     siso_configs = ["builder"],
@@ -491,7 +491,7 @@ cq_build_perf_builder(
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "mac",
+        category = "build perf|mac",
         short_name = "siso",
     ),
     siso_configs = ["builder"],
@@ -524,7 +524,7 @@ cq_build_perf_builder(
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "ios",
+        category = "build perf|ios",
         short_name = "ninja",
     ),
     siso_configs = ["builder"],
@@ -562,7 +562,7 @@ cq_build_perf_builder(
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "ios",
+        category = "build perf|ios",
         short_name = "siso",
     ),
     siso_configs = ["builder"],
@@ -628,7 +628,7 @@ This builder measures build performance for Android developer builds, by simulat
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "android",
+        category = "build perf|android",
         short_name = "dev",
     ),
     reclient_jobs = 5120,
@@ -662,7 +662,7 @@ This builder measures build performance for Linux developer builds, by simulatin
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "linux",
+        category = "build perf|linux",
         short_name = "dev",
     ),
     reclient_jobs = 5120,
@@ -696,7 +696,7 @@ This builder measures build performance for Windows developer builds, by simulat
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "windows",
+        category = "build perf|windows",
         short_name = "dev",
     ),
     reclient_jobs = 1000,
@@ -731,7 +731,7 @@ This builder measures build performance for Mac developer builds, by simulating 
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "mac",
+        category = "build perf|mac",
         short_name = "dev",
     ),
     reclient_jobs = 640,
@@ -770,7 +770,7 @@ This builder measures build performance for iOS developer builds, by simulating 
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "ios",
+        category = "build perf|ios",
         short_name = "dev",
     ),
     reclient_jobs = 640,
@@ -809,8 +809,8 @@ ci.builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "norbe",
+        category = "build stats",
+        short_name = "linux",
     ),
     contact_team_email = "chrome-build-team@google.com",
     notifies = ["Chromium Build Time Watcher"],
@@ -872,8 +872,8 @@ cq_rbe_test_builder(
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "rbe test",
-        short_name = "cqlin",
+        category = "rbe test|cq",
+        short_name = "lin",
     ),
 )
 
@@ -903,8 +903,8 @@ cq_rbe_test_builder(
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "rbe test",
-        short_name = "cqwin",
+        category = "rbe test|cq",
+        short_name = "win",
     ),
     # Downloading with "minimum" strategy doesn't work
     # well for the win builder because some steps are missing inputs.
@@ -939,8 +939,8 @@ ci_rbe_test_builder(
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "rbe test",
-        short_name = "cilin",
+        category = "rbe test|ci",
+        short_name = "lin",
     ),
     siso_remote_linking = True,
 )
@@ -971,7 +971,7 @@ ci_rbe_test_builder(
     },
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
-        category = "rbe test",
-        short_name = "ciwin",
+        category = "rbe test|ci",
+        short_name = "win",
     ),
 )
