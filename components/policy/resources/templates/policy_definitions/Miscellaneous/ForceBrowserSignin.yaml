@@ -11,8 +11,6 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: false
-future_on:
-- chrome.linux
 items:
 - caption: Force the user to sign in before using the browser
   value: true
@@ -26,6 +24,7 @@ schema:
 supported_on:
 - chrome.win:64-
 - chrome.mac:66-
+- chrome.linux:145-
 - android:65-
 tags: []
 type: main
