@@ -325,7 +325,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"voiceSearchButtonLabel", IDS_TOOLTIP_MIC_SEARCH},
 
       // Composebox.
-      {"addContext", IDS_NTP_COMPOSE_ADD_CONTEXT},
+      {"addContext", IDS_NTP_COMPOSE_ADD_CONTEXTS},
       {"addContextTitle", IDS_NTP_COMPOSE_ADD_CONTEXT_TITLE},
       {"addImage", IDS_NTP_COMPOSE_ADD_IMAGE},
       {"addTab", IDS_NTP_COMPOSE_MOST_RECENT_TABS},
