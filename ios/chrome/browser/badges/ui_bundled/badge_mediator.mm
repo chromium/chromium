@@ -310,10 +310,14 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 
   if (IsLocationBarBadgeMigrationEnabled()) {
     // Update Location Bar Badge with a new badge update.
-    LocationBarBadgeConfiguration* badgeConfig =
-        [self configureLocationBarBadgeConfigurationFromBadgeItem:displayedBadge
-                                                          infoBar:nil];
-    [self.dispatcher updateBadgeConfig:badgeConfig];
+    if (displayedBadge) {
+      LocationBarBadgeConfiguration* badgeConfig = [self
+          configureLocationBarBadgeConfigurationFromBadgeItem:displayedBadge
+                                                      infoBar:nil];
+      [self.dispatcher updateBadgeConfig:badgeConfig];
+    } else {
+      [self.dispatcher updateBadgeConfig:nil];
+    }
   } else {
     // Update the consumer with the new badge items.
     [self.consumer setupWithDisplayedBadge:displayedBadge];
