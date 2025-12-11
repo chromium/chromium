@@ -43,9 +43,11 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
 
   if (ui_service &&
-      ui_service->HandleNavigation(std::move(url_params),
-                                   web_contents->GetResponsibleWebContents(),
-                                   /*is_to_new_tab=*/false)) {
+      ui_service->HandleNavigation(
+          std::move(url_params), web_contents->GetResponsibleWebContents(),
+          /*is_from_embedded_page=*/web_contents !=
+              web_contents->GetResponsibleWebContents(),
+          /*is_to_new_tab=*/false)) {
     return CANCEL;
   }
   return PROCEED;
