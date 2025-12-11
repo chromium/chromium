@@ -423,29 +423,26 @@ void FormStructure::UpdateFormData(const FormData& form_data) {
     field_map[field->global_id()] = std::move(field);
   }
 
-  std::vector<std::unique_ptr<AutofillField>> fields;
-  fields.reserve(form_data.fields().size());
-  for (const FormFieldData& field_data : form_data.fields()) {
-    std::unique_ptr<AutofillField> autofill_field =
-        ExtractMatchingFieldToUpdate(field_data, field_map);
-    if (!autofill_field) {
-      // The field was newly added to the form, create an `AutofillField` from
-      // it and add it to the list.
-      fields.push_back(std::make_unique<AutofillField>(field_data));
-      continue;
-    }
-    const bool old_is_autofilled = autofill_field->is_autofilled();
+  std::vector<std::unique_ptr<AutofillField>> fields =
+      base::ToVector(form_data.fields(), [&](const FormFieldData& field_data) {
+        std::unique_ptr<AutofillField> autofill_field =
+            ExtractMatchingFieldToUpdate(field_data, field_map);
+        if (!autofill_field) {
+          // The field was newly added to the form, create an `AutofillField`
+          // from it and add it to the list.
+          return std::make_unique<AutofillField>(field_data);
+        }
+        const bool old_is_autofilled = autofill_field->is_autofilled();
 
-    // The field existed in the cache previously, update the cached members of
-    // `FormFieldData` in `autofill_field` provided by `field_data`.
-    autofill_field->UpdateFieldData(field_data, /*pass_key=*/{});
+        // The field existed in the cache previously, update the cached members
+        // of `FormFieldData` in `autofill_field` provided by `field_data`.
+        autofill_field->UpdateFieldData(field_data, /*pass_key=*/{});
 
-    // TODO(crbug.com/393114125): Remove the special handling of
-    // `FormFieldData::is_autofilled_` below after fixing its semantics.
-    autofill_field->set_is_autofilled(old_is_autofilled);
-
-    fields.push_back(std::move(autofill_field));
-  }
+        // TODO(crbug.com/393114125): Remove the special handling of
+        // `FormFieldData::is_autofilled_` below after fixing its semantics.
+        autofill_field->set_is_autofilled(old_is_autofilled);
+        return autofill_field;
+      });
 
   fields_ = std::move(fields);
 
