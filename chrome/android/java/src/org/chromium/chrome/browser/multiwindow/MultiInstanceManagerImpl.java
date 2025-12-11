@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
+import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
@@ -77,7 +78,8 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
                 MultiWindowModeStateDispatcher.MultiWindowModeObserver,
                 DestroyObserver,
                 MenuOrKeyboardActionController.MenuOrKeyboardActionHandler,
-                TopResumedActivityChangedObserver {
+                TopResumedActivityChangedObserver,
+                StartStopWithNativeObserver {
 
     private @Nullable Boolean mMergeTabsOnResume;
 
@@ -267,6 +269,13 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     // TopResumedActivityChangedObserver implementation.
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {}
+
+    // StartStopWithNativeObserver implementation.
+    @Override
+    public void onStartWithNative() {}
+
+    @Override
+    public void onStopWithNative() {}
 
     @Override
     public void onPauseWithNative() {

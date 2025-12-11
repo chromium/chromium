@@ -2763,4 +2763,52 @@ public class MultiInstanceManagerApi31UnitTest {
                         NewWindowAppSource.OTHER,
                         /* preferNew= */ false);
     }
+
+    @Test
+    public void testGetInstanceInfo_sortsByLastAccessedTime() {
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // Current activity is mActivityTask56, managed by mMultiInstanceManager.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        MultiInstancePersistentStore.writeLastAccessedTime(0);
+        mFakeTimeTestRule.advanceMillis(100);
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        MultiInstancePersistentStore.writeLastAccessedTime(1);
+        mFakeTimeTestRule.advanceMillis(100);
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+        MultiInstancePersistentStore.writeLastAccessedTime(2);
+
+        // Simulate simultaneous activity lifecycle changes for instances 0 and 1 that records
+        // nearly same last accessed time.
+        mFakeTimeTestRule.advanceMillis(100);
+        MultiInstancePersistentStore.writeLastAccessedTime(/* instanceId= */ 0);
+        mFakeTimeTestRule.advanceMillis(1);
+        MultiInstancePersistentStore.writeLastAccessedTime(/* instanceId= */ 1);
+
+        // Get instance info from instance 0 as the current instance.
+        List<InstanceInfo> instanceInfo =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
+
+        // Verify that the current instance (0) is first, and the rest are sorted by last accessed
+        // time.
+        assertEquals("Current instance (0) should be first.", 0, instanceInfo.get(0).instanceId);
+        assertEquals("Instance 1should be second.", 1, instanceInfo.get(1).instanceId);
+        assertEquals("Instance 1 should be third.", 2, instanceInfo.get(2).instanceId);
+    }
+
+    @Test
+    public void testOnStopWithNative_updatesLastAccessedTime() {
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
+        mMultiInstanceManager.initialize(
+                /* instanceId= */ 0, /* taskId= */ TASK_ID_56, SupportedProfileType.MIXED);
+        long initialTime = MultiInstancePersistentStore.readLastAccessedTime(/* instanceId= */ 0);
+
+        mFakeTimeTestRule.advanceMillis(100);
+
+        mMultiInstanceManager.onStopWithNative();
+        long updatedTime = MultiInstancePersistentStore.readLastAccessedTime(0);
+
+        assertTrue("Last accessed time should be updated.", updatedTime > initialTime);
+    }
 }
