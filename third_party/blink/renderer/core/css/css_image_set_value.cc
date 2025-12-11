@@ -149,6 +149,22 @@ bool CSSImageSetValue::HasFailedOrCanceledSubresources() const {
   return true;
 }
 
+const CSSImageSetValue& CSSImageSetValue::ResolveValuesIfNeeded(
+    const StyleResolverState&) const {
+  // TODO(crbug.com/466978530): Create a new value if it contains gradient
+  // values which needs to be resolved at computed value time
+  // (ResolveValuesIfNeeded() returns a new object for gradient values)
+  return *this;
+}
+
+CSSImageSetValue& CSSImageSetValue::ResolveValuesIfNeeded(
+    const StyleResolverState&) {
+  // TODO(crbug.com/466978530): Create a new value if it contains gradient
+  // values which needs to be resolved at computed value time
+  // (ResolveValuesIfNeeded() returns a new object for gradient values)
+  return *this;
+}
+
 void CSSImageSetValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(cached_image_);
   visitor->Trace(options_);

@@ -118,8 +118,9 @@ class CSSGradientValue : public CSSImageGeneratorValue {
   CSSGradientType GradientType() const { return gradient_type_; }
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
-  const CSSGradientValue* ResolveValuesIfNeeded(
+  const CSSGradientValue& ResolveValuesIfNeeded(
       const StyleResolverState&) const;
+  CSSGradientValue& ResolveValuesIfNeeded(const StyleResolverState&);
   CSSGradientValue* ComputedCSSValue(const ComputedStyle&,
                                      bool allow_visited_style,
                                      CSSValuePhase value_phase) const;
@@ -202,8 +203,9 @@ class CSSLinearGradientValue final : public CSSGradientValue {
 
   bool Equals(const CSSLinearGradientValue&) const;
 
-  const CSSLinearGradientValue* ResolveValuesIfNeeded(
+  const CSSLinearGradientValue& ResolveValuesIfNeeded(
       const StyleResolverState&) const;
+  CSSLinearGradientValue& ResolveValuesIfNeeded(const StyleResolverState&);
   CSSLinearGradientValue* ComputedCSSValue(const ComputedStyle&,
                                            bool allow_visited_style,
                                            CSSValuePhase value_phase) const;
@@ -214,6 +216,9 @@ class CSSLinearGradientValue final : public CSSGradientValue {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
+  CSSLinearGradientValue* ResolveValuesAndCreateCopyIfNeeded(
+      const StyleResolverState&) const;
+
   // Any of these may be null.
   Member<const CSSValue> first_x_;
   Member<const CSSValue> first_y_;
@@ -306,8 +311,9 @@ class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
 
   bool Equals(const CSSRadialGradientValue&) const;
 
-  const CSSRadialGradientValue* ResolveValuesIfNeeded(
+  const CSSRadialGradientValue& ResolveValuesIfNeeded(
       const StyleResolverState&) const;
+  CSSRadialGradientValue& ResolveValuesIfNeeded(const StyleResolverState&);
   CSSRadialGradientValue* ComputedCSSValue(const ComputedStyle&,
                                            bool allow_visited_style,
                                            CSSValuePhase value_phase) const;
@@ -318,6 +324,9 @@ class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
+  CSSRadialGradientValue* ResolveValuesAndCreateCopyIfNeeded(
+      const StyleResolverState&) const;
+
   // Any of these may be null.
   Member<const CSSValue> first_x_;
   Member<const CSSValue> first_y_;
@@ -358,8 +367,9 @@ class CSSConicGradientValue final : public CSSGradientValue {
 
   bool Equals(const CSSConicGradientValue&) const;
 
-  const CSSConicGradientValue* ResolveValuesIfNeeded(
+  const CSSConicGradientValue& ResolveValuesIfNeeded(
       const StyleResolverState&) const;
+  CSSConicGradientValue& ResolveValuesIfNeeded(const StyleResolverState&);
   CSSConicGradientValue* ComputedCSSValue(const ComputedStyle&,
                                           bool allow_visited_style,
                                           CSSValuePhase value_phase) const;
@@ -370,6 +380,9 @@ class CSSConicGradientValue final : public CSSGradientValue {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
+  CSSConicGradientValue* ResolveValuesAndCreateCopyIfNeeded(
+      const StyleResolverState&) const;
+
   // Any of these may be null.
   Member<const CSSValue> x_;
   Member<const CSSValue> y_;
@@ -402,8 +415,9 @@ class CSSConstantGradientValue final : public CSSGradientValue {
   CSSConstantGradientValue* ComputedCSSValue(const ComputedStyle&,
                                              bool allow_visited_style,
                                              CSSValuePhase value_phase) const;
-  const CSSConstantGradientValue* ResolveValuesIfNeeded(
+  const CSSConstantGradientValue& ResolveValuesIfNeeded(
       const StyleResolverState&) const;
+  CSSConstantGradientValue& ResolveValuesIfNeeded(const StyleResolverState&);
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

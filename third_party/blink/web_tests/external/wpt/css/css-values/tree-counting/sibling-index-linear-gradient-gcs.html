@@ -6,13 +6,25 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-  #target {
+  #t1 {
     background-image: linear-gradient(white, rgb(0 0 calc(sibling-index() * 200)));
   }
+  #t2 {
+    background-image: cross-fade(linear-gradient(white, rgb(0 0 calc(sibling-index() * 200))) 40%, rgb(0 0 calc(sibling-index() * 200)) 60%);
+  }
 </style>
-<div id="target"></div>
+<div>
+  <div id="t1"></div>
+</div>
+<div>
+  <div id="t2"></div>
+</div>
 <script>
   test(() => {
-    assert_equals(getComputedStyle(target).backgroundImage, "linear-gradient(rgb(255, 255, 255), rgb(0, 0, 200))");
+    assert_equals(getComputedStyle(t1).backgroundImage, "linear-gradient(rgb(255, 255, 255), rgb(0, 0, 200))");
   }, "Check that sibling-index() is resolved in serialization of computed value of linear-gradient()");
+
+  test(() => {
+    assert_equals(getComputedStyle(t2).backgroundImage, "cross-fade(linear-gradient(rgb(255, 255, 255), rgb(0, 0, 200)) 40%, rgb(0, 0, 200) 60%)");
+  }, "Check that sibling-index() is resolved in serialization of computed value of linear-gradient() inside cross-fade()");
 </script>

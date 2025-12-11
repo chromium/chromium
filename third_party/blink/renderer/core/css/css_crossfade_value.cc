@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -150,6 +151,43 @@ ImageResourceObserver* CSSCrossfadeValue::GetObserverProxy() {
     observer_proxy_ = MakeGarbageCollected<ObserverProxy>(this);
   }
   return observer_proxy_.Get();
+}
+
+CSSCrossfadeValue* CSSCrossfadeValue::ResolveValuesAndCreateCopyIfNeeded(
+    const StyleResolverState& state) const {
+  HeapVector<std::pair<Member<CSSValue>, Member<CSSPrimitiveValue>>>
+      image_and_percentages(image_and_percentages_);
+  bool values_changed = false;
+  for (auto& img_percent : image_and_percentages) {
+    CSSValue* image_value = &state.ResolveGradients(*img_percent.first);
+    if (image_value != img_percent.first) {
+      img_percent.first = image_value;
+      values_changed = true;
+    }
+  }
+  if (!values_changed) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<cssvalue::CSSCrossfadeValue>(
+      is_prefixed_variant_, std::move(image_and_percentages));
+}
+
+const CSSCrossfadeValue& CSSCrossfadeValue::ResolveValuesIfNeeded(
+    const StyleResolverState& state) const {
+  if (CSSCrossfadeValue* resolved =
+          CSSCrossfadeValue::ResolveValuesAndCreateCopyIfNeeded(state)) {
+    return *resolved;
+  }
+  return *this;
+}
+
+CSSCrossfadeValue& CSSCrossfadeValue::ResolveValuesIfNeeded(
+    const StyleResolverState& state) {
+  if (CSSCrossfadeValue* resolved =
+          CSSCrossfadeValue::ResolveValuesAndCreateCopyIfNeeded(state)) {
+    return *resolved;
+  }
+  return *this;
 }
 
 void CSSCrossfadeValue::TraceAfterDispatch(Visitor* visitor) const {

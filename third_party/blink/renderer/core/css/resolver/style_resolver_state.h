@@ -175,7 +175,7 @@ class CORE_EXPORT StyleResolverState {
 
   StyleImage* GetStyleImage(CSSPropertyID property_id, const CSSValue& value) {
     return element_style_resources_.GetStyleImage(property_id,
-                                                  ResolveGradient(value));
+                                                  ResolveGradients(value));
   }
   SVGResource* GetSVGResource(CSSPropertyID, const cssvalue::CSSURIValue&);
 
@@ -207,8 +207,10 @@ class CORE_EXPORT StyleResolverState {
   // reference to the passed value.
   const CSSValue& ResolveLightDarkPair(const CSSValue&);
 
-  // If the input CSSValue is a CSSGradientValue, resolve its "calc" functions.
-  const CSSValue& ResolveGradient(const CSSValue&);
+  // If the input CSSValue is a CSSGradientValue, or a value that nests
+  // CSSGradientValues, resolve its "calc" functions.
+  const CSSValue& ResolveGradients(const CSSValue&) const;
+  CSSValue& ResolveGradients(CSSValue&) const;
 
   const ComputedStyle* OriginatingElementStyle() const {
     return originating_element_style_;
