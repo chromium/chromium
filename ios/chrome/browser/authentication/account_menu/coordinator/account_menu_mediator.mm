@@ -414,9 +414,6 @@
 // Callback for signout.
 - (void)signoutEndedWithSuccess:(BOOL)success {
   if (success) {
-    // By signing-out the user cancelled the option to signin in this menu.
-    // TODO(crbug.com/400715119): Should consider add a signout result in
-    // SigninCoordinatorResult.
     [_delegate
         mediatorWantsToBeDismissed:self
              withCancelationReason:signin_ui::CancelationReason::kUserCanceled
