@@ -35,6 +35,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_coordinator/memory_consumer_registration.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -47,6 +49,8 @@ namespace blink {
 
 class NGShapeCache : public GarbageCollected<NGShapeCache>,
                      public base::MemoryConsumer {
+  USING_PRE_FINALIZER(NGShapeCache, Dispose);
+
  public:
   static constexpr unsigned kMaxTextLengthOfEntries = 30;
   static constexpr unsigned kMaxSize = 2048;
@@ -59,9 +63,9 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
          base::SingleThreadTaskRunner::GetMainThreadDefault()
              ->RunsTasksInCurrentSequence())) {
       memory_consumer_registration_ =
-          std::make_unique<base::MemoryConsumerRegistration>(
+          std::make_unique<MemoryConsumerRegistration>(
               kConsumerId, kNGShapeCacheTraits, this,
-              base::MemoryConsumerRegistration::CheckUnregister::kDisabled);
+              MemoryConsumerRegistration::CheckUnregister::kDisabled);
     }
   }
   NGShapeCache(const NGShapeCache&) = delete;
@@ -73,6 +77,12 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
     visitor->Trace(ltr_string_map_strong_);
     visitor->Trace(rtl_string_map_strong_);
     visitor->Trace(primary_font_);
+  }
+
+  void Dispose() {
+    if (memory_consumer_registration_) {
+      memory_consumer_registration_->Dispose();
+    }
   }
 
   void OnUpdateMemoryLimit() override {}
@@ -160,8 +170,7 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
   SmallStringMapStrong rtl_string_map_strong_;
   Member<const SimpleFontData> primary_font_;
 
-  std::unique_ptr<base::MemoryConsumerRegistration>
-      memory_consumer_registration_;
+  std::unique_ptr<MemoryConsumerRegistration> memory_consumer_registration_;
 };
 
 }  // namespace blink
