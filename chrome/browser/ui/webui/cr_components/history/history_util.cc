@@ -17,6 +17,7 @@
 #include "chrome/grit/locale_settings.h"
 #include "components/browsing_data/core/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -83,9 +84,8 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
   source->AddBoolean("isSignInAllowed",
                      prefs->GetBoolean(prefs::kSigninAllowed));
 
-  source->AddBoolean(
-      "enableBrowsingHistoryActorIntegrationM1",
-      browsing_data::features::IsBrowsingHistoryActorIntegrationM1Enabled());
+  source->AddBoolean("enableBrowsingHistoryActorIntegrationM1",
+                     history::IsBrowsingHistoryActorIntegrationM1Enabled());
 
   source->AddInteger(
       "lastSelectedTab",

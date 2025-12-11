@@ -12826,8 +12826,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBrowsingHistoryActorIntegrationM1Name,
      flag_descriptions::kBrowsingHistoryActorIntegrationM1Description,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         browsing_data::features::kBrowsingHistoryActorIntegrationM1)},
+     FEATURE_VALUE_TYPE(history::kBrowsingHistoryActorIntegrationM1)},
 
     {"browsing-history-actor-integration-M2",
      flag_descriptions::kBrowsingHistoryActorIntegrationM2Name,

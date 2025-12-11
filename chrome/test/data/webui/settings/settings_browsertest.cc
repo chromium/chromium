@@ -18,6 +18,7 @@
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/history/core/browser/features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
@@ -1001,7 +1002,7 @@ class SettingsClearBrowsingDataV2Test : public SettingsBrowserTest {
   SettingsClearBrowsingDataV2Test() {
     scoped_feature_list_.InitWithFeatures(
         {browsing_data::features::kDbdRevampDesktop,
-         browsing_data::features::kBrowsingHistoryActorIntegrationM1},
+         history::kBrowsingHistoryActorIntegrationM1},
         /*disabled_features=*/{});
   }
 
