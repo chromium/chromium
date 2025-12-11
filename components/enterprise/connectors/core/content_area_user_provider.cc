@@ -131,6 +131,16 @@ std::string GetDefaultActiveUser(signin::IdentityManager* im, const GURL& url) {
   return "";
 }
 
+std::string GetNavigationActiveContentAreaUser(signin::IdentityManager* im,
+                                               const GURL& tab_url) {
+  std::string email = GetActiveContentAreaUser(im, tab_url);
+  if (!email.empty()) {
+    return email;
+  }
+
+  return GetDefaultActiveUser(im, tab_url);
+}
+
 bool CanRetrieveActiveUser(const GURL& tab_url) {
   return IncludeContentAreaAccountEmail(tab_url, GoogleDomains());
 }
