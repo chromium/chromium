@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.task_manager.ui;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge.GpuMemoryUsage;
@@ -90,6 +92,9 @@ class TaskManagerProperties {
     /** Property key for GPU memory. */
     static final WritableObjectPropertyKey<GpuMemoryUsage> GPU_MEMORY =
             new WritableObjectPropertyKey<>();
+
+    /** Property key for task icon. */
+    static final WritableObjectPropertyKey<Bitmap> TASK_ICON = new WritableObjectPropertyKey<>();
 
     /**
      * All the property keys that can appear as a column. Sorted in order to appear in the context

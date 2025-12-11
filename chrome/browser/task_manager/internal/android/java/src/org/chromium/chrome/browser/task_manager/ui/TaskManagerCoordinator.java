@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.task_manager.ui;
 
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -173,7 +174,27 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
                 view.setBackgroundColor(0);
             }
             return;
+        } else if (key == TaskManagerProperties.TASK_ICON) {
+            Bitmap bitmap = model.get(TaskManagerProperties.TASK_ICON);
+            TextView textView =
+                    view.findViewById(getTaskItemViewId(TaskManagerProperties.TASK_NAME));
+            if (bitmap != null) {
+                int size = view.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, size, size, true);
+                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        new android.graphics.drawable.BitmapDrawable(
+                                view.getResources(), scaledBitmap),
+                        null,
+                        null,
+                        null);
+                textView.setCompoundDrawablePadding(20);
+            } else {
+                textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+                textView.setCompoundDrawablePadding(0);
+            }
+            return;
         }
+
         if (!List.of(TaskManagerProperties.ALL_COLUMN_KEYS).contains(key)) {
             return;
         }

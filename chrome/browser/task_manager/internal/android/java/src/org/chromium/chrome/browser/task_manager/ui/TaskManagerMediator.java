@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.NETWORK_USAGE;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.PROCESS_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SORT_DESCRIPTOR;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ICON;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_NAME;
 
@@ -212,19 +213,22 @@ class TaskManagerMediator {
     private ListItem createTaskModel(long taskId) {
         PropertyKey[] keys =
                 PropertyModel.concatKeys(
-                        ALL_COLUMN_KEYS, new PropertyKey[] {TASK_ID, IS_SELECTED, IS_KILLABLE});
+                        ALL_COLUMN_KEYS,
+                        new PropertyKey[] {TASK_ID, IS_SELECTED, IS_KILLABLE, TASK_ICON});
         return new ListItem(
                 RowType.TASK,
                 new PropertyModel.Builder(keys)
                         .with(TASK_ID, taskId)
                         .with(IS_SELECTED, false)
                         .with(IS_KILLABLE, mBridge.isTaskKillable(taskId))
+                        .with(TASK_ICON, mBridge.getIcon(taskId))
                         .build());
     }
 
     // TODO(crbug.com/380165957): Confirm pid and task name never change and stop
     // refreshing them.
     private void updateTaskModel(ListItem task, long taskId) {
+        task.model.set(TASK_ICON, mBridge.getIcon(taskId));
         for (PropertyKey columnKey : ALL_COLUMN_KEYS) {
             if (columnKey == TASK_NAME) {
                 task.model.set(TASK_NAME, mBridge.getTitle(taskId));
@@ -351,6 +355,7 @@ class TaskManagerMediator {
         mTasks.set(tasks);
     }
 
+    @SuppressWarnings("NullMarked")
     private static Comparator<ListItem> getTaskComparator(@NonNull SortDescriptor descriptor) {
         Comparator<ListItem> ascComparator =
                 (a, b) -> {
