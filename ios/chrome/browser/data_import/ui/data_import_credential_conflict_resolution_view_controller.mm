@@ -75,7 +75,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.title = l10n_util::GetNSString(
-      IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_TITLE);
+      IDS_IOS_CREDENTIAL_IMPORT_CONFLICT_RESOLUTION_TITLE);
   [self setupBarButtons];
   /// Sets up table view properties.
   self.tableView.separatorInset =
