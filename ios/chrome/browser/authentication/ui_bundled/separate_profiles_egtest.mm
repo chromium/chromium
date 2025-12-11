@@ -596,13 +596,13 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 
 // Tests switching to a managed account (and thus managed profile) and back via
 // the account menu.
-// TODO(crbug.com/411035267): Re-enable this test on device.
+// TODO(crbug.com/411035267): Re-enable this test.
 #if !TARGET_OS_SIMULATOR
 #define MAYBE_testSwitchFromPersonalToManagedAndBack \
   DISABLED_testSwitchFromPersonalToManagedAndBack
 #else
 #define MAYBE_testSwitchFromPersonalToManagedAndBack \
-  testSwitchFromPersonalToManagedAndBack
+  FLAKY_testSwitchFromPersonalToManagedAndBack
 #endif
 - (void)MAYBE_testSwitchFromPersonalToManagedAndBack {
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
