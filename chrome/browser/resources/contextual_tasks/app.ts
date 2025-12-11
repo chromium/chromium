@@ -65,15 +65,6 @@ export class ContextualTasksAppElement extends CrLitElement {
         new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
   }
 
-  // TODO(crbug.com/454388385): Remove this once the authentication flow is
-  // implemented. Removing the gsc param renders the OGB header, which allows
-  // the user to press "Sign In" to authenticate.
-  protected removeGsc_() {
-    const url = new URL(this.threadUrl_);
-    url.searchParams.delete('gsc');
-    this.threadUrl_ = url.toString();
-  }
-
   protected async onNewThreadClick_() {
     chrome.metricsPrivate.recordUserAction(
         'ContextualTasks.WebUI.UserAction.OpenNewThread');

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './icons.html.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -23,6 +24,7 @@ export interface TopToolbarElement {
   $: {
     menu: CrLazyRenderLitElement<CrActionMenuElement>,
     sourcesMenu: CrLazyRenderLitElement<CrActionMenuElement>,
+    topToolbarLogo: HTMLImageElement,
   };
 }
 
@@ -37,8 +39,9 @@ export class TopToolbarElement extends CrLitElement {
 
   static override get properties() {
     return {
-      title: {type: String},
       attachedTabs_: {type: Array},
+      logoImageUrl_: {type: String},
+      title: {type: String},
     };
   }
 
@@ -48,10 +51,6 @@ export class TopToolbarElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
-  }
-
-  protected onSigninClick_() {
-    this.fire('signin-click');
   }
 
   protected onCloseButtonClick_() {
