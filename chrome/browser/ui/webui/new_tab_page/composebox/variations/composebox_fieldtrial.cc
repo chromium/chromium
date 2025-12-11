@@ -60,8 +60,8 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   image_upload->set_image_compression_quality(40);
   // The current list of image types that Lens Backend supports
   image_upload->set_mime_types_allowed(
-    "image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,"
-    "image/heic");
+      "image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,"
+      "image/heic");
   auto* attachment_upload = composebox->mutable_attachment_upload();
   attachment_upload->set_max_size_bytes(200000000);
   attachment_upload->set_mime_types_allowed(".pdf,application/pdf");
@@ -202,6 +202,8 @@ CreateQueryControllerConfigParams() {
   config_params->use_separate_request_ids_for_multi_context_viewport_images =
       kUseSeparateRequestIdsForMultiContextViewportImages.Get();
   config_params->enable_context_id_migration = kEnableContextIdMigration.Get();
+  config_params->attach_page_title_and_url_to_suggest_requests =
+      kAttachPageTitleAndUrlToSuggestRequest.Get();
   return config_params;
 }
 
@@ -245,6 +247,11 @@ const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     "ShowComposeboxImageSuggestions",
     false);
 
+const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest(
+    &kNtpComposebox,
+    "AttachPageTitleAndUrlToSuggestRequest",
+    false);
+
 const base::FeatureParam<bool> kShowContextMenu(&kNtpComposebox,
                                                 "ShowContextMenu",
                                                 false);
@@ -274,14 +281,15 @@ const base::FeatureParam<bool> kShowCreateImageTool(&kNtpComposebox,
 
 const base::FeatureParam<bool> kShowSubmit(&kNtpComposebox, "ShowSubmit", true);
 
-const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(&kNtpComposebox,
-                                                "ShowVoiceSearchInSteadyComposebox",
-                                                true);
+const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(
+    &kNtpComposebox,
+    "ShowVoiceSearchInSteadyComposebox",
+    true);
 
 const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
-                                                &kNtpComposebox,
-                                                "ShowVoiceSearchInExpandedComposebox",
-                                                true);
+    &kNtpComposebox,
+    "ShowVoiceSearchInExpandedComposebox",
+    true);
 
 const base::FeatureParam<bool> kShowSmartCompose(&kNtpComposebox,
                                                  "ShowSmartCompose",
@@ -303,24 +311,25 @@ const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection(
 
 const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 1);
 
-const base::FeatureParam<bool> kEnableContextDragAndDrop(&kNtpComposebox,
-                                                  "EnableContextDragAndDrop",
-                                                  true);
+const base::FeatureParam<bool> kEnableContextDragAndDrop(
+    &kNtpComposebox,
+    "EnableContextDragAndDrop",
+    true);
 
-const base::FeatureParam<bool> kCloseComposeboxByEscape(&kNtpComposebox,
-                                                    "CloseComposeboxByEscape",
-                                                    true);
+const base::FeatureParam<bool>
+    kCloseComposeboxByEscape(&kNtpComposebox, "CloseComposeboxByEscape", true);
 
 const base::FeatureParam<bool> kCloseComposeboxByClickOutside(
-                                                    &kNtpComposebox,
-                                                    "CloseComposeboxByClickOutside",
-                                                    true);
+    &kNtpComposebox,
+    "CloseComposeboxByClickOutside",
+    true);
 const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
     &kNtpComposebox,
     "AddTabUploadDelayOnRecentTabChipClick",
     true);
-const base::FeatureParam<bool> kEnableModalComposebox(
-    &kNtpComposebox, "EnableModalComposebox", true);
+const base::FeatureParam<bool> kEnableModalComposebox(&kNtpComposebox,
+                                                      "EnableModalComposebox",
+                                                      true);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

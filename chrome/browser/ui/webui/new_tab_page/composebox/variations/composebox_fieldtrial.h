@@ -44,6 +44,9 @@ extern const base::FeatureParam<bool> kShowComposeboxZps;
 extern const base::FeatureParam<bool> kShowComposeboxTypedSuggest;
 // Whether to show image suggestions under the composebox.
 extern const base::FeatureParam<bool> kShowComposeboxImageSuggestions;
+// Whether or not to attach the page title and url directly to the suggest
+// request params.
+extern const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest;
 // Whether to show the + entrypoint and contextual input menu in the realbox and
 // composebox.
 extern const base::FeatureParam<bool> kShowContextMenu;

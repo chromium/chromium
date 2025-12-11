@@ -116,7 +116,8 @@ class ComposeboxQueryControllerTest
       bool use_separate_request_ids_for_multi_context_viewport_images = true,
       bool enable_cluster_info_ttl = false,
       bool prioritize_suggestions_for_the_first_attached_document = false,
-      bool enable_context_id_migration = false) {
+      bool enable_context_id_migration = false,
+      bool attach_page_title_and_url_to_suggest_requests = false) {
     // Create the config params.
     auto config_params =
         std::make_unique<ContextualSearchContextController::ConfigParams>();
@@ -133,6 +134,8 @@ class ComposeboxQueryControllerTest
     config_params->prioritize_suggestions_for_the_first_attached_document =
         prioritize_suggestions_for_the_first_attached_document;
     config_params->enable_context_id_migration = enable_context_id_migration;
+    config_params->attach_page_title_and_url_to_suggest_requests =
+        attach_page_title_and_url_to_suggest_requests;
 
     // Create the controller.
     controller_ = std::make_unique<TestComposeboxQueryController>(
@@ -2839,6 +2842,44 @@ TEST_F(ComposeboxQueryControllerTest,
                 .routing_info()
                 .server_address(),
             kTestServerAddress);
+}
+
+TEST_F(ComposeboxQueryControllerTest, CreateSuggestInputsWithPageTitleAndUrl) {
+  // Arrange: Create controller with
+  // attach_page_title_and_url_to_suggest_requests enabled.
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_multi_context_input_flow=*/false,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_multi_context_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*enable_context_id_migration=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/true);
+  StartSession();
+
+  // Act: Start the file upload flow with page title and url.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->page_url = GURL("https://page.url");
+  input_data->page_title = "Page Title";
+  input_data->context_input->emplace_back(lens::ContextualInput(
+      std::vector<uint8_t>(), lens::MimeType::kAnnotatedPageContent));
+  input_data->is_page_context_eligible = true;
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   std::nullopt);
+  WaitForFileUpload(file_token, lens::MimeType::kAnnotatedPageContent);
+
+  // Act: Create suggest inputs.
+  auto suggest_inputs = controller().CreateSuggestInputs({file_token});
+
+  // Assert: Verify page title and url are attached.
+  EXPECT_TRUE(suggest_inputs->send_page_title_and_url());
+  EXPECT_EQ(suggest_inputs->page_title(), "Page Title");
+  EXPECT_EQ(suggest_inputs->page_url(), "https://page.url/");
 }
 
 }  // namespace contextual_search
