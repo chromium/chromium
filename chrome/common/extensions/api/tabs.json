@@ -56,9 +56,7 @@
             "type": "integer",
             "minimum": -1,
             "optional": true,
-            "description": "The ID of the Split View that the tab belongs to.",
-            // TODO(crbug.com/433273595): Enable documentation when ready for launch.
-            "nodoc": true
+            "description": "The ID of the Split View that the tab belongs to."
           },
           "windowId": {"type": "integer", "minimum": -1, "description": "The ID of the window that contains the tab."},
           "openerTabId": {"type": "integer", "minimum": 0, "optional": true, "description": "The ID of the tab that opened this tab, if any. This property is only present if the opener tab still exists."},
@@ -157,8 +155,7 @@
       },
       "SPLIT_VIEW_ID_NONE": {
         "value": -1,
-        "description": "An ID that represents the absence of a split tab.",
-        "nodoc": true
+        "description": "An ID that represents the absence of a split tab."
       },
       "TAB_ID_NONE": {
         "value": -1,
