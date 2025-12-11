@@ -55,7 +55,13 @@ IN_PROC_BROWSER_TEST_F(SigninTest, SigninManagedUserProfileNotice) {
   RunTest("signin/managed_user_profile_notice_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SigninTest, HistorySyncOptIn) {
+// Failing on Win10 Tests https://crbug.com/468057306.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HistorySyncOptIn DISABLED_HistorySyncOptIn
+#else
+#define MAYBE_HistorySyncOptIn HistorySyncOptIn
+#endif
+IN_PROC_BROWSER_TEST_F(SigninTest, MAYBE_HistorySyncOptIn) {
   set_test_loader_host(chrome::kChromeUIHistorySyncOptinHost);
   RunTest("signin/history_sync_optin_test.js", "mocha.run()");
 }
