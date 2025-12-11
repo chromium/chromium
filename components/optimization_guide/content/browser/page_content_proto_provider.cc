@@ -69,20 +69,32 @@ class GetAIPageContentTimeoutHelper {
     return concurrent_for_subframes_.CreateClosure();
   }
   base::OnceClosure GetClosureForMainFrame() {
-    return base::BindOnce(&GetAIPageContentTimeoutHelper::OnMainFrameRun,
-                          weak_ptr_factory_.GetWeakPtr());
+    return base::BindOnce(
+        &GetAIPageContentTimeoutHelper::OnMainFrameRunOrTimeout,
+        weak_ptr_factory_.GetWeakPtr());
   }
 
   void Start(base::OnceClosure callback,
-             std::optional<base::TimeDelta> timeout) {
+             std::optional<base::TimeDelta> subframe_timeout,
+             std::optional<base::TimeDelta> main_frame_timeout) {
     CHECK(callback);
     callback_ = std::move(callback);
-    if (timeout.has_value()) {
-      // `base::Unretained` is safe here because `this` owns `timeout_timer_`.
-      timeout_timer_.Start(
-          FROM_HERE, timeout.value(),
+    if (subframe_timeout.has_value()) {
+      // `base::Unretained` is safe here because `this` owns
+      // `subframe_timeout_timer_`.
+      subframe_timeout_timer_.Start(
+          FROM_HERE, subframe_timeout.value(),
           base::BindOnce(
               &GetAIPageContentTimeoutHelper::OnAllSubframesRespondedOrTimeout,
+              base::Unretained(this)));
+    }
+    if (main_frame_timeout.has_value()) {
+      // `base::Unretained` is safe here because `this` owns
+      // `main_frame_timeout_timer_`.
+      main_frame_timeout_timer_.Start(
+          FROM_HERE, main_frame_timeout.value(),
+          base::BindOnce(
+              &GetAIPageContentTimeoutHelper::OnMainFrameRunOrTimeout,
               base::Unretained(this)));
     }
     std::move(concurrent_for_subframes_)
@@ -104,9 +116,9 @@ class GetAIPageContentTimeoutHelper {
     std::move(continue_callback).Run();
   }
 
-  void OnMainFrameRun() {
-    CHECK(!has_main_frame_run_);
-    has_main_frame_run_ = true;
+  void OnMainFrameRunOrTimeout() {
+    CHECK(!has_main_frame_run_or_timed_out_);
+    has_main_frame_run_or_timed_out_ = true;
 
     if (have_all_subframes_responded_or_timed_out_) {
       std::move(callback_).Run();
@@ -115,8 +127,8 @@ class GetAIPageContentTimeoutHelper {
 
   void OnAllSubframesRespondedOrTimeout() {
     have_all_subframes_responded_or_timed_out_ = true;
-    timeout_timer_.Stop();
-    if (has_main_frame_run_ && callback_) {
+    subframe_timeout_timer_.Stop();
+    if (has_main_frame_run_or_timed_out_ && callback_) {
       std::move(callback_).Run();
     }
   }
@@ -130,8 +142,9 @@ class GetAIPageContentTimeoutHelper {
   }
 
  private:
-  base::OneShotTimer timeout_timer_;
-  bool has_main_frame_run_ = false;
+  base::OneShotTimer subframe_timeout_timer_;
+  base::OneShotTimer main_frame_timeout_timer_;
+  bool has_main_frame_run_or_timed_out_ = false;
   bool have_all_subframes_responded_or_timed_out_ = false;
   std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map_;
   base::ConcurrentClosures concurrent_for_subframes_;
@@ -611,7 +624,8 @@ void GetAIPageContent(content::WebContents* web_contents,
                      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
                      web_contents->GetSize(), std::move(timeout_helper),
                      std::move(done_callback)),
-      features::GetSubframeGetAIPageContentTimeout());
+      features::GetSubframeGetAIPageContentTimeout(),
+      features::GetMainFrameGetAIPageContentTimeout());
 }
 
 // Allows for a DocumentIdentifier to be reused across calls to convert

@@ -194,17 +194,19 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
 
   void SetPageContent(base::OnceClosure quit_closure,
                       AIPageContentResultOrError page_content) {
-    page_content_ = std::move(page_content->proto);
-    metadata_ = std::move(page_content->metadata);
-    document_identifiers_ = std::move(page_content->document_identifiers);
+    page_content_ = std::move(page_content);
     std::move(quit_closure).Run();
   }
 
-  const proto::AnnotatedPageContent& page_content() { return *page_content_; }
-  const blink::mojom::PageMetadata& metadata() { return *metadata_; }
+  const proto::AnnotatedPageContent& page_content() {
+    return page_content_->value().proto;
+  }
+  const blink::mojom::PageMetadata& metadata() {
+    return *page_content_->value().metadata;
+  }
   const base::flat_map<std::string, content::WeakDocumentPtr>&
   document_identifiers() {
-    return document_identifiers_;
+    return page_content_->value().document_identifiers;
   }
 
   // If `quit_closure` is null, will block until the load is complete.
@@ -258,7 +260,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  std::optional<proto::AnnotatedPageContent> page_content_;
+  std::optional<AIPageContentResultOrError> page_content_;
   blink::mojom::PageMetadataPtr metadata_;
   base::flat_map<std::string, content::WeakDocumentPtr> document_identifiers_;
 };
@@ -2272,9 +2274,12 @@ class PageContentProtoProviderSubframeTimeoutBrowserTest
  public:
   PageContentProtoProviderSubframeTimeoutBrowserTest() {
     // Shorter timeout for quicker tests
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGetAIPageContentSubframeTimeoutEnabled,
-        {{"timeout", "100ms"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGetAIPageContentSubframeTimeoutEnabled,
+          {{"timeout", "100ms"}}}},
+        /*disabled_features=*/
+        {{features::kGetAIPageContentMainFrameTimeoutEnabled}});
   }
 
   base::TimeDelta GetTimeout() { return base::Milliseconds(100); }
@@ -2285,6 +2290,26 @@ class PageContentProtoProviderSubframeTimeoutBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContentProtoProviderSubframeTimeoutBrowserTest,
+                         testing::Bool());
+
+class PageContentProtoProviderMainFrameTimeoutBrowserTest
+    : public PageContentProtoProviderBrowserTestMultiProcess {
+ public:
+  PageContentProtoProviderMainFrameTimeoutBrowserTest() {
+    // Shorter timeout for quicker tests
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGetAIPageContentMainFrameTimeoutEnabled,
+        {{"timeout", "100ms"}});
+  }
+
+  base::TimeDelta GetTimeout() { return base::Milliseconds(100); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageContentProtoProviderMainFrameTimeoutBrowserTest,
                          testing::Bool());
 
 class PageContentProtoProviderSubframeTimeoutDisabledBrowserTest
@@ -2452,6 +2477,30 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderSubframeTimeoutBrowserTest,
                     ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1)
                         ->GetLastCommittedOrigin());
   EXPECT_FALSE(c_frame.content_attributes().is_ad_related());
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderMainFrameTimeoutBrowserTest,
+                       MainFrameAIPageContentAgentRespondsSlowly) {
+  // Load the page, but don't load the APC yet.
+  LoadPage(https_server()->GetURL("a.com", "/simple.html"),
+           /*options=*/nullptr);
+
+  // Make the main frame non-responsive.
+  NoResponseAIPageContentAgent no_response_agent(
+      web_contents()->GetPrimaryMainFrame());
+
+  // Request the APC for the main frame, but don't wait for a response.
+  base::RunLoop loading_run_loop;
+  LoadData(GetActionableAIPageContentOptions(), loading_run_loop.QuitClosure());
+
+  // Wait for the timeout time to pass.
+  base::RunLoop timer_run_loop;
+  base::OneShotTimer timer;
+  timer.Start(FROM_HERE, GetTimeout(), timer_run_loop.QuitClosure());
+  timer_run_loop.Run();
+
+  // The APC should have timed out.
+  EXPECT_TRUE(loading_run_loop.AnyQuitCalled());
 }
 
 }  // namespace

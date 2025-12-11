@@ -169,6 +169,16 @@ BASE_FEATURE(kGetAIPageContentSubframeTimeoutEnabled,
 const base::FeatureParam<base::TimeDelta> kGetAIPageContentSubframeTimeoutParam{
     &kGetAIPageContentSubframeTimeoutEnabled, "timeout", base::Seconds(1)};
 
+// Controls whether to enforce a timeout for main frame page content extraction.
+// If enabled, defaults to 10 seconds. If disabled, wait indefinitely for the
+// main frame to respond.
+BASE_FEATURE(kGetAIPageContentMainFrameTimeoutEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kGetAIPageContentMainFrameTimeoutParam{
+        &kGetAIPageContentMainFrameTimeoutEnabled, "timeout",
+        base::Seconds(10)};
+
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -584,6 +594,13 @@ std::optional<base::TimeDelta> GetSubframeGetAIPageContentTimeout() {
     return std::nullopt;
   }
   return kGetAIPageContentSubframeTimeoutParam.Get();
+}
+
+std::optional<base::TimeDelta> GetMainFrameGetAIPageContentTimeout() {
+  if (!base::FeatureList::IsEnabled(kGetAIPageContentMainFrameTimeoutEnabled)) {
+    return std::nullopt;
+  }
+  return kGetAIPageContentMainFrameTimeoutParam.Get();
 }
 
 }  // namespace features
