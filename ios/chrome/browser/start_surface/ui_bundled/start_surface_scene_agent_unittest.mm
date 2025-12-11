@@ -503,9 +503,9 @@ TEST_F(StartSurfaceSceneAgentTest, ShowTabGroupInGridOnStart) {
       /*disabled_features=*/{});
 
   // Within the interval.
-  base::Time TimeLastBackground = base::Time::Now() - base::Hours(2);
-  test::SetStartSurfaceSessionObjectForSceneStateForTesting(scene_state_,
-                                                            TimeLastBackground);
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
                             forProtocol:@protocol(ApplicationCommands)];
@@ -543,9 +543,9 @@ TEST_F(StartSurfaceSceneAgentTest,
       /*disabled_features=*/{});
 
   // Within the interval
-  base::Time TimeLastBackground = base::Time::Now() - base::Hours(2);
-  test::SetStartSurfaceSessionObjectForSceneStateForTesting(scene_state_,
-                                                            TimeLastBackground);
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
 
   // Forcing the current BrowserProvider to be incognito.
   scene_state_.browserProviderInterface.currentBrowserProvider =
@@ -590,9 +590,9 @@ TEST_F(StartSurfaceSceneAgentTest,
       /*disabled_features=*/{});
 
   // Not in interval.
-  base::Time TimeLastBackground = base::Time::Now() - base::Minutes(30);
-  test::SetStartSurfaceSessionObjectForSceneStateForTesting(scene_state_,
-                                                            TimeLastBackground);
+  base::Time time_last_background = base::Time::Now() - base::Minutes(30);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
                             forProtocol:@protocol(ApplicationCommands)];
@@ -630,9 +630,9 @@ TEST_F(StartSurfaceSceneAgentTest,
       /*disabled_features=*/{});
 
   // Not in interval.
-  base::Time TimeLastBackground = base::Time::Now() - base::Hours(5);
-  test::SetStartSurfaceSessionObjectForSceneStateForTesting(scene_state_,
-                                                            TimeLastBackground);
+  base::Time time_last_background = base::Time::Now() - base::Hours(5);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
                             forProtocol:@protocol(ApplicationCommands)];
@@ -673,9 +673,9 @@ TEST_F(StartSurfaceSceneAgentTest,
       /*disabled_features=*/{});
 
   // Within the interval but no group.
-  base::Time TimeLastBackground = base::Time::Now() - base::Hours(2);
-  test::SetStartSurfaceSessionObjectForSceneStateForTesting(scene_state_,
-                                                            TimeLastBackground);
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
                             forProtocol:@protocol(ApplicationCommands)];
@@ -713,9 +713,9 @@ TEST_F(StartSurfaceSceneAgentTest,
       /*disabled_features=*/{});
 
   // Within the interval.
-  base::Time TimeLastBackground = base::Time::Now() - base::Hours(2);
-  test::SetStartSurfaceSessionObjectForSceneStateForTesting(scene_state_,
-                                                            TimeLastBackground);
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
 
   [dispatcher_ startDispatchingToTarget:application_handler_
                             forProtocol:@protocol(ApplicationCommands)];
@@ -732,6 +732,80 @@ TEST_F(StartSurfaceSceneAgentTest,
   scene_state_.activationLevel = SceneActivationLevelBackground;
 
   EXPECT_OCMOCK_VERIFY((OCMockObject*)application_handler_);
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that a NTP is created when Chrome is foregrounded after being +4 hours
+// in background.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHours) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  base::Time time_last_background = base::Time::Now() - base::Hours(5);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ASSERT_EQ(2, web_state_list->count());
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that a NTP is created outside the active group when Chrome is
+// foregrounded after being +4 hours in background.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHoursOutsideActiveGroup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  base::Time time_last_background = base::Time::Now() - base::Hours(5);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ASSERT_EQ(2, web_state_list->count());
+  ASSERT_FALSE(web_state_list->GetGroupOfWebStateAt(1));
 
   [dispatcher_ stopDispatchingToTarget:application_handler_];
 }
