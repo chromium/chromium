@@ -132,8 +132,9 @@ bool MojoBinderPolicyApplier::ApplyPolicyToAssociatedBinder(
       policy = policy_map_->GetAssociatedMojoBinderPolicy(
           interface_name, MojoBinderAssociatedPolicy::kCancel);
       if (policy != MojoBinderAssociatedPolicy::kGrant) {
-        if (cancel_callback_)
+        if (cancel_callback_) {
           std::move(cancel_callback_).Run(interface_name);
+        }
         return false;
       }
   }
@@ -175,8 +176,9 @@ void MojoBinderPolicyApplier::GrantAll() {
 
   // It's safe to iterate over `deferred_binders_` because no more callbacks
   // will be added to it once `grant_all_` is true."
-  for (auto& deferred_binder : deferred_binders_)
+  for (auto& deferred_binder : deferred_binders_) {
     std::move(deferred_binder).Run();
+  }
   deferred_binders_.clear();
 }
 

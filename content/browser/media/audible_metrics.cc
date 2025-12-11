@@ -19,22 +19,26 @@ AudibleMetrics::AudibleMetrics()
 AudibleMetrics::~AudibleMetrics() = default;
 
 void AudibleMetrics::UpdateAudibleWebContentsState(
-    const WebContents* web_contents, bool audible) {
+    const WebContents* web_contents,
+    bool audible) {
   bool found =
       audible_web_contents_.find(web_contents) != audible_web_contents_.end();
-  if (found == audible)
+  if (found == audible) {
     return;
+  }
 
-  if (audible)
+  if (audible) {
     AddAudibleWebContents(web_contents);
-  else
+  } else {
     RemoveAudibleWebContents(web_contents);
+  }
 }
 
 void AudibleMetrics::WebContentsDestroyed(const WebContents* web_contents,
                                           bool recently_audible) {
-  if (base::Contains(audible_web_contents_, web_contents))
+  if (base::Contains(audible_web_contents_, web_contents)) {
     RemoveAudibleWebContents(web_contents);
+  }
 }
 
 void AudibleMetrics::SetClockForTest(const base::TickClock* test_clock) {
@@ -42,9 +46,8 @@ void AudibleMetrics::SetClockForTest(const base::TickClock* test_clock) {
 }
 
 void AudibleMetrics::AddAudibleWebContents(const WebContents* web_contents) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Media.Audible.ConcurrentTabsWhenStarting", audible_web_contents_.size(),
-      1, 10, 11);
+  UMA_HISTOGRAM_CUSTOM_COUNTS("Media.Audible.ConcurrentTabsWhenStarting",
+                              audible_web_contents_.size(), 1, 10, 11);
 
   audible_web_contents_.insert(web_contents);
 
@@ -58,10 +61,9 @@ void AudibleMetrics::AddAudibleWebContents(const WebContents* web_contents) {
     max_concurrent_audible_web_contents_in_session_ =
         audible_web_contents_.size();
 
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Media.Audible.MaxConcurrentTabsInSession",
-        max_concurrent_audible_web_contents_in_session_,
-        1, 10, 11);
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Media.Audible.MaxConcurrentTabsInSession",
+                                max_concurrent_audible_web_contents_in_session_,
+                                1, 10, 11);
   }
 }
 

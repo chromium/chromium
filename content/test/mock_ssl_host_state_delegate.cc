@@ -29,8 +29,9 @@ void MockSSLHostStateDelegate::Clear(
     for (auto it = exceptions_.begin(); it != exceptions_.end();) {
       auto next_it = std::next(it);
 
-      if (host_filter.Run(*it))
+      if (host_filter.Run(*it)) {
         exceptions_.erase(it);
+      }
 
       it = next_it;
     }
