@@ -34,7 +34,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       composeboxDropdownHeight_: {type: Number},
       isComposeboxFocused_: {type: Boolean, reflect: true},
       showContextMenu_: {
-        reflect: true,
         type: Boolean,
         value: loadTimeData.getBoolean('composeboxShowContextMenu'),
       },
