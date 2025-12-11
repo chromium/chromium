@@ -14514,7 +14514,7 @@
             ]
         }
     ],
-    "InfobarPrioritization": [
+    "InfoBarPrioritizationAndUIRefresh": [
         {
             "platforms": [
                 "chromeos",
@@ -14525,25 +14525,14 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "kMaxLowQueued": "1",
+                        "kMaxVisibleCritical": "2",
+                        "kMaxVisibleDefault": "1",
+                        "kMaxVisibleLow": "1"
+                    },
                     "enable_features": [
-                        "InfobarPrioritization"
-                    ]
-                }
-            ]
-        }
-    ],
-    "InfobarRefresh": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
+                        "InfobarPrioritization",
                         "InfobarRefresh"
                     ]
                 }
