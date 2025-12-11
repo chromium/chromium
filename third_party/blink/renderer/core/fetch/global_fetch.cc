@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -36,24 +37,29 @@ void MeasureFetchProperties(ExecutionContext* execution_context,
     UseCounter::Count(execution_context, WebFeature::kFetchCacheReload);
 }
 
-}  // namespace
-
 template <typename T>
 class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
-                              public GlobalFetch::ScopedFetcher {
+                              public GlobalFetch::ScopedFetcher,
+                              public Supplement<T> {
  public:
+  static constexpr auto kSupplementIndex = T::Supplements::kGlobalFetchImpl;
+
   static ScopedFetcher* From(T& supplementable,
                              ExecutionContext* execution_context) {
-    GlobalFetchImpl* supplement = supplementable.GetGlobalFetchImpl();
+    GlobalFetchImpl* supplement =
+        Supplement<T>::template From<GlobalFetchImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalFetchImpl>(execution_context);
-      supplementable.SetGlobalFetchImpl(supplement);
+      supplement = MakeGarbageCollected<GlobalFetchImpl>(supplementable,
+                                                         execution_context);
+      Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return supplement;
   }
 
-  explicit GlobalFetchImpl(ExecutionContext* execution_context)
-      : fetch_manager_(MakeGarbageCollected<FetchManager>(execution_context)),
+  explicit GlobalFetchImpl(T& supplementable,
+                           ExecutionContext* execution_context)
+      : Supplement<T>(supplementable),
+        fetch_manager_(MakeGarbageCollected<FetchManager>(execution_context)),
         // TODO(crbug.com/1356128): FetchLater is only supported in Document.
         fetch_later_manager_(
             base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
@@ -164,6 +170,7 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     visitor->Trace(fetch_manager_);
     visitor->Trace(fetch_later_manager_);
     ScopedFetcher::Trace(visitor);
+    Supplement<T>::Trace(visitor);
   }
 
  private:
@@ -171,6 +178,8 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
   Member<FetchLaterManager> fetch_later_manager_;
   uint32_t fetch_count_ = 0;
 };
+
+}  // namespace
 
 GlobalFetch::ScopedFetcher::~ScopedFetcher() {}
 

@@ -2538,10 +2538,9 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(crash_report_storage_);
   visitor->Trace(closewatcher_stack_);
   visitor->Trace(soft_navigation_heuristics_);
-  visitor->Trace(global_fetch_impl_);
   DOMWindow::Trace(visitor);
   ExecutionContext::Trace(visitor);
-  Supplementable<LocalDOMWindow, 47>::Trace(visitor);
+  Supplementable<LocalDOMWindow, 48>::Trace(visitor);
 }
 
 bool LocalDOMWindow::CrossOriginIsolatedCapability() const {

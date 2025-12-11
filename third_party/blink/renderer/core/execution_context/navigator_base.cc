@@ -73,7 +73,6 @@ String NavigatorBase::platform() const {
 }
 
 void NavigatorBase::Trace(Visitor* visitor) const {
-  visitor->Trace(global_fetch_impl_);
   ScriptWrappable::Trace(visitor);
   NavigatorLanguage::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

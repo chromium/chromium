@@ -1842,7 +1842,7 @@ void Range::ResetUpdateSelectionBehavior() {
 void Range::ScheduleVisualUpdateIfInRegisteredHighlight(Document& document) {
   if (LocalDOMWindow* window = document.domWindow()) {
     if (HighlightRegistry* highlight_registry =
-            window->Supplementable<LocalDOMWindow, 47>::RequireSupplement<
+            window->Supplementable<LocalDOMWindow, 48>::RequireSupplement<
                 HighlightRegistry>()) {
       for (const auto& highlight_registry_map_entry :
            highlight_registry->GetHighlights()) {

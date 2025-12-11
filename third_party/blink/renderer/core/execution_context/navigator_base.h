@@ -29,14 +29,10 @@
 #include "third_party/blink/renderer/core/frame/navigator_on_line.h"
 #include "third_party/blink/renderer/core/frame/navigator_ua.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
-
-template <typename T>
-class GlobalFetchImpl;
 
 // NavigatorBase is a helper for shared logic between Navigator and
 // WorkerNavigator. It is also a Supplementable, and can therefore be used for
@@ -49,7 +45,7 @@ class CORE_EXPORT NavigatorBase : public ScriptWrappable,
                                   public NavigatorOnLine,
                                   public NavigatorUA,
                                   public ExecutionContextClient,
-                                  public Supplementable<NavigatorBase, 15> {
+                                  public Supplementable<NavigatorBase, 16> {
  public:
   enum class Supplements {
     kLockManager = 0,
@@ -66,7 +62,8 @@ class CORE_EXPORT NavigatorBase : public ScriptWrappable,
     kStorageBucketManager = 11,
     kNavigatorML = 12,
     kSerial = 13,
-    kGeolocation = 14
+    kGeolocation = 14,
+    kGlobalFetchImpl = 15
   };
 
   explicit NavigatorBase(ExecutionContext* context);
@@ -78,20 +75,9 @@ class CORE_EXPORT NavigatorBase : public ScriptWrappable,
 
   unsigned int hardwareConcurrency() const override;
 
-  ForwardDeclaredMember<GlobalFetchImpl<NavigatorBase>> GetGlobalFetchImpl()
-      const {
-    return global_fetch_impl_;
-  }
-  void SetGlobalFetchImpl(
-      ForwardDeclaredMember<GlobalFetchImpl<NavigatorBase>> global_fetch_impl) {
-    global_fetch_impl_ = global_fetch_impl;
-  }
-
  protected:
   ExecutionContext* GetUAExecutionContext() const override;
   UserAgentMetadata GetUserAgentMetadata() const override;
-
-  ForwardDeclaredMember<GlobalFetchImpl<NavigatorBase>> global_fetch_impl_;
 };
 
 }  // namespace blink

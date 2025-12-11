@@ -56,7 +56,7 @@ HighlightRegistry* HighlightRegistry::GetHighlightRegistry(const Node* node) {
   return node->GetDocument()
       .domWindow()
       ->Supplementable<LocalDOMWindow,
-                       47>::RequireSupplement<HighlightRegistry>();
+                       48>::RequireSupplement<HighlightRegistry>();
 }
 
 bool HighlightRegistry::IsAbstractRangePaintable(AbstractRange* abstract_range,
