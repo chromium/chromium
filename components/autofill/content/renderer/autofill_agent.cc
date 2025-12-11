@@ -588,6 +588,16 @@ void AutofillAgent::FocusedElementChanged(
 
   HidePopup();
 
+  if (content::RenderFrame* render_frame = unsafe_render_frame()) {
+    if (WebLocalFrame& frame = *render_frame->GetWebFrame();
+        frame.IsInspectorConnected() && new_focused_element &&
+        (new_focused_element.DynamicTo<WebFormControlElement>() ||
+         new_focused_element.IsContentEditable())) {
+      form_issues::EmitAutofillOrManualTextIssue(GetDocument(),
+                                                 &form_issues::EmitToDevTools);
+    }
+  }
+
   // This behavior was introduced for to fix http://crbug.com/1105254. It's
   // unclear if this is still needed.
   auto handle_focus_change = [&](base::optional_ref<FormData> extracted_form =
