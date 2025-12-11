@@ -43,12 +43,16 @@ static_library("test_support") {
     "//testing/gtest",
   ]
   if (is_android) {
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources += [
       "android/supervised_user_service_test_bridge.cc",
       "android/supervised_user_settings_test_bridge.cc",
+      "supervised_user_browsertest_base.cc",
+      "supervised_user_browsertest_base.h",
     ]
     deps += [
       ":test_support_jni_headers",
+      "//chrome/test:test_support_ui_android",
       "//components/safe_search_api:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//components/supervised_user/core/browser/android:content_filters_observer_bridge",

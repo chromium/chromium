@@ -14,26 +14,18 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
-#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/test/base/android/android_browser_test.h"
+#include "chrome/browser/supervised_user/supervised_user_browsertest_base.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/safe_search_api/url_checker_client.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
-#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace supervised_user {
 namespace {
@@ -42,38 +34,15 @@ using ::safe_search_api::ClientClassification;
 using ::safe_search_api::URLCheckerClient;
 using ::testing::_;
 
-class MockUrlCheckerClient : public URLCheckerClient {
- public:
-  MOCK_METHOD(void, CheckURL, (const GURL& url, ClientCheckCallback callback));
-};
-
 // Covers extra behaviors available only in Clank (Android). See supervised user
 // navigation and throttle tests for general behavior.
 class SupervisedUserNavigationObserverAndroidBrowserTest
-    : public AndroidBrowserTest {
+    : public SupervisedUserBrowserTestBase {
  protected:
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    AndroidBrowserTest::SetUpBrowserContextKeyedServices(context);
-    SupervisedUserServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(
-                     &SupervisedUserNavigationObserverAndroidBrowserTest::
-                         BuildTestSupervisedUserService,
-                     base::Unretained(this)));
-  }
-
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
-  base::WeakPtr<ContentFiltersObserverBridge> search_content_filter() {
-    return supervised_user_service()
-        ->GetSearchContentFiltersObserverWeakPtrForTesting();
-  }
-  base::WeakPtr<ContentFiltersObserverBridge> browser_content_filter() {
-    return supervised_user_service()
-        ->GetBrowserContentFiltersObserverWeakPtrForTesting();
-  }
-  MockUrlCheckerClient* url_checker_client() { return url_checker_client_; }
+
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
@@ -103,46 +72,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
     command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
   }
 
-  // TestSupervisedUserService is a wrapper around SupervisedUserService that
-  // provides test-only interfaces.
-  std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
-      content::BrowserContext* browser_context) {
-    Profile* profile = Profile::FromBrowserContext(browser_context);
-
-    std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
-        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
-
-    std::unique_ptr<MockUrlCheckerClient> url_checker_client =
-        std::make_unique<MockUrlCheckerClient>();
-    url_checker_client_ = url_checker_client.get();
-
-    return std::make_unique<SupervisedUserService>(
-        IdentityManagerFactory::GetForProfile(profile),
-        profile->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess(),
-        *profile->GetPrefs(),
-        *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
-            profile->GetProfileKey()),
-        SupervisedUserContentFiltersServiceFactory::GetInstance()->GetForKey(
-            profile->GetProfileKey()),
-        SyncServiceFactory::GetInstance()->GetForProfile(profile),
-        std::make_unique<SupervisedUserURLFilter>(
-            *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
-            std::move(url_checker_client)),
-        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-        std::make_unique<FakeContentFiltersObserverBridge>(
-            kBrowserContentFiltersSettingName, *profile->GetPrefs()),
-        std::make_unique<FakeContentFiltersObserverBridge>(
-            kSearchContentFiltersSettingName, *profile->GetPrefs()));
-  }
-
-  SupervisedUserService* supervised_user_service() {
-    return SupervisedUserServiceFactory::GetInstance()->GetForProfile(
-        GetProfile());
-  }
-
   base::HistogramTester histogram_tester_;
-  raw_ptr<MockUrlCheckerClient> url_checker_client_;
   base::test::ScopedFeatureList scoped_feature_list_{
       kPropagateDeviceContentFiltersToSupervisedUser};
 };
@@ -151,7 +81,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
 // search query params are not appended.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        DontPropagateSearchContentFilterSettingWhenDisabled) {
-  ASSERT_FALSE(search_content_filter()->IsEnabled());
+  ASSERT_FALSE(GetSearchContentFiltersObserverWeakPtr()->IsEnabled());
 
   // The loaded URL is exactly as requested.
   EXPECT_TRUE(content::NavigateToURL(
@@ -165,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // feature consistency.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        LoadSafeSearchResultsWithSearchContentFilterPreset) {
-  search_content_filter()->SetEnabledForTesting(true);
+  GetSearchContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
   GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
 
   // The final url will be different: with safe search query params.
@@ -179,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // params are appended.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        PreexistingSafeSearchParamsAreRemovedBeforeAppending) {
-  search_content_filter()->SetEnabledForTesting(true);
+  GetSearchContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
   GURL url = embedded_test_server()->GetURL("google.com",
                                             "/search?safe=off&ssui=on&q=cat");
 
@@ -203,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
 
   content::TestNavigationObserver navigation_observer(web_contents());
-  search_content_filter()->SetEnabledForTesting(true);
+  GetSearchContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
   navigation_observer.Wait();
 
   // Key part: the search results are reloaded with extra query params.
@@ -220,7 +150,7 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     content::TestNavigationObserver navigation_observer(web_contents());
     // Turn the filtering on. That will trigger a url check which is resolved to
     // restricted.
-    browser_content_filter()->SetEnabledForTesting(true);
+    GetBrowserContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
     navigation_observer.Wait();
   }
 
@@ -246,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // In this test, all classifications are restricted after enabling the
   // browser content filter.
-  EXPECT_CALL(*url_checker_client(), CheckURL(url, _))
+  EXPECT_CALL(GetMockUrlCheckerClient(), CheckURL(url, _))
       .WillOnce(
           [](const GURL& url, URLCheckerClient::ClientCheckCallback callback) {
             std::move(callback).Run(url, ClientClassification::kRestricted);
@@ -275,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // In this test, all classifications are restricted after enabling the
   // browser content filter.
-  ON_CALL(*url_checker_client(), CheckURL)
+  ON_CALL(GetMockUrlCheckerClient(), CheckURL)
       .WillByDefault(
           [](const GURL& url, URLCheckerClient::ClientCheckCallback callback) {
             std::move(callback).Run(url, ClientClassification::kRestricted);
@@ -293,8 +223,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigation to google.com pages is expected to be always allowed.
   GURL help_center_url = GURL(kDeviceFiltersHelpCenterUrl);
-  ASSERT_TRUE(SupervisedUserServiceFactory::GetInstance()
-                  ->GetForBrowserContext(web_contents()->GetBrowserContext())
+  ASSERT_TRUE(GetSupervisedUserService()
                   ->GetURLFilter()
                   ->GetFilteringBehavior(help_center_url)
                   .IsAllowed());
@@ -328,19 +257,18 @@ IN_PROC_BROWSER_TEST_F(
 
   // In this test to facilitate the back button click, one url is allowed but
   // others are not. All navigations are subject to classification in this test.
-  browser_content_filter()->SetEnabledForTesting(true);
+  GetBrowserContentFiltersObserverWeakPtr()->SetEnabledForTesting(true);
 
-  // Three classification calls are expected:
+  // Two classification calls are expected:
   // 1. when the page is first loaded
   // 2. when the explicit page is attempted to be loaded
-  // 3. when the original page is reloaded (back button click)
-  EXPECT_CALL(*url_checker_client(), CheckURL(allowed_url, _))
-      .Times(2)
-      .WillRepeatedly(
+  // Back button click is not triggering any classification requests.
+  EXPECT_CALL(GetMockUrlCheckerClient(), CheckURL(allowed_url, _))
+      .WillOnce(
           [](const GURL& url, URLCheckerClient::ClientCheckCallback callback) {
             std::move(callback).Run(url, ClientClassification::kAllowed);
           });
-  EXPECT_CALL(*url_checker_client(), CheckURL(blocked_url, _))
+  EXPECT_CALL(GetMockUrlCheckerClient(), CheckURL(blocked_url, _))
       .WillOnce(
           [](const GURL& url, URLCheckerClient::ClientCheckCallback callback) {
             std::move(callback).Run(url, ClientClassification::kRestricted);

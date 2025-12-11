@@ -4,39 +4,24 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
-#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_metrics_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/test/base/android/android_browser_test.h"
+#include "chrome/browser/supervised_user/supervised_user_browsertest_base.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/safe_search_api/url_checker_client.h"
-#include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
-#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace supervised_user {
@@ -45,11 +30,6 @@ namespace {
 using ::safe_search_api::ClientClassification;
 using ::safe_search_api::URLCheckerClient;
 using ::testing::_;
-
-class MockUrlCheckerClient : public URLCheckerClient {
- public:
-  MOCK_METHOD(void, CheckURL, (const GURL& url, ClientCheckCallback callback));
-};
 
 // Covers extra behaviors available only in Clank (Android) related to
 // bootstrapping the supervised user service with Content Filters Observer (how
@@ -60,42 +40,14 @@ class MockUrlCheckerClient : public URLCheckerClient {
 // altered after the browser starts and urls are loaded), see
 // supervised_user_navigation_observer_android_browsertest.cc
 class SupervisedUserServiceBootstrapAndroidBrowserTestBase
-    : public AndroidBrowserTest {
+    : public SupervisedUserBrowserTestBase {
  protected:
-  SupervisedUserServiceBootstrapAndroidBrowserTestBase() = default;
-  SupervisedUserServiceBootstrapAndroidBrowserTestBase(
-      bool initial_browser_content_filters_value,
-      bool initial_search_content_filters_value)
-      : initial_browser_content_filters_value_(
-            initial_browser_content_filters_value),
-        initial_search_content_filters_value_(
-            initial_search_content_filters_value) {}
-
-  // Called just before supervised user service is created. Much like
-  // SetUpLocalStatePrefService, but called after prefs are registered.
-  virtual void SetUpPrefs(PrefService* local_state) {}
-
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
-  MockUrlCheckerClient* url_checker_client() { return url_checker_client_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  SupervisedUserService* GetSupervisedUserService() {
-    return SupervisedUserServiceFactory::GetForProfile(GetProfile());
-  }
-
  private:
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    AndroidBrowserTest::SetUpBrowserContextKeyedServices(context);
-    SupervisedUserServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(
-                     &SupervisedUserServiceBootstrapAndroidBrowserTestBase::
-                         BuildSupervisedUserService,
-                     base::Unretained(this)));
-  }
-
   void SetUpOnMainThread() override {
     AndroidBrowserTest::SetUpOnMainThread();
 
@@ -122,57 +74,7 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
     command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
   }
 
-  // Builds a SupervisedUserService with a fake content filters observer bridge
-  // that bootstraps with initial values from the test case.
-  std::unique_ptr<KeyedService> BuildSupervisedUserService(
-      content::BrowserContext* browser_context) {
-    Profile* profile = Profile::FromBrowserContext(browser_context);
-    SetUpPrefs(profile->GetPrefs());
-
-    std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
-        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
-
-    std::unique_ptr<MockUrlCheckerClient> url_checker_client =
-        std::make_unique<MockUrlCheckerClient>();
-    url_checker_client_ = url_checker_client.get();
-
-    // Create the bridge and configure its initial value before passing
-    // ownership to the SupervisedUserService.
-    std::unique_ptr<FakeContentFiltersObserverBridge> browser_bridge =
-        std::make_unique<FakeContentFiltersObserverBridge>(
-            kBrowserContentFiltersSettingName, *profile->GetPrefs());
-    browser_bridge->SetEnabledForTesting(
-        initial_browser_content_filters_value_);
-
-    // Create the bridge and configure its initial value before passing
-    // ownership to the SupervisedUserService.
-    std::unique_ptr<FakeContentFiltersObserverBridge> search_bridge =
-        std::make_unique<FakeContentFiltersObserverBridge>(
-            kSearchContentFiltersSettingName, *profile->GetPrefs());
-    search_bridge->SetEnabledForTesting(initial_search_content_filters_value_);
-
-    return std::make_unique<SupervisedUserService>(
-        IdentityManagerFactory::GetForProfile(profile),
-        profile->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess(),
-        *profile->GetPrefs(),
-        *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
-            profile->GetProfileKey()),
-        SupervisedUserContentFiltersServiceFactory::GetInstance()->GetForKey(
-            profile->GetProfileKey()),
-        SyncServiceFactory::GetInstance()->GetForProfile(profile),
-        std::make_unique<SupervisedUserURLFilter>(
-            *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
-            std::move(url_checker_client)),
-        std::move(platform_delegate), std::move(browser_bridge),
-        std::move(search_bridge));
-  }
-
-  bool initial_browser_content_filters_value_ = false;
-  bool initial_search_content_filters_value_ = false;
-
   base::HistogramTester histogram_tester_;
-  raw_ptr<MockUrlCheckerClient> url_checker_client_;
   base::test::ScopedFeatureList scoped_feature_list_{
       kPropagateDeviceContentFiltersToSupervisedUser};
 };
@@ -198,15 +100,18 @@ class SupervisedUserServiceBootstrapAndroidBrowserTest
     : public SupervisedUserServiceBootstrapAndroidBrowserTestBase,
       public ::testing::WithParamInterface<BootstrapServiceTestCase> {
  protected:
-  SupervisedUserServiceBootstrapAndroidBrowserTest()
-      : SupervisedUserServiceBootstrapAndroidBrowserTestBase(
-            GetParam().initial_browser_content_filters_value,
-            GetParam().initial_search_content_filters_value) {}
+  SupervisedUserServiceBootstrapAndroidBrowserTest() {
+    SetInitialSupervisedUserState(
+        {.android_parental_controls_browser_filter =
+             GetParam().initial_browser_content_filters_value,
+         .android_parental_controls_search_filter =
+             GetParam().initial_search_content_filters_value});
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                        IncognitoIsBlockedWhenAnyFilterIsEnabled) {
-  ASSERT_NE(nullptr, SupervisedUserServiceFactory::GetForProfile(GetProfile()));
+  ASSERT_NE(nullptr, GetSupervisedUserService());
 
   policy::IncognitoModeAvailability expected_incognito_mode_availability =
       GetParam().ShouldBlockIncognito()
@@ -232,7 +137,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
   if (GetParam().initial_browser_content_filters_value) {
     // Google search is not on the exempt list of the URL Filter: search
     // requests must be explicitly allowed.
-    EXPECT_CALL(*url_checker_client(),
+    EXPECT_CALL(GetMockUrlCheckerClient(),
                 CheckURL(url_matcher::util::Normalize(expected_url), _))
         .WillOnce([](const GURL& url,
                      URLCheckerClient::ClientCheckCallback callback) {
@@ -250,14 +155,14 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
       embedded_test_server()->GetURL("/supervised_user/simple.html");
 
   if (GetParam().initial_browser_content_filters_value) {
-    EXPECT_CALL(*url_checker_client(),
+    EXPECT_CALL(GetMockUrlCheckerClient(),
                 CheckURL(url_matcher::util::Normalize(request_url), _))
         .WillOnce([](const GURL& url,
                      URLCheckerClient::ClientCheckCallback callback) {
           std::move(callback).Run(url, ClientClassification::kAllowed);
         });
   } else {
-    EXPECT_CALL(*url_checker_client(),
+    EXPECT_CALL(GetMockUrlCheckerClient(),
                 CheckURL(url_matcher::util::Normalize(request_url), _))
         .Times(0);
   }
@@ -278,7 +183,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
   GURL request_url =
       embedded_test_server()->GetURL("/supervised_user/simple.html");
 
-  EXPECT_CALL(*url_checker_client(),
+  EXPECT_CALL(GetMockUrlCheckerClient(),
               CheckURL(url_matcher::util::Normalize(request_url), _))
       .WillOnce(
           [](const GURL& url, URLCheckerClient::ClientCheckCallback callback) {
@@ -313,15 +218,14 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                        FamilyLinkOverridesLocalSupervision) {
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(GetProfile());
   bool is_initially_supervised_locally =
       GetParam().initial_browser_content_filters_value ||
       GetParam().initial_search_content_filters_value;
 
   // Local supervision is initially enabled/disabled based on the test case, but
   // Family Link supervision is always disabled.
-  ASSERT_EQ(is_initially_supervised_locally, service->IsSupervisedLocally());
+  ASSERT_EQ(is_initially_supervised_locally,
+            GetSupervisedUserService()->IsSupervisedLocally());
   ASSERT_FALSE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
   EnableParentalControls(*GetProfile()->GetPrefs());
@@ -331,7 +235,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1,
       is_initially_supervised_locally ? 1 : 0);
-  EXPECT_FALSE(service->IsSupervisedLocally());
+  EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 }
 
@@ -362,8 +266,8 @@ INSTANTIATE_TEST_SUITE_P(
 class SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest
     : public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
  protected:
-  void SetUpPrefs(PrefService* local_state) override {
-    EnableParentalControls(*local_state);
+  SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest() {
+    SetInitialSupervisedUserState({.family_link_parental_controls = true});
   }
 };
 
@@ -384,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL request_url =
       embedded_test_server()->GetURL("/supervised_user/simple.html");
 
-  EXPECT_CALL(*url_checker_client(),
+  EXPECT_CALL(GetMockUrlCheckerClient(),
               CheckURL(url_matcher::util::Normalize(request_url), _))
       .WillOnce(
           [](const GURL& url, URLCheckerClient::ClientCheckCallback callback) {
@@ -411,25 +315,25 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
     FamilyLinkIsImmuneToLocalSupervision) {
-  SupervisedUserService* service = GetSupervisedUserService();
-
   // Local supervision is initially disabled and Family Link supervision is
   // initially enabled.
-  ASSERT_FALSE(service->IsSupervisedLocally());
+  ASSERT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
   ASSERT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
   // Try turning the knob on the local supervision (browser filtering).
-  service->GetBrowserContentFiltersObserverWeakPtrForTesting()
+  GetSupervisedUserService()
+      ->GetBrowserContentFiltersObserverWeakPtrForTesting()
       ->SetEnabledForTesting(true);
-  EXPECT_FALSE(service->IsSupervisedLocally());
+  EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 1);
 
   // Try turning the knob on the local supervision (search filtering).
-  service->GetSearchContentFiltersObserverWeakPtrForTesting()
+  GetSupervisedUserService()
+      ->GetSearchContentFiltersObserverWeakPtrForTesting()
       ->SetEnabledForTesting(true);
-  EXPECT_FALSE(service->IsSupervisedLocally());
+  EXPECT_FALSE(GetSupervisedUserService()->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 2);
@@ -456,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(
     SafeSitesIsNotUsed) {
   GURL request_url =
       embedded_test_server()->GetURL("/supervised_user/simple.html");
-  EXPECT_CALL(*url_checker_client(),
+  EXPECT_CALL(GetMockUrlCheckerClient(),
               CheckURL(url_matcher::util::Normalize(request_url), _))
       .Times(0);
 
@@ -477,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(
     SafeSearchIsNotEnforcedAtBrowserLevel) {
   GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
 
-  EXPECT_CALL(*url_checker_client(),
+  EXPECT_CALL(GetMockUrlCheckerClient(),
               CheckURL(url_matcher::util::Normalize(url), _))
       .Times(0);
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
