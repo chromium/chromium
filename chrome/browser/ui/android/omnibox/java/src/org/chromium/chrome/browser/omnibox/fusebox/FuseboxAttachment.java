@@ -87,14 +87,16 @@ public final class FuseboxAttachment extends ListItem {
      * Uploads this attachment using the provided bridge and sets its token.
      *
      * @param bridge The bridge to use for uploading
+     * @param currentlySelectedTab The currently selected tab, if any.
      * @return true if upload succeeded, false otherwise
      */
-    /* package */ boolean uploadToBackend(ComposeBoxQueryControllerBridge bridge) {
+    /* package */ boolean uploadToBackend(
+            ComposeBoxQueryControllerBridge bridge, @Nullable Tab currentlySelectedTab) {
         assert !hasToken() : "Attachment should not have a token when uploaded";
 
         if (type == FuseboxAttachmentType.ATTACHMENT_TAB) {
-            if (FuseboxTabUtils.isTabActive(assumeNonNull(tab))) {
-                mToken = bridge.addTabContext(tab);
+            if (FuseboxTabUtils.isTabActive(tab) && tab == currentlySelectedTab) {
+                mToken = bridge.addTabContext(assumeNonNull(tab));
             } else {
                 mToken = bridge.addTabContextFromCache(assumeNonNull(tab).getId());
             }

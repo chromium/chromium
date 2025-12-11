@@ -9,10 +9,13 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.text.TextUtils;
 import android.util.ArraySet;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridge.FileUploadObserver;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.contextual_search.FileUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -33,9 +36,15 @@ import java.util.function.Predicate;
 public class FuseboxAttachmentModelList extends ModelList implements FileUploadObserver {
     static final int MAX_ATTACHMENTS = OmniboxFeatures.sMultiattachmentFusebox.getValue() ? 10 : 1;
     private final Set<Integer> mAttachedTabIds = new ArraySet<>();
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @BrandedColorScheme int mBrandedColorScheme;
     private @Nullable Runnable mAttachmentUploadFailedListener;
+
+    public FuseboxAttachmentModelList(
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+    }
 
     /**
      * @param composeBoxQueryControllerBridge The bridge to use for backend operations
@@ -86,7 +95,9 @@ public class FuseboxAttachmentModelList extends ModelList implements FileUploadO
         if (isEmpty()) mComposeBoxQueryControllerBridge.notifySessionStarted();
 
         // Upload the attachment if it doesn't have a token
-        if (!attachment.uploadToBackend(mComposeBoxQueryControllerBridge)) {
+        @Nullable TabModelSelector selector = mTabModelSelectorSupplier.get();
+        @Nullable Tab currentlySelectedTab = selector != null ? selector.getCurrentTab() : null;
+        if (!attachment.uploadToBackend(mComposeBoxQueryControllerBridge, currentlySelectedTab)) {
             // Upload failed, abandon session if we just started it
             if (isEmpty()) mComposeBoxQueryControllerBridge.notifySessionAbandoned();
             return false;

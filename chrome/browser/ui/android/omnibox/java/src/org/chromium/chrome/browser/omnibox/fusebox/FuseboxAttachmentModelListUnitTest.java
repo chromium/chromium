@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -27,11 +28,16 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.contextual_search.FileUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.content_public.browser.RenderWidgetHostView;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -40,10 +46,12 @@ public class FuseboxAttachmentModelListUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    @Mock private TabModelSelector mTabModelSelector;
 
     private Resources mResources;
     private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     private FuseboxAttachment mTestAttachment;
+    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private FuseboxAttachment createTestAttachment(String title) {
         return FuseboxAttachment.forFile(
@@ -56,7 +64,8 @@ public class FuseboxAttachmentModelListUnitTest {
     @Before
     public void setUp() {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
-        mFuseboxAttachmentModelList = new FuseboxAttachmentModelList();
+        mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
+        mFuseboxAttachmentModelList = new FuseboxAttachmentModelList(mTabModelSelectorSupplier);
         mFuseboxAttachmentModelList.setComposeBoxQueryControllerBridge(
                 mComposeBoxQueryControllerBridge);
         verify(mComposeBoxQueryControllerBridge).setFileUploadObserver(mFuseboxAttachmentModelList);
@@ -425,5 +434,24 @@ public class FuseboxAttachmentModelListUnitTest {
 
         mFuseboxAttachmentModelList.clear();
         assertTrue(mFuseboxAttachmentModelList.getAttachedTabIds().isEmpty());
+    }
+
+    @Test
+    public void testCurrentTabDirectlyFetchesContext() {
+        Tab tab = mock(Tab.class);
+        WebContents webContents = mock(WebContents.class);
+        RenderWidgetHostView renderWidgetHostView = mock(RenderWidgetHostView.class);
+        doReturn(1).when(tab).getId();
+        doReturn(true).when(tab).isInitialized();
+        doReturn(false).when(tab).isFrozen();
+        doReturn(webContents).when(tab).getWebContents();
+        doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
+        when(mComposeBoxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
+        doReturn(tab).when(mTabModelSelector).getCurrentTab();
+
+        FuseboxAttachment tabAttachment = FuseboxAttachment.forTab(tab, mResources);
+        mFuseboxAttachmentModelList.add(tabAttachment);
+
+        assertEquals("token", tabAttachment.getToken());
     }
 }
