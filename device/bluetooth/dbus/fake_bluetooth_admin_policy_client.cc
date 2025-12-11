@@ -65,8 +65,9 @@ FakeBluetoothAdminPolicyClient::Properties*
 FakeBluetoothAdminPolicyClient::GetProperties(
     const dbus::ObjectPath& object_path) {
   PropertiesMap::const_iterator iter = properties_map_.find(object_path);
-  if (iter != properties_map_.end())
+  if (iter != properties_map_.end()) {
     return iter->second.get();
+  }
   return nullptr;
 }
 
@@ -83,8 +84,9 @@ void FakeBluetoothAdminPolicyClient::CreateAdminPolicy(
 
   properties_map_.emplace(path, std::move(properties));
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.AdminPolicyAdded(path);
+  }
 }
 
 void FakeBluetoothAdminPolicyClient::ChangeAdminPolicy(
@@ -106,8 +108,9 @@ void FakeBluetoothAdminPolicyClient::RemoveAdminPolicy(
   DCHECK(base::Contains(properties_map_, path));
   properties_map_.erase(path);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.AdminPolicyRemoved(path);
+  }
 }
 
 void FakeBluetoothAdminPolicyClient::OnPropertyChanged(
@@ -115,8 +118,9 @@ void FakeBluetoothAdminPolicyClient::OnPropertyChanged(
     const std::string& property_name) {
   DVLOG(2) << "Fake Bluetooth admin_policy property changed: "
            << object_path.value() << ": " << property_name;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.AdminPolicyPropertyChanged(object_path, property_name);
+  }
 }
 
 }  // namespace bluez

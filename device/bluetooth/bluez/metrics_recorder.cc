@@ -54,109 +54,142 @@ const char kBlueZUnknown[] = "br-connection-unknown";
 
 std::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
     const std::string& error_string) {
-  if (base::Contains(error_string, kBlueZInvalidArgumentsError))
+  if (base::Contains(error_string, kBlueZInvalidArgumentsError)) {
     return ConnectToServiceInsecurelyResult::kInvalidArgumentsError;
+  }
 
-  if (base::Contains(error_string, kBlueZInProgressError))
+  if (base::Contains(error_string, kBlueZInProgressError)) {
     return ConnectToServiceInsecurelyResult::kInProgressError;
+  }
 
-  if (base::Contains(error_string, kBlueZAlreadyExistsError))
+  if (base::Contains(error_string, kBlueZAlreadyExistsError)) {
     return ConnectToServiceInsecurelyResult::kAlreadyExistsError;
+  }
 
-  if (base::Contains(error_string, kBlueZNotSupportedError))
+  if (base::Contains(error_string, kBlueZNotSupportedError)) {
     return ConnectToServiceInsecurelyResult::kNotSupportedError;
+  }
 
-  if (base::Contains(error_string, kBlueZNotConnectedError))
+  if (base::Contains(error_string, kBlueZNotConnectedError)) {
     return ConnectToServiceInsecurelyResult::kNotConnectedError;
+  }
 
-  if (base::Contains(error_string, kBlueZAlreadyConnectedError))
+  if (base::Contains(error_string, kBlueZAlreadyConnectedError)) {
     return ConnectToServiceInsecurelyResult::kAlreadyConnectedError;
+  }
 
-  if (base::Contains(error_string, kBlueZNotAvailableError))
+  if (base::Contains(error_string, kBlueZNotAvailableError)) {
     return ConnectToServiceInsecurelyResult::kNotAvailableError;
+  }
 
-  if (base::Contains(error_string, kBlueZDoesNotExistError))
+  if (base::Contains(error_string, kBlueZDoesNotExistError)) {
     return ConnectToServiceInsecurelyResult::kDoesNotExistError;
+  }
 
-  if (base::Contains(error_string, kBlueZNotAuthorizedError))
+  if (base::Contains(error_string, kBlueZNotAuthorizedError)) {
     return ConnectToServiceInsecurelyResult::kNotAuthorizedError;
+  }
 
-  if (base::Contains(error_string, kBlueZNotPermittedError))
+  if (base::Contains(error_string, kBlueZNotPermittedError)) {
     return ConnectToServiceInsecurelyResult::kNotPermittedError;
+  }
 
-  if (base::Contains(error_string, kBlueZNoSuchAdapterError))
+  if (base::Contains(error_string, kBlueZNoSuchAdapterError)) {
     return ConnectToServiceInsecurelyResult::kNoSuchAdapterError;
+  }
 
-  if (base::Contains(error_string, kBlueZAgentNotAvailableError))
+  if (base::Contains(error_string, kBlueZAgentNotAvailableError)) {
     return ConnectToServiceInsecurelyResult::kAgentNotAvailableError;
+  }
 
-  if (base::Contains(error_string, kBlueZNotReadyError))
+  if (base::Contains(error_string, kBlueZNotReadyError)) {
     return ConnectToServiceInsecurelyResult::kNotReadyError;
+  }
 
-  if (base::Contains(error_string, kBlueZFailedError))
+  if (base::Contains(error_string, kBlueZFailedError)) {
     return ConnectToServiceInsecurelyResult::kFailedError;
+  }
 
   return std::nullopt;
 }
 
 ConnectToServiceFailureReason ExtractFailureReasonFromErrorString(
     const std::string& error_string) {
-  if (base::Contains(error_string, kBlueZConnectionAlreadyConnected))
+  if (base::Contains(error_string, kBlueZConnectionAlreadyConnected)) {
     return ConnectToServiceFailureReason::kReasonConnectionAlreadyConnected;
+  }
 
-  if (base::Contains(error_string, kBlueZPageTimeout))
+  if (base::Contains(error_string, kBlueZPageTimeout)) {
     return ConnectToServiceFailureReason::kReasonPageTimeout;
+  }
 
-  if (base::Contains(error_string, kBlueZProfileUnavailable))
+  if (base::Contains(error_string, kBlueZProfileUnavailable)) {
     return ConnectToServiceFailureReason::kReasonProfileUnavailable;
+  }
 
-  if (base::Contains(error_string, kBlueZSdpSearch))
+  if (base::Contains(error_string, kBlueZSdpSearch)) {
     return ConnectToServiceFailureReason::kReasonSdpSearch;
+  }
 
-  if (base::Contains(error_string, kBlueZCreateSocket))
+  if (base::Contains(error_string, kBlueZCreateSocket)) {
     return ConnectToServiceFailureReason::kReasonCreateSocket;
+  }
 
-  if (base::Contains(error_string, kBlueZInvalidArgument))
+  if (base::Contains(error_string, kBlueZInvalidArgument)) {
     return ConnectToServiceFailureReason::kReasonInvalidArgument;
+  }
 
-  if (base::Contains(error_string, kBlueZAdapterNotPowered))
+  if (base::Contains(error_string, kBlueZAdapterNotPowered)) {
     return ConnectToServiceFailureReason::kReasonAdapterNotPowered;
+  }
 
-  if (base::Contains(error_string, kBlueZNotSupported))
+  if (base::Contains(error_string, kBlueZNotSupported)) {
     return ConnectToServiceFailureReason::kReasonNotSupported;
+  }
 
-  if (base::Contains(error_string, kBlueZBadSocket))
+  if (base::Contains(error_string, kBlueZBadSocket)) {
     return ConnectToServiceFailureReason::kReasonBadSocket;
+  }
 
-  if (base::Contains(error_string, kBlueZMemoryAllocation))
+  if (base::Contains(error_string, kBlueZMemoryAllocation)) {
     return ConnectToServiceFailureReason::kReasonMemoryAllocation;
+  }
 
-  if (base::Contains(error_string, kBlueZBusy))
+  if (base::Contains(error_string, kBlueZBusy)) {
     return ConnectToServiceFailureReason::kReasonBusy;
+  }
 
-  if (base::Contains(error_string, kBlueZConcurrentConnectionLimit))
+  if (base::Contains(error_string, kBlueZConcurrentConnectionLimit)) {
     return ConnectToServiceFailureReason::kReasonConcurrentConnectionLimit;
+  }
 
-  if (base::Contains(error_string, kBlueZTimeout))
+  if (base::Contains(error_string, kBlueZTimeout)) {
     return ConnectToServiceFailureReason::kReasonTimeout;
+  }
 
-  if (base::Contains(error_string, kBlueZRefused))
+  if (base::Contains(error_string, kBlueZRefused)) {
     return ConnectToServiceFailureReason::kReasonRefused;
+  }
 
-  if (base::Contains(error_string, kBlueZAbortedByRemote))
+  if (base::Contains(error_string, kBlueZAbortedByRemote)) {
     return ConnectToServiceFailureReason::kReasonAbortedByRemote;
+  }
 
-  if (base::Contains(error_string, kBlueZAbortedByLocal))
+  if (base::Contains(error_string, kBlueZAbortedByLocal)) {
     return ConnectToServiceFailureReason::kReasonAbortedByLocal;
+  }
 
-  if (base::Contains(error_string, kBlueZLmpProtocolError))
+  if (base::Contains(error_string, kBlueZLmpProtocolError)) {
     return ConnectToServiceFailureReason::kReasonLmpProtocolError;
+  }
 
-  if (base::Contains(error_string, kBlueZCanceled))
+  if (base::Contains(error_string, kBlueZCanceled)) {
     return ConnectToServiceFailureReason::kReasonCanceled;
+  }
 
-  if (base::Contains(error_string, kBlueZUnknown))
+  if (base::Contains(error_string, kBlueZUnknown)) {
     return ConnectToServiceFailureReason::kReasonUnknown;
+  }
 
   return ConnectToServiceFailureReason::kReasonUnknown;
 }
