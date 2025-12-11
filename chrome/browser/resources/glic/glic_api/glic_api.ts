@@ -729,12 +729,12 @@ export declare interface GlicBrowserHost {
    * updated set of pinned tabs will asynchronously be available via
    * getPinnedTabs.
    */
-  unpinTabs?(tabIds: string[]): Promise<boolean>;
+  unpinTabs?(tabIds: string[], options?: UnpinTabsOptions): Promise<boolean>;
 
   /**
    * Unpins all currently pinned tabs.
    */
-  unpinAllTabs?(): void;
+  unpinAllTabs?(options?: UnpinTabsOptions): void;
 
   /**
    * Gets TabData for the current set of pinned tabs. The focused tab may also
@@ -1367,6 +1367,13 @@ export declare interface GetPinCandidatesOptions {
  */
 export declare interface PinTabsOptions {
   pinTrigger?: PinTrigger;
+}
+
+/**
+ * Options for unpinning tabs.
+ */
+export declare interface UnpinTabsOptions {
+  unpinTrigger?: UnpinTrigger;
 }
 
 /** Information about a web page being rendered in a tab. */
@@ -2342,6 +2349,22 @@ export enum PinTrigger {
   // The pin was triggered by the inline '@' mention feature.
   AT_MENTION = 2,
   // The pin was triggered as part of actor/actuation behavior.
+  ACTUATION = 3,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Describes what triggered the unpin.
+export enum UnpinTrigger {
+  // The unpin occurred for unknown reasons. Specifies 'web client' to align
+  // with `GlicUnpinTrigger` enum (which disambiguates from unknown triggers
+  // originating elsewhere).
+  WEB_CLIENT_UNKNOWN = 0,
+  // The unpin was triggered by the toggle UI for pin candidates.
+  CANDIDATES_TOGGLE = 1,
+  // The unpin was triggered by a chip.
+  CHIP = 2,
+  // The unpin was triggered as part of actor/actuation behavior.
   ACTUATION = 3,
 }
 

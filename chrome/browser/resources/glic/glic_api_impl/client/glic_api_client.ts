@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {AdditionalContext, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 
@@ -1084,14 +1084,15 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         .pinnedAll;
   }
 
-  async unpinTabs?(tabIds: string[]): Promise<boolean> {
+  async unpinTabs?
+      (tabIds: string[], options?: UnpinTabsOptions): Promise<boolean> {
     return (await this.sender.requestWithResponse(
-                'glicBrowserUnpinTabs', {tabIds}))
+                'glicBrowserUnpinTabs', {tabIds, options}))
         .unpinnedAll;
   }
 
-  unpinAllTabs?(): void {
-    this.sender.requestNoResponse('glicBrowserUnpinAllTabs', undefined);
+  unpinAllTabs?(options?: UnpinTabsOptions): void {
+    this.sender.requestNoResponse('glicBrowserUnpinAllTabs', {options});
   }
 
   getPinCandidates?

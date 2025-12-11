@@ -139,6 +139,19 @@ mojom::GetContextResultPtr LogErrorAndUnwrapResult(
   return std::move(result.value());
 }
 
+GlicUnpinTrigger FromMojomUnpinTrigger(mojom::UnpinTrigger trigger) {
+  switch (trigger) {
+    case mojom::UnpinTrigger::kWebClientUnknown:
+      return GlicUnpinTrigger::kWebClientUnknown;
+    case mojom::UnpinTrigger::kCandidatesToggle:
+      return GlicUnpinTrigger::kCandidatesToggle;
+    case mojom::UnpinTrigger::kChip:
+      return GlicUnpinTrigger::kChip;
+    case mojom::UnpinTrigger::kActuation:
+      return GlicUnpinTrigger::kActuation;
+  }
+}
+
 // Monitors the panel state and the browser widget state. Emits an event any
 // time the active state changes.
 // inactive = (panel hidden) || (panel attached) && (window not active)
@@ -1064,17 +1077,25 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void UnpinTabs(const std::vector<int32_t>& tab_ids,
+                 mojom::UnpinTabsOptionsPtr options,
                  UnpinTabsCallback callback) override {
     std::vector<tabs::TabHandle> tab_handles;
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
     }
-    std::move(callback).Run(sharing_manager().UnpinTabs(
-        tab_handles, GlicUnpinTrigger::kWebClientUnknown));
+    GlicUnpinTrigger trigger = GlicUnpinTrigger::kWebClientUnknown;
+    if (options) {
+      trigger = FromMojomUnpinTrigger(options->unpin_trigger);
+    }
+    std::move(callback).Run(sharing_manager().UnpinTabs(tab_handles, trigger));
   }
 
-  void UnpinAllTabs() override {
-    sharing_manager().UnpinAllTabs(GlicUnpinTrigger::kWebClientUnknown);
+  void UnpinAllTabs(mojom::UnpinTabsOptionsPtr options) override {
+    GlicUnpinTrigger trigger = GlicUnpinTrigger::kWebClientUnknown;
+    if (options) {
+      trigger = FromMojomUnpinTrigger(options->unpin_trigger);
+    }
+    sharing_manager().UnpinAllTabs(trigger);
   }
 
   void CreateTask(actor::webui::mojom::TaskOptionsPtr options,

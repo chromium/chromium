@@ -561,6 +561,27 @@ struct PinTabsOptions {
   PinTrigger pin_trigger;
 };
 
+// @generate glic_api
+// Describes what triggered the unpin.
+[Stable, Extensible]
+enum UnpinTrigger {
+  // The unpin occurred for unknown reasons. Specifies 'web client' to align
+  // with `GlicUnpinTrigger` enum (which disambiguates from unknown triggers
+  // originating elsewhere).
+  [Default] kWebClientUnknown = 0,
+  // The unpin was triggered by the toggle UI for pin candidates.
+  kCandidatesToggle = 1,
+  // The unpin was triggered by a chip.
+  kChip = 2,
+  // The unpin was triggered as part of actor/actuation behavior.
+  kActuation = 3,
+};
+
+// Options for unpinning tabs.
+struct UnpinTabsOptions {
+  UnpinTrigger unpin_trigger;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -659,11 +680,12 @@ interface WebClientHandler {
   // Unpins the given tabs. Can fail if the tabs cannot be found, or if some of
   // the given tabs aren't pinned.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
-  UnpinTabs(array<int32> tab_ids) => (bool unpinned_all);
+  UnpinTabs(array<int32> tab_ids, UnpinTabsOptions? options)
+      => (bool unpinned_all);
 
   // Unpins all currently pinned tabs.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
-  UnpinAllTabs();
+  UnpinAllTabs(UnpinTabsOptions? options);
 
   // Subscribes to receive updates on pin candidates.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
