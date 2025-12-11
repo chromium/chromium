@@ -3480,8 +3480,23 @@ chromium-metrics-reviews@google.com.
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
+    [Desktop] Logs the yser preference of where the tab search button should be
+    rendered in the tabstrip region view. Trailing implies right side in LTR,
+    leading implies left in LTR. Replaced by PositionInTabstrip2.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.PositionInTabstrip2" enum="TabSearchPosition"
+    expires_after="2026-03-29">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
     [Desktop] Logs the position of the tab search button in the tabstrip region
-    view. Trailing implies right side in LTR, leading implies left in LTR.
+    view, but only if the tab search button is rendered in the tabstrip region.
+    Trailing implies right side in LTR, leading implies left in LTR. The
+    previous version of the histogram always logged the value of the pref, but
+    that didn't mean the tab search button was actually rendered in the tab
+    strip.
   </summary>
 </histogram>
 

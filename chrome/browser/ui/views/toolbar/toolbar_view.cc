@@ -1346,8 +1346,8 @@ ToolbarView::GetCornerStyles() const {
     // radius. Also when showing WebUITabStrip, toolbar should not have receding
     // corners.
     const bool tab_strip_has_leading_action_buttons =
-        (!tabs::GetTabSearchTrailingTabstrip(browser()->profile()) &&
-         !features::HasTabSearchToolbarButton());
+        tabs::GetTabSearchPosition(browser()->profile()) ==
+        tabs::TabSearchPosition::kLeadingTabstrip;
     const bool first_tab_selected =
         browser_->tab_strip_model()->IsTabInForeground(0);
     if (has_leading_frame_buttons || tab_strip_has_leading_action_buttons ||

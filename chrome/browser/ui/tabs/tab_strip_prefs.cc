@@ -36,9 +36,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
-bool GetTabSearchTrailingTabstrip(const Profile* profile) {
+TabSearchPosition GetTabSearchPosition(const Profile* profile) {
   if (features::HasTabSearchToolbarButton()) {
-    return true;
+    return TabSearchPosition::kToolbarButton;
   }
 
   // If this pref has already been read, we need to return the same value.
@@ -49,7 +49,9 @@ bool GetTabSearchTrailingTabstrip(const Profile* profile) {
             : GetDefaultTabSearchRightAligned();
   }
 
-  return g_tab_search_trailing_tabstrip_at_startup.value();
+  return g_tab_search_trailing_tabstrip_at_startup.value()
+             ? TabSearchPosition::kTrailingTabstrip
+             : TabSearchPosition::kLeadingTabstrip;
 }
 
 void SetTabSearchRightAlignedForTesting(bool is_right_aligned) {

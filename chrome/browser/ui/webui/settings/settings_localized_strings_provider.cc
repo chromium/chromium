@@ -590,7 +590,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("showSplitViewDragAndDropSetting",
                           base::FeatureList::IsEnabled(features::kSideBySide));
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
-                          tabs::GetTabSearchTrailingTabstrip(profile));
+                          tabs::GetTabSearchPosition(profile) ==
+                              tabs::TabSearchPosition::kTrailingTabstrip);
 
 #if BUILDFLAG(IS_LINUX)
   bool show_custom_chrome_frame = ui::OzonePlatform::GetInstance()

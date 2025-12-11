@@ -262,11 +262,13 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
       },
       *bubble_created_time_));
 
-  webui_bubble_manager_->ShowBubble(std::nullopt,
-                                    tabs::GetTabSearchTrailingTabstrip(profile_)
-                                        ? views::BubbleBorder::TOP_RIGHT
-                                        : views::BubbleBorder::TOP_LEFT,
-                                    kTabSearchBubbleElementId);
+  webui_bubble_manager_->ShowBubble(
+      std::nullopt,
+      tabs::GetTabSearchPosition(profile_) ==
+              tabs::TabSearchPosition::kLeadingTabstrip
+          ? views::BubbleBorder::TOP_LEFT
+          : views::BubbleBorder::TOP_RIGHT,
+      kTabSearchBubbleElementId);
 
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);

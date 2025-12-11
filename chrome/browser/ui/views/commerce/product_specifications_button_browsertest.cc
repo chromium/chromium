@@ -109,7 +109,8 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   bool GetRenderTabSearchBeforeTabStrip() {
-    return !tabs::GetTabSearchTrailingTabstrip(browser()->profile());
+    return tabs::GetTabSearchPosition(browser()->profile()) ==
+           tabs::TabSearchPosition::kLeadingTabstrip;
   }
 
   void SetLockedExpansionModeForTesting(LockedExpansionMode mode) {

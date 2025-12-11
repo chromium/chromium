@@ -110,7 +110,6 @@ class HorizontalTabStripRegionViewTest : public InProcessBrowserTest {
 
  private:
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
@@ -235,21 +234,6 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
   EXPECT_EQ(0, new_tab_button_origin.y());
 }
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
-                       TabSearchPositionLoggedOnConstruction) {
-  using TabSearchPositionEnum = HorizontalTabStripRegionView::TabSearchPositionEnum;
-  const bool tab_search_trailing_tabstrip =
-      tabs::GetTabSearchTrailingTabstrip(browser()->profile());
-  TabSearchPositionEnum expected_enum_val =
-      tab_search_trailing_tabstrip ? TabSearchPositionEnum::kTrailing
-                                   : TabSearchPositionEnum::kLeading;
-
-  base::HistogramTester histogram_tester;
-  tab_strip_region_view()->LogTabSearchPositionForTesting();  // IN-TEST
-  histogram_tester.ExpectUniqueSample("Tabs.TabSearch.PositionInTabstrip",
-                                      expected_enum_val, 1);
-}
-
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, HasMultiselectableState) {
   ui::AXNodeData ax_node_data;
   tab_strip_region_view()->GetViewAccessibility().GetAccessibleNodeData(
@@ -305,4 +289,35 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
   EXPECT_LT(tab_strip()->width(), tab_strip_region_view()->width());
   EXPECT_FALSE(
       tab_strip()->tab_at(tab_strip()->GetModelCount() - 1)->GetVisible());
+}
+
+class HorizontalTabStripRegionViewWithTabstripTabSearchTest
+    : public HorizontalTabStripRegionViewTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {}, {features::kLaunchedTabSearchToolbarButton,
+             features::kTabstripComboButton});
+    HorizontalTabStripRegionViewTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewWithTabstripTabSearchTest,
+                       TabSearchPositionLoggedOnConstruction) {
+  using TabSearchPositionEnum =
+      HorizontalTabStripRegionView::TabSearchPositionEnum;
+  const bool tab_search_trailing_tabstrip =
+      tabs::GetTabSearchPosition(browser()->profile()) ==
+      tabs::TabSearchPosition::kTrailingTabstrip;
+  TabSearchPositionEnum expected_enum_val =
+      tab_search_trailing_tabstrip ? TabSearchPositionEnum::kTrailing
+                                   : TabSearchPositionEnum::kLeading;
+
+  base::HistogramTester histogram_tester;
+  tab_strip_region_view()->LogTabSearchPositionForTesting();  // IN-TEST
+  histogram_tester.ExpectUniqueSample("Tabs.TabSearch.PositionInTabstrip2",
+                                      expected_enum_val, 1);
 }

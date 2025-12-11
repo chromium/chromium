@@ -150,11 +150,15 @@ class TabSearchPositionMetricsLogger {
  private:
   // Logs the UMA metric for the tab search position.
   void LogMetrics() {
-    base::UmaHistogramEnumeration(
-        "Tabs.TabSearch.PositionInTabstrip",
-        tabs::GetTabSearchTrailingTabstrip(profile_)
-            ? HorizontalTabStripRegionView::TabSearchPositionEnum::kTrailing
-            : HorizontalTabStripRegionView::TabSearchPositionEnum::kLeading);
+    const tabs::TabSearchPosition position =
+        tabs::GetTabSearchPosition(profile_);
+    if (position != tabs::TabSearchPosition::kToolbarButton) {
+      base::UmaHistogramEnumeration(
+          "Tabs.TabSearch.PositionInTabstrip2",
+          position == tabs::TabSearchPosition::kTrailingTabstrip
+              ? HorizontalTabStripRegionView::TabSearchPositionEnum::kTrailing
+              : HorizontalTabStripRegionView::TabSearchPositionEnum::kLeading);
+    }
   }
 
   // Sets up a task runner that calls back into the logging data.
@@ -191,8 +195,8 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
                    ? tab_strip->GetBrowserWindowInterface()->GetProfile()
                    : nullptr),
       render_tab_search_before_tab_strip_(
-          !tabs::GetTabSearchTrailingTabstrip(profile_) &&
-          !features::HasTabSearchToolbarButton()),
+          tabs::GetTabSearchPosition(profile_) ==
+          tabs::TabSearchPosition::kLeadingTabstrip),
       tab_search_position_metrics_logger_(
           std::make_unique<TabSearchPositionMetricsLogger>(profile_)) {
   views::SetCascadingColorProviderColor(

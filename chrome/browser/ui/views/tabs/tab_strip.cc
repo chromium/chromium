@@ -1854,14 +1854,14 @@ bool TabStrip::IsFocusInTabs() const {
 }
 
 bool TabStrip::ShouldCompactLeadingEdge() const {
-  return !features::HasTabSearchToolbarButton() &&
-         !controller_->GetBrowser()
+  return !controller_->GetBrowser()
               ->window()
               ->AsBrowserView()
               ->browser_widget()
               ->GetFrameView()
               ->CaptionButtonsOnLeadingEdge() &&
-         tabs::GetTabSearchTrailingTabstrip(controller_->GetProfile());
+         (tabs::GetTabSearchPosition(controller_->GetProfile()) ==
+          tabs::TabSearchPosition::kTrailingTabstrip);
 }
 
 void TabStrip::MaybeStartDrag(TabSlotView* source,
