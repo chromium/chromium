@@ -266,4 +266,9 @@ public interface AconfigFlaggedApiDelegate {
             int startOffset,
             int endVirtualDescendantId,
             int endOffset) {}
+
+    /** Checks if {@link android.content.pm.webapp.WebAppManager} service is available. */
+    default boolean isWebAppServiceEnabled() {
+        return false;
+    }
 }

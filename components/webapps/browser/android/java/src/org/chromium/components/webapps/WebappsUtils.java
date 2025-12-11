@@ -20,6 +20,7 @@ import androidx.annotation.WorkerThread;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
@@ -211,5 +212,15 @@ public class WebappsUtils {
             sCheckedIfRequestPinShortcutSupported = true;
             sIsRequestPinShortcutSupported = supported.booleanValue();
         }
+    }
+
+    @CalledByNative
+    private static boolean isWebAppServiceEnabled() {
+        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate == null) {
+            Log.e(TAG, "Failed to get AconfigFlaggedApiDelegate in isWebAppServiceEnabled()");
+            return false;
+        }
+        return aconfigFlaggedApiDelegate.isWebAppServiceEnabled();
     }
 }

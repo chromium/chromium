@@ -47,6 +47,7 @@ android_library("java") {
     ":pwa_restore_bottom_sheet_mediator_jni_headers_java",
     ":webapps_jni_headers_java",
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//build/android:build_java",
     "//chrome/browser/android/webapk/proto:proto_java",
     "//components/browser_ui/bottomsheet/android:java",

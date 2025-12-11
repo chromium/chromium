@@ -70,9 +70,11 @@ void WebappsUtils::ShowWebApkInstallResultToast(
 
 // static
 bool WebappsUtils::IsAutoMintedTwaEnabled() {
-  // TODO: crbug.com/449581904 - Also check if Web App Service in WebApp
-  // mainline module is enabled.
-  return base::FeatureList::IsEnabled(webapps::features::kAndroidAutoMintedTWA);
+  if (!base::FeatureList::IsEnabled(webapps::features::kAndroidAutoMintedTWA)) {
+    return false;
+  }
+  return Java_WebappsUtils_isWebAppServiceEnabled(
+      base::android::AttachCurrentThread());
 }
 
 }  // namespace webapps
