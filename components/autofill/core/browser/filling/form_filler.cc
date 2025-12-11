@@ -1050,9 +1050,9 @@ void FormFiller::MaybeTriggerProgrammaticRefill(const FillId& fill_id) {
     return;
   }
 
-  if (refill_context->on_refill_timer.IsRunning()) {
-    refill_context->on_refill_timer.Stop();
-  }
+  // If a timer for the refill was already running, it means another
+  // RequestRefill() message arrived, perhaps from another frame. In that case,
+  // we restart the timer.
   refill_context->on_refill_timer.Start(
       FROM_HERE, kWaitTimeForDynamicForms,
       base::BindRepeating(
@@ -1163,11 +1163,7 @@ void FormFiller::ScheduleRefill(const FormData& form,
                                 AutofillTriggerSource trigger_source,
                                 RefillTriggerReason refill_trigger_reason) {
   // If a timer for the refill was already running, it means the form
-  // changed again. Stop the timer and start it again.
-  if (refill_context.on_refill_timer.IsRunning()) {
-    refill_context.on_refill_timer.Stop();
-  }
-  // Start a new timer to trigger refill.
+  // changed again. In that case, we restart the timer.
   refill_context.on_refill_timer.Start(
       FROM_HERE, kWaitTimeForDynamicForms,
       base::BindRepeating(&FormFiller::TriggerRefill,
