@@ -13,11 +13,19 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {HistorySyncOptInBrowserProxyImpl} from './browser_proxy.js';
 import type {HistorySyncOptInBrowserProxy} from './browser_proxy.js';
 import type {AccountInfo} from './history_sync_optin.mojom-webui.js';
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {LaunchContext, ScreenMode} from './history_sync_optin.mojom-webui.js';
 import {getCss} from './history_sync_optin_app.css.js';
 import {getHtml} from './history_sync_optin_app.html.js';
 
 const HistorySyncOptinAppElementBase = I18nMixinLit(CrLitElement);
+
+export interface HistorySyncOptinAppElement {
+  $: {
+    acceptButton: CrButtonElement,
+    rejectButton: CrButtonElement,
+  };
+}
 
 export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
   static get is() {

@@ -54,3 +54,8 @@ IN_PROC_BROWSER_TEST_F(SigninTest, SigninManagedUserProfileNotice) {
   set_test_loader_host(chrome::kChromeUIManagedUserProfileNoticeHost);
   RunTest("signin/managed_user_profile_notice_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(SigninTest, HistorySyncOptIn) {
+  set_test_loader_host(chrome::kChromeUIHistorySyncOptinHost);
+  RunTest("signin/history_sync_optin_test.js", "mocha.run()");
+}
