@@ -169,6 +169,15 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     create_client_to_aim_request_info->query_text_source =
         lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT;
     create_client_to_aim_request_info->query_start_time = base::Time::Now();
+
+    omnibox::ChromeAimToolsAndModels tool_mode = GetAimToolMode();
+    create_client_to_aim_request_info->deep_search_selected =
+        tool_mode == omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH;
+    create_client_to_aim_request_info->create_images_selected =
+        tool_mode == omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN ||
+        tool_mode ==
+            omnibox::ChromeAimToolsAndModels::TOOL_MODE_IMAGE_GEN_UPLOAD;
+
     lens::ClientToAimMessage client_to_page_message =
         contextual_search_web_contents_helper->session_handle()
             ->CreateClientToAimRequest(

@@ -149,6 +149,12 @@ class ContextualSearchContextController {
     // The input source of the query text.
     lens::QueryPayload::QueryTextSource query_text_source =
         lens::QueryPayload::QUERY_TEXT_SOURCE_UNSPECIFIED;
+
+    // Whether deep search is selected.
+    bool deep_search_selected = false;
+
+    // Whether create images is selected.
+    bool create_images_selected = false;
   };
 
   virtual ~ContextualSearchContextController() = default;
