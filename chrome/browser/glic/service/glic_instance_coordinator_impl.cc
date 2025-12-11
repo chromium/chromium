@@ -496,6 +496,10 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
+  if (!instances_.contains(instance->id())) {
+    // This instance has already been removed, so there's no work to do.
+    return;
+  }
   OnInstanceActivationChanged(instance, false);
 
   // Remove the instance first, and then delete. This way, GetInstances() will

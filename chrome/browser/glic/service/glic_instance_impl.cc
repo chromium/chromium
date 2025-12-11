@@ -231,6 +231,15 @@ GlicInstanceImpl::GlicInstanceImpl(
 GlicInstanceImpl::~GlicInstanceImpl() {
   // Destroying the web contents may result in calls back here, so do it first.
   host_.Shutdown();
+
+  // Unbind from all embedders to close side panels and prevent dangling ptrs.
+  std::vector<EmbedderKey> keys;
+  for (const auto& [key, _] : embedders_) {
+    keys.push_back(key);
+  }
+  for (const auto& key : keys) {
+    UnbindEmbedder(key);
+  }
 }
 
 glic::GlicInstanceMetrics* GlicInstanceImpl::instance_metrics() {
