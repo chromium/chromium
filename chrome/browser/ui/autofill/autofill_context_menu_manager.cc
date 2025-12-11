@@ -183,13 +183,9 @@ base::Value::Dict LoadTriggerFormAndFieldLogs(
     if (params.form_control_type) {
       FieldGlobalId field_global_id = {
           frame_token, FieldRendererId(params.field_renderer_id)};
-      auto field =
-          std::ranges::find_if(*form, [&field_global_id](const auto& field) {
-            return field->global_id() == field_global_id;
-          });
-      if (field != form->end()) {
+      if (const AutofillField* field = form->GetFieldById(field_global_id)) {
         trigger_form_logs.Set("triggerFieldSignature",
-                              (*field)->FieldSignatureAsStr());
+                              field->FieldSignatureAsStr());
       }
     }
   }
