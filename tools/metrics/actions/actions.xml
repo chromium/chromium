@@ -10271,6 +10271,19 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="ContextualTasks.AiResponse.UserAction.LinkClicked{SurfaceType}">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    The user clicked a link embedded in the contextual tasks ai response
+    directly. {SurfaceType}
+  </description>
+  <token key="SurfaceType">
+    <variant name=".Panel" summary="The user clicked on a link in the panel."/>
+    <variant name=".Tab" summary="The user clicked on a link in a tab."/>
+  </token>
+</action>
+
 <action name="ContextualTasks.ToolbarButton.UserAction{ActionType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

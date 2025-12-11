@@ -8,6 +8,8 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -164,10 +166,12 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     return;
   }
 
-  base::UmaHistogramBoolean(
+  std::string ai_response_link_clicked_metric_name =
       base::StrCat({"ContextualTasks.AiResponse.UserAction.LinkClicked.",
-                    (tab ? "Panel" : "Tab")}),
-      true);
+                    (tab ? "Tab" : "Panel")});
+  base::UmaHistogramBoolean(ai_response_link_clicked_metric_name, true);
+  base::RecordAction(
+      base::UserMetricsAction(ai_response_link_clicked_metric_name.c_str()));
 
   TabStripModel* tab_strip_model = browser->GetTabStripModel();
   std::unique_ptr<content::WebContents> new_contents =
