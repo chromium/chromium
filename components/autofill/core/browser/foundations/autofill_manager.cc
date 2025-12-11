@@ -480,12 +480,11 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
               form.global_id(), field_id)));
 }
 
-bool AutofillManager::GetCachedFormAndField(
-    const FormGlobalId& form_id,
-    const FieldGlobalId& field_id,
-    FormStructure** form_structure,
-    AutofillField** autofill_field) const {
-  FormStructure* cached_form = FindCachedFormById(form_id);
+bool AutofillManager::GetCachedFormAndField(const FormGlobalId& form_id,
+                                            const FieldGlobalId& field_id,
+                                            FormStructure** form_structure,
+                                            AutofillField** autofill_field) {
+  FormStructure* cached_form = FindCachedFormById(form_id, /*pass_key=*/{});
   if (!cached_form) {
     return false;
   }
@@ -520,13 +519,14 @@ size_t AutofillManager::FindCachedFormsBySignature(
   return hits_num;
 }
 
-FormStructure* AutofillManager::FindCachedFormById(FormGlobalId form_id) const {
+const FormStructure* AutofillManager::FindCachedFormById(
+    const FormGlobalId& form_id) const {
   auto it = form_structures_.find(form_id);
   return it != form_structures_.end() ? it->second.get() : nullptr;
 }
 
-FormStructure* AutofillManager::FindCachedFormById(
-    FieldGlobalId field_id) const {
+const FormStructure* AutofillManager::FindCachedFormById(
+    const FieldGlobalId& field_id) const {
   for (const auto& [form_id, form_structure] : form_structures_) {
     if (std::ranges::any_of(*form_structure, [&](const auto& field) {
           return field->global_id() == field_id;
@@ -535,6 +535,13 @@ FormStructure* AutofillManager::FindCachedFormById(
     }
   }
   return nullptr;
+}
+
+FormStructure* AutofillManager::FindCachedFormById(
+    const FormGlobalId& form_id,
+    const FormMutationPassKey& pass_key) {
+  return const_cast<FormStructure*>(
+      std::as_const(*this).FindCachedFormById(form_id));
 }
 
 void AutofillManager::ForEachCachedForm(
@@ -573,7 +580,7 @@ base::flat_map<FieldGlobalId, AutofillServerPrediction>
 AutofillManager::GetServerPredictionsForForm(
     FormGlobalId form_id,
     base::span<const FieldGlobalId> field_ids) const {
-  FormStructure* cached_form = FindCachedFormById(form_id);
+  const FormStructure* cached_form = FindCachedFormById(form_id);
   if (!cached_form) {
     return {};
   }
@@ -966,7 +973,7 @@ void AutofillManager::UpdateFormCache(
 
   for (size_t i = 0; i < forms.size(); ++i) {
     FormStructure* cached_form_structure =
-        FindCachedFormById(forms[i].global_id());
+        FindCachedFormById(forms[i].global_id(), /*pass_key=*/{});
     const bool is_new_form = !cached_form_structure;
     if (form_structures_.size() + is_new_form >
         kAutofillManagerMaxFormCacheSize) {

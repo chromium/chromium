@@ -231,7 +231,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
     // Clear the AutofillField::initial_value() and set the
     // AutofillField::autofilled_type() according to the `form_description`.
     if (FormStructure* form_structure =
-            autofill_manager().FindCachedFormById(form.global_id())) {
+            test_api(autofill_manager()).FindCachedFormById(form.global_id())) {
       for (auto [field, field_description] :
            base::zip(form_structure->fields(), form_description.fields)) {
         test_api(*field).set_initial_value(u"");

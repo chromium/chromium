@@ -22,7 +22,8 @@ namespace {
 }
 
 // Returns if `form` in `manager` contains at least one `ONE_TIME_CODE` field.
-[[nodiscard]] bool IsOtpForm(AutofillManager& manager, FormGlobalId form) {
+[[nodiscard]] bool IsOtpForm(const AutofillManager& manager,
+                             FormGlobalId form) {
   const FormStructure* form_structure = manager.FindCachedFormById(form);
   return form_structure && IsOtpForm(*form_structure);
 }

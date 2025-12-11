@@ -182,12 +182,17 @@ class FormFillerTest
   }
 
   FormStructure* GetFormStructure(const FormData& form) {
-    return autofill_manager().FindCachedFormById(form.global_id());
+    return test_api(autofill_manager()).FindCachedFormById(form.global_id());
   }
 
   AutofillField* GetAutofillField(const FormGlobalId& form_id,
                                   const FieldGlobalId& field_id) {
-    return autofill_manager().GetAutofillField(form_id, field_id);
+    FormStructure* form =
+        test_api(autofill_manager()).FindCachedFormById(form_id);
+    if (!form) {
+      return nullptr;
+    }
+    return form->GetFieldById(field_id);
   }
 
   // Lets `BrowserAutofillManager` fill `form` using `trigger`` and

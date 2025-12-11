@@ -558,7 +558,8 @@ void AutofillBottomSheetTabHelper::AttachListenersForPaymentsForm(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
     bool only_new) {
-  autofill::FormStructure* form_structure = manager.FindCachedFormById(form_id);
+  const autofill::FormStructure* form_structure =
+      manager.FindCachedFormById(form_id);
   if (!form_structure ||
       !form_structure->IsCompleteCreditCardForm(
           autofill::FormStructure::CreditCardFormCompleteness::

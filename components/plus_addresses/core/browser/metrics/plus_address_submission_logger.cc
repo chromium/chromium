@@ -110,7 +110,7 @@ void PlusAddressSubmissionLogger::OnPlusAddressSuggestionShown(
   const AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfo(core_account_info);
 
-  FormStructure* form_structure = manager.FindCachedFormById(form);
+  const FormStructure* form_structure = manager.FindCachedFormById(form);
   if (!form_structure) {
     return;
   }

@@ -177,7 +177,7 @@ base::Value::Dict LoadTriggerFormAndFieldLogs(
                                  FormRendererId(params.form_renderer_id)};
 
   base::Value::Dict trigger_form_logs;
-  if (FormStructure* form = manager.FindCachedFormById(form_global_id)) {
+  if (const FormStructure* form = manager.FindCachedFormById(form_global_id)) {
     trigger_form_logs.Set("triggerFormSignature", form->FormSignatureAsStr());
 
     if (params.form_control_type) {

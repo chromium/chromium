@@ -34,7 +34,7 @@ content::RenderFrameHost* FindRenderFrameHostByToken(
 std::optional<RendererForms> RendererFormsFromBrowserForm(
     AutofillManager& manager,
     FormGlobalId form_id) {
-  FormStructure* browser_form = manager.FindCachedFormById(form_id);
+  const FormStructure* browser_form = manager.FindCachedFormById(form_id);
   if (!browser_form) {
     return std::nullopt;
   }

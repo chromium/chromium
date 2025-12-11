@@ -490,7 +490,7 @@ void GetFormDataByFieldGlobalIdForModelPrototyping(
     std::move(continue_callback).Run(std::move(data));
     return;
   }
-  autofill::FormStructure* form_structure =
+  const autofill::FormStructure* form_structure =
       autofill_driver->GetAutofillManager().FindCachedFormById(global_id);
   if (!form_structure) {
     std::move(continue_callback).Run(std::move(data));

@@ -426,7 +426,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
     return YES;
   }
 
-  autofill::FormStructure* form_structure =
+  const autofill::FormStructure* form_structure =
       driver->GetAutofillManager().FindCachedFormById(
           {driver->GetFrameToken(), formQuery.formRendererID});
   if (!form_structure) {

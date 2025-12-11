@@ -86,7 +86,8 @@ void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
   int64_t form_control_type = -1;
   autofill::FieldSignature field_signature;
   autofill::FormSignature form_signature;
-  autofill::FormStructure* form_structure = manager.FindCachedFormById(form);
+  const autofill::FormStructure* form_structure =
+      manager.FindCachedFormById(form);
   bool is_long_field = false;
   if (form_structure) {
     form_signature = form_structure->form_signature();

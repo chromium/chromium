@@ -306,7 +306,7 @@ void AutofillHandler::OnFillOrPreviewForm(
     return;
   }
 
-  autofill::FormStructure& form =
+  const autofill::FormStructure& form =
       CHECK_DEREF(manager.FindCachedFormById(form_id));
   const autofill::AutofillProfile* profile_used_to_fill_form =
       std::get<const autofill::AutofillProfile*>(filling_payload);

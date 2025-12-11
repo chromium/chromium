@@ -1139,7 +1139,7 @@ void FormFiller::TriggerRefill(const FormData& form,
                                AutofillTriggerSource trigger_source,
                                RefillTriggerReason refill_trigger_reason) {
   FormStructure* form_structure =
-      manager_->FindCachedFormById(form.global_id());
+      manager_->FindCachedFormById(form.global_id(), /*pass_key=*/{});
   if (!form_structure) {
     return;
   }

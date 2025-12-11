@@ -17,6 +17,10 @@ class AutofillManagerTestApi {
   explicit AutofillManagerTestApi(AutofillManager* manager)
       : manager_(*manager) {}
 
+  FormStructure* FindCachedFormById(const FormGlobalId& form_id) {
+    return manager_->FindCachedFormById(form_id, /*pass_key=*/{});
+  }
+
   const base::ObserverList<AutofillManager::Observer>& observers() {
     return manager_->observers_;
   }

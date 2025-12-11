@@ -253,7 +253,8 @@ TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
   FormGlobalId form_id = form.global_id();
   auto current_cached_value = [this,
                                &form_id]() -> std::optional<std::u16string> {
-    FormStructure* cached_form = autofill_manager().FindCachedFormById(form_id);
+    const FormStructure* cached_form =
+        autofill_manager().FindCachedFormById(form_id);
     if (!cached_form || cached_form->fields().empty()) {
       return std::nullopt;
     }

@@ -1561,7 +1561,7 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion) {
 
   // Verify that the field count is now 1 for the xframes browser form since
   // there was one form containing one field that was deleted.
-  FormStructure* form =
+  const FormStructure* form =
       main_frame_manager().FindCachedFormById(browser_form_global_id);
   ASSERT_TRUE(form);
   EXPECT_EQ(1u, form->field_count());
@@ -1609,7 +1609,7 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion_Synthetic) {
 
   // Verify that the field count is now 2 for the xframe browser form since
   // the synthetic form in one of the frames was deleted.
-  FormStructure* form =
+  const FormStructure* form =
       main_frame_manager().FindCachedFormById(browser_form_global_id);
   ASSERT_TRUE(form);
   EXPECT_EQ(2u, form->field_count());
@@ -1658,7 +1658,7 @@ TEST_F(AutofillAcrossIframesTest, UpdateOnFormDeletion_Synthetic_Partial) {
 
   // Verify that the field count is still 4 for the xframe browser form since
   // the synthetic form in one of the frames was deleted.
-  FormStructure* form =
+  const FormStructure* form =
       main_frame_manager().FindCachedFormById(browser_form_global_id);
   ASSERT_TRUE(form);
   EXPECT_EQ(4u, form->field_count());

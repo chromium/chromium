@@ -916,7 +916,7 @@ class RenderViewContextMenuUsePasskeyFromAnotherDeviceTest
       : public autofill::TestBrowserAutofillManager {
    public:
     using autofill::TestBrowserAutofillManager::TestBrowserAutofillManager;
-    MOCK_METHOD(autofill::FormStructure*,
+    MOCK_METHOD(const autofill::FormStructure*,
                 FindCachedFormById,
                 (autofill::FormGlobalId),
                 (const override));

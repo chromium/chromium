@@ -762,7 +762,7 @@ void AutofillDriverIOS::FormsRemoved(
     // a deletion.
     FormGlobalId synthetic_global_id = {.frame_token = local_frame_token_,
                                         .renderer_id = FormRendererId(0)};
-    if (FormStructure* form =
+    if (const FormStructure* form =
             GetAutofillManager().FindCachedFormById(synthetic_global_id)) {
       base::flat_set<FieldRendererId> form_fields = base::ToVector(
           form->fields(), [](const std::unique_ptr<AutofillField>& field) {

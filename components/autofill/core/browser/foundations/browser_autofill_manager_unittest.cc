@@ -2144,7 +2144,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   FormStructure* form_structure =
-      autofill_manager().FindCachedFormById(form.global_id());
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
   AutofillField* autofill_field = form_structure->field(0);
   ASSERT_TRUE(autofill_field);
@@ -3661,7 +3661,7 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
   personal_data().address_data_manager().AddProfile(profile);
 
   FormStructure* form_structure =
-      autofill_manager().FindCachedFormById(form.global_id());
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
 
   FormFieldData& field = test_api(form).field(0);
@@ -3745,8 +3745,9 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
                                      .autocomplete_attribute = "country",
                                      .is_autofilled = true}}});
   FormsSeen({form});
-  autofill_manager()
-      .GetAutofillField(form.global_id(), form.fields()[0].global_id())
+  test_api(autofill_manager())
+      .FindCachedFormById(form.global_id())
+      ->GetFieldById(form.fields()[0].global_id())
       ->set_autofilled_type(NAME_FULL);
   personal_data().test_address_data_manager().ClearProfiles();
   personal_data().test_address_data_manager().AddProfile(
@@ -4954,7 +4955,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogIBANField) {
 
   const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =
       autofill_manager()
-          .GetAutofillField(form.global_id(), form.fields()[0].global_id())
+          .FindCachedFormById(form.global_id())
+          ->GetFieldById(form.fields()[0].global_id())
           ->field_log_events();
   ASSERT_EQ(CountEventOfType<FillFieldLogEvent>(fill_field_log_events), 1u);
   EXPECT_THAT(
@@ -7035,7 +7037,7 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
   FormData form = CreateTestAddressFormData();
 
   autofill_manager().OnFormsSeen({form}, {});
-  FormStructure* parsed_form =
+  const FormStructure* parsed_form =
       autofill_manager().FindCachedFormById(form.global_id());
 
   ASSERT_TRUE(parsed_form);
@@ -8137,7 +8139,7 @@ TEST_P(OnFocusOnFormFieldTest, FocusReporting) {
 
   // Observe form and retrieve pointers.
   FormsSeen({form});
-  FormStructure* parsed_form =
+  const FormStructure* parsed_form =
       autofill_manager().FindCachedFormById(form.global_id());
   ASSERT_TRUE(parsed_form);
   const AutofillField* field0 =
@@ -8634,7 +8636,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
       AutofillFormAndGetResults(form, form.fields()[0], pdm_profile->guid());
 
   // Expect that no observations for any of the form's types were collected yet.
-  FormStructure* form_structure =
+  const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   EXPECT_TRUE(std::ranges::all_of(
       *form_structure,
@@ -8721,8 +8723,8 @@ TEST_F(BrowserAutofillManagerTest,
   // Creates an address or credit card form, fills and submits it. Lastly,
   // returns a pointer to the `FormStructure`.
   auto create_fill_submit_and_find_cached_form =
-      [this, &url,
-       &address_form_unique_id](bool is_credit_card_form) -> FormStructure* {
+      [this, &url, &address_form_unique_id](
+          bool is_credit_card_form) -> const FormStructure* {
     FormData form =
         is_credit_card_form
             ? CreateTestCreditCardFormData(/*is_https=*/true,
@@ -8751,7 +8753,7 @@ TEST_F(BrowserAutofillManagerTest,
   // After the `first_address_form` was submitted, expect that its form
   // signature is set to the `last_address_form_submitted` on its form
   // associations.
-  FormStructure* first_address_form =
+  const FormStructure* first_address_form =
       create_fill_submit_and_find_cached_form(/*is_credit_card_form=*/false);
   ASSERT_TRUE(first_address_form);
   EXPECT_THAT(last_uploaded_form_associations.last_address_form_submitted,
@@ -8765,7 +8767,7 @@ TEST_F(BrowserAutofillManagerTest,
   // signature is set to the `last_address_form_submitted` on its form
   // associations. The signature of the `first_address_form` is expected to be
   // the `second_last_address_form_signature` now.
-  FormStructure* second_address_form =
+  const FormStructure* second_address_form =
       create_fill_submit_and_find_cached_form(/*is_credit_card_form=*/false);
   ASSERT_TRUE(second_address_form);
   EXPECT_THAT(last_uploaded_form_associations.last_address_form_submitted,
@@ -8779,7 +8781,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Expect that `last_credit_card_form_submitted` is also set with the form
   // submission of the `credit_card_form`. The address form signatures are
   // expected to be set before.
-  FormStructure* credit_card_form =
+  const FormStructure* credit_card_form =
       create_fill_submit_and_find_cached_form(/*is_credit_card_form=*/true);
   ASSERT_TRUE(credit_card_form);
   EXPECT_THAT(last_uploaded_form_associations.last_address_form_submitted,

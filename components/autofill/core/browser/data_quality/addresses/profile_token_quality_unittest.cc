@@ -122,7 +122,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
   // Accept field 1 as-is too. But since it has a derived type, it counts as
   // a partial accept for the middle name (its stored type).
 
-  FormStructure* form_structure =
+  const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   EXPECT_TRUE(
       quality.AddObservationsForFilledForm(*form_structure, form, adm()));
@@ -156,7 +156,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   // Edit field 3 to a completely different token.
   EditFieldValue(form, 3, u"different value");
 
-  FormStructure* form_structure =
+  const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   EXPECT_TRUE(
       quality.AddObservationsForFilledForm(*form_structure, form, adm()));
@@ -193,7 +193,7 @@ TEST_F(ProfileTokenQualityTest,
   EditFieldValue(form, 1,
                  other_profile.GetInfo(ADDRESS_HOME_STATE, adm().app_locale()));
 
-  FormStructure* form_structure =
+  const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   EXPECT_TRUE(
       quality.AddObservationsForFilledForm(*form_structure, form, adm()));
@@ -215,7 +215,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
   FormData form = GetFormWithTypes({NAME_FIRST});
   FillForm(form, profile);
 
-  FormStructure* form_structure =
+  const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   EXPECT_TRUE(
       quality.AddObservationsForFilledForm(*form_structure, form, adm()));
@@ -238,7 +238,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_DynamicChange) {
   FillForm(form, profile);
 
   FormStructure* form_structure =
-      autofill_manager().FindCachedFormById(form.global_id());
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
   form_structure->field(0)->SetTypeTo(AutofillType(NAME_LAST),
                                       AutofillPredictionSource::kHeuristics);
   EXPECT_TRUE(

@@ -1894,7 +1894,8 @@ void BrowserAutofillManager::UndoAutofill(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
     const FormFieldData& trigger_field) {
-  FormStructure* form_structure = FindCachedFormById(form.global_id());
+  FormStructure* form_structure =
+      FindCachedFormById(form.global_id(), /*pass_key=*/{});
   if (!form_structure) {
     return;
   }
@@ -2354,7 +2355,7 @@ bool BrowserAutofillManager::ShouldClearPreviewedForm() {
 void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
     const FormData& form,
     const FieldGlobalId& field_id) {
-  FormStructure* form_structure = FindCachedFormById(form.global_id());
+  const FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (!form_structure) {
     return;
   }
@@ -2485,7 +2486,8 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
                       kUseCachedServerClassificationModelResults)) {
             return;
           }
-          FormStructure* form = self->FindCachedFormById(form_id);
+          FormStructure* form =
+              self->FindCachedFormById(form_id, /*pass_key=*/{});
           if (!form) {
             return;
           }
@@ -2839,7 +2841,8 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
     const FormData& form) {
   // Ignore forms not present in our cache.  These are typically forms with
   // wonky JavaScript that also makes them not auto-fillable.
-  FormStructure* cached_submitted_form = FindCachedFormById(form.global_id());
+  const FormStructure* cached_submitted_form =
+      FindCachedFormById(form.global_id());
   if (!cached_submitted_form || !ShouldUploadForm(*cached_submitted_form)) {
     return nullptr;
   }
@@ -2854,7 +2857,7 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
 
 AutofillField* BrowserAutofillManager::GetAutofillField(
     const FormGlobalId& form_id,
-    const FieldGlobalId& field_id) const {
+    const FieldGlobalId& field_id) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form_id, field_id, &form_structure,

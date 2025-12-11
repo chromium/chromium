@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
       notification.FindListByDottedPath("filledFields");
   ASSERT_EQ(filled_fields->size(), filled_fields_by_autofill.size());
   for (size_t i = 0; i < filled_fields->size(); ++i) {
-    FormStructure& fs =
+    const FormStructure& fs =
         CHECK_DEREF(main_autofill_manager().FindCachedFormById(form_id()));
     const base::Value& ff = (*filled_fields)[i];
     const FormFieldData& ffd = filled_fields_by_autofill[i];

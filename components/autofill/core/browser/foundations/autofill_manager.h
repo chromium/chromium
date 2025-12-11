@@ -306,19 +306,30 @@ class AutofillManager
   // corresponding to `form_id` and `field_id`.  This might have the side-effect
   // of updating the cache.  Returns false if the form is not autofillable, or
   // if either the form or the field cannot be found.
-  [[nodiscard]] bool GetCachedFormAndField(
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
-      FormStructure** form_structure,
-      AutofillField** autofill_field) const;
+  [[nodiscard]] bool GetCachedFormAndField(const FormGlobalId& form_id,
+                                           const FieldGlobalId& field_id,
+                                           FormStructure** form_structure,
+                                           AutofillField** autofill_field);
+
+  class FormMutationPassKey {
+   private:
+    FormMutationPassKey() = default;
+    friend class AutofillManager;
+    friend class AutofillManagerTestApi;
+    friend class BrowserAutofillManager;
+    friend class FormFiller;
+  };
+
+  FormStructure* FindCachedFormById(const FormGlobalId& form_id,
+                                    const FormMutationPassKey& pass_key);
 
   // Returns nullptr if no cached form structure is found with a matching
   // `form_id`. Runs in logarithmic time.
-  FormStructure* FindCachedFormById(FormGlobalId form_id) const;
+  const FormStructure* FindCachedFormById(const FormGlobalId& form_id) const;
 
   // Searches for any cached form that contains a field with `field_id`.
   // Runs in linear time.
-  FormStructure* FindCachedFormById(FieldGlobalId field_id) const;
+  const FormStructure* FindCachedFormById(const FieldGlobalId& field_id) const;
 
   // Returns all FormStructures with the given `form_signature` and
   // Runs in linear time.

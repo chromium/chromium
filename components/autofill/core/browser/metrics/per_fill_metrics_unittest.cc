@@ -36,14 +36,15 @@ class PerFillMetricsTest : public AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 
   void FillForm(FormData form, FillingPayload filling_payload) {
+    FormStructure& form_structure = CHECK_DEREF(
+        test_api(autofill_manager()).FindCachedFormById(form.global_id()));
+    AutofillField& autofill_field = CHECK_DEREF(
+        form_structure.GetFieldById(form.fields().front().global_id()));
     test_api(autofill_manager())
         .form_filler()
-        .FillOrPreviewForm(
-            mojom::ActionPersistence::kFill, form, filling_payload,
-            *autofill_manager().FindCachedFormById(form.global_id()),
-            *autofill_manager().GetAutofillField(
-                form.global_id(), form.fields().front().global_id()),
-            AutofillTriggerSource::kPopup);
+        .FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                           filling_payload, form_structure, autofill_field,
+                           AutofillTriggerSource::kPopup);
   }
 
   // Lets `BrowserAutofillManager` fill `form` with `filling_payload` and

@@ -362,7 +362,7 @@ TEST_F(SharedPasswordControllerTest,
 
   // Verify that the browser form is correctly constructed, composed of the main
   // frame form and child frame form, having 3 fields in total.
-  autofill::FormStructure* browser_form =
+  const autofill::FormStructure* browser_form =
       autofill_manager_injector_->GetForFrame(main_frame_ptr)
           ->FindCachedFormById(main_form.global_id());
   ASSERT_TRUE(browser_form);

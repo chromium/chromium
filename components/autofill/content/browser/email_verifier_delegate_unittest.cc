@@ -111,7 +111,8 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
   FormData form_data = ValidForm();
 
   manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
-  FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
+  FormStructure* form =
+      test_api(*manager_).FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
@@ -140,7 +141,8 @@ TEST_F(EmailVerifierDelegateTest, FeatureDisabled) {
   FormData form_data = ValidForm();
 
   manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
-  FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
+  const FormStructure* form =
+      manager_->FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
 
   EXPECT_CALL(*email_verifier_, Verify).Times(0);
@@ -161,7 +163,8 @@ TEST_F(EmailVerifierDelegateTest, NotFillAction) {
   FormData form_data = ValidForm();
 
   manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
-  FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
+  const FormStructure* form =
+      manager_->FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
 
   EXPECT_CALL(*email_verifier_, Verify).Times(0);
@@ -191,7 +194,8 @@ TEST_F(EmailVerifierDelegateTest, NoNonce) {
        }});
 
   manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
-  FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
+  const FormStructure* form =
+      manager_->FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
 
   EXPECT_CALL(*email_verifier_, Verify).Times(0);
@@ -221,7 +225,8 @@ TEST_F(EmailVerifierDelegateTest, NotEmailField) {
                          }});
 
   manager_->AddSeenForm(form_data, {NAME_FULL});
-  FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
+  const FormStructure* form =
+      manager_->FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
 
   EXPECT_CALL(*email_verifier_, Verify).Times(0);
@@ -245,7 +250,8 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
   FormData form_data = ValidForm();
 
   manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
-  FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
+  FormStructure* form =
+      test_api(*manager_).FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
