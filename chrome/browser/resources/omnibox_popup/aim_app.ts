@@ -62,11 +62,11 @@ export class OmniboxAimAppElement extends CrLitElement {
     super.connectedCallback();
 
     this.listenerIds_ = [
-      this.callbackRouter_.onWidgetShown.addListener(
-          this.onWidgetShown_.bind(this)),
+      this.callbackRouter_.onPopupShown.addListener(
+          this.onPopupShown_.bind(this)),
       this.callbackRouter_.addContext.addListener(this.addContext_.bind(this)),
-      this.callbackRouter_.onWidgetClosed.addListener(
-          this.onWidgetClosed_.bind(this)),
+      this.callbackRouter_.onPopupHidden.addListener(
+          this.onPopupHidden_.bind(this)),
       this.callbackRouter_.setPreserveContextOnClose.addListener(
           this.setPreserveContextOnClose_.bind(this)),
     ];
@@ -123,7 +123,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.preserveContextOnClose_ = preserveContextOnClose;
   }
 
-  private onWidgetShown_(context: SearchContextStub) {
+  private onPopupShown_(context: SearchContextStub) {
     if (!this.preserveContextOnClose_) {
       // Avoid showing the glow animation when coming back from a preserved
       // context on close as this indicates that the user is returning to the
@@ -140,7 +140,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.$.composebox.focusInput();
   }
 
-  private onWidgetClosed_(): Promise<{input: string}> {
+  private onPopupHidden_(): Promise<{input: string}> {
     const input = this.$.composebox.getInputText();
     if (!this.preserveContextOnClose_) {
       this.$.composebox.clearAllInputs();

@@ -52,7 +52,7 @@ suite('AimAppTest', function() {
     assertTrue(!!app.$.composebox.getInputText());
 
     // Close without preserving context (default is false).
-    testProxy.page.onWidgetClosed();
+    testProxy.page.onPopupHidden();
     await microtasksFinished();
     assertTrue(!app.$.composebox.getInputText());
   });
@@ -71,7 +71,7 @@ suite('AimAppTest', function() {
 
     // Close with preserving context.
     testProxy.page.setPreserveContextOnClose(true);
-    testProxy.page.onWidgetClosed();
+    testProxy.page.onPopupHidden();
     await microtasksFinished();
     assertTrue(!!app.$.composebox.getInputText());
   });
@@ -89,11 +89,11 @@ suite('AimAppTest', function() {
 
     // Close with preserving context.
     testProxy.page.setPreserveContextOnClose(true);
-    testProxy.page.onWidgetClosed();
+    testProxy.page.onPopupHidden();
     await microtasksFinished();
 
-    // Re-open (onWidgetShown) should reset preserveContextOnClose to false.
-    testProxy.page.onWidgetShown({
+    // Re-open (onPopupShown) should reset preserveContextOnClose to false.
+    testProxy.page.onPopupShown({
       input: '',
       attachments: [],
       toolMode: 0,
@@ -101,7 +101,7 @@ suite('AimAppTest', function() {
     await microtasksFinished();
 
     // Close again, should clear input because it was reset to false.
-    testProxy.page.onWidgetClosed();
+    testProxy.page.onPopupHidden();
     await microtasksFinished();
     assertTrue(!app.$.composebox.getInputText());
   });
@@ -115,7 +115,7 @@ suite('AimAppTest', function() {
       glowAnimationPlayed = true;
     };
 
-    testProxy.page.onWidgetShown({
+    testProxy.page.onPopupShown({
       input: '',
       attachments: [],
       toolMode: 0,
@@ -136,7 +136,7 @@ suite('AimAppTest', function() {
     // Simulate preserving context.
     testProxy.page.setPreserveContextOnClose(true);
 
-    testProxy.page.onWidgetShown({
+    testProxy.page.onPopupShown({
       input: '',
       attachments: [],
       toolMode: 0,
@@ -145,9 +145,9 @@ suite('AimAppTest', function() {
     // Should NOT have played.
     assertTrue(!glowAnimationPlayed);
 
-    // Reset for next show (implicit in onWidgetShown).
+    // Reset for next show (implicit in onPopupShown).
     // If we show again, it SHOULD play.
-    testProxy.page.onWidgetShown({
+    testProxy.page.onPopupShown({
       input: '',
       attachments: [],
       toolMode: 0,

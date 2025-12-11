@@ -34,14 +34,14 @@ interface Page {
 
   // Called when the widget in which the AIM popup view is embedded in appears.
   // `context` is the searchbox context that should be set on the composebox.
-  OnWidgetShown(searchbox.mojom.SearchContextStub context);
+  OnPopupShown(searchbox.mojom.SearchContextStub context);
 
   // Called when searchbox context is added outside of a OnShow call.
   AddContext(searchbox.mojom.SearchContextStub context);
 
-  // Called when the widget in which the AIM popup view is embedded in closes.
-  // The page is expected to return the input text via the callback.
-  OnWidgetClosed() => (string input);
+  // Called when the widget in which the AIM popup view is embedded in is
+  // hidden. The page is expected to return the input text via the callback.
+  OnPopupHidden() => (string input);
 
   // Sets whether the context should be preserved when the popup is closed.
   // Intended to be called while the popup is open before an interstitial
