@@ -10267,12 +10267,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SPLIT_VIEW_BODY_IPH" desc="The body text of the IPH describing pinning split view.">
         Quickly create a split view when you need it
       </message>
-      <message name="IDS_SPLIT_VIEW_PIN_ACTION_IPH" desc="The pin confirmation button of the IPH describing split view.">
-        Pin split view
-      </message>
-      <message name="IDS_SPLIT_VIEW_DISMISS_ACTION_IPH" desc="The pin confirmation button of the IPH describing split view.">
-        No thanks
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_SPLIT_VIEW_PIN_ACTION_2_IPH" desc="In Title Case: The pin confirmation button of the IPH describing split view.">
+          Pin Split View
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_SPLIT_VIEW_PIN_ACTION_2_IPH" desc="The pin confirmation button of the IPH describing split view.">
+          Pin split view
+        </message>
+      </if>
       <message name="IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_TITLE" desc="The title for intro of quick tab switch split view IPH tutorial.">
         Split view makes it easier to multitask
       </message>

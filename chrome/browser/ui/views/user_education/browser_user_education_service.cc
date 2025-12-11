@@ -1012,7 +1012,7 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSideBySidePinnableFeature,
           kToolbarSplitTabsToolbarButtonElementId, IDS_SPLIT_VIEW_BODY_IPH,
-          IDS_SPLIT_VIEW_PIN_ACTION_IPH,
+          IDS_SPLIT_VIEW_PIN_ACTION_2_IPH,
           base::BindRepeating(
               [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
