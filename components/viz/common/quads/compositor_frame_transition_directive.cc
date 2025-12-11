@@ -33,10 +33,12 @@ CompositorFrameTransitionDirective::CreateSave(
     bool maybe_cross_frame_sink,
     uint32_t sequence_id,
     std::vector<SharedElement> shared_elements,
-    const gfx::DisplayColorSpaces& display_color_spaces) {
+    const gfx::DisplayColorSpaces& display_color_spaces,
+    bool delay_layer_tree_view_deletion) {
   return CompositorFrameTransitionDirective(
       transition_token, maybe_cross_frame_sink, sequence_id, Type::kSave,
-      std::move(shared_elements), display_color_spaces);
+      std::move(shared_elements), display_color_spaces,
+      delay_layer_tree_view_deletion);
 }
 
 // static
@@ -44,10 +46,11 @@ CompositorFrameTransitionDirective
 CompositorFrameTransitionDirective::CreateAnimate(
     const blink::ViewTransitionToken& transition_token,
     bool maybe_cross_frame_sink,
-    uint32_t sequence_id) {
-  return CompositorFrameTransitionDirective(transition_token,
-                                            maybe_cross_frame_sink, sequence_id,
-                                            Type::kAnimateRenderer);
+    uint32_t sequence_id,
+    bool delay_layer_tree_view_deletion) {
+  return CompositorFrameTransitionDirective(
+      transition_token, maybe_cross_frame_sink, sequence_id,
+      Type::kAnimateRenderer, {}, {}, delay_layer_tree_view_deletion);
 }
 
 // static
@@ -55,9 +58,11 @@ CompositorFrameTransitionDirective
 CompositorFrameTransitionDirective::CreateRelease(
     const blink::ViewTransitionToken& transition_token,
     bool maybe_cross_frame_sink,
-    uint32_t sequence_id) {
+    uint32_t sequence_id,
+    bool delay_layer_tree_view_deletion) {
   return CompositorFrameTransitionDirective(
-      transition_token, maybe_cross_frame_sink, sequence_id, Type::kRelease);
+      transition_token, maybe_cross_frame_sink, sequence_id, Type::kRelease, {},
+      {}, delay_layer_tree_view_deletion);
 }
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective() =
@@ -69,13 +74,15 @@ CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     uint32_t sequence_id,
     Type type,
     std::vector<SharedElement> shared_elements,
-    const gfx::DisplayColorSpaces& display_color_spaces)
+    const gfx::DisplayColorSpaces& display_color_spaces,
+    bool delay_layer_tree_view_deletion)
     : transition_token_(transition_token),
       maybe_cross_frame_sink_(maybe_cross_frame_sink),
       sequence_id_(sequence_id),
       type_(type),
       shared_elements_(std::move(shared_elements)),
-      display_color_spaces_(display_color_spaces) {}
+      display_color_spaces_(display_color_spaces),
+      delay_layer_tree_view_deletion_(delay_layer_tree_view_deletion) {}
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     const CompositorFrameTransitionDirective&) = default;

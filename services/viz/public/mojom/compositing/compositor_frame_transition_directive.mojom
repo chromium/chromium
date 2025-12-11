@@ -61,4 +61,9 @@ struct CompositorFrameTransitionDirective {
   // Display color spaces that the compositor expects are used for this
   // directive.
   gfx.mojom.DisplayColorSpaces display_color_spaces;
+
+  // Whether we should delay deleting the old LayerTreeView on the compositor
+  // thread until the new one is activated. This is needed to ensure a smooth
+  // transition.
+  bool delay_layer_tree_view_deletion;
 };

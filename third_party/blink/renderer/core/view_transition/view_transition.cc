@@ -13,6 +13,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_view_transition_type_set.h"
@@ -269,7 +270,9 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
           static_cast<int>(State::kCaptureTagDiscovery) &&
       creation_type_ != CreationType::kForSnapshot) {
     delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
-        transition_token_, MaybeCrossFrameSink()));
+        transition_token_, MaybeCrossFrameSink(),
+        base::FeatureList::IsEnabled(
+            features::kDelayLayerTreeViewDeletionOnLocalSwap)));
   }
 
   // We always need to call the transition state callback (mojo seems to require
@@ -507,9 +510,11 @@ void ViewTransition::ProcessCurrentState() {
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateCapture(
             transition_token_, MaybeCrossFrameSink(),
             style_tracker_->TakeCaptureResourceIds(),
-            ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                &ViewTransition::NotifyCaptureFinished,
-                MakeUnwrappingCrossThreadWeakHandle(this)))));
+            ConvertToBaseOnceCallback(
+                CrossThreadBindOnce(&ViewTransition::NotifyCaptureFinished,
+                                    MakeUnwrappingCrossThreadWeakHandle(this))),
+            base::FeatureList::IsEnabled(
+                features::kDelayLayerTreeViewDeletionOnLocalSwap)));
 
         if (document_->GetFrame()->IsLocalRoot()) {
           // We need to ensure commits aren't deferred since we rely on commits
@@ -633,7 +638,9 @@ void ViewTransition::ProcessCurrentState() {
 
         delegate_->AddPendingRequest(
             ViewTransitionRequest::CreateAnimateRenderer(
-                transition_token_, MaybeCrossFrameSink()));
+                transition_token_, MaybeCrossFrameSink(),
+                base::FeatureList::IsEnabled(
+                    features::kDelayLayerTreeViewDeletionOnLocalSwap)));
         process_next_state = AdvanceTo(State::kAnimating);
         DCHECK(!process_next_state);
 
@@ -678,7 +685,9 @@ void ViewTransition::ProcessCurrentState() {
         style_tracker_->StartFinished();
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
-            transition_token_, MaybeCrossFrameSink()));
+            transition_token_, MaybeCrossFrameSink(),
+            base::FeatureList::IsEnabled(
+                features::kDelayLayerTreeViewDeletionOnLocalSwap)));
         delegate_->OnTransitionFinished(this);
         LogIfDocumentElementChanged();
 

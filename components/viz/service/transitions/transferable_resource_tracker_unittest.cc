@@ -23,7 +23,7 @@ std::unique_ptr<SurfaceSavedFrame> CreateFrameWithResult(
   CompositorFrameTransitionDirective::SharedElement element;
   auto directive = CompositorFrameTransitionDirective::CreateSave(
       blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false, 1,
-      {element}, {});
+      {element}, {}, false);
   auto frame = SurfaceSavedFrame::CreateForTesting(
       std::move(directive), shared_image_interface, base::DoNothing());
   frame->CompleteSavedFrameForTesting();

@@ -10140,7 +10140,8 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
             base::BindLambdaForTesting(
                 [this](const viz::ViewTransitionElementResourceRects&) {
                   CommitLambdaCalled();
-                })));
+                }),
+            false));
   }
 
   void CommitLambdaCalled() { ++num_lambda_calls_; }

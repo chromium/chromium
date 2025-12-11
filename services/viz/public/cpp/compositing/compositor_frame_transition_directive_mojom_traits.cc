@@ -104,15 +104,18 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     case viz::CompositorFrameTransitionDirective::Type::kSave:
       *out = viz::CompositorFrameTransitionDirective::CreateSave(
           transition_token, maybe_cross_frame_sink, sequence_id,
-          std::move(shared_elements), display_color_spaces);
+          std::move(shared_elements), display_color_spaces,
+          data.delay_layer_tree_view_deletion());
       break;
     case viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer:
       *out = viz::CompositorFrameTransitionDirective::CreateAnimate(
-          transition_token, maybe_cross_frame_sink, sequence_id);
+          transition_token, maybe_cross_frame_sink, sequence_id,
+          data.delay_layer_tree_view_deletion());
       break;
     case viz::CompositorFrameTransitionDirective::Type::kRelease:
       *out = viz::CompositorFrameTransitionDirective::CreateRelease(
-          transition_token, maybe_cross_frame_sink, sequence_id);
+          transition_token, maybe_cross_frame_sink, sequence_id,
+          data.delay_layer_tree_view_deletion());
   }
 
   return true;

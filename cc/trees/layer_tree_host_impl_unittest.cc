@@ -6482,7 +6482,8 @@ TEST_P(DisabledForVizClientLayerTreeHostImplPrepareToDrawTest,
           ViewTransitionRequest::CreateCapture(
               blink::ViewTransitionToken(), false, {},
               base::DoNothingAs<void(
-                  const viz::ViewTransitionElementResourceRects&)>()));
+                  const viz::ViewTransitionElementResourceRects&)>(),
+              false));
     }
 
     if (testcase.high_res_required)
@@ -18086,7 +18087,8 @@ TEST_P(LayerTreeHostImplTest, ViewTransitionRequestCausesDamage) {
   // Adding a transition effect should cause us to redraw.
   host_impl_->active_tree()->AddViewTransitionRequest(
       ViewTransitionRequest::CreateAnimateRenderer(
-          blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false));
+          blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false,
+          /*delay_layer_tree_view_deletion=*/false));
 
   // Ensure there is damage and we requested a redraw.
   host_impl_->OnDraw(draw_transform, draw_viewport, resourceless_software_draw,

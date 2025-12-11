@@ -179,7 +179,8 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
 
   // DispatchCopyDoneCallback early for cross frame sink view transitions.
   if ((features::ShouldAckCOREarlyForViewTransition() &&
-       directive_.maybe_cross_frame_sink()) ||
+       directive_.maybe_cross_frame_sink() &&
+       directive_.delay_layer_tree_view_deletion()) ||
       copy_request_count_ == 0) {
     DispatchCopyDoneCallback();
   }
@@ -303,7 +304,8 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   --copy_request_count_;
   // Callback is run already for cross frame view transitions.
   if (!(features::ShouldAckCOREarlyForViewTransition() &&
-        directive_.maybe_cross_frame_sink()) &&
+        directive_.maybe_cross_frame_sink() &&
+        directive_.delay_layer_tree_view_deletion()) &&
       copy_request_count_ == 0) {
     DispatchCopyDoneCallback();
   }

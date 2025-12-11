@@ -329,7 +329,8 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
       // be resolved for activation.
       if (directive.type() ==
               CompositorFrameTransitionDirective::Type::kAnimateRenderer &&
-          !surface_manager_->FrameSinkManagerHasViewTransitionToken(token)) {
+          !surface_manager_->FrameSinkManagerHasViewTransitionToken(token) &&
+          directive.delay_layer_tree_view_deletion()) {
         // Observe FrameSinkManager if we're not already observing.
         if (!frame_sink_manager_observation_.IsObserving()) {
           frame_sink_manager_observation_.Observe(surface_manager_);

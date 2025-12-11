@@ -19,20 +19,20 @@ TEST(ViewTransitionRequestTest, PrepareRequest) {
       });
 
   auto request = ViewTransitionRequest::CreateCapture(
-      blink::ViewTransitionToken(),
-      /*maybe_cross_frame_sink=*/false, {}, std::move(callback));
+      blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false, {},
+      std::move(callback), /*delay_layer_tree_view_deletion=*/false);
 
   EXPECT_FALSE(called);
   request->TakeFinishedCallback().Run({});
   EXPECT_TRUE(called);
   EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 
-  auto directive = request->ConstructDirective({}, {});
+  auto directive = request->ConstructDirective({}, {}, false);
   EXPECT_GT(directive.sequence_id(), 0u);
   EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kSave,
             directive.type());
 
-  auto duplicate = request->ConstructDirective({}, {});
+  auto duplicate = request->ConstructDirective({}, {}, false);
   EXPECT_EQ(duplicate.sequence_id(), directive.sequence_id());
   EXPECT_EQ(duplicate.type(), directive.type());
 }
@@ -40,11 +40,12 @@ TEST(ViewTransitionRequestTest, PrepareRequest) {
 TEST(ViewTransitionRequestTest, StartRequest) {
   auto request = ViewTransitionRequest::CreateAnimateRenderer(
       blink::ViewTransitionToken(),
-      /*maybe_cross_frame_sink=*/false);
+      /*maybe_cross_frame_sink=*/false,
+      /*delay_layer_tree_view_deletion=*/false);
 
   EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 
-  auto directive = request->ConstructDirective({}, {});
+  auto directive = request->ConstructDirective({}, {}, false);
   EXPECT_GT(directive.sequence_id(), 0u);
   EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer,
             directive.type());

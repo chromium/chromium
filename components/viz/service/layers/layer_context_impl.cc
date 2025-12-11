@@ -1091,6 +1091,8 @@ base::expected<void, std::string> DeserializeTiling(
 void DeserializeViewTransitionRequests(
     cc::LayerTreeImpl& layers,
     std::vector<mojom::ViewTransitionRequestPtr>& wire_data) {
+  // TODO(crbug.com/467351935): Have `delay_layer_tree_view_deletion` added to
+  //  `mojom::ViewTransitionRequestPtr`
   for (auto& wire : wire_data) {
     std::unique_ptr<cc::ViewTransitionRequest> request;
     switch (wire->type) {
@@ -1102,15 +1104,18 @@ void DeserializeViewTransitionRequests(
         request = cc::ViewTransitionRequest::CreateCapture(
             wire->transition_token, wire->maybe_cross_frame_sink,
             wire->capture_resource_ids,
-            cc::ViewTransitionRequest::ViewTransitionCaptureCallback());
+            cc::ViewTransitionRequest::ViewTransitionCaptureCallback(),
+            /*delay_layer_tree_view_deletion=*/true);
         break;
       case mojom::CompositorFrameTransitionDirectiveType::kAnimateRenderer:
         request = cc::ViewTransitionRequest::CreateAnimateRenderer(
-            wire->transition_token, wire->maybe_cross_frame_sink);
+            wire->transition_token, wire->maybe_cross_frame_sink,
+            /*delay_layer_tree_view_deletion=*/true);
         break;
       case mojom::CompositorFrameTransitionDirectiveType::kRelease:
         request = cc::ViewTransitionRequest::CreateRelease(
-            wire->transition_token, wire->maybe_cross_frame_sink);
+            wire->transition_token, wire->maybe_cross_frame_sink,
+            /*delay_layer_tree_view_deletion=*/true);
         break;
     }
     request->set_sequence_id(wire->sequence_id);
