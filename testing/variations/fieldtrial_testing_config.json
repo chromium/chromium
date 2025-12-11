@@ -15722,27 +15722,6 @@
             ]
         }
     ],
-    "MakeMemoryPressureListenerSync": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MakeMemoryPressureListenerSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "MaliciousApkDownloadCheck": [
         {
             "platforms": [
