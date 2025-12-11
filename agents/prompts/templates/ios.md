@@ -45,23 +45,31 @@ autoninja --quiet -C out/Debug-iphonesimulator ios_chrome_ui_eg2tests_module
 
 ## Running Unit Tests
 
-To run unit tests inside `//ios/chrome`, you can use the following.
+To build and run unit tests inside `//ios/chrome`, use the `ios/tools/run_unittests.py` script.
 
 ```sh
-out/Debug-iphonesimulator/iossim -d "iPhone 16 Pro" \
-  -c "--gtest_filter=ExampleTest1.*:ExampleTest2.*" \
-  out/Debug-iphonesimulator/ios_chrome_unittests.app
+# Run specific tests using gtest_filter
+ios/tools/run_unittests.py --gtest_filter="ExampleTest1.*:ExampleTest2.*"
+
+# Run tests on a specific device
+ios/tools/run_unittests.py --gtest_filter="ExampleTest1.*" --device="iPhone 16 Pro"
+
+# Run tests on a specific OS version
+ios/tools/run_unittests.py --gtest_filter="ExampleTest1.*" --device="iPhone 15" --os="17.5"
 ```
 
 ## Running EG Tests
 
-To run EG tests inside `ios_chrome_ui_eg2tests_module` without building, you can
-use the following.
+To run EG tests, use the `ios/tools/run_egtests.py` script. This script handles
+building and running the tests on a simulator.
 
 ```sh
-xcodebuild test-without-building \
-  -project out/build/all.xcodeproj \
-  -scheme ios_chrome_ui_eg2tests_module \
-  -destination "platform=iOS Simulator,name=iPhone 16 Pro" \
-  -only-testing:"ios_chrome_ui_eg2tests_module/ExampleTestCase/testExample"
+# Run a specific test case on the default simulator
+ios/tools/run_egtests.py --tests=ExampleTestCase/testExample
+
+# Run a test on a specific device
+ios/tools/run_egtests.py --tests=ExampleTestCase/testExample --device="iPhone 16 Pro"
+
+# Run a test on a specific device and OS version
+ios/tools/run_egtests.py --tests=ExampleTestCase/testExample --device="iPhone 15" --os="17.5"
 ```
