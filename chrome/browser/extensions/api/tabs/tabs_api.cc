@@ -144,6 +144,71 @@ bool IsValidStateForWindowsCreateFunction(
   NOTREACHED();
 }
 
+// Returns the IsolatedWebAppUrlInfo for the given call to windows.create() if
+// the call is to create a new IWA window.
+// Populates `error` with an error if the call is invalid.
+// Note that returning std::nullopt *can* be valid (if error is unpopulated);
+// this indicates the call is not for an IWA window.
+std::optional<web_app::IsolatedWebAppUrlInfo> GetIsolatedWebAppInfo(
+    const std::optional<windows::Create::Params::CreateData>& create_data,
+    const std::vector<GURL>& parsed_urls,
+    std::string* error) {
+  if (parsed_urls.size() > 1) {
+    if (std::ranges::any_of(parsed_urls, [](const GURL& url) {
+          return url.SchemeIs(webapps::kIsolatedAppScheme);
+        })) {
+      // Invalid. Can only open a single IWA URL.
+      *error = kWindowCreateSupportsOnlySingleIwaUrlError;
+      return std::nullopt;
+    }
+  }
+
+  if (parsed_urls.empty() ||
+      !parsed_urls[0].SchemeIs(webapps::kIsolatedAppScheme)) {
+    // Valid; not opening an IWA.
+    return std::nullopt;
+  }
+
+  base::expected<web_app::IsolatedWebAppUrlInfo, std::string> maybe_url_info =
+      web_app::IsolatedWebAppUrlInfo::Create(parsed_urls[0]);
+
+  if (!maybe_url_info.has_value()) {
+    // Invalid. Failed to create IWA info.
+    *error = base::StringPrintf(kWindowCreateCannotParseIwaUrlError,
+                                maybe_url_info.error().c_str());
+    return std::nullopt;
+  }
+
+  // Validate `create_data` params to make sure they're compatible with IWAs.
+  if (create_data) {
+    if (create_data->tab_id) {
+      // Invalid. Can't specify tab ID with IWAs.
+      *error = kWindowCreateCannotUseTabIdWithIwaError;
+      return std::nullopt;
+    }
+
+    switch (create_data->type) {
+      case windows::CreateType::kNone:
+      case windows::CreateType::kNormal:
+        break;  // Valid type.
+      case windows::CreateType::kPopup:
+      case windows::CreateType::kPanel:
+        // Invalid window type for IWAs.
+        *error = kInvalidWindowTypeError;
+        return std::nullopt;
+    }
+
+    if (create_data->set_self_as_opener && *create_data->set_self_as_opener) {
+      // Invalid. Can't have openers with IWAs.
+      *error = "Cannot specify setSelfAsOpener for isolated-app:// URLs.";
+      return std::nullopt;
+    }
+  }
+
+  // Valid IWA parameters.
+  return *maybe_url_info;
+}
+
 class ScopedPinBrowserAtFront {
  public:
   explicit ScopedPinBrowserAtFront(BrowserWindowInterface* bwi)
@@ -601,8 +666,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   std::optional<windows::Create::Params::CreateData>& create_data =
       params->create_data;
 
-  std::optional<web_app::IsolatedWebAppUrlInfo> isolated_web_app_url_info;
-
   // Look for optional url.
   if (create_data && create_data->url) {
     std::vector<std::string> url_strings;
@@ -620,26 +683,18 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       if (!url.has_value()) {
         return RespondNow(Error(std::move(url.error())));
       }
-      if (url->SchemeIs(webapps::kIsolatedAppScheme)) {
-        if (url_strings.size() > 1) {
-          return RespondNow(Error(kWindowCreateSupportsOnlySingleIwaUrlError));
-        }
-
-        base::expected<web_app::IsolatedWebAppUrlInfo, std::string>
-            maybe_url_info = web_app::IsolatedWebAppUrlInfo::Create(*url);
-        if (!maybe_url_info.has_value()) {
-          return RespondNow(
-              Error(base::StringPrintf(kWindowCreateCannotParseIwaUrlError,
-                                       maybe_url_info.error().c_str())));
-        }
-        isolated_web_app_url_info = *maybe_url_info;
-      }
       urls.push_back(*url);
     }
   }
 
-  // Decide whether we are opening a normal window or an incognito window.
   std::string error;
+  std::optional<web_app::IsolatedWebAppUrlInfo> isolated_web_app_url_info =
+      GetIsolatedWebAppInfo(create_data, urls, &error);
+  if (!error.empty()) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  // Decide whether we are opening a normal window or an incognito window.
   Profile* calling_profile = Profile::FromBrowserContext(browser_context());
   windows_util::IncognitoResult incognito_result =
       windows_util::ShouldOpenIncognitoWindow(
@@ -667,10 +722,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       create_data->state == windows::WindowState::kLockedFullscreen;
   WindowController* source_window = nullptr;
   if (create_data && create_data->tab_id) {
-    if (isolated_web_app_url_info.has_value()) {
-      return RespondNow(Error(kWindowCreateCannotUseTabIdWithIwaError));
-    }
-
     // Find the tab. `tab_index` will later be used to move the tab into the
     // created window.
     content::WebContents* web_contents = nullptr;
@@ -729,9 +780,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       case windows::CreateType::kPanel:
       case windows::CreateType::kPopup:
         window_type = Browser::TYPE_POPUP;
-        if (isolated_web_app_url_info.has_value()) {
-          return RespondNow(Error(kInvalidWindowTypeError));
-        }
         if (extension()) {
           extension_id = extension()->id();
         }
@@ -829,10 +877,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
         // TODO(crbug.com/40636155): Add test for this.
         return base::unexpected(
             "Cannot specify setSelfAsOpener Service Worker extension.");
-      }
-      if (isolated_web_app_url_info) {
-        return base::unexpected(
-            "Cannot specify setSelfAsOpener for isolated-app:// URLs.");
       }
       // TODO(crbug.com/40636155): Add tests for checking opener SiteInstance
       // behavior from a SW based extension's extension frame (e.g. from popup).
