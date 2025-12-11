@@ -185,8 +185,8 @@ void ResizingHostObserver::SetScreenResolution(
   // Resizing the desktop too often is probably not a good idea, so apply a
   // simple rate-limiting scheme.
   auto& rate_limiter = rate_limiters_[screen_id];
-  base::TimeTicks next_allowed_resize = rate_limiter.previous_time +
-      base::Milliseconds(kMinimumResizeIntervalMs);
+  base::TimeTicks next_allowed_resize =
+      rate_limiter.previous_time + base::Milliseconds(kMinimumResizeIntervalMs);
 
   if (!rate_limiter.previous_time.is_null() && now < next_allowed_resize) {
     rate_limiter.timer.Start(
