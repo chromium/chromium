@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -242,8 +241,7 @@ EcheTray::~EcheTray() {
   if (bubble_) {
     bubble_->bubble_view()->ResetDelegate();
   }
-  if (features::IsEcheNetworkConnectionStateEnabled() &&
-      eche_connection_status_handler_) {
+  if (eche_connection_status_handler_) {
     eche_connection_status_handler_->RemoveObserver(this);
   }
 }
@@ -402,11 +400,6 @@ void EcheTray::OnKeyboardHidden(bool is_temporary_hide) {
 
 void EcheTray::OnConnectionStatusChanged(
     eche_app::mojom::ConnectionStatus connection_status) {
-  if (!features::IsEcheNetworkConnectionStateEnabled() ||
-      !initializer_webview_) {
-    return;
-  }
-
   switch (connection_status) {
     case eche_app::mojom::ConnectionStatus::kConnectionStatusConnecting:
       break;
@@ -451,7 +444,7 @@ void EcheTray::OnConnectionStatusChanged(
 }
 
 void EcheTray::OnRequestBackgroundConnectionAttempt() {
-  if (!features::IsEcheNetworkConnectionStateEnabled() || web_view_) {
+  if (web_view_) {
     return;
   }
   has_reported_initializer_result_ = false;
@@ -663,8 +656,7 @@ void EcheTray::InitBubble(
     return;
   }
 
-  if (features::IsEcheNetworkConnectionStateEnabled() &&
-      last_connection_status !=
+  if (last_connection_status !=
           eche_app::mojom::ConnectionStatus::kConnectionStatusConnected &&
       entry_point == eche_app::mojom::AppStreamLaunchEntryPoint::NOTIFICATION) {
     base::UmaHistogramEnumeration(
@@ -1046,10 +1038,8 @@ bool EcheTray::IsBubbleVisible() {
 
 void EcheTray::SetEcheConnectionStatusHandler(
     eche_app::EcheConnectionStatusHandler* eche_connection_status_handler) {
-  if (features::IsEcheNetworkConnectionStateEnabled()) {
-    eche_connection_status_handler_ = eche_connection_status_handler;
-    eche_connection_status_handler_->AddObserver(this);
-  }
+  eche_connection_status_handler_ = eche_connection_status_handler;
+  eche_connection_status_handler_->AddObserver(this);
 }
 
 bool EcheTray::IsBackgroundConnectionAttemptInProgress() {

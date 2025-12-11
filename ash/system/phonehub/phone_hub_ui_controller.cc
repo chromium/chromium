@@ -221,8 +221,7 @@ void PhoneHubUiController::HandleBubbleOpened() {
     phone_hub_manager_->GetConnectionScheduler()->ScheduleConnectionNow(
         phonehub::DiscoveryEntryPoint::kPhoneHubBubbleOpen);
 
-  if (features::IsEcheNetworkConnectionStateEnabled() &&
-      feature_status == FeatureStatus::kEnabledAndConnected) {
+  if (feature_status == FeatureStatus::kEnabledAndConnected) {
     if (phone_hub_manager_->GetEcheConnectionStatusHandler()) {
       phone_hub_manager_->GetEcheConnectionStatusHandler()
           ->CheckConnectionStatusForUi();

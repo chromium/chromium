@@ -88,8 +88,7 @@ class EcheConnectionStatusHandlerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA,
-                              features::kEcheNetworkConnectionState},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
 
     handler_ = std::make_unique<EcheConnectionStatusHandler>();
@@ -190,42 +189,6 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChanged) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 4u);
-  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
-}
-
-TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChangedFlagDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheSWA},
-      /*disabled_features=*/{features::kEcheNetworkConnectionState});
-
-  EXPECT_EQ(GetLastConnectionChangedStatus(),
-            mojom::ConnectionStatus::kConnectionStatusDisconnected);
-  EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
-  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
-
-  NotifyConnectionStatusChanged(
-      mojom::ConnectionStatus::kConnectionStatusConnecting);
-
-  EXPECT_EQ(GetLastConnectionChangedStatus(),
-            mojom::ConnectionStatus::kConnectionStatusDisconnected);
-  EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
-  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
-
-  NotifyConnectionStatusChanged(
-      mojom::ConnectionStatus::kConnectionStatusConnected);
-
-  EXPECT_EQ(GetLastConnectionChangedStatus(),
-            mojom::ConnectionStatus::kConnectionStatusDisconnected);
-  EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
-  EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
-
-  NotifyConnectionStatusChanged(
-      mojom::ConnectionStatus::kConnectionStatusFailed);
-
-  EXPECT_EQ(GetLastConnectionChangedStatus(),
-            mojom::ConnectionStatus::kConnectionStatusDisconnected);
-  EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
   EXPECT_FALSE(GetIsConnectingOrConnectedStatus());
 }
 

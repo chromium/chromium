@@ -105,8 +105,7 @@ class EcheTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA,
-                              features::kEcheNetworkConnectionState},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
 
     DCHECK(test_web_view_factory_.get());
@@ -610,23 +609,6 @@ TEST_F(EcheTrayTest, OnRequestBackgroundConnectionAttempt) {
   eche_tray()->OnRequestBackgroundConnectionAttempt();
 
   EXPECT_TRUE(eche_tray()->get_initializer_webview_for_test());
-  EXPECT_FALSE(eche_tray()->is_active());
-}
-
-TEST_F(EcheTrayTest, OnRequestBackgroundConnectionAttemptFlagDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheSWA},
-      /*disabled_features=*/{features::kEcheNetworkConnectionState});
-
-  ResetUnloadWebContent();
-
-  EXPECT_FALSE(eche_tray()->is_active());
-  EXPECT_FALSE(eche_tray()->get_initializer_webview_for_test());
-
-  eche_tray()->OnRequestBackgroundConnectionAttempt();
-
-  EXPECT_FALSE(eche_tray()->get_initializer_webview_for_test());
   EXPECT_FALSE(eche_tray()->is_active());
 }
 

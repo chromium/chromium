@@ -8,7 +8,6 @@
 #include <numeric>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
@@ -94,19 +93,17 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
                                         *label);
   label->SetLineHeight(kHeaderLabelLineHeight);
 
-  if (features::IsEcheNetworkConnectionStateEnabled()) {
-    error_button_ =
-        AddChildView(std::make_unique<views::ImageButton>(std::move(callback)));
-    ui::ImageModel image = ui::ImageModel::FromVectorIcon(
-        kPhoneHubEcheErrorStatusIcon, cros_tokens::kIconColorWarning);
-    error_button_->SetImageModel(views::Button::STATE_NORMAL, image);
-    views::FocusRing::Get(error_button_)
-        ->SetColorId(static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
-    views::InstallCircleHighlightPathGenerator(error_button_);
-    error_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-        IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TITLE));
-    error_button_->SetVisible(false);
-  }
+  error_button_ =
+      AddChildView(std::make_unique<views::ImageButton>(std::move(callback)));
+  ui::ImageModel image = ui::ImageModel::FromVectorIcon(
+      kPhoneHubEcheErrorStatusIcon, cros_tokens::kIconColorWarning);
+  error_button_->SetImageModel(views::Button::STATE_NORMAL, image);
+  views::FocusRing::Get(error_button_)
+      ->SetColorId(static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
+  views::InstallCircleHighlightPathGenerator(error_button_);
+  error_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TITLE));
+  error_button_->SetVisible(false);
 }
 
 void PhoneHubRecentAppsView::HeaderView::SetErrorButtonVisible(
@@ -171,11 +168,8 @@ PhoneHubRecentAppsView::PhoneHubRecentAppsView(
       std::make_unique<RecentAppButtonsView>());
   placeholder_view_ =
       recent_apps_content->AddChildView(std::make_unique<PlaceholderView>());
-
-  if (features::IsEcheNetworkConnectionStateEnabled()) {
-    loading_view_ =
-        recent_apps_content->AddChildView(std::make_unique<LoadingView>());
-  }
+  loading_view_ =
+      recent_apps_content->AddChildView(std::make_unique<LoadingView>());
 
   phone_hub_metrics::LogRecentAppsStateOnBubbleOpened(
       recent_apps_interaction_handler_->ui_state());
@@ -315,43 +309,35 @@ void PhoneHubRecentAppsView::Update() {
       SetVisible(false);
       break;
     case RecentAppsUiState::LOADING:
-      if (features::IsEcheNetworkConnectionStateEnabled()) {
-        FadeOutRecentAppsButtonView();
-        placeholder_view_->SetVisible(false);
-        loading_view_->SetVisible(true);
-        header_view_->SetErrorButtonVisible(false);
-        SetVisible(true);
-        loading_animation_start_time_ = base::TimeTicks::Now();
-        break;
-      }
-      [[fallthrough]];
+      FadeOutRecentAppsButtonView();
+      placeholder_view_->SetVisible(false);
+      loading_view_->SetVisible(true);
+      header_view_->SetErrorButtonVisible(false);
+      SetVisible(true);
+      loading_animation_start_time_ = base::TimeTicks::Now();
+      break;
     case RecentAppsUiState::CONNECTION_FAILED:
-      if (features::IsEcheNetworkConnectionStateEnabled()) {
-        FadeOutRecentAppsButtonView();
-        placeholder_view_->SetVisible(false);
-        loading_view_->SetVisible(true);
-        header_view_->SetErrorButtonVisible(true);
-        SetVisible(true);
+      FadeOutRecentAppsButtonView();
+      placeholder_view_->SetVisible(false);
+      loading_view_->SetVisible(true);
+      header_view_->SetErrorButtonVisible(true);
+      SetVisible(true);
 
-        if (loading_animation_start_time_ != base::TimeTicks()) {
-          phone_hub_metrics::LogRecentAppsTransitionToFailedLatency(
-              base::TimeTicks::Now() - loading_animation_start_time_);
+      if (loading_animation_start_time_ != base::TimeTicks()) {
+        phone_hub_metrics::LogRecentAppsTransitionToFailedLatency(
+            base::TimeTicks::Now() - loading_animation_start_time_);
 
-          loading_animation_start_time_ = base::TimeTicks();
-        }
-
-        error_button_start_time_ = base::TimeTicks::Now();
-        break;
+        loading_animation_start_time_ = base::TimeTicks();
       }
-      [[fallthrough]];
+
+      error_button_start_time_ = base::TimeTicks::Now();
+      break;
     case RecentAppsUiState::PLACEHOLDER_VIEW:
       recent_app_buttons_view_->SetVisible(false);
       placeholder_view_->SetVisible(true);
-      if (features::IsEcheNetworkConnectionStateEnabled()) {
-        header_view_->SetErrorButtonVisible(false);
-        if (loading_view_) {
-          loading_view_->SetVisible(false);
-        }
+      header_view_->SetErrorButtonVisible(false);
+      if (loading_view_) {
+        loading_view_->SetVisible(false);
       }
       SetVisible(true);
       break;
@@ -397,10 +383,8 @@ void PhoneHubRecentAppsView::Update() {
 
       recent_app_buttons_view_->SetVisible(true);
       placeholder_view_->SetVisible(false);
-      if (features::IsEcheNetworkConnectionStateEnabled()) {
-        header_view_->SetErrorButtonVisible(false);
-        FadeOutLoadingView();
-      }
+      header_view_->SetErrorButtonVisible(false);
+      FadeOutLoadingView();
       SetVisible(true);
       break;
   }
@@ -408,8 +392,7 @@ void PhoneHubRecentAppsView::Update() {
 }
 
 void PhoneHubRecentAppsView::FadeOutLoadingView() {
-  if (features::IsEcheNetworkConnectionStateEnabled() &&
-      loading_view_->GetVisible()) {
+  if (loading_view_->GetVisible()) {
     loading_view_->StopLoadingAnimation();
     recent_app_buttons_view_->SetVisible(true);
 
@@ -429,8 +412,7 @@ void PhoneHubRecentAppsView::FadeOutLoadingView() {
 }
 
 void PhoneHubRecentAppsView::FadeOutRecentAppsButtonView() {
-  if (features::IsEcheNetworkConnectionStateEnabled() &&
-      recent_app_buttons_view_->GetVisible()) {
+  if (recent_app_buttons_view_->GetVisible()) {
     loading_view_->StartLoadingAnimation();
 
     views::AnimationBuilder()
@@ -454,17 +436,15 @@ void PhoneHubRecentAppsView::SwitchToFullAppsList() {
 }
 
 void PhoneHubRecentAppsView::ShowConnectionErrorDialog() {
-  if (features::IsEcheNetworkConnectionStateEnabled()) {
-    connected_view_->ShowAppStreamErrorDialog(
-        phone_hub_manager_->GetSystemInfoProvider()
-            ? phone_hub_manager_->GetSystemInfoProvider()
-                  ->is_different_network()
-            : false,
-        phone_hub_manager_->GetSystemInfoProvider()
-            ? phone_hub_manager_->GetSystemInfoProvider()
-                  ->android_device_on_cellular()
-            : false);
-  }
+  connected_view_->ShowAppStreamErrorDialog(
+      phone_hub_manager_->GetSystemInfoProvider()
+          ? phone_hub_manager_->GetSystemInfoProvider()
+                ->is_different_network()
+          : false,
+      phone_hub_manager_->GetSystemInfoProvider()
+          ? phone_hub_manager_->GetSystemInfoProvider()
+                ->android_device_on_cellular()
+          : false);
 }
 
 std::unique_ptr<views::View> PhoneHubRecentAppsView::GenerateMoreAppsButton() {
