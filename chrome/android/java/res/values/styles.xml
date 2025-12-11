@@ -108,10 +108,6 @@ found in the LICENSE file.
         <item name="android:colorAccent">@macro/preference_category_text_color_contained</item>
     </style>
 
-    <style name="ThemeOverlay.Chromium.Settings.MainPanel" parent="">
-        <item name="android:colorAccent">@macro/preference_category_text_color_standard</item>
-    </style>
-
     <style name="ThemeOverlay.Chromium.Settings.InputFields" parent="">
         <item name="textInputStyle">@style/Widget.Chromium.Settings.TextInputLayout.OutlinedBox</item>
         <item name="autoCompleteTextViewStyle">@style/Widget.Chromium.Settings.AutoCompleteTextView.OutlinedBox</item>
@@ -239,6 +235,9 @@ found in the LICENSE file.
     </style>
     <style name="TextAppearance.SettingsSelectedMainMenuItemTitle">
         <item name="android:textColor">?attr/colorOnSecondaryContainer</item>
+    </style>
+    <style name="TextAppearance.PreferenceCategoryStandard" parent="TextAppearance.TextMediumThick.Accent1">
+        <item name="android:textColor">@macro/preference_category_text_color_standard</item>
     </style>
 
     <!-- Manage Space Activity styles -->

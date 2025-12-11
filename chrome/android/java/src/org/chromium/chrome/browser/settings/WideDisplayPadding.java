@@ -68,7 +68,7 @@ public class WideDisplayPadding {
                 });
 
         if (!hasPreferenceRecyclerView) {
-            if (!settingsActivity.isMultiColumnSettingsVisible()) {
+            if (!settingsActivity.isTwoColumnSettingsVisible()) {
                 // TODO(crbug.com/454247949): Short term workaround until margin for views are
                 // updated.
                 int defaultPadding =
@@ -124,8 +124,7 @@ public class WideDisplayPadding {
             SettingsActivity settingsActivity, RecyclerView recyclerView) {
         Supplier<Integer> itemOffsetSupplier =
                 () -> {
-                    boolean applyHorizontalPadding =
-                            !settingsActivity.isMultiColumnSettingsVisible();
+                    boolean applyHorizontalPadding = !settingsActivity.isTwoColumnSettingsVisible();
 
                     return applyHorizontalPadding
                             ? getItemOffset(mUiConfig.getCurrentDisplayStyle(), recyclerView)
