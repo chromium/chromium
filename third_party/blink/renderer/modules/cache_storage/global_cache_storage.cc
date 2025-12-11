@@ -11,25 +11,31 @@
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
+
+namespace {
 
 template <typename T>
 class GlobalCacheStorageImpl final
     : public GarbageCollected<GlobalCacheStorageImpl<T>>,
-      public GarbageCollectedMixin {
+      public Supplement<T> {
  public:
+  static constexpr auto kSupplementIndex =
+      T::Supplements::kGlobalCacheStorageImpl;
+
   static GlobalCacheStorageImpl& From(T& supplementable) {
     GlobalCacheStorageImpl* supplement =
-        supplementable.GetGlobalCacheStorageImpl();
+        Supplement<T>::template From<GlobalCacheStorageImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalCacheStorageImpl>();
-      supplementable.SetGlobalCacheStorageImpl(supplement);
+      supplement = MakeGarbageCollected<GlobalCacheStorageImpl>(supplementable);
+      Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return *supplement;
   }
 
-  GlobalCacheStorageImpl() = default;
+  GlobalCacheStorageImpl(T& supplementable) : Supplement<T>(supplementable) {}
   ~GlobalCacheStorageImpl() = default;
 
   CacheStorage* Caches(T& fetching_scope, ExceptionState& exception_state) {
@@ -56,11 +62,16 @@ class GlobalCacheStorageImpl final
     return caches_.Get();
   }
 
-  void Trace(Visitor* visitor) const override { visitor->Trace(caches_); }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(caches_);
+    Supplement<T>::Trace(visitor);
+  }
 
  private:
   Member<CacheStorage> caches_;
 };
+
+}  // namespace
 
 bool GlobalCacheStorage::CanCreateCacheStorage(
     ExecutionContext* context,
