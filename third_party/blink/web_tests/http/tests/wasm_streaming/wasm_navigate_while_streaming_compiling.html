@@ -8,31 +8,26 @@ promise_test(async test => {
   const url1 = 'resources/wasm_load.html?small.wasm';
   const url2 = 'resources/wasm_load.html?large.wasm';
 
-  const popup = window.open('about:blank');
-  test.add_cleanup(() => popup.close());
-
-  let navigation_resolve;
-  window.addEventListener('message', (event) => {
-    console.log(`[parent] got message: ${event.data}`);
-    assert_equals(event.data.substring(0, 18), 'started compiling ');
-    navigation_resolve();
+  const popups = [];
+  for (let i = 0; i < 5; ++i) {
+    popups.push(window.open('about:blank'));
+  }
+  test.add_cleanup(() => {
+    for (let popup of popups) popup.close();
   });
 
   const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   for (let i = 0; i < 20; ++i) {
     let navigationPromiseResolve;
-    const navigationPromise = new Promise((resolve) => {navigation_resolve = resolve});
     const url = i % 2 ? url1 : url2;
-    console.log(`[parent] Iteration ${i}, navigating popup to ${url}`);
-    popup.location.href = url;
-    await navigationPromise;
+    console.log(`[parent] Iteration ${i}, navigating popups to ${url}`);
+    for (let popup of popups) popup.location.href = url;
     const ms = Math.floor(Math.random() * 50);
     console.log(`[parent] Waiting for ${ms}ms`);
     if (ms) await timeout(ms);
   }
-
-  popup.close();
+  for (let popup of popups) popup.close();
 }, "Test navigating away while Wasm streaming compilation is running");
 
 </script>

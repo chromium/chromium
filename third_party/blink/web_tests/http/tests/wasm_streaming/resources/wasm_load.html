@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <script>
 
-function messageParent(msg) {
-  window.opener.parent.postMessage(msg);
-  console.log(`[popup] Sent to parent: ${msg}`);
-}
-
 const ms = Math.floor(Math.random() * 50);
 console.log(`[popup] Waiting for ${ms}ms`);
 const timeout_promise = ms
@@ -17,6 +12,5 @@ const url = `../../wasm/resources/load-wasm.php?name=${wasm}`;
 console.log(`[popup] Loading ${wasm} after ${ms}ms...`);
 timeout_promise.then(() => WebAssembly.compileStreaming(fetch(url))
   .then(module => console.log(`[popup] Compilation ready: ${module}`),
-        error => messageParent(`Compilation failed: ${error}`)));
-messageParent(`started compiling ${wasm}`);
+        error => console.log(`[popup] Compilation failed: ${error}`)));
 </script>
