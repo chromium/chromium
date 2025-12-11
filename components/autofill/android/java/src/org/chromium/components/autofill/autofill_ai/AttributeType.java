@@ -6,6 +6,7 @@ package org.chromium.components.autofill.autofill_ai;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -23,9 +24,16 @@ public class AttributeType {
 
     @CalledByNative
     public AttributeType(
-            @AttributeTypeName int typeName, String typeNameAsString, @DataType int dataType) {
+            @AttributeTypeName int typeName,
+            @JniType("std::u16string") String typeNameAsString,
+            @DataType int dataType) {
         this.typeName = typeName;
         this.typeNameAsString = typeNameAsString;
         this.dataType = dataType;
+    }
+
+    @CalledByNative
+    public @AttributeTypeName int getTypeName() {
+        return typeName;
     }
 }
