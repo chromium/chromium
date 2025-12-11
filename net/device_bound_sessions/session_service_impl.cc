@@ -29,6 +29,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace net::device_bound_sessions {
 
@@ -1009,22 +1010,29 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     OnAccessCallback on_access_callback,
     RegistrationFetcher* fetcher,
     RegistrationResult registration_result) {
-  CHECK(!registration_result.is_no_session_config_change());
   RemoveFetcher(fetcher);
 
-  if (registration_result.is_error()) {
-    // We failed to create a new session, so there's nothing to clean
-    // up.
-    return registration_result.error().type;
-  }
-
-  std::unique_ptr<Session> session = registration_result.TakeSession();
-  CHECK(session);
-  const SchemefulSite site(session->origin());
-  NotifySessionAccess(on_access_callback, SessionAccess::AccessType::kCreation,
-                      SessionKey{site, session->id()}, *session);
-  AddSession(site, std::move(session));
-  return SessionError::kSuccess;
+  return std::move(registration_result)
+      .Visit(absl::Overload(
+          [&](std::unique_ptr<Session> session) {
+            CHECK(session);
+            const SchemefulSite site(session->origin());
+            NotifySessionAccess(on_access_callback,
+                                SessionAccess::AccessType::kCreation,
+                                SessionKey{site, session->id()}, *session);
+            AddSession(site, std::move(session));
+            return SessionError::kSuccess;
+          },
+          [](RegistrationResult::NoSessionConfigChange)
+              -> SessionError::ErrorType {
+            // This should not be returned for registrations.
+            NOTREACHED();
+          },
+          [](SessionError error) {
+            // We failed to create a new session, so there's nothing to clean
+            // up.
+            return error.type;
+          }));
 }
 
 SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
@@ -1033,67 +1041,78 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     RegistrationFetcher* fetcher,
     RegistrationResult registration_result) {
   RemoveFetcher(fetcher);
+  CookieAndLineAccessResultList stored_cookies =
+      registration_result.TakeStoredCookies();
 
-  // If refresh succeeded:
-  // 1. update the session by adding a new session, replacing the old one
-  // 2. restart the deferred requests.
-  if (registration_result.is_session()) {
-    std::unique_ptr<Session> new_session = registration_result.TakeSession();
-    CHECK(new_session);
-    CHECK_EQ(new_session->id(), session_key.id);
+  SessionError::ErrorType result =
+      std::move(registration_result)
+          .Visit(absl::Overload(
+              [&](std::unique_ptr<Session> new_session) {
+                // If refresh succeeded:
+                // 1. update the session by adding a new session, replacing the
+                //    old one
+                // 2. restart the deferred requests.
+                CHECK(new_session);
+                CHECK_EQ(new_session->id(), session_key.id);
 
-    Session* existing_session = GetSession(session_key);
-    CHECK(existing_session);
-    bool is_proactive_refresh_candidate =
-        IsProactiveRefreshCandidate(*existing_session, *new_session,
-                                    registration_result.maybe_stored_cookies());
-    std::optional<base::TimeDelta> minimum_cookie_lifetime =
-        existing_session
-            ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime();
+                Session* existing_session = GetSession(session_key);
+                CHECK(existing_session);
+                bool is_proactive_refresh_candidate =
+                    IsProactiveRefreshCandidate(*existing_session, *new_session,
+                                                stored_cookies);
+                std::optional<base::TimeDelta> minimum_cookie_lifetime =
+                    existing_session
+                        ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime();
 
-    SchemefulSite new_site(new_session->origin());
-    AddSession(new_site, std::move(new_session));
-    // The session has been refreshed, restart the request.
-    UnblockDeferredRequests(session_key, RefreshResult::kRefreshed,
-                            is_proactive_refresh_candidate,
-                            std::move(minimum_cookie_lifetime));
-  } else if (registration_result.is_no_session_config_change()) {
-    Session* existing_session = GetSession(session_key);
-    CHECK(existing_session);
-    bool is_proactive_refresh_candidate =
-        IsProactiveRefreshCandidate(*existing_session, *existing_session,
-                                    registration_result.maybe_stored_cookies());
+                SchemefulSite new_site(new_session->origin());
+                AddSession(new_site, std::move(new_session));
+                // The session has been refreshed, restart the request.
+                UnblockDeferredRequests(session_key, RefreshResult::kRefreshed,
+                                        is_proactive_refresh_candidate,
+                                        std::move(minimum_cookie_lifetime));
+                return SessionError::kSuccess;
+              },
+              [&](RegistrationResult::NoSessionConfigChange) {
+                Session* existing_session = GetSession(session_key);
+                CHECK(existing_session);
+                bool is_proactive_refresh_candidate =
+                    IsProactiveRefreshCandidate(
+                        *existing_session, *existing_session, stored_cookies);
 
-    UnblockDeferredRequests(
-        session_key, RefreshResult::kRefreshed, is_proactive_refresh_candidate,
-        existing_session
-            ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime());
-  } else if (std::optional<DeletionReason> deletion_reason =
-                 registration_result.error().GetDeletionReason();
-             deletion_reason.has_value()) {
-    DeleteSessionAndNotify(*deletion_reason, session_key, on_access_callback);
-    UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
-  } else {
-    RefreshResult refresh_result;
-    if (registration_result.error().IsServerError()) {
-      refresh_result = RefreshResult::kServerError;
-    } else if (registration_result.error().type ==
-               SessionError::kSigningQuotaExceeded) {
-      refresh_result = RefreshResult::kSigningQuotaExceeded;
-    } else {
-      refresh_result = RefreshResult::kUnreachable;
-    }
-    // Transient error, unblock the request without cookies.
-    UnblockDeferredRequests(session_key, refresh_result);
-  }
+                UnblockDeferredRequests(
+                    session_key, RefreshResult::kRefreshed,
+                    is_proactive_refresh_candidate,
+                    existing_session
+                        ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime());
+                return SessionError::kSuccess;
+              },
+              [&](SessionError error) {
+                if (std::optional<DeletionReason> deletion_reason =
+                        error.GetDeletionReason();
+                    deletion_reason.has_value()) {
+                  DeleteSessionAndNotify(*deletion_reason, session_key,
+                                         on_access_callback);
+                  UnblockDeferredRequests(session_key,
+                                          RefreshResult::kFatalError);
+                } else {
+                  RefreshResult refresh_result;
+                  if (error.IsServerError()) {
+                    refresh_result = RefreshResult::kServerError;
+                  } else if (error.type ==
+                             SessionError::kSigningQuotaExceeded) {
+                    refresh_result = RefreshResult::kSigningQuotaExceeded;
+                  } else {
+                    refresh_result = RefreshResult::kUnreachable;
+                  }
+                  // Transient error, unblock the request without cookies.
+                  UnblockDeferredRequests(session_key, refresh_result);
+                }
+                return error.type;
+              }));
 
-  refresh_last_result_.insert_or_assign(
-      session_key.site, SessionError(registration_result.is_error()
-                                         ? registration_result.error().type
-                                         : SessionError::kSuccess));
+  refresh_last_result_.insert_or_assign(session_key.site, SessionError(result));
 
-  return registration_result.is_error() ? registration_result.error().type
-                                        : SessionError::kSuccess;
+  return result;
 }
 
 void SessionServiceImpl::RestoreSessionKey(

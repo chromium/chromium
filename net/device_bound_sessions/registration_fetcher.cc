@@ -26,6 +26,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_context.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/origin.h"
 
 namespace net::device_bound_sessions {
@@ -768,19 +769,21 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         IsForRefreshRequest() ? NetLogEventType::DBSC_REFRESH_RESULT
                               : NetLogEventType::DBSC_REGISTRATION_RESULT;
     url_fetcher_->request().net_log().AddEvent(result_event_type, [&]() {
-      std::string result;
-      if (registration_result.is_session() ||
-          registration_result.is_no_session_config_change()) {
-        result = IsForRefreshRequest() ? "refreshed" : "registered";
-      } else {
-        const SessionError& error = registration_result.error();
-        if (IsForRefreshRequest()) {
-          result = error.GetDeletionReason().has_value() ? "session_ended"
-                                                         : "failed_continue";
-        } else {
-          result = "registration_failed";
-        }
-      }
+      std::string result = registration_result.Visit(absl::Overload{
+          [&](SessionError error) {
+            if (IsForRefreshRequest()) {
+              return error.GetDeletionReason().has_value() ? "session_ended"
+                                                           : "failed_continue";
+            } else {
+              return "registration_failed";
+            }
+          },
+          [&](const std::unique_ptr<Session>&) {
+            return IsForRefreshRequest() ? "refreshed" : "registered";
+          },
+          [&](RegistrationResult::NoSessionConfigChange) {
+            return IsForRefreshRequest() ? "refreshed" : "registered";
+          }});
 
       base::Value::Dict dict;
       dict.Set("status", std::move(result));

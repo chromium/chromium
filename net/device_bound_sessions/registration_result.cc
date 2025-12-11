@@ -35,28 +35,19 @@ RegistrationResult::RegistrationResult(RegistrationResult&&) = default;
 RegistrationResult& RegistrationResult::operator=(RegistrationResult&&) =
     default;
 
-bool RegistrationResult::is_session() const {
-  return std::holds_alternative<std::unique_ptr<Session>>(storage_);
-}
-bool RegistrationResult::is_no_session_config_change() const {
-  return std::holds_alternative<NoSessionConfigChange>(storage_);
-}
-bool RegistrationResult::is_error() const {
-  return std::holds_alternative<SessionError>(storage_);
+CookieAndLineAccessResultList RegistrationResult::TakeStoredCookies() {
+  return std::move(maybe_stored_cookies_);
 }
 
-const Session& RegistrationResult::session() const {
+const Session& RegistrationResult::SessionForTesting() const {
   return *std::get<std::unique_ptr<Session>>(storage_);
 }
-const SessionError& RegistrationResult::error() const {
+RegistrationResult::NoSessionConfigChange
+RegistrationResult::NoSessionConfigChangeForTesting() const {
+  return std::get<NoSessionConfigChange>(storage_);
+}
+SessionError RegistrationResult::SessionErrorForTesting() const {
   return std::get<SessionError>(storage_);
-}
-
-std::unique_ptr<Session> RegistrationResult::TakeSession() {
-  return std::get<std::unique_ptr<Session>>(std::move(storage_));
-}
-SessionError RegistrationResult::TakeError() {
-  return std::get<SessionError>(std::move(storage_));
 }
 
 }  // namespace net::device_bound_sessions

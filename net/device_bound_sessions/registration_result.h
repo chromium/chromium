@@ -41,19 +41,22 @@ class NET_EXPORT RegistrationResult {
   RegistrationResult(RegistrationResult&&);
   RegistrationResult& operator=(RegistrationResult&&);
 
-  bool is_session() const;
-  bool is_no_session_config_change() const;
-  bool is_error() const;
-
-  const Session& session() const;
-  const SessionError& error() const;
-
-  std::unique_ptr<Session> TakeSession();
-  SessionError TakeError();
-
-  const CookieAndLineAccessResultList& maybe_stored_cookies() {
-    return maybe_stored_cookies_;
+  template <class Visitor>
+  decltype(auto) Visit(Visitor&& v) const& {
+    return std::visit(std::forward<Visitor>(v), storage_);
   }
+
+  template <class Visitor>
+  decltype(auto) Visit(Visitor&& v) && {
+    return std::visit(std::forward<Visitor>(v), std::move(storage_));
+  }
+
+  // Test-only accessors
+  const Session& SessionForTesting() const;
+  NoSessionConfigChange NoSessionConfigChangeForTesting() const;
+  SessionError SessionErrorForTesting() const;
+
+  CookieAndLineAccessResultList TakeStoredCookies();
 
  private:
   std::variant<std::unique_ptr<Session>, NoSessionConfigChange, SessionError>
