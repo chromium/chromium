@@ -79,6 +79,7 @@
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/config_watcher.h"
 #include "remoting/host/corp_host_status_logger.h"
+#include "remoting/host/corp_signaling_connector.h"
 #include "remoting/host/crash_process.h"
 #include "remoting/host/create_desktop_interaction_strategy_factory.h"
 #include "remoting/host/desktop_environment.h"
@@ -502,18 +503,18 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Must outlive |signal_strategy_| and |heartbeat_sender_|.
   std::unique_ptr<ZombieHostDetector> zombie_host_detector_;
 
-  // Signal strategies must outlive |ftl_signaling_connector_|.
+  // |signal_strategy_| must outlive |ftl_signaling_connector_|.
   std::unique_ptr<SignalStrategy> signal_strategy_;
-
   std::unique_ptr<FtlSignalingConnector> ftl_signaling_connector_;
+
+  // |corp_signal_strategy_| must outlive |corp_signaling_connector_|.
+  std::unique_ptr<SignalStrategy> corp_signal_strategy_;
+  std::unique_ptr<CorpSignalingConnector> corp_signaling_connector_;
 
   std::unique_ptr<HeartbeatSender> heartbeat_sender_;
   std::unique_ptr<FtlHostChangeNotificationListener>
       ftl_host_change_notification_listener_;
   std::unique_ptr<FtlEchoMessageListener> ftl_echo_message_listener_;
-
-  // TODO: joedow - Unify FTL and Corp classes with a single SignalStrategy.
-  std::unique_ptr<SignalStrategy> corp_signal_strategy_;
 
   std::unique_ptr<HostEventLogger> host_event_logger_;
 #if BUILDFLAG(IS_LINUX)
@@ -1767,7 +1768,9 @@ void HostProcess::InitializeSignaling() {
     corp_signal_strategy_ = std::make_unique<CorpSignalStrategy>(
         context_->url_loader_factory(),
         context_->create_client_cert_store_callback(), username, key_pair_);
-    corp_signal_strategy_->Connect();
+    corp_signaling_connector_ =
+        std::make_unique<CorpSignalingConnector>(corp_signal_strategy_.get());
+    corp_signaling_connector_->Start();
   }
 #endif
 
@@ -2109,6 +2112,7 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
   ftl_echo_message_listener_.reset();
   signal_strategy_.reset();
   corp_signal_strategy_.reset();
+  corp_signaling_connector_.reset();
   zombie_host_detector_.reset();
 
   if (state_ == HOST_GOING_OFFLINE_TO_RESTART) {
