@@ -1353,8 +1353,11 @@ ToolbarView::GetCornerStyles() const {
     if (has_leading_frame_buttons || tab_strip_has_leading_action_buttons ||
         !first_tab_selected) {
       leading = CornerStyle::kTabstripCurve;
-      trailing = CornerStyle::kTabstripCurve;
     }
+
+    // The trailing end of the toolbar always receives a curve, because it
+    // cannot be overlapped by an active tab.
+    trailing = CornerStyle::kTabstripCurve;
   }
 
   return std::make_pair(leading, trailing);
