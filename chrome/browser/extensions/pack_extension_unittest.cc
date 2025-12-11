@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/startup_helper.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -32,9 +33,10 @@ class PackExtensionTest : public testing::Test {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     command_line.AppendSwitchPath(switches::kPackExtension,
                                   temp_dir.GetPath().Append(path.BaseName()));
-    std::string error_message;
+    std::u16string error_message;
     bool result = startup_helper_.PackExtension(command_line, &error_message);
-    EXPECT_EQ(result, error_message.empty()) << error_message;
+    EXPECT_EQ(result, error_message.empty())
+        << base::UTF16ToUTF8(error_message);
     return result;
   }
 

@@ -31,7 +31,7 @@ class PackExtensionJob {
    public:
     virtual void OnPackSuccess(const base::FilePath& crx_file,
                                const base::FilePath& key_file) = 0;
-    virtual void OnPackFailure(const std::string& message,
+    virtual void OnPackFailure(const std::u16string& message,
                                ExtensionCreator::ErrorType error_type) = 0;
 
    protected:

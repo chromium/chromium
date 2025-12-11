@@ -453,10 +453,10 @@ std::optional<int> HandlePackExtensionSwitches(
   ui::ScopedStartupResourceBundle ensure_startup_resource_bundle;
 
   extensions::StartupHelper extension_startup_helper;
-  std::string error_message;
+  std::u16string error_message;
   if (!extension_startup_helper.PackExtension(command_line, &error_message)) {
     if (!error_message.empty()) {
-      LOG(ERROR) << error_message.c_str();
+      LOG(ERROR) << error_message;
     }
     return CHROME_RESULT_CODE_PACK_EXTENSION_ERROR;
   }

@@ -959,7 +959,7 @@ class PackExtensionTestClient : public PackExtensionJob::Client {
 
   void OnPackSuccess(const base::FilePath& crx_path,
                      const base::FilePath& private_key_path) override;
-  void OnPackFailure(const std::string& error_message,
+  void OnPackFailure(const std::u16string& error_message,
                      ExtensionCreator::ErrorType type) override;
 
  private:
@@ -993,7 +993,7 @@ void PackExtensionTestClient::OnPackSuccess(
 }
 
 // The tests are designed so that we never expect to see a packing error.
-void PackExtensionTestClient::OnPackFailure(const std::string& error_message,
+void PackExtensionTestClient::OnPackFailure(const std::u16string& error_message,
                                             ExtensionCreator::ErrorType type) {
   if (type == ExtensionCreator::kCRXExists)
      FAIL() << "Packing should not fail.";

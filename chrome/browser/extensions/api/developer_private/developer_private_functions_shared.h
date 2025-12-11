@@ -662,10 +662,10 @@ class DeveloperPrivatePackDirectoryFunction
 
   DeveloperPrivatePackDirectoryFunction();
 
-  // ExtensionPackJob::Client implementation.
+  // PackExtensionJob::Client implementation.
   void OnPackSuccess(const base::FilePath& crx_file,
                      const base::FilePath& key_file) override;
-  void OnPackFailure(const std::string& error,
+  void OnPackFailure(const std::u16string& error,
                      ExtensionCreator::ErrorType error_type) override;
 
  protected:

@@ -1684,10 +1684,12 @@ void DeveloperPrivatePackDirectoryFunction::OnPackSuccess(
 }
 
 void DeveloperPrivatePackDirectoryFunction::OnPackFailure(
-    const std::string& error,
+    const std::u16string& error,
     ExtensionCreator::ErrorType error_type) {
+  // TODO(crbug.com/41317803): Continue removing std::string errors and
+  // replacing with std::u16string.
   developer::PackDirectoryResponse response;
-  response.message = error;
+  response.message = base::UTF16ToUTF8(error);
   if (error_type == ExtensionCreator::kCRXExists) {
     response.item_path = item_path_str_;
     response.pem_path = key_path_str_;

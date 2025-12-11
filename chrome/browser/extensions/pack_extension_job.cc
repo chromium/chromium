@@ -148,9 +148,7 @@ void PackExtensionJob::ReportFailureOnClientSequence(
     ExtensionCreator::ErrorType error_type) {
   DCHECK(client_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/41317803): Continue removing std::string errors and
-  // replacing with std::u16string.
-  client_->OnPackFailure(base::UTF16ToUTF8(error), error_type);
+  client_->OnPackFailure(error, error_type);
 }
 
 // static
