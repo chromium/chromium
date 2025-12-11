@@ -28,10 +28,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://w3c.github.io/webcrypto/Overview.html#crypto-interface
+#include "third_party/blink/renderer/modules/crypto/dom_window_crypto.h"
 
-[
-    ImplementedAs=GlobalCrypto
-] partial interface mixin WindowOrWorkerGlobalScope {
-    [SameObject] readonly attribute Crypto crypto;
-};
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/crypto/crypto.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
+
+namespace blink {
+
+DOMWindowCrypto& DOMWindowCrypto::From(LocalDOMWindow& window) {
+  DOMWindowCrypto* supplement = window.GetDOMWindowCrypto();
+  if (!supplement) {
+    supplement = MakeGarbageCollected<DOMWindowCrypto>();
+    window.SetDOMWindowCrypto(supplement);
+  }
+  return *supplement;
+}
+
+Crypto* DOMWindowCrypto::crypto(LocalDOMWindow& window) {
+  return DOMWindowCrypto::From(window).crypto();
+}
+
+Crypto* DOMWindowCrypto::crypto() const {
+  if (!crypto_)
+    crypto_ = MakeGarbageCollected<Crypto>();
+  return crypto_.Get();
+}
+
+void DOMWindowCrypto::Trace(Visitor* visitor) const {
+  visitor->Trace(crypto_);
+}
+
+}  // namespace blink

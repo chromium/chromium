@@ -28,33 +28,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_GLOBAL_CRYPTO_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_GLOBAL_CRYPTO_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_WORKER_GLOBAL_SCOPE_CRYPTO_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_WORKER_GLOBAL_SCOPE_CRYPTO_H_
 
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class Crypto;
-class WindowOrWorkerGlobalScope;
+class WorkerGlobalScope;
 
-class GlobalCrypto final : public GarbageCollected<GlobalCrypto>,
-                           public GarbageCollectedMixin {
+class WorkerGlobalScopeCrypto final
+    : public GarbageCollected<WorkerGlobalScopeCrypto>,
+      public GarbageCollectedMixin {
  public:
-  static Crypto* crypto(WindowOrWorkerGlobalScope&);
+  static WorkerGlobalScopeCrypto& From(WorkerGlobalScope&);
+  static Crypto* crypto(WorkerGlobalScope&);
   Crypto* crypto() const;
 
-  GlobalCrypto() = default;
+  WorkerGlobalScopeCrypto() = default;
 
   void Trace(Visitor*) const override;
 
  private:
-  static GlobalCrypto& From(WindowOrWorkerGlobalScope&);
-
   mutable Member<Crypto> crypto_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_GLOBAL_CRYPTO_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_WORKER_GLOBAL_SCOPE_CRYPTO_H_
