@@ -37,14 +37,16 @@ void SVGAnimatedString::setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
               AttributeName() == xlink_names::kHrefAttr) {
             string = TrustedTypesCheckForScriptURL(
                 string, ContextElement()->GetExecutionContext(),
-                "SVGScriptElement", "href", exception_state);
+                trusted_types_names::kSVGScriptElement,
+                trusted_types_names::kHref, exception_state);
           }
         } else {
           // https://w3c.github.io/trusted-types/dist/spec/#integration-with-svg
           // (Spec is no longer current.)
           string = TrustedTypesCheckForScriptURL(
               string, ContextElement()->GetExecutionContext(),
-              "SVGAnimatedString", "baseVal", exception_state);
+              trusted_types_names::kSVGAnimatedString,
+              trusted_types_names::kBaseVal, exception_state);
         }
         if (exception_state.HadException())
           return;

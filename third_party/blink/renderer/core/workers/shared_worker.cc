@@ -90,7 +90,8 @@ SharedWorker* SharedWorker::Create(
     const V8UnionSharedWorkerOptionsOrString* name_or_options,
     ExceptionState& exception_state) {
   String compliant_url = TrustedTypesCheckForScriptURL(
-      url, context, "SharedWorker", "create", exception_state);
+      url, context, trusted_types_names::kSharedWorker,
+      trusted_types_names::kCreate, exception_state);
   if (exception_state.HadException()) {
     return 0;
   }

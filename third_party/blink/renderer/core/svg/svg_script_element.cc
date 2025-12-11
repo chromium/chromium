@@ -229,9 +229,12 @@ bool SVGScriptElement::IsAnimatableAttribute(const QualifiedName& name) const {
 
 const AttrNameToTrustedType& SVGScriptElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"href", std::pair{SpecificTrustedType::kScriptURL,
-                                           "SVGScriptElement"}}}));
+  DEFINE_STATIC_LOCAL(
+      AttrNameToTrustedType, attribute_map,
+      ({{"href", std::pair{SpecificTrustedType::kScriptURL,
+                           trusted_types_names::kSVGScriptElement}}
+
+      }));
   return attribute_map;
 }
 

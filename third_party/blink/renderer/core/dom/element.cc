@@ -3484,7 +3484,7 @@ const AttrNameToTrustedType& Element::GetCheckedAttributeTypes() const {
   return attribute_map;
 }
 
-const std::tuple<SpecificTrustedType, const char*, const AtomicString>
+const std::tuple<SpecificTrustedType, const AtomicString, const AtomicString>
 Element::GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
                                         const char* legacy_sink_name) const {
   // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-get-trusted-type-data-for-attribute
@@ -3503,7 +3503,8 @@ Element::GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
          namespaceURI() == svg_names::kNamespaceURI ||
          namespaceURI() == mathml_names::kNamespaceURI) &&
         IsTrustedTypesEventHandlerAttribute(q_name)) {
-      return {SpecificTrustedType::kScript, "Element", q_name.LocalName()};
+      return {SpecificTrustedType::kScript, trusted_types_names::kElement,
+              q_name.LocalName()};
     }
 
     // Step 3: Find the row in the following table [...]
@@ -3512,7 +3513,8 @@ Element::GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
     // attribute separately.
     if (!q_name.NamespaceURI().empty() &&
         !q_name.Matches(xlink_names::kHrefAttr)) {
-      return {SpecificTrustedType::kNone, "Element", q_name.LocalName()};
+      return {SpecificTrustedType::kNone, trusted_types_names::kElement,
+              q_name.LocalName()};
     }
     const AttrNameToTrustedType* attribute_types = &GetCheckedAttributeTypes();
     AttrNameToTrustedType::const_iterator iter =
@@ -3520,7 +3522,8 @@ Element::GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
 
     // Step 4: Return data. [data might be null.]
     if (iter == attribute_types->end()) {
-      return {SpecificTrustedType::kNone, "Element", q_name.LocalName()};
+      return {SpecificTrustedType::kNone, trusted_types_names::kElement,
+              q_name.LocalName()};
     }
     return {iter->value.first, iter->value.second, q_name.LocalName()};
   } else {
@@ -3532,20 +3535,23 @@ Element::GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
     AtomicString property_name(legacy_sink_name);
     if (!q_name.NamespaceURI().IsNull() &&
         !SVGAnimatedHref::IsKnownAttribute(q_name)) {
-      return {SpecificTrustedType::kNone, "Element", property_name};
+      return {SpecificTrustedType::kNone, trusted_types_names::kElement,
+              property_name};
     }
     const AttrNameToTrustedType* attribute_types = &GetCheckedAttributeTypes();
     AttrNameToTrustedType::const_iterator iter =
         attribute_types->find(q_name.LocalName());
     if (iter != attribute_types->end()) {
-      return {iter->value.first, "Element", property_name};
+      return {iter->value.first, trusted_types_names::kElement, property_name};
     }
 
     if (IsTrustedTypesEventHandlerAttribute(q_name)) {
-      return {SpecificTrustedType::kScript, "Element", property_name};
+      return {SpecificTrustedType::kScript, trusted_types_names::kElement,
+              property_name};
     }
 
-    return {SpecificTrustedType::kNone, "Element", property_name};
+    return {SpecificTrustedType::kNone, trusted_types_names::kElement,
+            property_name};
   }
 }
 
@@ -8804,7 +8810,8 @@ void Element::setInnerHTML(
     ExceptionState& exception_state) {
   probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
   String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), "Element", "innerHTML", exception_state);
+      html, GetExecutionContext(), trusted_types_names::kElement,
+      trusted_types_names::kInnerHTML, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -8870,7 +8877,8 @@ void Element::setOuterHTML(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* html,
     ExceptionState& exception_state) {
   String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), "Element", "outerHTML", exception_state);
+      html, GetExecutionContext(), trusted_types_names::kElement,
+      trusted_types_names::kOuterHTML, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -9114,9 +9122,9 @@ void Element::InsertAdjacentHTMLWithoutTrustedTypes(
 void Element::insertAdjacentHTML(const String& where,
                                  const V8UnionStringOrTrustedHTML* html,
                                  ExceptionState& exception_state) {
-  String compliant_html =
-      TrustedTypesCheckForHTML(html, GetExecutionContext(), "Element",
-                               "insertAdjacentHTML", exception_state);
+  String compliant_html = TrustedTypesCheckForHTML(
+      html, GetExecutionContext(), trusted_types_names::kElement,
+      trusted_types_names::kInsertAdjacentHTML, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -12980,7 +12988,8 @@ void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                             ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
   String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), "Element", "setHTMLUnsafe", exception_state);
+      html, GetExecutionContext(), trusted_types_names::kElement,
+      trusted_types_names::kSetHTMLUnsafe, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -12993,7 +13002,8 @@ void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                             ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), "Element", "setHTMLUnsafe", exception_state);
+      html, GetExecutionContext(), trusted_types_names::kElement,
+      trusted_types_names::kSetHTMLUnsafe, exception_state);
   if (exception_state.HadException()) {
     return;
   }

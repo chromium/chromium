@@ -272,7 +272,7 @@ static constexpr double kDefaultInterestDelayEndSeconds = 0.25;
 typedef HeapVector<Member<Attr>> AttrNodeList;
 
 // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-get-trusted-type-data-for-attribute
-typedef HashMap<AtomicString, std::pair<SpecificTrustedType, const char*>>
+typedef HashMap<AtomicString, std::pair<SpecificTrustedType, AtomicString>>
     AttrNameToTrustedType;
 
 class CORE_EXPORT Element : public ContainerNode, public Animatable {
@@ -459,7 +459,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Returns attributes that should be checked against Trusted Types
   virtual const AttrNameToTrustedType& GetCheckedAttributeTypes() const;
-  const std::tuple<SpecificTrustedType, const char*, const AtomicString>
+  const std::tuple<SpecificTrustedType, const AtomicString, const AtomicString>
   GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
                                  const char* legacy_sink_name) const;
 

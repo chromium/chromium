@@ -165,7 +165,8 @@ void ShadowRoot::setInnerHTML(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* html,
     ExceptionState& exception_state) {
   String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), "ShadowRoot", "innerHTML", exception_state);
+      html, GetExecutionContext(), trusted_types_names::kShadowRoot,
+      trusted_types_names::kInnerHTML, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -175,9 +176,9 @@ void ShadowRoot::setInnerHTML(
 void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                                ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
-  String compliant_html =
-      TrustedTypesCheckForHTML(html, GetExecutionContext(), "ShadowRoot",
-                               "setHTMLUnsafe", exception_state);
+  String compliant_html = TrustedTypesCheckForHTML(
+      html, GetExecutionContext(), trusted_types_names::kShadowRoot,
+      trusted_types_names::kSetHTMLUnsafe, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -197,9 +198,9 @@ void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
 void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                                SetHTMLUnsafeOptions* options,
                                ExceptionState& exception_state) {
-  String compliant_html =
-      TrustedTypesCheckForHTML(html, GetExecutionContext(), "ShadowRoot",
-                               "setHTMLUnsafe", exception_state);
+  String compliant_html = TrustedTypesCheckForHTML(
+      html, GetExecutionContext(), trusted_types_names::kShadowRoot,
+      trusted_types_names::kSetHTMLUnsafe, exception_state);
   if (exception_state.HadException()) {
     return;
   }

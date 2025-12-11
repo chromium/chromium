@@ -846,8 +846,8 @@ void ServiceWorkerGlobalScope::importScripts(
   Vector<String> url_strings;
   for (const auto& url : urls) {
     url_strings.push_back(TrustedTypesCheckForScriptURL(
-        url, GetExecutionContext(), "WorkerGlobalScope", "importScripts",
-        exception_state));
+        url, GetExecutionContext(), trusted_types_names::kWorkerGlobalScope,
+        trusted_types_names::kImportScripts, exception_state));
     if (exception_state.HadException()) {
       return;
     }

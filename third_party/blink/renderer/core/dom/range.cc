@@ -998,8 +998,9 @@ DocumentFragment* Range::createContextualFragment(
 
   // Step 1: Invoke Get Trusted Type compliant string.
   String compliant_markup = TrustedTypesCheckForHTML(
-      markup, OwnerDocument().GetExecutionContext(), "Range",
-      "createContextualFragment", exception_state);
+      markup, OwnerDocument().GetExecutionContext(),
+      trusted_types_names::kRange,
+      trusted_types_names::kCreateContextualFragment, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

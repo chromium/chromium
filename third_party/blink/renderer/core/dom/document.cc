@@ -4867,7 +4867,8 @@ void Document::write(v8::Isolate* isolate,
     builder.Append(string);
   String string =
       TrustedTypesCheckForHTML(builder.ReleaseString(), GetExecutionContext(),
-                               "Document", "write", exception_state);
+                               trusted_types_names::kDocument,
+                               trusted_types_names::kWrite, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -4882,7 +4883,8 @@ void Document::writeln(v8::Isolate* isolate,
     builder.Append(string);
   String string =
       TrustedTypesCheckForHTML(builder.ReleaseString(), GetExecutionContext(),
-                               "Document", "writeln", exception_state);
+                               trusted_types_names::kDocument,
+                               trusted_types_names::kWriteln, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -4937,11 +4939,12 @@ void Document::Write(v8::Isolate* isolate,
     }
   }
   // Step 4: If isTrusted is false, set string to [... Get Trusted Type ...]
-  String string =
-      is_trusted ? builder.ReleaseString()
-                 : TrustedTypesCheckForHTML(builder.ReleaseString(),
-                                            GetExecutionContext(), "Document",
-                                            sink, exception_state);
+  String string = is_trusted
+                      ? builder.ReleaseString()
+                      : TrustedTypesCheckForHTML(
+                            builder.ReleaseString(), GetExecutionContext(),
+                            trusted_types_names::kDocument, AtomicString(sink),
+                            exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -10128,7 +10131,8 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                     ExceptionState& exception_state) {
   UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
   String compliant_html = TrustedTypesCheckForHTML(
-      html, context, "Document", "parseHTMLUnsafe", exception_state);
+      html, context, trusted_types_names::kDocument,
+      trusted_types_names::kParseHTMLUnsafe, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -10143,7 +10147,8 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
   UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   String compliant_html = TrustedTypesCheckForHTML(
-      html, context, "Document", "parseHTMLUnsafe", exception_state);
+      html, context, trusted_types_names::kDocument,
+      trusted_types_names::kParseHTMLUnsafe, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

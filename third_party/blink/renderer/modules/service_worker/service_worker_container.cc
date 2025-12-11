@@ -344,8 +344,9 @@ ServiceWorkerContainer::registerServiceWorker(
   // step 2 of
   // https://w3c.github.io/ServiceWorker/#dom-serviceworkercontainer-register
   String url = TrustedTypesCheckForScriptURL(
-      untrusted_url, GetExecutionContext(), "ServiceWorkerContainer",
-      "register", exception_state);
+      untrusted_url, GetExecutionContext(),
+      trusted_types_names::kServiceWorkerContainer,
+      trusted_types_names::kRegister, exception_state);
   if (exception_state.HadException()) {
     return {};
   }

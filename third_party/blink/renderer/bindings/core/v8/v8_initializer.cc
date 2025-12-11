@@ -522,8 +522,8 @@ std::pair<bool, v8::MaybeLocal<v8::String>> TrustedTypesCodeGenerationCheck(
   }
 
   String stringified_source = TrustedTypesCheckForScript(
-      string_or_trusted_script, ToExecutionContext(context), "eval", "",
-      PassThroughException(isolate));
+      string_or_trusted_script, ToExecutionContext(context),
+      trusted_types_names::kEval, g_empty_atom, PassThroughException(isolate));
   if (try_catch.HasCaught()) {
     return {false, v8::MaybeLocal<v8::String>()};
   }

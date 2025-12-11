@@ -206,8 +206,8 @@ void ChildNodePart::replaceChildren(
 
   // Insert new contents.
   VectorOf<Node> node_vector = Node::ConvertNodeUnionsIntoNodes(
-      parent, nodes_mapped, parent->GetDocument(), "replaceChildren",
-      exception_state);
+      parent, nodes_mapped, parent->GetDocument(),
+      trusted_types_names::kReplaceChildren, exception_state);
   if (exception_state.HadException()) {
     return;
   }

@@ -68,8 +68,9 @@ HTMLScriptElement::HTMLScriptElement(Document& document,
 const AttrNameToTrustedType& HTMLScriptElement::GetCheckedAttributeTypes()
     const {
   DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"src", std::pair{SpecificTrustedType::kScriptURL,
-                                          "HTMLScriptElement"}}}));
+                      ({{trusted_types_names::kSrc,
+                         std::pair{SpecificTrustedType::kScriptURL,
+                                   trusted_types_names::kHTMLScriptElement}}}));
   return attribute_map;
 }
 
@@ -192,8 +193,9 @@ void HTMLScriptElement::setScriptInnerTextForBinding(
         string_or_trusted_script,
     ExceptionState& exception_state) {
   const String& value = TrustedTypesCheckForScript(
-      string_or_trusted_script, GetExecutionContext(), "HTMLScriptElement",
-      "innerText", exception_state);
+      string_or_trusted_script, GetExecutionContext(),
+      trusted_types_names::kHTMLScriptElement, trusted_types_names::kInnerText,
+      exception_state);
   if (exception_state.HadException())
     return;
   // https://w3c.github.io/trusted-types/dist/spec/#setting-slot-values
@@ -227,8 +229,8 @@ void HTMLScriptElement::setScriptTextContentForBinding(
     const V8UnionStringOrTrustedScript* value,
     ExceptionState& exception_state) {
   const String& string = TrustedTypesCheckForScript(
-      value, GetExecutionContext(), "HTMLScriptElement", "textContent",
-      exception_state);
+      value, GetExecutionContext(), trusted_types_names::kHTMLScriptElement,
+      trusted_types_names::kTextContent, exception_state);
   if (exception_state.HadException())
     return;
   setTextContent(string);
@@ -257,9 +259,9 @@ V8UnionStringOrTrustedScript* HTMLScriptElement::text() {
 
 void HTMLScriptElement::setText(V8UnionStringOrTrustedScript* value,
                                 ExceptionState& exception_state) {
-  String compliant_value =
-      TrustedTypesCheckForScript(value, GetExecutionContext(),
-                                 "HTMLScriptElement", "text", exception_state);
+  String compliant_value = TrustedTypesCheckForScript(
+      value, GetExecutionContext(), trusted_types_names::kHTMLScriptElement,
+      trusted_types_names::kText, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -278,8 +280,8 @@ V8UnionTrustedScriptURLOrUSVString* HTMLScriptElement::src() {
 void HTMLScriptElement::setSrc(const V8UnionTrustedScriptURLOrUSVString* value,
                                ExceptionState& exception_state) {
   String compliant_value = TrustedTypesCheckForScriptURL(
-      value, GetExecutionContext(), "HTMLScriptElement", "src",
-      exception_state);
+      value, GetExecutionContext(), trusted_types_names::kHTMLScriptElement,
+      trusted_types_names::kSrc, exception_state);
   if (exception_state.HadException()) {
     return;
   }

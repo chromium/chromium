@@ -1023,7 +1023,7 @@ static Node* NodeOrStringToNode(
     const V8UnionNodeOrStringOrTrustedScript* node_or_string,
     Document& document,
     bool needs_trusted_types_check,
-    const char* property_name,
+    const AtomicString& property_name,
     ExceptionState& exception_state) {
   if (!needs_trusted_types_check) {
     // Without trusted type checks, we simply extract the string from whatever
@@ -1054,9 +1054,9 @@ static Node* NodeOrStringToNode(
                             ? node_or_string->GetAsString()
                             : node_or_string->GetAsNode()->textContent();
 
-  string_value =
-      TrustedTypesCheckForScript(string_value, document.GetExecutionContext(),
-                                 "Node", property_name, exception_state);
+  string_value = TrustedTypesCheckForScript(
+      string_value, document.GetExecutionContext(), trusted_types_names::kNode,
+      property_name, exception_state);
   if (exception_state.HadException())
     return nullptr;
   return Text::Create(document, string_value);
@@ -1070,7 +1070,7 @@ VectorOf<Node> Node::ConvertNodeUnionsIntoNodes(
     const ContainerNode* parent,
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
     Document& document,
-    const char* property_name,
+    const AtomicString& property_name,
     ExceptionState& exception_state) {
   bool needs_check = !RuntimeEnabledFeatures::TrustedTypesHTMLEnabled() &&
                      IsA<HTMLScriptElement>(parent) &&
@@ -1162,7 +1162,8 @@ void Node::prepend(
   }
 
   VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-      this_node, nodes, GetDocument(), "prepend", exception_state);
+      this_node, nodes, GetDocument(), trusted_types_names::kPrepend,
+      exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1181,8 +1182,9 @@ void Node::append(
     return;
   }
 
-  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-      this_node, nodes, GetDocument(), "append", exception_state);
+  VectorOf<Node> node_vector =
+      ConvertNodeUnionsIntoNodes(this_node, nodes, GetDocument(),
+                                 trusted_types_names::kAppend, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1196,8 +1198,9 @@ void Node::before(
   if (!parent)
     return;
   Node* viable_previous_sibling = FindViablePreviousSibling(*this, nodes);
-  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-      parent, nodes, GetDocument(), "before", exception_state);
+  VectorOf<Node> node_vector =
+      ConvertNodeUnionsIntoNodes(parent, nodes, GetDocument(),
+                                 trusted_types_names::kBefore, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1215,8 +1218,9 @@ void Node::after(
   if (!parent)
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
-  VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-      parent, nodes, GetDocument(), "after", exception_state);
+  VectorOf<Node> node_vector =
+      ConvertNodeUnionsIntoNodes(parent, nodes, GetDocument(),
+                                 trusted_types_names::kAfter, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1231,7 +1235,8 @@ void Node::replaceWith(
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
   VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
-      parent, nodes, GetDocument(), "replaceWith", exception_state);
+      parent, nodes, GetDocument(), trusted_types_names::kReplaceWith,
+      exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -1255,7 +1260,8 @@ void Node::replaceChildren(
   }
 
   VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
-      this_node, node_unions, GetDocument(), "replace", exception_state);
+      this_node, node_unions, GetDocument(), trusted_types_names::kReplace,
+      exception_state);
   if (exception_state.HadException()) {
     return;
   }

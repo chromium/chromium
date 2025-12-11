@@ -433,7 +433,8 @@ blink::SharedWorker* StorageAccessHandle::SharedWorker(
     const V8UnionSharedWorkerOptionsOrString* name_or_options,
     ExceptionState& exception_state) const {
   String compliant_url = TrustedTypesCheckForScriptURL(
-      url, context, "StorageAccessHandle", "SharedWorker", exception_state);
+      url, context, trusted_types_names::kStorageAccessHandle,
+      trusted_types_names::kSharedWorker, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

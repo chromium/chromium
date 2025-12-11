@@ -51,9 +51,10 @@ HTMLEmbedElement::HTMLEmbedElement(Document& document,
 
 const AttrNameToTrustedType& HTMLEmbedElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"src", std::pair{SpecificTrustedType::kScriptURL,
-                                          "HTMLEmbedElement"}}}));
+  DEFINE_STATIC_LOCAL(
+      AttrNameToTrustedType, attribute_map,
+      ({{"src", std::pair{SpecificTrustedType::kScriptURL,
+                          trusted_types_names::kHTMLEmbedElement}}}));
   return attribute_map;
 }
 
@@ -239,7 +240,8 @@ const V8UnionTrustedScriptURLOrUSVString* HTMLEmbedElement::src() {
 void HTMLEmbedElement::setSrc(const V8UnionTrustedScriptURLOrUSVString* value,
                               ExceptionState& exception_state) {
   String compliantValue = TrustedTypesCheckForScriptURL(
-      value, GetExecutionContext(), "HTMLEmbedElement", "src", exception_state);
+      value, GetExecutionContext(), trusted_types_names::kHTMLEmbedElement,
+      trusted_types_names::kSrc, exception_state);
   if (exception_state.HadException()) {
     return;
   }
