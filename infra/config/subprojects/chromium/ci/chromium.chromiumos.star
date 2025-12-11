@@ -747,7 +747,7 @@ ci.builder(
             ),
             "interactive_ui_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 12,
+                    shards = 24,
                 ),
             ),
             "net_unittests": targets.mixin(
