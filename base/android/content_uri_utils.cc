@@ -34,8 +34,11 @@ std::optional<std::string> TranslateOpenFlagsToJavaMode(uint32_t open_flags) {
   // ("r", "w", "wt", "wa", "rw", "rwt"), we disallow "w" which has been the
   // source of android security issues.
 
-  // Ignore async.
-  open_flags &= ~File::FLAG_ASYNC;
+  // Filter out unsupported or irrelevant flags, not explicitly supported by
+  // Content UI in the switch statement below.
+  open_flags &= (File::FLAG_OPEN | File::FLAG_CREATE | File::FLAG_OPEN_ALWAYS |
+                 File::FLAG_CREATE_ALWAYS | File::FLAG_OPEN_TRUNCATED |
+                 File::FLAG_READ | File::FLAG_WRITE | File::FLAG_APPEND);
 
   switch (open_flags) {
     case File::FLAG_OPEN | File::FLAG_READ:

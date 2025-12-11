@@ -70,7 +70,7 @@ TEST(ContentUriUtilsTest, TranslateOpenFlagsToJavaMode) {
                {0u, File::FLAG_DELETE_ON_CLOSE, File::FLAG_TERMINAL_DEVICE})) {
         uint32_t open_flags = open_or_create | read_write_append | other;
         auto mode = internal::TranslateOpenFlagsToJavaMode(open_flags);
-        auto it = kTranslations.find(open_flags);
+        auto it = kTranslations.find(open_or_create | read_write_append);
         if (it != kTranslations.end()) {
           EXPECT_TRUE(mode.has_value()) << "flag=0x" << std::hex << open_flags;
           EXPECT_EQ(mode.value(), it->second)
