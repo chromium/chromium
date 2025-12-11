@@ -151,6 +151,10 @@ class SyncServiceImplHarness {
   // sync cycle and all the clients' progress markers match.  Note: Use this
   // method when more than one client makes local change(s), and more than one
   // client is waiting to receive those changes.
+  //
+  // WARNING: Prefer using other test-specific methods to wait for a specific
+  // state because current checker is too generic and can lead to test flakiness
+  // in some cases.
   [[nodiscard]] static bool AwaitQuiescence(
       const std::vector<SyncServiceImplHarness*>& clients);
 

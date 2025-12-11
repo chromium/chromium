@@ -4,6 +4,9 @@
 
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 
+#include <string>
+
+#include "base/strings/string_util.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -29,3 +32,13 @@ bool ServerCountMatchStatusChecker::IsExitConditionSatisfied(std::ostream* os) {
       << DataTypeToDebugString(type_);
   return count_ == actual_count;
 }
+
+namespace sync_integration_test_util {
+
+bool IsCurrentTestAllowlistedForE2EMode() {
+  const std::string current_test_name =
+      ::testing::UnitTest::GetInstance()->current_test_info()->name();
+  return base::EndsWith(current_test_name, "E2ETest");
+}
+
+}  // namespace sync_integration_test_util

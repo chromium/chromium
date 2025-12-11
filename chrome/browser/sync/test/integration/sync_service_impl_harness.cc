@@ -24,6 +24,7 @@
 #include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 #include "chrome/browser/sync/test/integration/quiesce_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_signin_delegate.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -413,6 +414,9 @@ bool SyncServiceImplHarness::AwaitQuiescence(
   if (clients.empty()) {
     return true;
   }
+
+  CHECK(!sync_integration_test_util::IsCurrentTestAllowlistedForE2EMode())
+      << "AwaitQuiescence is not supported for E2E tests.";
 
   std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>> services;
   for (SyncServiceImplHarness* harness : clients) {
