@@ -105,7 +105,6 @@ const char kForgetCommandName[] = "device/forget";
 const char kWrapKeyCommandName[] = "keys/wrap";
 const char kGenKeyPairCommandName[] = "keys/genpair";
 const char kRecoveryKeyStoreWrapCommandName[] = "recovery_key_store/wrap";
-const char kPasskeysWrapPinCommandName[] = "passkeys/wrap_pin";
 const char kRecoveryKeyStoreWrapAsMemberCommandName[] =
     "recovery_key_store/wrap_as_member";
 const char kRecoveryKeyStoreWrapPinAndSecretCommandName[] =

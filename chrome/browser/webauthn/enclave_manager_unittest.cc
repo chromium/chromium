@@ -531,8 +531,6 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
   std::unique_ptr<crypto::ScopedFakeUnexportableKeyProvider> fake_hw_provider_;
   EnclaveManager manager_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnWrapCohortData};
 };
 
 TEST_F(EnclaveManagerTest, TestInfrastructure) {
@@ -1034,23 +1032,7 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccountWithPreviouslyInvalidPIN) {
   }
 }
 
-class EnclaveManagerChangePINTest : public EnclaveManagerTest,
-                                    public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(device::kWebAuthnWrapCohortData,
-                                              GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         EnclaveManagerChangePINTest,
-                         testing::Values(false, true));
-
-TEST_P(EnclaveManagerChangePINTest, ChangePIN) {
+TEST_F(EnclaveManagerTest, ChangePIN) {
   security_domain_service_->pretend_there_are_members();
   const std::string pin = "pin";
   const std::string new_pin = "newpin";
@@ -1093,7 +1075,7 @@ TEST_P(EnclaveManagerChangePINTest, ChangePIN) {
               GetAssertionResponseExpectation());
 }
 
-TEST_P(EnclaveManagerChangePINTest, AddPINToExistingAccount) {
+TEST_F(EnclaveManagerTest, AddPINToExistingAccount) {
   security_domain_service_->pretend_there_are_members();
   const std::string new_pin = "newpin";
 
@@ -1132,8 +1114,7 @@ TEST_P(EnclaveManagerChangePINTest, AddPINToExistingAccount) {
               GetAssertionResponseExpectation());
 }
 
-TEST_P(EnclaveManagerChangePINTest,
-       AddPINToExistingAccountButTheresAlreadyOne) {
+TEST_F(EnclaveManagerTest, AddPINToExistingAccountButTheresAlreadyOne) {
   security_domain_service_->pretend_there_are_members();
   const std::string pin = "pin";
   const std::string new_pin = "newpin";
@@ -1160,7 +1141,7 @@ TEST_P(EnclaveManagerChangePINTest,
   ASSERT_FALSE(set_pin_future.Get());
 }
 
-TEST_P(EnclaveManagerChangePINTest, ChangePINWithTwoDevices) {
+TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
   security_domain_service_->pretend_there_are_members();
   const std::string pin = "pin";
   const std::string intermediate_pin = "intermediate_pin";

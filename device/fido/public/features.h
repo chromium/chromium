@@ -152,10 +152,6 @@ BASE_DECLARE_FEATURE(kWebAuthnImmediateGetAutoselect);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnSendPinGeneration);
 
-// Adds the cohort public key and cert.xml serial number to GPM wrapped PINs.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnWrapCohortData);
-
 // Enables the Authenticator interface to support
 // 'navigator.credentials.get({password: true, mediation: "immediate"})'
 // requests.

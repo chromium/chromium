@@ -110,7 +110,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrapKeyCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGenKeyPairCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreWrapCommandName[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPasskeysWrapPinCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreWrapAsMemberCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)

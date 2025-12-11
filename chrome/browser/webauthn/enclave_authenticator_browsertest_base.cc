@@ -49,7 +49,6 @@
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
-#include "device/fido/public/features.h"
 #include "enclave_authenticator_browsertest_base.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
@@ -112,10 +111,6 @@ EnclaveAuthenticatorTestBase::EnclaveAuthenticatorTestBase()
   }
   scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(false);
 #endif
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{device::kWebAuthnSignalApiHidePasskeys,
-                            device::kWebAuthnWrapCohortData},
-      /*disabled_features=*/{});
   OSCryptMocker::SetUp();
   scoped_vmodule_.InitWithSwitches("device_event_log_impl=2");
 
