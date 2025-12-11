@@ -190,6 +190,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/browser_ui/site_settings/AddExceptionPreferenceUnitTest.java",
     "junit/src/org/chromium/components/browser_ui/site_settings/DesktopSiteMetricsUnitTest.java",
     "junit/src/org/chromium/components/browser_ui/site_settings/SiteDataCleanerUnitTest.java",
+    "junit/src/org/chromium/components/browser_ui/site_settings/SiteSettingsUnitTest.java",
   ]
 
   deps = [
@@ -197,8 +198,10 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/browser_ui/settings/android:java",
     "//components/browsing_data/content/android:java",
     "//components/content_settings/android:content_settings_enums_java",
+    "//components/permissions/android:core_java",
     "//content/public/android:content_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

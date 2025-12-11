@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.site_settings;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
@@ -22,6 +23,8 @@ import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
+import org.chromium.components.browser_ui.settings.search.PreferenceParser;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -83,7 +86,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
             }
         }
 
-        if (getSiteSettingsDelegate().shouldShowTrackingProtectionUi()) {
+        if (shouldShowTrackingProtectionUi(getSiteSettingsDelegate())) {
             Preference thirdPartyCookiesPref = findPreference(Type.THIRD_PARTY_COOKIES);
             thirdPartyCookiesPref.setVisible(false);
             Preference trackingProtectionPref = findPreference(Type.TRACKING_PROTECTION);
@@ -99,6 +102,10 @@ public class SiteSettings extends BaseSiteSettingsFragment
                 getPreferenceScreen().removePreference(pref);
             }
         }
+    }
+
+    private static boolean shouldShowTrackingProtectionUi(SiteSettingsDelegate delegate) {
+        return delegate.shouldShowTrackingProtectionUi();
     }
 
     private void updatePreferenceStates() {
@@ -272,8 +279,37 @@ public class SiteSettings extends BaseSiteSettingsFragment
         return "content_settings";
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
                     SiteSettings.class.getName(), R.xml.site_settings_preferences);
+
+    /**
+     * Update dynamic preferences with an object of the interface {@link SiteSettingsDelegate}.
+     *
+     * <p>The implementation of the interface has dependencies outside //components, therefore
+     * cannot be instantiated in BaseSearchIndexProvider#updateDynamicPreferences. This is handled
+     * as an exception.
+     */
+    public static void updateDynamicPreferences(
+            Context context, SiteSettingsDelegate delegate, SettingsIndexData indexData) {
+        String prefFragment = SiteSettings.class.getName();
+
+        // Always remove the divider as the search is based on containment style.
+        indexData.removeEntry(PreferenceParser.createUniqueId(prefFragment, "divider"));
+
+        boolean showTrackingProtection = shouldShowTrackingProtectionUi(delegate);
+        for (@Type int prefCategory = 0; prefCategory < Type.NUM_ENTRIES; prefCategory++) {
+            if (SiteSettingsCategory.contentSettingsType(prefCategory) < 0) continue;
+
+            String key = SiteSettingsCategory.preferenceKey(prefCategory);
+            if (!delegate.isCategoryVisible(prefCategory)
+                    || (showTrackingProtection && prefCategory == Type.THIRD_PARTY_COOKIES)
+                    || (!showTrackingProtection && prefCategory == Type.TRACKING_PROTECTION)) {
+                indexData.removeEntry(PreferenceParser.createUniqueId(prefFragment, key));
+                continue;
+            }
+            int titleId = ContentSettingsResources.getTitleForCategory(prefCategory);
+            indexData.updateEntryForKey(prefFragment, key, titleId);
+        }
+    }
 }
