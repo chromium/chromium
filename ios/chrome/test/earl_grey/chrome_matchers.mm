@@ -991,20 +991,6 @@ id<GREYMatcher> SettingsActionButton() {
   return [ChromeMatchersAppInterface settingsActionButton];
 }
 
-#pragma mark - Promo style view controller
-
-// TODO(crbug.com/444648926): Remove this matcher once downstream dependencies
-// have been updated.
-id<GREYMatcher> PromoScreenPrimaryButtonMatcher() {
-  return chrome_test_util::ButtonStackPrimaryButton();
-}
-
-// TODO(crbug.com/444648926): Remove this matcher once downstream dependencies
-// have been updated.
-id<GREYMatcher> PromoScreenSecondaryButtonMatcher() {
-  return chrome_test_util::ButtonStackSecondaryButton();
-}
-
 #pragma mark - Incognito Interstitial
 
 id<GREYMatcher> IncognitoInterstitialMatcher() {
