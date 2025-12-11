@@ -2281,6 +2281,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method copyTo
+[Worker]     method metadata
 [Worker] interface WGSLLanguageFeatures
 [Worker]     attribute @@toStringTag
 [Worker]     getter size

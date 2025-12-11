@@ -5580,7 +5580,7 @@
     },
     {
       name: "VideoFrameMetadataRtpTimestamp",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "VideoFullscreenOrientationLock",
