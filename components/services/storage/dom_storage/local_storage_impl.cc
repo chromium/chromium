@@ -55,8 +55,6 @@ namespace storage {
 
 namespace {
 
-static const int kStaleBucketCutoffInDays = 400;
-
 // After this many consecutive commit errors we'll throw away the entire
 // database.
 const int kCommitErrorThreshold = 8;
@@ -348,20 +346,12 @@ void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
     area->CancelAllPendingRequests();
   }
 
-  // Respect the content policy settings about what to
-  // keep and what to discard.
-  if (force_keep_session_state_) {
-    OnShutdownComplete();
-    return;  // Keep everything.
+  if (!force_keep_session_state_ && !origins_to_purge_on_shutdown_.empty()) {
+    database_->PurgeOriginsForShutdown(
+        std::move(origins_to_purge_on_shutdown_));
   }
 
-  if (!origins_to_purge_on_shutdown_.empty()) {
-    RetrieveStorageUsage(
-        base::BindOnce(&LocalStorageImpl::OnGotStorageUsageForShutdown,
-                       base::Unretained(this)));
-  } else {
-    OnShutdownComplete();
-  }
+  OnShutdownComplete();
 }
 
 void LocalStorageImpl::PurgeMemory() {
@@ -704,55 +694,6 @@ void LocalStorageImpl::OnGotWriteMetaData(
   std::move(callback).Run(std::move(result));
 }
 
-void LocalStorageImpl::OnGotStorageUsageForShutdown(
-    std::vector<mojom::StorageUsageInfoPtr> usage) {
-  std::vector<blink::StorageKey> metadata_to_delete;
-  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  for (const auto& info : usage) {
-    const blink::StorageKey& storage_key = info->storage_key;
-    const url::Origin& key_origin = storage_key.origin();
-    // Ideally we would be recording last_accessed instead, but there is no
-    // historical data on that. Instead, we will use last_modified as a sanity
-    // check against other data as we try to understand how many 'old' storage
-    // buckets are still in use. This is split into two buckets for greater
-    // resolution on near and far term ages.
-    if (!info->last_modified.is_null() &&
-        info->last_modified < base::Time::Now()) {
-      int days_since_last_modified =
-          (base::Time::Now() - info->last_modified).InDays();
-      base::UmaHistogramCustomCounts("LocalStorage.DaysSinceLastModified",
-                                     days_since_last_modified, 1,
-                                     kStaleBucketCutoffInDays, 100);
-    }
-    // Delete the storage if its origin matches one of the origins to purge, or
-    // if it is third-party and the top-level site is same-site with one of
-    // those origins.
-    for (const auto& origin_to_purge : origins_to_purge_on_shutdown_) {
-      if (key_origin == origin_to_purge ||
-          (storage_key.IsThirdPartyContext() &&
-           storage_key.top_level_site().IsSameSiteWith(origin_to_purge))) {
-        metadata_to_delete.push_back(storage_key);
-        maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
-        break;
-      }
-    }
-  }
-
-  if (!metadata_to_delete.empty() && database_) {
-    database_->DeleteStorageKeysFromSession(
-        kLocalStorageSessionId, std::move(metadata_to_delete),
-        std::move(maps_to_delete),
-        base::BindOnce(&LocalStorageImpl::OnStorageKeysDeleted,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    OnShutdownComplete();
-  }
-}
-
-void LocalStorageImpl::OnStorageKeysDeleted(DbStatus status) {
-  OnShutdownComplete();
-}
-
 void LocalStorageImpl::OnShutdownComplete() {
   DCHECK(shutdown_complete_callback_);
   // Flush any final tasks on the DB task runner before invoking the callback.
@@ -855,7 +796,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
     }
 
     if ((base::Time::Now() - accessed_or_modified_time) >=
-        base::Days(kStaleBucketCutoffInDays)) {
+        base::Days(LocalStorageLevelDB::kStaleBucketCutoffInDays)) {
       // If the storage area has not been accessed or modified within 400 days
       // it can be cleared.
       stale_storage_keys.push_back(storage_key);

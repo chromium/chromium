@@ -62,6 +62,8 @@ class LocalStorageLevelDB : public DomStorageDatabase {
   using PassKey = base::PassKey<DomStorageDatabaseFactory>;
 
  public:
+  static const int kStaleBucketCutoffInDays = 400;
+
   // Use `DomStorageDatabaseFactory::Open()` to construct a
   // base::SequenceBound<DomStorageDatabase>.
   explicit LocalStorageLevelDB(PassKey);
@@ -160,6 +162,7 @@ class LocalStorageLevelDB : public DomStorageDatabase {
       std::vector<MapLocator> maps_to_delete) override;
   DbStatus DeleteSessions(std::vector<std::string> session_ids,
                           std::vector<MapLocator> maps_to_delete) override;
+  DbStatus PurgeOrigins(std::set<url::Origin> origins) override;
   DbStatus RewriteDB() override;
 
   // Test-only functions.

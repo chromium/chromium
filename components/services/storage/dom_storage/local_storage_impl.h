@@ -138,9 +138,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void OnGotWriteMetaData(GetUsageCallback callback,
                           StatusOr<DomStorageDatabase::Metadata> all_metadata);
 
-  void OnGotStorageUsageForShutdown(
-      std::vector<mojom::StorageUsageInfoPtr> usage);
-  void OnStorageKeysDeleted(DbStatus status);
   void OnShutdownComplete();
 
   void GetStatistics(size_t* total_cache_size, size_t* unused_area_count);

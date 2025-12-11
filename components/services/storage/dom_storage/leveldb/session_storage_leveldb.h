@@ -109,6 +109,7 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   DbStatus DeleteSessions(std::vector<std::string> session_ids,
                           std::vector<MapLocator> maps_to_delete) override;
 
+  DbStatus PurgeOrigins(std::set<url::Origin> origins) override;
   DbStatus RewriteDB() override;
 
   // Test-only functions.

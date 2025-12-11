@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -157,6 +158,10 @@ class DomStorageDatabase {
   // still referenced by other cloned sessions.
   virtual DbStatus DeleteSessions(std::vector<std::string> session_ids,
                                   std::vector<MapLocator> maps_to_delete) = 0;
+
+  // Deletes all data if its origin is in `origins`, or if it is third-party and
+  // the top-level site is same-site with one of those origins.
+  virtual DbStatus PurgeOrigins(std::set<url::Origin> origins) = 0;
 
   // For LevelDB only. Rewrites the database on disk to
   // clean up traces of deleted entries.

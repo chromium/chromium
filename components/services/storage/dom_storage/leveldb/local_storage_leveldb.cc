@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_view_util.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
@@ -322,6 +323,45 @@ DbStatus LocalStorageLevelDB::DeleteSessions(
   // Not implemented.  Since local storage uses a single global session, callers
   // should delete the entire database instead of the session.
   NOTREACHED();
+}
+
+DbStatus LocalStorageLevelDB::PurgeOrigins(std::set<url::Origin> origins) {
+  ASSIGN_OR_RETURN(Metadata all_metadata, ReadAllMetadata());
+
+  std::vector<blink::StorageKey> metadata_to_delete;
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+
+  for (const DomStorageDatabase::MapMetadata& metadata :
+       all_metadata.map_metadata) {
+    // Ideally we would be recording last_accessed instead, but there is no
+    // historical data on that. Instead, we will use last_modified as a sanity
+    // check against other data as we try to understand how many 'old' storage
+    // buckets are still in use. This is split into two buckets for greater
+    // resolution on near and far term ages.
+    if (metadata.last_modified && *metadata.last_modified < base::Time::Now()) {
+      const int days_since_last_modified =
+          (base::Time::Now() - *metadata.last_modified).InDays();
+      base::UmaHistogramCustomCounts("LocalStorage.DaysSinceLastModified",
+                                     days_since_last_modified, 1,
+                                     kStaleBucketCutoffInDays, 100);
+    }
+
+    const blink::StorageKey& storage_key = metadata.map_locator.storage_key();
+
+    for (const auto& origin : origins) {
+      if (storage_key.origin() == origin ||
+          (storage_key.IsThirdPartyContext() &&
+           storage_key.top_level_site().IsSameSiteWith(origin))) {
+        metadata_to_delete.push_back(storage_key);
+        maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
+        break;
+      }
+    }
+  }
+
+  return DeleteStorageKeysFromSession(kLocalStorageSessionId,
+                                      std::move(metadata_to_delete),
+                                      std::move(maps_to_delete));
 }
 
 DbStatus LocalStorageLevelDB::RewriteDB() {

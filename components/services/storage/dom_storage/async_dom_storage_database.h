@@ -125,6 +125,7 @@ class AsyncDomStorageDatabase {
       std::vector<std::string> session_ids,
       std::vector<DomStorageDatabase::MapLocator> maps_to_delete,
       StatusCallback callback);
+  void PurgeOriginsForShutdown(std::set<url::Origin> origins);
   void RewriteDB(StatusCallback callback);
 
   // TODO(crbug.com/377242771): Temporarily overload `RunDatabaseTask()` to

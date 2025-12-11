@@ -201,6 +201,12 @@ DbStatus SessionStorageLevelDB::DeleteSessions(
   return batch->Commit();
 }
 
+DbStatus SessionStorageLevelDB::PurgeOrigins(std::set<url::Origin> origins) {
+  // Origins aren't explicitly purged from session storage on shutdown because
+  // all session storage (generally) is cleared on shutdown already.
+  NOTREACHED();
+}
+
 DbStatus SessionStorageLevelDB::RewriteDB() {
   return leveldb_->RewriteDB();
 }

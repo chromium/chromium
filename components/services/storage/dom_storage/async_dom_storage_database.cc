@@ -110,6 +110,18 @@ void AsyncDomStorageDatabase::DeleteSessions(
       std::move(callback));
 }
 
+void AsyncDomStorageDatabase::PurgeOriginsForShutdown(
+    std::set<url::Origin> origins) {
+  RunDatabaseTask(
+      base::BindOnce(
+          [](std::set<url::Origin> origins, DomStorageDatabase& db) {
+            return db.PurgeOrigins(std::move(origins));
+          },
+          std::move(origins)),
+      // Ignore errors since this is called during shutdown.
+      base::DoNothing());
+}
+
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   RunDatabaseTask(
       base::BindOnce([](DomStorageDatabase& db) { return db.RewriteDB(); }),
