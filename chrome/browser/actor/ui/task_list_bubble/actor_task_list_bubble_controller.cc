@@ -93,7 +93,7 @@ void ActorTaskListBubbleController::OnStateUpdateImpl(actor::TaskId task_id) {
             kTabStripActionContainerElementId);
     if (tab_strip_action_container &&
         tab_strip_action_container->GetIsShowingGlicActorTaskIconNudge()) {
-      ShowBubble(tab_strip_action_container->glic_actor_task_icon());
+      ShowBubble(tab_strip_action_container->glic_actor_button_container());
     }
   }
 }

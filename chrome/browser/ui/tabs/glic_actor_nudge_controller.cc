@@ -101,7 +101,7 @@ void GlicActorNudgeController::UpdateNudgeLabelOrRetrigger(
     tab_strip_action_container_->TriggerGlicActorNudge(nudge_label_text);
   }
   ActorTaskListBubbleController::From(browser_)->ShowBubble(
-      tab_strip_action_container_->glic_actor_task_icon());
+      tab_strip_action_container_->glic_actor_button_container());
 }
 
 void GlicActorNudgeController::RegisterActorNudgeStateCallback() {
