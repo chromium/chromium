@@ -119,7 +119,7 @@ import * as Security from 'devtools/panels/security/security.js';
       "https://ech.foo.test",
   ];
   for (const origin of origins) {
-    Security.SecurityPanel.SecurityPanel.instance().sidebarTree.elementsByOrigin.get(origin).select();
+    Security.SecurityPanel.SecurityPanel.instance().sidebar.elementsByOrigin().get(origin).select(undefined, true);
     TestRunner.addResult('Origin view (' + origin + ') ' + '-'.repeat(33 - origin.length));
     TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.SecurityPanel.instance().visibleView.contentElement);
   }

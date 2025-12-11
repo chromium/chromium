@@ -33,7 +33,7 @@ import * as Security from 'devtools/panels/security/security.js';
   request1.setSecurityDetails(securityDetails);
   SecurityTestRunner.dispatchRequestFinished(request1);
 
-  Security.SecurityPanel.SecurityPanel.instance().sidebarTree.elementsByOrigin.get('https://foo.test').select();
+  Security.SecurityPanel.SecurityPanel.instance().sidebar.elementsByOrigin().get('https://foo.test').select(undefined, true);
 
   TestRunner.addResult('Panel on origin view:');
   TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.SecurityPanel.instance().visibleView.contentElement);

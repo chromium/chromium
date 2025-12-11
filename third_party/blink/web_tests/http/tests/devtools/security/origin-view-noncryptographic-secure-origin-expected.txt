@@ -1,7 +1,11 @@
 Tests that the panel shows the correct text for non-cryptographic secure origins
 
 Panel on origin view:
-<DIV class=widget vbox security-origin-view jslog=Pane; context: security.origin-view slot=insertion-point-main >
+<DIV jslog=Pane; context: security.origin-view class=widget vbox security-origin-view slot=main >
+    <STYLE >
+    </STYLE>
+    <STYLE >
+    </STYLE>
     <DIV class=title-section >
         <DIV class=title-section-header role=heading aria-level=1 >
 Origin
@@ -10,10 +14,10 @@ Origin
             <SPAN >
                 <DEVTOOLS-ICON role=presentation name=lock class=security-property security-property-secure >
                     <#document-fragment >
-                        <SPAN style=--icon-url: var(--image-file-lock); >
-                        </SPAN>
                         <STYLE >
                         </STYLE>
+                        <SPAN style=--icon-url: var(--image-file-lock); >
+                        </SPAN>
                     </#document-fragment>
                 </DEVTOOLS-ICON>
             </SPAN>
@@ -33,6 +37,24 @@ test
             <DEVTOOLS-BUTTON role=link jslog=Action; track: click; context: reveal-in-network >
 View requests in Network Panel
                 <#document-fragment >
+                    <#comment >
+                    </#comment>
+                    <STYLE >
+                        <#comment >
+                        </#comment>
+                        <#comment >
+                        </#comment>
+                    </STYLE>
+                    <BUTTON class=outlined >
+                        <#comment >
+                        </#comment>
+                        <#comment >
+                        </#comment>
+                        <#comment >
+                        </#comment>
+                        <SLOT >
+                        </SLOT>
+                    </BUTTON>
                 </#document-fragment>
             </DEVTOOLS-BUTTON>
         </DIV>
