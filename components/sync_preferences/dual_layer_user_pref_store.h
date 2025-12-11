@@ -51,7 +51,6 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
 
   // Marks `data_type` as enabled for account storage. This should be called
   // when a data type starts syncing.
-  // TODO(crbug.com/464008640): Rename this to `MarkTypeActive` or similar.
   void EnableType(syncer::DataType data_type);
   // Unmarks `data_type` as enabled for account storage and removes all
   // corresponding preference entries(belonging to this type) from account
