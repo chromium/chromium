@@ -193,7 +193,7 @@ void LetterboxPlane(VideoFrame* frame,
 void ProcessAsyncMappingResult(
     scoped_refptr<VideoFrame> video_frame,
     base::OnceCallback<void(scoped_refptr<VideoFrame>)> result_cb,
-    std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping) {
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping) {
   CHECK(video_frame);
   if (!scoped_mapping) {
     std::move(result_cb).Run(nullptr);
@@ -203,7 +203,7 @@ void ProcessAsyncMappingResult(
   const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
   std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> planes = {};
   for (size_t i = 0; i < num_planes; i++) {
-    planes[i] = scoped_mapping->GetMemoryAsSpan(i);
+    planes[i] = scoped_mapping->GetMemoryForPlane(i);
   }
 
   auto mapped_frame = VideoFrame::WrapExternalYuvDataWithLayout(
@@ -223,10 +223,11 @@ void ProcessAsyncMappingResult(
   // is unmapped on destruction.
   mapped_frame->AddDestructionObserver(base::BindOnce(
       [](scoped_refptr<VideoFrame> frame,
-         std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping) {
+         std::unique_ptr<gpu::ClientSharedImage::ScopedMapping>
+             scoped_mapping) {
         CHECK(scoped_mapping);
         // The VideoFrame::ScopedMapping must be destroyed before the
-        // FrameResource that produced it in order to avoid dangling pointers.
+        // VideoFrame that produced it in order to avoid dangling pointers.
         scoped_mapping.reset();
       },
       std::move(video_frame), std::move(scoped_mapping)));
@@ -613,7 +614,7 @@ void ConvertToMemoryMappedFrameAsync(
   CHECK(video_frame);
   CHECK(video_frame->HasMappableSharedImage());
 
-  video_frame->MapSharedImageAsync(base::BindOnce(
+  video_frame->shared_image()->MapAsync(base::BindOnce(
       &ProcessAsyncMappingResult, video_frame, std::move(result_cb)));
 }
 
