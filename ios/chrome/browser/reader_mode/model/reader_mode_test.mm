@@ -129,20 +129,31 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
   }
 
   // Set up the fake web frame to return a custom result after executing
-  // the DOM distiller Javascript.
-  dom_distiller::proto::DomDistillerOptions options;
-  std::u16string script =
-      base::UTF8ToUTF16(dom_distiller::GetDistillerScriptWithOptions(options));
-  dom_distiller::proto::DomDistillerResult distiller_result;
-  distiller_result.mutable_distilled_content()->set_html(
-      std::move(distilled_content));
-  base::Value distiller_result_value =
-      dom_distiller::proto::json::DomDistillerResult::WriteToValue(
-          std::move(distiller_result));
+  // the Readability Javascript.
+  std::u16string readability_script =
+      base::UTF8ToUTF16(dom_distiller::GetReadabilityDistillerScript());
+  base::Value::Dict readability_result;
+  readability_result.Set("content", distilled_content);
+  readability_result.Set("title", "fake title");
   distiller_result_values_.push_back(
-      std::make_unique<base::Value>(std::move(distiller_result_value)));
+      std::make_unique<base::Value>(std::move(readability_result)));
   web_frame->AddResultForExecutedJs(distiller_result_values_.back().get(),
-                                    script);
+                                    readability_script);
+
+  auto* tab_helper = ReaderModeTabHelper::FromWebState(web_state);
+  if (!tab_helper) {
+    return;
+  }
+  // `url` is captured by copy to ensure it is still valid when the block is
+  // executed.
+  web_frame->set_call_java_script_function_callback(base::BindRepeating(
+      ^(GURL url_copy) {
+        // Overrides the result from DOM distiller heuristic with a custom
+        // entry.
+        tab_helper->HandleReaderModeHeuristicResult(result);
+        web_frame->set_call_java_script_function_callback(base::DoNothing());
+      },
+      url));
 }
 
 void ReaderModeTest::WaitForPageLoadDelayAndRunUntilIdle() {

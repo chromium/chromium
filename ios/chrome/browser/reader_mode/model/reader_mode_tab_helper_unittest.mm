@@ -804,6 +804,14 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerHeuristicOnPageLoad) {
 // heuristic runs on page load and returns a result.
 TEST_P(ReaderModeTabHelperWithEligibilityTest,
        TriggerReadabilityHeuristicOnPageLoad) {
+  ReaderModeHeuristicResult eligibility = GetEligibility();
+  if (eligibility ==
+          ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly ||
+      eligibility ==
+          ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength) {
+    GTEST_SKIP() << "Does not provide content and length heuristics.";
+  }
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableReadabilityHeuristic);
 
@@ -811,7 +819,6 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest,
   ASSERT_EQ(0u, GetHeuristicResultEntries().size());
 
   GURL test_url("https://test.url/");
-  ReaderModeHeuristicResult eligibility = GetEligibility();
   SetReaderModeState(web_state(), test_url, eligibility, "");
 
   LoadWebpage(web_state(), test_url);
@@ -875,5 +882,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         ReaderModeHeuristicResult::kMalformedResponse,
         ReaderModeHeuristicResult::kReaderModeEligible,
+        ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly,
+        ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength,
         ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength),
     ReaderModeTest::TestParametersReaderModeHeuristicResultToString);
