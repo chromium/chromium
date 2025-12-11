@@ -36,7 +36,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#include "services/preferences/tracked/features.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -538,11 +537,8 @@ TEST_F(DefaultSearchManagerTest, UserDseChangeDisablesResetNotification) {
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{switches::kResetTamperedDefaultSearchEngine},
-      /*disabled_features=*/{tracked::kEnableEncryptedTrackedPrefOnEnterprise});
-
+  base::test::ScopedFeatureList feature_list{
+      switches::kResetTamperedDefaultSearchEngine};
   // Simulate an enterprise device.
   base::win::ScopedDomainStateForTesting scoped_domain_state_(true);
   base::HistogramTester histograms;
@@ -552,8 +548,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
 
   auto manager = create_manager();
 
-  // The DSE prefs should NOT be cleared since this is an enterprise device
-  // and the feature flag is disabled.
+  // The DSE prefs should NOT be cleared since this is an enterprise device.
   EXPECT_FALSE(
       pref_service()
           ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
@@ -584,54 +579,6 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchNotResetForEnterprisePolicy) {
   DefaultSearchManager::Source source;
   ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
-}
-
-TEST_F(DefaultSearchManagerTest,
-       DefaultSearchResetForEnterpriseWithFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{switches::kResetTamperedDefaultSearchEngine,
-                            tracked::kEnableEncryptedTrackedPrefOnEnterprise},
-      /*disabled_features=*/{});
-
-  // Simulate an enterprise device.
-  base::win::ScopedDomainStateForTesting scoped_domain_state_(true);
-  base::HistogramTester histograms;
-
-  set_default_search_provider_data_pref("search_engine_A");
-  set_mirrored_default_search_provider_data_pref("search_engine_B");
-
-  auto manager = create_manager();
-
-  // The original and mirrored DSE prefs should have been cleared, even though
-  // this is an enterprise device, because the feature flag is enabled.
-  EXPECT_TRUE(
-      pref_service()
-          ->GetDict(DefaultSearchManager::kDefaultSearchProviderDataPrefName)
-          .empty());
-  EXPECT_TRUE(
-      pref_service()
-          ->GetDict(
-              DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName)
-          .empty());
-
-  histograms.ExpectUniqueSample(
-      DefaultSearchManager::kDefaultSearchEngineMirrorCheckOutcomeMetric,
-      static_cast<int>(
-          DefaultSearchManager::DefaultSearchEngineMirrorCheckOutcomeType::
-              kMirrorCheckReset),
-      1);
-
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kUnacknowledgedDefaultSearchEngineResetOccurred));
-  EXPECT_FALSE(pref_service()->GetTime(
-                   prefs::kDefaultSearchEngineMirrorCheckResetTimeStamp) ==
-               base::Time());
-
-  // The DSE should now be the fallback.
-  DefaultSearchManager::Source source;
-  manager->GetDefaultSearchEngine(&source);
-  EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
