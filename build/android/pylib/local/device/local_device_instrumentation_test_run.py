@@ -680,8 +680,8 @@ class LocalDeviceInstrumentationTestRun(
 
       install_steps += [push_test_data, create_flag_changer]
       post_install_steps += [
-          self._SetDefaultBrowserApp, set_debug_app, approve_app_links,
-          disable_system_modals, set_vega_permissions, DismissCrashDialogs
+          set_debug_app, approve_app_links, disable_system_modals,
+          set_vega_permissions, DismissCrashDialogs
       ]
 
       def bind_crash_handler(step, dev):
@@ -758,8 +758,6 @@ class LocalDeviceInstrumentationTestRun(
       if self._webview_flag_changers[str(dev)].GetCurrentFlags():
         self._webview_flag_changers[str(dev)].Restore()
 
-      self._ClearDefaultBrowserApp(dev)
-
       # Remove package-specific configuration
       dev.RunShellCommand(['am', 'clear-debug-app'], check_return=True)
 
@@ -780,26 +778,6 @@ class LocalDeviceInstrumentationTestRun(
         # pylint: enable=no-member
 
     self._env.parallel_devices.pMap(individual_device_tear_down)
-
-  def _SetDefaultBrowserApp(self, dev):
-    browser_activity_names = self._test_instance.test_apk.GetActivityNamesWithCategory(
-        'android.intent.category.APP_BROWSER')
-    if browser_activity_names:
-      dev.RunShellCommand([
-          'cmd', 'role', 'add-role-holder', 'android.app.role.BROWSER',
-          self._test_instance.test_apk.GetPackageName()
-      ],
-                          check_return=True)
-
-  def _ClearDefaultBrowserApp(self, dev):
-    browser_activity_names = self._test_instance.test_apk.GetActivityNamesWithCategory(
-        'android.intent.category.APP_BROWSER')
-    if browser_activity_names:
-      dev.RunShellCommand([
-          'cmd', 'role', 'remove-role-holder', 'android.app.role.BROWSER',
-          self._test_instance.test_apk.GetPackageName()
-      ],
-                          check_return=True)
 
   def _ToggleAppLinks(self, dev, state):
     # The set-app-links command was added in Android 12 (sdk = 31). The
