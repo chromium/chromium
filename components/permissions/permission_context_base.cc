@@ -513,23 +513,26 @@ PermissionContextBase::UpdatePermissionStatusWithDeviceStatus(
     return result;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  if (!web_contents || !web_contents->GetNativeView() ||
-      !web_contents->GetNativeView()->GetWindowAndroid()) {
-    return result;
-  }
-  result.status =
-      CanRequestSystemPermission(content_settings_type(), web_contents)
-          ? blink::mojom::PermissionStatus::ASK
-          : blink::mojom::PermissionStatus::DENIED;
-#else
   // Otherwise the result will be "ASK" if the browser can ask for the
   // device-level permission, and "BLOCKED" otherwise.
-  result.status = PermissionsClient::Get()->CanRequestDevicePermission(
-                      content_settings_type())
-                      ? blink::mojom::PermissionStatus::ASK
-                      : blink::mojom::PermissionStatus::DENIED;
+  bool can_request;
+  if (can_request_device_permission_for_test_.has_value()) {
+    can_request = can_request_device_permission_for_test_.value();
+  } else {
+#if BUILDFLAG(IS_ANDROID)
+    if (!web_contents || !web_contents->GetNativeView() ||
+        !web_contents->GetNativeView()->GetWindowAndroid()) {
+      return result;
+    }
+    can_request =
+        CanRequestSystemPermission(content_settings_type(), web_contents);
+#else
+    can_request = PermissionsClient::Get()->CanRequestDevicePermission(
+        content_settings_type());
 #endif
+  }
+  result.status = can_request ? blink::mojom::PermissionStatus::ASK
+                              : blink::mojom::PermissionStatus::DENIED;
   return result;
 }
 
@@ -698,22 +701,22 @@ PermissionContextBase::CreatePermissionResolver(
 
 void PermissionContextBase::MaybeUpdateCachedHasDevicePermission(
     content::WebContents* web_contents) {
+  bool has_device_permission;
+  if (has_device_permission_for_test_.has_value()) {
+    has_device_permission = has_device_permission_for_test_.value();
+  } else {
 #if BUILDFLAG(IS_ANDROID)
-  if (!web_contents || !web_contents->GetNativeView() ||
-      !web_contents->GetNativeView()->GetWindowAndroid()) {
-    return;
-  }
-  const bool has_device_permission =
-      has_device_permission_for_test_.has_value()
-          ? has_device_permission_for_test_.value()
-          : HasSystemPermission(content_settings_type(), web_contents);
+    if (!web_contents || !web_contents->GetNativeView() ||
+        !web_contents->GetNativeView()->GetWindowAndroid()) {
+      return;
+    }
+    has_device_permission =
+        HasSystemPermission(content_settings_type(), web_contents);
 #else
-  const bool has_device_permission =
-      has_device_permission_for_test_.has_value()
-          ? has_device_permission_for_test_.value()
-          : PermissionsClient::Get()->HasDevicePermission(
-                content_settings_type());
+    has_device_permission =
+        PermissionsClient::Get()->HasDevicePermission(content_settings_type());
 #endif
+  }
 
   const bool should_notify_observers =
       last_has_device_permission_result_.has_value() &&

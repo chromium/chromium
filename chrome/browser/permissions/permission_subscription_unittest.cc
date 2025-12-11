@@ -670,10 +670,148 @@ TEST_F(PermissionSubscriptionTest, SubscribersAreNotifedOfEmbargoEvents) {
       ->UnsubscribeFromPermissionResultChange(subscription_id);
 }
 
-// TODO(b/339158416): Add back
-// RequestableDevicePermissionChangesLazilyNotifiesObservers and
-// NonrequestableDevicePermissionChangesLazilyNotifiesObservers tests once the
-// implementation is finished.
+TEST_F(PermissionSubscriptionTest,
+       RequestableDevicePermissionChangesLazilyNotifiesObservers) {
+  // Setup the initial state.
+  SetPermission(url(), url(), PermissionType::GEOLOCATION,
+                PermissionStatus::GRANTED);
+  permissions::PermissionContextBase* geolocation_permission_context =
+      GetPermissionManager()->GetPermissionContextForTesting(
+          ContentSettingsType::GEOLOCATION);
+  geolocation_permission_context->set_has_device_permission_for_test(true);
+  geolocation_permission_context->set_can_request_device_permission_for_test(
+      true);
+
+  content::PermissionController::SubscriptionId subscription_id =
+      content::SubscribeToPermissionResultChange(
+          GetPermissionController(),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  PermissionType::GEOLOCATION),
+          /*render_process_host=*/nullptr, main_rfh(), url(),
+          /*should_include_device_status=*/true,
+          base::BindRepeating(&PermissionSubscriptionTest::OnPermissionChange,
+                              base::Unretained(this)));
+
+  // Change device permission to denied. At this point we have not yet retrieved
+  // the permission status so the device permission change has not been
+  // detected.
+  geolocation_permission_context->set_has_device_permission_for_test(false);
+  EXPECT_FALSE(callback_called());
+
+  // This call will trigger an update of the device permission status and
+  // observers will be notified.
+  GetPermissionController()->GetPermissionResultForCurrentDocument(
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              PermissionType::GEOLOCATION),
+      main_rfh());
+
+  EXPECT_TRUE(callback_called());
+  EXPECT_EQ(PermissionStatus::ASK, callback_result());
+  Reset();
+
+  // Changing the permission status triggers a callback.
+  SetPermission(url(), url(), PermissionType::GEOLOCATION,
+                PermissionStatus::DENIED);
+  EXPECT_TRUE(callback_called());
+  EXPECT_EQ(PermissionStatus::DENIED, callback_result());
+  Reset();
+
+  // We now reset to a granted state, which should move the overall permission
+  // status to ask (origin status "granted", but Chrome does not have the device
+  // permission).
+  SetPermission(url(), url(), PermissionType::GEOLOCATION,
+                PermissionStatus::GRANTED);
+  EXPECT_TRUE(callback_called());
+  EXPECT_EQ(PermissionStatus::ASK, callback_result());
+  Reset();
+
+  // Now we reset the device permission status back to granted, which moves the
+  // overall permission status to granted. At this point we have not yet
+  // refreshed the permission status.
+  geolocation_permission_context->set_has_device_permission_for_test(true);
+  EXPECT_FALSE(callback_called());
+
+  // This call will make us retrieve the device permission status and observers
+  // will be notified.
+  GetPermissionController()->GetPermissionResultForCurrentDocument(
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              PermissionType::GEOLOCATION),
+      main_rfh());
+
+  EXPECT_TRUE(callback_called());
+  EXPECT_EQ(PermissionStatus::GRANTED, callback_result());
+
+  // Cleanup.
+  GetBrowserContext()
+      ->GetPermissionController()
+      ->UnsubscribeFromPermissionResultChange(subscription_id);
+}
+
+TEST_F(PermissionSubscriptionTest,
+       NonrequestableDevicePermissionChangesLazilyNotifiesObservers) {
+  // Setup the initial state.
+  SetPermission(url(), url(), PermissionType::GEOLOCATION,
+                PermissionStatus::GRANTED);
+  permissions::PermissionContextBase* geolocation_permission_context =
+      GetPermissionManager()->GetPermissionContextForTesting(
+          ContentSettingsType::GEOLOCATION);
+  geolocation_permission_context->set_can_request_device_permission_for_test(
+      false);
+  geolocation_permission_context->set_has_device_permission_for_test(true);
+
+  content::PermissionController::SubscriptionId subscription_id =
+      content::SubscribeToPermissionResultChange(
+          GetPermissionController(),
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  PermissionType::GEOLOCATION),
+          /*render_process_host=*/nullptr, main_rfh(), url(),
+          /*should_include_device_status=*/true,
+          base::BindRepeating(&PermissionSubscriptionTest::OnPermissionChange,
+                              base::Unretained(this)));
+
+  // Change device status. At this point the device permission has not been
+  // queried yet.
+  geolocation_permission_context->set_has_device_permission_for_test(false);
+  EXPECT_FALSE(callback_called());
+
+  // Get permission status to also trigger the device permission being queried
+  // which would result in observers being notified.
+  GetPermissionController()->GetPermissionResultForCurrentDocument(
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              PermissionType::GEOLOCATION),
+      main_rfh());
+
+  EXPECT_TRUE(callback_called());
+  EXPECT_EQ(PermissionStatus::DENIED, callback_result());
+  Reset();
+
+  // Since the device level permission has changed, this will trigger a
+  // notification to observers.
+  geolocation_permission_context->set_has_device_permission_for_test(true);
+  SetPermission(url(), url(), PermissionType::GEOLOCATION,
+                PermissionStatus::DENIED);
+
+  EXPECT_TRUE(callback_called());
+  EXPECT_EQ(PermissionStatus::DENIED, callback_result());
+  Reset();
+
+  // Change permission to granted and observe change.
+  SetPermission(url(), url(), PermissionType::GEOLOCATION,
+                PermissionStatus::GRANTED);
+  EXPECT_TRUE(callback_called());
+  EXPECT_EQ(PermissionStatus::GRANTED, callback_result());
+  Reset();
+
+  // Cleanup.
+  GetBrowserContext()
+      ->GetPermissionController()
+      ->UnsubscribeFromPermissionResultChange(subscription_id);
+}
 
 TEST_F(PermissionSubscriptionTest,
        SubscribeUnsubscribeForNotAddedPermissionContext) {

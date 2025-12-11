@@ -182,6 +182,11 @@ class PermissionContextBase : public content_settings::Observer {
     has_device_permission_for_test_ = has_permission;
   }
 
+  void set_can_request_device_permission_for_test(
+      std::optional<bool> can_request) {
+    can_request_device_permission_for_test_ = can_request;
+  }
+
  protected:
   // Retrieves the current permission status. |render_frame_host| may be
   // nullptr.
@@ -302,6 +307,7 @@ class PermissionContextBase : public content_settings::Observer {
   mutable std::optional<bool> last_has_device_permission_result_ = std::nullopt;
 
   std::optional<bool> has_device_permission_for_test_;
+  std::optional<bool> can_request_device_permission_for_test_;
 
   // Must be the last member, to ensure that it will be
   // destroyed first, which will invalidate weak pointers
