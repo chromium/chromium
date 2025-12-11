@@ -137,6 +137,8 @@ export function sendCommand(cmd) {
       case SecurityInterstitialCommandId.CMD_SHOW_CERTIFICATE_VIEWER:
         certificateErrorPageController.showCertificateViewer();
         break;
+      default:
+        break;
     }
     return;
   }

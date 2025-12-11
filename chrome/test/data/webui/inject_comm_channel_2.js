@@ -14,9 +14,10 @@ window.addEventListener('message', function(e) {
   embedder = e.source;
   const data = JSON.parse(e.data);
   switch (data[0]) {
-    case 'connect_request': {
+    case 'connect_request':
       reportConnected_request();
       break;
-    }
+    default:
+      break;
   }
 });

@@ -340,6 +340,8 @@ class WebRequestInterceptor extends EventTarget {
       case 'sendheaders':
         webEvent = new SendHeadersEvent(webDetails);
         break;
+      default:
+        break;
     }
     const listenerReturnValue = webListener(webEvent);
     if (listenerReturnValue instanceof Promise) {

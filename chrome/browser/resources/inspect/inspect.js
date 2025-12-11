@@ -841,6 +841,8 @@ function handleKey(event) {
         dialog.commit(true);
       }
       break;
+    default:
+      break;
   }
 }
 

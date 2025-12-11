@@ -305,6 +305,8 @@ class ControlledFrameContextMenus extends EventTarget {
         menuEvent =
             new ContextMenusClickEvent(webifyClickEventDetails(details));
         break;
+      default:
+        break;
     }
 
     const listenerReturnValue = listener(menuEvent);

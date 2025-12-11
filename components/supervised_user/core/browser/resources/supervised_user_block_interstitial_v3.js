@@ -27,6 +27,8 @@ function sendCommand(cmd) {
       case 'requestUrlAccessLocal':
         supervisedUserErrorPageController.requestUrlAccessLocal();
         break;
+      default:
+        break;
     }
     return;
   }
