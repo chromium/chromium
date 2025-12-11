@@ -13,7 +13,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -86,10 +85,7 @@ public class InstanceSwitcherCoordinator {
     }
 
     private final Context mContext;
-    private final Callback<InstanceInfo> mOpenCallback;
-    private final Callback<InstanceInfo> mCloseCallback;
-    private final Callback<Pair<Integer, String>> mRenameWindowCallback;
-    private final Runnable mNewWindowAction;
+    private final InstanceSwitcherActionsDelegate mDelegate;
     private final ModalDialogManager mModalDialogManager;
     private final int mMaxInstanceCount;
 
@@ -120,10 +116,7 @@ public class InstanceSwitcherCoordinator {
      * @param context Context to use to build the dialog.
      * @param modalDialogManager {@link ModalDialogManager} object.
      * @param iconBridge An object that fetches favicons from local DB.
-     * @param openCallback Callback to invoke to open a chosen instance.
-     * @param closeCallback Callback to invoke to close a chosen instance.
-     * @param renameWindowCallback Callback to invoke to rename a chosen instance.
-     * @param newWindowAction Runnable to invoke to open a new window.
+     * @param delegate A delegate interface to handle instance switcher actions.
      * @param maxInstanceCount The maximum number of instances whose state can be persisted.
      * @param instanceInfo List of {@link InstanceInfo} for available Chrome instances.
      * @param isIncognitoWindow Used to determine if dialog should show "New window" or "New
@@ -133,10 +126,7 @@ public class InstanceSwitcherCoordinator {
             Context context,
             ModalDialogManager modalDialogManager,
             LargeIconBridge iconBridge,
-            Callback<InstanceInfo> openCallback,
-            Callback<InstanceInfo> closeCallback,
-            Callback<Pair<Integer, String>> renameWindowCallback,
-            Runnable newWindowAction,
+            InstanceSwitcherActionsDelegate delegate,
             int maxInstanceCount,
             List<InstanceInfo> instanceInfo,
             boolean isIncognitoWindow) {
@@ -144,10 +134,7 @@ public class InstanceSwitcherCoordinator {
                         context,
                         modalDialogManager,
                         iconBridge,
-                        openCallback,
-                        closeCallback,
-                        renameWindowCallback,
-                        newWindowAction,
+                        delegate,
                         maxInstanceCount,
                         isIncognitoWindow)
                 .show(instanceInfo);
@@ -157,19 +144,13 @@ public class InstanceSwitcherCoordinator {
             Context context,
             ModalDialogManager modalDialogManager,
             LargeIconBridge iconBridge,
-            Callback<InstanceInfo> openCallback,
-            Callback<InstanceInfo> closeCallback,
-            Callback<Pair<Integer, String>> renameWindowCallback,
-            Runnable newWindowAction,
+            InstanceSwitcherActionsDelegate delegate,
             int maxInstanceCount,
             boolean isIncognitoWindow) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mOpenCallback = openCallback;
-        mCloseCallback = closeCallback;
-        mRenameWindowCallback = renameWindowCallback;
         mUiUtils = new UiUtils(mContext, iconBridge);
-        mNewWindowAction = newWindowAction;
+        mDelegate = delegate;
         mMaxInstanceCount = maxInstanceCount;
         mIsIncognitoWindow = isIncognitoWindow;
         mSelectedItems = new HashMap<>();
@@ -486,7 +467,7 @@ public class InstanceSwitcherCoordinator {
 
     private void newWindowAction(View view) {
         dismissDialog(DialogDismissalCause.ACTION_ON_CONTENT);
-        mNewWindowAction.run();
+        mDelegate.openNewWindow(mIsIncognitoWindow);
     }
 
     private void buildMoreMenu(PropertyModel.Builder builder, InstanceInfo item) {
@@ -543,7 +524,7 @@ public class InstanceSwitcherCoordinator {
             return;
         }
         dismissDialog(DialogDismissalCause.ACTION_ON_CONTENT);
-        mOpenCallback.onResult(item);
+        mDelegate.openInstance(item.instanceId);
     }
 
     private void selectInstance(InstanceInfo clickedItem) {
@@ -710,7 +691,7 @@ public class InstanceSwitcherCoordinator {
             // Update new window item based on instance count after instance removal.
             enableNewWindowCommand(getTotalInstanceCount() < mMaxInstanceCount);
         }
-        mCloseCallback.onResult(item);
+        mDelegate.closeInstance(item.instanceId);
         RecordUserAction.record("Android.WindowManager.CloseWindow");
     }
 
@@ -803,7 +784,7 @@ public class InstanceSwitcherCoordinator {
                             mContext.getString(
                                     R.string.instance_switcher_item_more_menu_content_description,
                                     newTitle));
-                    mRenameWindowCallback.onResult(new Pair<>(item.instanceId, customTitle));
+                    mDelegate.renameInstance(item.instanceId, customTitle);
                 };
 
         UiUtils.showNameWindowDialog(

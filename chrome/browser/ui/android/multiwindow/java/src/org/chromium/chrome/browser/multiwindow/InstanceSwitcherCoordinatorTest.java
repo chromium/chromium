@@ -30,8 +30,13 @@ import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 
-import android.util.Pair;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,8 +53,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -84,9 +91,13 @@ import java.util.concurrent.TimeoutException;
 public class InstanceSwitcherCoordinatorTest {
     private static final int MAX_INSTANCE_COUNT = 5;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    @Mock InstanceSwitcherActionsDelegate mDelegate;
 
     private LargeIconBridge mIconBridge;
 
@@ -128,25 +139,19 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 createPersistedInstances(
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
-        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
-        final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            openCallback,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
                 });
         onData(anything()).inRoot(isDialog()).atPosition(1).perform(click());
-        itemClickCallbackHelper.waitForCallback(itemClickCount);
+        verify(mDelegate).openInstance(eq(instances[1].instanceId));
     }
 
     @Test
@@ -158,17 +163,21 @@ public class InstanceSwitcherCoordinatorTest {
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            itemClickCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .openInstance(anyInt());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            openCallback,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -200,6 +209,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isEnabled()))
                 .perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
+        verify(mDelegate).openInstance(instances[1].instanceId);
     }
 
     @Test
@@ -212,17 +222,21 @@ public class InstanceSwitcherCoordinatorTest {
                         /* numActiveInstances= */ 2, /* numInactiveInstances= */ 1);
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            itemClickCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .openInstance(anyInt());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            openCallback,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -254,6 +268,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isEnabled()))
                 .perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
+        verify(mDelegate).openInstance(instances[2].instanceId);
     }
 
     @Test
@@ -265,20 +280,22 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 createPersistedInstances(
                         /* numActiveInstances= */ 1, /* numInactiveInstances= */ 3);
-        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
-        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            closeCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .closeInstance(anyInt());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            openCallback,
-                            closeCallback,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -305,6 +322,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close the selected instance.
         closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
+        verify(mDelegate).closeInstance(instances[1].instanceId);
 
         // Verify "Restore" button is now disabled.
         onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
@@ -321,20 +339,22 @@ public class InstanceSwitcherCoordinatorTest {
         InstanceInfo[] instances =
                 createPersistedInstances(
                         /* numActiveInstances= */ 1, /* numInactiveInstances= */ 3);
-        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
-        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            closeCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .closeInstance(anyInt());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            openCallback,
-                            closeCallback,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -361,6 +381,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close the first instance.
         closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
+        verify(mDelegate).closeInstance(instances[1].instanceId);
 
         // Verify "Restore" button is still enabled.
         onView(allOf(withId(R.id.positive_button), withText(R.string.restore)))
@@ -384,10 +405,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -429,17 +447,21 @@ public class InstanceSwitcherCoordinatorTest {
                         /* numActiveInstances= */ 2, /* numInactiveInstances= */ 1);
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            itemClickCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .openInstance(anyInt());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            openCallback,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -472,6 +494,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isEnabled()))
                 .perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
+        verify(mDelegate).openInstance(instances[2].instanceId);
     }
 
     @Test
@@ -497,16 +520,21 @@ public class InstanceSwitcherCoordinatorTest {
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
+        doAnswer(
+                        invocation -> {
+                            itemClickCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .openNewWindow(anyBoolean());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            null,
-                            null,
-                            itemClickCallbackHelper::notifyCalled,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             isIncognitoWindow);
@@ -518,6 +546,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(hasDescendant(withText(stringId))))
                 .perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
+        verify(mDelegate).openNewWindow(isIncognitoWindow);
     }
 
     @Test
@@ -528,17 +557,21 @@ public class InstanceSwitcherCoordinatorTest {
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        Callback<InstanceInfo> closeCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            itemClickCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .closeInstance(anyInt());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            closeCallback,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -561,6 +594,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         onView(withText(R.string.close)).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
+        verify(mDelegate).closeInstance(instances[2].instanceId);
     }
 
     @Test
@@ -578,10 +612,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -614,7 +645,20 @@ public class InstanceSwitcherCoordinatorTest {
         final int newWindowClickCount = newWindowCallbackHelper.getCallCount();
 
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
-        Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            closeCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .closeInstance(anyInt());
+        doAnswer(
+                        invocation -> {
+                            newWindowCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .openNewWindow(anyBoolean());
         InstanceSwitcherCoordinator.setSkipCloseConfirmation();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -623,10 +667,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            closeCallback,
-                            null,
-                            newWindowCallbackHelper::notifyCalled,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -647,6 +688,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close an instance.
         closeInstanceAt(2, closeCallbackHelper);
+        verify(mDelegate).closeInstance(instances[2].instanceId);
 
         // Verify that we show info message that users can have up to 5 windows when there are
         // maximum number of windows.
@@ -658,10 +700,12 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close another instance.
         closeInstanceAt(2, closeCallbackHelper);
+        verify(mDelegate).closeInstance(instances[3].instanceId);
 
         // List positions 0 ~ 3: instances. 4: 'new window' command.
         onData(anything()).inRoot(isDialog()).atPosition(4).perform(click());
         newWindowCallbackHelper.waitForCallback(newWindowClickCount);
+        verify(mDelegate).openNewWindow(false);
     }
 
     @Test
@@ -679,7 +723,20 @@ public class InstanceSwitcherCoordinatorTest {
         final int newWindowClickCount = newWindowCallbackHelper.getCallCount();
 
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
-        Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            closeCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .closeInstance(anyInt());
+        doAnswer(
+                        invocation -> {
+                            newWindowCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .openNewWindow(anyBoolean());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -687,10 +744,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            closeCallback,
-                            null,
-                            newWindowCallbackHelper::notifyCalled,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -738,6 +792,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isDisplayed()));
 
         closeInstanceAt(0, /* isActiveInstance= */ false, closeCallbackHelper);
+        verify(mDelegate).closeInstance(instances[5].instanceId);
 
         // Switch to the active instance tab.
         onView(
@@ -748,6 +803,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Close an active instance (e.g., the third one, at index 2).
         closeInstanceAt(2, /* isActiveInstance= */ true, closeCallbackHelper);
+        verify(mDelegate).closeInstance(instances[2].instanceId);
 
         // Verify max instance info message is gone.
         onView(withId(R.id.max_instance_info))
@@ -760,6 +816,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isDisplayed())) // Assert it's now visible
                 .perform(click());
         newWindowCallbackHelper.waitForCallback(newWindowClickCount);
+        verify(mDelegate).openNewWindow(false);
     }
 
     @Test
@@ -781,10 +838,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -841,17 +895,21 @@ public class InstanceSwitcherCoordinatorTest {
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        Callback<InstanceInfo> openCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            itemClickCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .openInstance(anyInt());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            openCallback,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -888,6 +946,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(isEnabled()))
                 .perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
+        verify(mDelegate).openInstance(instances[1].instanceId);
     }
 
     @Test
@@ -933,17 +992,21 @@ public class InstanceSwitcherCoordinatorTest {
                             /* markedForDeletion= */ false)
                 };
         final CallbackHelper closeCallbackHelper = new CallbackHelper();
-        Callback<InstanceInfo> closeCallback = (item) -> closeCallbackHelper.notifyCalled();
+        doAnswer(
+                        invocation -> {
+                            closeCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .closeInstance(anyInt());
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     InstanceSwitcherCoordinator.showDialog(
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            closeCallback,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -951,11 +1014,13 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Closing a hidden, tab-less instance skips the confirmation.
         closeInstanceAt(2, closeCallbackHelper);
+        verify(mDelegate).closeInstance(instances[2].instanceId);
 
         // Verify that the close callback skips the confirmation when the skip checkbox
         // was ticked on.
         InstanceSwitcherCoordinator.setSkipCloseConfirmation();
         closeInstanceAt(1, closeCallbackHelper);
+        verify(mDelegate).closeInstance(instances[1].instanceId);
     }
 
     @Test
@@ -970,10 +1035,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -1015,10 +1077,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null,
-                            null,
-                            null,
-                            null,
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -1063,10 +1122,13 @@ public class InstanceSwitcherCoordinatorTest {
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
         final CallbackHelper renameCallbackHelper = new CallbackHelper();
         final int renameCallbackCount = renameCallbackHelper.getCallCount();
-        Callback<Pair<Integer, String>> renameCallback =
-                (result) -> {
-                    renameCallbackHelper.notifyCalled();
-                };
+        doAnswer(
+                        invocation -> {
+                            renameCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .renameInstance(anyInt(), anyString());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1074,10 +1136,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null, // openCallback
-                            null, // closeCallback
-                            renameCallback,
-                            null, // newWindowAction
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -1122,6 +1181,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Check that the rename callback was called.
         assertEquals(renameCallbackCount + 1, renameCallbackHelper.getCallCount());
+        verify(mDelegate).renameInstance(instances[1].instanceId, newName);
     }
 
     @Test
@@ -1142,10 +1202,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null, // openCallback
-                            null, // closeCallback
-                            null, // renameCallback
-                            null, // newWindowAction
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -1191,10 +1248,13 @@ public class InstanceSwitcherCoordinatorTest {
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
         final CallbackHelper renameCallbackHelper = new CallbackHelper();
         final int renameCallbackCount = renameCallbackHelper.getCallCount();
-        Callback<Pair<Integer, String>> renameCallback =
-                (result) -> {
-                    renameCallbackHelper.notifyCalled();
-                };
+        doAnswer(
+                        invocation -> {
+                            renameCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .renameInstance(anyInt(), anyString());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1202,10 +1262,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null, // openCallback
-                            null, // closeCallback
-                            renameCallback,
-                            null, // newWindowAction
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -1231,6 +1288,7 @@ public class InstanceSwitcherCoordinatorTest {
 
         // Check that the rename callback was called.
         assertEquals(renameCallbackCount + 1, renameCallbackHelper.getCallCount());
+        verify(mDelegate).renameInstance(instances[1].instanceId, "");
 
         // Check that the instance title is updated to the default name in the list.
         String defaultName = instances[1].title;
@@ -1262,10 +1320,13 @@ public class InstanceSwitcherCoordinatorTest {
                 createPersistedInstances(
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
         final CallbackHelper renameCallbackHelper = new CallbackHelper();
-        Callback<Pair<Integer, String>> renameCallback =
-                (result) -> {
-                    renameCallbackHelper.notifyCalled();
-                };
+        doAnswer(
+                        invocation -> {
+                            renameCallbackHelper.notifyCalled();
+                            return null;
+                        })
+                .when(mDelegate)
+                .renameInstance(anyInt(), anyString());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1273,10 +1334,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null, // openCallback
-                            null, // closeCallback
-                            renameCallback,
-                            null, // newWindowAction
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -1325,10 +1383,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null, // openCallback
-                            null, // closeCallback
-                            null, // renameCallback
-                            null, // newWindowAction
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);
@@ -1424,10 +1479,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
-                            null, // openCallback
-                            null, // closeCallback
-                            null, // renameCallback
-                            null, // newWindowAction
+                            mDelegate,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances),
                             /* isIncognitoWindow= */ false);

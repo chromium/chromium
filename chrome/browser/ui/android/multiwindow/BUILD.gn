@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/multiwindow/CloseConfirmationDialogView.java",
     "java/src/org/chromium/chrome/browser/multiwindow/DialogListItemDecoration.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceInfo.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherActionsDelegate.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinator.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemProperties.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemViewBinder.java",

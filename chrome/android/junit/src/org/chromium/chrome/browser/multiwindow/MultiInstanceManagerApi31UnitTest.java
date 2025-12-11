@@ -65,7 +65,6 @@ import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
@@ -1051,13 +1050,10 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testRenameCallbackUpdatesCustomTitle() {
-        Callback<Pair<Integer, String>> renameCallback =
-                mMultiInstanceManager.getRenameCallbackForTesting();
-
+    public void testRenameInstanceUpdatesCustomTitle() {
         final String newTitle = "My Renamed Window";
         final int instanceId = 2;
-        renameCallback.onResult(new Pair<>(instanceId, newTitle));
+        mMultiInstanceManager.renameInstance(instanceId, newTitle);
 
         assertEquals(
                 "Custom title should be updated in SharedPreferences.",

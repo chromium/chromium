@@ -19,7 +19,6 @@ import android.os.SystemClock;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
@@ -104,7 +103,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 @NullMarked
-class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
+class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
+        implements ActivityStateListener, InstanceSwitcherActionsDelegate {
     private static final String TAG = "MIMApi31";
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
     /* package */ static final long SIX_MONTHS_MS = TimeUnit.DAYS.toMillis(6 * 30);
@@ -140,7 +140,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     private final Supplier<DesktopWindowStateManager> mDesktopWindowStateManagerSupplier;
     private final MultiInstanceStateObserver mOnMultiInstanceStateChanged;
-    private final Callback<Pair<Integer, String>> mRenameCallback;
 
     private static @Nullable Set<Integer> sAppTaskIdsForTesting;
 
@@ -162,8 +161,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mDesktopWindowStateManagerSupplier = desktopWindowStateManagerSupplier;
         mOnMultiInstanceStateChanged = this::onMultiInstanceStateChanged;
-        mRenameCallback =
-                (pair) -> MultiInstancePersistentStore.writeCustomTitle(pair.first, pair.second);
 
         // Check if instance limit has changed and update SharedPrefs.
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
@@ -213,27 +210,35 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 mActivity,
                 mModalDialogManagerSupplier.get(),
                 new LargeIconBridge(getProfile()),
-                (item) -> {
-                    RecordUserAction.record("Android.WindowManager.SelectWindow");
-                    openWindow(item.instanceId, NewWindowAppSource.WINDOW_MANAGER);
-                },
-                (item) -> {
-                    RecordUserAction.record("MobileMenuWindowManagerCloseInstance");
-                    closeWindow(item.instanceId, CloseWindowAppSource.WINDOW_MANAGER);
-                },
-                mRenameCallback,
-                () ->
-                        openNewWindow(
-                                "Android.WindowManager.NewWindow",
-                                isIncognitoWindow,
-                                NewWindowAppSource.WINDOW_MANAGER),
+                this,
                 MultiWindowUtils.getMaxInstances(),
                 info,
                 isIncognitoWindow);
     }
 
-    Callback<Pair<Integer, String>> getRenameCallbackForTesting() {
-        return mRenameCallback;
+    // InstanceSwitcherActionsDelegate implementation.
+
+    @Override
+    public void openInstance(int instanceId) {
+        RecordUserAction.record("Android.WindowManager.SelectWindow");
+        openWindow(instanceId, NewWindowAppSource.WINDOW_MANAGER);
+    }
+
+    @Override
+    public void closeInstance(int instanceId) {
+        RecordUserAction.record("MobileMenuWindowManagerCloseInstance");
+        closeWindow(instanceId, CloseWindowAppSource.WINDOW_MANAGER);
+    }
+
+    @Override
+    public void renameInstance(int instanceId, String newName) {
+        MultiInstancePersistentStore.writeCustomTitle(instanceId, newName);
+    }
+
+    @Override
+    public void openNewWindow(boolean isIncognito) {
+        openNewWindow(
+                "Android.WindowManager.NewWindow", isIncognito, NewWindowAppSource.WINDOW_MANAGER);
     }
 
     @Override
@@ -1837,7 +1842,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         UiUtils.showNameWindowDialog(
                 mActivity,
                 assumeNonNull(currentTitle),
-                newTitle -> mRenameCallback.onResult(new Pair<>(mInstanceId, newTitle)),
+                newTitle -> renameInstance(mInstanceId, newTitle),
                 source);
     }
 }
