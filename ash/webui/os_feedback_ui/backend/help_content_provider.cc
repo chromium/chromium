@@ -12,6 +12,7 @@
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/http/http_response_headers.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -324,33 +324,18 @@ void HelpContentProvider::OnHelpContentSearchResponse(
     GetHelpContentsCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     std::optional<std::string> response_body) {
-  if (IsLoaderSuccessful(url_loader.get()) && response_body) {
-    DVLOG(2) << "HelpContentProvider response body: " << *response_body;
-    // Send the JSON string to a dedicated service for safe parsing.
-    data_decoder_.ParseJson(
-        *response_body,
-        base::BindOnce(&HelpContentProvider::OnResponseJsonParsed,
-                       weak_ptr_factory_.GetWeakPtr(), max_results,
-                       std::move(callback)));
-  } else {
-    SearchResponsePtr response = SearchResponse::New();
-    std::move(callback).Run(std::move(response));
-  }
-}
-
-void HelpContentProvider::OnResponseJsonParsed(
-    const uint32_t max_results,
-    GetHelpContentsCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
   SearchResponsePtr response = SearchResponse::New();
 
-  if (result.has_value()) {
-    PopulateSearchResponse(app_locale_, is_child_account_, max_results, *result,
-                           response);
-  } else {
-    LOG(ERROR)
-        << "HelpContentProvider data decoder failed to parse json. Error: "
-        << result.error();
+  if (IsLoaderSuccessful(url_loader.get()) && response_body) {
+    DVLOG(2) << "HelpContentProvider response body: " << *response_body;
+    std::optional<base::Value> result = base::JSONReader::Read(
+        *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    if (result.has_value()) {
+      PopulateSearchResponse(app_locale_, is_child_account_, max_results,
+                             *result, response);
+    } else {
+      LOG(ERROR) << "HelpContentProvider failed to parse json";
+    }
   }
 
   std::move(callback).Run(std::move(response));

@@ -19,6 +19,7 @@
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -579,21 +580,13 @@ void SystemRoutineController::OnPowerRoutineResultFetched(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      file_contents,
-      base::BindOnce(&SystemRoutineController::OnPowerRoutineJsonParsed,
-                     weak_factory_.GetWeakPtr(), routine_type));
-  return;
-}
-
-void SystemRoutineController::OnPowerRoutineJsonParsed(
-    mojom::RoutineType routine_type,
-    data_decoder::DataDecoder::ValueOrError result) {
+  std::optional<base::Value> result = base::JSONReader::Read(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result.has_value()) {
     OnPowerRoutineResult(routine_type,
                          mojom::StandardRoutineResult::kExecutionError,
                          /*percent_change=*/0, /*seconds_elapsed=*/0);
-    DVLOG(2) << "JSON parsing failed: " << result.error();
+    DVLOG(2) << "JSON parsing failed";
     return;
   }
 

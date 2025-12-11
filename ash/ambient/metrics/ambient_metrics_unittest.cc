@@ -17,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/url_util.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -116,7 +115,6 @@ class AmbientMetricsVideoTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder data_decoder_;
   base::HistogramTester histogram_tester_;
   const AshWebView::InitParams init_params_;
   TestAshWebView view_;

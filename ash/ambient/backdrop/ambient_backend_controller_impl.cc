@@ -26,6 +26,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -40,7 +41,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -455,20 +455,15 @@ void AmbientBackendControllerImpl::FetchWeather(
         constexpr char kJsonPrefix[] = ")]}'\n";
 
         if (response && response->length() > strlen(kJsonPrefix)) {
-          auto json_handler =
-              [](FetchWeatherCallback callback,
-                 data_decoder::DataDecoder::ValueOrError result) {
-                if (result.has_value()) {
-                  std::move(callback).Run(ToWeatherInfo(*result));
-                } else {
-                  DVLOG(1) << "Failed to parse weather json.";
-                  std::move(callback).Run(std::nullopt);
-                }
-              };
-
-          data_decoder::DataDecoder::ParseJsonIsolated(
-              response->substr(strlen(kJsonPrefix)),
-              base::BindOnce(json_handler, std::move(callback)));
+          std::optional<base::Value> result =
+              base::JSONReader::Read(response->substr(strlen(kJsonPrefix)),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+          if (result.has_value()) {
+            std::move(callback).Run(ToWeatherInfo(*result));
+          } else {
+            DVLOG(1) << "Failed to parse weather json.";
+            std::move(callback).Run(std::nullopt);
+          }
         } else {
           std::move(callback).Run(std::nullopt);
         }

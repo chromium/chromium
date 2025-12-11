@@ -26,7 +26,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/url_util.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -84,26 +83,6 @@ void RecordEngagementTime(const std::string& histogram_name,
       /*buckets=*/kAmbientModeElapsedTimeHistogramBuckets);
 }
 
-// After the JSON in the URL fragment has been decoded in `result`:
-void OnAmbientVideoPlaybackMetricsParsed(
-    base::OnceCallback<void(base::Value::Dict)> completion_cb,
-    data_decoder::DataDecoder::ValueOrError result) {
-  CHECK(completion_cb);
-  // These errors really shouldn't ever happen, but they're not significant
-  // enough to crash the whole process over.
-  if (!result.has_value()) {
-    LOG(ERROR) << "JSON parsing failed with error: " << result.error();
-    std::move(completion_cb).Run(base::Value::Dict());
-    return;
-  }
-  if (!result->is_dict()) {
-    LOG(ERROR) << "Expected JSON dictionary for metrics";
-    std::move(completion_cb).Run(base::Value::Dict());
-    return;
-  }
-  std::move(completion_cb).Run(std::move(*result).TakeDict());
-}
-
 // Retrieves the the JSON dictionary in the `web_view`'s URL fragment.
 void GetAmbientVideoPlaybackMetrics(
     AshWebView* web_view,
@@ -123,10 +102,21 @@ void GetAmbientVideoPlaybackMetrics(
     std::move(completion_cb).Run(base::Value::Dict());
     return;
   }
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      serialized_playback_metrics,
-      base::BindOnce(&OnAmbientVideoPlaybackMetricsParsed,
-                     std::move(completion_cb)));
+  std::optional<base::Value> result = base::JSONReader::Read(
+      serialized_playback_metrics, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  // These errors really shouldn't ever happen, but they're not significant
+  // enough to crash the whole process over.
+  if (!result.has_value()) {
+    LOG(ERROR) << "JSON parsing failed";
+    std::move(completion_cb).Run(base::Value::Dict());
+    return;
+  }
+  if (!result->is_dict()) {
+    LOG(ERROR) << "Expected JSON dictionary for metrics";
+    std::move(completion_cb).Run(base::Value::Dict());
+    return;
+  }
+  std::move(completion_cb).Run(std::move(*result).TakeDict());
 }
 
 AmbientVideoSessionStatus ParseAmbientVideoSessionStatus(

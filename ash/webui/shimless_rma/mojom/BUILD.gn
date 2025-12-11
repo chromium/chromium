@@ -120,7 +120,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
     "//chromeos/ash/components/dbus/update_engine",
     "//content/test:test_support",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
     "//ui/gfx",
