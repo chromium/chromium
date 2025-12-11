@@ -94,6 +94,10 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
     DiskMetrics ComputeDiskMetrics(const base::FilePath& user_data_dir);
   };
 
+  // Sets the value to be returned by ComputeDiskMetrics in tests. To stop
+  // overriding the return value, pass std::nullopt.
+  void SetDiskMetricsForTesting(std::optional<DiskMetrics> metrics);
+
   void RecordDiskMetrics();
   void PostDiskMetricsTask();
   void SavePendingDiskMetrics(DiskMetrics metrics);
@@ -111,6 +115,8 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
 
   std::unique_ptr<ScopedTimeInModeTracker> battery_saver_mode_tracker_;
   std::unique_ptr<ScopedTimeInModeTracker> memory_saver_mode_tracker_;
+
+  std::optional<DiskMetrics> disk_metrics_for_testing_;
 };
 
 }  // namespace performance_manager
