@@ -41,8 +41,9 @@ NoStatePrefetchClient* NoStatePrefetchClient::From(Page* page) {
   return page->GetNoStatePrefetchClient();
 }
 
-NoStatePrefetchClient::NoStatePrefetchClient(WebNoStatePrefetchClient* client)
-    : client_(client) {}
+NoStatePrefetchClient::NoStatePrefetchClient(Page& page,
+                                             WebNoStatePrefetchClient* client)
+    : page_(&page), client_(client) {}
 
 bool NoStatePrefetchClient::IsPrefetchOnly() {
   return client_ && client_->IsPrefetchOnly();

@@ -82,6 +82,7 @@ class PagePopupController : public ScriptWrappable {
       bool children_updated);
 
  private:
+  Member<Page> page_;
   PagePopup& popup_;
   std::optional<gfx::Point> popup_origin_;
 

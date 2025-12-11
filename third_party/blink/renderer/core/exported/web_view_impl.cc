@@ -555,9 +555,9 @@ void WebView::ResetVisitedLinkState(bool invalidate_visited_link_hashes) {
 void WebViewImpl::SetNoStatePrefetchClient(
     WebNoStatePrefetchClient* no_state_prefetch_client) {
   DCHECK(page_);
-  ProvideNoStatePrefetchClientTo(
-      *page_,
-      MakeGarbageCollected<NoStatePrefetchClient>(no_state_prefetch_client));
+  ProvideNoStatePrefetchClientTo(*page_,
+                                 MakeGarbageCollected<NoStatePrefetchClient>(
+                                     *page_, no_state_prefetch_client));
 }
 
 void WebViewImpl::CloseWindow() {

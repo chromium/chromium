@@ -15,10 +15,13 @@
 namespace blink {
 
 void AudioGraphTracer::ProvideAudioGraphTracerTo(Page& page) {
-  page.SetAudioGraphTracer(MakeGarbageCollected<AudioGraphTracer>());
+  page.SetAudioGraphTracer(MakeGarbageCollected<AudioGraphTracer>(page));
 }
 
+AudioGraphTracer::AudioGraphTracer(Page& page) : page_(&page) {}
+
 void AudioGraphTracer::Trace(Visitor* visitor) const {
+  visitor->Trace(page_);
   visitor->Trace(inspector_agent_);
   visitor->Trace(contexts_);
 }

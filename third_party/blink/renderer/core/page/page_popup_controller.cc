@@ -48,7 +48,7 @@ PagePopupController* PagePopupController::From(Page& page) {
 PagePopupController::PagePopupController(Page& page,
                                          PagePopup& popup,
                                          PagePopupClient* client)
-    : popup_(popup), popup_client_(client) {
+    : page_(&page), popup_(popup), popup_client_(client) {
   DCHECK(client);
   page.SetPagePopupController(this);
 }
@@ -124,6 +124,7 @@ void PagePopupController::setWindowRect(int x, int y, int width, int height) {
 
 void PagePopupController::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  visitor->Trace(page_);
 }
 
 void PagePopupController::setMenuListOptionsBoundsInAXTree(
