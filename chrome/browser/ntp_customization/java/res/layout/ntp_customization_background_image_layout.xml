@@ -24,5 +24,6 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="@dimen/ntp_customization_gradient_toolbar_height"
         android:layout_gravity="top"
+        android:visibility="gone"
         android:background="@drawable/ntp_customized_background_image_gradient_overlay" />
 </FrameLayout>

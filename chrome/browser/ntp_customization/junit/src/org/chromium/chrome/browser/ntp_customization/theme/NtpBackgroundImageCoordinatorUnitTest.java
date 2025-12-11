@@ -23,6 +23,7 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
@@ -41,6 +42,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
@@ -59,6 +61,7 @@ public class NtpBackgroundImageCoordinatorUnitTest {
     @Mock private UiConfig mUiConfig;
     @Mock private Bitmap mBitmap;
     @Captor ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverArgumentCaptor;
+    @Captor ArgumentCaptor<FrameLayout> mBackgroundImageLayoutCaptor;
 
     private Activity mActivity;
     private NtpBackgroundImageCoordinator mCoordinator;
@@ -99,7 +102,11 @@ public class NtpBackgroundImageCoordinatorUnitTest {
     public void testConstructor() {
         verify(mUiConfig, never()).addObserver(any(DisplayStyleObserver.class));
         assertEquals(COLOR, mPropertyModel.get(NtpBackgroundImageProperties.BACKGROUND_COLOR));
-        verify(mRootView).addView(any(View.class));
+        verify(mRootView).addView(mBackgroundImageLayoutCaptor.capture());
+
+        View backgroundImageLayout = mBackgroundImageLayoutCaptor.getValue();
+        View gradientView = backgroundImageLayout.findViewById(R.id.gradient_view);
+        assertEquals(View.GONE, gradientView.getVisibility());
     }
 
     @Test
