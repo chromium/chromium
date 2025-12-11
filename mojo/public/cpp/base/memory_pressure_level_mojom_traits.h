@@ -6,7 +6,7 @@
 #define MOJO_PUBLIC_CPP_BASE_MEMORY_PRESSURE_LEVEL_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/memory_pressure_level.mojom-shared.h"
 

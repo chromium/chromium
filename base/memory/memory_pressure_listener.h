@@ -14,7 +14,7 @@
 #include <variant>
 
 #include "base/base_export.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/scoped_refptr.h"
