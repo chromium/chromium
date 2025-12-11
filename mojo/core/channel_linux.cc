@@ -637,7 +637,7 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
         return true;
       }
 
-      if (read_buffer_ || read_notifier_) {
+      if (shared_read_buffer_ || read_notifier_) {
         LOG(ERROR) << "Received an UPGRADE_OFFER on already upgraded channel";
         return true;
       }
@@ -683,9 +683,9 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
         return true;
       }
 
-      read_buffer_ = std::move(read_sb);
+      shared_read_buffer_ = std::move(read_sb);
 
-      read_buf_.resize(read_buffer_->usable_len());
+      read_buf_.resize(shared_read_buffer_->usable_len());
       AcceptUpgradeOffer();
 
       // And if we haven't offered ourselves just go ahead and do it now.
@@ -726,13 +726,13 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
 }
 
 void ChannelLinux::SharedMemReadReady() {
-  CHECK(read_buffer_);
-  if (read_buffer_->TryLockForReading()) {
+  CHECK(shared_read_buffer_);
+  if (shared_read_buffer_->TryLockForReading()) {
     read_notifier_->Clear();
     bool read_fail = false;
     do {
       uint32_t bytes_read = 0;
-      SharedBuffer::Error read_res = read_buffer_->TryReadLocked(
+      SharedBuffer::Error read_res = shared_read_buffer_->TryReadLocked(
           read_buf_.data(), read_buf_.size(), &bytes_read);
       if (read_res == SharedBuffer::Error::kControlCorruption) {
         // This is an error we cannot recover from.
@@ -777,7 +777,7 @@ void ChannelLinux::SharedMemReadReady() {
         data_offset += read_size_hint;
       }
     } while (!read_fail);
-    read_buffer_->UnlockForReading();
+    shared_read_buffer_->UnlockForReading();
   }
 }
 

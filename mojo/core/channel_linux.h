@@ -83,7 +83,7 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
   std::unique_ptr<SharedBuffer> write_buffer_ GUARDED_BY(memfd_write_lock_);
 
   std::unique_ptr<DataAvailableNotifier> read_notifier_;
-  std::unique_ptr<SharedBuffer> read_buffer_;
+  std::unique_ptr<SharedBuffer> shared_read_buffer_;
 
   uint32_t num_pages_ = 0;
 
