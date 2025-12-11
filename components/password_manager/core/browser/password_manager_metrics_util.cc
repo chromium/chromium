@@ -247,12 +247,6 @@ void LogPasswordGenerationSubmissionEvent(PasswordSubmissionEvent event) {
                                 SUBMISSION_EVENT_ENUM_COUNT);
 }
 
-void LogPasswordGenerationAvailableSubmissionEvent(
-    PasswordSubmissionEvent event) {
-  base::UmaHistogramEnumeration("PasswordGeneration.SubmissionAvailableEvent",
-                                event, SUBMISSION_EVENT_ENUM_COUNT);
-}
-
 void LogAutoSigninPromoUserAction(AutoSigninPromoUserAction action) {
   base::UmaHistogramEnumeration("PasswordManager.AutoSigninFirstRunDialog",
                                 action, AUTO_SIGNIN_PROMO_ACTION_COUNT);

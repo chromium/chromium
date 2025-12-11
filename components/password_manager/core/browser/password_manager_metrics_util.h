@@ -735,10 +735,6 @@ void LogApplySyncChangesState(ApplySyncChangesState state);
 // Log submission events related to generation.
 void LogPasswordGenerationSubmissionEvent(PasswordSubmissionEvent event);
 
-// Log when password generation is available for a particular form.
-void LogPasswordGenerationAvailableSubmissionEvent(
-    PasswordSubmissionEvent event);
-
 // Log a user action on showing the autosignin first run experience.
 void LogAutoSigninPromoUserAction(AutoSigninPromoUserAction action);
 

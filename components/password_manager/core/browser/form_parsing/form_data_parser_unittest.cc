@@ -3775,7 +3775,6 @@ TEST_F(FormParserTest, PasswordFieldIsMaskedMetric_NotRecorded) {
 }
 
 TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_Recorded) {
-  base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   CheckTestData({{
       .fields =
@@ -3791,8 +3790,6 @@ TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_Recorded) {
                .model_predicted_type = autofill::UNKNOWN_TYPE},
           },
   }});
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked", true, 1);
 
   auto ukm_entries =
       test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");
@@ -3802,7 +3799,6 @@ TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_Recorded) {
 }
 
 TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_NotRecorded) {
-  base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   CheckTestData({{
       .fields =
@@ -3817,9 +3813,6 @@ TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_NotRecorded) {
                .model_predicted_type = autofill::PASSWORD},
           },
   }});
-  // No unrelated fields - no metric.
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked", 0);
 
   auto ukm_entries =
       test_ukm_recorder.GetEntriesByName("PasswordManager.Parsing");

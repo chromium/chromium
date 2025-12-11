@@ -392,9 +392,6 @@ class PasswordFormMetricsRecorder
     kMaxValue = kWrong,
   };
 
-  // Called if the user could generate a password for this form.
-  void MarkGenerationAvailable();
-
   // Stores the user action associated with a generated password.
   void SetGeneratedPasswordStatus(GeneratedPasswordStatus status);
 

@@ -325,9 +325,6 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
     if (HasGeneratedPassword(generated_password_status_)) {
       metrics_util::LogPasswordGenerationSubmissionEvent(
           metrics_util::PASSWORD_NOT_SUBMITTED);
-    } else if (generation_available_) {
-      metrics_util::LogPasswordGenerationAvailableSubmissionEvent(
-          metrics_util::PASSWORD_NOT_SUBMITTED);
     }
     ukm_entry_builder_.SetSubmission_Observed(0 /*false*/);
   }
@@ -546,10 +543,6 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
 #endif
 }
 
-void PasswordFormMetricsRecorder::MarkGenerationAvailable() {
-  generation_available_ = true;
-}
-
 void PasswordFormMetricsRecorder::SetGeneratedPasswordStatus(
     GeneratedPasswordStatus status) {
   generated_password_status_ = status;
@@ -559,9 +552,6 @@ void PasswordFormMetricsRecorder::LogSubmitPassed() {
   if (submit_result_ != SubmitResult::kFailed) {
     if (HasGeneratedPassword(generated_password_status_)) {
       metrics_util::LogPasswordGenerationSubmissionEvent(
-          metrics_util::PASSWORD_SUBMITTED);
-    } else if (generation_available_) {
-      metrics_util::LogPasswordGenerationAvailableSubmissionEvent(
           metrics_util::PASSWORD_SUBMITTED);
     }
   }
@@ -580,9 +570,6 @@ void PasswordFormMetricsRecorder::LogSubmitFailed() {
   if (HasGeneratedPassword(generated_password_status_)) {
     metrics_util::LogPasswordGenerationSubmissionEvent(
         metrics_util::GENERATED_PASSWORD_FORCE_SAVED);
-  } else if (generation_available_) {
-    metrics_util::LogPasswordGenerationAvailableSubmissionEvent(
-        metrics_util::PASSWORD_SUBMISSION_FAILED);
   }
   base::RecordAction(base::UserMetricsAction("PasswordManager_LoginFailed"));
   ukm_entry_builder_.SetSubmission_Observed(1 /*true*/);

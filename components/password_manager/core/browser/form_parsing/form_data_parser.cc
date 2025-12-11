@@ -979,12 +979,6 @@ bool ParseUsingModelPredictions(
           password_field_is_masked.value());
     }
 
-    if (unrelated_fields_contain_masked_fields.has_value()) {
-      base::UmaHistogramBoolean(
-          "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked",
-          unrelated_fields_contain_masked_fields.value());
-    }
-
     if (ukm_source_id && (password_field_is_masked.has_value() ||
                           unrelated_fields_contain_masked_fields.has_value())) {
       ukm::builders::PasswordManager_Parsing ukm_builder(ukm_source_id.value());

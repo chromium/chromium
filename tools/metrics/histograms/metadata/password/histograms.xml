@@ -452,18 +452,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records an entry if (and only if) a popup was shown.</summary>
 </histogram>
 
-<histogram name="PasswordGeneration.SubmissionAvailableEvent"
-    enum="PasswordSubmissionEvent" expires_after="2026-01-18">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
-  <summary>
-    Measures the frequency of submission events for passwords that could have
-    been generated, but the user didn't choose to use the feature. This is to
-    compare with PasswordGeneration.SubmssionEvent.
-  </summary>
-</histogram>
-
 <histogram name="PasswordGeneration.SubmissionEvent"
     enum="PasswordSubmissionEvent" expires_after="2026-05-24">
   <owner>kazinova@google.com</owner>
@@ -2482,18 +2470,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     masked (has HTML type &quot;password&quot;) or not. Recorded once per form
     when the form is parsed for filling, and the form contains a field with
     PASSWORD type prediction.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked"
-    enum="Boolean" expires_after="2026-01-18">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Reports whether any of the fields predicted to be unrelated to password
-    flows is masked (has HTML type &quot;password&quot;) or not. Recorded once
-    per form when the form is parsed for filling, and the form contains fields
-    with UNKNOWN_TYPE prediction.
   </summary>
 </histogram>
 
