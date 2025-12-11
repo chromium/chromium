@@ -23,6 +23,9 @@ inline constexpr int kMicronsPerPwgUnit = kMicronsPerMm / 100;
 inline constexpr float kMicronsPerMil = 25.4f;
 inline constexpr int kMilsPerInch = 1000;
 
+// Millimeters per inch.
+inline constexpr float kMmPerInch = 25.4f;
+
 // Length of an inch in CSS's 1pt unit.
 // http://dev.w3.org/csswg/css3-values/#absolute-length-units-cm-mm.-in-pt-pc
 inline constexpr int kPointsPerInch = 72;
