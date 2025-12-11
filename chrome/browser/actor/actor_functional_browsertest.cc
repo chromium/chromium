@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -26,6 +30,14 @@ namespace {
 
 MATCHER_P(HasResultCode, expected_code, "") {
   return arg.action_result() == static_cast<int32_t>(expected_code);
+}
+
+base::expected<base::Value, std::string> ToExpected(
+    content::EvalJsResult result) {
+  if (!result.is_ok()) {
+    return base::unexpected(result.ExtractError());
+  }
+  return base::ok(std::move(result).TakeValue());
 }
 
 class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
@@ -60,7 +72,7 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
 
   // Helper that sets a future if an ActorTask with `task_id` enters a completed
   // state.
-  base::CallbackListSubscription CreateTaskCompletetionSubscription(
+  base::CallbackListSubscription CreateTaskCompletionSubscription(
       TaskId for_task_id,
       TestFuture<ActorTask::State>& future) {
     return actor_keyed_service()->AddTaskStateChangedCallback(
@@ -73,48 +85,52 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
   }
 
   // Common helper to run EvalJs in the Glic frame.
-  content::EvalJsResult EvalJsInGlic(const std::string& script) {
-    return content::EvalJs(FindGlicGuestMainFrame(), script);
+  base::expected<base::Value, std::string> EvalJsInGlic(
+      const std::string_view script) {
+    return ToExpected(content::EvalJs(FindGlicGuestMainFrame(), script));
   }
 
-  // Helper for JavaScript calls expected to return an integer.
-  int EvalJsInGlicForInt(const std::string& script) {
-    const auto js_result = EvalJsInGlic(script);
-    EXPECT_THAT(js_result, content::EvalJsResult::IsOkAndHolds(
-                               Property(&base::Value::is_int, true)))
-        << "EvalJsInGlicForInt() failed or did not return an integer. Result: "
-        << js_result;
-    return js_result.ExtractInt();
+  // Helper for JavaScript calls expected to return an integer value.
+  base::expected<int, std::string> EvalJsInGlicForInt(
+      const std::string_view script) {
+    ASSIGN_OR_RETURN(base::Value js_result, EvalJsInGlic(script));
+    if (std::optional<int> result = js_result.GetIfInt()) {
+      return *result;
+    }
+    return base::unexpected("Expected an integer value from JavaScript.");
   }
 
   // Helper for JavaScript calls that return a Base64 encoded string
   // representing a serialized protobuf of type `ProtoType`.
   // `proto_name` is used for error messages since RTTI is disabled.
   template <typename ProtoType>
-  ProtoType EvalJsInGlicForBase64Proto(const std::string& script,
-                                       const char* proto_name) {
-    const auto js_result = EvalJsInGlic(script);
-    EXPECT_THAT(js_result, content::EvalJsResult::IsOkAndHolds(
-                               Property(&base::Value::is_string, true)))
-        << "EvalJsInGlicForBase64Proto() for " << proto_name
-        << " failed or did not return a string. Result: " << js_result;
-
-    const std::string result_base64 = js_result.ExtractString();
+  base::expected<ProtoType, std::string> EvalJsInGlicForBase64Proto(
+      std::string_view script,
+      std::string_view proto_name) {
+    ASSIGN_OR_RETURN(base::Value js_result, EvalJsInGlic(script));
+    const std::string* result_base64 = js_result.GetIfString();
+    if (!result_base64) {
+      return base::unexpected("Expected a string value from JavaScript.");
+    }
     std::string decoded_result;
-    CHECK(base::Base64Decode(result_base64, &decoded_result))
-        << "Failed to Base64-decode the result for " << proto_name
-        << " from JavaScript.";
-
     ProtoType proto_result;
-    CHECK(proto_result.ParseFromString(decoded_result))
-        << "Failed to parse " << proto_name
-        << " proto from the decoded result.";
-    return proto_result;
+    if (!base::Base64Decode(*result_base64, &decoded_result)) {
+      return base::unexpected(
+          base::StrCat({"Failed to Base64-decode the result for ", proto_name,
+                        " from JavaScript."}));
+    }
+
+    if (!proto_result.ParseFromString(decoded_result)) {
+      return base::unexpected(base::StrCat(
+          {"Failed to parse ", proto_name, " proto from the decoded result."}));
+    }
+    return base::ok(proto_result);
   }
 
   // Helper to call the CreateTask TS API.
   // Returns the TaskId of the newly created ActorTask.
-  TaskId CreateTask(webui::mojom::TaskOptionsPtr options = nullptr) {
+  base::expected<TaskId, std::string> CreateTask(
+      webui::mojom::TaskOptionsPtr options = nullptr) {
     std::string title;
     if (options && options->title) {
       title = content::JsReplace("{title: $1}", *options->title);
@@ -122,8 +138,8 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
 
     std::string script =
         base::StrCat({"window.client.browser.createTask(", title, ");"});
-
-    return actor::TaskId(EvalJsInGlicForInt(script));
+    ASSIGN_OR_RETURN(int task_id_int, EvalJsInGlicForInt(script));
+    return base::ok(actor::TaskId(task_id_int));
   }
 
   // Helper to call the PerformActions TS API.
@@ -159,9 +175,13 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
       })($1)
     )";
 
-    return EvalJsInGlicForBase64Proto<optimization_guide::proto::ActionsResult>(
-        content::JsReplace(script, proto_base64),
-        "optimization_guide::proto::ActionsResult");
+    const std::string full_script = content::JsReplace(script, proto_base64);
+    base::expected<optimization_guide::proto::ActionsResult, std::string>
+        result_expected = EvalJsInGlicForBase64Proto<
+            optimization_guide::proto::ActionsResult>(
+            full_script, "optimization_guide::proto::ActionsResult");
+    CHECK(result_expected.has_value()) << result_expected.error();
+    return result_expected.value();
   }
 
   // Helper to call the StopActorTask TS API.
@@ -175,10 +195,11 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
         await window.client.browser.stopActorTask(taskId, stopReason);
       })($1, $2)
     )";
-    const auto stop_task_js_result = EvalJsInGlic(content::JsReplace(
-        script, task_id.value(), static_cast<int>(stop_reason)));
-    EXPECT_THAT(stop_task_js_result, content::EvalJsResult::IsOk())
-        << "stopActorTask() failed.";
+    // Store the result of content::JsReplace in a std::string to make ownership
+    // explicit.
+    const std::string full_script = content::JsReplace(
+        script, task_id.value(), static_cast<int>(stop_reason));
+    EXPECT_OK(EvalJsInGlic(full_script));
   }
 
  private:
@@ -187,12 +208,12 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
 
 IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest,
                        CreateTask_Navigate_StopTask) {
-  TaskId task_id = CreateTask();
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
   EXPECT_NE(task_id, TaskId());
 
   TestFuture<ActorTask::State> task_completion_state;
   base::CallbackListSubscription subscription =
-      CreateTaskCompletetionSubscription(task_id, task_completion_state);
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
 
   // Construct the Actions proto.
   const GURL target_url =
@@ -219,12 +240,12 @@ IN_PROC_BROWSER_TEST_F(ActorFunctionalBrowserTest, CreateTask_Click_StopTask) {
   EXPECT_TRUE(content::ExecJs(web_contents(),
                               content::JsReplace("setLink($1);", target_url)));
 
-  TaskId task_id = CreateTask();
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
   EXPECT_NE(task_id, TaskId());
 
   TestFuture<ActorTask::State> task_completion_state;
   base::CallbackListSubscription subscription =
-      CreateTaskCompletetionSubscription(task_id, task_completion_state);
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
 
   // Click link to navigate to target page.
   std::optional<int> link_node_id =
