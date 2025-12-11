@@ -200,7 +200,7 @@ ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   if (!GetSystemMemoryInfo(&info)) {
     return ByteCount(0);
   }
-  return ByteCount::FromUnsigned(info.avail_phys.InBytes());
+  return info.avail_phys.AsDeprecatedByteCount();
 }
 
 // static

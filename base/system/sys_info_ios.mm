@@ -115,7 +115,7 @@ ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   }
   // We should add inactive file-backed memory also but there is no such
   // information from iOS unfortunately.
-  return ByteCount::FromUnsigned((info.free + info.speculative).InBytes());
+  return (info.free + info.speculative).AsDeprecatedByteCount();
 }
 
 // static

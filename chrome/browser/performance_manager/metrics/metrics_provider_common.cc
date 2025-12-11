@@ -67,10 +67,10 @@ MetricsProviderCommon::MetricsProviderCommon() {
 MetricsProviderCommon::~MetricsProviderCommon() = default;
 
 void MetricsProviderCommon::RecordAvailableMemoryMetrics() {
-  auto available_bytes = base::ByteSize::FromByteCount(
+  auto available_bytes = base::ByteSize::FromDeprecatedByteCount(
       base::SysInfo::AmountOfAvailablePhysicalMemory());
-  auto total_bytes =
-      base::ByteSize::FromByteCount(base::SysInfo::AmountOfPhysicalMemory());
+  auto total_bytes = base::ByteSize::FromDeprecatedByteCount(
+      base::SysInfo::AmountOfPhysicalMemory());
 
   base::UmaHistogramMemoryLargeMB("Memory.Experimental.AvailableMemoryMB",
                                   available_bytes.InMiB());

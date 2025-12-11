@@ -74,10 +74,10 @@ ByteCount SysInfo::AmountOfAvailablePhysicalMemory(
   // The fallback logic (when there is no MemAvailable) would be more precise
   // if we had info about zones watermarks (/proc/zoneinfo).
   if (info.available.is_zero()) {
-    return ByteCount::FromUnsigned(
-        (info.free + info.reclaimable + info.inactive_file).InBytes());
+    return (info.free + info.reclaimable + info.inactive_file)
+        .AsDeprecatedByteCount();
   } else if (info.available > info.active_file) {
-    return ByteCount((info.available - info.active_file).InBytes());
+    return (info.available - info.active_file).AsDeprecatedByteCount();
   } else {
     return ByteCount(0);
   }

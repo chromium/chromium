@@ -182,10 +182,14 @@ class BASE_EXPORT ByteSize : public internal::ByteSizeBase {
   static constexpr ByteSize FromByteSizeDelta(ByteSizeDelta delta);
   constexpr ByteSizeDelta AsByteSizeDelta() const;
 
-  // Converts a deprecated ByteCount to ByteSize. CHECK's that it's in range
-  // (ie. non-negative).
-  static constexpr ByteSize FromByteCount(ByteCount count) {
+  // Converts ByteSize to and from a deprecated ByteCount. Converting from a
+  // ByteCount CHECK's that it's in range (ie. non-negative). Converting to a
+  // ByteCount always succeeds.
+  static constexpr ByteSize FromDeprecatedByteCount(ByteCount count) {
     return ByteSize(count.InBytesUnsigned());
+  }
+  constexpr ByteCount AsDeprecatedByteCount() const {
+    return ByteCount::FromUnsigned(InBytes());
   }
 
   // Returns a value corresponding to the "maximum" number of bytes possible.
@@ -307,9 +311,12 @@ class BASE_EXPORT ByteSizeDelta : public internal::ByteSizeBase {
     return ByteSize(checked_cast<uint64_t>(InBytes()));
   }
 
-  // Converts a deprecated ByteCount to ByteSizeDelta. Always succeeds.
-  static constexpr ByteSizeDelta FromByteCount(ByteCount count) {
+  // Converts ByteSizeDelta to and from a deprecated ByteCount. Always succeeds.
+  static constexpr ByteSizeDelta FromDeprecatedByteCount(ByteCount count) {
     return ByteSizeDelta(count.InBytes());
+  }
+  constexpr ByteCount AsDeprecatedByteCount() const {
+    return ByteCount(InBytes());
   }
 
   // Returns a value corresponding to the "maximum" (positive) number of bytes
