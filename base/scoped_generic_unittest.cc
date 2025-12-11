@@ -37,12 +37,16 @@ TEST(ScopedGenericTest, ScopedGeneric) {
   IntTraits traits(&values_freed);
 
   // Invalid case, delete should not be called.
-  { ScopedInt a(IntTraits::InvalidValue(), traits); }
+  {
+    ScopedInt a(IntTraits::InvalidValue(), traits);
+  }
   EXPECT_TRUE(values_freed.empty());
 
   // Simple deleting case.
   static const int kFirst = 0;
-  { ScopedInt a(kFirst, traits); }
+  {
+    ScopedInt a(kFirst, traits);
+  }
   ASSERT_EQ(1u, values_freed.size());
   ASSERT_EQ(kFirst, values_freed[0]);
   values_freed.clear();
