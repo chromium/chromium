@@ -229,7 +229,7 @@ public class FastCheckoutHomeScreenViewTest {
         assertTrue(addressImageView.isShown());
         assertThat(
                 shadowOf(addressImageView.getDrawable()).getCreatedFromResId(),
-                equalTo(R.drawable.location_on_logo));
+                equalTo(R.drawable.ic_location_on_fill_24dp));
 
         // Icon subtitle should be hidden.
         assertFalse(mHomeScreenView.findViewById(R.id.fast_checkout_record_type).isShown());
@@ -292,7 +292,7 @@ public class FastCheckoutHomeScreenViewTest {
         assertTrue(addressImageView.isShown());
         assertThat(
                 shadowOf(addressImageView.getDrawable()).getCreatedFromResId(),
-                equalTo(R.drawable.location_on_logo));
+                equalTo(R.drawable.ic_location_on_fill_24dp));
 
         // Icon subtitle should be hidden.
         assertFalse(mHomeScreenView.findViewById(R.id.fast_checkout_record_type).isShown());

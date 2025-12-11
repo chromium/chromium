@@ -332,7 +332,7 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
                 return new ResourceItem(
-                        R.drawable.gm_filled_location_on_24,
+                        R.drawable.ic_location_on_fill_24dp,
                         R.string.website_settings_device_location,
                         ContentSetting.ASK,
                         ContentSetting.BLOCK,
