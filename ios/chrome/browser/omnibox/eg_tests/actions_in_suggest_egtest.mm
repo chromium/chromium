@@ -115,9 +115,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
   [[EarlGrey selectElementWithMatcher:unhighlightedDirectionsButtonMatcher()]
       performAction:grey_tap()];
 
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxText(
-                                              _directionURI.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:_directionURI];
 }
 
 - (void)testTapReviewsButton {
@@ -128,9 +126,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
   [[EarlGrey selectElementWithMatcher:unhighlightedReviewsButtonMatcher()]
       performAction:grey_tap()];
 
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxText(
-                                              _reviewsURI.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:_reviewsURI];
 }
 
 // TODO (crbug.com/348177731) re-enable when fixed.
@@ -276,12 +272,10 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:highlightedDirectionsButtonMatcher()];
 
-  // press the return key.
+  // Press the return key.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"return" flags:0];
-  // We expect to trigger the reviews button action.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxText(
-                                              _directionURI.GetContent())];
+  // We expect to have triggered the directions button action.
+  [ChromeEarlGrey waitForWebStateVisibleURL:_directionURI];
 }
 
 - (void)testReturnKeyOnReviewsButton {
@@ -310,10 +304,8 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
 
   // press the return key.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"return" flags:0];
-  // We expect to trigger the reviews button action.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxText(
-                                              _reviewsURI.GetContent())];
+  // We expect to have triggered the reviews button action.
+  [ChromeEarlGrey waitForWebStateVisibleURL:_reviewsURI];
 }
 
 // TODO (crbug.com/348177731) re-enable when fixed.
