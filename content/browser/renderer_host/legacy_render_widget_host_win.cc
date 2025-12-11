@@ -12,6 +12,9 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/win/win_util.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/renderer_host/direct_manipulation_helper_win.h"
@@ -647,6 +650,15 @@ LRESULT LegacyRenderWidgetHostHWND::OnCreate(UINT message,
   return 0;
 }
 
+namespace {
+
+void UiaDisconnectProviderInTask(
+    Microsoft::WRL::ComPtr<IRawElementProviderSimple> provider) {
+  ::UiaDisconnectProvider(provider.Get());
+}
+
+}  // namespace
+
 LRESULT LegacyRenderWidgetHostHWND::OnDestroy(UINT message,
                                               WPARAM w_param,
                                               LPARAM l_param) {
@@ -662,7 +674,14 @@ LRESULT LegacyRenderWidgetHostHWND::OnDestroy(UINT message,
     // https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiadisconnectprovider.
     if (ax_platform.IsUiaProviderEnabled() &&
         base::FeatureList::IsEnabled(features::kUiaDisconnectRootProviders)) {
-      ::UiaDisconnectProvider(ax_fragment_root_->GetProvider());
+      // Post a task to disconnect the provider to avoid a potential re-entrancy
+      // issue -- UiaDisconnectProvider may make COM calls, which could result
+      // in a call to PeekMessage.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&UiaDisconnectProviderInTask,
+                         Microsoft::WRL::ComPtr<IRawElementProviderSimple>(
+                             ax_fragment_root_->GetProvider())));
     }
 
     // Disassociate this window from MSAA clients that are observing events; see

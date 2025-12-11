@@ -30,6 +30,7 @@
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -1897,6 +1898,15 @@ LRESULT HWNDMessageHandler::OnCreate(CREATESTRUCT* create_struct) {
   return 0;
 }
 
+namespace {
+
+void UiaDisconnectProviderInTask(
+    Microsoft::WRL::ComPtr<IRawElementProviderSimple> provider) {
+  ::UiaDisconnectProvider(provider.Get());
+}
+
+}  // namespace
+
 void HWNDMessageHandler::OnDestroy() {
   // The window will no longer service WM_GETOBJECT messages from this point
   // onward; see
@@ -1922,7 +1932,14 @@ void HWNDMessageHandler::OnDestroy() {
     // https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiadisconnectprovider.
     if (ax_platform.IsUiaProviderEnabled() &&
         base::FeatureList::IsEnabled(features::kUiaDisconnectRootProviders)) {
-      ::UiaDisconnectProvider(ax_fragment_root_->GetProvider());
+      // Post a task to disconnect the provider to avoid a potential re-entrancy
+      // issue -- UiaDisconnectProvider may make COM calls, which could result
+      // in a call to PeekMessage.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&UiaDisconnectProviderInTask,
+                         Microsoft::WRL::ComPtr<IRawElementProviderSimple>(
+                             ax_fragment_root_->GetProvider())));
     }
 
     // Disassociate this window from MSAA clients that are observing events; see
