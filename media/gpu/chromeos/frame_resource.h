@@ -96,11 +96,6 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   // Create a shared GPU memory handle to |this|'s data.
   virtual gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const = 0;
 
-  // Gets the ScopedMapping object which clients can use to access the CPU
-  // visible memory and other metadata for the gpu buffer backing |this|.
-  virtual std::unique_ptr<VideoFrame::ScopedMapping> MapSharedImageDEPRECATED()
-      const = 0;
-
   virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const = 0;
 
   virtual const VideoFrameLayout& layout() const = 0;

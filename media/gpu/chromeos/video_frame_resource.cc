@@ -82,11 +82,6 @@ gfx::GpuMemoryBufferHandle VideoFrameResource::CreateGpuMemoryBufferHandle()
   return media::CreateGpuMemoryBufferHandle(frame_.get());
 }
 
-std::unique_ptr<VideoFrame::ScopedMapping>
-VideoFrameResource::MapSharedImageDEPRECATED() const {
-  return frame_->MapSharedImageDEPRECATED();
-}
-
 scoped_refptr<gpu::ClientSharedImage> VideoFrameResource::GetSharedImage()
     const {
   return frame_->shared_image();
