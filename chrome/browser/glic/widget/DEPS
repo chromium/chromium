@@ -1,6 +1,7 @@
 specific_include_rules = {
   "glic_widget\.cc": [
     "+ash/wm/window_util.h",
+    "+ash/frame/frame_view_ash.h",
     "+chromeos/ui/base/window_properties.h"
   ],
 }

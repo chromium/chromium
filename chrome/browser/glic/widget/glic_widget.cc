@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/base/base_window.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer_type.h"
@@ -34,6 +35,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/client_view.h"
+#include "ui/views/window/frame_view.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -54,6 +56,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/frame/frame_view_ash.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #endif
@@ -101,6 +104,61 @@ class GlicClientView : public views::ClientView {
  private:
   GlicView* glic_view() { return static_cast<GlicView*>(contents_view()); }
 };
+
+class GlicWidgetDelegate : public views::WidgetDelegate {
+ public:
+  GlicWidgetDelegate() = default;
+
+  GlicWidgetDelegate(const GlicWidgetDelegate&) = delete;
+  GlicWidgetDelegate& operator=(const GlicWidgetDelegate&) = delete;
+
+  ~GlicWidgetDelegate() override = default;
+
+  // views::WidgetDelegate:
+  bool ShouldDescendIntoChildForEventHandling(
+      gfx::NativeView child,
+      const gfx::Point& location) override {
+    if (base::FeatureList::IsEnabled(features::kGlicHandleDraggingNatively)) {
+      return !glic_view()->IsPointWithinDraggableArea(location);
+    }
+
+    return true;
+  }
+
+ private:
+  GlicView* glic_view() {
+    return static_cast<GlicView*>(GetWidget()->GetClientContentsView());
+  }
+};
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+class GlicFrameViewChromeOS : public ash::FrameViewAsh {
+ public:
+  explicit GlicFrameViewChromeOS(views::Widget* widget)
+      : ash::FrameViewAsh(widget) {}
+
+  GlicFrameViewChromeOS(const GlicFrameViewChromeOS&) = delete;
+  GlicFrameViewChromeOS& operator=(const GlicFrameViewChromeOS&) = delete;
+
+  ~GlicFrameViewChromeOS() override = default;
+
+  // ash::FrameViewAsh:
+  int NonClientHitTest(const gfx::Point& point) override {
+    if (glic_view()->IsPointWithinDraggableArea(point)) {
+      return HTCAPTION;
+    }
+
+    return ash::FrameViewAsh::NonClientHitTest(point);
+  }
+
+ private:
+  GlicView* glic_view() {
+    return static_cast<GlicView*>(GetWidget()->GetClientContentsView());
+  }
+};
+
+#endif  // #if BUILDFLAG(IS_CHROMEOS)
 
 bool ShouldCreateNonClientView() {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -234,7 +292,7 @@ bool GlicWidget::IsWidgetLocationAllowed(const gfx::Rect& bounds) {
 std::unique_ptr<views::WidgetDelegate> GlicWidget::CreateWidgetDelegate(
     std::unique_ptr<GlicView> contents_view,
     bool user_resizable) {
-  auto delegate = std::make_unique<views::WidgetDelegate>();
+  auto delegate = std::make_unique<GlicWidgetDelegate>();
   delegate->SetFocusTraversesOut(true);
   delegate->SetCanResize(user_resizable);
   delegate->SetContentsView(std::move(contents_view));
@@ -245,6 +303,13 @@ std::unique_ptr<views::WidgetDelegate> GlicWidget::CreateWidgetDelegate(
       }));
 
 #if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kGlicHandleDraggingNatively)) {
+    delegate->SetFrameViewFactory(base::BindRepeating(
+        [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
+          return std::make_unique<GlicFrameViewChromeOS>(widget);
+        }));
+  }
+
   // TODO(b:458115863): Move ChromeOS specific code to platform specific
   // implementation. (Like GlicWidgetChromeOS?)
   delegate->RegisterWidgetInitializedCallback(base::BindOnce(
