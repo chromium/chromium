@@ -172,6 +172,11 @@
           on-sub-label-link-clicked="onWebActuationToggleLearnMoreClick_"
           hidden="[[!webActuationFeatureEnabled_]]">
       </settings-toggle-button>
+      <settings-toggle-button
+          id="keepSidepanelOpenOnNewTabsToggle" pref="[[fakePref_]]" disabled
+          label="$i18n{glicKeepSidepanelOpenOnNewTabsToggle}"
+          hidden="[[!showGlicKeepSidepanelOpenOnNewTabsSetting_]]">
+      </settings-toggle-button>
     </template>
 
     <!-- Glic Policy Enabled -->
