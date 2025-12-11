@@ -4,9 +4,9 @@ if [ ! -x "$XDG_ICON_RESOURCE" ]; then
   echo "Error: Could not find xdg-icon-resource" >&2
   exit 1
 fi
-for icon in @@LOGO_RESOURCES_PNG@@; do
+for icon in @@logo_resources_png; do
   size="$(echo ${icon} | sed 's/[^0-9]//g')"
-  "$XDG_ICON_RESOURCE" uninstall --size "${size}" "@@PACKAGE@@"
+  "$XDG_ICON_RESOURCE" uninstall --size "${size}" "@@PACKAGE"
 done
 
 # Update cache of .desktop file MIME types. Non-fatal since it's just a cache.

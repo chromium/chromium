@@ -4,10 +4,10 @@ if [ ! -x "$XDG_ICON_RESOURCE" ]; then
   echo "Error: Could not find xdg-icon-resource" >&2
   exit 1
 fi
-for icon in @@LOGO_RESOURCES_PNG@@; do
+for icon in @@logo_resources_png; do
   size="$(echo ${icon} | sed 's/[^0-9]//g')"
-  "$XDG_ICON_RESOURCE" install --size "${size}" "@@INSTALLDIR@@/${icon}" \
-    "@@PACKAGE@@"
+  "$XDG_ICON_RESOURCE" install --size "${size}" "@@INSTALLDIR/${icon}" \
+    "@@PACKAGE"
 done
 
 # Update cache of .desktop file MIME types. Non-fatal since it's just a cache.
@@ -45,7 +45,7 @@ update_defaults_list() {
   done
 }
 
-update_defaults_list "@@PACKAGE@@.desktop"
+update_defaults_list "@@PACKAGE.desktop"
 
 # This function uses sed to insert the contents of one file into another file,
 # after the first line matching a given regular expression. If there is no
@@ -67,10 +67,10 @@ GNOME_DFL_APPS=/usr/share/gnome-control-center/default-apps/gnome-default-applic
 if [ -f "$GNOME_DFL_APPS" ]; then
 # Conditionally insert the contents of the file "default-app-block" after the
 # first "<web-browsers>" line we find in gnome-default-applications.xml
-  fgrep -q "@@MENUNAME@@" "$GNOME_DFL_APPS" || insert_after_first_match \
+  fgrep -q "@@MENUNAME" "$GNOME_DFL_APPS" || insert_after_first_match \
     "$GNOME_DFL_APPS" \
     "^[ 	]*<web-browsers>[ 	]*$" \
-    "@@INSTALLDIR@@/default-app-block"
+    "@@INSTALLDIR/default-app-block"
 fi
 
 # This function performs the setup for the chrome management service process.
@@ -88,11 +88,11 @@ chrome_management_service_setup() {
 
   getent group chromemgmt > /dev/null || groupadd chromemgmt
 
-  chgrp chromemgmt "@@INSTALLDIR@@/chrome-management-service"
-  chmod 2755 "@@INSTALLDIR@@/chrome-management-service"
+  chgrp chromemgmt "@@INSTALLDIR/chrome-management-service"
+  chmod 2755 "@@INSTALLDIR/chrome-management-service"
 
-  mkdir -p "@@ENROLLMENTDIR@@"
-  SIGNING_KEY_FILE="@@ENROLLMENTDIR@@/DeviceTrustSigningKey"
+  mkdir -p "@@ENROLLMENTDIR"
+  SIGNING_KEY_FILE="@@ENROLLMENTDIR/DeviceTrustSigningKey"
   if [ ! -e "$SIGNING_KEY_FILE" ]; then
     touch "$SIGNING_KEY_FILE"
   fi

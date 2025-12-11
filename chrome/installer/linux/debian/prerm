@@ -19,7 +19,7 @@ fi
 @@include@@../common/prerm.include
 
 # Remove from the alternatives system
-update-alternatives --remove x-www-browser /usr/bin/@@USR_BIN_SYMLINK_NAME@@
-update-alternatives --remove gnome-www-browser /usr/bin/@@USR_BIN_SYMLINK_NAME@@
+update-alternatives --remove x-www-browser /usr/bin/@@usr_bin_symlink_name
+update-alternatives --remove gnome-www-browser /usr/bin/@@usr_bin_symlink_name
 
-update-alternatives --remove @@PACKAGE_ORIG@@ /usr/bin/@@USR_BIN_SYMLINK_NAME@@
+update-alternatives --remove @@package_orig /usr/bin/@@usr_bin_symlink_name

@@ -1,12 +1,12 @@
 .\" This file is processed to generate manpages in the
 .\" build diretory.
-.TH @@PACKAGE@@ 1 "" "" "USER COMMANDS"
+.TH @@PACKAGE 1 "" "" "USER COMMANDS"
 
 .SH NAME
-@@PACKAGE@@ \- the web browser from Google
+@@PACKAGE \- the web browser from Google
 
 .SH SYNOPSIS
-.B @@PACKAGE@@
+.B @@PACKAGE
 [\fIOPTION\fR] [\fIPATH\fR|\fIURL\fR]
 
 .SH DESCRIPTION
@@ -17,16 +17,16 @@ See the Google Chrome help center for help on using the browser.
 This manpage only describes invocation, environment, and arguments.
 
 .SH OPTIONS
-@@MENUNAME@@ has hundreds of undocumented command-line flags that are added
+@@MENUNAME has hundreds of undocumented command-line flags that are added
 and removed at the whim of the developers.  Here, we document relatively
 stable flags.
 .TP
 \fB\-\-user\-data\-dir\fR=\fIDIR\fR
 Specifies the directory that user data (your "profile") is kept in.
 Defaults to
-.I $HOME/.config/@@PACKAGE@@ .
-Separate instances of @@MENUNAME@@ must use separate user data directories;
-repeated invocations of @@PACKAGE@@ will reuse an existing process for
+.I $HOME/.config/@@PACKAGE .
+Separate instances of @@MENUNAME must use separate user data directories;
+repeated invocations of @@PACKAGE will reuse an existing process for
 a given user data directory.
 
 .TP
@@ -102,7 +102,7 @@ password store.  \fIgnome\fR selects Gnome keyring.  \fIkwallet\fR selects
 Show version information.
 
 .PP
-As a GTK+ app, @@MENUNAME@@ also obeys GTK+ command-line flags, such
+As a GTK+ app, @@MENUNAME also obeys GTK+ command-line flags, such
 as
 .BR \-\-display .
 See the GTK documentation for more:
@@ -112,7 +112,7 @@ See the GTK documentation for more:
 <http://library.gnome.org/devel/gtk/stable/gtk-x11.html>
 
 .SH ENVIRONMENT
-@@MENUNAME@@ obeys the following environment variables:
+@@MENUNAME obeys the following environment variables:
 
 .TP
 .B all_proxy
@@ -145,11 +145,11 @@ Comma separated list of hosts or patterns to bypass proxying.
 
 .SH FILES
 .TP
-.I $HOME/.config/@@PACKAGE@@
+.I $HOME/.config/@@PACKAGE
 Default directory for configuration data.
 
 .TP
-.I $HOME/.cache/@@PACKAGE@@
+.I $HOME/.cache/@@PACKAGE
 Default directory for cache data.  (Why?  See
 <http://standards.freedesktop.org/basedir-spec/latest/> .)
 
