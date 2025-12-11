@@ -87,22 +87,21 @@ template <typename T>
 class GlobalCookieStoreImpl;
 template <typename T, typename P>
 class GlobalPerformanceImpl;
-template <typename T>
-class GlobalIndexedDBImpl;
 
 class CORE_EXPORT WorkerGlobalScope
     : public WorkerOrWorkletGlobalScope,
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
       public ActiveScriptWrappable<WorkerGlobalScope>,
-      public Supplementable<WorkerGlobalScope, 2>,
+      public Supplementable<WorkerGlobalScope, 3>,
       public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   enum class Supplements {
     kWorkerGlobalScopeCrypto = 0,
-    kFontFaceSetWorker = 1
+    kFontFaceSetWorker = 1,
+    kGlobalIndexedDBImpl = 2
   };
 
   ~WorkerGlobalScope() override;
@@ -334,16 +333,6 @@ class CORE_EXPORT WorkerGlobalScope
     global_performance_impl_ = global_performance_impl;
   }
 
-  ForwardDeclaredMember<GlobalIndexedDBImpl<WorkerGlobalScope>>
-  GetGlobalIndexedDBImpl() const {
-    return global_indexed_db_impl_;
-  }
-  void SetGlobalIndexedDBImpl(
-      ForwardDeclaredMember<GlobalIndexedDBImpl<WorkerGlobalScope>>
-          global_indexed_db_impl) {
-    global_indexed_db_impl_ = global_indexed_db_impl;
-  }
-
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
@@ -475,8 +464,6 @@ class CORE_EXPORT WorkerGlobalScope
   ForwardDeclaredMember<
       GlobalPerformanceImpl<WorkerGlobalScope, WorkerPerformance>>
       global_performance_impl_;
-  ForwardDeclaredMember<GlobalIndexedDBImpl<WorkerGlobalScope>>
-      global_indexed_db_impl_;
 };
 
 template <>

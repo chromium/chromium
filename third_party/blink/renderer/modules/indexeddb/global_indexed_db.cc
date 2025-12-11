@@ -8,24 +8,31 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
+
+namespace {
 
 template <typename T>
 class GlobalIndexedDBImpl final
     : public GarbageCollected<GlobalIndexedDBImpl<T>>,
-      public GarbageCollectedMixin {
+      public Supplement<T> {
  public:
+  static constexpr auto kSupplementIndex = T::Supplements::kGlobalIndexedDBImpl;
+
   static GlobalIndexedDBImpl& From(T& supplementable) {
-    GlobalIndexedDBImpl* supplement = supplementable.GetGlobalIndexedDBImpl();
+    GlobalIndexedDBImpl* supplement =
+        Supplement<T>::template From<GlobalIndexedDBImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalIndexedDBImpl>();
-      supplementable.SetGlobalIndexedDBImpl(supplement);
+      supplement = MakeGarbageCollected<GlobalIndexedDBImpl>(supplementable);
+      Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return *supplement;
   }
 
-  GlobalIndexedDBImpl() = default;
+  explicit GlobalIndexedDBImpl(T& supplementable)
+      : Supplement<T>(supplementable) {}
 
   IDBFactory* IdbFactory(ExecutionContext* context) {
     if (!idb_factory_)
@@ -33,11 +40,16 @@ class GlobalIndexedDBImpl final
     return idb_factory_.Get();
   }
 
-  void Trace(Visitor* visitor) const override { visitor->Trace(idb_factory_); }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(idb_factory_);
+    Supplement<T>::Trace(visitor);
+  }
 
  private:
   Member<IDBFactory> idb_factory_;
 };
+
+}  // namespace
 
 IDBFactory* GlobalIndexedDB::indexedDB(ExecutionContext& context) {
   return GlobalIndexedDBImpl<ExecutionContext>::From(context).IdbFactory(
