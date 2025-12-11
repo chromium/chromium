@@ -215,6 +215,11 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   MultiStep CheckIsWebContentsCaptured(ui::ElementIdentifier tab,
                                        bool expected);
 
+  // Waits for the specified tab to render a frame. Unlike
+  // `WaitForWebContentsPainted` this does not require the frame to have
+  // non-trivial contents or for the paint to have non-failed feedback.
+  MultiStep WaitForFrameSubmitted(ui::ElementIdentifier tab);
+
   const std::optional<optimization_guide::proto::ActionsResult>&
   last_execution_result() const;
 
@@ -231,13 +236,17 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   tabs::TabHandle tab_handle_;
 
  protected:
+  void EnableScreenshotsInContext() { include_screenshot_ = true; }
+
   std::unique_ptr<optimization_guide::proto::AnnotatedPageContent>
       annotated_page_content_;
+  mojom::ScreenshotPtr viewport_screenshot_;
 
   // Label corresponds to the aria-label on the element in the page.
   int32_t SearchAnnotatedPageContent(std::string_view label);
 
  private:
+  bool include_screenshot_ = false;
   std::optional<optimization_guide::proto::ActionsResult>
       last_execution_result_;
   base::test::ScopedFeatureList scoped_feature_list_;

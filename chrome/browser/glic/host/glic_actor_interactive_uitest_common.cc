@@ -574,20 +574,17 @@ MultiStep GlicActorUiTest::InitializeWithOpenGlicWindow() {
 
 MultiStep GlicActorUiTest::GetPageContextForActorTab() {
   return Steps(Do([&]() {
-    GlicKeyedService* glic_service =
-        GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
-    ASSERT_TRUE(glic_service);
-
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
 
     auto options = mojom::GetTabContextOptions::New();
     options->include_annotated_page_content = true;
+    options->include_viewport_screenshot = include_screenshot_;
     // TODO (crbug.com/458415347): Look into replacing GetContextFromActorForTab
     // with an AKS::RequestTabObservation
     EXPECT_NE(tab_handle_, TabHandle::Null())
         << "GetPageContextForActorTab must be called after starting a task in "
            "a tab, e.g. using StartActorTaskInNewTab";
-    glic_service->sharing_manager().GetContextForActorFromTab(
+    GetGlicInstance()->host().sharing_manager().GetContextForActorFromTab(
         tab_handle_, *options.get(),
         base::BindLambdaForTesting([&](GlicGetContextResult result) {
           if (result.has_value()) {
@@ -595,6 +592,8 @@ MultiStep GlicActorUiTest::GetPageContextForActorTab() {
                 *result.value()
                      ->get_tab_context()
                      ->annotated_page_data->annotated_page_content;
+            viewport_screenshot_ = std::move(
+                result.value()->get_tab_context()->viewport_screenshot);
             annotated_page_content_ = std::make_unique<AnnotatedPageContent>(
                 serialized_apc.As<AnnotatedPageContent>().value());
             actor::ActorTabData* tab_data =
@@ -652,6 +651,14 @@ MultiStep GlicActorUiTest::CheckIsWebContentsCaptured(ui::ElementIdentifier tab,
         return tab_contents->IsBeingCaptured();
       },
       expected));
+}
+
+MultiStep GlicActorUiTest::WaitForFrameSubmitted(ui::ElementIdentifier tab) {
+  return InAnyContext(WithElement(tab, [](::ui::TrackedElement* el) {
+    auto* const owner = el->AsA<TrackedElementWebContents>()->owner();
+    content::RenderFrameSubmissionObserver waiter(owner->web_contents());
+    waiter.WaitForAnyFrameSubmission();
+  }));
 }
 
 const std::optional<ActionsResult>& GlicActorUiTest::last_execution_result()
