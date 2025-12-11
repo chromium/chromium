@@ -6835,6 +6835,13 @@
     "expiry_milestone": 150
   },
   {
+    "name": "mac-enable-okta-sso",
+    "owners": [
+      "ssolarewicz@chromium.com", "cec-growth-eng@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "magic-boost-revamp-for-quick-answers",
     "owners": [ "hdchuong@chromium.org", "yawano@google.com", "assistive-eng@google.com" ],
     "expiry_milestone": 144

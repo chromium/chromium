@@ -13523,6 +13523,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAndroidPkAutocorrectUnderline)},
 #endif
 
+#if BUILDFLAG(IS_MAC)
+    {"mac-enable-okta-sso", flag_descriptions::kEnableOktaSSOName,
+     flag_descriptions::kEnableOktaSSODescription, kOsMac,
+     FEATURE_VALUE_TYPE(enterprise_auth::kOktaSSO)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

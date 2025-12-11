@@ -8423,6 +8423,11 @@ inline constexpr char kHandleMdmErrorsForDasherAccountsName[] =
 inline constexpr char kHandleMdmErrorsForDasherAccountsDescription[] =
     "Enables the mdm error handling feature for dasher accounts";
 
+inline constexpr char kEnableOktaSSOName[] =
+    "Enable Okta SSO for enterprise browsers.";
+inline constexpr char kEnableOktaSSODescription[] =
+    "Enables native support for Okta SSO on managed MacOS devices.";
+
 // ============================================================================
 // Don't just add flags to the end, put them in the alphabetical order.
 // ============================================================================

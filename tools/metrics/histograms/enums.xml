@@ -11683,6 +11683,7 @@ from previous Chrome versions.
   <int value="-938457958" label="CaptionsOnBrailleDisplay:disabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>
+  <int value="-937116841" label="OktaSSO:enabled"/>
   <int value="-936652950"
       label="AutofillEnableManualFallbackForVirtualCards:disabled"/>
   <int value="-936308513" label="CompactBubbleLauncher:enabled"/>
@@ -11859,6 +11860,7 @@ from previous Chrome versions.
   <int value="-869023958" label="PasskeyUnlockManager:disabled"/>
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
   <int value="-868041476" label="OmniboxFocusTriggersSRPZeroSuggest:enabled"/>
+  <int value="-867591635" label="OktaSSO:disabled"/>
   <int value="-867571486" label="PrivateStateTokens:disabled"/>
   <int value="-867087281" label="enable-virtual-keyboard"/>
   <int value="-867085393" label="WebNotesDynamicTemplates:enabled"/>
