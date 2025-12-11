@@ -59,35 +59,19 @@ bool BnplIssuerContext::IsEligible() const {
   NOTREACHED();
 }
 
-BnplIssuerTosDetail::BnplIssuerTosDetail(
-    BnplIssuer::IssuerId issuer_id,
-    int header_icon_id,
-    int header_icon_id_dark,
-    bool is_linked_issuer,
-    std::u16string issuer_name,
-    std::vector<LegalMessageLine> legal_message_lines)
-    : issuer_id(issuer_id),
-      header_icon_id(header_icon_id),
-      header_icon_id_dark(header_icon_id_dark),
-      is_linked_issuer(is_linked_issuer),
-      issuer_name(std::move(issuer_name)),
-      legal_message_lines(std::move(legal_message_lines)) {}
+BnplTosModel::BnplTosModel() = default;
 
-BnplIssuerTosDetail::BnplIssuerTosDetail(const BnplIssuerTosDetail& other) =
-    default;
+BnplTosModel::BnplTosModel(const BnplTosModel& other) = default;
 
-BnplIssuerTosDetail::BnplIssuerTosDetail(BnplIssuerTosDetail&&) = default;
+BnplTosModel::BnplTosModel(BnplTosModel&& other) = default;
 
-BnplIssuerTosDetail& BnplIssuerTosDetail::operator=(
-    const BnplIssuerTosDetail& other) = default;
+BnplTosModel& BnplTosModel::operator=(const BnplTosModel& other) = default;
 
-BnplIssuerTosDetail& BnplIssuerTosDetail::operator=(BnplIssuerTosDetail&&) =
-    default;
+BnplTosModel& BnplTosModel::operator=(BnplTosModel&& other) = default;
 
-BnplIssuerTosDetail::~BnplIssuerTosDetail() = default;
+BnplTosModel::~BnplTosModel() = default;
 
-bool BnplIssuerTosDetail::operator==(const BnplIssuerTosDetail&) const =
-    default;
+bool BnplTosModel::operator==(const BnplTosModel&) const = default;
 
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,

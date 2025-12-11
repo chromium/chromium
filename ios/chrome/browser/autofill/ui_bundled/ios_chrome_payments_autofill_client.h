@@ -33,7 +33,6 @@ struct AutofillErrorDialogContext;
 class AutofillProgressDialogController;
 class AutofillProgressDialogControllerImpl;
 class BnplIssuer;
-struct BnplTosModel;
 struct CardUnmaskChallengeOption;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 class CardUnmaskOtpInputDialogController;
@@ -55,6 +54,7 @@ class VirtualCardEnrollUiModel;
 namespace payments {
 
 struct BnplIssuerContext;
+struct BnplTosModel;
 class MandatoryReauthManager;
 
 // Chrome iOS implementation of PaymentsAutofillClient. Owned by the

@@ -15,11 +15,11 @@ namespace autofill {
 struct AutofillErrorDialogContext;
 enum class AutofillProgressDialogType;
 class BnplIssuer;
-struct BnplTosModel;
 
 namespace payments {
 
 struct BnplIssuerContext;
+struct BnplTosModel;
 
 // The cross-platform interface that handles the UI for the BNPL autofill flows.
 class BnplUiDelegate {

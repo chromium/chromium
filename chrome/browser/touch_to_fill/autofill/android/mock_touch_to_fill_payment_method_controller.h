@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -90,7 +89,7 @@ class MockTouchToFillPaymentMethodController
               (override));
   MOCK_METHOD(bool,
               ShowBnplIssuerTos,
-              (BnplTosModel bnpl_tos_model,
+              (payments::BnplTosModel bnpl_tos_model,
                base::OnceClosure accept_callback,
                base::OnceClosure cancel_callback),
               (override));

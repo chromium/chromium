@@ -16,6 +16,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller_impl.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
+#include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
@@ -537,7 +538,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowBnplIssuerTosPassesTextsAndIconsToTheView_LinkedIssuer) {
-  BnplTosModel bnpl_tos_model;
+  payments::BnplTosModel bnpl_tos_model;
   bnpl_tos_model.issuer =
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm);
   bnpl_tos_model.legal_message_lines = {
@@ -566,7 +567,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowBnplIssuerTosPassesTextsAndIconsToTheView_UnlinkedIssuer) {
-  BnplTosModel bnpl_tos_model;
+  payments::BnplTosModel bnpl_tos_model;
   bnpl_tos_model.issuer = test::GetTestUnlinkedBnplIssuer();
   bnpl_tos_model.legal_message_lines = {
       TestLegalMessageLine("This is the entire message.")};
@@ -750,7 +751,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        OnBnplTosAccepted_ForwardsCallToDelegate) {
-  BnplTosModel bnpl_tos_model;
+  payments::BnplTosModel bnpl_tos_model;
   bnpl_tos_model.issuer = test::GetTestUnlinkedBnplIssuer();
   bnpl_tos_model.legal_message_lines = {
       TestLegalMessageLine("This is the entire message.")};

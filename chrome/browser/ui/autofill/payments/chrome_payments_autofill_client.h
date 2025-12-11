@@ -49,7 +49,6 @@ class AutofillOfferManager;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
 class BnplIssuer;
-struct BnplTosModel;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 struct CardUnmaskChallengeOption;
 class CardUnmaskOtpInputDialogControllerImpl;
@@ -75,6 +74,7 @@ namespace payments {
 
 struct BnplIssuerContext;
 class BnplStrategy;
+struct BnplTosModel;
 class BnplUiDelegate;
 class MandatoryReauthManager;
 class MultipleRequestPaymentsNetworkInterface;

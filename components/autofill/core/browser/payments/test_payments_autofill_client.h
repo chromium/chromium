@@ -29,7 +29,6 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
-#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
@@ -47,7 +46,6 @@ class AutofillDriver;
 #endif  // !BUILDFLAG(IS_IOS)
 class AutofillProgressDialogController;
 class BnplIssuer;
-struct BnplTosModel;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
 class CreditCardCvcAuthenticator;
@@ -57,6 +55,7 @@ namespace payments {
 
 struct BnplIssuerContext;
 class BnplStrategy;
+struct BnplTosModel;
 class PaymentsWindowManager;
 
 // This class is for easier writing of tests. It is owned by TestAutofillClient.
@@ -206,7 +205,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillError(const AutofillErrorDialogContext& context) override;
-  bool ShowTouchToFillBnplTos(BnplTosModel bnpl_tos_model,
+  bool ShowTouchToFillBnplTos(payments::BnplTosModel bnpl_tos_model,
                               base::OnceClosure accept_callback,
                               base::OnceClosure cancel_callback) override;
   void HideTouchToFillPaymentMethod() override;

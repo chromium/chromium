@@ -18,12 +18,12 @@ struct AutofillErrorDialogContext;
 enum class AutofillProgressDialogType;
 class BnplIssuer;
 class BnplTosControllerImpl;
-struct BnplTosModel;
 class ContentAutofillClient;
 
 namespace payments {
 
 struct BnplIssuerContext;
+struct BnplTosModel;
 class SelectBnplIssuerDialogControllerImpl;
 
 // Desktop implementation of the BnplUiDelegate interface. This class handles

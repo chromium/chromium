@@ -17,10 +17,10 @@ namespace autofill {
 
 namespace payments {
 struct BnplIssuerContext;
+struct BnplTosModel;
 }  // namespace payments
 
 class BnplIssuer;
-struct BnplTosModel;
 class ContentAutofillClient;
 class Iban;
 class LoyaltyCard;
@@ -123,7 +123,7 @@ class TouchToFillPaymentMethodController
 
   // Shows the Touch To Fill BNPL issuer Terms of Service screen. Returns
   // whether the surface was successfully shown.
-  virtual bool ShowBnplIssuerTos(BnplTosModel bnpl_tos_model,
+  virtual bool ShowBnplIssuerTos(payments::BnplTosModel bnpl_tos_model,
                                  base::OnceClosure accept_callback,
                                  base::OnceClosure cancel_callback) = 0;
 

@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -65,7 +66,7 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
             views::test::kCurrentFocusedViewId,
             BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
         Do([this, bnpl_issuer_id]() {
-          BnplTosModel model;
+          payments::BnplTosModel model;
           model.issuer = BnplIssuer(
               /*instrument_id=*/std::nullopt, bnpl_issuer_id,
               std::vector<BnplIssuer::EligiblePriceRange>{});

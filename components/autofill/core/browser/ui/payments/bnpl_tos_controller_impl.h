@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -33,7 +34,7 @@ class BnplTosControllerImpl : public BnplTosController {
   std::u16string GetTitle() const override;
   std::u16string GetReviewText() const override;
   std::u16string GetApproveText() const override;
-  TextWithLink GetLinkText() const override;
+  payments::TextWithLink GetLinkText() const override;
   const LegalMessageLines& GetLegalMessageLines() const override;
   AccountInfo GetAccountInfo() const override;
   BnplIssuer::IssuerId GetIssuerId() const override;
@@ -44,7 +45,7 @@ class BnplTosControllerImpl : public BnplTosController {
   // populate the data in the view.
   void Show(base::OnceCallback<std::unique_ptr<BnplTosView>()>
                 create_and_show_view_callback,
-            BnplTosModel model,
+            payments::BnplTosModel model,
             base::OnceClosure accept_callback,
             base::OnceClosure cancel_callback);
 
@@ -55,7 +56,7 @@ class BnplTosControllerImpl : public BnplTosController {
   friend class BnplTosControllerImplTest;
   std::unique_ptr<BnplTosView> view_;
 
-  BnplTosModel model_;
+  payments::BnplTosModel model_;
 
   base::OnceClosure accept_callback_;
   base::OnceClosure cancel_callback_;

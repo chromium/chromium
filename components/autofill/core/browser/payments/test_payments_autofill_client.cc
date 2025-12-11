@@ -412,7 +412,7 @@ bool TestPaymentsAutofillClient::ShowTouchToFillError(
 }
 
 bool TestPaymentsAutofillClient::ShowTouchToFillBnplTos(
-    BnplTosModel bnpl_tos_model,
+    payments::BnplTosModel bnpl_tos_model,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback) {
   return false;

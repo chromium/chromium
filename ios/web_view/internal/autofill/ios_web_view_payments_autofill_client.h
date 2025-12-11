@@ -25,7 +25,6 @@ namespace autofill {
 
 class AutofillProgressDialogController;
 class BnplIssuer;
-struct BnplTosModel;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
 class CreditCardCvcAuthenticator;
@@ -40,6 +39,7 @@ class VirtualCardEnrollmentManager;
 namespace payments {
 
 struct BnplIssuerContext;
+struct BnplTosModel;
 class MandatoryReauthManager;
 
 // iOS WebView implementation of PaymentsAutofillClient. Owned by the

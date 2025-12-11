@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
@@ -27,6 +28,7 @@ using base::UTF8ToUTF16;
 using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
 using std::u16string;
+using testing::_;
 using testing::ByMove;
 using testing::FieldsAre;
 using testing::Return;
@@ -82,7 +84,7 @@ class BnplTosControllerImplTest : public Test {
   u16string IssuerName() { return controller_->model_.issuer.GetDisplayName(); }
 
   void ShowBnplTos() {
-    BnplTosModel model;
+    payments::BnplTosModel model;
     model.issuer = issuer_;
     model.legal_message_lines = legal_message_lines_;
 
@@ -122,7 +124,7 @@ TEST_F(BnplTosControllerImplTest, ShowView_MultipleTimes) {
       new_create_view_callback_;
 
   EXPECT_CALL(new_create_view_callback_, Run()).Times(0);
-  controller_->Show(new_create_view_callback_.Get(), BnplTosModel(),
+  controller_->Show(new_create_view_callback_.Get(), payments::BnplTosModel(),
                     accept_callback_.Get(), cancel_callback_.Get());
 }
 
@@ -216,7 +218,8 @@ TEST_F(BnplTosControllerImplTest, GetLinkText) {
 
   EXPECT_THAT(
       controller_->GetLinkText(),
-      FieldsAre(text,
+      FieldsAre(text, /*bold_range=*/_,
+                /*offset=*/
                 gfx::Range(offsets[1], offsets[1] + kWalletLinkText.length()),
                 GURL(kWalletUrlString)));
 }

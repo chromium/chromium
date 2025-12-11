@@ -32,20 +32,6 @@ constexpr std::string_view kWalletUrlString = "https://wallet.google.com/";
 // LINT.ThenChange(//chrome/browser/touch_to_fill/autofill/android/internal/java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodMediator.java)
 }  // namespace
 
-BnplTosModel::BnplTosModel() = default;
-
-BnplTosModel::BnplTosModel(const BnplTosModel& other) = default;
-
-BnplTosModel::BnplTosModel(BnplTosModel&& other) = default;
-
-BnplTosModel& BnplTosModel::operator=(const BnplTosModel& other) = default;
-
-BnplTosModel& BnplTosModel::operator=(BnplTosModel&& other) = default;
-
-BnplTosModel::~BnplTosModel() = default;
-
-bool BnplTosModel::operator==(const BnplTosModel&) const = default;
-
 BnplTosControllerImpl::BnplTosControllerImpl(AutofillClient* client)
     : client_(CHECK_DEREF(client)) {}
 
@@ -94,8 +80,8 @@ u16string BnplTosControllerImpl::GetApproveText() const {
                          model_.issuer.GetDisplayName());
 }
 
-TextWithLink BnplTosControllerImpl::GetLinkText() const {
-  TextWithLink text_with_link;
+payments::TextWithLink BnplTosControllerImpl::GetLinkText() const {
+  payments::TextWithLink text_with_link;
   std::vector<size_t> offsets;
   text_with_link.text = GetStringFUTF16(
       IDS_AUTOFILL_BNPL_TOS_LINK_TEXT, model_.issuer.GetDisplayName(),
@@ -137,7 +123,7 @@ base::WeakPtr<BnplTosController> BnplTosControllerImpl::GetWeakPtr() {
 void BnplTosControllerImpl::Show(
     base::OnceCallback<std::unique_ptr<BnplTosView>()>
         create_and_show_view_callback,
-    BnplTosModel model,
+    payments::BnplTosModel model,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback) {
   // If the view already exists, don't create and show a new view.

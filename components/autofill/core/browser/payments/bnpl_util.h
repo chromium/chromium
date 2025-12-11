@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_UTIL_H_
 
 #include <string>
-#include <vector>
 
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -66,39 +65,20 @@ struct TextWithLink {
   GURL url;
 };
 
-// A struct containing a BNPL ToS info to be shown on the bottomsheet screen.
-struct BnplIssuerTosDetail {
- public:
-  BnplIssuerTosDetail(BnplIssuer::IssuerId issuer_id,
-                      int header_icon_id,
-                      int header_icon_id_dark,
-                      bool is_linked_issuer,
-                      std::u16string issuer_name,
-                      std::vector<LegalMessageLine> legal_message_lines);
-  BnplIssuerTosDetail(const BnplIssuerTosDetail& other);
-  BnplIssuerTosDetail(BnplIssuerTosDetail&&);
-  BnplIssuerTosDetail& operator=(const BnplIssuerTosDetail& other);
-  BnplIssuerTosDetail& operator=(BnplIssuerTosDetail&&);
-  ~BnplIssuerTosDetail();
-  bool operator==(const BnplIssuerTosDetail&) const;
+// BnplTosModel holds the data required to show the BNPL ToS view.
+struct BnplTosModel {
+  BnplTosModel();
+  BnplTosModel(const BnplTosModel& other);
+  BnplTosModel(BnplTosModel&& other);
+  BnplTosModel& operator=(const BnplTosModel& other);
+  BnplTosModel& operator=(BnplTosModel&& other);
+  ~BnplTosModel();
+  bool operator==(const BnplTosModel&) const;
 
-  // Issuer that the ToS screen is being shown for.
-  BnplIssuer::IssuerId issuer_id;
-
-  // Icon shown in the screen title.
-  int header_icon_id;
-
-  // Icon shown in the screen title in dark mode.
-  int header_icon_id_dark;
-
-  // True if the selected issuer is a linked issuer.
-  bool is_linked_issuer;
-
-  // Display name of the BNPL issuer.
-  std::u16string issuer_name;
-
-  // Legal messages with links that are shown in screen footer.
-  std::vector<LegalMessageLine> legal_message_lines;
+  // Used to show the BNPL Issuer logo and name.
+  BnplIssuer issuer;
+  // Used to show the legal message.
+  LegalMessageLines legal_message_lines;
 };
 
 // Returns the selection option text for a given BNPL issuer.

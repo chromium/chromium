@@ -578,7 +578,7 @@ void BnplManager::OnDidGetLegalMessageFromServer(
     ongoing_flow_state_->context_token = std::move(context_token);
 
     CHECK(!legal_message.empty());
-    BnplTosModel bnpl_tos_model;
+    payments::BnplTosModel bnpl_tos_model;
     bnpl_tos_model.legal_message_lines = std::move(legal_message);
     bnpl_tos_model.issuer = ongoing_flow_state_->issuer.value();
 

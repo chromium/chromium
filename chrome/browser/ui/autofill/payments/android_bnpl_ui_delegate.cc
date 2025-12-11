@@ -14,10 +14,39 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/grit/components_scaled_resources.h"
 
 namespace autofill::payments {
+
+BnplIssuerTosDetail::BnplIssuerTosDetail(
+    BnplIssuer::IssuerId issuer_id,
+    int header_icon_id,
+    int header_icon_id_dark,
+    bool is_linked_issuer,
+    std::u16string issuer_name,
+    std::vector<LegalMessageLine> legal_message_lines)
+    : issuer_id(issuer_id),
+      header_icon_id(header_icon_id),
+      header_icon_id_dark(header_icon_id_dark),
+      is_linked_issuer(is_linked_issuer),
+      issuer_name(std::move(issuer_name)),
+      legal_message_lines(std::move(legal_message_lines)) {}
+
+BnplIssuerTosDetail::BnplIssuerTosDetail(const BnplIssuerTosDetail& other) =
+    default;
+
+BnplIssuerTosDetail::BnplIssuerTosDetail(BnplIssuerTosDetail&&) = default;
+
+BnplIssuerTosDetail& BnplIssuerTosDetail::operator=(
+    const BnplIssuerTosDetail& other) = default;
+
+BnplIssuerTosDetail& BnplIssuerTosDetail::operator=(BnplIssuerTosDetail&&) =
+    default;
+
+BnplIssuerTosDetail::~BnplIssuerTosDetail() = default;
+
+bool BnplIssuerTosDetail::operator==(const BnplIssuerTosDetail&) const =
+    default;
 
 AndroidBnplUiDelegate::AndroidBnplUiDelegate(PaymentsAutofillClient* client)
     : client_(CHECK_DEREF(client)) {}
