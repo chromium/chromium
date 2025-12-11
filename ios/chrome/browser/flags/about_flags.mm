@@ -1289,9 +1289,6 @@ const FeatureEntry::FeatureVariation
         {"Popup Blocker", kProactiveSuggestionsFrameworkPopupBlockerParam,
          std::size(kProactiveSuggestionsFrameworkPopupBlockerParam), nullptr}};
 
-const FeatureEntry::FeatureParam kAskGeminiChipUseSnackbarVariation[] = {
-    {kAskGeminiChipUseSnackbar, "true"},
-};
 const FeatureEntry::FeatureParam kAskGeminiChipIgnoreCriteriaVariation[] = {
     {kAskGeminiChipIgnoreCriteria, "true"},
 };
@@ -1307,8 +1304,6 @@ const FeatureEntry::FeatureParam
         {kAskGeminiChipAllowNonconsentedUsers, "true"},
 };
 const FeatureEntry::FeatureVariation kAskGeminiChipVariations[] = {
-    {"Use Snackbar", kAskGeminiChipUseSnackbarVariation,
-     std::size(kAskGeminiChipUseSnackbarVariation), nullptr},
     {"Ignore FET and Time Criteria", kAskGeminiChipIgnoreCriteriaVariation,
      std::size(kAskGeminiChipIgnoreCriteriaVariation), nullptr},
     {"Prepopulate Floaty", kAskGeminiChipPrepopulateFloatyVariation,

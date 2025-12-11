@@ -345,7 +345,7 @@ void BwgTabHelper::SetBwgCommandsHandler(id<BWGCommands> handler) {
 }
 
 void BwgTabHelper::SetSnackbarCommandsHandler(id<SnackbarCommands> handler) {
-  CHECK(IsAskGeminiSnackbarEnabled() || IsWebPageReportedImagesSheetEnabled());
+  CHECK(IsWebPageReportedImagesSheetEnabled());
   snackbar_commands_handler_ = handler;
 }
 
@@ -597,34 +597,19 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
     return;
   }
 
-  // Otherwise, show snackbar if eligible.
-  if (IsAskGeminiSnackbarEnabled()) {
-    SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
-    action.handler = ^{
-      [bwg_commands_handler_
-          startGeminiFlowWithEntryPoint:bwg::EntryPoint::Promo];
-    };
-    action.title = [NSString stringWithFormat:@"✦ %@", @"Ask Gemini"];
-    SnackbarMessage* message =
-        [[SnackbarMessage alloc] initWithTitle:@"Ask about page?"];
-    message.action = action;
+  UIImage* badge_image =
+      [BWGUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
+  NSString* cue_label =
+      l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_CUE_LABEL);
+  LocationBarBadgeConfiguration* badge_config =
+      [[LocationBarBadgeConfiguration alloc]
+           initWithBadgeType:LocationBarBadgeType::kGeminiContextualCueChip
+          accessibilityLabel:cue_label
+                  badgeImage:badge_image];
 
-    [snackbar_commands_handler_ showSnackbarMessage:message];
-  } else {
-    UIImage* badge_image =
-        [BWGUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
-    NSString* cue_label =
-        l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_CUE_LABEL);
-    LocationBarBadgeConfiguration* badge_config =
-        [[LocationBarBadgeConfiguration alloc]
-             initWithBadgeType:LocationBarBadgeType::kGeminiContextualCueChip
-            accessibilityLabel:cue_label
-                    badgeImage:badge_image];
-
-    badge_config.badgeText = cue_label;
-    badge_config.shouldHideBadgeAfterChipCollapse = true;
-    [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
-  }
+  badge_config.badgeText = cue_label;
+  badge_config.shouldHideBadgeAfterChipCollapse = true;
+  [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
 }
 
 void BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision(

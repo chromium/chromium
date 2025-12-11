@@ -51,11 +51,6 @@ bool IsAskGeminiChipEnabled();
 bool IsAskGeminiChipIgnoreCriteria();
 extern const char kAskGeminiChipIgnoreCriteria[];
 
-// Returns true if a snackbar should be shown when a site is eligible for Ask
-// Gemini.
-bool IsAskGeminiSnackbarEnabled();
-extern const char kAskGeminiChipUseSnackbar[];
-
 // Returns true if the Ask Gemini chip should prepopulate the Gemini Floaty with
 // a prompt.
 bool IsAskGeminiChipPrepopulateFloatyEnabled();

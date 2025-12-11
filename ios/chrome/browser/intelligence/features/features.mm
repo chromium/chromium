@@ -81,8 +81,6 @@ bool IsProactiveSuggestionsFrameworkPopupBlockerEnabled() {
 
 BASE_FEATURE(kAskGeminiChip, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kAskGeminiChipUseSnackbar[] = "AskGeminiChipUseSnackbar";
-
 const char kAskGeminiChipIgnoreCriteria[] = "AskGeminiChipIgnoreCriteria";
 
 const char kAskGeminiChipPrepopulateFloaty[] = "AskGeminiChipPrepopulateFloaty";
@@ -104,11 +102,6 @@ bool IsAskGeminiChipIgnoreCriteria() {
   }
   return base::GetFieldTrialParamByFeatureAsBool(
       kAskGeminiChip, kAskGeminiChipIgnoreCriteria, false);
-}
-
-bool IsAskGeminiSnackbarEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kAskGeminiChip, kAskGeminiChipUseSnackbar, false);
 }
 
 bool IsAskGeminiChipPrepopulateFloatyEnabled() {
