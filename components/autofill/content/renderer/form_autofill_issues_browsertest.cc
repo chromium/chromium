@@ -5,9 +5,12 @@
 #include "components/autofill/content/renderer/form_autofill_issues.h"
 
 #include "base/compiler_specific.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -35,7 +38,13 @@ auto as_invokable(MockFunction<R(Args...)>& fun LIFETIME_BOUND) {
 
 class FormAutofillIssuesTest : public content::RenderViewTest {
  public:
-  FormAutofillIssuesTest() = default;
+  FormAutofillIssuesTest() {
+    feature_list_.InitWithFeatures(
+        {features::kAutofillPolicyControlledFeatureAutofill,
+         features::kAutofillPolicyControlledFeatureManualText},
+        {});
+  }
+
   ~FormAutofillIssuesTest() override = default;
 
   WebDocument GetDocument() { return GetMainFrame()->GetDocument(); }
@@ -51,6 +60,9 @@ class FormAutofillIssuesTest : public content::RenderViewTest {
         *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
         /*button_titles_cache=*/nullptr);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(FormAutofillIssuesTest, FormLabelHasNeitherForNorNestedInputError) {
@@ -225,6 +237,60 @@ TEST_F(FormAutofillIssuesTest, FormLabelForMatchesNonExistingIdError) {
                          _, WebString("for")));
   EmitFormIssues(GetDocument(), base::span_from_ref(ExtractTargetForm("f")),
                  as_invokable(emit));
+}
+
+// Tests that if the `autofill` and `manual-text` features are disabled in the
+// document, an issue is emitted.
+TEST_F(FormAutofillIssuesTest, NoAutofillNoManualTextPermission) {
+  using enum GenericIssueErrorType;
+  LoadHTML(R"(
+      <iframe
+          id=child_frame
+          allow="autofill 'none'; manual-text 'none'"
+          srcdoc="<label><input id=t></label>"
+      ></iframe>
+      )");
+  MockEmit emit;
+  WebDocument document = GetIframeDocumentById(GetDocument(), "child_frame");
+  EXPECT_CALL(
+      emit,
+      Call(document, kAutofillAndManualTextPolicyControlledFeaturesInfo, _, _));
+  EmitFormIssues(document, {}, as_invokable(emit));
+}
+
+// Tests that if the `manual-text` feature is disabled in the document, an issue
+// is emitted.
+TEST_F(FormAutofillIssuesTest, NoAutofillPermission) {
+  using enum GenericIssueErrorType;
+  LoadHTML(R"(
+      <iframe
+          id=child_frame
+          allow="autofill 'none'; manual-text"
+          srcdoc="<label><input id=t></label>"
+      ></iframe>
+      )");
+  MockEmit emit;
+  WebDocument document = GetIframeDocumentById(GetDocument(), "child_frame");
+  EXPECT_CALL(emit, Call(document, kAutofillPolicyControlledFeatureInfo, _, _));
+  EmitFormIssues(document, {}, as_invokable(emit));
+}
+
+// Tests that if the `autofill` feature is disabled in the document, an issue is
+// emitted.
+TEST_F(FormAutofillIssuesTest, NoManualTextPermission) {
+  using enum GenericIssueErrorType;
+  LoadHTML(R"(
+      <iframe
+          id=child_frame
+          allow="autofill; manual-text 'none'"
+          srcdoc="<label><input id=t></label>"
+      ></iframe>
+      )");
+  MockEmit emit;
+  WebDocument document = GetIframeDocumentById(GetDocument(), "child_frame");
+  EXPECT_CALL(emit,
+              Call(document, kManualTextPolicyControlledFeatureInfo, _, _));
+  EmitFormIssues(document, {}, as_invokable(emit));
 }
 
 }  // namespace

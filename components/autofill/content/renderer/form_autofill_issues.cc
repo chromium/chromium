@@ -109,6 +109,37 @@ int GetShadowHostDOMNodeId(const WebFormControlElement& element) {
   return host.GetDomNodeId();
 }
 
+void EmitAutofillOrManualTextIssue(const WebDocument& document,
+                                   EmitCallback emit) {
+  const WebLocalFrame* frame = document.GetFrame();
+  if (!frame) {
+    return;
+  }
+  const bool is_autofill_disabled =
+      !frame->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kAutofill) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillPolicyControlledFeatureAutofill);
+  const bool is_manual_text_disabled =
+      !frame->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kManualText) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillPolicyControlledFeatureManualText);
+  if (is_autofill_disabled && is_manual_text_disabled) {
+    emit(document,
+         GenericIssueErrorType::
+             kAutofillAndManualTextPolicyControlledFeaturesInfo,
+         document.GetDomNodeId(), {});
+  } else if (is_autofill_disabled) {
+    emit(document, GenericIssueErrorType::kAutofillPolicyControlledFeatureInfo,
+         document.GetDomNodeId(), {});
+  } else if (is_manual_text_disabled) {
+    emit(document,
+         GenericIssueErrorType::kManualTextPolicyControlledFeatureInfo,
+         document.GetDomNodeId(), {});
+  }
+}
+
 void EmitDuplicateIdForInputDevtoolsIssue(
     const WebDocument& document,
     std::vector<WebFormControlElement> elements,
@@ -226,6 +257,7 @@ void EmitFormControlIssues(const WebDocument& document,
   }
 
   for (const WebFormControlElement& element : elements) {
+    EmitAutofillOrManualTextIssue(document, emit);
     EmitAriaLabelledByDevtoolsIssue(document, element, emit);
     EmitAutocompleteAttributeDevtoolsIssue(document, element, emit);
     EmitInputWithEmptyIdAndNameDevtoolsIssue(document, element, emit);
