@@ -90,8 +90,17 @@ Local modifications:
   * patches/2025-12-09-symlink-backend.patch
     * Implements logic for configuring behavior when reading symlinks when
       adding to an HFS archive. Not yet reachable by the CLI.
-    * Also implements flag for enabling or disabling "special chmod" behavior
-      specifically targeted at images intended to be installed on mobile
-      platforms.
+    * Implements logic for turning off ad-hoc special case chmod behaviors
+      when adding to an HFS archive. Not yet reachable by CLI.
     * Minor cleanup for indentation, brackets, trailing whitespace, line breaks,
       code structure, etc. encountered during implementation.
+  * patches/2025-12-10-symlink-cli.patch
+    * Migrates hfs.c to use getopt_long for option parsing.
+    * Allows configuring the behavior of `hfsplus addall` when it encounters
+      symlinks via `--symlinks` or `-s`. Default is backwards compatible
+      (`--symlinks=traverse` behavior).
+    * Allows controlling special case chmod behaviors in `hfsplus addall` via
+      `--special-modes` or `-m`. Default is backwards compatible (mode changing
+      enabled).
+    * Updates usage message to include new flags for addall.
+    * Style cleanups in hfs.c.
