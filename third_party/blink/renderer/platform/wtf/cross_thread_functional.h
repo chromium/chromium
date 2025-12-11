@@ -34,12 +34,12 @@ namespace blink {
 // // Given the prototype:
 // // void MyFunction(const CopyAndMovableObject&, int);
 // CopyableAndMovableObject obj;
-// CrossThreadFunction<void(int)> f =
+// CrossThreadOnceFunction<void(int)> f =
 //     CrossThreadBindOnce(&MyFunction, obj);
 // std::move(f).Run(42);  // Calls MyFunction(<copy of `obj`>, 42);
 //
 // // Moves ownership of `obj` into `g`.
-// CrossThreadFunction<void(int)> g =
+// CrossThreadOnceFunction<void(int)> g =
 //     CrossThreadBindOnce(&MyFunction, std::move(obj));
 // std::move(g).Run(42);  // Calls MyFunction(<`obj` that was moved>, 42);
 
