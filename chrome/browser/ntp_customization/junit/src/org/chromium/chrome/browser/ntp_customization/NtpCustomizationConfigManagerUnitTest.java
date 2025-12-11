@@ -481,6 +481,35 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
+    public void testOnThemeCollectionImageSelected_dailyRefresh() {
+        // Test case for daily refresh isn't enabled.
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        CustomBackgroundInfo customBackgroundInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.NTP_URL,
+                        /* collectionId= */ "test",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+
+        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
+                mBitmap, customBackgroundInfo, mBackgroundImageInfo);
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        assertFalse(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+
+        // Test case for daily refresh enabled.
+        customBackgroundInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.NTP_URL,
+                        /* collectionId= */ "test",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
+        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
+                mBitmap, customBackgroundInfo, mBackgroundImageInfo);
+        assertTrue(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+        assertNotEquals(0, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
+    }
+
+    @Test
     public void testAddListener_notifiesImmediatelyWithThemeCollection() {
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpBackgroundImageType.THEME_COLLECTION);

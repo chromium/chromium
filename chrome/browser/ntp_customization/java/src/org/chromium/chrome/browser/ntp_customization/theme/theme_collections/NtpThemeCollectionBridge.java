@@ -186,6 +186,14 @@ public class NtpThemeCollectionBridge {
                         mNativeNtpThemeCollectionBridge, themeCollectionId);
     }
 
+    /** Fetches the next image for a theme collection with daily refresh enabled. */
+    public void fetchNextThemeCollectionImage() {
+        if (mNativeNtpThemeCollectionBridge == 0) return;
+
+        NtpThemeCollectionBridgeJni.get()
+                .fetchNextThemeCollectionImage(mNativeNtpThemeCollectionBridge);
+    }
+
     /**
      * Callback from native code, triggered when the custom background image has been successfully
      * updated. This can occur after a new theme is selected.
@@ -262,6 +270,8 @@ public class NtpThemeCollectionBridge {
 
         void setThemeCollectionDailyRefreshed(
                 long nativeNtpThemeCollectionBridge, String collectionId);
+
+        void fetchNextThemeCollectionImage(long nativeNtpThemeCollectionBridge);
 
         @Nullable CustomBackgroundInfo getCustomBackgroundInfo(long nativeNtpThemeCollectionBridge);
 

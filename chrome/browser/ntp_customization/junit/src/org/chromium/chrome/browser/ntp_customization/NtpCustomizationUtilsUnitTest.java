@@ -819,21 +819,43 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testMaybeUpdateDailyRefreshTimestamp() {
-        // Disable daily refresh.
+    public void testMaybeUpdateDailyRefreshTimestamp_chromeColor() {
+        long timestamp = 100;
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+
+        // Test case for daily refresh for CHROME_COLOR isn't enabled.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         assertFalse(
                 NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
-
-        long timestamp = 100;
-        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(timestamp);
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
+                timestamp, NtpBackgroundImageType.CHROME_COLOR, /* customBackgroundInfo= */ null);
         assertFalse(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
         assertEquals(0, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
 
-        // Enable daily refresh.
+        // Test case for daily refresh for CHROME_COLOR enabled.
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
-        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(timestamp);
+        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
+                timestamp, NtpBackgroundImageType.CHROME_COLOR, /* customBackgroundInfo= */ null);
+        assertEquals(timestamp, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
+    }
+
+    @Test
+    public void testMaybeUpdateDailyRefreshTimestamp_themeCollection() {
+        long timestamp = 100;
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+
+        // Test case for daily refresh for THEME_COLLECTION isn't enabled.
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        CustomBackgroundInfo customBackgroundInfo =
+                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, false);
+        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
+                timestamp, NtpBackgroundImageType.THEME_COLLECTION, customBackgroundInfo);
+        assertFalse(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+
+        // Test case for daily refresh for THEME_COLLECTION is enabled.
+        customBackgroundInfo = new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, true);
+        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
+                timestamp, NtpBackgroundImageType.THEME_COLLECTION, customBackgroundInfo);
         assertEquals(timestamp, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
     }
 

@@ -75,6 +75,9 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_collection_id);
 
+  // Fetches the next image for a theme collection with daily refresh enabled.
+  void FetchNextThemeCollectionImage(JNIEnv* env);
+
   // Fetches the current custom background information (e.g., URL, collection
   // ID) from the NtpCustomBackgroundService.
   base::android::ScopedJavaLocalRef<jobject> GetCustomBackgroundInfo(

@@ -34,6 +34,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NtpThemeCollectionBridgeUnitTest {
+    public static final long NATIVE_NTP_THEME_COLLECTION_BRIDGE = 1L;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private NtpThemeCollectionBridge.Natives mNatives;
@@ -49,7 +51,7 @@ public class NtpThemeCollectionBridgeUnitTest {
     @Before
     public void setUp() {
         NtpThemeCollectionBridgeJni.setInstanceForTesting(mNatives);
-        when(mNatives.init(any(), any())).thenReturn(1L);
+        when(mNatives.init(any(), any())).thenReturn(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
         mNtpThemeCollectionBridge = new NtpThemeCollectionBridge(mProfile, mOnThemeUpdatedCallback);
     }
 
@@ -57,13 +59,16 @@ public class NtpThemeCollectionBridgeUnitTest {
     public void testInitAndDestroy() {
         verify(mNatives).init(eq(mProfile), any(NtpThemeCollectionBridge.class));
         mNtpThemeCollectionBridge.destroy();
-        verify(mNatives).destroy(1L);
+        verify(mNatives).destroy(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
     }
 
     @Test
     public void testGetBackgroundCollections() {
         mNtpThemeCollectionBridge.getBackgroundCollections(mBackgroundCollectionsCallback);
-        verify(mNatives).getBackgroundCollections(eq(1L), mObjectArrayCallbackCaptor.capture());
+        verify(mNatives)
+                .getBackgroundCollections(
+                        eq(NATIVE_NTP_THEME_COLLECTION_BRIDGE),
+                        mObjectArrayCallbackCaptor.capture());
 
         // Test with null response.
         mObjectArrayCallbackCaptor.getValue().onResult(null);
@@ -90,7 +95,9 @@ public class NtpThemeCollectionBridgeUnitTest {
         mNtpThemeCollectionBridge.getBackgroundImages(collectionId, mCollectionImagesCallback);
         verify(mNatives)
                 .getBackgroundImages(
-                        eq(1L), eq(collectionId), mObjectArrayCallbackCaptor.capture());
+                        eq(NATIVE_NTP_THEME_COLLECTION_BRIDGE),
+                        eq(collectionId),
+                        mObjectArrayCallbackCaptor.capture());
 
         // Test with null response.
         mObjectArrayCallbackCaptor.getValue().onResult(null);
@@ -163,7 +170,7 @@ public class NtpThemeCollectionBridgeUnitTest {
         mNtpThemeCollectionBridge.setThemeCollectionImage(image);
         verify(mNatives)
                 .setThemeCollectionImage(
-                        1L,
+                        NATIVE_NTP_THEME_COLLECTION_BRIDGE,
                         "collectionId",
                         JUnitTestGURLs.URL_1,
                         JUnitTestGURLs.URL_2,
@@ -175,20 +182,20 @@ public class NtpThemeCollectionBridgeUnitTest {
     @Test
     public void testSelectLocalBackgroundImage() {
         mNtpThemeCollectionBridge.selectLocalBackgroundImage();
-        verify(mNatives).selectLocalBackgroundImage(1L);
+        verify(mNatives).selectLocalBackgroundImage(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
     }
 
     @Test
     public void testResetCustomBackground() {
         mNtpThemeCollectionBridge.resetCustomBackground();
-        verify(mNatives).resetCustomBackground(1L);
+        verify(mNatives).resetCustomBackground(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
     }
 
     @Test
     public void onCustomBackgroundImageUpdated() {
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "collection_id", false, true);
-        when(mNatives.getCustomBackgroundInfo(1L)).thenReturn(info);
+        when(mNatives.getCustomBackgroundInfo(NATIVE_NTP_THEME_COLLECTION_BRIDGE)).thenReturn(info);
 
         mNtpThemeCollectionBridge.onCustomBackgroundImageUpdated();
 
@@ -197,7 +204,7 @@ public class NtpThemeCollectionBridgeUnitTest {
 
     @Test
     public void testOnCustomBackgroundImageUpdated_nullInfo() {
-        when(mNatives.getCustomBackgroundInfo(1L)).thenReturn(null);
+        when(mNatives.getCustomBackgroundInfo(NATIVE_NTP_THEME_COLLECTION_BRIDGE)).thenReturn(null);
         mNtpThemeCollectionBridge.onCustomBackgroundImageUpdated();
         verify(mOnThemeUpdatedCallback).onResult(null);
     }
@@ -206,6 +213,14 @@ public class NtpThemeCollectionBridgeUnitTest {
     public void testSetThemeCollectionDailyRefreshed() {
         String collectionId = "test_id";
         mNtpThemeCollectionBridge.setThemeCollectionDailyRefreshed(collectionId);
-        verify(mNatives).setThemeCollectionDailyRefreshed(eq(1L), eq(collectionId));
+        verify(mNatives)
+                .setThemeCollectionDailyRefreshed(
+                        eq(NATIVE_NTP_THEME_COLLECTION_BRIDGE), eq(collectionId));
+    }
+
+    @Test
+    public void testFetchNextThemeCollectionImage() {
+        mNtpThemeCollectionBridge.fetchNextThemeCollectionImage();
+        verify(mNatives).fetchNextThemeCollectionImage(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
     }
 }

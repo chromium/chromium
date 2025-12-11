@@ -276,6 +276,9 @@ public class NtpCustomizationConfigManager {
         mBackgroundImageType = NtpBackgroundImageType.THEME_COLLECTION;
         mCustomBackgroundInfo = customBackgroundInfo;
         onBackgroundChanged(bitmap, backgroundImageInfo, oldType);
+        // Updates the daily refresh timestamp if daily refresh enabled.
+        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
+                TimeUtils.currentTimeMillis(), mBackgroundImageType, mCustomBackgroundInfo);
     }
 
     /**
@@ -325,7 +328,10 @@ public class NtpCustomizationConfigManager {
         if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
             NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(assumeNonNull(colorInfo).id);
             // Updates the daily refresh timestamp if enabled.
-            NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(TimeUtils.currentTimeMillis());
+            NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
+                    TimeUtils.currentTimeMillis(),
+                    mBackgroundImageType,
+                    /* customBackgroundInfo= */ null);
         } else if (mBackgroundImageType == NtpBackgroundImageType.COLOR_FROM_HEX) {
             NtpThemeColorFromHexInfo colorFromHexInfo = (NtpThemeColorFromHexInfo) colorInfo;
             NtpCustomizationUtils.setBackgroundColorToSharedPreference(

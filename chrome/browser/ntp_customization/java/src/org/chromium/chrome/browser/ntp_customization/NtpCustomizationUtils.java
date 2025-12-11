@@ -750,12 +750,25 @@ public class NtpCustomizationUtils {
      *
      * @param timestamp The new timestamp.
      */
-    public static void maybeUpdateDailyRefreshTimestamp(long timestamp) {
+    public static void maybeUpdateDailyRefreshTimestamp(
+            long timestamp,
+            @NtpBackgroundImageType int backgroundImageType,
+            @Nullable CustomBackgroundInfo customBackgroundInfo) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        if (!prefsManager.readBoolean(
-                NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, false)) {
-            return;
+
+        if (backgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
+            if (!prefsManager.readBoolean(
+                    NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, false)) {
+                return;
+            }
         }
+
+        if (backgroundImageType == NtpBackgroundImageType.THEME_COLLECTION) {
+            if (customBackgroundInfo == null || !customBackgroundInfo.isDailyRefreshEnabled) {
+                return;
+            }
+        }
+
         prefsManager.writeLong(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP, timestamp);
     }
 
@@ -1214,7 +1227,7 @@ public class NtpCustomizationUtils {
      * @param backgroundImageInfo The {@link BackgroundImageInfo} containing the portrait and
      *     landscape transformation matrices of the image.
      */
-    static void saveDailyRefreshBackgroundInfo(
+    public static void saveDailyRefreshBackgroundInfo(
             @Nullable CustomBackgroundInfo customBackgroundInfo,
             Bitmap bitmap,
             BackgroundImageInfo backgroundImageInfo) {
