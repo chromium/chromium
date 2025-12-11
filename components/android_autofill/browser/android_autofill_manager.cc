@@ -222,13 +222,15 @@ AndroidAutofillManager::GetCreditCardAccessManager() const {
 FieldTypeGroup AndroidAutofillManager::ComputeFieldTypeGroupForField(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id) {
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form_id, field_id, &form_structure,
-                             &autofill_field)) {
+  const FormStructure* form = FindCachedFormById(form_id);
+  if (!form) {
     return FieldTypeGroup::kNoGroup;
   }
-  return GroupTypeOfFieldType(GetMostRelevantFieldType(autofill_field->Type()));
+  const AutofillField* field = form->GetFieldById(field_id);
+  if (!field) {
+    return FieldTypeGroup::kNoGroup;
+  }
+  return GroupTypeOfFieldType(GetMostRelevantFieldType(field->Type()));
 }
 
 void AndroidAutofillManager::FillOrPreviewForm(

@@ -2860,6 +2860,20 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
   return submitted_form;
 }
 
+bool BrowserAutofillManager::GetCachedFormAndField(
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
+    FormStructure** form_structure,
+    AutofillField** autofill_field) {
+  FormStructure* cached_form = FindCachedFormById(form_id, /*pass_key=*/{});
+  if (!cached_form) {
+    return false;
+  }
+  *form_structure = cached_form;
+  *autofill_field = cached_form->GetFieldById(field_id);
+  return *autofill_field != nullptr;
+}
+
 autofill_metrics::CreditCardFormEventLogger&
 BrowserAutofillManager::GetCreditCardFormEventLogger() {
   return metrics_->credit_card_form_event_logger;

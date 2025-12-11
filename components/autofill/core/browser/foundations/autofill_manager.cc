@@ -480,19 +480,6 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
               form.global_id(), field_id)));
 }
 
-bool AutofillManager::GetCachedFormAndField(const FormGlobalId& form_id,
-                                            const FieldGlobalId& field_id,
-                                            FormStructure** form_structure,
-                                            AutofillField** autofill_field) {
-  FormStructure* cached_form = FindCachedFormById(form_id, /*pass_key=*/{});
-  if (!cached_form) {
-    return false;
-  }
-  *form_structure = cached_form;
-  *autofill_field = cached_form->GetFieldById(field_id);
-  return *autofill_field != nullptr;
-}
-
 std::vector<raw_ref<const FormStructure>>
 AutofillManager::FindCachedFormsBySignature(
     FormSignature form_signature) const {
