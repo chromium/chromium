@@ -19,6 +19,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/badges/ui_bundled",
     "//ios/chrome/browser/contextual_panel/entrypoint/coordinator",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model:badge",

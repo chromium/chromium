@@ -2,6 +2,7 @@ include_rules = [
   "+ios/chrome/browser/badges/ui_bundled",
   "+ios/chrome/browser/contextual_panel/entrypoint/coordinator",
   "+ios/chrome/browser/contextual_panel/entrypoint/ui",
+  "+ios/chrome/browser/contextual_panel/model",
   "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/bwg/utils",
   "+ios/chrome/browser/intelligence/features",

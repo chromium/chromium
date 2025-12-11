@@ -42,6 +42,11 @@
 // Sets whether there are infobar badges currently being shown.
 - (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown;
 
+// Notify the consumer to update the state of the entrypoint. When `opened` is
+// passed as YES, the entrypoint gets muted colors and becomes small, otherwise,
+// it returns to its default style.
+- (void)transitionToContextualPanelOpenedState:(BOOL)opened;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_UI_LOCATION_BAR_BADGE_CONSUMER_H_

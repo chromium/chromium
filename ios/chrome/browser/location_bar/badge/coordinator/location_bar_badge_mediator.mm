@@ -11,6 +11,8 @@
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
@@ -40,7 +42,8 @@ const int kStartExpandTransitionTimeInSeconds = 2;
 const int kStartCollapseTransitionTimeInSeconds = 5;
 }  // anonymous namespace
 
-@interface LocationBarBadgeMediator () <CRWWebStateObserver,
+@interface LocationBarBadgeMediator () <ContextualPanelTabHelperObserving,
+                                        CRWWebStateObserver,
                                         InfobarBadgeTabHelperObserving,
                                         WebStateListObserving>
 @end
@@ -73,6 +76,12 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
       _infobarBadgeObservation;
   // Whether there currently are any Infobar badges being shown.
   BOOL _infobarBadgesCurrentlyShown;
+  // Bridge for the ContextualPanelTabHelper observation.
+  std::unique_ptr<ContextualPanelTabHelperObserverBridge>
+      _contextualPanelObserverBridge;
+  // Forwarder to always be observing the active ContextualPanelTabHelper.
+  std::unique_ptr<ActiveContextualPanelTabHelperObservationForwarder>
+      _activeContextualPanelObservationForwarder;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -101,6 +110,13 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
         _infobarBadgeObservation->Observe(
             InfobarBadgeTabHelper::GetOrCreateForWebState(_activeWebState));
       }
+
+      // Set up active ContextualPanelTabHelper observation.
+      _contextualPanelObserverBridge =
+          std::make_unique<ContextualPanelTabHelperObserverBridge>(self);
+      _activeContextualPanelObservationForwarder =
+          std::make_unique<ActiveContextualPanelTabHelperObservationForwarder>(
+              webStateList, _contextualPanelObserverBridge.get());
     }
 
     _tracker = tracker;
@@ -124,6 +140,8 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     _infobarBadgeObservation->Reset();
     _infobarBadgeObservation.reset();
     _infobarBadgeObserverBridge.reset();
+    _activeContextualPanelObservationForwarder.reset();
+    _contextualPanelObserverBridge.reset();
   }
 
   _promoStartTimer = nullptr;
@@ -208,6 +226,27 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   }
 
   [self.consumer setInfobarBadgesCurrentlyShown:_infobarBadgesCurrentlyShown];
+}
+
+#pragma mark - ContextualPanelTabHelperObserving
+
+- (void)contextualPanel:(ContextualPanelTabHelper*)tabHelper
+             hasNewData:
+                 (std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>)
+                     item_configurations {
+  // TODO(crbug.com/467506403): Implement activeTabHasNewData.
+}
+
+- (void)contextualPanelTabHelperDestroyed:(ContextualPanelTabHelper*)tabHelper {
+  // TODO(crbug.com/467506403): Implement activeTabHasNewData.
+}
+
+- (void)contextualPanelOpened:(ContextualPanelTabHelper*)tabHelper {
+  [self.consumer transitionToContextualPanelOpenedState:YES];
+}
+
+- (void)contextualPanelClosed:(ContextualPanelTabHelper*)tabHelper {
+  [self.consumer transitionToContextualPanelOpenedState:NO];
 }
 
 #pragma mark - LocationBarBadgeCommands
