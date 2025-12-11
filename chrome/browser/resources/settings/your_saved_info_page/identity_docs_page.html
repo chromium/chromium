@@ -11,7 +11,9 @@
   <div class="card">
     <settings-toggle-button id="optInToggle"
         disabled="[[optInToggleDisabled_(
-            enhancedAutofillEligibleUser_, enhancedAutofillOptedIn_)]]"
+            enhancedAutofillEligibleUser_, enhancedAutofillOptedIn_,
+            autofillAiIgnoresWhetherAddressFillingIsEnabled_,
+            prefs.autofill.profile_enabled.value)]]"
         on-settings-boolean-control-change="onOptInToggleChange_"
         pref="[[identityDocsOptedIn_]]"
         no-extension-indicator

@@ -78,7 +78,22 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
         type: Object,
         computed: 'computeTravelOptedIn_(enhancedAutofillEligibleUser_, ' +
             'enhancedAutofillOptedIn_, ' +
-            'prefs.autofill.autofill_ai.travel_entities_enabled)',
+            'prefs.autofill.autofill_ai.travel_entities_enabled, ' +
+            'prefs.autofill.profile_enabled.value)',
+      },
+
+      /**
+        If true, Autofill AI does not depend on whether Autofill for addresses
+        is enabled.
+      */
+      // TODO(crbug.com/466345561): remove when enhanced autofill will stop
+      // depending on addresses autofill
+      autofillAiIgnoresWhetherAddressFillingIsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'AutofillAiIgnoresWhetherAddressFillingIsEnabled');
+        },
       },
     };
   }
@@ -92,6 +107,7 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   declare private enhancedAutofillEligibleUser_: boolean;
   declare private enhancedAutofillOptedIn_: boolean;
   declare private travelOptedIn_: chrome.settingsPrivate.PrefObject;
+  declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
 
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
@@ -102,8 +118,21 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   }
 
   private optInToggleDisabled_(): boolean {
-    return !this.enhancedAutofillEligibleUser_ ||
-        !this.enhancedAutofillOptedIn_;
+    const addressAutofillOptInStatus =
+        this.getPref<boolean>('autofill.profile_enabled').value;
+    const ignoreAddressAutofill =
+        this.autofillAiIgnoresWhetherAddressFillingIsEnabled_;
+    // The travel opt-in toggle should be enabled (editable) when all
+    // conditions are met:
+    //  * User is eligible for enhanced autofill.
+    //  * User is enrolled in enhanced autofill.
+    //  * User is enrolled in address autofill (unless the experiment
+    //    to ignore address autofill is active).
+    const optInToggleEnabled = this.enhancedAutofillEligibleUser_ &&
+        this.enhancedAutofillOptedIn_ &&
+        (ignoreAddressAutofill || addressAutofillOptInStatus);
+
+    return !optInToggleEnabled;
   }
 
   private onAutofillOptInStatusChange_() {
