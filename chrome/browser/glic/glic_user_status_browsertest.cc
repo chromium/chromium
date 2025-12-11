@@ -67,7 +67,6 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   GlicUserStatusBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicRollout, {}},
-         {features::kGlicShareImage, {}},
          {features::kGlicUserStatusCheck,
           {{features::kGlicUserStatusRequestDelay.name, "200ms"},
            {features::kGlicUserStatusRequestDelayJitter.name, "0"}}}},
@@ -215,10 +214,6 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsGlicEnabled() { return GlicEnabling::IsEnabledForProfile(profile()); }
-  bool IsShareImageEnabled() {
-    return GlicEnabling::IsShareImageEnabledForProfile(profile());
-  }
-
   Profile* profile() { return browser()->profile(); }
 
   net::test_server::HttpRequest& most_recent_request() {
@@ -250,8 +245,6 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
 
   SetGlicUserStatusUrlForTest();
 
-  EXPECT_FALSE(IsShareImageEnabled());
-
   SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
 
   // Verify Prefs
@@ -266,7 +259,6 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
 
   // Verify GlicEnabling status (assuming other criteria met)
   EXPECT_TRUE(IsGlicEnabled());
-  EXPECT_FALSE(IsShareImageEnabled());
 }
 
 // TODO(460830699): Re-enable on ChromeOS.
@@ -729,8 +721,6 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterpriseSignIn) {
 
   SetGlicUserStatusUrlForTest();
 
-  EXPECT_FALSE(IsShareImageEnabled());
-
   SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
 
   // wait for a while.
@@ -743,29 +733,6 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterpriseSignIn) {
   ASSERT_FALSE(GetCachedStatusDict().has_value());
 
   ASSERT_TRUE(IsGlicEnabled());
-
-  {
-    policy::ScopedManagementServiceOverrideForTesting platform_management(
-        policy::ManagementServiceFactory::GetForProfile(profile()),
-        policy::EnterpriseManagementAuthority::CLOUD);
-    EXPECT_FALSE(IsShareImageEnabled());
-  }
-  {
-    policy::ScopedManagementServiceOverrideForTesting platform_management(
-        policy::ManagementServiceFactory::GetForProfile(profile()),
-        policy::EnterpriseManagementAuthority::NONE);
-    EXPECT_TRUE(IsShareImageEnabled());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
-                       NonEnterpriseSignInBeforeAccountInfoFetch) {
-  const bool fetch_account_info = false;
-  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount,
-                                      fetch_account_info);
-  // Ensure that we return false if we have not yet successfully fetched account
-  // information.
-  EXPECT_FALSE(IsShareImageEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseDataProtection) {
@@ -845,6 +812,121 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, ClientDataHeaderExists) {
 
   EXPECT_NE(most_recent_request().headers["X-Client-Data"], "");
 }
+
+class GlicShareImageEnablementBrowserTest
+    : public GlicUserStatusBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  GlicShareImageEnablementBrowserTest() {
+    if (IsGlicShareImageEnterpriseEnabled()) {
+      feature_list_.InitWithFeatures(
+          {features::kGlicShareImage, features::kGlicShareImageEnterprise}, {});
+    } else {
+      feature_list_.InitWithFeatures({features::kGlicShareImage},
+                                     {features::kGlicShareImageEnterprise});
+    }
+  }
+
+  bool IsGlicShareImageEnterpriseEnabled() const { return GetParam(); }
+
+  bool IsShareImageEnabled() {
+    return GlicEnabling::IsShareImageEnabledForProfile(profile());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicShareImageEnablementBrowserTest,
+                       EnterpriseSignInEnabledNonManaged) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // If enterprise checks are enabled, we should reject if value is pending.
+  EXPECT_EQ(IsShareImageEnabled(), IsGlicShareImageEnterpriseEnabled());
+
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  // This should continue to be the case after fetching (as this is an
+  // enterprise user).
+  EXPECT_EQ(IsShareImageEnabled(), IsGlicShareImageEnterpriseEnabled());
+}
+
+IN_PROC_BROWSER_TEST_P(GlicShareImageEnablementBrowserTest,
+                       NonEnterpriseSignIn) {
+  EXPECT_EQ(IsShareImageEnabled(), IsGlicShareImageEnterpriseEnabled());
+
+  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
+
+  ASSERT_TRUE(IsGlicEnabled());
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::CLOUD);
+    EXPECT_EQ(IsShareImageEnabled(), IsGlicShareImageEnterpriseEnabled());
+  }
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::NONE);
+    // In all cases, share image should be enabled here.
+    EXPECT_TRUE(IsShareImageEnabled());
+  }
+}
+
+class GlicShareImageGlicDisabledBrowserTest
+    : public GlicUserStatusBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  GlicShareImageGlicDisabledBrowserTest() {
+    if (IsGlicShareImageEnterpriseEnabled()) {
+      feature_list_.InitWithFeatures(
+          {features::kGlicShareImage, features::kGlicShareImageEnterprise},
+          {features::kGlic});
+    } else {
+      feature_list_.InitWithFeatures(
+          {features::kGlicShareImage},
+          {features::kGlicShareImageEnterprise, features::kGlic});
+    }
+  }
+
+  bool IsGlicShareImageEnterpriseEnabled() const { return GetParam(); }
+
+  bool IsShareImageEnabled() {
+    return GlicEnabling::IsShareImageEnabledForProfile(profile());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// If glic is disabled, share image should always be disabled.
+IN_PROC_BROWSER_TEST_P(GlicShareImageGlicDisabledBrowserTest, AlwaysDisabled) {
+  EXPECT_FALSE(IsShareImageEnabled());
+
+  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
+
+  ASSERT_FALSE(IsGlicEnabled());
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::CLOUD);
+    EXPECT_FALSE(IsShareImageEnabled());
+  }
+  {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForProfile(profile()),
+        policy::EnterpriseManagementAuthority::NONE);
+    EXPECT_FALSE(IsShareImageEnabled());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(ToggleGlicShareImageEnterprise,
+                         GlicShareImageEnablementBrowserTest,
+                         testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(ToggleGlicShareImageEnterprise,
+                         GlicShareImageGlicDisabledBrowserTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace glic

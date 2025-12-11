@@ -286,6 +286,11 @@ bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
       !base::FeatureList::IsEnabled(features::kGlicShareImage)) {
     return false;
   }
+
+  if (base::FeatureList::IsEnabled(features::kGlicShareImageEnterprise)) {
+    return true;
+  }
+
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
     return false;
