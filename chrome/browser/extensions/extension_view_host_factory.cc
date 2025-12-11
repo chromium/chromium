@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_view_host.h"
@@ -149,8 +150,12 @@ class ExtensionViewHostDelegateAndroid : public ExtensionViewHost::Delegate {
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override {
-    // TODO(cbrug.com/385987224): Implement this method for Android.
-    NOTIMPLEMENTED();
+    // TODO(cbrug.com/430430820): Investigate and remove if truly unused.
+    //  Return nullptr for now. Initial investigations (see crrev.com/c/7214213)
+    //  suggest that OpenURL methods within ExtensionViewHost::Delegate
+    //  implementations are never actually called. This unblocks Android
+    //  extension work while further analysis is conducted.
+    base::debug::DumpWithoutCrashing();
     return nullptr;
   }
 
