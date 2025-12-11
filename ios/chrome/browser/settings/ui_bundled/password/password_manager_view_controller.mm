@@ -889,18 +889,12 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)didTapWidgetPromoCloseButton {
-  UmaHistogramEnumeration(kPasswordManagerWidgetPromoActionHistogram,
-                          PasswordManagerWidgetPromoAction::kClose);
-
   [self clearSectionWithIdentifier:SectionIdentifierWidgetPromo
                   withRowAnimation:UITableViewRowAnimationFade];
   [self.delegate notifyFETOfPasswordManagerWidgetPromoDismissal];
 }
 
 - (void)didTapWidgetPromoMoreInfoButton {
-  UmaHistogramEnumeration(kPasswordManagerWidgetPromoActionHistogram,
-                          PasswordManagerWidgetPromoAction::kOpenInstructions);
-
   [self.presentationDelegate showPasswordManagerWidgetPromoInstructions];
 }
 

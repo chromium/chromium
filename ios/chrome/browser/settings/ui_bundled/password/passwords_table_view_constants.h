@@ -75,24 +75,10 @@ extern NSString* const kWidgetPromoImageID;
 // promo's image.
 extern NSString* const kWidgetTrustedVaultPromoImageID;
 
-// Name of histogram tracking actions taken on the Password Manager widget
-// promo.
-extern const char kPasswordManagerWidgetPromoActionHistogram[];
-
 // Name of histogram tracking actions taken on the Trusted Vault Password
 // Manager widget promo.
 extern const char
     kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram[];
-
-// Enum for the IOS.PasswordManager.WidgetPromo.Action histogram. Keep in sync
-// with the "PromoWithInstructionsAction" enum.
-// LINT.IfChange(PromoWithInstructionsAction)
-enum class PasswordManagerWidgetPromoAction {
-  kClose = 0,             // The user closed the promo.
-  kOpenInstructions = 1,  // The user opened the instruction view.
-  kMaxValue = kOpenInstructions,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PromoWithInstructionsAction)
 
 // Enum for the IOS.PasswordManager.TrustedVaultKeyRetrievalPromo.Action
 // histogram. Keep in sync with the "PromoWithTrustedVaultKeyRetrievalAction"

@@ -1753,11 +1753,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/common/ui/promo_style/constants.h:PromoStyleSheetAction) -->
 
-<enum name="PromoWithInstructionsAction">
-  <int value="0" label="Close"/>
-  <int value="1" label="Open Instructions"/>
-</enum>
-
 <!-- LINT.IfChange(PromoWithTrustedVaultKeyRetrievalAction) -->
 
 <enum name="PromoWithTrustedVaultKeyRetrievalAction">
