@@ -7,8 +7,8 @@
 
 #include <stddef.h>
 
-#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "webp/decode.h"
 #include "webp/demux.h"
@@ -113,7 +113,8 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   // bits-per-pixel value of the image when the image is successfully decoded.
   // Note that void(gfx::Size, size_t) is the function call signature of
   // UpdateBppHistogram<"WebP">().
-  base::OnceCallback<void(gfx::Size, size_t)> update_bpp_histogram_callback_;
+  CrossThreadOnceFunction<void(gfx::Size, size_t)>
+      update_bpp_histogram_callback_;
 
   typedef void (*AlphaBlendFunction)(ImageFrame&, ImageFrame&, int, int, int);
   AlphaBlendFunction blend_function_;
