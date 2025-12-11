@@ -269,6 +269,12 @@ class ImageCarouselView : public views::View {
                            SkBitmap bitmap,
                            std::optional<std::u16string> label) {
     CHECK(index < static_cast<int>(image_inner_container_->children().size()));
+    // If the bitmap being downloaded is empty, do not attempt to draw it in a
+    // loading area.
+    if (bitmap.drawsNothing()) {
+      return;
+    }
+
     float current_scale =
         display::Screen::Get()
             ->GetPreferredScaleFactorForView(GetWidget()->GetNativeView())
@@ -360,6 +366,7 @@ class ImageCarouselView : public views::View {
   // of the throbber container, or the maximum w/h ratio of screenshots.
   int GetScaledWidthBasedOnThrobberHeight(const gfx::Size& size) {
     const int throbber_height = GetFullThrobberHeight();
+    CHECK_GE(size.height(), 0) << "screenshot cannot have an empty height";
     int height_limited_width = base::checked_cast<int>(
         size.width() *
         (base::checked_cast<float>(throbber_height) / size.height()));
