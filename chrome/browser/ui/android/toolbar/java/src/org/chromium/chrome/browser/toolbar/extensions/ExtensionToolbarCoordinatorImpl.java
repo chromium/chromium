@@ -11,11 +11,9 @@ import android.widget.LinearLayout;
 
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -30,7 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordinator {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
-    private ObservableSupplier<@Nullable Profile> mProfileSupplier;
+    private ChromeAndroidTask mTask;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
     private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
 
@@ -40,12 +38,10 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
-            ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
-        mProfileSupplier = profileSupplier;
-
+        mTask = task;
         extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
         LinearLayout container = (LinearLayout) extensionToolbarStub.inflate();
         mExtensionActionListCoordinator =
@@ -54,7 +50,6 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         container.findViewById(R.id.extension_action_list),
                         windowAndroid,
                         task,
-                        profileSupplier,
                         currentTabSupplier);
         mExtensionsMenuCoordinator =
                 new ExtensionsMenuCoordinator(
@@ -62,7 +57,6 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         container.findViewById(R.id.extensions_menu_button),
                         themeColorProvider,
                         task,
-                        profileSupplier,
                         currentTabSupplier,
                         tabCreator);
     }
@@ -81,12 +75,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             return false;
         }
 
-        Profile profile = mProfileSupplier.get();
-        if (profile == null) {
-            return false;
-        }
-
-        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(profile);
+        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(mTask.getProfile());
         if (bridge == null) {
             return false;
         }

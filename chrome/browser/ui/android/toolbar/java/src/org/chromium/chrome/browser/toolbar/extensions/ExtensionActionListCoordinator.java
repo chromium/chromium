@@ -10,10 +10,8 @@ import android.view.LayoutInflater;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
@@ -40,14 +38,13 @@ public class ExtensionActionListCoordinator implements Destroyable {
             ExtensionActionListContainer container,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
-            ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier) {
         mContainer = container;
 
         mModels = new ModelList();
         mMediator =
                 new ExtensionActionListMediator(
-                        context, windowAndroid, mModels, task, profileSupplier, currentTabSupplier);
+                        context, windowAndroid, mModels, task, currentTabSupplier);
         mAdapter =
                 new ViewGroupAdapter.Builder(mContainer, mModels)
                         .registerType(

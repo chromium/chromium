@@ -11,7 +11,6 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -91,7 +90,6 @@ public class ExtensionActionListMediatorTest {
     private FakeExtensionActionsBridge.ProfileModel mProfileModel;
     private MockTab mTab1;
     private MockTab mTab2;
-    private ObservableSupplierImpl<@Nullable Profile> mProfileSupplier;
     private ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier;
     private ModelList mModels;
     private ExtensionActionListMediator mMediator;
@@ -102,6 +100,7 @@ public class ExtensionActionListMediatorTest {
 
         // Mock AndroidChromeTask.
         when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mTask.getProfile()).thenReturn(mProfile);
 
         // Mock {@link ExtensionActionsBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
@@ -111,22 +110,18 @@ public class ExtensionActionListMediatorTest {
                 .thenReturn(mMenuModelBridge);
         when(mMenuModelBridge.populateModelList()).thenReturn(new ModelList());
 
+        setUpProfileModel();
+
         // Initialize common objects.
         mTab1 = new MockTab(TAB1_ID, mProfile);
         mTab2 = new MockTab(TAB2_ID, mProfile);
         mTab1.setWebContentsOverrideForTesting(mWebContents);
         mTab2.setWebContentsOverrideForTesting(mWebContents);
-        mProfileSupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
         mMediator =
                 new ExtensionActionListMediator(
-                        context,
-                        mWindowAndroid,
-                        mModels,
-                        mTask,
-                        mProfileSupplier,
-                        mCurrentTabSupplier);
+                        context, mWindowAndroid, mModels, mTask, mCurrentTabSupplier);
 
         // Wait for the main thread to settle.
         shadowOf(Looper.getMainLooper()).idle();
@@ -141,8 +136,7 @@ public class ExtensionActionListMediatorTest {
     public void testUpdateModels() {
         setUpProfileModel();
 
-        // Set the profile and the tab.
-        mProfileSupplier.set(mProfile);
+        // Set the current tab.
         mCurrentTabSupplier.set(mTab1);
 
         // The model should have been updated.
@@ -152,32 +146,14 @@ public class ExtensionActionListMediatorTest {
     }
 
     @Test
-    public void testUpdateModels_noProfile() {
-        // Set the tab only.
-        mCurrentTabSupplier.set(mTab1);
-
-        // The model should have been not updated.
-        assertTrue(mModels.isEmpty());
-        verify(mProfile, never()).getNativeBrowserContextPointer();
-    }
-
-    @Test
     public void testUpdateModels_noTab() {
-        setUpProfileModel();
-
-        // Set the profile only.
-        mProfileSupplier.set(mProfile);
-
-        // The model should have been not updated.
+        // The current tab is not available yet.
         assertTrue(mModels.isEmpty());
     }
 
     @Test
     public void testUpdateModels_tabChanged() {
-        setUpProfileModel();
-
-        // Set the profile and the tab.
-        mProfileSupplier.set(mProfile);
+        // Set the current tab.
         mCurrentTabSupplier.set(mTab1);
 
         // The model should have been updated.
@@ -196,10 +172,7 @@ public class ExtensionActionListMediatorTest {
 
     @Test
     public void testContextClick_showMenu() {
-        setUpProfileModel();
-
-        // Set the profile and the tab.
-        mProfileSupplier.set(mProfile);
+        // Set the current tab.
         mCurrentTabSupplier.set(mTab1);
 
         ListItem item = mModels.get(0);

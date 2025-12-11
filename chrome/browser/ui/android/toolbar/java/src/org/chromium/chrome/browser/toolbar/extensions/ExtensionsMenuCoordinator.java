@@ -16,10 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -69,7 +67,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
      * @param extensionsMenuButton The puzzle icon in the toolbar.
      * @param themeColorProvider The provider for theme colors.
      * @param taskSupplier Supplies the {@link ChromeAndroidTask}.
-     * @param profileSupplier Supplies the current {@link Profile}.
      * @param currentTabSupplier Supplies the current {@link Tab}.
      * @param tabCreator {@link TabCreator} to handle a new tab creation.
      */
@@ -78,7 +75,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
             ListMenuButton extensionsMenuButton,
             ThemeColorProvider themeColorProvider,
             ChromeAndroidTask task,
-            ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator) {
         mContext = context;
@@ -125,7 +121,6 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                 new ExtensionsMenuMediator(
                         mContext,
                         task,
-                        profileSupplier,
                         mCurrentTabSupplier,
                         mExtensionModels,
                         () -> {

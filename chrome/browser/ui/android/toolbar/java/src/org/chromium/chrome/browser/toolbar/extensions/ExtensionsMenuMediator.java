@@ -11,11 +11,8 @@ import android.view.View;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
@@ -44,7 +41,6 @@ class ExtensionsMenuMediator implements Destroyable {
     public ExtensionsMenuMediator(
             Context context,
             ChromeAndroidTask task,
-            ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ModelList extensionModels,
             Runnable onUpdateFinishedRunnable,
@@ -57,10 +53,7 @@ class ExtensionsMenuMediator implements Destroyable {
 
         mExtensionActionsUpdateHelper =
                 new ExtensionActionsUpdateHelper(
-                        extensionModels,
-                        profileSupplier,
-                        currentTabSupplier,
-                        mActionsUpdateDelegate);
+                        extensionModels, task, currentTabSupplier, mActionsUpdateDelegate);
     }
 
     private static class RelativeViewRectProvider extends RectProvider {

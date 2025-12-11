@@ -11,11 +11,9 @@ import android.view.ViewStub;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -44,7 +42,6 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
-            ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
@@ -63,7 +60,6 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
                 extensionToolbarStub,
                 windowAndroid,
                 task,
-                profileSupplier,
                 currentTabSupplier,
                 tabCreator,
                 themeColorProvider);
@@ -82,7 +78,6 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
-            ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider);

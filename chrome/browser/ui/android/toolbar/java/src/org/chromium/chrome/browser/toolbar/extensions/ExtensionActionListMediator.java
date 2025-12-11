@@ -12,11 +12,9 @@ import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
@@ -54,7 +52,6 @@ class ExtensionActionListMediator implements Destroyable {
             WindowAndroid windowAndroid,
             ModelList models,
             ChromeAndroidTask task,
-            ObservableSupplier<@Nullable Profile> profileSupplier,
             NullableObservableSupplier<Tab> currentTabSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
@@ -63,7 +60,7 @@ class ExtensionActionListMediator implements Destroyable {
 
         mExtensionActionsUpdateHelper =
                 new ExtensionActionsUpdateHelper(
-                        mModels, profileSupplier, currentTabSupplier, mActionsUpdateDelegate);
+                        mModels, task, currentTabSupplier, mActionsUpdateDelegate);
     }
 
     @Override

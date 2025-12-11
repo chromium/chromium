@@ -37,11 +37,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -102,7 +100,6 @@ public class ExtensionsMenuMediatorTest {
     private ProfileModel mProfileModel;
     private MockTab mTab1;
     private MockTab mTab2;
-    private ObservableSupplierImpl<@Nullable Profile> mProfileSupplier;
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
     private ModelList mModels;
@@ -119,6 +116,7 @@ public class ExtensionsMenuMediatorTest {
 
         // Mock AndroidChromeTask.
         when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
+        when(mTask.getProfile()).thenReturn(mProfile);
 
         // Mock {@link ExtensionActionContextMenuBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
@@ -133,14 +131,12 @@ public class ExtensionsMenuMediatorTest {
         mTab2 = new MockTab(TAB2_ID, mProfile);
         mTab1.setWebContentsOverrideForTesting(mWebContents);
         mTab2.setWebContentsOverrideForTesting(mWebContents);
-        mProfileSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
 
         mMediator =
                 new ExtensionsMenuMediator(
                         ApplicationProvider.getApplicationContext(),
                         mTask,
-                        mProfileSupplier,
                         mCurrentTabSupplier,
                         mModels,
                         mDataReadyCallback,
@@ -157,8 +153,7 @@ public class ExtensionsMenuMediatorTest {
 
     @Test
     public void testUpdateModels() {
-        // Set the profile and the tab.
-        mProfileSupplier.set(mProfile);
+        // Set the current tab.
         mCurrentTabSupplier.set(mTab1);
 
         // The model should have been updated.
@@ -172,8 +167,7 @@ public class ExtensionsMenuMediatorTest {
         // The callback should not have been called.
         verify(mDataReadyCallback, never()).run();
 
-        // Set the profile and the tab.
-        mProfileSupplier.set(mProfile);
+        // Set the current tab.
         mCurrentTabSupplier.set(mTab1);
 
         // The callback should have been called.
@@ -181,20 +175,8 @@ public class ExtensionsMenuMediatorTest {
     }
 
     @Test
-    public void testUpdateModels_noProfile() {
-        // Set the tab only.
-        mCurrentTabSupplier.set(mTab1);
-
-        // The model should have been not updated.
-        assertTrue(mModels.isEmpty());
-    }
-
-    @Test
     public void testUpdateModels_noTab() {
-        // Set the profile only.
-        mProfileSupplier.set(mProfile);
-
-        // The model should have been not updated.
+        // The current tab is not available yet.
         assertTrue(mModels.isEmpty());
     }
 
@@ -238,8 +220,7 @@ public class ExtensionsMenuMediatorTest {
                     }
                 });
 
-        // Set the profile and the tab.
-        mProfileSupplier.set(mProfile);
+        // Set the current tab.
         mCurrentTabSupplier.set(mTab1);
 
         // The model should have been updated.
@@ -258,8 +239,7 @@ public class ExtensionsMenuMediatorTest {
 
     @Test
     public void testContextClick_showMenu() {
-        // Set the profile and the tab.
-        mProfileSupplier.set(mProfile);
+        // Set the current tab.
         mCurrentTabSupplier.set(mTab1);
 
         ListItem item = mModels.get(0);

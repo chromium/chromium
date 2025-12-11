@@ -2361,7 +2361,6 @@ public class ToolbarManager
                                 extensionToolbarStub,
                                 mWindowAndroid,
                                 task,
-                                mProfileSupplier,
                                 mActivityTabProvider.asObservable(),
                                 mTabCreatorManager.getTabCreator(false),
                                 getBrowsingModeThemeColorProvider());
