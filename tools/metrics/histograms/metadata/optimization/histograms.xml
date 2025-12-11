@@ -2308,7 +2308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.TextSafetyChecker.InitTime" units="ms"
-    expires_after="2025-12-21">
+    expires_after="2026-05-03">
   <owner>holte@google.com</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
@@ -2318,7 +2318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.TextSafetyChecker.ModelCreationTime"
-    units="ms" expires_after="2025-12-21">
+    units="ms" expires_after="2026-05-03">
   <owner>holte@google.com</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
@@ -2328,7 +2328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.TextSafetyChecker.ModelExecutionTime"
-    units="ms" expires_after="M145">
+    units="ms" expires_after="2026-05-03">
   <owner>holte@google.com</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
@@ -2338,7 +2338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.TextSafetyChecker.TokensPerSecond"
-    units="counts" expires_after="2025-12-28">
+    units="counts" expires_after="2026-05-03">
   <owner>holte@google.com</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
