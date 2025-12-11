@@ -41,7 +41,8 @@ fn create_reader() -> XmlEventReader<Cursor<Vec<u8>>> {
     let parser_config = ParserConfig::new()
         .override_encoding(Some(Encoding::Utf8))
         .ignore_invalid_encoding_declarations(true)
-        .ignore_comments(false);
+        .ignore_comments(false)
+        .allow_multiple_root_elements(false);
     return XmlEventReader::new_with_config(cursor, parser_config);
 }
 
