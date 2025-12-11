@@ -777,7 +777,7 @@ void FormTracker::UpdateLastInteractedElement(
 }
 
 void FormTracker::ResetLastInteractedElements() {
-  last_interacted_ = {};
+  last_interacted_ = {FormRef(), FieldRef()};
   submission_triggering_events_ = {};
   if (form_element_observer_) {
     form_element_observer_->Disconnect();

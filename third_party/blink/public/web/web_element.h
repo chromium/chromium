@@ -55,7 +55,9 @@ class WebLabelElement;
 // Provides access to some properties of a DOM element node.
 class BLINK_EXPORT WebElement : public WebNode {
  public:
-  WebElement() : WebNode() {}
+  explicit WebElement(
+      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
+      : WebNode(loc) {}
   WebElement(const WebElement& e) = default;
 
   // Returns the empty WebElement if the argument doesn't represent an Element.

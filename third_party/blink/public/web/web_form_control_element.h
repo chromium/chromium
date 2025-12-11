@@ -47,7 +47,9 @@ class HTMLFormControlElement;
 // node.
 class BLINK_EXPORT WebFormControlElement : public WebElement {
  public:
-  WebFormControlElement() : WebElement() {}
+  explicit WebFormControlElement(
+      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
+      : WebElement(loc) {}
   WebFormControlElement(const WebFormControlElement& e) = default;
 
   WebFormControlElement& operator=(const WebFormControlElement& e) {

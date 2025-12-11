@@ -79,7 +79,9 @@ enum class BackForwardCacheAware { kAllow, kPossiblyDisallow };
 // Provides readonly access to some properties of a DOM document.
 class BLINK_EXPORT WebDocument : public WebNode {
  public:
-  WebDocument() = default;
+  explicit WebDocument(
+      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
+      : WebNode(loc) {}
   WebDocument(const WebDocument& e) = default;
 
   WebDocument& operator=(const WebDocument& e) {
