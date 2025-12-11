@@ -462,10 +462,6 @@ const char kUmaSelectDefaultSearchEngine[] =
     return;
   }
 
-  // TODO(b/280753739) Update this method to return the correct list of search
-  // engines directly (for both choice-screen-eligible users and
-  // non-choice-screen-eligible users). This way we don't have to worry about
-  // calling two different methods anymore.
   std::vector<raw_ptr<TemplateURL, VectorExperimental>> urls =
       _templateURLService->GetTemplateURLs();
   _firstList.clear();
