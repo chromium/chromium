@@ -5683,6 +5683,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/TestThreadUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
       "test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
+      "test/android/javatests/src/org/chromium/base/test/util/VeryLongPressAction.java",
       "test/android/javatests/src/org/chromium/base/test/util/ViewActionOnDescendant.java",
       "test/android/javatests/src/org/chromium/base/test/util/ViewPrinter.java",
     ]

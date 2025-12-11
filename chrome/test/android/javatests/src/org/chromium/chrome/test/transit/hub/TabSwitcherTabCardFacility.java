@@ -44,4 +44,10 @@ public class TabSwitcherTabCardFacility extends TabSwitcherCardFacility {
                         .build();
         return titleElement.clickTo().arriveAt(destination);
     }
+
+    /** Long press the tab card to show the context menu. */
+    public <PageStationT extends TabSwitcherStation>
+            TabSwitcherTabCardContextMenuFacility<PageStationT> showContextMenu() {
+        return veryLongPressTo().enterFacility(new TabSwitcherTabCardContextMenuFacility<>());
+    }
 }
