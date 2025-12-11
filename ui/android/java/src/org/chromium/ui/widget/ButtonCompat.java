@@ -99,7 +99,9 @@ public class ButtonCompat extends AppCompatButton {
         int borderStyle = a.getInt(R.styleable.ButtonCompat_buttonBorderStyle, BorderType.SOLID);
 
         final int defaultRadius =
-                getResources().getDimensionPixelSize(R.dimen.button_compat_corner_radius);
+                a.getDimensionPixelSize(
+                        R.styleable.ButtonCompat_rippleCornerRadius,
+                        getResources().getDimensionPixelSize(R.dimen.button_compat_corner_radius));
         final int topStartRippleRadius =
                 a.getDimensionPixelSize(
                         R.styleable.ButtonCompat_rippleCornerRadiusTopStart, defaultRadius);

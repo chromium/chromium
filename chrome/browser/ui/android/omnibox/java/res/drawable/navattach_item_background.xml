@@ -6,5 +6,5 @@ found in the LICENSE file.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="?attr/colorSurfaceContainer"/>
-    <corners android:radius="12dp"/>
+    <corners android:radius="@dimen/fusebox_button_corner_radius"/>
 </shape>

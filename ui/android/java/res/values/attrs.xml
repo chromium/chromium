@@ -28,8 +28,9 @@ found in the LICENSE file.
             <enum name="dashed" value="1"/>
         </attr>
 
-        <!--  The ripple corner radius of ripple effect. If not specified,
-          @dimen/button_compat_corner_radius is default. -->
+        <!-- The corner radius of the background and ripple effect. If not specified,
+             @dimen/button_compat_corner_radius is used as a default. -->
+        <attr name="rippleCornerRadius" format="reference|dimension"/>
         <attr name="rippleCornerRadiusTopStart" format="reference|dimension"/>
         <attr name="rippleCornerRadiusTopEnd" format="reference|dimension"/>
         <attr name="rippleCornerRadiusBottomStart" format="reference|dimension"/>

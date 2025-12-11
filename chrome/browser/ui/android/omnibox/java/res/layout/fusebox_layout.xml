@@ -78,7 +78,8 @@ found in the LICENSE file.
         app:layout_constraintTop_toBottomOf="@id/url_bar"
         app:buttonColor="@color/gm3_baseline_surface_container"
         app:buttonBorderStyle="solid"
-        app:verticalInset="8dp"/>
+        app:verticalInset="8dp"
+        app:rippleCornerRadius="@dimen/fusebox_button_corner_radius"/>
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/navigate_button"
