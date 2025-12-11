@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -47,6 +48,7 @@ class WebuiOmniboxHandler : public SearchboxHandler,
                        bool is_mouse_event) override;
   void OnThumbnailRemoved() override {}
   void ShowContextMenu(const gfx::Point& point) override;
+
   void OnShow();
 
   // SearchboxHandler:
@@ -59,6 +61,8 @@ class WebuiOmniboxHandler : public SearchboxHandler,
       const TemplateURLService* turl_service) const override;
 
   // AutocompleteController::Observer:
+  void OnStart(AutocompleteController* controller,
+               const AutocompleteInput& input) override;
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 

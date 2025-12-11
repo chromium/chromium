@@ -106,6 +106,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       // Public properties
       // =========================================================================
       showDropdown: {type: Boolean},
+      showLensSearchChip: {reflect: true, type: Boolean},
       searchboxLayoutMode: {type: String},
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
@@ -153,6 +154,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   accessor showDropdown: boolean = false;
+  accessor showLensSearchChip: boolean = false;
   accessor searchboxLayoutMode: string = '';
   accessor entrypointName: string = '';
   accessor tabSuggestions: TabInfo[] = [];
@@ -176,8 +178,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowPdfUpload');
   protected accessor showContextMenuDescription_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
-  protected showLensSearchChip_: boolean =
-      loadTimeData.getBoolean('composeboxShowLensSearchChip');
   protected accessor showRecentTabChip_: boolean =
       loadTimeData.getBoolean('composeboxShowRecentTabChip');
   protected accessor showFileCarousel_: boolean = false;
@@ -190,9 +190,17 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     return this.inDeepSearchMode_ || this.inCreateImageMode_;
   }
 
+  private shouldShowContextualSearchChips_(): boolean {
+    return this.showDropdown && this.files_.size === 0 && !this.inToolMode_;
+  }
+
   protected get shouldShowRecentTabChip_(): boolean {
-    return !!this.recentTabForChip_ && this.showDropdown &&
-        this.showRecentTabChip_ && this.files_.size === 0 && !this.inToolMode_;
+    return this.shouldShowContextualSearchChips_() &&
+        !!this.recentTabForChip_ && this.showRecentTabChip_;
+  }
+
+  protected get shouldShowLensSearchChip_(): boolean {
+    return this.shouldShowContextualSearchChips_() && this.showLensSearchChip;
   }
 
   private maxFileCount_: number =

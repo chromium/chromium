@@ -30,6 +30,7 @@ ${this.showContextEntrypoint_ ? html`
       entrypoint-name="Omnibox"
       searchbox-layout-mode="${this.searchboxLayoutMode_}"
       ?show-dropdown="${this.hasVisibleMatches_}"
+      ?show-lens-search-chip="${this.isLensSearchEligible_}"
       @context-menu-entrypoint-click="${this.onContextualEntryPointClicked_}">
     ${searchboxDropdown}
   </contextual-entrypoint-and-carousel>

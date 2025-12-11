@@ -79,6 +79,7 @@ class MockSearchboxPage : public searchbox::mojom::Page {
   MOCK_METHOD(void,
               UpdateAutoSuggestedTabContext,
               (searchbox::mojom::TabInfoPtr));
+  MOCK_METHOD(void, UpdateLensSearchEligibility, (bool eligible), (override));
 };
 
 class MockAutocompleteController : public AutocompleteController {

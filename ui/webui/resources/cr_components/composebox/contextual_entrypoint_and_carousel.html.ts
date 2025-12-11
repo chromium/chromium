@@ -24,11 +24,11 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         ` :
                                       ''}
       ${
-      this.showLensSearchChip_ ? html`
+      this.shouldShowLensSearchChip_ ? html`
         <cr-composebox-lens-search id="lensSearchChip" class="upload-button">
         </cr-composebox-lens-search>
       ` :
-                                 ''}
+                                       ''}
         <cr-composebox-tool-chip
             icon="composebox:deepSearch"
             label="${this.i18n('deepSearch')}"
