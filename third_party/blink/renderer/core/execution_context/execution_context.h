@@ -102,7 +102,6 @@ class FileSystemAccessManager;
 class FileSystemDispatcher;
 class FileSystemObservationCollection;
 class FrameOrWorkerScheduler;
-class GlobalIndexedDB;
 class IdleManager;
 class ImageBitmapFactories;
 class KURL;
@@ -130,6 +129,9 @@ class TrustedTypePolicyFactory;
 class WebCodecsLogger;
 class WebPrintingManager;
 class WebViewAndroid;
+
+template <typename T>
+class GlobalIndexedDBImpl;
 
 enum ReasonForCallingCanExecuteScripts {
   kAboutToExecuteScript,
@@ -512,12 +514,14 @@ class CORE_EXPORT ExecutionContext : public MojoBindingContext,
     canvas_noise_token_ = token;
   }
 
-  ForwardDeclaredMember<GlobalIndexedDB> GetGlobalIndexedDB() const {
-    return global_indexed_db_;
+  ForwardDeclaredMember<GlobalIndexedDBImpl<ExecutionContext>>
+  GetGlobalIndexedDBImpl() const {
+    return global_indexed_db_impl_;
   }
-  void SetGlobalIndexedDB(
-      ForwardDeclaredMember<GlobalIndexedDB> global_indexed_db) {
-    global_indexed_db_ = global_indexed_db;
+  void SetGlobalIndexedDBImpl(
+      ForwardDeclaredMember<GlobalIndexedDBImpl<ExecutionContext>>
+          global_indexed_db_impl) {
+    global_indexed_db_impl_ = global_indexed_db_impl;
   }
 
   AbortSignalRegistry* GetAbortSignalRegistry() const {
@@ -857,7 +861,8 @@ class CORE_EXPORT ExecutionContext : public MojoBindingContext,
 
   std::optional<NoiseToken> canvas_noise_token_;
 
-  ForwardDeclaredMember<GlobalIndexedDB> global_indexed_db_;
+  ForwardDeclaredMember<GlobalIndexedDBImpl<ExecutionContext>>
+      global_indexed_db_impl_;
 
   Member<AbortSignalRegistry> abort_signal_registry_;
   Member<ContextFeatureSettings> context_feature_settings_;

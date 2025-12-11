@@ -89,6 +89,8 @@ template <typename T>
 class GlobalCookieStoreImpl;
 template <typename T, typename P>
 class GlobalPerformanceImpl;
+template <typename T>
+class GlobalIndexedDBImpl;
 
 class CORE_EXPORT WorkerGlobalScope
     : public WorkerOrWorkletGlobalScope,
@@ -328,6 +330,16 @@ class CORE_EXPORT WorkerGlobalScope
     global_performance_impl_ = global_performance_impl;
   }
 
+  ForwardDeclaredMember<GlobalIndexedDBImpl<WorkerGlobalScope>>
+  GetGlobalIndexedDBImpl() const {
+    return global_indexed_db_impl_;
+  }
+  void SetGlobalIndexedDBImpl(
+      ForwardDeclaredMember<GlobalIndexedDBImpl<WorkerGlobalScope>>
+          global_indexed_db_impl) {
+    global_indexed_db_impl_ = global_indexed_db_impl;
+  }
+
   FontFaceSetWorker* GetFontFaceSetWorker() const {
     return font_face_set_worker_;
   }
@@ -475,6 +487,8 @@ class CORE_EXPORT WorkerGlobalScope
   ForwardDeclaredMember<
       GlobalPerformanceImpl<WorkerGlobalScope, WorkerPerformance>>
       global_performance_impl_;
+  ForwardDeclaredMember<GlobalIndexedDBImpl<WorkerGlobalScope>>
+      global_indexed_db_impl_;
 
   Member<FontFaceSetWorker> font_face_set_worker_;
   ForwardDeclaredMember<WorkerGlobalScopeCrypto> worker_global_scope_crypto_;
