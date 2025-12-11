@@ -4,6 +4,7 @@
 
 #include <poll.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <string>
 
@@ -19,6 +20,7 @@
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -146,10 +148,9 @@ class KeystoneInstallTest : public testing::Test {
         output->resize(total_bytes_read.ValueOrDie());
       }
     } while (read_this_pass > 0);
-
-    base::TimeDelta remaining =
-        std::max(deadline - base::Time::Now(), base::TimeDelta());
-    if (proc.WaitForExitWithTimeout(remaining, exit_code)) {
+    if (proc.WaitForExitWithTimeout(
+            std::max(deadline - base::Time::Now(), base::TimeDelta()),
+            exit_code)) {
       return;
     };
     proc.Terminate(1, false);
