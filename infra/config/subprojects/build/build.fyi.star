@@ -100,7 +100,7 @@ ci.thin_tester(
 This builder is intended to shadow {}.<br/>\
 But, the tests are built by {}.\
 """.format(
-        linkify_builder("ci", "mac14-tests"),
+        linkify_builder("ci", "Mac13 Tests"),
         linkify_builder("build", "Mac Builder Siso FYI"),
     ),
     parent = "build/Mac Builder Siso FYI",
@@ -125,7 +125,7 @@ But, the tests are built by {}.\
             "chromium_mac_rel_isolated_scripts_once",
         ],
         mixins = [
-            "mac_default_x64",
+            "mac_13_x64",
             "isolate_profile_data",
         ],
         per_test_modifications = {
@@ -169,6 +169,9 @@ But, the tests are built by {}.\
                 swarming = targets.swarming(
                     shards = 4,
                 ),
+            ),
+            "telemetry_perf_unittests": targets.mixin(
+                ci_only = True,
             ),
             "unit_tests": targets.mixin(
                 swarming = targets.swarming(
