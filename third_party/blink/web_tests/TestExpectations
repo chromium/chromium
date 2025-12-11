@@ -9883,7 +9883,6 @@ crbug.com/301364727 http/tests/devtools/elements/styles-4/do-not-rebuild-styles-
 crbug.com/301364727 http/tests/devtools/elements/styles-4/styles-live-locations-leak.js [ Failure Pass ]
 crbug.com/301364727 http/tests/devtools/elements/styles/undo-set-selector-text.js [ Failure Pass ]
 crbug.com/301364727 http/tests/devtools/sources/debugger-ui/error-in-watch-expressions.js [ Failure Pass ]
-crbug.com/301364727 http/tests/devtools/sources/debugger-ui/watch-expressions-preserve-expansion.js [ Failure Pass ]
 
 
 # Gardener 2025-10-21
