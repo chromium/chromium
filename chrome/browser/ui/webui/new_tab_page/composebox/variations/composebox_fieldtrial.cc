@@ -139,10 +139,14 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
     return false;
   }
 
+  AimEligibilityService* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  if (!aim_eligibility_service) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kNtpComposebox) &&
-         AimEligibilityService::GenericKillSwitchFeatureCheck(
-             AimEligibilityServiceFactory::GetForProfile(profile),
-             kNtpComposebox);
+         aim_eligibility_service->IsAimEligible();
 }
 
 bool IsDeepSearchEnabled(Profile* profile) {
@@ -346,10 +350,14 @@ bool IsNtpRealboxNextEnabled(Profile* profile) {
     return false;
   }
 
+  AimEligibilityService* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  if (!aim_eligibility_service) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kNtpRealboxNext) &&
-         AimEligibilityService::GenericKillSwitchFeatureCheck(
-             AimEligibilityServiceFactory::GetForProfile(profile),
-             kNtpRealboxNext);
+         aim_eligibility_service->IsAimEligible();
 }
 
 BASE_FEATURE(kNtpRealboxNext, base::FEATURE_DISABLED_BY_DEFAULT);
