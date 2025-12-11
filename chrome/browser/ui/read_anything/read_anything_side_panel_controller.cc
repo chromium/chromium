@@ -336,6 +336,15 @@ void ReadAnythingSidePanelController::TabWillDetach(
     observers_.Notify(&Observer::OnTabWillDetach);
   }
 
+  // Use the cached is_good_candidate_for_rm_ since
+  // GetCurrentPageAction().showing will already be false if it was showing
+  // before. If it was a good candidate, then it's likely the entry point was
+  // showing, so mark it as "ignored".
+  if (features::IsReadAnythingOmniboxChipEnabled() &&
+      base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    UpdateOmniboxEntryPointIgnored(was_last_checked_page_distillable_);
+  }
+
   if (!tab_->IsActivated()) {
     return;
   }
@@ -389,6 +398,11 @@ void ReadAnythingSidePanelController::CheckIfGoodCandidateForReadingMode() {
 }
 
 void ReadAnythingSidePanelController::OnReadabilityResult(bool should_show) {
+  // Cache the result of CheckIfGoodCandidateForReadingMode since the omnibox
+  // entry point is hidden when the tab is closed, but a closed tab should count
+  // as "ignored".
+  was_last_checked_page_distillable_ = should_show;
+
   if (!features::IsReadAnythingOmniboxChipEnabled() ||
       (!tab_->IsActivated() && should_show)) {
     return;
@@ -452,12 +466,39 @@ void ReadAnythingSidePanelController::PrimaryPageChanged(content::Page& page) {
   loading_ = true;
   distillable_ = IsActivePageDistillable();
   UpdateIphVisibility();
+  if (features::IsReadAnythingOmniboxChipEnabled() &&
+      base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    UpdateOmniboxEntryPointIgnored(GetCurrentPageActionState().showing);
+  }
 
   // If the user navigated to a new page, stop any pending IPH response timer,
   // since they are likely not interested in opening RM after seeing the IPH.
   if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
     iph_response_timer_->Stop();
     RecordOpenedAfterPromo();
+  }
+}
+
+void ReadAnythingSidePanelController::UpdateOmniboxEntryPointIgnored(
+    bool is_showing) {
+  if (!features::IsReadAnythingOmniboxChipEnabled() ||
+      !base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    return;
+  }
+
+  // Indicate that the omnibox entrypoint was ignored if it's still showing when
+  // the page changes or tab closes, and the user was on the previous page for a
+  // non-trivial amount of time. Without this time check, the omnibox would be
+  // snoozed if the user is quickly clicking through links without reading them,
+  // so they aren't truly ignoring the Reading mode entrypoint.
+  base::TimeDelta time_on_previous_page =
+      candidate_check_triggered_time_ms_.is_null()
+          ? base::Milliseconds(0)
+          : base::TimeTicks::Now() - candidate_check_triggered_time_ms_;
+  if (is_showing &&
+      time_on_previous_page.InMilliseconds() > kShowPageActionDelayMs) {
+    read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
+        tab_->GetBrowserWindowInterface());
   }
 }
 

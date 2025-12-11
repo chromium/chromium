@@ -435,6 +435,7 @@ enum {
   kClassManagementToolsOOBEAccessCountSetting = 100367,
   kClassManagementToolsKioskReceiverCodes = 100368,
   kPinContextualTaskButton = 100369,
+  kAccessibilityReadAnythingOmniboxChipIgnoredCount = 100370,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -541,6 +542,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kAccessibilityReadAnythingLanguagesEnabled,
      {syncable_prefs_ids::kAccessibilityReadAnythingLanguagesEnabled,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount,
+     {syncable_prefs_ids::kAccessibilityReadAnythingOmniboxChipIgnoredCount,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kLensRegionSearchEnabled,

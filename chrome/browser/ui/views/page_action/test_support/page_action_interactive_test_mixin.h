@@ -73,6 +73,24 @@ class PageActionInteractiveTestMixin : public T {
     return steps;
   }
 
+  // Utility to reliably wait for the page action view to be visible in icon
+  // state.
+  auto WaitForPageActionIconVisible(actions::ActionId action_id) {
+    auto steps = T::Steps(
+        T::PollState(kPageActionButtonVisible,
+                     [this, action_id]() {
+                       auto* view =
+                           BrowserView::GetBrowserViewForBrowser(T::browser())
+                               ->toolbar_button_provider()
+                               ->GetPageActionView(action_id);
+                       return view->GetVisible() && !view->ShouldShowLabel();
+                     }),
+        T::WaitForState(kPageActionButtonVisible, true),
+        T::StopObservingState(kPageActionButtonVisible));
+    T::AddDescriptionPrefix(steps, "WaitForPageActionIconVisible()");
+    return steps;
+  }
+
   // Utility to reliably wait for the page action view to not be visible in chip
   // state.
   auto WaitForPageActionChipNotVisible(actions::ActionId action_id) {

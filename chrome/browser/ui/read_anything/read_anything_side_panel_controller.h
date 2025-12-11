@@ -146,6 +146,12 @@ class ReadAnythingSidePanelController
   // Show or hide the omnibox entry point.
   void UpdateOmniboxEntryPoint(bool should_show);
 
+  // Checks if the omnibox entry point was ignored and informs the entry point
+  // controller if it was.
+  // TODO(crbug.com/447418049): Check this with IRM too - possibly by moving
+  // this to the ReadAnythingController.
+  void UpdateOmniboxEntryPointIgnored(bool is_showing);
+
   // Called when the IPH for the omnibox entry is either shown or not shown.
   void OnShowPromoResult(user_education::FeaturePromoResult result);
 
@@ -157,6 +163,9 @@ class ReadAnythingSidePanelController
 
   // The time when CheckIfGoodCandidateForReadingMode was triggered.
   base::TimeTicks candidate_check_triggered_time_ms_;
+
+  // The cached result of CheckIfGoodCandidateForReadingMode.
+  bool was_last_checked_page_distillable_ = false;
 
   // A timer for delaying showing the ominbox entrypoint to ensure the user is
   // actually attempting to read the page.

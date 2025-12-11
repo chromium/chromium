@@ -79,6 +79,11 @@ inline constexpr char kAccessibilityReadAnythingDateLastOpened[] =
 inline constexpr char kAccessibilityReadAnythingTTSEngineReinstalled[] =
     "settings.a11y.read_anything.tts_engine_reinstalled";
 
+// The count of the omnibox entry point chip being ignored. Used to determine
+// when / how to continue showing the entry point.
+inline constexpr char kAccessibilityReadAnythingOmniboxChipIgnoredCount[] =
+    "settings.a11y.read_anything.omnibox_chip_ignored_count";
+
 }  // namespace prefs
 
 void RegisterReadAnythingProfilePrefs(

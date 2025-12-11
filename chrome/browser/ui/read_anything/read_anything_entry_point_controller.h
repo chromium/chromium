@@ -40,6 +40,10 @@ class ReadAnythingEntryPointController {
       base::OnceCallback<void(user_education::FeaturePromoResult promo_result)>
           show_promo_callback = {});
 
+  // Updates the number of times the omnibox entry point has been ignored by the
+  // user.
+  static void OnPageActionIgnored(BrowserWindowInterface* bwi);
+
  private:
   static void ToggleUI(BrowserWindowInterface* bwi,
                        ReadAnythingOpenTrigger open_trigger);

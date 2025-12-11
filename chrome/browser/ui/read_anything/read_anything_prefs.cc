@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 
 #include "base/values.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -63,6 +64,12 @@ void RegisterReadAnythingProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilityReadAnythingImagesEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  if (features::IsReadAnythingOmniboxChipEnabled() &&
+      base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityReadAnythingOmniboxChipIgnoredCount, 0,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
