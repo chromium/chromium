@@ -86,16 +86,6 @@ BASE_FEATURE(kPreloadTopChromeWebUILessNavigations,
 BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, reloading using the toolbar button, hotkey, and web contents
-// context menu will only reload the active tab. The tab context menu will still
-// use the selection model to reload.
-BASE_FEATURE(kReloadSelectionModel, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enforces close tab hotkey to only close the active view of a split tab,
-// when it is the only tab in selection model.
-BASE_FEATURE(kCloseActiveTabInSplitViewViaHotkey,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC)
 // Add tab group colours when viewing tab groups using the top mac OS menu bar.
 BASE_FEATURE(kShowTabGroupsMacSystemMenu, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -253,22 +243,14 @@ BASE_FEATURE_PARAM(int,
                    "side_by_side_iph_tab_switch_count",
                    3);
 
-// When enabled along with SideBySide flag, split tabs will be restored on
-// startup.
-BASE_FEATURE(kSideBySideSessionRestore, base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsRestoringSplitViewEnabled() {
-  return base::FeatureList::IsEnabled(features::kSideBySide) &&
-         base::FeatureList::IsEnabled(features::kSideBySideSessionRestore);
+  return base::FeatureList::IsEnabled(features::kSideBySide);
 }
 
 BASE_FEATURE(kSideBySideLinkMenuNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSideBySideKeyboardShortcut, base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsSideBySideKeyboardShortcutEnabled() {
-  return base::FeatureList::IsEnabled(features::kSideBySide) &&
-         base::FeatureList::IsEnabled(features::kSideBySideKeyboardShortcut);
+  return base::FeatureList::IsEnabled(features::kSideBySide);
 }
 
 BASE_FEATURE(kSideBySideFocusClearing, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -588,10 +588,7 @@ void ReloadInternal(BrowserWindowInterface* browser,
       active_tab && tab_strip_model->selection_model().size() >
                         (active_tab->IsSplit() ? 2 : 1);
 
-  if (base::FeatureList::IsEnabled(features::kReloadSelectionModel) &&
-      !multiple_ui_tabs_selected) {
-    tabs_to_reload.push_back(active_contents);
-  } else {
+  if (multiple_ui_tabs_selected) {
     // Reloading a tab may change the selection (see crbug.com/339061099), so
     // take
     // a defensive copy into a more stable form before we begin. We take
@@ -602,6 +599,8 @@ void ReloadInternal(BrowserWindowInterface* browser,
       tabs_to_reload.push_back(
           tab_strip_model->GetWebContentsAt(selected_index));
     }
+  } else {
+    tabs_to_reload.push_back(active_contents);
   }
 
   base::UmaHistogramCounts100("TabStrip.Tab.ReloadCount",
@@ -1172,9 +1171,7 @@ void CloseTab(BrowserWindowInterface* browser) {
   const bool only_active_split_tab_selected =
       browser->GetTabStripModel()->IsActiveTabSplit() &&
       browser->GetTabStripModel()->selection_model().size() == 2;
-  if (only_active_split_tab_selected &&
-      base::FeatureList::IsEnabled(
-          features::kCloseActiveTabInSplitViewViaHotkey)) {
+  if (only_active_split_tab_selected) {
     RecordTabCloseCount(1);
 
     content::WebContents* active_web_contents =

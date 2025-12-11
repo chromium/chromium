@@ -140,10 +140,6 @@ BASE_DECLARE_FEATURE(kPreloadTopChromeWebUILessNavigations);
 
 BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 
-BASE_DECLARE_FEATURE(kReloadSelectionModel);
-
-BASE_DECLARE_FEATURE(kCloseActiveTabInSplitViewViaHotkey);
-
 BASE_DECLARE_FEATURE(kScrimForBrowserWindowModal);
 
 BASE_DECLARE_FEATURE(kSideBySide);
@@ -208,13 +204,9 @@ BASE_DECLARE_FEATURE_PARAM(int, kSideBySideSnapDistance);
 
 BASE_DECLARE_FEATURE_PARAM(int, kSideBySideIphTabSwitchCount);
 
-BASE_DECLARE_FEATURE(kSideBySideSessionRestore);
-
 bool IsRestoringSplitViewEnabled();
 
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
-
-BASE_DECLARE_FEATURE(kSideBySideKeyboardShortcut);
 
 bool IsSideBySideKeyboardShortcutEnabled();
 

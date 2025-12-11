@@ -60,9 +60,7 @@ class BrowserCommandsTest : public InProcessBrowserTest {
             toast_features::kReadingListToast,
             toast_features::kLinkCopiedToast,
         },
-        {
-            features::kReloadSelectionModel,
-        });
+        {});
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -190,21 +188,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabs) {
   EXPECT_EQ(kTabCount, load_sum);
 }
 
-class BrowserCommandsWithReloadSelectionModelTest : public BrowserCommandsTest {
- public:
-  BrowserCommandsWithReloadSelectionModelTest() {
-    feature_list_.InitWithFeatures(
-        {
-            features::kReloadSelectionModel,
-        },
-        {});
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandsWithReloadSelectionModelTest,
-                       ReloadSelectedTabs) {
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabsWithinSplitView) {
   // Add 5 tabs.
   constexpr int kTabCount = 5;
   for (int i = 0; i < kTabCount; i++) {
@@ -284,28 +268,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsWithReloadSelectionModelTest,
   stop_all_tabs();
 }
 
-class BrowserCommandsWithCloseHotkeySplitViewTest : public BrowserCommandsTest {
- public:
-  BrowserCommandsWithCloseHotkeySplitViewTest() {
-    feature_list_.InitWithFeatures(
-        {
-            features::kCloseActiveTabInSplitViewViaHotkey,
-        },
-        {});
-  }
-
- protected:
-  TabStripModel* GetTabStripModel(Browser* browser) {
-    return browser->tab_strip_model();
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // With kCloseHotkeySplitView enabled, only the active tab in the split view is
 // closed.
-IN_PROC_BROWSER_TEST_F(BrowserCommandsWithCloseHotkeySplitViewTest,
-                       OnlyCloseActiveTabInSplitView) {
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, OnlyCloseActiveTabInSplitView) {
   // Add 2 tabs.
   constexpr int kTabCount = 3;
   for (int i = 1; i < kTabCount; i++) {
@@ -313,26 +278,25 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsWithCloseHotkeySplitViewTest,
                                        ui::PAGE_TRANSITION_LINK, false));
   }
 
-  EXPECT_EQ(kTabCount, GetTabStripModel(browser())->count());
+  EXPECT_EQ(kTabCount, browser()->tab_strip_model()->count());
 
   // Add second last tab to split view with the last tab.
-  GetTabStripModel(browser())->AddToNewSplit(
+  browser()->tab_strip_model()->AddToNewSplit(
       {kTabCount - 2},
       split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
                                      1.0f),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
-  EXPECT_TRUE(GetTabStripModel(browser())->IsActiveTabSplit());
+  EXPECT_TRUE(browser()->tab_strip_model()->IsActiveTabSplit());
 
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_CLOSE_TAB));
 
-  EXPECT_FALSE(GetTabStripModel(browser())->IsActiveTabSplit());
-  EXPECT_EQ(2, GetTabStripModel(browser())->count());
+  EXPECT_FALSE(browser()->tab_strip_model()->IsActiveTabSplit());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }
 
 // All tabs in the selection model get closed.
-IN_PROC_BROWSER_TEST_F(BrowserCommandsWithCloseHotkeySplitViewTest,
-                       CloseAllTabsInSelectionModel) {
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, CloseAllTabsInSelectionModel) {
   // Add 4 tabs.
   constexpr int kTabCount = 4;
   for (int i = 1; i < kTabCount; i++) {
@@ -340,25 +304,25 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsWithCloseHotkeySplitViewTest,
                                        ui::PAGE_TRANSITION_LINK, false));
   }
 
-  EXPECT_EQ(kTabCount, GetTabStripModel(browser())->count());
+  EXPECT_EQ(kTabCount, browser()->tab_strip_model()->count());
 
   // Add second last tab to split view with the last tab.
-  GetTabStripModel(browser())->AddToNewSplit(
+  browser()->tab_strip_model()->AddToNewSplit(
       {kTabCount - 2},
       split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
                                      1.0f),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
-  EXPECT_TRUE(GetTabStripModel(browser())->IsActiveTabSplit());
+  EXPECT_TRUE(browser()->tab_strip_model()->IsActiveTabSplit());
 
   // Add a non-split tab to the selection model.
-  GetTabStripModel(browser())->SelectTabAt(kTabCount - 3);
+  browser()->tab_strip_model()->SelectTabAt(kTabCount - 3);
 
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_CLOSE_TAB));
 
   // Only one, non-split tab should remain.
-  EXPECT_FALSE(GetTabStripModel(browser())->IsActiveTabSplit());
-  EXPECT_EQ(1, GetTabStripModel(browser())->count());
+  EXPECT_FALSE(browser()->tab_strip_model()->IsActiveTabSplit());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
 // Check that the ThirdPartyCookieBreakageIndicator UKM is sent on Reload.

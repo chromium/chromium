@@ -3934,12 +3934,6 @@ inline constexpr char kSideBySideDescription[] =
     "Allows users to view two tabs "
     "simultaneously in a split view.";
 
-inline constexpr char kSideBySideSessionRestoreName[] =
-    "Split View Session Restore";
-inline constexpr char kSideBySideSessionRestoreDescription[] =
-    "Allows users to restore tabs in split view "
-    "from previous session when the browser restarts.";
-
 inline constexpr char kOpenDraggedLinksSameTabName[] =
     "Open Dragged Links in the Same Tab";
 inline constexpr char kOpenDraggedLinksSameTabDescription[] =

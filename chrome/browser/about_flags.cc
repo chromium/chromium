@@ -12306,11 +12306,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kSideBySideVariations,
                                     "SideBySide")},
 
-    {"side-by-side-session-restore",
-     flag_descriptions::kSideBySideSessionRestoreName,
-     flag_descriptions::kSideBySideSessionRestoreDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSideBySideSessionRestore)},
-
     {"open-dragged-links-same-tab",
      flag_descriptions::kOpenDraggedLinksSameTabName,
      flag_descriptions::kOpenDraggedLinksSameTabDescription, kOsDesktop,
