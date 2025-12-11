@@ -960,7 +960,9 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
       base::BindOnce(
           [](base::WeakPtr<IndexedDBContextImpl> context,
              const std::vector<std::optional<BucketLocator>>& bucket_locators) {
-            DCHECK(context);
+            if (!context) {
+              return;
+            }
             for (const std::optional<BucketLocator>& locator :
                  bucket_locators) {
               if (locator) {

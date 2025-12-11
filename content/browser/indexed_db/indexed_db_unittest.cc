@@ -334,12 +334,6 @@ class IndexedDBTest : public testing::Test,
     bucket_info = InitBucket(kInvertedSessionOnlySubdomainThirdPartyStorageKey);
     kInvertedSessionOnlySubdomainThirdPartyBucketLocator =
         bucket_info.ToBucketLocator();
-
-    std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
-    policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
-        url::Origin::Create(GURL("http://subdomain.session-only.com")),
-        /*should_purge_on_shutdown=*/true));
-    context_->ApplyPolicyUpdates(std::move(policy_updates));
   }
 
   IndexedDBTest(const IndexedDBTest&) = delete;
@@ -1431,6 +1425,12 @@ TEST_P(IndexedDBTest, DISABLED_DatabaseOperationSequencing) {
 }
 
 TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
+  std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
+  policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
+      url::Origin::Create(GURL("http://subdomain.session-only.com")),
+      /*should_purge_on_shutdown=*/true));
+  context_->ApplyPolicyUpdates(std::move(policy_updates));
+
   base::FilePath normal_path_first_party;
   base::FilePath session_only_path_first_party;
   base::FilePath session_only_subdomain_path_first_party;
@@ -1559,6 +1559,24 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
   EXPECT_TRUE(base::DirectoryExists(session_only_path_first_party));
   EXPECT_TRUE(base::DirectoryExists(normal_path_third_party));
   EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
+}
+
+TEST_P(IndexedDBTest, Bug464999826) {
+  quota_manager_->HoldBackResults();
+
+  base::FilePath db_directory =
+      GetFilePathForTesting(kNormalFirstPartyBucketLocator);
+  ASSERT_TRUE(base::CreateDirectory(db_directory));
+  context()->ForceInitializeFromFilesForTesting(base::DoNothing());
+
+  scoped_refptr<base::SequencedTaskRunner> idb_task_runner =
+      context_->idb_task_runner();
+  IndexedDBContextImpl::Shutdown(std::move(context_));
+  base::RunLoop destruction_loop;
+  idb_task_runner->PostTask(FROM_HERE, destruction_loop.QuitClosure());
+  destruction_loop.Run();
+
+  quota_manager_->ReleaseResults();
 }
 
 // Verifies that the IDB connection is force closed and the directory is deleted
