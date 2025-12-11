@@ -297,7 +297,7 @@ void CloudBinaryUploadService::MaybeAcknowledge(
 }
 
 void CloudBinaryUploadService::MaybeCancelRequests(
-    std::unique_ptr<CancelRequests> cancel) {
+    std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel) {
   // Nothing to do for cloud upload service.
   // TODO(crbug.com/40242713): Might consider canceling requests in
   // `request_queue_`.

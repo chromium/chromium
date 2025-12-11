@@ -41,7 +41,9 @@ class CloudBinaryUploadService : public BinaryUploadService {
       override;
   void MaybeAcknowledge(
       std::unique_ptr<enterprise_connectors::BinaryUploadAck> ack) override;
-  void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override;
+  void MaybeCancelRequests(
+      std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel)
+      override;
   base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
 
   // Indicates whether the DM token/Connector combination is allowed to upload

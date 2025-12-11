@@ -45,17 +45,6 @@ BinaryUploadService::Request::Request(
 
 BinaryUploadService::Request::~Request() = default;
 
-BinaryUploadService::CancelRequests::CancelRequests(
-    enterprise_connectors::CloudOrLocalAnalysisSettings settings)
-    : cloud_or_local_settings_(std::move(settings)) {}
-
-BinaryUploadService::CancelRequests::~CancelRequests() = default;
-
-void BinaryUploadService::CancelRequests::set_user_action_id(
-    const std::string& user_action_id) {
-  user_action_id_ = user_action_id;
-}
-
 // static
 BinaryUploadService* BinaryUploadService::GetForProfile(
     Profile* profile,

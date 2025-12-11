@@ -25,7 +25,9 @@ class TestBinaryUploadService : public BinaryUploadService {
       override;
   void MaybeAcknowledge(
       std::unique_ptr<enterprise_connectors::BinaryUploadAck> ack) override {}
-  void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override {}
+  void MaybeCancelRequests(
+      std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel)
+      override {}
   base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
   void SetResponse(enterprise_connectors::ScanRequestUploadResult result,
                    enterprise_connectors::ContentAnalysisResponse response);

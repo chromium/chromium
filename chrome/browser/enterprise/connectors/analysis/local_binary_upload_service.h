@@ -72,7 +72,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   void MaybeUploadForDeepScanning(
       std::unique_ptr<BinaryUploadRequest> request) override;
   void MaybeAcknowledge(std::unique_ptr<BinaryUploadAck> ack) override;
-  void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override;
+  void MaybeCancelRequests(
+      std::unique_ptr<BinaryUploadCancelRequests> cancel) override;
   base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
 
   size_t GetActiveRequestCountForTesting() const {
@@ -164,8 +165,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // Starts a local content analysis cancel request.
   void DoSendCancel(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-      std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests>
-          cancel);
+      std::unique_ptr<BinaryUploadCancelRequests> cancel);
 
   // Handles a response from the agent for a given ask or cancel.
   void HandleAckResponse(
@@ -173,13 +173,13 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
       int status);
   void HandleCancelResponse(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-      std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests>
-          cancel,
+      std::unique_ptr<BinaryUploadCancelRequests> cancel,
       int status);
 
   // In tests, this method can be overridden to know when a cancel request
   // has been sent to the agent.
-  virtual void OnCancelRequestSent(std::unique_ptr<CancelRequests> cancel) {}
+  virtual void OnCancelRequestSent(
+      std::unique_ptr<BinaryUploadCancelRequests> cancel) {}
 
   // Find the request that corresponds to the given response.
   Request::Id FindRequestByToken(
@@ -249,7 +249,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // action are sent, a cancel request can be sent.  This is to ensure that
   // chrome does not send requests for analysis for a given action after a
   // cancel request has been sent.
-  std::set<std::unique_ptr<CancelRequests>> pending_cancel_requests_;
+  std::set<std::unique_ptr<BinaryUploadCancelRequests>>
+      pending_cancel_requests_;
 
   // Timer used to retry connection to agent.
   base::OneShotTimer connection_retry_timer_;

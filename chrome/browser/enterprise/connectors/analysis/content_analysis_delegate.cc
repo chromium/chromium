@@ -228,7 +228,7 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
   }
 
   // Ask the binary upload service to cancel requests if it can.
-  auto cancel = std::make_unique<BinaryUploadService::CancelRequests>(
+  auto cancel = std::make_unique<BinaryUploadCancelRequests>(
       data_.settings.cloud_or_local_settings);
   cancel->set_user_action_id(user_action_id_);
 

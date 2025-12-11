@@ -105,7 +105,8 @@ class FakeLocalBinaryUploadService : public LocalBinaryUploadService {
     return &mock_system_signals_service_;
   }
 
-  void OnCancelRequestSent(std::unique_ptr<CancelRequests> cancel) override {
+  void OnCancelRequestSent(
+      std::unique_ptr<BinaryUploadCancelRequests> cancel) override {
     if (!cancel_quit_closure_.is_null()) {
       cancel_quit_closure_.Run();
     }
@@ -557,8 +558,7 @@ TEST_F(LocalBinaryUploadServiceTest, CancelRequests) {
             lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(1u, lbus.GetPendingRequestCountForTesting());
 
-  auto cr = std::make_unique<LocalBinaryUploadService::CancelRequests>(
-      cloud_or_local);
+  auto cr = std::make_unique<BinaryUploadCancelRequests>(cloud_or_local);
   cr->set_user_action_id(kFakeUserActionId);
   lbus.MaybeCancelRequests(std::move(cr));
 
@@ -618,8 +618,7 @@ TEST_F(LocalBinaryUploadServiceTest, CancelRequests_MultipleUserActions) {
   EXPECT_EQ(2u, lbus.GetActiveRequestCountForTesting());
   EXPECT_EQ(0u, lbus.GetPendingRequestCountForTesting());
 
-  auto cr = std::make_unique<LocalBinaryUploadService::CancelRequests>(
-      cloud_or_local);
+  auto cr = std::make_unique<BinaryUploadCancelRequests>(cloud_or_local);
   cr->set_user_action_id(kFakeUserActionId);
   lbus.MaybeCancelRequests(std::move(cr));
 
@@ -646,8 +645,7 @@ TEST_F(LocalBinaryUploadServiceTest,
   CloudOrLocalAnalysisSettings cloud_or_local(local);
   FakeLocalBinaryUploadService lbus(&profile_);
 
-  auto cr = std::make_unique<LocalBinaryUploadService::CancelRequests>(
-      cloud_or_local);
+  auto cr = std::make_unique<BinaryUploadCancelRequests>(cloud_or_local);
   cr->set_user_action_id("1234567890");
   lbus.MaybeCancelRequests(std::move(cr));
 

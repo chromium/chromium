@@ -161,7 +161,9 @@ class FakeBinaryUploadService : public BinaryUploadService {
     ASSERT_TRUE(base::Contains(requests_tokens_, ack->ack().request_token()));
   }
 
-  void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override {}
+  void MaybeCancelRequests(
+      std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel)
+      override {}
 
   base::WeakPtr<BinaryUploadService> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

@@ -41,7 +41,7 @@ content_analysis::sdk::Client::Config SDKConfigFromAck(
 // Build a content analysis SDK client config based on the cancel requests being
 // sent.
 content_analysis::sdk::Client::Config SDKConfigFromCancel(
-    const safe_browsing::BinaryUploadService::CancelRequests* cancel) {
+    const BinaryUploadCancelRequests* cancel) {
   return {cancel->cloud_or_local_settings().local_path(),
           cancel->cloud_or_local_settings().user_specific()};
 }
@@ -274,7 +274,7 @@ void LocalBinaryUploadService::MaybeAcknowledge(
 }
 
 void LocalBinaryUploadService::MaybeCancelRequests(
-    std::unique_ptr<CancelRequests> cancel) {
+    std::unique_ptr<BinaryUploadCancelRequests> cancel) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Cancel all pending requests.
@@ -551,8 +551,7 @@ void LocalBinaryUploadService::DoSendAck(
 
 void LocalBinaryUploadService::DoSendCancel(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-    std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests>
-        cancel) {
+    std::unique_ptr<BinaryUploadCancelRequests> cancel) {
   if (!wrapped || !wrapped->client()) {
     return;
   }
@@ -582,7 +581,7 @@ void LocalBinaryUploadService::HandleAckResponse(
 
 void LocalBinaryUploadService::HandleCancelResponse(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-    std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests> cancel,
+    std::unique_ptr<BinaryUploadCancelRequests> cancel,
     int status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
