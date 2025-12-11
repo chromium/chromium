@@ -727,8 +727,9 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
   std::vector<UrlAndId> url_and_ids;
   urls.reserve(nodes.size());
   for (const bookmarks::BookmarkNode* node : nodes) {
-    if (!base::Contains(urls, node->url()))
+    if (!base::Contains(urls, node->url())) {
       continue;  // The URL was filtered out; ignore this node.
+    }
     UrlAndId url_and_id;
     url_and_id.url = node->url();
     url_and_id.id = node->id();

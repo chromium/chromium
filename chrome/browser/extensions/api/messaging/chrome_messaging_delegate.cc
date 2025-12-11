@@ -69,8 +69,9 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
           pref_names::kNativeMessagingAllowlist)) {
     const base::Value::List& allowlist =
         pref_service->GetList(pref_names::kNativeMessagingAllowlist);
-    if (base::Contains(allowlist, name_value))
+    if (base::Contains(allowlist, name_value)) {
       return allow_result;
+    }
   }
 
   return PolicyPermission::DISALLOW;

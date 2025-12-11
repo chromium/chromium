@@ -75,8 +75,9 @@ void HidPolicyAllowedDevices::RegisterLocalStatePrefs(
 bool HidPolicyAllowedDevices::HasDevicePermission(
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
-  if (base::Contains(all_devices_policy_, origin))
+  if (base::Contains(all_devices_policy_, origin)) {
     return true;
+  }
 
   auto vendor_it = vendor_policy_.find(device.vendor_id);
   if (vendor_it != vendor_policy_.end() &&

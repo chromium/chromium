@@ -69,8 +69,9 @@ bool LocalFileSyncService::OriginChangeMap::NextOriginToProcess(GURL* origin) {
       next_ = change_count_map_.begin();
     DCHECK_NE(0, next_->second);
     *origin = next_++->first;
-    if (!base::Contains(disabled_origins_, *origin))
+    if (!base::Contains(disabled_origins_, *origin)) {
       return true;
+    }
   } while (next_ != begin);
   return false;
 }
@@ -79,8 +80,9 @@ int64_t LocalFileSyncService::OriginChangeMap::GetTotalChangeCount() const {
   int64_t num_changes = 0;
   for (auto iter = change_count_map_.begin(); iter != change_count_map_.end();
        ++iter) {
-    if (base::Contains(disabled_origins_, iter->first))
+    if (base::Contains(disabled_origins_, iter->first)) {
       continue;
+    }
     num_changes += iter->second;
   }
   return num_changes;
@@ -335,8 +337,9 @@ void LocalFileSyncService::OnChangesAvailableInOrigins(
 }
 
 void LocalFileSyncService::SetOriginEnabled(const GURL& origin, bool enabled) {
-  if (!base::Contains(origin_to_contexts_, origin))
+  if (!base::Contains(origin_to_contexts_, origin)) {
     return;
+  }
   origin_change_map_.SetOriginEnabled(origin, enabled);
 }
 

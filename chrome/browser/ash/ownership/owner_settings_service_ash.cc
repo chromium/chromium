@@ -438,13 +438,15 @@ void OwnerSettingsServiceAsh::FixupLocalOwnerPolicy(
   if (settings->has_user_whitelist() && !settings->has_user_allowlist()) {
     em::UserWhitelistProto* whitelist_proto =
         settings->mutable_user_whitelist();
-    if (!base::Contains(whitelist_proto->user_whitelist(), user_id))
+    if (!base::Contains(whitelist_proto->user_whitelist(), user_id)) {
       whitelist_proto->add_user_whitelist(user_id);
+    }
   } else {
     em::UserAllowlistProto* allowlist_proto =
         settings->mutable_user_allowlist();
-    if (!base::Contains(allowlist_proto->user_allowlist(), user_id))
+    if (!base::Contains(allowlist_proto->user_allowlist(), user_id)) {
       allowlist_proto->add_user_allowlist(user_id);
+    }
   }
 }
 

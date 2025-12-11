@@ -58,8 +58,9 @@ void RoundTripAndVerifyLogMessages(
       messages_expected.erase(message);
       continue;
     }
-    if (base::Contains(messages_not_expected, message))
+    if (base::Contains(messages_not_expected, message)) {
       ADD_FAILURE() << "Saw anti-expected message: " << message;
+    }
   }
   EXPECT_THAT(messages_expected, ::testing::IsEmpty())
       << "Missing expected messages.";

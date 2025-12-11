@@ -106,8 +106,9 @@ void ExternalInstallManager::AddExternalInstallError(const Extension* extension,
                                                      bool is_new_profile) {
   // Error already exists or has been previously shown.
   if (base::Contains(errors_, extension->id()) ||
-      shown_ids_.count(extension->id()) > 0)
+      shown_ids_.count(extension->id()) > 0) {
     return;
+  }
 
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
@@ -262,8 +263,9 @@ void ExternalInstallManager::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  if (base::Contains(errors_, extension->id()))
+  if (base::Contains(errors_, extension->id())) {
     RemoveExternalInstallError(extension->id());
+  }
   unacknowledged_ids_.erase(extension->id());
 }
 

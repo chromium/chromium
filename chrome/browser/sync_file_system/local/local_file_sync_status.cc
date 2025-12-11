@@ -61,8 +61,9 @@ bool ContainsChildOrParent(const Container& paths,
 
   // Check if any ancestor of |normalized_path| is in |writing_|.
   while (true) {
-    if (base::Contains(paths, normalized_path))
+    if (base::Contains(paths, normalized_path)) {
       return true;
+    }
 
     if (storage::VirtualPath::IsRootPath(normalized_path))
       return false;

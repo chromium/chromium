@@ -717,8 +717,9 @@ void PopulateInputMethodListFromDescriptors(
     input_method.display_name = util->GetLocalizedDisplayName(descriptor);
     input_method.language_codes = descriptor.language_codes();
     input_method.tags = GetInputMethodTags(&input_method);
-    if (base::Contains(enabled_ids, input_method.id))
+    if (base::Contains(enabled_ids, input_method.id)) {
       input_method.enabled = true;
+    }
     if (descriptor.options_page_url().is_valid())
       input_method.has_options_page = true;
     if (!allowed_ids.empty() && !base::Contains(allowed_ids, input_method.id)) {

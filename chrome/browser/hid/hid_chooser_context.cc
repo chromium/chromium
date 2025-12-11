@@ -244,8 +244,9 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
   if (CanApplyPolicy()) {
     auto* policy = HidPolicyAllowedDevicesFactory::GetForProfile(profile_);
     for (const auto& entry : policy->device_policy()) {
-      if (!base::Contains(entry.second, origin))
+      if (!base::Contains(entry.second, origin)) {
         continue;
+      }
 
       auto object =
           VendorAndProductIdsToValue(entry.first.first, entry.first.second);
@@ -254,8 +255,9 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     for (const auto& entry : policy->vendor_policy()) {
-      if (!base::Contains(entry.second, origin))
+      if (!base::Contains(entry.second, origin)) {
         continue;
+      }
 
       auto object = VendorIdToValue(entry.first);
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
@@ -263,8 +265,9 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     for (const auto& entry : policy->usage_policy()) {
-      if (!base::Contains(entry.second, origin))
+      if (!base::Contains(entry.second, origin)) {
         continue;
+      }
 
       auto object =
           UsagePageAndUsageToValue(entry.first.first, entry.first.second);
@@ -273,8 +276,9 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     for (const auto& entry : policy->usage_page_policy()) {
-      if (!base::Contains(entry.second, origin))
+      if (!base::Contains(entry.second, origin)) {
         continue;
+      }
 
       auto object = UsagePageToValue(entry.first);
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
@@ -624,8 +628,9 @@ void HidChooserContext::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
   DCHECK(device);
 
   // Update the device list.
-  if (!base::Contains(devices_, device->guid))
+  if (!base::Contains(devices_, device->guid)) {
     devices_.insert({device->guid, device->Clone()});
+  }
 
   // Notify all observers.
   for (auto& observer : device_observer_list_)

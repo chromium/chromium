@@ -145,8 +145,9 @@ void ServiceWatcherImpl::OnRecordUpdate(
     return;
   }
 
-  if (!base::Contains(services_, record->name()))
+  if (!base::Contains(services_, record->name())) {
     return;
+  }
 
   DCHECK(record->type() == net::dns_protocol::kTypeSRV ||
          record->type() == net::dns_protocol::kTypeTXT);

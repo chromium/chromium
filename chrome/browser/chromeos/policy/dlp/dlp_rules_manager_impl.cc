@@ -445,11 +445,10 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
 
   src_url_matcher_->AddConditionSets(src_conditions_);
   dst_url_matcher_->AddConditionSets(dst_conditions_);
-  if (base::Contains(restrictions_map_, Restriction::kClipboard)
-      || (base::FeatureList::IsEnabled(
-              features::kDataLeakPreventionFilesRestriction) &&
-          request_to_daemon.rules_size() > 0)
-  ) {
+  if (base::Contains(restrictions_map_, Restriction::kClipboard) ||
+      (base::FeatureList::IsEnabled(
+           features::kDataLeakPreventionFilesRestriction) &&
+       request_to_daemon.rules_size() > 0)) {
     DataTransferDlpController::Init(*this);
   } else {
     DataTransferDlpController::DeleteInstance();

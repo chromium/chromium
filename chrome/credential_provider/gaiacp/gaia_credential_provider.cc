@@ -180,8 +180,9 @@ bool BackgroundTokenHandleUpdater::IsAuthEnforcedOnAssociatedUsers() {
     const std::wstring& sid = sid_to_association.first;
     // Checks if the login UI was already refreshed due to
     // auth enforcements on this sid.
-    if (reauth_sids_ != nullptr && base::Contains(*reauth_sids_, sid))
+    if (reauth_sids_ != nullptr && base::Contains(*reauth_sids_, sid)) {
       continue;
+    }
 
     // Return true if the associated user sid has auth enforced.
     if (AssociatedUserValidator::Get()->IsAuthEnforcedForUser(sid)) {

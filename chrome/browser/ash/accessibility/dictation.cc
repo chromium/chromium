@@ -163,8 +163,9 @@ std::string GetSupportedLocale(const std::string& lang_or_locale) {
 
   // The code is a supported locale. Return itself.
   // Note that it doesn't matter if the supported locale is online or offline.
-  if (base::Contains(Dictation::GetAllSupportedLocales(), lang_or_locale))
+  if (base::Contains(Dictation::GetAllSupportedLocales(), lang_or_locale)) {
     return lang_or_locale;
+  }
 
   // Finally, get the language code from the locale and try to use it to map
   // to a default locale. For example, "en-XX" should map to "en-US" if "en-XX"

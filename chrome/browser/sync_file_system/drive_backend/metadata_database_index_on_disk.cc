@@ -247,8 +247,9 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
         continue;
       }
 
-      if (!base::Contains(referred_file_ids, metadata->file_id()))
+      if (!base::Contains(referred_file_ids, metadata->file_id())) {
         PutFileMetadataDeletionToDB(metadata->file_id(), db);
+      }
     }
   }
 }

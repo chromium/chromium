@@ -659,8 +659,9 @@ base::FilePath MediaGalleriesPreferences::LookUpGalleryPathForExtension(
   DCHECK(IsInitialized());
   DCHECK(extension);
   if (!include_unpermitted_galleries &&
-      !base::Contains(GalleriesForExtension(*extension), gallery_id))
+      !base::Contains(GalleriesForExtension(*extension), gallery_id)) {
     return base::FilePath();
+  }
 
   MediaGalleriesPrefInfoMap::const_iterator it =
       known_galleries_.find(gallery_id);
@@ -964,8 +965,9 @@ void MediaGalleriesPreferences::EraseOrBlocklistGalleryById(
       prefs, prefs::kMediaGalleriesRememberedGalleries);
   base::Value::List& list = update->Get();
 
-  if (!base::Contains(known_galleries_, id))
+  if (!base::Contains(known_galleries_, id)) {
     return;
+  }
 
   for (auto iter = list.begin(); iter != list.end(); ++iter) {
     MediaGalleryPrefId iter_id;

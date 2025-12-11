@@ -113,12 +113,14 @@ std::string DebugString(const NotificationEntry* entry) {
            << " : " << static_cast<int>(mapping.second);
   }
 
-  if (base::Contains(entry->icons_uuid, IconType::kSmallIcon))
+  if (base::Contains(entry->icons_uuid, IconType::kSmallIcon)) {
     stream << " \n small_icons_id:"
            << entry->icons_uuid.at(IconType::kSmallIcon);
-  if (base::Contains(entry->icons_uuid, IconType::kLargeIcon))
+  }
+  if (base::Contains(entry->icons_uuid, IconType::kLargeIcon)) {
     stream << " \n large_icons_id:"
            << entry->icons_uuid.at(IconType::kLargeIcon);
+  }
 
   return stream.str();
 }

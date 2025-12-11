@@ -417,9 +417,10 @@ void GalleryWatchManager::OnFilePathChanged(const base::FilePath& path,
     for (auto it = owners.begin(); it != owners.end(); ++it) {
       Profile* profile = Profile::FromBrowserContext(it->browser_context);
       RemoveWatch(it->browser_context, it->extension_id, it->gallery_id);
-      if (base::Contains(observers_, profile))
+      if (base::Contains(observers_, profile)) {
         observers_[profile]->OnGalleryWatchDropped(it->extension_id,
                                                    it->gallery_id);
+      }
     }
 
     return;
@@ -460,8 +461,9 @@ void GalleryWatchManager::OnPermissionRemoved(MediaGalleriesPreferences* pref,
                                               const std::string& extension_id,
                                               MediaGalleryPrefId pref_id) {
   RemoveWatch(pref->profile(), extension_id, pref_id);
-  if (base::Contains(observers_, pref->profile()))
+  if (base::Contains(observers_, pref->profile())) {
     observers_[pref->profile()]->OnGalleryWatchDropped(extension_id, pref_id);
+  }
 }
 
 void GalleryWatchManager::OnGalleryRemoved(MediaGalleriesPreferences* pref,
@@ -478,8 +480,9 @@ void GalleryWatchManager::OnGalleryRemoved(MediaGalleriesPreferences* pref,
 
   for (auto it = extension_ids.begin(); it != extension_ids.end(); ++it) {
     RemoveWatch(pref->profile(), *it, pref_id);
-    if (base::Contains(observers_, pref->profile()))
+    if (base::Contains(observers_, pref->profile())) {
       observers_[pref->profile()]->OnGalleryWatchDropped(*it, pref_id);
+    }
   }
 }
 

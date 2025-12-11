@@ -295,8 +295,9 @@ std::string SpellcheckService::GetSupportedAcceptLanguageCode(
   // language, but not sr-Cyrl-CS. Matching language + script subtags assures
   // we get the correct script for spellchecking, and not use sr-Latn-RS if
   // language packs for both scripts are installed on the system.
-  if (!base::Contains(supported_language_full_tag, "-"))
+  if (!base::Contains(supported_language_full_tag, "-")) {
     return "";
+  }
 
   iter = std::ranges::find_if(
       accept_languages,

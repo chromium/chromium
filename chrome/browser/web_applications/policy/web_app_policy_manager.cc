@@ -795,8 +795,10 @@ void WebAppPolicyManager::MaybeOverrideManifest(
     if (base::Contains(policy_installed_apps, app_id)) {
       DCHECK_GT(policy_installed_apps[app_id].size(), 0UL);
       for (const GURL& policy_install_url : policy_installed_apps[app_id]) {
-        if (base::Contains(custom_manifest_values_by_url_, policy_install_url))
+        if (base::Contains(custom_manifest_values_by_url_,
+                           policy_install_url)) {
           OverrideManifest(policy_install_url, manifest);
+        }
       }
       return;
     }
@@ -811,8 +813,9 @@ void WebAppPolicyManager::MaybeOverrideManifest(
   if (!pre_redirect)
     return;
   GURL install_url = pre_redirect->last_url();
-  if (base::Contains(custom_manifest_values_by_url_, install_url))
+  if (base::Contains(custom_manifest_values_by_url_, install_url)) {
     OverrideManifest(install_url, manifest);
+  }
 }
 
 // TODO(crbug.com/329823863): This method should be placed somewhere else, as it

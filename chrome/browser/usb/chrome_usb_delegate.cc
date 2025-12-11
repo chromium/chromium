@@ -247,12 +247,12 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
 
     if (base::Contains(kHidPrivilegedExtensionIds, origin.host())) {
       std::erase(classes, device::mojom::kUsbHidClass);
-  }
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (base::Contains(kSmartCardPrivilegedExtensionIds, origin.host())) {
-    std::erase(classes, device::mojom::kUsbSmartCardClass);
-  }
+    if (base::Contains(kSmartCardPrivilegedExtensionIds, origin.host())) {
+      std::erase(classes, device::mojom::kUsbSmartCardClass);
+    }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 

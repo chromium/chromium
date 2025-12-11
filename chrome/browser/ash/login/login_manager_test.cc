@@ -69,8 +69,9 @@ void LoginManagerTest::RegisterUser(const AccountId& account_id) {
   ScopedListPrefUpdate users_pref(g_browser_process->local_state(),
                                   "LoggedInUsers");
   base::Value email_value(account_id.GetUserEmail());
-  if (!base::Contains(users_pref.Get(), email_value))
+  if (!base::Contains(users_pref.Get(), email_value)) {
     users_pref->Append(std::move(email_value));
+  }
   if (user_manager::UserManager::IsInitialized()) {
     user_manager::KnownUser(g_browser_process->local_state())
         .SaveKnownUser(account_id);

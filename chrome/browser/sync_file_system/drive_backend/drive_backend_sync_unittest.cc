@@ -486,8 +486,9 @@ class DriveBackendSyncTest : public testing::Test,
   size_t CountApp() { return file_systems_.size(); }
 
   size_t CountLocalFile(const std::string& app_id) {
-    if (!base::Contains(file_systems_, app_id))
+    if (!base::Contains(file_systems_, app_id)) {
       return 0;
+    }
 
     CannedSyncableFileSystem* file_system = file_systems_[app_id];
     base::stack<base::FilePath> folders;

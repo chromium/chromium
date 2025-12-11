@@ -57,8 +57,9 @@ std::vector<base::FilePath> GetFilesFromPrevSessions(
   for (base::FilePath current = file_enumerator.Next(); !current.empty();
        current = file_enumerator.Next()) {
     // Exclude any new file created in this session.
-    if (!base::Contains(registered_names, current.BaseName()))
+    if (!base::Contains(registered_names, current.BaseName())) {
       files.push_back(std::move(current));
+    }
   }
 
   return files;

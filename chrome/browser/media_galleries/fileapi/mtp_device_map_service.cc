@@ -84,8 +84,9 @@ void MTPDeviceMapService::AddAsyncDelegate(
   DCHECK(!device_location.empty());
 
   const AsyncDelegateKey key = GetAsyncDelegateKey(device_location, read_only);
-  if (base::Contains(async_delegate_map_, key))
+  if (base::Contains(async_delegate_map_, key)) {
     return;
+  }
   async_delegate_map_[key] = delegate;
 }
 

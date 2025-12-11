@@ -285,8 +285,9 @@ void TabUsageScenarioTracker::OnVideoStartedPlaying(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!base::Contains(contents_playing_video_, web_contents));
   contents_playing_video_.insert(web_contents);
-  if (base::Contains(visible_tabs_, web_contents))
+  if (base::Contains(visible_tabs_, web_contents)) {
     usage_scenario_data_store_->OnVideoStartsInVisibleTab();
+  }
 }
 
 void TabUsageScenarioTracker::OnVideoStoppedPlaying(
@@ -294,8 +295,9 @@ void TabUsageScenarioTracker::OnVideoStoppedPlaying(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::Contains(contents_playing_video_, web_contents));
   contents_playing_video_.erase(web_contents);
-  if (base::Contains(visible_tabs_, web_contents))
+  if (base::Contains(visible_tabs_, web_contents)) {
     usage_scenario_data_store_->OnVideoStopsInVisibleTab();
+  }
 }
 
 void TabUsageScenarioTracker::OnDisplayAdded(const display::Display&) {
@@ -320,8 +322,9 @@ void TabUsageScenarioTracker::OnTabBecameHidden(
 
   // If this tab is playing video then record that it became non visible.
   content::WebContents* const web_contents = (*visible_tab_iter)->first;
-  if (base::Contains(contents_playing_video_, web_contents))
+  if (base::Contains(contents_playing_video_, web_contents)) {
     usage_scenario_data_store_->OnVideoStopsInVisibleTab();
+  }
 
   // Record that the ukm::SourceID associated with this tab isn't visible
   // anymore if necessary.

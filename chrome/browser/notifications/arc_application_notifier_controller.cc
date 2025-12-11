@@ -147,8 +147,9 @@ void ArcApplicationNotifierController::SetIcon(const std::string& app_id,
 
 void ArcApplicationNotifierController::OnAppUpdate(
     const apps::AppUpdate& update) {
-  if (!base::Contains(package_to_app_ids_, update.PublisherId()))
+  if (!base::Contains(package_to_app_ids_, update.PublisherId())) {
     return;
+  }
 
   if (update.PermissionsChanged()) {
     for (const auto& permission : update.Permissions()) {

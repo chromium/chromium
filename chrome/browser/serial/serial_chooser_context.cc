@@ -461,8 +461,9 @@ bool SerialChooserContext::HasPortPermission(
   auto it = ephemeral_ports_.find(origin);
   if (it != ephemeral_ports_.end()) {
     const std::set<base::UnguessableToken> ports = it->second;
-    if (base::Contains(ports, port.token))
+    if (base::Contains(ports, port.token)) {
       return true;
+    }
   }
 
   if (!CanStorePersistentEntry(port)) {

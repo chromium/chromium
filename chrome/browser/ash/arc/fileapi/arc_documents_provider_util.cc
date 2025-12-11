@@ -258,8 +258,9 @@ std::string FindArcMimeTypeFromExtension(const std::string& ext) {
   for (const auto& mapping : kAndroidMimeTypeMappings) {
     std::vector<std::string_view> extensions = base::SplitStringPiece(
         mapping.extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (base::Contains(extensions, ext))
+    if (base::Contains(extensions, ext)) {
       return mapping.mime_type;
+    }
   }
   return std::string();
 }

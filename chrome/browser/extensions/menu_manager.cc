@@ -431,8 +431,9 @@ bool MenuManager::AddContextItem(const Extension* extension,
   const MenuItem::ExtensionKey& key = item->id().extension_key;
 
   // The item must have a non-empty key, and not have already been added.
-  if (key.empty() || base::Contains(items_by_id_, item->id()))
+  if (key.empty() || base::Contains(items_by_id_, item->id())) {
     return false;
+  }
 
   const std::string& extension_id = extension ? extension->id() : "";
   DCHECK_EQ(extension_id, key.extension_id);
@@ -462,8 +463,9 @@ bool MenuManager::AddChildItem(const MenuItem::Id& parent_id,
   if (!parent || parent->type() != MenuItem::NORMAL ||
       parent->incognito() != child->incognito() ||
       parent->extension_id() != child->extension_id() ||
-      base::Contains(items_by_id_, child->id()))
+      base::Contains(items_by_id_, child->id())) {
     return false;
+  }
   MenuItem* child_ptr = child.get();
   parent->AddChild(std::move(child));
   items_by_id_[child_ptr->id()] = child_ptr;
@@ -544,8 +546,9 @@ bool MenuManager::ChangeParent(const MenuItem::Id& child_id,
 }
 
 bool MenuManager::RemoveContextMenuItem(const MenuItem::Id& id) {
-  if (!base::Contains(items_by_id_, id))
+  if (!base::Contains(items_by_id_, id)) {
     return false;
+  }
 
   MenuItem* menu_item = GetItemById(id);
   DCHECK(menu_item);
@@ -866,8 +869,9 @@ void MenuManager::SanitizeRadioListsInMenu(
 }
 
 bool MenuManager::ItemUpdated(const MenuItem::Id& id) {
-  if (!base::Contains(items_by_id_, id))
+  if (!base::Contains(items_by_id_, id)) {
     return false;
+  }
 
   MenuItem* menu_item = GetItemById(id);
   DCHECK(menu_item);

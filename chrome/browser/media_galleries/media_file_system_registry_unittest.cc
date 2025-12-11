@@ -133,8 +133,9 @@ bool TestMediaFileSystemContext::RegisterFileSystem(
 }
 
 void TestMediaFileSystemContext::RevokeFileSystem(const std::string& fs_name) {
-  if (!base::Contains(file_systems_by_name_, fs_name))
+  if (!base::Contains(file_systems_by_name_, fs_name)) {
     return;
+  }
   EXPECT_EQ(1U, file_systems_by_name_.erase(fs_name));
 }
 
@@ -703,8 +704,9 @@ void MediaFileSystemRegistryTest::CheckNewGalleryInfo(
   for (FSInfoMap::const_iterator it = new_galleries_info.begin();
        it != new_galleries_info.end();
        ++it) {
-    if (base::Contains(galleries_info, it->first))
+    if (base::Contains(galleries_info, it->first)) {
       continue;
+    }
 
     ASSERT_FALSE(found_new);
     CheckGalleryInfo(it->second, test_file_system_context_, location,

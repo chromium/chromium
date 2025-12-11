@@ -879,8 +879,9 @@ bool ProfileManager::IsValidProfile(const void* profile) {
       return true;
     std::vector<Profile*> otr_profiles =
         candidate->GetAllOffTheRecordProfiles();
-    if (base::Contains(otr_profiles, profile))
+    if (base::Contains(otr_profiles, profile)) {
       return true;
+    }
   }
   return false;
 }

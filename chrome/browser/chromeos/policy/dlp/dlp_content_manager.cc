@@ -133,8 +133,9 @@ DlpContentManager* DlpContentManager::Get() {
 
 DlpContentRestrictionSet DlpContentManager::GetConfidentialRestrictions(
     content::WebContents* web_contents) const {
-  if (!base::Contains(confidential_web_contents_, web_contents))
+  if (!base::Contains(confidential_web_contents_, web_contents)) {
     return DlpContentRestrictionSet();
+  }
   return confidential_web_contents_.at(web_contents);
 }
 

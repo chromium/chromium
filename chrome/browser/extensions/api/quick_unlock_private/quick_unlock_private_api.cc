@@ -103,8 +103,9 @@ bool AreModesEqual(const QuickUnlockModeList& a, const QuickUnlockModeList& b) {
   // This is a slow comparison algorithm, but the number of entries in |a| and
   // |b| will always be very low (0-3 items) so it doesn't matter.
   for (auto mode : a) {
-    if (!base::Contains(b, mode))
+    if (!base::Contains(b, mode)) {
       return false;
+    }
   }
 
   return true;
@@ -167,8 +168,9 @@ bool IsPinDifficultEnough(const std::string& pin) {
     return true;
 
   // Check if it is on the list of most common PINs.
-  if (base::Contains(kMostCommonPins, pin))
+  if (base::Contains(kMostCommonPins, pin)) {
     return false;
+  }
 
   // Check for same digits, increasing and decreasing PIN simultaneously.
   bool is_same = true;

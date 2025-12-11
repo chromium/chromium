@@ -240,8 +240,9 @@ class ExtensionGalleriesHost {
       const MediaGalleryPrefInfo& gallery_info =
           galleries_info.find(pref_id)->second;
       const std::string& device_id = gallery_info.device_id;
-      if (!base::Contains(*attached_devices, device_id))
+      if (!base::Contains(*attached_devices, device_id)) {
         continue;
+      }
 
       PrefIdFsInfoMap::const_iterator existing_info =
           pref_id_map_.find(pref_id);
@@ -619,8 +620,9 @@ void MediaFileSystemRegistry::OnGalleryRemoved(
         extension_registry->enabled_extensions().GetByID(it->first));
   }
   for (size_t i = 0; i < extensions.size(); ++i) {
-    if (!base::Contains(extension_hosts_map_, profile))
+    if (!base::Contains(extension_hosts_map_, profile)) {
       break;
+    }
     auto gallery_host_it = extension_host_map.find(extensions[i]->id());
     if (gallery_host_it == extension_host_map.end())
       continue;

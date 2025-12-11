@@ -1246,8 +1246,9 @@ void AppListSyncableService::PruneEmptySyncFolders() {
     if (sync_item->item_id == ash::kOemFolderId)
       continue;
 
-    if (!base::Contains(parent_ids, sync_item->item_id))
+    if (!base::Contains(parent_ids, sync_item->item_id)) {
       DeleteSyncItem(sync_item->item_id);
+    }
   }
 }
 

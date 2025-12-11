@@ -42,13 +42,15 @@ void InputMethodPrefs::UpdateEnabledImes(
   const std::string current_ime =
       prefs->GetString(prefs::kLanguageCurrentInputMethod);
   if (ce::IsArcIME(current_ime) &&
-      !base::Contains(enabled_ime_list, current_ime))
+      !base::Contains(enabled_ime_list, current_ime)) {
     prefs->SetString(prefs::kLanguageCurrentInputMethod, std::string());
+  }
   const std::string previous_ime =
       prefs->GetString(prefs::kLanguagePreviousInputMethod);
   if (ce::IsArcIME(previous_ime) &&
-      !base::Contains(enabled_ime_list, previous_ime))
+      !base::Contains(enabled_ime_list, previous_ime)) {
     prefs->SetString(prefs::kLanguagePreviousInputMethod, std::string());
+  }
 }
 
 std::set<std::string> InputMethodPrefs::GetEnabledImes() const {

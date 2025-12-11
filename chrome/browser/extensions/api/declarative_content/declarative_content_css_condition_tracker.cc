@@ -230,8 +230,9 @@ bool DeclarativeContentCssConditionTracker::EvaluatePredicate(
       loc->second->matching_css_selectors();
   for (const std::string& predicate_css_selector :
            typed_predicate->css_selectors()) {
-    if (!base::Contains(matching_css_selectors, predicate_css_selector))
+    if (!base::Contains(matching_css_selectors, predicate_css_selector)) {
       return false;
+    }
   }
 
   return true;

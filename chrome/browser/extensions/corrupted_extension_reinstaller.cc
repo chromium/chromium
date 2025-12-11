@@ -77,16 +77,18 @@ void CorruptedExtensionReinstaller::ExpectReinstallForCorruption(
     const ExtensionId& id,
     std::optional<PolicyReinstallReason> reason_for_uma,
     mojom::ManifestLocation manifest_location_for_uma) {
-  if (base::Contains(expected_reinstalls_, id))
+  if (base::Contains(expected_reinstalls_, id)) {
     return;
+  }
   expected_reinstalls_[id] = base::TimeTicks::Now();
   if (reason_for_uma)
     RecordPolicyReinstallReason(*reason_for_uma);
 }
 
 void CorruptedExtensionReinstaller::MarkResolved(const ExtensionId& id) {
-  if (!base::Contains(expected_reinstalls_, id))
+  if (!base::Contains(expected_reinstalls_, id)) {
     return;
+  }
 
   base::TimeDelta latency = base::TimeTicks::Now() - expected_reinstalls_[id];
   base::UmaHistogramLongTimes("Extensions.CorruptPolicyExtensionResolved",

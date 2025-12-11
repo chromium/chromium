@@ -199,8 +199,9 @@ void FallbackTaskProvider::OnTaskRemovedBySource(Task* task,
 
 void FallbackTaskProvider::OnTaskUnresponsive(Task* task) {
   DCHECK(task);
-  if (base::Contains(shown_tasks_, task))
+  if (base::Contains(shown_tasks_, task)) {
     NotifyObserverTaskUnresponsive(task);
+  }
 }
 
 FallbackTaskProvider::SubproviderSource::SubproviderSource(

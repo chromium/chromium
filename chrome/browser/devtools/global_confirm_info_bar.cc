@@ -315,8 +315,9 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   // WebContents from the tab strip must have the infobar manager.
   DCHECK(infobar_manager);
-  if (base::Contains(proxies_, infobar_manager))
+  if (base::Contains(proxies_, infobar_manager)) {
     return;
+  }
 
   auto proxy = std::make_unique<GlobalConfirmInfoBar::DelegateProxy>(
       weak_factory_.GetWeakPtr());

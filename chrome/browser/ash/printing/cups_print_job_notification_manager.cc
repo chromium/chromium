@@ -30,8 +30,9 @@ void CupsPrintJobNotificationManager::OnPrintJobCreated(
     base::WeakPtr<CupsPrintJob> job) {
   if (!job)
     return;
-  if (base::Contains(notification_map_, job.get()))
+  if (base::Contains(notification_map_, job.get())) {
     return;
+  }
   notification_map_[job.get()] =
       std::make_unique<CupsPrintJobNotification>(this, job, profile_);
 }

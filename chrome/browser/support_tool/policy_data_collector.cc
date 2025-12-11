@@ -185,8 +185,9 @@ void PolicyDataCollector::RedactPIIInPolicyStatus(
          entry.second.GetDict()) {
       std::optional<redaction::PIIType> pii_type =
           GetPIITypeOfStatusField(status_pair.first);
-      if (!pii_type || base::Contains(pii_types_to_keep, pii_type.value()))
+      if (!pii_type || base::Contains(pii_types_to_keep, pii_type.value())) {
         continue;
+      }
       // Replace the value with `kRedactedPlaceholder` if it's a PII type that
       // user didn't select to keep.
       status_pair.second = base::Value(kRedactedPlaceholder);

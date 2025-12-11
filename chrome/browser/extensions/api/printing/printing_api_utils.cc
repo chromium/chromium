@@ -358,8 +358,9 @@ bool CheckSettingsAndCapabilitiesCompatibility(
   if (settings.copies() > capabilities.copies_max)
     return false;
 
-  if (!base::Contains(capabilities.duplex_modes, settings.duplex_mode()))
+  if (!base::Contains(capabilities.duplex_modes, settings.duplex_mode())) {
     return false;
+  }
 
   std::optional<bool> is_color =
       ::printing::IsColorModelSelected(settings.color());
@@ -375,8 +376,9 @@ bool CheckSettingsAndCapabilitiesCompatibility(
     return false;
   }
 
-  if (!base::Contains(capabilities.dpis, settings.dpi_size()))
+  if (!base::Contains(capabilities.dpis, settings.dpi_size())) {
     return false;
+  }
 
   for (const auto& [name, value] : settings.advanced_settings()) {
     if (!value.is_string()) {

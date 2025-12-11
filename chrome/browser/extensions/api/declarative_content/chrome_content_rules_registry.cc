@@ -377,8 +377,9 @@ void ChromeContentRulesRegistry::EvaluateConditionsForTab(
     content::WebContents* tab) {
   std::set<raw_ptr<const ContentRule, SetExperimental>> matching_rules =
       GetMatchingRules(tab);
-  if (matching_rules.empty() && !base::Contains(active_rules_, tab))
+  if (matching_rules.empty() && !base::Contains(active_rules_, tab)) {
     return;
+  }
 
   std::set<raw_ptr<const ContentRule, SetExperimental>>& prev_matching_rules =
       active_rules_[tab];
