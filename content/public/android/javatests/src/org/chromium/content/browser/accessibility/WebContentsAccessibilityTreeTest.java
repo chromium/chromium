@@ -228,12 +228,6 @@ public class WebContentsAccessibilityTreeTest {
         performAccnameTest("name-div-content-only.html");
     }
 
-    @Test
-    @SmallTest
-    public void test_nameImgEmptyAltTitle() {
-        performAccnameTest("name-img-empty-alt-title.html");
-    }
-
     // ------------------ ARIA TESTS ------------------ //
 
     @Test

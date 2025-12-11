@@ -709,10 +709,6 @@ Tests name sources in images and figures.
         type : internalRole
         value : 99
     }
-    description : {
-        type : computedString
-        value : title
-    }
     domNode : img
     ignored : false
     name : {
@@ -727,19 +723,23 @@ Tests name sources in images and figures.
             }
             [2] : {
                 attribute : alt
+                type : attribute
+            }
+            [3] : {
+                attribute : title
                 attributeValue : {
                     type : string
-                    value : 
+                    value : title
                 }
                 type : attribute
                 value : {
                     type : computedString
-                    value : 
+                    value : title
                 }
             }
         ]
         type : computedString
-        value : 
+        value : title
     }
     nodeId : <string>
     parentId : <string>

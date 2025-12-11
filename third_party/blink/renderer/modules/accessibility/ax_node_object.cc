@@ -5283,9 +5283,7 @@ String AXNodeObject::TextAlternative(
   // visible element without causing an accessibility error or user problem.
   // Note: if this is part of another label or description, it needs to be
   // computed as a name, in order to contribute to that.
-  if ((aria_label_or_description_root || !IsNameProhibited()) &&
-      !(has_explicitly_empty_native_text_alternative &&
-        (IsA<HTMLImageElement>(node) || IsA<HTMLAreaElement>(node)))) {
+  if (aria_label_or_description_root || !IsNameProhibited()) {
     String resulting_text = TextAlternativeFromTooltip(
         name_from, name_sources, &found_text_alternative, &text_alternative,
         related_objects);
@@ -7268,7 +7266,7 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->push_back(NameSource(*found_text_alternative, kAltAttr));
       name_sources->back().type = name_from;
     }
-    if (!alt.IsNull()) {
+    if (!alt.empty()) {
       text_alternative = alt;
       if (name_sources) {
         NameSource& source = name_sources->back();

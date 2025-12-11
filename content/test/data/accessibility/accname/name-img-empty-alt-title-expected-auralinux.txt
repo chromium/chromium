@@ -1,1 +1,0 @@
-[image] name='To get missing image descriptions, open the context menu.' description='title' description-from:tooltip

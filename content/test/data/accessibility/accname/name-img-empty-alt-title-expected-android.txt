@@ -1,1 +1,0 @@
-android.widget.Image tooltip_text='title'
