@@ -60,7 +60,7 @@ namespace task_manager {
 IsolatedWebAppTask::IsolatedWebAppTask(content::WebContents* web_contents)
     : RendererTask(
           PrefixTaskTitle(RendererTask::GetTitleFromWebContents(web_contents)),
-          RendererTask::GetFaviconFromWebContents(web_contents),
+          RendererTask::GetFaviconFromWebContents(web_contents).get(),
           web_contents) {}
 
 IsolatedWebAppTask::~IsolatedWebAppTask() = default;
