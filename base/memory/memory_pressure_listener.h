@@ -90,6 +90,7 @@ enum class MemoryPressureListenerTag {
   kMemoryCache = 57,
   kResource = 58,
   kResourceFetcher = 59,
+  kGlicProfileManager = 60,
 };
 
 // To start listening, derive from MemoryPressureListener, and use

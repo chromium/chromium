@@ -105,8 +105,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(ENABLE_GLIC)
   void SetUp() override {
     // This will temporarily disable preloading.
-    glic::GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    glic::GlicProfileManager::SetPrewarmingEnabledForTesting(false);
     fre_server_.ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));
@@ -122,7 +121,7 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
-    glic::GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
+    glic::GlicProfileManager::SetPrewarmingEnabledForTesting(true);
   }
 
   void SetUpOnMainThread() override {
@@ -227,9 +226,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  void ResetMemoryPressure() {
-    glic::GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MEMORY_PRESSURE_LEVEL_NONE);
+  void ResetPrewarming() {
+    glic::GlicProfileManager::SetPrewarmingEnabledForTesting(true);
   }
 
   const GURL& fre_url() { return fre_url_; }
@@ -519,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, PreloadFreOnNudge) {
   EXPECT_FALSE(service->fre_controller().IsWarmed());
 
   // This will enable preloading again.
-  ResetMemoryPressure();
+  ResetPrewarming();
 
   base::RunLoop run_loop;
   auto subscription = service->fre_controller().AddWebUiStateChangedCallback(

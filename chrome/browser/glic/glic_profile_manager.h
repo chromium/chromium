@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_GLIC_GLIC_PROFILE_MANAGER_H_
 
 #include "base/callback_list.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -22,7 +21,8 @@ enum class GlicPrewarmingChecksResult;
 // GlicProfileManager is a GlobalFeature that manages multi-profile Glic state.
 // Among other things it is used for determining which profile to launch from an
 // OS Entry point and ensuring that just one panel is shown across all profiles.
-class GlicProfileManager : public ProfileManagerObserver {
+class GlicProfileManager : public ProfileManagerObserver,
+                           public base::MemoryPressureListener {
  public:
   GlicProfileManager();
   ~GlicProfileManager() override;
@@ -95,11 +95,13 @@ class GlicProfileManager : public ProfileManagerObserver {
   // ProfileManagerObserver:
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
 
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
+
   // Static in order to permit setting forced values before the manager is
   // constructed.
+  static void SetPrewarmingEnabledForTesting(bool enabled);
   static void ForceProfileForLaunchForTesting(std::optional<Profile*> profile);
-  static void ForceMemoryPressureForTesting(
-      std::optional<base::MemoryPressureLevel> level);
   static void ForceConnectionTypeForTesting(
       std::optional<network::mojom::ConnectionType> type);
 
@@ -129,6 +131,13 @@ class GlicProfileManager : public ProfileManagerObserver {
   // detached glic, if any.
   base::WeakPtr<GlicKeyedService> current_detached_glic_;
   bool did_auto_open_ = false;
+
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
+
+  base::MemoryPressureLevel memory_pressure_level_ =
+      base::MEMORY_PRESSURE_LEVEL_NONE;
+
   base::WeakPtrFactory<GlicProfileManager> weak_ptr_factory_{this};
 };
 
@@ -185,7 +194,11 @@ enum class GlicPrewarmingChecksResult {
   // The user already went through the Glic FRE (applicable to FRE warming).
   kUserAlreadyWentTroughFre = 15,
 
-  kMaxValue = kUserAlreadyWentTroughFre,
+  // Used by tests to prevent premature preloading. Not a valid value for
+  // production code.
+  kPrewarmingDisabledForTesting = 16,
+
+  kMaxValue = kPrewarmingDisabledForTesting,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrewarmingChecksResult)
 

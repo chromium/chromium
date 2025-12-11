@@ -8,7 +8,7 @@
 #include <string>
 #include <type_traits>
 
-#include "base/memory/memory_pressure_monitor.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -376,10 +376,8 @@ class GlicProfileManagerPreloadingTest
           /*disabled_features=*/{features::kGlicWarming});
     }
 
-    // We initialize memory pressure to moderate to prevent any premature
-    // preloading.
-    GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MEMORY_PRESSURE_LEVEL_MODERATE);
+    // We prevent any premature preloading by disabling it.
+    GlicProfileManager::SetPrewarmingEnabledForTesting(false);
     GlicProfileManager::ForceConnectionTypeForTesting(
         network::mojom::ConnectionType::CONNECTION_WIFI);
   }
@@ -392,17 +390,16 @@ class GlicProfileManagerPreloadingTest
   }
 
   void TearDown() override {
+    GlicProfileManager::SetPrewarmingEnabledForTesting(true);
     GlicProfileManager::ForceProfileForLaunchForTesting(std::nullopt);
-    GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
     GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
     InProcessBrowserTest::TearDown();
   }
 
   bool IsPrewarmingEnabled() const { return GetParam(); }
 
-  void ResetMemoryPressure() {
-    GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MEMORY_PRESSURE_LEVEL_NONE);
+  void ResetPrewarming() {
+    GlicProfileManager::SetPrewarmingEnabledForTesting(true);
   }
 
   GlicPrewarmingChecksResult WaitForShouldPreload() {
@@ -435,7 +432,7 @@ class GlicProfileManagerPreloadingTest
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
                        ShouldPreloadForProfile_Success) {
-  ResetMemoryPressure();
+  ResetPrewarming();
   const bool should_preload = IsPrewarmingEnabled();
   EXPECT_EQ(WaitForShouldPreload(),
             should_preload ? GlicPrewarmingChecksResult::kSuccess
@@ -447,7 +444,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   if (!IsPrewarmingEnabled()) {
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
-  ResetMemoryPressure();
+  ResetPrewarming();
   GlicProfileManager::ForceProfileForLaunchForTesting(std::nullopt);
   SetGlicCapability(browser()->profile(), false);
   EXPECT_EQ(WaitForShouldPreload(),
@@ -459,7 +456,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   if (!IsPrewarmingEnabled()) {
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
-  ResetMemoryPressure();
+  ResetPrewarming();
   browser()->profile()->NotifyWillBeDestroyed();
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kBrowserShuttingDown);
@@ -470,7 +467,11 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   if (!IsPrewarmingEnabled()) {
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
-  // Note: we keep memory pressure at moderate here.
+  ResetPrewarming();
+  base::RunLoop run_loop;
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE, run_loop.QuitClosure());
+  run_loop.Run();
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kUnderMemoryPressure);
 }
@@ -480,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   if (!IsPrewarmingEnabled()) {
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
-  ResetMemoryPressure();
+  ResetPrewarming();
   SetConnectionType(network::mojom::ConnectionType::CONNECTION_2G);
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kCellularConnection);
@@ -493,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   if (!IsPrewarmingEnabled()) {
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
-  ResetMemoryPressure();
+  ResetPrewarming();
   auto* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   service->TryPreload();
@@ -527,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
   if (!IsPrewarmingEnabled()) {
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
-  ResetMemoryPressure();
+  ResetPrewarming();
   auto* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   service->TryPreload();
@@ -542,7 +543,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDeferredPreloadingTest,
   if (!IsPrewarmingEnabled()) {
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
-  ResetMemoryPressure();
+  ResetPrewarming();
   auto* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   base::RunLoop run_loop;

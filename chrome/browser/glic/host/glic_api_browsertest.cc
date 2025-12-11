@@ -417,8 +417,7 @@ class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
     // This will temporarily disable preloading to ensure that we don't load
     // the web client before we've initialized the embedded test server and
     // can set the correct URL.
-    GlicProfileManager::ForceMemoryPressureForTesting(
-        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    GlicProfileManager::SetPrewarmingEnabledForTesting(false);
     GlicProfileManager::ForceConnectionTypeForTesting(
         network::mojom::ConnectionType::CONNECTION_ETHERNET);
   }
@@ -427,11 +426,9 @@ class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
     return Do([this] { GetService()->TryPreload(); });
   }
 
-  auto ResetMemoryPressure() {
-    return Do([]() {
-      GlicProfileManager::ForceMemoryPressureForTesting(
-          base::MEMORY_PRESSURE_LEVEL_NONE);
-    });
+  auto ResetPreloading() {
+    return Do(
+        []() { GlicProfileManager::SetPrewarmingEnabledForTesting(true); });
   }
 
   void SetUpOnMainThread() override {
@@ -444,7 +441,7 @@ class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
                     NavigateWebContents(kFirstTab, page_url()));
 
     // Preload the web client.
-    RunTestSequence(WaitForShow(kGlicButtonElementId), ResetMemoryPressure(),
+    RunTestSequence(WaitForShow(kGlicButtonElementId), ResetPreloading(),
                     ObserveState(glic::test::internal::kWebUiState, GetHost()),
                     CreateAndWarmGlic(),
                     WaitForState(glic::test::internal::kWebUiState,
@@ -454,7 +451,7 @@ class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
 
   void TearDown() override {
     GlicApiTestWithOneTab::TearDown();
-    GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
+    GlicProfileManager::SetPrewarmingEnabledForTesting(true);
     GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
   }
 

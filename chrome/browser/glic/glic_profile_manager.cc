@@ -29,8 +29,8 @@
 #include "content/public/browser/network_service_instance.h"
 
 namespace {
+bool g_prewarming_enabled_for_testing_ = true;
 std::optional<Profile*> g_forced_profile_for_launch_;
-std::optional<base::MemoryPressureLevel> g_forced_memory_pressure_level_;
 std::optional<network::mojom::ConnectionType> g_forced_connection_type_;
 }  // namespace
 
@@ -67,7 +67,11 @@ GlicProfileManager* GlicProfileManager::GetInstance() {
   return g_browser_process->GetFeatures()->glic_profile_manager();
 }
 
-GlicProfileManager::GlicProfileManager() {
+GlicProfileManager::GlicProfileManager()
+    : memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kGlicProfileManager,
+          this) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager) {
     profile_manager->AddObserver(this);
@@ -316,16 +320,19 @@ void GlicProfileManager::OnProfileMarkedForPermanentDeletion(Profile* profile) {
   glic_keyed_service->Shutdown();
 }
 
+void GlicProfileManager::OnMemoryPressure(base::MemoryPressureLevel level) {
+  memory_pressure_level_ = level;
+}
+
+// static
+void GlicProfileManager::SetPrewarmingEnabledForTesting(bool enabled) {
+  g_prewarming_enabled_for_testing_ = enabled;
+}
+
 // static
 void GlicProfileManager::ForceProfileForLaunchForTesting(
     std::optional<Profile*> profile) {
   g_forced_profile_for_launch_ = profile;
-}
-
-// static
-void GlicProfileManager::ForceMemoryPressureForTesting(
-    std::optional<base::MemoryPressureLevel> level) {
-  g_forced_memory_pressure_level_ = level;
 }
 
 // static
@@ -335,14 +342,7 @@ void GlicProfileManager::ForceConnectionTypeForTesting(
 }
 
 bool GlicProfileManager::IsUnderMemoryPressure() const {
-  base::MemoryPressureLevel memory_pressure = base::MEMORY_PRESSURE_LEVEL_NONE;
-  if (g_forced_memory_pressure_level_) {
-    memory_pressure = *g_forced_memory_pressure_level_;
-  } else if (const auto* memory_monitor = base::MemoryPressureMonitor::Get()) {
-    memory_pressure = memory_monitor->GetCurrentPressureLevel(
-        base::MemoryPressureMonitorTag::kGlicProfileManager);
-  }
-  return memory_pressure >= base::MEMORY_PRESSURE_LEVEL_MODERATE;
+  return memory_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
 void GlicProfileManager::CanPreloadForProfile(Profile* profile,
@@ -382,6 +382,10 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
   }
   if (IsUnderMemoryPressure()) {
     return produce_result(GlicPrewarmingChecksResult::kUnderMemoryPressure);
+  }
+  if (!g_prewarming_enabled_for_testing_) {
+    return produce_result(
+        GlicPrewarmingChecksResult::kPrewarmingDisabledForTesting);
   }
 
   auto on_got_connection_type = [](ShouldPreloadCallback callback,
