@@ -457,6 +457,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
   MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  EXPECT_CALL(*mock_optimization_guide_keyed_service(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kPasswordChangeSubmission,
+                           _, _, _));
 
   // Start observing web_contents where password change happens.
   auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
@@ -894,6 +898,13 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   // starts.
   delegate->StartPasswordChangeFlow();
   MockLoginOutcome(LoginCheckResult::kLoggedIn);
+  // This expects the submit form step model call. Here no reply is mocked
+  // because it's expected that cross origin navigation is triggered while
+  // waiting for the model response.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kPasswordChangeSubmission,
+                           _, _, _));
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
