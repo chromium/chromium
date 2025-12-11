@@ -26,6 +26,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/find_in_page_budget_pool_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
@@ -406,6 +408,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
     // Don't count the above policy change.
     scheduler_->update_policy_count_ = 0;
     scheduler_->use_cases_.clear();
+    // Used to reset the thread type, since tests can change it.
+    thread_type_ = base::PlatformThread::GetCurrentThreadType();
   }
 
   void CreateTestTaskRunner() {
@@ -508,6 +512,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
     scheduler_->Shutdown();
     base::RunLoop().RunUntilIdle();
     scheduler_.reset();
+    base::PlatformThread::SetCurrentThreadType(thread_type_);
   }
 
   void ShutdownWidgetScheduler() {
@@ -1026,6 +1031,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> render_blocking_task_runner_;
   bool simulate_throttleable_task_ran_;
   uint64_t next_begin_frame_number_ = viz::BeginFrameArgs::kStartingFrameNumber;
+  base::ThreadType thread_type_;
 };
 
 TEST_F(MainThreadSchedulerImplTest, TestPostDefaultTask) {
@@ -3246,6 +3252,10 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
     : public MainThreadSchedulerImplTest {
  public:
   void SetUp() override {
+    // NOTE: The code below partially duplicates code in the parent class,
+    // because the setup has to be partially different, and is
+    // incompatible. This is brittle, because, TearDown() is still called from
+    // the parent class.
     CreateTestTaskRunner();
     auto main_thread_scheduler =
         std::make_unique<MainThreadSchedulerImplForTest>(
@@ -3262,6 +3272,8 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
     main_thread_scheduler->SetVirtualTimePolicy(
         VirtualTimeController::VirtualTimePolicy::kPause);
     Initialize(std::move(main_thread_scheduler));
+    // Used to reset the thread type, since tests can change it.
+    thread_type_ = base::PlatformThread::GetCurrentThreadType();
   }
 };
 
@@ -4421,6 +4433,62 @@ INSTANTIATE_TEST_SUITE_P(
           return "AllTypes";
       }
     });
+
+TEST_F(MainThreadSchedulerImplTest, ThreadPriorityUseCaseChangesScrolling) {
+  // The initial thread type outside of tests is kDisplayCritical.
+  base::PlatformThread::SetCurrentThreadType(
+      base::ThreadType::kDisplayCritical);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLowerPriorityForCompositorGestures);
+
+  // Compositor gesture, lower priority.
+  SimulateCompositorGestureStart(TouchEventPolicy::kDontSendTouchStart);
+  ForceUpdatePolicyAndGetCurrentUseCase();
+  EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kDefault);
+
+  // Which gets reset.
+  test_task_runner_->AdvanceMockTickClock(base::Seconds(1));
+  ForceUpdatePolicyAndGetCurrentUseCase();
+  EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kDisplayCritical);
+
+  // Compositor gesture, lower priority.
+  SimulateCompositorGestureStart(TouchEventPolicy::kDontSendTouchStart);
+  ForceUpdatePolicyAndGetCurrentUseCase();
+  EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kDefault);
+
+  // As soon as there is another use case, go back to kDisplayCritical.
+  SimulateMainThreadGestureStart(
+      TouchEventPolicy::kSendTouchStart,
+      blink::WebInputEvent::Type::kGestureScrollBegin);
+  test_task_runner_->FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
+
+  EXPECT_NE(ForceUpdatePolicyAndGetCurrentUseCase(),
+            UseCase::kCompositorGesture);
+  EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kDisplayCritical);
+}
+
+TEST_F(MainThreadSchedulerImplTest,
+       ThreadPriorityUseCaseChangesMainThreadScrolling) {
+  // The initial thread type outside of tests is kDisplayCritical.
+  base::PlatformThread::SetCurrentThreadType(
+      base::ThreadType::kDisplayCritical);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLowerPriorityForCompositorGestures);
+
+  // Main thread scrolling without preventDefault is also a compositor-driven
+  // one.
+  SimulateMainThreadGestureWithoutPreventDefault();
+  ForceUpdatePolicyAndGetCurrentUseCase();
+  EXPECT_EQ(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kDefault);
+}
 
 }  // namespace main_thread_scheduler_impl_unittest
 }  // namespace scheduler

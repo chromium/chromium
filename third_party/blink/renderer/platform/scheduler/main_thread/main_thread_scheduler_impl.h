@@ -13,6 +13,7 @@
 #include <stack>
 
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -80,6 +81,9 @@ FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest,
 FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest,
                      CanExceedIdleDeadlineIfRequired);
 }  // namespace main_thread_scheduler_impl_unittest
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kLowerPriorityForCompositorGestures);
+
 class AgentGroupSchedulerImpl;
 class CPUTimeBudgetPool;
 class FrameSchedulerImpl;

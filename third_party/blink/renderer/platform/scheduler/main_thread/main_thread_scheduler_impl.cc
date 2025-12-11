@@ -27,6 +27,7 @@
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -62,6 +63,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/use_case.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/widget_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_renderer_scheduler_state.pbzero.h"
@@ -78,6 +80,12 @@ class LazyNow;
 
 namespace blink {
 namespace scheduler {
+
+// When scrolling and the main thread is not expected to be blocking, decrease
+// its thread priority, so as not to contend with the actually display critical
+// threads.
+BASE_FEATURE(kLowerPriorityForCompositorGestures,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 using base::sequence_manager::TaskQueue;
 using base::sequence_manager::TaskTimeObserver;
@@ -1482,6 +1490,8 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
     return;
   }
 
+  // NOTE: Code below only executes for forced updates or when the policy has
+  // changed.
   if (new_policy.rail_mode != main_thread_only().current_policy.rail_mode) {
     if (isolate()) {
       if (!base::FeatureList::IsEnabled(kSetIsLoadingAblation)) {
@@ -1506,6 +1516,26 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
     }
   } else {
     main_thread_only().renderer_frozen_metadata.reset();
+  }
+
+  // During a compositor gesture, main thread latency is usually not directly
+  // visible to the user. In this case, make sure that the thread priority is
+  // low enough to not compete with the actually critical threads (e.g. the
+  // compositor thread).
+  if (base::FeatureList::IsEnabled(kLowerPriorityForCompositorGestures)) {
+    base::ThreadType desired_thread_type;
+    switch (main_thread_only().current_use_case) {
+      case UseCase::kCompositorGesture:
+        desired_thread_type = base::ThreadType::kDefault;
+        break;
+      default:
+        desired_thread_type = base::ThreadType::kDisplayCritical;
+        break;
+    }
+
+    if (base::PlatformThread::GetCurrentThreadType() != desired_thread_type) {
+      base::PlatformThread::SetCurrentThreadType(desired_thread_type);
+    }
   }
 }
 
