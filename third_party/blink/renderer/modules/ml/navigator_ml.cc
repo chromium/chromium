@@ -7,21 +7,22 @@
 namespace blink {
 
 NavigatorML::NavigatorML(NavigatorBase& navigator)
-    : navigator_base_(navigator),
+    : Supplement<NavigatorBase>(navigator),
       ml_(MakeGarbageCollected<ML>(navigator.GetExecutionContext())) {}
 
 ML* NavigatorML::ml(NavigatorBase& navigator) {
-  NavigatorML* supplement = navigator.GetNavigatorML();
+  NavigatorML* supplement =
+      Supplement<NavigatorBase>::From<NavigatorML>(navigator);
   if (!supplement) {
     supplement = MakeGarbageCollected<NavigatorML>(navigator);
-    navigator.SetNavigatorML(supplement);
+    ProvideTo(navigator, supplement);
   }
   return supplement->ml_.Get();
 }
 
 void NavigatorML::Trace(Visitor* visitor) const {
   visitor->Trace(ml_);
-  visitor->Trace(navigator_base_);
+  Supplement<NavigatorBase>::Trace(visitor);
 }
 
 }  // namespace blink

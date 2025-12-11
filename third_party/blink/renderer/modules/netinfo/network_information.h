@@ -24,11 +24,14 @@ class V8EffectiveConnectionType;
 class NetworkInformation final
     : public EventTarget,
       public ActiveScriptWrappable<NetworkInformation>,
+      public Supplement<NavigatorBase>,
       public ExecutionContextLifecycleObserver,
       public NetworkStateNotifier::NetworkStateObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Web-exposed as navigator.connection.
   static NetworkInformation* connection(NavigatorBase&);
 
@@ -84,8 +87,6 @@ class NetworkInformation final
   const String Host() const;
 
   void MaybeShowWebHoldbackConsoleMsg();
-
-  Member<NavigatorBase> navigator_base_;
 
   // Touched only on context thread.
   WebConnectionType type_;

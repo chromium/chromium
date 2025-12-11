@@ -28,10 +28,13 @@ class ScriptValue;
 enum class PermissionType;
 
 class Permissions final : public ScriptWrappable,
+                          public Supplement<NavigatorBase>,
                           public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Getter for navigator.permissions
   static Permissions* permissions(NavigatorBase&);
 
@@ -91,8 +94,6 @@ class Permissions final : public ScriptWrappable,
       const mojom::blink::PermissionDescriptor& descriptor);
   mojom::blink::PermissionDescriptorPtr CreatePermissionVerificationDescriptor(
       PermissionType descriptor_type);
-
-  Member<NavigatorBase> navigator_base_;
 
   HeapHashMap<PermissionType, Member<PermissionStatusListener>> listeners_;
 

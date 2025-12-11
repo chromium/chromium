@@ -31,11 +31,14 @@ class WakeLockManager;
 class WakeLockSentinel;
 
 class MODULES_EXPORT WakeLock final : public ScriptWrappable,
+                                      public Supplement<NavigatorBase>,
                                       public ExecutionContextLifecycleObserver,
                                       public PageVisibilityObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Getter for navigator.wakelock
   static WakeLock* wakeLock(NavigatorBase&);
 
@@ -66,8 +69,6 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
 
   // Permission handling
   mojom::blink::PermissionService* GetPermissionService();
-
-  Member<NavigatorBase> navigator_base_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 

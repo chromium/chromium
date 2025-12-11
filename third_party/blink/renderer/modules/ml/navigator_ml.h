@@ -13,8 +13,10 @@
 namespace blink {
 
 class NavigatorML : public GarbageCollected<NavigatorML>,
-                    public GarbageCollectedMixin {
+                    public Supplement<NavigatorBase> {
  public:
+  static constexpr auto kSupplementIndex =
+      NavigatorBase::Supplements::kNavigatorML;
   static ML* ml(NavigatorBase& navigator);
   explicit NavigatorML(NavigatorBase& navigator);
 
@@ -24,7 +26,6 @@ class NavigatorML : public GarbageCollected<NavigatorML>,
   void Trace(blink::Visitor*) const override;
 
  private:
-  Member<NavigatorBase> navigator_base_;
   Member<ML> ml_;
 };
 

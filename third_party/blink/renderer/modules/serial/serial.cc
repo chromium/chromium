@@ -96,18 +96,21 @@ bool ShouldBlockSerialServiceCall(LocalDOMWindow* window,
 
 }  // namespace
 
+const unsigned Serial::kSupplementIndex =
+    static_cast<unsigned>(NavigatorBase::Supplements::kSerial);
+
 Serial* Serial::serial(NavigatorBase& navigator) {
-  Serial* serial = navigator.GetSerial();
+  Serial* serial = Supplement<NavigatorBase>::From<Serial>(navigator);
   if (!serial) {
     serial = MakeGarbageCollected<Serial>(navigator);
-    navigator.SetSerial(serial);
+    ProvideTo(navigator, serial);
   }
   return serial;
 }
 
 Serial::Serial(NavigatorBase& navigator)
-    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      navigator_base_(navigator),
+    : Supplement<NavigatorBase>(navigator),
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       service_(navigator.GetExecutionContext()),
       receiver_(this, navigator.GetExecutionContext()) {}
 
@@ -139,7 +142,7 @@ void Serial::OnPortConnectedStateChanged(
 ScriptPromise<IDLSequence<SerialPort>> Serial::getPorts(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (ShouldBlockSerialServiceCall(navigator_base_->DomWindow(),
+  if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
                                    GetExecutionContext(), &exception_state)) {
     return ScriptPromise<IDLSequence<SerialPort>>();
   }
@@ -206,7 +209,7 @@ ScriptPromise<SerialPort> Serial::requestPort(
     ScriptState* script_state,
     const SerialPortRequestOptions* options,
     ExceptionState& exception_state) {
-  if (ShouldBlockSerialServiceCall(navigator_base_->DomWindow(),
+  if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
                                    GetExecutionContext(), &exception_state)) {
     return EmptyPromise();
   }
@@ -276,7 +279,7 @@ void Serial::Trace(Visitor* visitor) const {
   visitor->Trace(request_port_promises_);
   visitor->Trace(port_cache_);
   EventTarget::Trace(visitor);
-  visitor->Trace(navigator_base_);
+  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
@@ -289,7 +292,7 @@ void Serial::AddedEventListener(const AtomicString& event_type,
     return;
   }
 
-  if (ShouldBlockSerialServiceCall(navigator_base_->DomWindow(),
+  if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
                                    GetExecutionContext(), nullptr)) {
     return;
   }

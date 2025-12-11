@@ -893,8 +893,8 @@ void ServiceWorkerGlobalScope::CountCacheStorageInstalledScript(
 
   base::UmaHistogramCustomCounts(
       "ServiceWorker.CacheStorageInstalledScript.ScriptSize",
-      base::saturated_cast<base::Histogram::Sample32>(script_size), 1000,
-      5000000, 50);
+      base::saturated_cast<base::Histogram::Sample32>(script_size), 1000, 5000000,
+      50);
 
   if (script_metadata_size) {
     base::UmaHistogramCustomCounts(
@@ -2767,12 +2767,12 @@ ServiceWorkerGlobalScope::FetchHandlerType() {
 }
 
 bool ServiceWorkerGlobalScope::HasHidEventHandlers() {
-  HID* hid = navigator()->GetHID();
+  HID* hid = Supplement<NavigatorBase>::From<HID>(*navigator());
   return hid ? hid->HasEventListeners() : false;
 }
 
 bool ServiceWorkerGlobalScope::HasUsbEventHandlers() {
-  USB* usb = navigator()->GetUSB();
+  USB* usb = Supplement<NavigatorBase>::From<USB>(*navigator());
   return usb ? usb->HasEventListeners() : false;
 }
 

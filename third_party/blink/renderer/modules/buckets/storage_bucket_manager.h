@@ -22,10 +22,13 @@ class StorageBucket;
 
 class MODULES_EXPORT StorageBucketManager final
     : public ScriptWrappable,
+      public Supplement<NavigatorBase>,
       public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Web-exposed as navigator.storageBuckets
   static StorageBucketManager* storageBuckets(NavigatorBase& navigator);
 

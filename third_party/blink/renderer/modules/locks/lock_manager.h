@@ -28,10 +28,13 @@ class ScriptState;
 class V8LockGrantedCallback;
 
 class LockManager final : public ScriptWrappable,
+                          public Supplement<NavigatorBase>,
                           public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Web-exposed as navigator.locks
   static LockManager* locks(NavigatorBase&, ExceptionState&);
 
@@ -96,7 +99,6 @@ class LockManager final : public ScriptWrappable,
                                     base::OnceCallback<void()> callback,
                                     bool allow_access);
 
-  Member<NavigatorBase> navigator_base_;
   HeapHashSet<Member<LockRequestImpl>> pending_requests_;
   HeapHashSet<Member<Lock>> held_locks_;
 

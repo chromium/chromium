@@ -55,10 +55,13 @@ struct BoxedMappableWGPUBufferHandles
 };
 
 class MODULES_EXPORT GPU final : public ScriptWrappable,
+                                 public Supplement<NavigatorBase>,
                                  public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Getter for navigator.gpu
   static GPU* gpu(NavigatorBase&);
 
@@ -112,7 +115,6 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
                           const GPURequestAdapterOptions* options,
                           ScriptPromiseResolver<IDLNullable<GPUAdapter>>*);
 
-  Member<NavigatorBase> navigator_base_;
   Member<WGSLLanguageFeatures> wgsl_language_features_;
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;

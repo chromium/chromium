@@ -27,10 +27,13 @@ class SmartCardContext;
 
 class MODULES_EXPORT SmartCardResourceManager final
     : public ScriptWrappable,
+      public Supplement<NavigatorBase>,
       public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Getter for navigator.smartCard
   static SmartCardResourceManager* smartCard(NavigatorBase&);
 
@@ -55,7 +58,6 @@ class MODULES_EXPORT SmartCardResourceManager final
       ScriptPromiseResolver<SmartCardContext>*,
       device::mojom::blink::SmartCardCreateContextResultPtr);
 
-  Member<NavigatorBase> navigator_base_;
   HeapMojoRemote<mojom::blink::SmartCardService> service_;
   HeapHashSet<Member<ScriptPromiseResolver<SmartCardContext>>>
       create_context_promises_;

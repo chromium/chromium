@@ -15,14 +15,16 @@ namespace blink {
 class NavigatorBase;
 
 class MODULES_EXPORT LockedMode final : public ScriptWrappable,
-                                        public GarbageCollectedMixin {
+                                        public Supplement<NavigatorBase> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Web-exposed getter for `navigator.lockedMode`.
   static LockedMode* lockedMode(NavigatorBase&);
 
-  LockedMode() = default;
+  explicit LockedMode(NavigatorBase&);
   ~LockedMode() override;
 
   // ScriptWrappable

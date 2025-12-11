@@ -31,11 +31,14 @@ class NavigatorBase;
 class ScriptState;
 
 class MODULES_EXPORT HID : public EventTarget,
+                           public Supplement<NavigatorBase>,
                            public device::mojom::blink::HidManagerClient,
                            public HIDDevice::ServiceInterface {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
+
   // Web-exposed getter for navigator.hid
   static HID* hid(NavigatorBase&);
 
@@ -104,7 +107,6 @@ class MODULES_EXPORT HID : public EventTarget,
   void FinishRequestDevice(HIDDeviceResolver*,
                            Vector<device::mojom::blink::HidDeviceInfoPtr>);
 
-  Member<NavigatorBase> navigator_base_;
   HeapMojoRemote<mojom::blink::HidService> service_;
   HeapMojoAssociatedReceiver<device::mojom::blink::HidManagerClient, HID>
       receiver_;
