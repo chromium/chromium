@@ -650,6 +650,8 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
   builder.SetNavigationId(soft_navigation_metrics.navigation_id);
 
   builder.SetStartTime(soft_navigation_metrics.start_time.InMillisecondsF());
+  PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.StartTime",
+                      soft_navigation_metrics.start_time);
 
   auto largest_contentful_paint = GetSoftNavigationLargestContentfulPaint();
 

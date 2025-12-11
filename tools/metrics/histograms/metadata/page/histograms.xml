@@ -4792,6 +4792,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.SoftNavigation.StartTime" units="ms"
+    expires_after="2026-05-20">
+  <owner>sullivan@chromium.org</owner>
+  <owner>johannes@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures the start time of the soft navigation in milliseconds from the
+    start of the hard navigation.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.{AdsPageLoadMetricVisibilityType}.AdPaintTiming.NavigationToFirstContentfulPaint3"
     units="ms" expires_after="never">
