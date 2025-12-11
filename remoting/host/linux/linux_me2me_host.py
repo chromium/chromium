@@ -2473,6 +2473,8 @@ def main():
   # Check for a modal command-line option (start, stop, etc.)
   if options.get_status:
     proc = get_daemon_proc(config_file)
+    # Print the status string without additional logging information as they may
+    # be parsed by scripts.
     if proc is not None:
       print("STARTED")
     elif is_supported_platform():
@@ -2490,21 +2492,23 @@ def main():
   if options.stop:
     proc = get_daemon_proc(config_file)
     if proc is None:
-      print("The daemon is not currently running")
+      logging.error("The daemon is not currently running")
     else:
-      print("Killing process %s" % proc.pid)
+      logging.info("Killing process %s" % proc.pid)
       proc.terminate()
       try:
         proc.wait(timeout=30)
       except psutil.TimeoutExpired:
-        print("Timed out trying to kill daemon process")
+        logging.error("Timed out trying to kill daemon process")
         return 1
     return 0
 
   if options.reload:
     proc = get_daemon_proc(config_file)
     if proc is None:
+      logging.error("Reload failed: the daemon is not currently running")
       return 1
+    logging.info("Reloading Chrome Remote Desktop daemon process")
     proc.send_signal(signal.SIGHUP)
     return 0
 
