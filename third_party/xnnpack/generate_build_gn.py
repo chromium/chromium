@@ -89,6 +89,7 @@ config("xnnpack_private_config") {
   cflags = [
     "-Wno-unused-function",
     "-Wno-deprecated-comma-subscript",
+    "-Wno-gcc-compat",
   ]
 }
 '''.strip()
