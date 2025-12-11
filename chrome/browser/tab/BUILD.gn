@@ -213,6 +213,7 @@ source_set("tab") {
     "collection_storage_observer.h",
     "collection_storage_package.h",
     "payload.h",
+    "payload_util.h",
     "restore_entity_tracker.h",
     "storage_collection_synchronizer.h",
     "storage_id.h",
@@ -254,6 +255,7 @@ source_set("impl") {
     "collection_save_forwarder.cc",
     "collection_storage_observer.cc",
     "collection_storage_package.cc",
+    "payload_util.cc",
     "storage_collection_synchronizer.cc",
     "storage_id.cc",
     "storage_loaded_data.cc",
@@ -279,13 +281,17 @@ source_set("impl") {
     "//components/sessions",
     "//components/tabs:public",
     "//content/public/browser",
+    "//crypto",
     "//sql",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tab_storage_util_unittest.cc" ]
+  sources = [
+    "payload_util_unittest.cc",
+    "tab_storage_util_unittest.cc",
+  ]
   deps = [
     ":tab",
     "//base",
