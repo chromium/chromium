@@ -383,9 +383,9 @@ void ChromeBrowserPolicyConnector::OnMachineLevelCloudPolicyManagerCreated(
       machine_level_user_cloud_policy_manager.get();
   if (machine_level_user_cloud_policy_manager_) {
     machine_level_user_cloud_policy_manager_->Init(GetSchemaRegistry());
-    proxy_policy_provider_->SetOwnedDelegate(
-        std::move(machine_level_user_cloud_policy_manager));
   }
+  proxy_policy_provider_->SetOwnedDelegate(
+      std::move(machine_level_user_cloud_policy_manager));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

@@ -8,6 +8,7 @@
 #include <utility>
 #include <variant>
 
+#include "absl/functional/overload.h"
 #include "base/check_op.h"
 #include "components/policy/core/common/policy_bundle.h"
 
@@ -21,21 +22,15 @@ ProxyPolicyProvider::~ProxyPolicyProvider() {
 
 void ProxyPolicyProvider::SetOwnedDelegate(OwnedDelegate delegate) {
   ResetDelegate();
-
   if (delegate) {
     delegate_ = std::move(delegate);
   }
-
   OnDelegateChanged();
 }
 
 void ProxyPolicyProvider::SetUnownedDelegate(UnownedDelegate delegate) {
   ResetDelegate();
-
-  if (delegate) {
-    delegate_ = delegate;
-  }
-
+  delegate_ = delegate;
   OnDelegateChanged();
 }
 
@@ -59,7 +54,11 @@ void ProxyPolicyProvider::RefreshPolicies(PolicyFetchReason reason) {
 }
 
 bool ProxyPolicyProvider::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
-  return delegate() && delegate()->IsInitializationComplete(domain);
+  // - Uninitialized delegate always returns false.
+  // - An initialized but nullptr delegate returns true.
+  // - An initialized and non-null delegate calls the delegate.
+  return !std::holds_alternative<Unspecified>(delegate_) &&
+         (!delegate() || delegate()->IsInitializationComplete(domain));
 }
 
 void ProxyPolicyProvider::OnUpdatePolicy(
@@ -72,15 +71,19 @@ void ProxyPolicyProvider::OnUpdatePolicy(
 }
 
 ConfigurationPolicyProvider* ProxyPolicyProvider::delegate() {
-  return std::holds_alternative<OwnedDelegate>(delegate_)
-             ? std::get<OwnedDelegate>(delegate_).get()
-             : std::get<UnownedDelegate>(delegate_).get();
+  return std::visit(
+      absl::Overload(
+          [](Unspecified) -> ConfigurationPolicyProvider* { return nullptr; },
+          [](const auto& delegate) { return delegate.get(); }),
+      delegate_);
 }
 
 const ConfigurationPolicyProvider* ProxyPolicyProvider::delegate() const {
-  return std::holds_alternative<OwnedDelegate>(delegate_)
-             ? std::get<OwnedDelegate>(delegate_).get()
-             : std::get<UnownedDelegate>(delegate_).get();
+  return std::visit(
+      absl::Overload(
+          [](Unspecified) -> ConfigurationPolicyProvider* { return nullptr; },
+          [](const auto& delegate) { return delegate.get(); }),
+      delegate_);
 }
 
 void ProxyPolicyProvider::ResetDelegate() {
@@ -92,7 +95,10 @@ void ProxyPolicyProvider::ResetDelegate() {
     delegate()->RemoveObserver(this);
   }
 
-  delegate_ = UnownedDelegate(nullptr);
+  // If Unspecified, stay Unspecified.
+  if (!std::holds_alternative<Unspecified>(delegate_)) {
+    delegate_ = UnownedDelegate(nullptr);
+  }
 }
 
 void ProxyPolicyProvider::OnDelegateChanged() {

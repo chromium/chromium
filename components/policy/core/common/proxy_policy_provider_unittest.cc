@@ -140,4 +140,10 @@ TEST_F(ProxyPolicyProviderTest, RefreshPoliciesOwnedDelegate) {
   Mock::VerifyAndClearExpectations(&observer_);
 }
 
+TEST_F(ProxyPolicyProviderTest, IsFirstPolicyLoadComplete) {
+  EXPECT_FALSE(proxy_provider_.IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
+  proxy_provider_.SetUnownedDelegate(nullptr);
+  EXPECT_TRUE(proxy_provider_.IsFirstPolicyLoadComplete(POLICY_DOMAIN_CHROME));
+}
+
 }  // namespace policy
