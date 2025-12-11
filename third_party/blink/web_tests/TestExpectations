@@ -9931,7 +9931,6 @@ crbug.com/40516274 [ Win11-arm64 ] images/color-profile-reflection.html [ Failur
 # Gardener 2025-11-14
 crbug.com/460545299 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure Pass ]
 
-crbug.com/414792736 http/tests/devtools/filtered-item-selection-dialog-rendering.js [ Failure Pass ]
 
 # Temporarily disable RAB/GSAB tests till V8 change to enable the feature and pass tests is landed.
 crbug.com/42202693 external/wpt/wasm/jsapi/idlharness.any.html [ Failure Pass ]
