@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef URL_URL_FILE_H_
 #define URL_URL_FILE_H_
 
 // Provides shared functions used by the internals of the parser and
 // canonicalizer for file URLs. Do not use outside of these modules.
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "url/url_parse_internal.h"
 
@@ -43,10 +39,12 @@ inline int DoesContainWindowsDriveSpecUntil(const CHAR* spec,
   if (max_offset > spec_len - 2)
     max_offset = spec_len - 2;
   for (int offset = start_offset; offset <= max_offset; ++offset) {
-    if (!base::IsAsciiAlpha(spec[offset]))
+    if (!base::IsAsciiAlpha(UNSAFE_TODO(spec[offset]))) {
       continue;  // Doesn't contain a valid drive letter.
-    if (!IsWindowsDriveSeparator(spec[offset + 1]))
+    }
+    if (!IsWindowsDriveSeparator(UNSAFE_TODO(spec[offset + 1]))) {
       continue;  // Isn't followed with a drive separator.
+    }
     return offset;
   }
   return -1;
@@ -85,9 +83,10 @@ inline bool DoesBeginUNCPath(const CHAR* text,
     return false;
 
   if (strict_slashes)
-    return text[start_offset] == '\\' && text[start_offset + 1] == '\\';
-  return IsSlashOrBackslash(text[start_offset]) &&
-         IsSlashOrBackslash(text[start_offset + 1]);
+    return UNSAFE_TODO(text[start_offset]) == '\\' &&
+           UNSAFE_TODO(text[start_offset + 1]) == '\\';
+  return IsSlashOrBackslash(UNSAFE_TODO(text[start_offset])) &&
+         IsSlashOrBackslash(UNSAFE_TODO(text[start_offset + 1]));
 }
 
 #endif  // WIN32
