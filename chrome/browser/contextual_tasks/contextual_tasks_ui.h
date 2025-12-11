@@ -172,7 +172,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // guest. The WebUI is responsible for taking the 'message' (a serialized
   // lens.ClientToAimMessage protobuf) and using the <webview> postMessage API
   // to send it to the guest content.
-  void PostMessageToWebview(const lens::ClientToAimMessage& message);
+  virtual void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   mojo::Remote<contextual_tasks::mojom::Page>& page() { return page_; }
 
