@@ -767,6 +767,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameImageTitle) {
   RunAccNameTest(FILE_PATH_LITERAL("name-image-title.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameImgEmptyAltTitle) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-img-empty-alt-title.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameImgLabelAltTitle) {
   RunAccNameTest(FILE_PATH_LITERAL("name-img-label-alt-title.html"));
 }
