@@ -5582,6 +5582,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      "//base/test:leak_canary_java",
       "//testing/android/instrumentation:test_runner_java",
       "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
