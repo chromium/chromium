@@ -360,6 +360,12 @@ extern const base::FeatureParam<ProfilePickerVariation>
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfilesReordering);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Kill switch for Device Management Service OAuth scope.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kRestrictDeviceManagementServiceOAuthScope);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // When enabled, rolls back the DICe migration for implicitly signed-in users.
 // Overrides `kOfferMigrationToDiceUsers` and `kForcedDiceMigration`.

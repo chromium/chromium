@@ -27,7 +27,6 @@ using signin::OAuth2ScopeRestriction;
 const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kGoogleUserInfoEmail, OAuth2ScopeRestriction::kNoRestriction},
  {GaiaConstants::kGoogleUserInfoProfile, OAuth2ScopeRestriction::kNoRestriction},
- {GaiaConstants::kDeviceManagementServiceOAuth, OAuth2ScopeRestriction::kNoRestriction},
  {GaiaConstants::kSecureConnectOAuth2Scope, OAuth2ScopeRestriction::kNoRestriction},
  {GaiaConstants::kFCMOAuthScope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kPaymentsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
@@ -52,6 +51,13 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kOAuth1LoginScope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCalendarReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kDriveReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
+ {GaiaConstants::kDeviceManagementServiceOAuth,
+#if BUILDFLAG(IS_ANDROID)
+  OAuth2ScopeRestriction::kNoRestriction
+#else
+  OAuth2ScopeRestriction::kSignedIn
+#endif
+ },
 #if BUILDFLAG(IS_CHROMEOS)
  {GaiaConstants::kAssistantOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kAuditRecordingOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},

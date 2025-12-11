@@ -120,6 +120,11 @@ class UserPolicySigninServiceTest : public testing::Test {
     user_affiliation_ids_ = user_affiliation_ids;
   }
 
+  void SigninToChrome() {
+    identity_test_env()->MakePrimaryAccountAvailable(
+        kTestUser, signin::ConsentLevel::kSignin);
+  }
+
   void RegisterPolicyClientWithCallback(UserPolicySigninService* service) {
     UserPolicySigninServiceBase::PolicyRegistrationCallback callback =
         base::BindOnce(&UserPolicySigninServiceTest::OnRegisterCompleted,
@@ -128,10 +133,8 @@ class UserPolicySigninServiceTest : public testing::Test {
         identity_test_env()
             ->identity_manager()
             ->FindExtendedAccountInfoByEmailAddress(kTestUser);
-    if (account_info.IsEmpty()) {
-      account_info = identity_test_env()->MakeAccountAvailable(kTestUser);
-    }
-    DCHECK(!account_info.IsEmpty());
+
+    CHECK(!account_info.IsEmpty());
     service->RegisterForPolicyWithAccountId(
         kTestUser, account_info.account_id,
         /*is_registration_for_management_consistency_check=*/false,
@@ -241,11 +244,9 @@ class UserPolicySigninServiceTest : public testing::Test {
     UserPolicySigninService* signin_service =
         UserPolicySigninServiceFactory::GetForProfile(profile_.get());
     EXPECT_CALL(*this, OnPolicyRefresh(true)).Times(0);
-    RegisterPolicyClientWithCallback(signin_service);
 
-    // Sign in to Chrome.
-    identity_test_env()->SetPrimaryAccount(kTestUser,
-                                           signin::ConsentLevel::kSignin);
+    SigninToChrome();
+    RegisterPolicyClientWithCallback(signin_service);
 
     // Mimic successful oauth token fetch.
     MakeOAuthTokenFetchSucceed();
@@ -580,24 +581,7 @@ TEST_F(UserPolicySigninServiceTest,
   UserPolicySigninService* signin_service =
       UserPolicySigninServiceFactory::GetForProfile(profile_.get());
 
-  // Start registration process in a temporary client.
-  RegisterPolicyClientWithCallback(signin_service);
-  // UserCloudPolicyManager should not be initialized.
-  ASSERT_FALSE(manager_->core()->service());
-  // Complete several registration steps.
-  MakeOAuthTokenFetchSucceed();
-  DeviceManagementService::JobForTesting job;
-  EXPECT_CALL(job_creation_handler_, OnJobCreation).WillOnce(SaveArg<0>(&job));
-  ReportHostedDomainStatus(true);
-  ASSERT_FALSE(IsRequestActive());
-  Mock::VerifyAndClearExpectations(&job_creation_handler_);
-  ASSERT_TRUE(job.IsActive());
-  EXPECT_FALSE(register_completed_);
-
-  // Add a primary account now. This should trigger the UserCloudPolicyManager
-  // initialization.
-  identity_test_env()->MakePrimaryAccountAvailable(
-      kTestUser, signin::ConsentLevel::kSignin);
+  SigninToChrome();
   // UserCloudPolicyManager should be initialized.
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(manager_->core()->service());
@@ -607,6 +591,18 @@ TEST_F(UserPolicySigninServiceTest,
   mock_store_->NotifyStoreLoaded();
   // New access token request has been sent.
   ASSERT_TRUE(IsRequestActive());
+
+  // Start registration process in a temporary client.
+  RegisterPolicyClientWithCallback(signin_service);
+  // Complete several registration steps.
+  MakeOAuthTokenFetchSucceed();
+  DeviceManagementService::JobForTesting job;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation).WillOnce(SaveArg<0>(&job));
+  ReportHostedDomainStatus(true);
+  ASSERT_FALSE(IsRequestActive());
+  Mock::VerifyAndClearExpectations(&job_creation_handler_);
+  ASSERT_TRUE(job.IsActive());
+  EXPECT_FALSE(register_completed_);
 
   // Complete registration in the temporary client.
   em::DeviceManagementResponse registration_response;
@@ -766,11 +762,10 @@ TEST_F(UserPolicySigninServiceSignedInTest, SignOutAfterInit) {
 TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientOAuthFailure) {
   UserPolicySigninService* signin_service =
       UserPolicySigninServiceFactory::GetForProfile(profile_.get());
+  SigninToChrome();
   RegisterPolicyClientWithCallback(signin_service);
   Mock::VerifyAndClearExpectations(this);
 
-  // UserCloudPolicyManager should not be initialized.
-  ASSERT_FALSE(manager_->core()->service());
   ASSERT_TRUE(IsRequestActive());
   EXPECT_FALSE(register_completed_);
 
@@ -785,10 +780,9 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientOAuthFailure) {
 TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientNonHostedDomain) {
   UserPolicySigninService* signin_service =
       UserPolicySigninServiceFactory::GetForProfile(profile_.get());
+  SigninToChrome();
   RegisterPolicyClientWithCallback(signin_service);
 
-  // UserCloudPolicyManager should not be initialized.
-  ASSERT_FALSE(manager_->core()->service());
   ASSERT_TRUE(IsRequestActive());
 
   // Cause the access token request to succeed.
@@ -814,10 +808,8 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientNonHostedDomain) {
 TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientFailedRegistration) {
   UserPolicySigninService* signin_service =
       UserPolicySigninServiceFactory::GetForProfile(profile_.get());
+  SigninToChrome();
   RegisterPolicyClientWithCallback(signin_service);
-
-  // UserCloudPolicyManager should not be initialized.
-  ASSERT_FALSE(manager_->core()->service());
 
   // Mimic successful oauth token fetch.
   MakeOAuthTokenFetchSucceed();
@@ -856,10 +848,8 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientFailedRegistration) {
 TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientSucceeded) {
   UserPolicySigninService* signin_service =
       UserPolicySigninServiceFactory::GetForProfile(profile_.get());
+  SigninToChrome();
   RegisterPolicyClientWithCallback(signin_service);
-
-  // UserCloudPolicyManager should not be initialized.
-  ASSERT_FALSE(manager_->core()->service());
 
   // Mimic successful oauth token fetch.
   MakeOAuthTokenFetchSucceed();
@@ -895,8 +885,6 @@ TEST_F(UserPolicySigninServiceTest, RegisterPolicyClientSucceeded) {
 
   EXPECT_TRUE(register_completed_);
   EXPECT_EQ(dm_token_, expected_dm_token);
-  // UserCloudPolicyManager should not be initialized.
-  ASSERT_FALSE(manager_->core()->service());
 }
 
 // Tests `FetchPolicyForSignedInUser()` with no active client.

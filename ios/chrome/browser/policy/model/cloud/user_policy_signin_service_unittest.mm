@@ -101,12 +101,11 @@ class UserPolicySigninServiceTest : public PlatformTest {
   }
 
   // Registers the `kManagedTestUser` for user policy.
-  void RegisterPolicyClientWithCallback(UserPolicySigninService* service) {
+  void RegisterPolicyClientWithCallback(UserPolicySigninService* service,
+                                        const AccountInfo& account_info) {
     UserPolicySigninServiceBase::PolicyRegistrationCallback callback =
         base::BindOnce(&UserPolicySigninServiceTest::OnRegisterCompleted,
                        base::Unretained(this));
-    AccountInfo account_info =
-        identity_test_env()->MakeAccountAvailable(kManagedTestUser);
     service->RegisterForPolicyWithAccountId(
         kManagedTestUser, account_info.account_id,
         /*is_registration_for_management_consistency_check=*/false,
@@ -199,11 +198,11 @@ class UserPolicySigninServiceTest : public PlatformTest {
   // Simulates the flow that registrates an account for user policy.
   void RegisterForPolicyAndSignin() {
     EXPECT_CALL(*this, OnPolicyRefresh(true)).Times(0);
-    RegisterPolicyClientWithCallback(user_policy_signin_service_.get());
-
     // Sign in to Chrome.
-    identity_test_env()->SetPrimaryAccount(kManagedTestUser,
-                                           signin::ConsentLevel::kSignin);
+    AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        kManagedTestUser, signin::ConsentLevel::kSignin);
+    RegisterPolicyClientWithCallback(user_policy_signin_service_.get(),
+                                     account_info);
 
     DoPendingRegistration(/*with_dm_token=*/true,
                           /*with_oauth_token_success=*/true);

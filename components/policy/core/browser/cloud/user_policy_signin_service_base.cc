@@ -357,7 +357,7 @@ void UserPolicySigninServiceBase::SetDeviceDMTokenCallbackForTesting(
 }
 
 void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
-  DCHECK(identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  CHECK(identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   DCHECK(policy_manager()->core()->client());
   DCHECK(!policy_manager()->IsClientRegistered());
 
