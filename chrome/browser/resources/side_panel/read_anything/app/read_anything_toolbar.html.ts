@@ -198,6 +198,8 @@ ${renderTextStyleOptions.call(this)}
     .pageLanguage="${this.pageLanguage}"
     @font-change="${this.onFontChange_}">
 </font-menu>
+<line-focus-menu id="lineFocusMenu">
+</line-focus-menu>
 <!--_html_template_end_-->`;
   // clang-format on
 }

@@ -21,6 +21,7 @@ export type {FontMenuElement} from './menus/font_menu.js';
 export type {FontSelectElement} from './menus/font_select.js';
 export type {HighlightMenuElement} from './menus/highlight_menu.js';
 export type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
+export type {LineFocusMenuElement} from './menus/line_focus_menu.js';
 export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 export type {MenuStateItem} from './menus/menu_util.js';
 export type {RateMenuElement} from './menus/rate_menu.js';

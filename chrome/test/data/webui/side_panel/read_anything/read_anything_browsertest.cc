@@ -212,6 +212,11 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, ColorMenu) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, LineFocusMenu) {
+  RunSidePanelTest("side_panel/read_anything/line_focus_menu_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, LetterSpacing) {
   RunSidePanelTest("side_panel/read_anything/letter_spacing_test.js",
                    "mocha.run()");

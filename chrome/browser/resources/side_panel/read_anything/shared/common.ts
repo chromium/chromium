@@ -38,6 +38,7 @@ export enum ToolbarEvent {
   LANGUAGE_MENU_CLOSE = 'language-menu-close',
   VOICE_MENU_OPEN = 'voice-menu-open',
   VOICE_MENU_CLOSE = 'voice-menu-close',
+  LINE_FOCUS = 'line-focus-change',
 }
 
 // The user settings stored in preferences and restored on re-opening Reading

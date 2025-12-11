@@ -8,6 +8,7 @@ import '../menus/simple_action_menu.js';
 import '../menus/color_menu.js';
 import '../menus/font_menu.js';
 import '../menus/font_select.js';
+import '../menus/line_focus_menu.js';
 import '../menus/line_spacing_menu.js';
 import '../menus/letter_spacing_menu.js';
 import '../menus/highlight_menu.js';
@@ -32,6 +33,7 @@ import type {ColorMenuElement} from '../menus/color_menu.js';
 import type {FontMenuElement} from '../menus/font_menu.js';
 import type {HighlightMenuElement} from '../menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from '../menus/letter_spacing_menu.js';
+import type {LineFocusMenuElement} from '../menus/line_focus_menu.js';
 import type {LineSpacingMenuElement} from '../menus/line_spacing_menu.js';
 import type {RateMenuElement} from '../menus/rate_menu.js';
 import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
@@ -56,6 +58,7 @@ export interface ReadAnythingToolbarElement {
     moreOptionsMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     voiceSelectionMenu: VoiceSelectionMenuElement,
     highlightMenu: HighlightMenuElement,
+    lineFocusMenu: LineFocusMenuElement,
     toolbarContainer: HTMLElement,
     more: CrIconButtonElement,
   };
@@ -380,7 +383,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           ariaLabel: loadTimeData.getString('letterSpacingTitle'),
           openMenu: (target: HTMLElement) =>
               this.$.letterSpacingMenu.open(target),
-        });
+        },
+    );
+    if (chrome.readingMode.isLineFocusEnabled) {
+      this.textStyleOptions_.push({
+        id: 'line-focus',
+        icon: 'read-anything:line-focus',
+        ariaLabel: loadTimeData.getString('lineFocusLabel'),
+        openMenu: (target: HTMLElement) => this.$.lineFocusMenu.open(target),
+      });
+    }
     this.requestUpdate();
   }
 
