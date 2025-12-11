@@ -224,14 +224,17 @@ PrinterStatus::PrinterReason::Reason ToReason(std::string_view reason) {
 // Returns the Severity corresponding to `severity`.  Returns UNKNOWN_SEVERITY
 // if the strin gis not recognized.
 PSeverity ToSeverity(std::string_view severity) {
-  if (severity == kSeverityError)
+  if (severity == kSeverityError) {
     return PSeverity::kError;
+  }
 
-  if (severity == kSeverityWarn)
+  if (severity == kSeverityWarn) {
     return PSeverity::kWarning;
+  }
 
-  if (severity == kSeverityReport)
+  if (severity == kSeverityReport) {
     return PSeverity::kReport;
+  }
 
   return PSeverity::kUnknownSeverity;
 }
