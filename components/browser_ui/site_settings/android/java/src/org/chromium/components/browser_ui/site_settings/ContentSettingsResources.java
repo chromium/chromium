@@ -584,7 +584,7 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.SOUND:
                 return new ResourceItem(
-                                R.drawable.ic_volume_up_grey600_24dp,
+                                R.drawable.ic_volume_up_fill_24dp,
                                 R.string.sound_permission_title,
                                 ContentSetting.ALLOW,
                                 ContentSetting.BLOCK,
