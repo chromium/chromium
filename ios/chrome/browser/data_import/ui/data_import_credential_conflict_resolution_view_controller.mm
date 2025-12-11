@@ -374,11 +374,9 @@ NSString* const kDataImportCredentialConflictResolutionSection =
       }];
   UIButton* button = [UIButton buttonWithConfiguration:configuration
                                          primaryAction:updatePasswordField];
-  /// Make sure the button is positioned correctly; not adding the following
-  /// line triggers a bug where the accessory view appears on the top-leading
-  /// edge of the cell.
-  button.frame =
-      CGRectMake(0, 0, buttonImage.size.width, buttonImage.size.height);
+  /// The following line calculates the correct size so the icon isn't cut off,
+  /// and ensures the button appears in the correct place within the cell.
+  [button sizeToFit];
   return button;
 }
 
