@@ -20,7 +20,7 @@ PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
     IdentityManager* identity_manager,
     Mode mode,
     ConsentLevel consent)
-    : client_info_(oauth_consumer_id),
+    : oauth_consumer_id_(oauth_consumer_id),
       identity_manager_(identity_manager),
       mode_(mode),
       consent_(consent) {
@@ -35,34 +35,6 @@ PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
     ConsentLevel consent)
     : PrimaryAccountAccessTokenFetcher(oauth_consumer_id,
                                        identity_manager,
-                                       mode,
-                                       consent) {
-  Start(std::move(callback));
-}
-
-PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
-    const std::string& oauth_consumer_name,
-    IdentityManager* identity_manager,
-    const ScopeSet& scopes,
-    Mode mode,
-    ConsentLevel consent)
-    : client_info_(std::pair(oauth_consumer_name, scopes)),
-      identity_manager_(identity_manager),
-      mode_(mode),
-      consent_(consent) {
-  identity_manager_observation_.Observe(identity_manager_.get());
-}
-
-PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
-    const std::string& oauth_consumer_name,
-    IdentityManager* identity_manager,
-    const ScopeSet& scopes,
-    AccessTokenFetcher::TokenCallback callback,
-    Mode mode,
-    ConsentLevel consent)
-    : PrimaryAccountAccessTokenFetcher(oauth_consumer_name,
-                                       identity_manager,
-                                       scopes,
                                        mode,
                                        consent) {
   Start(std::move(callback));
@@ -110,27 +82,12 @@ void PrimaryAccountAccessTokenFetcher::StartAccessTokenRequest() {
   // request should be started when the account is primary AND has a refresh
   // token available. AccessTokenFetcher used in
   // |kWaitUntilRefreshTokenAvailable| mode would guarantee only the latter.
-  std::visit(absl::Overload{
-                 [&](const std::pair<std::string, ScopeSet>& client_info) {
-                   access_token_fetcher_ =
-                       identity_manager_->CreateAccessTokenFetcherForAccount(
-                           GetAccountId(), client_info.first,
-                           client_info.second,
-                           base::BindOnce(&PrimaryAccountAccessTokenFetcher::
-                                              OnAccessTokenFetchComplete,
-                                          base::Unretained(this)),
-                           AccessTokenFetcher::Mode::kImmediate);
-                 },
-                 [&](const OAuthConsumerId& consumer_id) {
-                   access_token_fetcher_ =
-                       identity_manager_->CreateAccessTokenFetcherForAccount(
-                           GetAccountId(), consumer_id,
-                           base::BindOnce(&PrimaryAccountAccessTokenFetcher::
-                                              OnAccessTokenFetchComplete,
-                                          base::Unretained(this)),
-                           AccessTokenFetcher::Mode::kImmediate);
-                 }},
-             client_info_);
+  access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
+      GetAccountId(), oauth_consumer_id_,
+      base::BindOnce(
+          &PrimaryAccountAccessTokenFetcher::OnAccessTokenFetchComplete,
+          base::Unretained(this)),
+      AccessTokenFetcher::Mode::kImmediate);
 }
 
 void PrimaryAccountAccessTokenFetcher::OnPrimaryAccountChanged(

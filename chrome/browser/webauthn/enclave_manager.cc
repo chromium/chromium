@@ -3676,8 +3676,7 @@ std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
 EnclaveManager::GetAccessToken(
     base::OnceCallback<void(std::optional<std::string>)> callback) {
   return std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-      "passkeys_enclave", identity_manager_,
-      signin::ScopeSet{GaiaConstants::kPasskeysEnclaveOAuth2Scope},
+      signin::OAuthConsumerId::kEnclaveManager, identity_manager_,
       base::BindOnce(
           [](base::OnceCallback<void(std::optional<std::string>)> callback,
              GoogleServiceAuthError error,
