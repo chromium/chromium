@@ -20,13 +20,10 @@ struct Rule {
   bool wildcard;
   bool is_private;
 
-  bool operator==(const Rule& other) const {
-    return std::tie(exception, wildcard, is_private) ==
-           std::tie(other.exception, other.wildcard, other.is_private);
-  }
+  friend bool operator==(const Rule&, const Rule&) = default;
 };
 
-typedef std::map<std::string, Rule> RuleMap;
+using RuleMap = std::map<std::string, Rule>;
 
 // These result codes should be in increasing order of severity.
 enum class NormalizeResult {
