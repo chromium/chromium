@@ -163,20 +163,18 @@ class CanvasResourceProviderExternalBitmap::SoftwareImageProvider
                         cc::ImageDecodeCache* cache_f16,
                         const gfx::ColorSpace& target_color_space,
                         viz::SharedImageFormat canvas_format) {
-    std::optional<cc::PlaybackImageProvider::Settings> settings =
-        cc::PlaybackImageProvider::Settings();
-
     cc::TargetColorParams target_color_params;
     target_color_params.color_space = target_color_space;
     playback_image_provider_n32_.emplace(cache_n32, target_color_params,
-                                         std::move(settings));
+                                         cc::PlaybackImageProvider::Settings());
+
     // If the image provider may require to decode to half float instead of
     // uint8, create a f16 PlaybackImageProvider with the passed cache.
     if (canvas_format == viz::SinglePlaneFormat::kRGBA_F16) {
       DCHECK(cache_f16);
-      settings = cc::PlaybackImageProvider::Settings();
-      playback_image_provider_f16_.emplace(cache_f16, target_color_params,
-                                           std::move(settings));
+      playback_image_provider_f16_.emplace(
+          cache_f16, target_color_params,
+          cc::PlaybackImageProvider::Settings());
     }
   }
   SoftwareImageProvider(const SoftwareImageProvider&) = delete;
