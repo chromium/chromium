@@ -59,4 +59,12 @@ const char kUserSecurityAuthenticatedReporting[] =
 const char kPoliciesEverFetchedWithProfileId[] =
     "enterprise_reporting.policies_ever_fetched_with_profile_id";
 
+// List of domains for which SaaS reporting is enabled for browser.
+const char kSaaSReportDomainUrlsForBrowser[] =
+    "enterprise_reporting.saas_report_domain_urls_for_browser";
+
+// List of domains for which SaaS reporting is enabled for profile.
+const char kSaaSReportDomainUrlsForProfile[] =
+    "enterprise_reporting.saas_report_domain_urls_for_profile";
+
 }  // namespace enterprise_reporting

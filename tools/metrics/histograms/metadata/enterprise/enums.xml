@@ -2350,6 +2350,8 @@ chromium-metrics-reviews@google.com.
   <int value="1415" label="DeviceLoginScreenPreferSlowCiphers"/>
   <int value="1416" label="SearchContentSharingSettings"/>
   <int value="1417" label="StaticStorageQuotaEnabled"/>
+  <int value="1418" label="SaaSReportDomainUrlsForBrowser"/>
+  <int value="1419" label="SaaSReportDomainUrlsForProfile"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -2967,6 +2967,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
           policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
+  handlers->AddHandler(std::make_unique<CloudOnlyPolicyChecker>(
+      std::make_unique<URLSchemeListPolicyHandler>(
+          key::kSaaSReportDomainUrlsForBrowser,
+          enterprise_reporting::kSaaSReportDomainUrlsForBrowser)));
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
+      std::make_unique<URLSchemeListPolicyHandler>(
+          key::kSaaSReportDomainUrlsForProfile,
+          enterprise_reporting::kSaaSReportDomainUrlsForProfile)));
+
 #elif BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
       std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema));

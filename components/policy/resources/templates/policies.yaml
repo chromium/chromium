@@ -1416,6 +1416,8 @@ policies:
   1415: DeviceLoginScreenPreferSlowCiphers
   1416: SearchContentSharingSettings
   1417: StaticStorageQuotaEnabled
+  1418: SaaSReportDomainUrlsForBrowser
+  1419: SaaSReportDomainUrlsForProfile
 
 atomic_groups:
   1: Homepage

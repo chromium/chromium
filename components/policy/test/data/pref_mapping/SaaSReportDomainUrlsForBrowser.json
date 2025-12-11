@@ -1,0 +1,106 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Should have default value when policy is not set",
+        "policies": {},
+        "prefs": {
+          "enterprise_reporting.saas_report_domain_urls_for_browser": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Should be set when policy source is cloud",
+        "policies": {
+          "SaaSReportDomainUrlsForBrowser": ["https://gemini.google.com"]
+        },
+        "policies_settings": {
+          "SaaSReportDomainUrlsForBrowser": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.saas_report_domain_urls_for_browser": {
+            "value": ["https://gemini.google.com"],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Should not be set when policy source is platform",
+        "policies": {
+          "SaaSReportDomainUrlsForBrowser": ["https://gemini.google.com"]
+        },
+        "policies_settings": {
+          "SaaSReportDomainUrlsForBrowser": {
+            "scope": "machine",
+            "source": "platform"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.saas_report_domain_urls_for_browser": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Should have default value when only profile policy is set",
+        "policies": {
+          "SaaSReportDomainUrlsForProfile": ["https://docs.google.com"]
+        },
+        "policies_settings": {
+          "SaaSReportDomainUrlsForProfile": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.saas_report_domain_urls_for_browser": {
+            "default_value": [],
+            "location": "local_state"
+          },
+          "enterprise_reporting.saas_report_domain_urls_for_profile": {
+            "value": ["https://docs.google.com"],
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Should have profile and browser values when both are set",
+        "policies": {
+          "SaaSReportDomainUrlsForBrowser": ["https://gemini.google.com"],
+          "SaaSReportDomainUrlsForProfile": ["https://docs.google.com"]
+        },
+        "policies_settings": {
+          "SaaSReportDomainUrlsForBrowser": {
+            "scope": "machine",
+            "source": "cloud"
+          },
+          "SaaSReportDomainUrlsForProfile": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.saas_report_domain_urls_for_browser": {
+            "value": ["https://gemini.google.com"],
+            "location": "local_state"
+          },
+          "enterprise_reporting.saas_report_domain_urls_for_profile": {
+            "value": ["https://docs.google.com"],
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  }
+]
