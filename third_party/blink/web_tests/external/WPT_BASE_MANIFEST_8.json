@@ -395717,7 +395717,7 @@
       ]
      },
      "random-computed.tentative-expected.txt": [
-      "764120cd7db6e6bbe16ea9fcd086db47894f7742",
+      "c2376229a8f970a82d0d25ce3bdae255320b55f8",
       []
      ],
      "random-serialize.tentative-expected.txt": [
@@ -404043,6 +404043,10 @@
      "177f1411bb96680e76e05f71988dc669f67c9d3a",
      []
     ],
+    "create-enabled-on-self-origin-by-permissions-policy.https.sub.html.headers": [
+     "5e8f2d7031a401cf6d7b3ea46efdb8e3e3a6315f",
+     []
+    ],
     "create.disabled-by-permissions-policy.https.sub.html.headers": [
      "9847d173eb6278152c83f719914f604375b4d151",
      []
@@ -404055,8 +404059,8 @@
      "5c4a3b206c3f733dc0fe3e9255e7698d30f4b028",
      []
     ],
-    "enabled-on-self-origin-by-permissions-policy.https.sub.html.headers": [
-     "4de358e6a4404c94768441ee20cfc9e7f6191b06",
+    "get-enabled-on-self-origin-by-permissions-policy.https.sub.html.headers": [
+     "1207d9e29a111a46b920d27dd3188bae1e6cf8f4",
      []
     ],
     "get.disabled-by-permissions-policy.https.sub.html.headers": [
@@ -404064,7 +404068,7 @@
      []
     ],
     "get.tentative.https-expected.txt": [
-     "deb1744d4de7e61971dfb4cabffb6530d8a89d8a",
+     "9fe8cbac94c2d3e16a1e1e2eef92232a5653e39a",
      []
     ],
     "non-fully-active.https-expected.txt": [
@@ -404083,7 +404087,7 @@
     },
     "support": {
      "helper.js": [
-      "4b0a28c1432f6eb31a996f0e6ecaaa42f84b8692",
+      "697d737c1c50d8a84a327b297ace5a5422a99250",
       []
      ],
      "iframe.html": [
@@ -425480,10 +425484,6 @@
         "b7c080bfac0506c1f41e3a9082ef964d8014b5b0",
         []
        ],
-       "fieldset-display-expected.txt": [
-        "405d2b20cd6105bb2ca7f9aa4e79e699a41d5e33",
-        []
-       ],
        "fieldset-div-display-contents.html": [
         "5d17b91290f41db86147dcd80385aecbf19c14c7",
         []
@@ -425557,7 +425557,7 @@
         []
        ],
        "legend-display-expected.txt": [
-        "aedbf4b0bf77a1ff11bb1c53e20c1ea6d3b5de05",
+        "27d93efdef499e57b8438ab5d65d0f2c0e5c44e5",
         []
        ],
        "legend-display-none-rendering-ref.html": [
@@ -425566,6 +425566,10 @@
        ],
        "legend-display-rendering-ref.html": [
         "189b195f6154e7afc354726a13f8e79290f6edfb",
+        []
+       ],
+       "legend-display-ruby-expected.txt": [
+        "2969316c29dd5bae07dcb5166315d0304d902d9d",
         []
        ],
        "legend-dynamic-update.html": [
@@ -425602,6 +425606,10 @@
        ],
        "legend-position-relative-ref.html": [
         "fd6c11a00566759fbf1e749d49ad396cf1a7ee08",
+        []
+       ],
+       "legend-sans-fieldset-display-ruby-expected.txt": [
+        "788c25dd88bc02e347204c3d0669c0a74dc64138",
         []
        ],
        "legend-tall-ref.html": [
@@ -561044,7 +561052,7 @@
       ]
      ],
      "random-computed.tentative.html": [
-      "0e8777d279a5b11085cd5204e28fc056870eb2a0",
+      "7c528f2e25eb1da06538df9c9f579b553053160a",
       [
        null,
        {
@@ -561342,6 +561350,13 @@
       ],
       "sibling-index-keyframe-value-dynamic.html": [
        "286e0d3d3e2eecdd091df74c8c47f738cb700dd1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "sibling-index-linear-gradient-gcs.html": [
+       "ace36aaf1cd97568058ed448bfd615c83700a43e",
        [
         null,
         {}
@@ -570861,6 +570876,15 @@
       }
      ]
     ],
+    "create-enabled-on-self-origin-by-permissions-policy.https.sub.html": [
+     "63f149d09dfaa9f87b5adb7189c0ed7277656153",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "create.disabled-by-permissions-policy.https.sub.html": [
      "b4d75d14b0cff40aab7a850b5eca65b90683ff49",
      [
@@ -570902,8 +570926,8 @@
       {}
      ]
     ],
-    "enabled-on-self-origin-by-permissions-policy.https.sub.html": [
-     "0f3cba6032514f145d7cc2a06b23669b6cabcbf3",
+    "get-enabled-on-self-origin-by-permissions-policy.https.sub.html": [
+     "c51f324a584e74979ec4b2de20b555649012629d",
      [
       null,
       {
@@ -570921,7 +570945,7 @@
      ]
     ],
     "get.tentative.https.html": [
-     "f552dd322b3866d5b116fb0dd02e6bae63f2f591",
+     "ec5c014380c8472fb8ae5e2a09e6dd4c4389f7bf",
      [
       null,
       {
@@ -573110,6 +573134,15 @@
        [
         null,
         {}
+       ]
+      ],
+      "wheel-event-no-scroll-after-prevent-default.html": [
+       "bd9f523e9077da711ef680c015c3c57f9166fd26",
+       [
+        null,
+        {
+         "testdriver": true
+        }
        ]
       ],
       "wheel-event-transactions-basic.html": [
@@ -674954,8 +674987,15 @@
          {}
         ]
        ],
+       "fieldset-display-ruby.html": [
+        "1e6aa527b067ca18f4324b943ac0f9ab27774b29",
+        [
+         null,
+         {}
+        ]
+       ],
        "fieldset-display.html": [
-        "7f281847085d03ddbaad1e3ddf3762cbe13b2434",
+        "7213aa84c489f0dd8a81d7d3b69d595778f54ea5",
         [
          null,
          {}
@@ -675080,8 +675120,15 @@
          {}
         ]
        ],
+       "legend-display-ruby.html": [
+        "ce2e015d97a70388b7912db8a003d3a0b3a74af9",
+        [
+         null,
+         {}
+        ]
+       ],
        "legend-display.html": [
-        "ca214bf25d10d0243ccf598bf7b597ca6f542f1e",
+        "dcdd747732467e275d2730d456b7bb1bd54cfb49",
         [
          null,
          {}
@@ -675124,8 +675171,15 @@
          {}
         ]
        ],
+       "legend-sans-fieldset-display-ruby.html": [
+        "bd25ff3f96fb9499f4272c9306d466067313a035",
+        [
+         null,
+         {}
+        ]
+       ],
        "legend-sans-fieldset-display.html": [
-        "5f27ca5c299de72c6e8aab9275fcf70b3c4246a3",
+        "cf2a5c712e3c05d299ae86e8f33e035bcc772a90",
         [
          null,
          {}
@@ -738768,6 +738822,13 @@
      ],
      "trigger-scope-scoped-tree-order.tentative.html": [
       "0263ea562aa6fd335dfbad11c26c51971f5cacbd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "trigger-scope-tree-order-ancestor-chain.tentative.html": [
+      "35011bf0c761366521132a18b038e94092d41355",
       [
        null,
        {}

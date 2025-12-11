@@ -1,5 +1,5 @@
 <!doctype html>
-<title>fieldset and CSS display</title>
+<title>fieldset and CSS display (ruby)</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <style>
@@ -15,9 +15,8 @@
   // Please only add canonical values to these lists:
   // (Also, note that we're not testing "display:run-in" here; it's mentioned
   // in several CSS specs, but no browser engines appear likely to support it.)
-  const blocks = ['block', 'table', 'table-row-group', 'table-header-group', 'table-footer-group', 'table-row', 'table-cell',
-                  'table-column-group', 'table-column', 'table-caption', 'list-item', 'flow-root'];
-  const inlines = ['inline', 'inline-block', 'inline-table'];
+  const blocks = ['block ruby'];
+  const inlines = ['ruby', 'ruby-base', 'ruby-text', 'ruby-base-container', 'ruby-text-container'];
 
   function test_display(val, expectedWidth) {
     test(() => {

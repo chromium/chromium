@@ -223,17 +223,16 @@
   }, "navigator.credentials.get() promise is rejected if abort controller is aborted after call to get() in cross-origin iframe.");
 
   promise_test(async (t) => {
-    /** @type sequence<CredentialMediationRequirement> */
-    const mediations = ["silent", "optional", "conditional", "required"];
-    const abortController = new AbortController();
-    const { signal } = abortController;
-    abortController.abort();
-    for (const mediation of mediations) {
-      const requestPromise = navigator.credentials.get({
+    for (const mediation of ["silent", "optional", "conditional", "required"]) {
+      const abortController = new AbortController();
+      const { signal } = abortController;
+      await test_driver.bless("user activation");
+      const requestPromise = navigator.credentials.get(makeGetOptions({
         mediation,
         signal,
-      });
-      await promise_rejects_dom(t, "AbortError", requestPromise);
+      }));
+      abortController.abort(new Error(`Aborted for testing mediation "${mediation}"`));
+      await promise_rejects_js(t, Error, requestPromise);
     }
   }, "Mediation is implicitly required and hence ignored. Request is aborted regardless.");
 

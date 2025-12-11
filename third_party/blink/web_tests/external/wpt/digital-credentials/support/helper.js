@@ -15,24 +15,6 @@
  * @typedef {GetProtocol | CreateProtocol} Protocol
  */
 
-/** @type {GetProtocol[]} */
-const GET_PROTOCOLS = /** @type {const} */ ([
-  "openid4vp-v1-unsigned",
-  "openid4vp-v1-signed",
-  "openid4vp-v1-multisigned",
-  "org-iso-mdoc",
-]);
-
-/** @type {CreateProtocol[]} */
-const CREATE_PROTOCOLS = /** @type {const} */ (["openid4vci"]);
-
-const SUPPORTED_GET_PROTOCOL = GET_PROTOCOLS.find((protocol) =>
-  DigitalCredential.userAgentAllowsProtocol(protocol)
-);
-const SUPPORTED_CREATE_PROTOCOL = CREATE_PROTOCOLS.find((protocol) =>
-  DigitalCredential.userAgentAllowsProtocol(protocol)
-);
-
 /** @type {Record<Protocol, object | MobileDocumentRequest>} */
 const CANONICAL_REQUEST_OBJECTS = {
   openid4vci: {
@@ -146,7 +128,7 @@ const allMappings = {
  * @returns {TOptions}
  */
 function makeCredentialOptionsFromConfig(config, mapping) {
-  const { protocol, requests = [], data, mediation = "required", signal } = config;
+  const { protocol, requests = [], data, mediation, signal } = config;
 
   // Validate that we have either a protocol or requests
   if (!protocol && !requests?.length) {
@@ -174,8 +156,9 @@ function makeCredentialOptionsFromConfig(config, mapping) {
  * @returns {CredentialRequestOptions}
  */
 export function makeGetOptions(config = {}) {
+  /** @type {MakeGetOptionsConfig} */
   const configWithDefaults = {
-    protocol: SUPPORTED_GET_PROTOCOL,
+    protocol: ["openid4vp-v1-unsigned", "org-iso-mdoc"],
     ...config,
   };
 
@@ -191,8 +174,9 @@ export function makeGetOptions(config = {}) {
  * @returns {CredentialCreationOptions}
  */
 export function makeCreateOptions(config = {}) {
+  /** @type {MakeCreateOptionsConfig} */
   const configWithDefaults = {
-    protocol: SUPPORTED_CREATE_PROTOCOL,
+    protocol: "openid4vci",
     ...config,
   };
 

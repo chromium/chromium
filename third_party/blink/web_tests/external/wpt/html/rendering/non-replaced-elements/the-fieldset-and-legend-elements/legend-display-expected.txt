@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] rendered legend with display: table-row-group
   assert_equals: display: table-row-group is not supported expected "table-row-group" but got "block"
 [FAIL] rendered legend with display: table-header-group
@@ -22,16 +22,6 @@ Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: display: inline-block is not supported expected "inline-block" but got "block"
 [FAIL] rendered legend with display: inline-table
   assert_equals: display: inline-table is not supported expected "inline-table" but got "table"
-[FAIL] rendered legend with display: ruby
-  assert_equals: display: ruby is not supported expected "ruby" but got "block ruby"
-[FAIL] rendered legend with display: ruby-base
-  assert_equals: display: ruby-base is not supported expected "ruby-base" but got "block"
-[FAIL] rendered legend with display: ruby-text
-  assert_equals: display: ruby-text is not supported expected "ruby-text" but got "block"
-[FAIL] rendered legend with display: ruby-base-container
-  assert_equals: display: ruby-base-container is not supported expected "ruby-base-container" but got "block"
-[FAIL] rendered legend with display: ruby-text-container
-  assert_equals: display: ruby-text-container is not supported expected "ruby-text-container" but got "block"
 [FAIL] rendered legend with display: inline-grid
   assert_equals: display: inline-grid is not supported expected "inline-grid" but got "grid"
 [FAIL] rendered legend with display: inline-flex
@@ -58,16 +48,6 @@ Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: display: inline-block is not supported expected "inline-block" but got "block"
 [FAIL] rendered legend with display: inline-table; overflow:hidden
   assert_equals: display: inline-table is not supported expected "inline-table" but got "table"
-[FAIL] rendered legend with display: ruby; overflow:hidden
-  assert_equals: display: ruby is not supported expected "ruby" but got "block ruby"
-[FAIL] rendered legend with display: ruby-base; overflow:hidden
-  assert_equals: display: ruby-base is not supported expected "ruby-base" but got "block"
-[FAIL] rendered legend with display: ruby-text; overflow:hidden
-  assert_equals: display: ruby-text is not supported expected "ruby-text" but got "block"
-[FAIL] rendered legend with display: ruby-base-container; overflow:hidden
-  assert_equals: display: ruby-base-container is not supported expected "ruby-base-container" but got "block"
-[FAIL] rendered legend with display: ruby-text-container; overflow:hidden
-  assert_equals: display: ruby-text-container is not supported expected "ruby-text-container" but got "block"
 [FAIL] rendered legend with display: inline-grid; overflow:hidden
   assert_equals: display: inline-grid is not supported expected "inline-grid" but got "grid"
 [FAIL] rendered legend with display: inline-flex; overflow:hidden
@@ -94,16 +74,6 @@ Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: display: inline-block is not supported expected "inline-block" but got "block"
 [FAIL] rendered legend with display: inline-table; columns:1
   assert_equals: display: inline-table is not supported expected "inline-table" but got "table"
-[FAIL] rendered legend with display: ruby; columns:1
-  assert_equals: display: ruby is not supported expected "ruby" but got "block ruby"
-[FAIL] rendered legend with display: ruby-base; columns:1
-  assert_equals: display: ruby-base is not supported expected "ruby-base" but got "block"
-[FAIL] rendered legend with display: ruby-text; columns:1
-  assert_equals: display: ruby-text is not supported expected "ruby-text" but got "block"
-[FAIL] rendered legend with display: ruby-base-container; columns:1
-  assert_equals: display: ruby-base-container is not supported expected "ruby-base-container" but got "block"
-[FAIL] rendered legend with display: ruby-text-container; columns:1
-  assert_equals: display: ruby-text-container is not supported expected "ruby-text-container" but got "block"
 [FAIL] rendered legend with display: inline-grid; columns:1
   assert_equals: display: inline-grid is not supported expected "inline-grid" but got "grid"
 [FAIL] rendered legend with display: inline-flex; columns:1
@@ -130,16 +100,6 @@ Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: display: inline-block is not supported expected "inline-block" but got "block"
 [FAIL] rendered legend with display: inline-table; overflow:hidden;columns:1
   assert_equals: display: inline-table is not supported expected "inline-table" but got "table"
-[FAIL] rendered legend with display: ruby; overflow:hidden;columns:1
-  assert_equals: display: ruby is not supported expected "ruby" but got "block ruby"
-[FAIL] rendered legend with display: ruby-base; overflow:hidden;columns:1
-  assert_equals: display: ruby-base is not supported expected "ruby-base" but got "block"
-[FAIL] rendered legend with display: ruby-text; overflow:hidden;columns:1
-  assert_equals: display: ruby-text is not supported expected "ruby-text" but got "block"
-[FAIL] rendered legend with display: ruby-base-container; overflow:hidden;columns:1
-  assert_equals: display: ruby-base-container is not supported expected "ruby-base-container" but got "block"
-[FAIL] rendered legend with display: ruby-text-container; overflow:hidden;columns:1
-  assert_equals: display: ruby-text-container is not supported expected "ruby-text-container" but got "block"
 [FAIL] rendered legend with display: inline-grid; overflow:hidden;columns:1
   assert_equals: display: inline-grid is not supported expected "inline-grid" but got "grid"
 [FAIL] rendered legend with display: inline-flex; overflow:hidden;columns:1
