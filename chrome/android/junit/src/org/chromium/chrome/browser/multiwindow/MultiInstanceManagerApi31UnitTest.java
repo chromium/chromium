@@ -26,7 +26,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_TASK_ID;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -1564,7 +1563,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    public void testOpenInstance_opensAdjacently_WithRobustWindowManagementExperimental() {
+    public void testOpenWindow_opensAdjacently_WithRobustWindowManagementExperimental() {
         setupTwoInstances();
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1580,8 +1579,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 .thenReturn(ContextUtils.getApplicationContext().getPackageName());
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
 
-        mMultiInstanceManager.openInstance(
-                INSTANCE_ID_2, INVALID_TASK_ID, NewWindowAppSource.WINDOW_MANAGER);
+        mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
 
         verify(mCurrentActivity).startActivity(intentCaptor.capture());
         histogramWatcher.assertExpected();
@@ -1595,7 +1593,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    public void testOpenInstance_opensFullScreen_WithRobustWindowManagementExperimental() {
+    public void testOpenWindow_opensFullScreen_WithRobustWindowManagementExperimental() {
         setupTwoInstances();
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1611,8 +1609,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 .thenReturn(ContextUtils.getApplicationContext().getPackageName());
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
 
-        mMultiInstanceManager.openInstance(
-                INSTANCE_ID_2, INVALID_TASK_ID, NewWindowAppSource.WINDOW_MANAGER);
+        mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
 
         verify(mCurrentActivity).startActivity(intentCaptor.capture());
         histogramWatcher.assertExpected();
@@ -2040,14 +2037,14 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @Config(sdk = 30)
-    public void testOpenInstance_TaskHasRunningActivity() {
-        doTestOpenInstanceWithValidTask(/* isActivityAlive= */ true);
+    public void testOpenWindow_TaskHasRunningActivity() {
+        doTestOpenWindowWithValidTask(/* isActivityAlive= */ true);
     }
 
     @Test
     @Config(sdk = 30)
-    public void testOpenInstance_TaskHasNoRunningActivity() {
-        doTestOpenInstanceWithValidTask(/* isActivityAlive= */ false);
+    public void testOpenWindow_TaskHasNoRunningActivity() {
+        doTestOpenWindowWithValidTask(/* isActivityAlive= */ false);
     }
 
     @Test
@@ -2268,7 +2265,7 @@ public class MultiInstanceManagerApi31UnitTest {
         return appTasks;
     }
 
-    private void doTestOpenInstanceWithValidTask(boolean isActivityAlive) {
+    private void doTestOpenWindowWithValidTask(boolean isActivityAlive) {
         // Setup mocks to ensure that MultiWindowUtils#createNewWindowIntent() runs as expected.
         MultiWindowTestUtils.enableMultiInstance();
         when(mTabbedActivityTask62.getPackageName())
@@ -2276,21 +2273,19 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Create the MultiInstanceManager for current activity = |mTabbedActivityTask62| and setup
         // another instance for |mTabbedActivityTask63|.
-        MultiInstanceManagerApi31 multiInstanceManager =
-                Mockito.spy(
-                        new TestMultiInstanceManagerApi31(
-                                mTabbedActivityTask62,
-                                mTabModelOrchestratorSupplier,
-                                mMultiWindowModeStateDispatcher,
-                                mActivityLifecycleDispatcher,
-                                mModalDialogManagerSupplier,
-                                mMenuOrKeyboardActionController,
-                                mDesktopWindowStateManagerSupplier));
+        MultiInstanceManagerApi31 multiInstanceManager62 =
+                Mockito.spy(createMultiInstanceManager(mTabbedActivityTask62));
+        MultiInstanceManagerApi31 multiInstanceManager63 =
+                Mockito.spy(createMultiInstanceManager(mTabbedActivityTask63));
 
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
+        multiInstanceManager62.initialize(0, TASK_ID_62, SupportedProfileType.MIXED);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
+        multiInstanceManager63.initialize(1, TASK_ID_63, SupportedProfileType.MIXED);
 
-        // Setup AppTask's for both activities.
+        // Setup AppTask's for both activities. Clear test AppTask ids that are set during the test
+        // manager instantiation so that ids from the current mocked AppTasks are used.
+        MultiInstanceManagerApi31.setAppTaskIdsForTesting(null);
         List<AppTask> appTasks =
                 setupActivityManagerAppTasks(mTabbedActivityTask62, mTabbedActivityTask63);
 
@@ -2299,8 +2294,8 @@ public class MultiInstanceManagerApi31UnitTest {
             destroyActivity(mTabbedActivityTask63);
         }
 
-        // Try to restore the instance in task TASK_ID_63, from |mTabbedActivityTask62|.
-        multiInstanceManager.openInstance(1, TASK_ID_63, NewWindowAppSource.WINDOW_MANAGER);
+        // Try to restore the instance in task from |mTabbedActivityTask62|.
+        multiInstanceManager62.openWindow(1, NewWindowAppSource.WINDOW_MANAGER);
 
         if (isActivityAlive) {
             // If |mTabbedActivityTask63| is alive, verify that its instance was restored in the

@@ -395,6 +395,17 @@ public abstract class MultiInstanceManager {
     }
 
     /**
+     * Open the window for the specified instance. If a live activity exists for the instance, it
+     * will be brought to the foreground. If the instance is inactive, it will be restored in a new
+     * activity in a new task.
+     *
+     * @param instanceId ID of the instance whose window should be brought to the foreground.
+     * @param source The {@link NewWindowAppSource} that reflects the source of new activity
+     *     creation for an inactive instance, used for metrics.
+     */
+    public void openWindow(int instanceId, @NewWindowAppSource int source) {}
+
+    /**
      * Close the window associated with a given task / activity. This will permanently and
      * irreversibly delete persisted instance and tab state data.
      *

@@ -213,9 +213,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 mActivity,
                 mModalDialogManagerSupplier.get(),
                 new LargeIconBridge(getProfile()),
-                (item) ->
-                        openInstance(
-                                item.instanceId, item.taskId, NewWindowAppSource.WINDOW_MANAGER),
+                (item) -> {
+                    RecordUserAction.record("Android.WindowManager.SelectWindow");
+                    openWindow(item.instanceId, NewWindowAppSource.WINDOW_MANAGER);
+                },
                 (item) -> {
                     RecordUserAction.record("MobileMenuWindowManagerCloseInstance");
                     closeWindow(item.instanceId, CloseWindowAppSource.WINDOW_MANAGER);
@@ -1261,48 +1262,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     /**
-     * Open or launch a given instance.
-     *
-     * @param instanceId ID of the instance to open.
-     * @param taskId ID of the task the instance resides in.
-     * @param source The source of the opening of the instance.
-     */
-    @VisibleForTesting
-    void openInstance(int instanceId, int taskId, @NewWindowAppSource int source) {
-        RecordUserAction.record("Android.WindowManager.SelectWindow");
-        if (taskId != INVALID_TASK_ID) {
-            // Bring the task to foreground if the activity is alive, this completes the opening
-            // of the instance. Otherwise, create a new activity for the instance and kill the
-            // existing task.
-            // TODO: Consider killing the instance and start it again to be able to position it
-            //       in the intended window.
-            if (getActivityById(instanceId) != null) {
-                bringTaskForeground(taskId);
-                return;
-            } else {
-                var appTask = AndroidTaskUtils.getAppTaskFromId(mActivity, taskId);
-                if (appTask != null) {
-                    appTask.finishAndRemoveTask();
-                }
-            }
-        }
-        onMultiInstanceModeStarted();
-        // TODO: Pass this flag from UI to control the window to open.
-        // If not in multi-window mode, this will be determined by shouldOpenInAdjacentWindow().
-        boolean openAdjacently =
-                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        mActivity,
-                        instanceId,
-                        /* preferNew= */ false,
-                        openAdjacently,
-                        /* addTrustedIntentExtras= */ true,
-                        source);
-        mActivity.startActivity(intent);
-    }
-
-    /**
      * Launch the given intent in an existing ChromeTabbedActivity instance.
      *
      * @param intent The intent to launch.
@@ -1346,6 +1305,41 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
         IntentUtils.safeStartActivity(context, intent);
+    }
+
+    @Override
+    public void openWindow(int instanceId, @NewWindowAppSource int source) {
+        Set<Integer> activeTaskIds = getAllAppTaskIds(mActivity);
+        int persistedTaskId = MultiInstancePersistentStore.readTaskId(instanceId);
+        if (activeTaskIds.contains(persistedTaskId)) {
+            // Bring the task to foreground if the activity is alive, this completes the opening
+            // of the instance. Otherwise, create a new activity for the instance and kill the
+            // existing task.
+            Activity activity = getActivityById(instanceId);
+            if (activity != null) {
+                bringTaskForeground(persistedTaskId);
+                return;
+            } else {
+                var appTask = AndroidTaskUtils.getAppTaskFromId(mActivity, persistedTaskId);
+                if (appTask != null) {
+                    appTask.finishAndRemoveTask();
+                }
+            }
+        }
+
+        onMultiInstanceModeStarted();
+        // If not in multi-window mode, this will be determined by shouldOpenInAdjacentWindow().
+        boolean openAdjacently =
+                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        mActivity,
+                        instanceId,
+                        /* preferNew= */ false,
+                        openAdjacently,
+                        /* addTrustedIntentExtras= */ true,
+                        source);
+        mActivity.startActivity(intent);
     }
 
     @Override
