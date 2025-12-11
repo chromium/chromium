@@ -123,9 +123,6 @@ void SearchController::StartSearch(const std::u16string& query) {
 
   burn_in_controller_->Start();
 
-  // TODO(b/266468933): This logging is limited to a short maximum query
-  // length. Add another metric which measures the bucket count of query length,
-  // with no maximum.
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
   // Limit query length, for efficiency reasons in matching query to texts.
   const std::u16string truncated_query =
