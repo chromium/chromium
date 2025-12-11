@@ -45,9 +45,17 @@ void EmitFormIssues(
                            int violating_node,
                            blink::WebString violating_node_attribute)> emit);
 
+enum class PermissionsPolicyFeature {
+  kAutofill,
+  kManualText,
+  kMaxValue = kManualText
+};
+
 // Emits warnings about disabled `autofill` and/or `manual-text` features.
+// Only informs about the given `features`.
 void EmitAutofillOrManualTextIssue(
     const blink::WebDocument& document,
+    DenseSet<PermissionsPolicyFeature> features,
     base::FunctionRef<void(const blink::WebDocument& document,
                            blink::mojom::GenericIssueErrorType issue_type,
                            int violating_node,
