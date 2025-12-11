@@ -312,3 +312,7 @@ cr-icon-button {
   display: flex;
   margin-bottom: 16px;
 }
+
+cr-toast-manager {
+  --cr-toast-white-space: normal;
+}
