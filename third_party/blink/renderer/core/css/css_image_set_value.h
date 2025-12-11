@@ -61,6 +61,9 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
+  CSSImageSetValue* ResolveValuesAndCreateCopyIfNeeded(
+      const StyleResolverState&) const;
+
   Member<StyleImage> cached_image_;
   float cached_device_scale_factor_{1.0f};
 
