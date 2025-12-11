@@ -5,6 +5,7 @@
 #ifndef BASE_TRAITS_BAG_H_
 #define BASE_TRAITS_BAG_H_
 
+#include <concepts>
 #include <initializer_list>
 #include <optional>
 #include <tuple>
