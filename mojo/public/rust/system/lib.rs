@@ -4,4 +4,8 @@
 
 pub mod data_pipe;
 pub mod mojo_types;
-pub mod trap;
+pub mod raw_trap;
+// FOR_RELEASE: Rename this module to just `trap`.
+// (Git got grumpy when I tried to move trap.rs -> raw_trap.rs
+// and change trap.rs itself in the same CL.)
+pub mod safe_trap;
