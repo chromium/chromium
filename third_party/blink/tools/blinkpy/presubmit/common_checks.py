@@ -36,7 +36,7 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
         '--ignore-glob=*.ini',
         '--ignore-glob=*DIR_METADATA',
         '--ignore-glob=*OWNERS',
-        '--ignore-glob=.config.json',
+        '--ignore-glob=config.tmpl.json',
     ]
     # When uploading, only check changed files to keep linting fast. However,
     # when it's time to commit the CL, check all WPT files to catch dangling

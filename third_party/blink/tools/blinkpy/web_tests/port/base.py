@@ -317,7 +317,7 @@ class Port(object):
     FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
 
     # The following two constants must match. When adding a new WPT root, also
-    # remember to add an alias rule to external/wpt/.config.json.
+    # remember to add an alias rule to external/wpt/config.tmpl.json.
     # WPT_DIRS maps WPT roots on the file system to URL prefixes on wptserve.
     # The order matters: '/' MUST be the last URL prefix.
     # Consider using port.wpt_dirs() instead.

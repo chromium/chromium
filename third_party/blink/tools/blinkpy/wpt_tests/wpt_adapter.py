@@ -121,7 +121,7 @@ class WPTAdapter:
         if self.options.use_upstream_wpt:
             return
         # create //third_party/blink/web_tests/external/wpt/config.json
-        src_config_json = self.finder.path_from_wpt_tests('.config.json')
+        src_config_json = self.finder.path_from_wpt_tests('config.tmpl.json')
         with self.fs.open_text_file_for_reading(src_config_json) as src:
             data = json.load(src)
         data['aliases'] = [{
