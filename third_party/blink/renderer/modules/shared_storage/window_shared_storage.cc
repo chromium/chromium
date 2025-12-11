@@ -18,13 +18,14 @@ class WindowSharedStorageImpl final
   static WindowSharedStorageImpl& From(LocalDOMWindow& window) {
     WindowSharedStorageImpl* supplement = window.GetWindowSharedStorageImpl();
     if (!supplement) {
-      supplement = MakeGarbageCollected<WindowSharedStorageImpl>();
+      supplement = MakeGarbageCollected<WindowSharedStorageImpl>(window);
       window.SetWindowSharedStorageImpl(supplement);
     }
     return *supplement;
   }
 
-  WindowSharedStorageImpl() = default;
+  explicit WindowSharedStorageImpl(LocalDOMWindow& window)
+      : local_dom_window_(window) {}
 
   SharedStorage* GetOrCreate(LocalDOMWindow& fetching_scope) {
     if (!shared_storage_)
@@ -34,9 +35,11 @@ class WindowSharedStorageImpl final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(shared_storage_);
+    visitor->Trace(local_dom_window_);
   }
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   Member<SharedStorage> shared_storage_;
 };
 

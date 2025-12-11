@@ -34,7 +34,7 @@ class AudioRendererSinkCacheWindowObserver final
       public ExecutionContextLifecycleObserver {
  public:
   explicit AudioRendererSinkCacheWindowObserver(LocalDOMWindow& window)
-      : ExecutionContextLifecycleObserver(&window) {}
+      : ExecutionContextLifecycleObserver(&window), local_dom_window_(window) {}
 
   AudioRendererSinkCacheWindowObserver(
       const AudioRendererSinkCacheWindowObserver&) = delete;
@@ -44,6 +44,7 @@ class AudioRendererSinkCacheWindowObserver final
   ~AudioRendererSinkCacheWindowObserver() override = default;
 
   void Trace(Visitor* visitor) const final {
+    visitor->Trace(local_dom_window_);
     ExecutionContextLifecycleObserver::Trace(visitor);
   }
 
@@ -52,6 +53,9 @@ class AudioRendererSinkCacheWindowObserver final
     if (auto* cache_instance = AudioRendererSinkCache::instance_)
       cache_instance->DropSinksForFrame(DomWindow()->GetLocalFrameToken());
   }
+
+ private:
+  Member<LocalDOMWindow> local_dom_window_;
 };
 
 namespace {

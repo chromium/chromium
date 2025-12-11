@@ -25,6 +25,9 @@ class MODULES_EXPORT DOMWindowStorageController final
   void DidAddEventListener(LocalDOMWindow*, const AtomicString&) override;
   void DidRemoveEventListener(LocalDOMWindow*, const AtomicString&) override {}
   void DidRemoveAllEventListeners(LocalDOMWindow*) override {}
+
+ private:
+  Member<LocalDOMWindow> local_dom_window_;
 };
 
 }  // namespace blink

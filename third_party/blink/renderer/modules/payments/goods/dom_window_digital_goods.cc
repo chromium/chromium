@@ -47,7 +47,7 @@ void OnCreateDigitalGoodsResponse(
 }  // namespace
 
 DOMWindowDigitalGoods::DOMWindowDigitalGoods(LocalDOMWindow& window)
-    : mojo_service_(&window) {}
+    : local_dom_window_(window), mojo_service_(&window) {}
 
 ScriptPromise<DigitalGoodsService>
 DOMWindowDigitalGoods::getDigitalGoodsService(ScriptState* script_state,
@@ -119,6 +119,7 @@ DOMWindowDigitalGoods::GetDigitalGoodsService(ScriptState* script_state,
 
 void DOMWindowDigitalGoods::Trace(Visitor* visitor) const {
   visitor->Trace(mojo_service_);
+  visitor->Trace(local_dom_window_);
 }
 
 // static

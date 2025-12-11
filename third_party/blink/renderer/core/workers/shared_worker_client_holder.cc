@@ -70,7 +70,8 @@ SharedWorkerClientHolder* SharedWorkerClientHolder::From(
 }
 
 SharedWorkerClientHolder::SharedWorkerClientHolder(LocalDOMWindow& window)
-    : connector_(&window),
+    : local_dom_window_(window),
+      connector_(&window),
       client_receivers_(&window),
       task_runner_(window.GetTaskRunner(blink::TaskType::kDOMManipulation)) {
   DCHECK(IsMainThread());
@@ -133,6 +134,7 @@ void SharedWorkerClientHolder::Connect(
 void SharedWorkerClientHolder::Trace(Visitor* visitor) const {
   visitor->Trace(connector_);
   visitor->Trace(client_receivers_);
+  visitor->Trace(local_dom_window_);
 }
 
 }  // namespace blink

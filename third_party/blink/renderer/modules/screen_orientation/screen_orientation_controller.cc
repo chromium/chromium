@@ -41,6 +41,7 @@ ScreenOrientationController* ScreenOrientationController::FromIfExists(
 ScreenOrientationController::ScreenOrientationController(LocalDOMWindow& window)
     : ExecutionContextLifecycleObserver(&window),
       PageVisibilityObserver(window.GetFrame()->GetPage()),
+      local_dom_window_(window),
       screen_orientation_service_(&window) {
   Page* page = window.GetFrame()->GetPage();
 
@@ -265,6 +266,7 @@ void ScreenOrientationController::Trace(Visitor* visitor) const {
   visitor->Trace(screen_orientation_service_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 void ScreenOrientationController::SetScreenOrientationAssociatedRemoteForTests(

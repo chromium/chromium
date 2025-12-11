@@ -45,13 +45,14 @@ class DOMWindowCrypto final : public GarbageCollected<DOMWindowCrypto>,
   static DOMWindowCrypto& From(LocalDOMWindow&);
   static Crypto* crypto(LocalDOMWindow&);
 
-  DOMWindowCrypto() = default;
+  explicit DOMWindowCrypto(LocalDOMWindow&);
 
   Crypto* crypto() const;
 
   void Trace(Visitor*) const override;
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   mutable Member<Crypto> crypto_;
 };
 

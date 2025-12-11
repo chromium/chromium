@@ -20,7 +20,7 @@ class ThirdPartyScriptDetector final
  public:
   static ThirdPartyScriptDetector& From(LocalDOMWindow&);
 
-  ThirdPartyScriptDetector();
+  explicit ThirdPartyScriptDetector(LocalDOMWindow&);
   ThirdPartyScriptDetector(const ThirdPartyScriptDetector&) = delete;
   ThirdPartyScriptDetector& operator=(const ThirdPartyScriptDetector&) = delete;
 
@@ -58,6 +58,7 @@ class ThirdPartyScriptDetector final
   Technology Detect(const String url);
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   RE2 precompiled_detection_regex__;
   HashMap<String, Technology> url_to_technology_cache_;
 };

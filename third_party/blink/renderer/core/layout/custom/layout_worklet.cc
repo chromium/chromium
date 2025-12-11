@@ -29,6 +29,7 @@ LayoutWorklet* LayoutWorklet::From(LocalDOMWindow& window) {
 
 LayoutWorklet::LayoutWorklet(LocalDOMWindow& window)
     : Worklet(window),
+      local_dom_window_(window),
       pending_layout_registry_(MakeGarbageCollected<PendingLayoutRegistry>()) {}
 
 LayoutWorklet::~LayoutWorklet() = default;
@@ -45,6 +46,7 @@ void LayoutWorklet::Trace(Visitor* visitor) const {
   visitor->Trace(document_definition_map_);
   visitor->Trace(pending_layout_registry_);
   Worklet::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 bool LayoutWorklet::NeedsToCreateGlobalScope() {

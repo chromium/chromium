@@ -33,7 +33,7 @@ HighlightRegistry* HighlightRegistry::From(LocalDOMWindow& window) {
 }
 
 HighlightRegistry::HighlightRegistry(LocalDOMWindow& window)
-    : frame_(window.GetFrame()) {}
+    : local_dom_window_(window), frame_(window.GetFrame()) {}
 
 HighlightRegistry::~HighlightRegistry() = default;
 
@@ -42,6 +42,7 @@ void HighlightRegistry::Trace(blink::Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(active_highlights_in_node_);
   ScriptWrappable::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 HighlightRegistry* HighlightRegistry::GetHighlightRegistry(const Node* node) {

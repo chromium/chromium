@@ -86,6 +86,7 @@ class CORE_EXPORT SharedWorkerClientHolder final
   void Trace(Visitor* visitor) const override;
 
  private:
+  Member<LocalDOMWindow> local_dom_window_;
   HeapMojoRemote<mojom::blink::SharedWorkerConnector> connector_;
   HeapMojoUniqueReceiverSet<mojom::blink::SharedWorkerClient> client_receivers_;
 
