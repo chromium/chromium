@@ -12669,6 +12669,24 @@
             ]
         }
     ],
+    "HeliosWithReaderMode": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableReaderModeInUS"
+                    ],
+                    "disable_features": [
+                        "EnableReaderModeOmniboxEntryPoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosZeroStateSuggestions": [
         {
             "platforms": [
