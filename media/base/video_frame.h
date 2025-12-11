@@ -510,21 +510,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // memory which allows for hardware acceleration.
   bool HasNativeGpuMemoryBuffer() const;
 
-  // Gets the ScopedMapping object which clients can use to access the CPU
-  // visible memory and other metadata for the MappableSI backing this
-  // VideoFrame.
-  // This isn't guaranteed to be always async.
-  // If 'AsyncMappingIsNonBlocking()' is 'false', this will run the callback
-  // in the current sequence. Otherwise, the callback will be invoked in the
-  // GpuMemoryThread.
-  // Note: the frame must not be destroyed before the result callback is
-  // executed.
-  // TODO(crbug.com/40263579): Have this method directly return
-  // ClientSharedImage::ScopedMapping object instead.
-  void MapSharedImageAsync(
-      base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
-          result_cb) const;
-
   // Returns true if the underlying SharedImage can be mapped truly
   // asynchronously: with an unblocking request to the GPU process.
   // Only call if `HasMappableSharedImage() == true`.
@@ -781,10 +766,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
           result_cb,
       bool success) const;
 #endif
-  void WrapScopedSharedImageMapping(
-      base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
-          result_cb,
-      std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping) const;
 
   // Return the alignment for the whole frame, calculated as the max of the
   // alignment for each individual plane.

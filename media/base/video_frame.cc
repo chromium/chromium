@@ -1185,25 +1185,6 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   return false;
 }
 
-void VideoFrame::MapSharedImageAsync(
-    base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
-        result_cb) const {
-  if (wrapped_frame_) {
-    wrapped_frame_->MapSharedImageAsync(std::move(result_cb));
-    return;
-  }
-  if (HasMappableSharedImage()) {
-    CHECK(HasSharedImage());
-    // `base::Unretained()` is safe because of the requirement for callers to
-    // keep the VideoFrame alive until the callback executes.
-    shared_image_->MapAsync(
-        base::BindOnce(&VideoFrame::WrapScopedSharedImageMapping,
-                       base::Unretained(this), std::move(result_cb)));
-    return;
-  }
-  std::move(result_cb).Run(nullptr);
-}
-
 bool VideoFrame::AsyncMappingIsNonBlocking() const {
   if (wrapped_frame_) {
     return wrapped_frame_->AsyncMappingIsNonBlocking();
@@ -1761,14 +1742,5 @@ VideoFrame::ScopedMapping::ScopedMapping(
 }
 
 VideoFrame::ScopedMapping::~ScopedMapping() = default;
-
-void VideoFrame::WrapScopedSharedImageMapping(
-    base::OnceCallback<void(std::unique_ptr<VideoFrame::ScopedMapping>)>
-        result_cb,
-    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping) const {
-  std::move(result_cb).Run(
-      mapping ? base::WrapUnique(new ScopedMapping(std::move(mapping)))
-              : nullptr);
-}
 
 }  // namespace media
