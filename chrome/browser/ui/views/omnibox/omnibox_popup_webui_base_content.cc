@@ -69,7 +69,7 @@ void OmniboxPopupWebUIBaseContent::OnViewBoundsChanged(
   gfx::Size min_size(width, 1);
   gfx::Size max_size(width, INT_MAX);
   if (auto* render_widget_host_view =
-          GetWebContents()->GetRenderWidgetHostView()) {
+          GetWrappedWebContents()->GetRenderWidgetHostView()) {
     render_widget_host_view->EnableAutoResize(min_size, max_size);
   }
 }

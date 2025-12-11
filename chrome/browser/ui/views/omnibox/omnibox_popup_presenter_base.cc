@@ -38,6 +38,10 @@ OmniboxPopupPresenterBase::~OmniboxPopupPresenterBase() {
 }
 
 void OmniboxPopupPresenterBase::Show() {
+  if (IsShown()) {
+    return;
+  }
+
   EnsureWidgetCreated();
   SynchronizePopupBounds();
 
@@ -46,8 +50,6 @@ void OmniboxPopupPresenterBase::Show() {
 
     widget_->ShowInactive();
 
-    content->GetWebContents()->UpdateWebContentsVisibility(
-        content::Visibility::VISIBLE);
     content->GetWebContents()->WasShown();
     if (ShouldReceiveFocus()) {
       widget_->Activate();
