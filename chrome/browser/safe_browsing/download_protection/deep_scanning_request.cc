@@ -62,6 +62,8 @@ namespace safe_browsing {
 
 namespace {
 
+using ::enterprise_connectors::BinaryUploadRequest;
+
 DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
                                                DownloadCheckResult result_2) {
   // Don't use the enum's int values to determine precedence since that
@@ -533,7 +535,7 @@ void DeepScanningRequest::OnGetPackageFileRequestData(
     const base::FilePath& current_path,
     std::unique_ptr<FileAnalysisRequest> request,
     enterprise_connectors::ScanRequestUploadResult result,
-    BinaryUploadService::Request::Data data) {
+    BinaryUploadRequest::Data data) {
   file_metadata_.insert({current_path, enterprise_connectors::FileMetadata(
                                            final_path.AsUTF8Unsafe(), data.hash,
                                            data.mime_type, data.size)});
@@ -555,7 +557,7 @@ void DeepScanningRequest::OnGetFileRequestData(
     const base::FilePath& file_path,
     std::unique_ptr<FileAnalysisRequest> request,
     enterprise_connectors::ScanRequestUploadResult result,
-    BinaryUploadService::Request::Data data) {
+    BinaryUploadRequest::Data data) {
   if (ShouldTerminateEarly(result)) {
     // We record the scan here because the request is terminated early and won't
     // be uploaded to CloudBinaryUploadService.

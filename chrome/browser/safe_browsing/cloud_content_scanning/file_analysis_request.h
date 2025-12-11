@@ -10,15 +10,16 @@
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/file_access/scoped_file_access.h"
 
 namespace safe_browsing {
 
-// A BinaryUploadService::Request implementation that gets the data to scan
-// from the contents of a file. It caches the results so that future calls to
+// A BinaryUploadRequest implementation that gets the data to scan from the
+// contents of a file. It caches the results so that future calls to
 // GetRequestData will return quickly.
-class FileAnalysisRequest : public BinaryUploadService::Request {
+class FileAnalysisRequest : public enterprise_connectors::BinaryUploadRequest {
  public:
   FileAnalysisRequest(
       const enterprise_connectors::AnalysisSettings& analysis_settings,
@@ -26,17 +27,18 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
       base::FilePath file_name,
       std::string mime_type,
       bool delay_opening_file,
-      BinaryUploadService::ContentAnalysisCallback callback,
-      BinaryUploadService::Request::RequestStartCallback start_callback =
-          base::DoNothing(),
+      enterprise_connectors::BinaryUploadRequest::ContentAnalysisCallback
+          callback,
+      enterprise_connectors::BinaryUploadRequest::RequestStartCallback
+          start_callback = base::DoNothing(),
       bool is_obfuscated = false);
   FileAnalysisRequest(const FileAnalysisRequest&) = delete;
   FileAnalysisRequest& operator=(const FileAnalysisRequest&) = delete;
   ~FileAnalysisRequest() override;
 
-  // BinaryUploadService::Request implementation. If |delay_opening_file_| is
-  // false, OnGotFileData is called by posting after GetFileDataBlocking runs
-  // a base::MayBlock() thread, otherwise the callback will be stored and run
+  // BinaryUploadRequest implementation. If |delay_opening_file_| is false,
+  // OnGotFileData is called by posting after GetFileDataBlocking runs a
+  // base::MayBlock() thread, otherwise the callback will be stored and run
   // later when OpenFile is called.
   void GetRequestData(DataCallback callback) override;
 

@@ -13,8 +13,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/enterprise/obfuscation/core/utils.h"
@@ -30,6 +32,9 @@
 namespace safe_browsing {
 
 namespace {
+
+using ::enterprise_connectors::BinaryUploadRequest;
+using ::enterprise_connectors::GetBrowserPolicyConnector;
 
 constexpr size_t kReadFileChunkSize = 4096;
 constexpr size_t kMaxUploadSizeMetricsKB = 500 * 1024;
@@ -70,7 +75,7 @@ std::string GetFileMimeType(const base::FilePath& path,
 }
 
 std::pair<enterprise_connectors::ScanRequestUploadResult,
-          BinaryUploadService::Request::Data>
+          BinaryUploadRequest::Data>
 GetFileDataBlocking(const base::FilePath& path,
                     bool detect_mime_type,
                     bool is_obfuscated) {
@@ -79,7 +84,7 @@ GetFileDataBlocking(const base::FilePath& path,
   // The returned `Data` must always have a valid `path` member, regardless
   // if this function succeeds or not.  The other members of `Data` may or
   // may not be filled in.
-  BinaryUploadService::Request::Data file_data;
+  BinaryUploadRequest::Data file_data;
   file_data.path = path;
 
   // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
@@ -182,12 +187,13 @@ FileAnalysisRequest::FileAnalysisRequest(
     base::FilePath file_name,
     std::string mime_type,
     bool delay_opening_file,
-    BinaryUploadService::ContentAnalysisCallback callback,
-    BinaryUploadService::Request::RequestStartCallback start_callback,
+    BinaryUploadRequest::ContentAnalysisCallback callback,
+    BinaryUploadRequest::RequestStartCallback start_callback,
     bool is_obfuscated)
-    : Request(std::move(callback),
-              analysis_settings.cloud_or_local_settings,
-              std::move(start_callback)),
+    : BinaryUploadRequest(std::move(callback),
+                          analysis_settings.cloud_or_local_settings,
+                          std::move(start_callback),
+                          base::BindRepeating(&GetBrowserPolicyConnector)),
       has_cached_result_(false),
       tag_settings_(analysis_settings.tags),
       path_(std::move(path)),

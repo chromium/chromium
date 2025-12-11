@@ -24,6 +24,7 @@
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_metadata.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -188,7 +189,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
       const base::FilePath& file_path,
       std::unique_ptr<FileAnalysisRequest> request,
       enterprise_connectors::ScanRequestUploadResult result,
-      BinaryUploadService::Request::Data data);
+      enterprise_connectors::BinaryUploadRequest::Data data);
 
   // Callback invoked in `StartSavePackageScan` to check if `data` of a file in
   // package has been successfully fetched and ready for deep scanning if
@@ -198,7 +199,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
       const base::FilePath& current_path,
       std::unique_ptr<FileAnalysisRequest> request,
       enterprise_connectors::ScanRequestUploadResult result,
-      BinaryUploadService::Request::Data data);
+      enterprise_connectors::BinaryUploadRequest::Data data);
 
   // Helper function to simplify checking if the report-only feature is set in
   // conjunction with the corresponding policy value.
