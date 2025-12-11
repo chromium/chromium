@@ -682,7 +682,6 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
         }
       }
     }
-    actor::ui::LogTaskIconClick();
   }
 }
 

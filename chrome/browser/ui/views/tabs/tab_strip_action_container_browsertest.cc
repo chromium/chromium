@@ -1083,27 +1083,4 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerPreRedesignBrowserTest,
   EXPECT_TRUE(tab_two->IsActivated());
   EXPECT_FALSE(tab_one->IsActivated());
 }
-
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerPreRedesignBrowserTest,
-                       LogsWhenGlicActorTaskIconClicked) {
-  EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
-  ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(1));
-
-  auto* task_icon_controller =
-      tabs::GlicActorTaskIconController::From(browser());
-  auto actor_task_icon_state = tabs::ActorTaskIconState();
-  actor_task_icon_state.is_visible = true;
-  task_icon_controller->OnStateUpdate(
-      /*is_showing=*/false, glic::mojom::CurrentView::kConversation,
-      actor_task_icon_state);
-
-  EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
-  EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
-
-  base::UserActionTester user_action_tester;
-
-  OnButtonClicked(GlicActorTaskIcon());
-
-  EXPECT_EQ(1, user_action_tester.GetActionCount("Actor.Ui.TaskIcon.Click"));
-}
 #endif  // BUILDFLAG(ENABLE_GLIC)

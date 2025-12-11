@@ -19,9 +19,6 @@ namespace actor::ui {
 // Logs a click on the handoff button.
 void LogHandoffButtonClick(HandoffButtonState::ControlOwnership ownership);
 
-// Logs a click on the task icon.
-void LogTaskIconClick();
-
 // Logs a click on a row in the task list bubble.
 void LogTaskListBubbleRowClicked();
 

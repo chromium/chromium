@@ -3496,6 +3496,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Actor.Ui.TaskIcon.Click">
+  <obsolete>
+    Deprecated as of 12/2025 with the removal of the Task Icon.
+  </obsolete>
   <owner>chrstne@google.com</owner>
   <owner>kenok@google.com</owner>
   <owner>koilos@google.com</owner>

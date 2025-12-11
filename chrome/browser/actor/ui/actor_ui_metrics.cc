@@ -43,12 +43,6 @@ void LogHandoffButtonClick(HandoffButtonState::ControlOwnership ownership) {
   }
 }
 
-void LogTaskIconClick() {
-  // TODO(crbug.com/462712067): Revise to use RecordComputedAction.
-  base::RecordAction(
-      base::UserMetricsAction(GetActorUiMetricName("TaskIcon.Click").c_str()));
-}
-
 void LogTaskListBubbleRowClicked() {
   base::RecordComputedAction(GetActorUiMetricName("TaskListBubble.Row.Click"));
 }
