@@ -143,6 +143,7 @@
   UrlLoadingBrowserAgent::RemoveFromBrowser(_browser.get());
   FakeUrlLoadingBrowserAgent::InjectForBrowser(_browser.get());
   [self insertInitialWebstate];
+  chrome_test_util::SetMainBrowserOverride(self.browser);
 }
 
 - (void)useTestBrowser {
@@ -154,6 +155,7 @@
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(_browser.get());
   FakeUrlLoadingBrowserAgent::InjectForBrowser(_browser.get());
   [self insertInitialWebstate];
+  chrome_test_util::SetMainBrowserOverride(self.browser);
 }
 
 - (void)setCoordinator:(ChromeCoordinator*)coordinator {
@@ -208,6 +210,7 @@
 }
 
 + (void)reset {
+  chrome_test_util::SetMainBrowserOverride(nullptr);
   [self stopCoordinator];
   [self.helper reset];
 }

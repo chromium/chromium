@@ -178,6 +178,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       @selector(testMinimumHeight),
       @selector(testInitialPositionAndOrientationChange),
       @selector(testMagicStack),
+      @selector(testSignInSignOutScrolledToTop_AccountMenu),
       @selector(testToggleModuleVisiblityInCustomizationMenu),
       @selector(testNavigateInCustomizationMenu),
   };
@@ -1231,12 +1232,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Test that signing in and signing out results in the NTP scrolled to the top
 // and not in some unexpected layout state.
 - (void)testSignInSignOutScrolledToTop_AccountMenu {
-// TODO(crbug.com/40903244): test failing on ipad device
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
+  [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
@@ -1261,7 +1257,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [SigninEarlGreyUI signOut];
+  [SigninEarlGrey signOut];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
       assertWithMatcher:grey_sufficientlyVisible()];

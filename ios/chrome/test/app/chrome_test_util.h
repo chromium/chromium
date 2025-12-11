@@ -40,6 +40,9 @@ ProfileIOS* GetOriginalProfile();
 // Returns the current incognito Profile
 ProfileIOS* GetCurrentIncognitoProfile();
 
+// Sets a browser that will override the one from the SceneState.
+void SetMainBrowserOverride(Browser* browser);
+
 // Returns the browser for the main interface.
 Browser* GetMainBrowser();
 
