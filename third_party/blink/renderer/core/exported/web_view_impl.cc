@@ -3037,8 +3037,6 @@ gfx::Size WebViewImpl::ContentsPreferredMinimumSize() {
   DCHECK(!document->NeedsLayoutTreeUpdate() &&
          !document->View()->NeedsLayout());
 
-  // Needed for computing MinPreferredWidth.
-  FontCachePurgePreventer fontCachePurgePreventer;
   // Already accounts for zoom.
   int width_scaled = document->GetLayoutView()->ComputeMinimumWidth().Round();
   int height_scaled =

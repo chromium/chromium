@@ -101,7 +101,6 @@ extern const char kNotoColorEmojiCompat[];
 
 class PLATFORM_EXPORT FontCache final {
   DISALLOW_NEW();
-  friend class FontCachePurgePreventer;
 
  public:
   // FontCache initialisation on Windows depends on a global FontMgr being
@@ -254,8 +253,6 @@ class PLATFORM_EXPORT FontCache final {
       const FontPlatformData*,
       bool subpixel_ascent_descent = false);
 
-  void InvalidateShapeCache();
-
   static void CrashWithFontInfo(const FontDescription*);
 
   // Memory reporting
@@ -287,15 +284,6 @@ class PLATFORM_EXPORT FontCache final {
 
   friend class FontGlobalContext;
   FontCache();
-
-  void Purge();
-
-  void DisablePurging() { purge_prevent_count_++; }
-  void EnablePurging() {
-    DCHECK(purge_prevent_count_);
-    if (!--purge_prevent_count_)
-      Purge();
-  }
 
   // FIXME: This method should eventually be removed.
   const FontPlatformData* GetFontPlatformData(
@@ -329,9 +317,6 @@ class PLATFORM_EXPORT FontCache final {
 
   const SimpleFontData* FallbackOnStandardFontStyle(const FontDescription&,
                                                     UChar32);
-
-  // Don't purge if this count is > 0;
-  int purge_prevent_count_ = 0;
 
 #if BUILDFLAG(IS_WIN)
   static WebFontPrewarmer* prewarmer_;
@@ -367,23 +352,11 @@ class PLATFORM_EXPORT FontCache final {
   CharacterFallbackCache character_fallback_cache_;
 #endif
 
-  void PurgeFallbackListShaperCache();
-
   friend class SimpleFontData;  // For fontDataFromFontPlatformData
   friend class FontFallbackList;
   friend class FontPlatformDataCache;
   friend class FontCacheMacTest;
   FRIEND_TEST_ALL_PREFIXES(FontCacheAndroidTest, LocaleSpecificTypeface);
-};
-
-class PLATFORM_EXPORT FontCachePurgePreventer {
-  USING_FAST_MALLOC(FontCachePurgePreventer);
-
- public:
-  FontCachePurgePreventer() { FontCache::Get().DisablePurging(); }
-  FontCachePurgePreventer(const FontCachePurgePreventer&) = delete;
-  FontCachePurgePreventer& operator=(const FontCachePurgePreventer&) = delete;
-  ~FontCachePurgePreventer() { FontCache::Get().EnablePurging(); }
 };
 
 AtomicString ToAtomicString(const SkString&);

@@ -357,8 +357,6 @@ const SimpleFontData* RemoteFontFaceSource::CreateFontData(
 
 const SimpleFontData* RemoteFontFaceSource::CreateLoadingFallbackFontData(
     const FontDescription& font_description) {
-  // This temporary font is not retained and should not be returned.
-  FontCachePurgePreventer font_cache_purge_preventer;
   const SimpleFontData* temporary_font =
       FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {

@@ -64,7 +64,6 @@ TEST_F(FontCacheTest, NoFallbackForPrivateUseArea) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(FontCacheTest, FallbackForEmojis) {
   FontCache& font_cache = FontCache::Get();
-  FontCachePurgePreventer purge_preventer;
 
   // Perform the test for the default font family (kStandardFamily) and the
   // -webkit-body font family (kWebkitBodyFamily) since they behave the same in

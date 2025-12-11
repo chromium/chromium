@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -64,7 +63,6 @@ class TextMetricsTest : public testing::Test {
   const Font* GetFont(FontType type) const { return fonts_holder->fonts[type]; }
 
   test::TaskEnvironment task_environment_;
-  FontCachePurgePreventer font_cache_purge_preventer;
   Persistent<FontsHolder> fonts_holder;
 };
 

@@ -7,7 +7,6 @@
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_cursor.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
@@ -86,7 +85,6 @@ class ShapeResultTest : public FontTestBase {
     return fonts_holder->fonts.at(static_cast<size_t>(type));
   }
 
-  FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
   Persistent<FontsHolder> fonts_holder;
 };

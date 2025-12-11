@@ -177,7 +177,6 @@ class InlineNodeTest : public RenderingTest {
 
   Persistent<LayoutBlockFlow> layout_block_flow_;
   Persistent<LayoutObject> layout_object_;
-  FontCachePurgePreventer purge_preventer_;
 };
 
 #define TEST_ITEM_TYPE_OFFSET(item, type, start, end) \

@@ -156,7 +156,6 @@ ShapeCache* FontCache::GetShapeCache(const FallbackListCompositeKey& key) {
 
 void FontCache::AcceptLanguagesChanged(const String& accept_languages) {
   LayoutLocale::AcceptLanguagesChanged(accept_languages);
-  Get().InvalidateShapeCache();
 }
 
 const SimpleFontData* FontCache::GetFontData(
@@ -235,27 +234,6 @@ const SimpleFontData* FontCache::FallbackFontForCharacter(
   return result;
 }
 
-void FontCache::PurgeFallbackListShaperCache() {
-  TRACE_EVENT0("fonts,ui", "FontCache::PurgeFallbackListShaperCache");
-  for (auto& shape_cache : fallback_list_shaper_cache_.Values()) {
-    shape_cache->Clear();
-  }
-}
-
-void FontCache::InvalidateShapeCache() {
-  PurgeFallbackListShaperCache();
-}
-
-void FontCache::Purge() {
-  // Ideally we should never be forcing the purge while the
-  // FontCachePurgePreventer is in scope, but we call purge() at any timing
-  // via MemoryPressureListenerRegistry.
-  if (purge_prevent_count_)
-    return;
-
-  PurgeFallbackListShaperCache();
-}
-
 void FontCache::AddClient(FontCacheClient* client) {
   CHECK(client);
   DCHECK(!font_cache_clients_.Contains(client));
@@ -275,8 +253,6 @@ void FontCache::Invalidate() {
   for (const auto& client : font_cache_clients_) {
     client->FontCacheInvalidated();
   }
-
-  Purge();
 }
 
 void FontCache::CrashWithFontInfo(const FontDescription* font_description) {

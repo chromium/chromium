@@ -208,7 +208,6 @@ class OffsetMappingTest : public RenderingTest {
 
   Persistent<LayoutBlockFlow> layout_block_flow_;
   Persistent<LayoutObject> layout_object_;
-  FontCachePurgePreventer purge_preventer_;
 };
 
 TEST_F(OffsetMappingTest, CollapseSpaces) {

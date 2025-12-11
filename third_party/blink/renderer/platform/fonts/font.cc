@@ -134,7 +134,6 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   if (ShouldSkipDrawing())
     return;
 
-  FontCachePurgePreventer purge_preventer;
   const auto emphasis_glyph_data = GetEmphasisMarkGlyphData(mark);
   if (!emphasis_glyph_data.font_data)
     return;
@@ -278,8 +277,6 @@ GlyphData Font::GetEmphasisMarkGlyphData(const AtomicString& mark) const {
 }
 
 int Font::EmphasisMarkAscent(const AtomicString& mark) const {
-  FontCachePurgePreventer purge_preventer;
-
   const auto mark_glyph_data = GetEmphasisMarkGlyphData(mark);
   const SimpleFontData* mark_font_data = mark_glyph_data.font_data;
   if (!mark_font_data)
@@ -289,8 +286,6 @@ int Font::EmphasisMarkAscent(const AtomicString& mark) const {
 }
 
 int Font::EmphasisMarkDescent(const AtomicString& mark) const {
-  FontCachePurgePreventer purge_preventer;
-
   const auto mark_glyph_data = GetEmphasisMarkGlyphData(mark);
   const SimpleFontData* mark_font_data = mark_glyph_data.font_data;
   if (!mark_font_data)
@@ -300,8 +295,6 @@ int Font::EmphasisMarkDescent(const AtomicString& mark) const {
 }
 
 int Font::EmphasisMarkHeight(const AtomicString& mark) const {
-  FontCachePurgePreventer purge_preventer;
-
   const auto mark_glyph_data = GetEmphasisMarkGlyphData(mark);
   const SimpleFontData* mark_font_data = mark_glyph_data.font_data;
   if (!mark_font_data)

@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -88,7 +87,6 @@ class ShapingLineBreakerPerfTest : public testing::Test {
 
   void TearDown() override {}
 
-  FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
   base::LapTimer timer_;
 };

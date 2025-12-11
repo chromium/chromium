@@ -153,7 +153,6 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -2609,7 +2608,6 @@ void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
   if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
     return;
 
-  FontCachePurgePreventer preventer;
   DCHECK(layout_object->IsInLayoutNGInlineFormattingContext());
   InlineCursor cursor;
   cursor.MoveTo(*layout_object);

@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
@@ -155,8 +154,6 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
 
   if (!label_font_data || !url_font_data)
     return nullptr;
-
-  FontCachePurgePreventer font_cache_purge_preventer;
 
   bool draw_url_string = true;
   bool clip_url_string = false;

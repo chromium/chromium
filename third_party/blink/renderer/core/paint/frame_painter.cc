@@ -56,7 +56,6 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
   bool is_top_level_painter = !in_paint_contents_;
   in_paint_contents_ = true;
 
-  FontCachePurgePreventer font_cache_purge_preventer;
   ScopedDisplayItemFragment display_item_fragment(context, 0u);
 
   PaintLayer* root_layer = layout_view->Layer();

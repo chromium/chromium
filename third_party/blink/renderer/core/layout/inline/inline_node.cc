@@ -994,10 +994,6 @@ bool InlineNode::SetTextWithOffset(LayoutText* layout_text,
   if (!previous_data)
     return false;
 
-  // This function runs outside of the layout phase. Prevent purging font cache
-  // while shaping.
-  FontCachePurgePreventer font_cache_purge_preventer;
-
   TextOffsetMap offset_map;
   new_text = layout_text->TransformAndSecureText(new_text, offset_map);
   if (!offset_map.IsEmpty()) {

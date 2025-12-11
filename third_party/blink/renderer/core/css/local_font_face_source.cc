@@ -50,7 +50,6 @@ bool LocalFontFaceSource::IsLocalFontAvailable(
 
 const SimpleFontData* LocalFontFaceSource::CreateLoadingFallbackFontData(
     const FontDescription& font_description) {
-  FontCachePurgePreventer font_cache_purge_preventer;
   const SimpleFontData* temporary_font =
       FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {

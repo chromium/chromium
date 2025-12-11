@@ -198,7 +198,6 @@ class HarfBuzzShaperTest : public FontTestBase {
     return result;
   }
 
-  FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
   unsigned start_index_ = 0;
   unsigned num_characters_ = 0;
