@@ -28,9 +28,11 @@ UserActivation* NavigatorUserActivation::userActivation() {
 
 void NavigatorUserActivation::Trace(Visitor* visitor) const {
   visitor->Trace(user_activation_);
+  visitor->Trace(navigator_);
 }
 
-NavigatorUserActivation::NavigatorUserActivation(Navigator& navigator) {
+NavigatorUserActivation::NavigatorUserActivation(Navigator& navigator)
+    : navigator_(navigator) {
   user_activation_ =
       MakeGarbageCollected<UserActivation>(navigator.DomWindow());
 }

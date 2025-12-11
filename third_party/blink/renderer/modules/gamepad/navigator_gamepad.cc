@@ -220,6 +220,7 @@ void NavigatorGamepad::Trace(Visitor* visitor) const {
   visitor->Trace(gamepads_back_);
   visitor->Trace(vibration_actuators_);
   visitor->Trace(gamepad_dispatcher_);
+  visitor->Trace(navigator_);
   ExecutionContextClient::Trace(visitor);
   PlatformEventController::Trace(visitor);
   Gamepad::Client::Trace(visitor);
@@ -250,6 +251,7 @@ void NavigatorGamepad::DidUpdateData() {
 NavigatorGamepad::NavigatorGamepad(Navigator& navigator)
     : ExecutionContextClient(navigator.DomWindow()),
       PlatformEventController(*navigator.DomWindow()),
+      navigator_(navigator),
       gamepad_dispatcher_(
           MakeGarbageCollected<GamepadDispatcher>(*navigator.DomWindow())) {
   LocalDOMWindow* window = navigator.DomWindow();

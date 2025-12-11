@@ -30,6 +30,7 @@ class CORE_EXPORT NavigatorPreferences final
  private:
   static NavigatorPreferences& From(Navigator&);
 
+  Member<Navigator> navigator_;
   Member<PreferenceManager> preference_manager_;
 };
 

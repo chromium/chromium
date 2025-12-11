@@ -12,7 +12,8 @@
 namespace blink {
 
 NavigatorKeyboard::NavigatorKeyboard(Navigator& navigator)
-    : keyboard_(MakeGarbageCollected<Keyboard>(navigator.DomWindow())) {}
+    : navigator_(navigator),
+      keyboard_(MakeGarbageCollected<Keyboard>(navigator_->DomWindow())) {}
 
 // static
 Keyboard* NavigatorKeyboard::keyboard(Navigator& navigator) {
@@ -26,6 +27,7 @@ Keyboard* NavigatorKeyboard::keyboard(Navigator& navigator) {
 
 void NavigatorKeyboard::Trace(Visitor* visitor) const {
   visitor->Trace(keyboard_);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

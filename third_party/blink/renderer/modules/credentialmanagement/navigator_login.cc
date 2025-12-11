@@ -31,11 +31,13 @@ void OnSetIdpSigninStatus(ScriptPromiseResolver<IDLUndefined>* resolver) {
 NavigatorLogin* NavigatorLogin::login(Navigator& navigator) {
   NavigatorLogin* supplement = navigator.GetNavigatorLogin();
   if (!supplement) {
-    supplement = MakeGarbageCollected<NavigatorLogin>();
+    supplement = MakeGarbageCollected<NavigatorLogin>(navigator);
     navigator.SetNavigatorLogin(supplement);
   }
   return supplement;
 }
+
+NavigatorLogin::NavigatorLogin(Navigator& navigator) : navigator_(navigator) {}
 
 ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
     ScriptState* script_state,
@@ -117,6 +119,7 @@ ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
 
 void NavigatorLogin::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

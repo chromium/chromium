@@ -27,6 +27,7 @@ class NavigatorKeyboard final : public GarbageCollected<NavigatorKeyboard>,
   void Trace(Visitor*) const override;
 
  private:
+  Member<Navigator> navigator_;
   Member<Keyboard> keyboard_;
 };
 

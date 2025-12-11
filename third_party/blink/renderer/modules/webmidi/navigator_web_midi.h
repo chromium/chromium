@@ -56,9 +56,12 @@ class NavigatorWebMIDI final : public GarbageCollected<NavigatorWebMIDI>,
                                               const MIDIOptions*,
                                               ExceptionState& exception_state);
 
-  NavigatorWebMIDI() = default;
+  explicit NavigatorWebMIDI(Navigator&);
 
   void Trace(Visitor*) const override;
+
+ private:
+  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

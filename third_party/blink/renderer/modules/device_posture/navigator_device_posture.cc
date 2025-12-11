@@ -26,10 +26,12 @@ DevicePosture* NavigatorDevicePosture::devicePosture(Navigator& navigator) {
 }
 
 NavigatorDevicePosture::NavigatorDevicePosture(Navigator& navigator)
-    : posture_(MakeGarbageCollected<DevicePosture>(navigator.DomWindow())) {}
+    : navigator_(navigator),
+      posture_(MakeGarbageCollected<DevicePosture>(navigator_->DomWindow())) {}
 
 void NavigatorDevicePosture::Trace(Visitor* visitor) const {
   visitor->Trace(posture_);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

@@ -14,11 +14,14 @@
 
 namespace blink {
 
+NavigatorPlugins::NavigatorPlugins(Navigator& navigator)
+    : navigator_(navigator) {}
+
 // static
 NavigatorPlugins& NavigatorPlugins::From(Navigator& navigator) {
   NavigatorPlugins* supplement = ToNavigatorPlugins(navigator);
   if (!supplement) {
-    supplement = MakeGarbageCollected<NavigatorPlugins>();
+    supplement = MakeGarbageCollected<NavigatorPlugins>(navigator);
     navigator.SetNavigatorPlugins(supplement);
   }
   return *supplement;
@@ -73,6 +76,7 @@ bool NavigatorPlugins::pdfViewerEnabled(LocalDOMWindow* window) const {
 void NavigatorPlugins::Trace(Visitor* visitor) const {
   visitor->Trace(plugins_);
   visitor->Trace(mime_types_);
+  visitor->Trace(navigator_);
 }
 
 }  // namespace blink

@@ -810,6 +810,7 @@ XRSystem* XRSystem::xr(Navigator& navigator) {
 XRSystem::XRSystem(Navigator& navigator)
     : ExecutionContextLifecycleObserver(navigator.DomWindow()),
       FocusChangedObserver(navigator.DomWindow()->GetFrame()->GetPage()),
+      navigator_(navigator),
       service_(navigator.DomWindow()),
       environment_provider_(navigator.DomWindow()),
       receiver_(this, navigator.DomWindow()),
@@ -1803,6 +1804,7 @@ void XRSystem::DisableBackForwardCache() {
 }
 
 void XRSystem::Trace(Visitor* visitor) const {
+  visitor->Trace(navigator_);
   visitor->Trace(frame_provider_);
   visitor->Trace(sessions_);
   visitor->Trace(service_);

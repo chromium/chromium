@@ -28,6 +28,7 @@ class CORE_EXPORT NavigatorUserActivation final
  private:
   static NavigatorUserActivation& From(Navigator&);
 
+  Member<Navigator> navigator_;
   Member<UserActivation> user_activation_;
 };
 

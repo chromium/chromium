@@ -27,9 +27,11 @@ PreferenceManager* NavigatorPreferences::preferences() {
 
 void NavigatorPreferences::Trace(Visitor* visitor) const {
   visitor->Trace(preference_manager_);
+  visitor->Trace(navigator_);
 }
 
-NavigatorPreferences::NavigatorPreferences(Navigator& navigator) {
+NavigatorPreferences::NavigatorPreferences(Navigator& navigator)
+    : navigator_(navigator) {
   preference_manager_ =
       MakeGarbageCollected<PreferenceManager>(navigator.GetExecutionContext());
 }

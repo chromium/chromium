@@ -22,8 +22,9 @@ class MODULES_EXPORT NavigatorLogin : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static const unsigned kSupplementIndex;
   static NavigatorLogin* login(Navigator&);
-  NavigatorLogin() = default;
+  explicit NavigatorLogin(Navigator&);
 
   ScriptPromise<IDLUndefined> setStatus(ScriptState* script_state,
                                         const V8LoginStatus& status);
@@ -33,6 +34,9 @@ class MODULES_EXPORT NavigatorLogin : public ScriptWrappable,
                                         const LoginStatusOptions* options);
 
   void Trace(Visitor*) const override;
+
+ private:
+  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

@@ -53,6 +53,7 @@ BatteryManager::BatteryManager(Navigator& navigator)
     : ActiveScriptWrappable<BatteryManager>({}),
       ExecutionContextLifecycleStateObserver(navigator.DomWindow()),
       PlatformEventController(*navigator.DomWindow()),
+      navigator_(navigator),
       battery_dispatcher_(
           MakeGarbageCollected<BatteryDispatcher>(navigator.DomWindow())) {
   UpdateStateIfNeeded();
@@ -159,6 +160,7 @@ bool BatteryManager::HasPendingActivity() const {
 void BatteryManager::Trace(Visitor* visitor) const {
   visitor->Trace(battery_property_);
   visitor->Trace(battery_dispatcher_);
+  visitor->Trace(navigator_);
   PlatformEventController::Trace(visitor);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleStateObserver::Trace(visitor);

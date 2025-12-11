@@ -106,7 +106,7 @@ ContactsManager* ContactsManager::contacts(Navigator& navigator) {
 }
 
 ContactsManager::ContactsManager(Navigator& navigator)
-    : contacts_manager_(navigator.DomWindow()) {}
+    : navigator_(navigator), contacts_manager_(navigator.DomWindow()) {}
 
 ContactsManager::~ContactsManager() = default;
 
@@ -260,6 +260,7 @@ ScriptPromise<IDLSequence<V8ContactProperty>> ContactsManager::getProperties(
 
 void ContactsManager::Trace(Visitor* visitor) const {
   visitor->Trace(contacts_manager_);
+  visitor->Trace(navigator_);
   ScriptWrappable::Trace(visitor);
 }
 

@@ -24,6 +24,7 @@ class NavigatorDevicePosture final
   void Trace(Visitor*) const override;
 
  private:
+  Member<Navigator> navigator_;
   Member<DevicePosture> posture_;
 };
 
