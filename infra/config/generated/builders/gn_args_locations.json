@@ -123,22 +123,20 @@
     "linux-build-perf-siso": "build/linux-build-perf-siso/gn-args.json",
     "linux-chromeos-build-perf-ninja": "build/linux-chromeos-build-perf-ninja/gn-args.json",
     "linux-chromeos-build-perf-siso": "build/linux-chromeos-build-perf-siso/gn-args.json",
+    "linux-rbe-trusted-test": "build/linux-rbe-trusted-test/gn-args.json",
+    "linux-rbe-untrusted-test": "build/linux-rbe-untrusted-test/gn-args.json",
     "mac-build-perf-developer": "build/mac-build-perf-developer/gn-args.json",
     "mac-build-perf-ninja": "build/mac-build-perf-ninja/gn-args.json",
     "mac-build-perf-siso": "build/mac-build-perf-siso/gn-args.json",
     "win-build-perf-ci-siso": "build/win-build-perf-ci-siso/gn-args.json",
     "win-build-perf-developer": "build/win-build-perf-developer/gn-args.json",
     "win-build-perf-ninja": "build/win-build-perf-ninja/gn-args.json",
-    "win-build-perf-siso": "build/win-build-perf-siso/gn-args.json"
+    "win-build-perf-siso": "build/win-build-perf-siso/gn-args.json",
+    "win-rbe-trusted-test": "build/win-rbe-trusted-test/gn-args.json",
+    "win-rbe-untrusted-test": "build/win-rbe-untrusted-test/gn-args.json"
   },
   "chromium.build.fyi": {
     "Mac Builder Siso FYI": "build/Mac Builder Siso FYI/gn-args.json"
-  },
-  "chromium.build.test": {
-    "linux-rbe-trusted-test": "build/linux-rbe-trusted-test/gn-args.json",
-    "linux-rbe-untrusted-test": "build/linux-rbe-untrusted-test/gn-args.json",
-    "win-rbe-trusted-test": "build/win-rbe-trusted-test/gn-args.json",
-    "win-rbe-untrusted-test": "build/win-rbe-untrusted-test/gn-args.json"
   },
   "chromium.cft": {
     "linux-rel-cft": "ci/linux-rel-cft/gn-args.json",

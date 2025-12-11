@@ -817,3 +817,161 @@ ci.builder(
     siso_fail_if_reapi_used = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
+
+# RBE test builders
+def cq_rbe_test_builder(**kwargs):
+    # Use CQ RBE instance and high remote_jobs to simulate CQ builds.
+    return ci.builder(
+        builderless = True,
+        execution_timeout = 10 * time.hour,
+        priority = ci_constants.DEFAULT_FYI_PRIORITY,
+        siso_configs = ["builder"],
+        siso_project = siso.project.TEST_UNTRUSTED,
+        siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+        siso_remote_linking = True,
+        use_clang_coverage = True,
+        **kwargs
+    )
+
+def ci_rbe_test_builder(**kwargs):
+    # Use CI RBE instance to simulate CI builds.
+    return ci.builder(
+        builderless = True,
+        execution_timeout = 10 * time.hour,
+        priority = ci_constants.DEFAULT_FYI_PRIORITY,
+        siso_configs = ["builder"],
+        siso_project = siso.project.TEST_TRUSTED,
+        siso_remote_jobs = siso.remote_jobs.DEFAULT,
+        **kwargs
+    )
+
+# Builders with rbe-chromium-untrusted-test.
+cq_rbe_test_builder(
+    name = "linux-rbe-untrusted-test",
+    description_html = "This builder builds Linux CQ build with rbe-chroimum-untrusted-test.<br/>" +
+                       "The build configs and the bot specs should be in sync with " + linkify_builder("try", "linux-rel-compilator", "chromium"),
+    executable = "recipe:chrome_build/build_perf_siso",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = {
+        "builtin": "try/linux-rel",
+        "no_clang_modules": gn_args.config(configs = ["try/linux-rel", "no_clang_modules"]),
+    },
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "rbe test",
+        short_name = "cqlin",
+    ),
+)
+
+cq_rbe_test_builder(
+    name = "win-rbe-untrusted-test",
+    description_html = "This builder builds Windows CQ build with rbe-chroimum-untrusted-test.<br/>" +
+                       "The build configs and the bot specs should be in sync with " + linkify_builder("try", "win-rel-compilator", "chromium"),
+    executable = "recipe:chrome_build/build_perf_siso",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = {
+        "builtin": "try/win-rel",
+        "no_clang_modules": gn_args.config(configs = ["try/win-rel", "no_clang_modules"]),
+    },
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "rbe test",
+        short_name = "cqwin",
+    ),
+    # Downloading with "minimum" strategy doesn't work
+    # well for the win builder because some steps are missing inputs.
+    # e.g. mini_installer.exe
+    siso_output_local_strategy = "greedy",
+)
+
+# Builders with rbe-chromium-trusted-test.
+ci_rbe_test_builder(
+    name = "linux-rbe-trusted-test",
+    description_html = "This builder builds Linux CI build with rbe-chroimum-trusted-test.<br/>" +
+                       "The build configs and the bot specs should be in sync with " + linkify_builder("ci", "Linux Builder", "chromium"),
+    executable = "recipe:chrome_build/build_perf_siso",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = {
+        "builtin": "ci/Linux Builder",
+        "no_clang_modules": gn_args.config(configs = ["ci/Linux Builder", "no_clang_modules"]),
+    },
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "rbe test",
+        short_name = "cilin",
+    ),
+    siso_remote_linking = True,
+)
+
+ci_rbe_test_builder(
+    name = "win-rbe-trusted-test",
+    description_html = "This builder builds Windows CI build with rbe-chroimum-trusted-test.<br/>" +
+                       "The build configs and the bot specs should be in sync with " + linkify_builder("ci", "Win x64 Builder", "chromium"),
+    executable = "recipe:chrome_build/build_perf_siso",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "siso_latest",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    gn_args = {
+        "builtin": "ci/Win x64 Builder",
+        "no_clang_modules": gn_args.config(configs = ["ci/Win x64 Builder", "no_clang_modules"]),
+    },
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "rbe test",
+        short_name = "ciwin",
+    ),
+)
