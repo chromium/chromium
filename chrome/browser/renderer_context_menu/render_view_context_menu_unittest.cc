@@ -912,15 +912,6 @@ TEST_F(RenderViewContextMenuPrefsTest,
 class RenderViewContextMenuUsePasskeyFromAnotherDeviceTest
     : public RenderViewContextMenuPrefsTest {
  public:
-  class MockBrowserAutofillManager
-      : public autofill::TestBrowserAutofillManager {
-   public:
-    using autofill::TestBrowserAutofillManager::TestBrowserAutofillManager;
-    MOCK_METHOD(const autofill::FormStructure*,
-                FindCachedFormById,
-                (autofill::FormGlobalId),
-                (const override));
-  };
   void SetUp() override { RenderViewContextMenuPrefsTest::SetUp(); }
 
   const GURL get_url() { return GURL("https://foo.com"); }
@@ -984,7 +975,7 @@ class RenderViewContextMenuUsePasskeyFromAnotherDeviceTest
       af_client_injector;
   autofill::TestAutofillDriverInjector<autofill::TestContentAutofillDriver>
       af_driver_injector_;
-  autofill::TestAutofillManagerInjector<MockBrowserAutofillManager>
+  autofill::TestAutofillManagerInjector<autofill::TestBrowserAutofillManager>
       af_manager_injector_;
 };
 
