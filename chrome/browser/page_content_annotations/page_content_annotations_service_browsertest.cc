@@ -237,7 +237,6 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
           {
               {"write_to_history_service", "true"},
           }},
-         {features::kPageVisibilityPageContentAnnotations, {}},
          {history::kVisitedLinksOn404, {}}},
         /*disabled_features=*/{
             optimization_guide::features::kPreventLongRunningPredictionModels});
@@ -923,8 +922,7 @@ class PageContentAnnotationsServiceNoHistoryTest
         {{features::kPageContentAnnotations,
           {
               {"write_to_history_service", "false"},
-          }},
-         {features::kPageVisibilityPageContentAnnotations, {}}},
+          }}},
         /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceNoHistoryTest() override = default;
@@ -1020,8 +1018,7 @@ class PageContentAnnotationsServiceBatchVisitTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPageContentAnnotations,
           {{"write_to_history_service", "false"},
-           {"annotate_visit_batch_size", "2"}}},
-         {features::kPageVisibilityPageContentAnnotations, {}}},
+           {"annotate_visit_batch_size", "2"}}}},
         /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceBatchVisitTest() override = default;
@@ -1102,8 +1099,7 @@ class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPageContentAnnotations,
           {{"write_to_history_service", "false"},
-           {"annotate_visit_batch_size", "1"}}},
-         {features::kPageVisibilityPageContentAnnotations, {}}},
+           {"annotate_visit_batch_size", "1"}}}},
         /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceBatchVisitNoAnnotateTest() override = default;
