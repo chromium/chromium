@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/layout/flex_layout.h"
 
 class HorizontalTabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
@@ -250,6 +251,56 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
     EXPECT_EQ(tab_search_container()->bounds().right(),
               tab_search_container_expected_end);
   }
+}
+
+// This test uses both shift+click and shift+ctrl/cmd+click to verify the
+// AddSelectionFromAnchorTo function.
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
+                       MultiSelectAcrossNoncontiguousTabs) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  Tab* tab_0 = tab_strip()->tab_at(0);
+  Tab* tab_1 = tab_strip()->tab_at(1);
+  Tab* tab_2 = tab_strip()->tab_at(2);
+  Tab* tab_3 = tab_strip()->tab_at(3);
+
+  auto click_tab = [](Tab* tab, int flags) {
+    const int event_flags = flags | ui::EF_LEFT_MOUSE_BUTTON;
+    ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
+                               gfx::Point(), base::TimeTicks::Now(),
+                               event_flags, ui::EF_LEFT_MOUSE_BUTTON);
+    tab->OnMousePressed(press_event);
+  };
+#if BUILDFLAG(IS_MAC)
+  const int kPlatformModifier = ui::EF_COMMAND_DOWN;
+#else
+  const int kPlatformModifier = ui::EF_CONTROL_DOWN;
+#endif
+  // Establish Tab 2 as an anchor.
+  click_tab(tab_2, ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_0));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_1));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_2));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_3));
+  EXPECT_TRUE(tab_2->IsActive());
+
+  // Shift click tab_3.
+  click_tab(tab_3, ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_0));
+  EXPECT_FALSE(tab_strip()->IsTabSelected(tab_1));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_2));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_3));
+  EXPECT_TRUE(tab_3->IsActive());
+
+  // Shift + Platform click tab_0.
+  click_tab(tab_0,
+            ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN | kPlatformModifier);
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_0));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_1));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_2));
+  EXPECT_TRUE(tab_strip()->IsTabSelected(tab_3));
+  EXPECT_TRUE(tab_0->IsActive());
 }
 
 class TabSearchForcedPositionTest : public HorizontalTabStripRegionViewBrowserBaseTest,
