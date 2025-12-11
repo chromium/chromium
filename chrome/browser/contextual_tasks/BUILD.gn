@@ -163,6 +163,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/lens",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/interaction",

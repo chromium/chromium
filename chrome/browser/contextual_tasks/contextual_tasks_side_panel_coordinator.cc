@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -34,6 +35,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -662,6 +664,10 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
     if (it != task_id_to_web_contents_cache_.end()) {
       it->second->is_open = is_open;
     }
+
+    if (!is_open) {
+      CloseLensSessionsForTask(*task);
+    }
   } else {
     tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
     if (!active_tab) {
@@ -674,6 +680,13 @@ void ContextualTasksSidePanelCoordinator::UpdateOpenState(bool is_open) {
       it->second = is_open;
     } else {
       tab_scoped_open_state_[tab_id] = is_open;
+    }
+
+    if (auto* lens_controller = LensSearchController::From(active_tab)) {
+      if (!is_open && !lens_controller->IsOff()) {
+        lens_controller->CloseLensAsync(
+            lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+      }
     }
   }
 }
@@ -719,6 +732,27 @@ bool ContextualTasksSidePanelCoordinator::ShouldBeOpen() {
       return it->second;
     }
     return false;
+  }
+}
+
+void ContextualTasksSidePanelCoordinator::CloseLensSessionsForTask(
+    const ContextualTask& task) {
+  TabStripModel* tab_strip_model = browser_window_->GetTabStripModel();
+  const auto associated_tab_ids =
+      context_controller_->GetTabsAssociatedWithTask(task.GetTaskId());
+
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+    auto it =
+        std::find(associated_tab_ids.begin(), associated_tab_ids.end(),
+                  sessions::SessionTabHelper::IdForTab(tab->GetContents()));
+    if (it != associated_tab_ids.end()) {
+      if (auto* lens_controller = LensSearchController::From(tab);
+          !lens_controller->IsOff()) {
+        lens_controller->CloseLensAsync(
+            lens::LensOverlayDismissalSource::kSidePanelCloseButton);
+      }
+    }
   }
 }
 
