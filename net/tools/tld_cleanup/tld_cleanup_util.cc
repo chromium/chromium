@@ -7,13 +7,14 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
+#include <tuple>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -70,7 +71,8 @@ std::string RulesToGperf(const RuleMap& rules) {
 // canonicalizes it using GURL. Returns kSuccess if the rule is interpreted as
 // valid; logs a warning and returns kWarning if it is probably invalid; and
 // logs an error and returns kError if the rule is (almost) certainly invalid.
-NormalizeResult NormalizeRule(std::string& domain, Rule& rule) {
+std::tuple<NormalizeResult, std::string, Rule> NormalizeRule(std::string domain,
+                                                             Rule rule) {
   NormalizeResult result = NormalizeResult::kSuccess;
 
   // Strip single leading and trailing dots.
@@ -91,7 +93,7 @@ NormalizeResult NormalizeRule(std::string& domain, Rule& rule) {
   }
   if (domain.empty()) {
     LOG(WARNING) << "Ignoring empty rule";
-    return NormalizeResult::kWarning;
+    return std::make_tuple(NormalizeResult::kWarning, domain, rule);
   }
 
   // Warn about additional '*.' or '!'.
@@ -106,7 +108,7 @@ NormalizeResult NormalizeRule(std::string& domain, Rule& rule) {
   url::Component host = gurl.parsed_for_possibly_invalid_spec().host;
   if (!host.is_valid()) {
     LOG(ERROR) << "Ignoring rule that couldn't be normalized: " << domain;
-    return NormalizeResult::kError;
+    return std::make_tuple(NormalizeResult::kError, domain, rule);
   }
   if (!gurl.is_valid()) {
     LOG(WARNING) << "Keeping rule that GURL says is invalid: " << domain;
@@ -114,11 +116,12 @@ NormalizeResult NormalizeRule(std::string& domain, Rule& rule) {
   }
   domain.assign(spec.substr(host.begin, host.len));
 
-  return result;
+  return std::make_tuple(result, domain, rule);
 }
 
-NormalizeResult NormalizeDataToRuleMap(const std::string& data,
-                                       RuleMap& rules) {
+std::pair<NormalizeResult, RuleMap> NormalizeDataToRuleMap(
+    const std::string& data) {
+  RuleMap rules;
   // We do a lot of string assignment during parsing, but simplicity is more
   // important than performance here.
   NormalizeResult result = NormalizeResult::kSuccess;
@@ -149,11 +152,10 @@ NormalizeResult NormalizeDataToRuleMap(const std::string& data,
         first_whitespace != std::string::npos) {
       line.erase(first_whitespace);
     }
-    std::string domain = line;
 
-    Rule rule{/*exception=*/false, /*wildcard=*/false,
-              /*is_private=*/in_private_section};
-    NormalizeResult new_result = NormalizeRule(domain, rule);
+    const auto [new_result, domain, rule] =
+        NormalizeRule(line, Rule{/*exception=*/false, /*wildcard=*/false,
+                                 /*is_private=*/in_private_section});
     result = std::max(result, new_result);
     if (new_result == NormalizeResult::kError) {
       continue;
@@ -193,12 +195,11 @@ NormalizeResult NormalizeDataToRuleMap(const std::string& data,
                          return !base::Contains(rules, extra_rule.first);
                        });
 
-  return result;
+  return std::make_pair(result, rules);
 }
 
 NormalizeResult NormalizeFile(const base::FilePath& in_filename,
                               const base::FilePath& out_filename) {
-  RuleMap rules;
   std::string data;
   if (!base::ReadFileToString(in_filename, &data)) {
     LOG(ERROR) << "Unable to read file";
@@ -206,11 +207,11 @@ NormalizeResult NormalizeFile(const base::FilePath& in_filename,
     return NormalizeResult::kSuccess;
   }
 
-  NormalizeResult result = NormalizeDataToRuleMap(data, rules);
+  const auto [result, rules] = NormalizeDataToRuleMap(data);
 
   if (!base::WriteFile(out_filename, RulesToGperf(rules))) {
     LOG(ERROR) << "Error(s) writing output file";
-    result = NormalizeResult::kError;
+    return NormalizeResult::kError;
   }
 
   return result;
