@@ -958,10 +958,9 @@ void LoginOnUff() {
                  @"Wrong domain in leaked username.");
 }
 
-// TODO(crbug.com/440644620): Find a solution to page loading flakes.
 // Tests that the password save flow via the infobar still works correctly
 // when the badge is removed.
-- (void)FLAKY_testSaveWithoutBadges {
+- (void)testSaveWithoutBadges {
   [self loadLoginPage];
 
   // Simulate user interacting with fields to trigger a capture of credentials.
@@ -998,10 +997,9 @@ void LoginOnUff() {
   GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
 }
 
-// TODO(crbug.com/440644620): Find a solution to page loading flakes.
 // Tests that the password update flow via the infobar still works correctly
 // when the badge is removed.
-- (void)FLAKY_testUpdateWithoutBadges {
+- (void)testUpdateWithoutBadges {
   // Load the page the first time an store credentials.
   [self loadLoginPage];
   [PasswordManagerAppInterface storeCredentialWithUsername:@"Eguser"
