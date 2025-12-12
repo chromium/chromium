@@ -230,10 +230,44 @@ class AndroidProfileTool:
     ])
     self._RestoreCommandLineFlags(changer)
 
+    pid = self._GetProcessPid(
+        'com.google.android.googlequicksearchbox:googleapp')
     time.sleep(60)  # Leave time for the profile dump
     data = self._PullProfileData('embedder.crossbench')
+    data = self._FilterWebViewProfiles(data, pid)
+    if len(data) != 2:
+      raise NoProfileDataError(
+          f'Expected 2 profiles (browser and renderer) but found {len(data)}')
     self._DeleteDeviceData()
     return data
+
+  def _FilterWebViewProfiles(self, data: List[str],
+                             pid: Optional[int]) -> List[str]:
+    if not pid:
+      logging.warning('Could not find PID, not filtering profiles.')
+      return data
+
+    pid_str = str(pid)
+    filtered_data = []
+    for path in data:
+      filename = os.path.basename(path)
+      # Renderer profiles are always included.
+      # The renderer is less likely to dump a profile as a result of
+      # an app starting WebView from the background.
+      if 'profile-hitmap-renderer-' in filename:
+        filtered_data.append(path)
+        continue
+      # For browser profiles, check the PID.
+      if f'profile-hitmap-{pid_str}-' in filename:
+        filtered_data.append(path)
+    logging.info('Filtered Pulled profile files: %s', '\n'.join(filtered_data))
+    return filtered_data
+
+  def _GetProcessPid(self, full_process_name: str) -> Optional[int]:
+    pid_list = self._device.GetPids(full_process_name).get(full_process_name)
+    if pid_list:
+      return pid_list[0]
+    return None
 
   def InstallAndSetWebViewProvider(self, installer_path: str):
     """Installs the built WebView on the device and set it as the WebView
