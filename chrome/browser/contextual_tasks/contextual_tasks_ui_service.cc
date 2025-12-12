@@ -579,7 +579,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanel(
     // Associate the web contents with the task and set the session handle if
     // provided.
     content::WebContents* web_contents = coordinator->GetActiveWebContents();
-    AssociateWebContentsToTask(panel_contents, task.GetTaskId());
+    AssociateWebContentsToTask(web_contents, task.GetTaskId());
     if (session_handle) {
       ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents)
           ->set_session_handle(std::move(session_handle));
