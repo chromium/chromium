@@ -47,6 +47,12 @@ message QueryPayload {
   // Query data returned if Lens was invoked.
   repeated LensImageQueryData lens_image_query_data = 2;
 
+  // Whether to use research agent for this query.
+  bool use_research_agent = 4;
+
+  // Whether to use Image Generation for this query.
+  bool use_image_generation = 12;
+
   // Deprecated fields to match the Silk QueryPayload.
   reserved 5, 7;
 }

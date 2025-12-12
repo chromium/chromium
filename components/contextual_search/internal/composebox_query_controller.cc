@@ -455,6 +455,10 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
       create_client_to_aim_request_info->query_text);
   submit_query->mutable_payload()->set_query_text_source(
       create_client_to_aim_request_info->query_text_source);
+  submit_query->mutable_payload()->set_use_research_agent(
+      create_client_to_aim_request_info->deep_search_selected);
+  submit_query->mutable_payload()->set_use_image_generation(
+      create_client_to_aim_request_info->create_images_selected);
 
   // Add the request id data for each file token.
   if (!active_files_.empty() && cluster_info_.has_value()) {
