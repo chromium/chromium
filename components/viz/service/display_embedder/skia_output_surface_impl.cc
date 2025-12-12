@@ -991,8 +991,6 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
         std::make_unique<ImageContextImpl>(mailbox, size, format, color_space);
   }
   if (!image_context->has_image()) {
-    // NOTE: The ColorSpace parameter is relevant only for external sampling,
-    // whereas RenderPasses always work with true single-planar formats.
     MakePromiseSkImageSinglePlane(image_context.get(), mipmap, false);
     if (!image_context->has_image()) {
       return nullptr;

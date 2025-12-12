@@ -675,8 +675,6 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     image_context->set_alpha_type(alpha_type);
   }
 
-  // We need the original TransferableResource.color_space for YUV => RGB
-  // conversion.
   skia_renderer->skia_output_surface_->MakePromiseSkImage(image_context,
                                                           force_rgbx);
   paint_op_buffer_ = image_context->paint_op_buffer();
