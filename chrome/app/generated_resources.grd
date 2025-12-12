@@ -9757,6 +9757,30 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_OFF_HIGHLIGHT_LABEL" desc="Dropdown option for turning off highlighting in Read Aloud.">
         Off
       </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_WINDOW_HEADING" desc="Heading in dropdown menu for the sliding window line focus options.">
+        Highlight
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_1_LINE_LABEL" desc="Dropdown option for the sliding 1-line-height window line focus option.">
+        1 line
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_3_LINE_LABEL" desc="Dropdown option for the sliding 3-line-height window line focus option.">
+        3 lines
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_5_LINE_LABEL" desc="Dropdown option for the sliding 5-line-height window line focus option.">
+        5 lines
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_LINE_HEADING" desc="Heading in dropdown menu for the single underline line focus options.">
+        Line
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_STATIC_LINE_LABEL" desc="Dropdown option for the line focus option of a single static line in the middle of the panel.">
+        Static line
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_CURSOR_LINE_LABEL" desc="Dropdown option for the line focus option of a single line following the cursor.">
+        Follow cursor
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_OFF_LABEL" desc="Dropdown option for turning off line focus.">
+        Off
+      </message>
       <message name="IDS_READ_ANYTHING_LOADING" desc="Message to show while Read Anything is figuring out what text to display.">
         Getting ready
       </message>
