@@ -23,6 +23,9 @@ enum FeatureCapability {
 
   // SetCobrowsingDisplayMode event
   COBROWSING_DISPLAY_CONTROL = 16;
+
+  // AiModeUpdateThreadContextLibrary() method
+  THREAD_CONTEXT_LIBRARY = 17;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,6 +99,7 @@ message AimToClientMessage {
     RestoreInput restore_input = 3;
     EnterBasicMode enter_basic_mode = 4;
     ExitBasicMode exit_basic_mode = 5;
+    UpdateThreadContextLibrary update_thread_context_library = 7;
   }
 }
 
@@ -110,3 +114,35 @@ message EnterBasicMode {}
 
 // Message AIM sends to clients to exit basic mode.
 message ExitBasicMode {}
+
+// Message AIM sends to clients to update the thread context library.
+message UpdateThreadContextLibrary {
+  repeated Context contexts = 1;
+}
+
+// Context input for AIM threads.
+message Context {
+  // Unique identifier for the user uploaded context (e.g. PDF). This is created
+  // during context upload.
+  int64 context_id = 1;
+  oneof context_input {
+    Image image = 2;
+    Pdf pdf = 3;
+    Webpage webpage = 4;
+  }
+}
+
+message Image {
+  string title = 1;
+  string url = 2;
+}
+
+message Pdf {
+  string title = 1;
+  string url = 2;
+}
+
+message Webpage {
+  string title = 1;
+  string url = 2;
+}
