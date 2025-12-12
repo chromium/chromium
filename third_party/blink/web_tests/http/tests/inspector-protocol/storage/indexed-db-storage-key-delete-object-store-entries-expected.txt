@@ -1,7 +1,7 @@
 Tests that deleting object store entries works for IndexedDB with storage bucket
 
 Open database, object store and set values for default bucket
-data values[
+data values [
     [0] : test-data0
     [1] : test-data1
     [2] : test-data2
@@ -9,7 +9,7 @@ data values[
     [4] : test-data4
 ]
 Delete object store entries with keys greater than 'test-key1'
-data values after clear[
+data values after clear [
     [0] : test-data0
     [1] : test-data1
     [2] : null
@@ -17,7 +17,7 @@ data values after clear[
     [4] : null
 ]
 Open database, object store and set values for test-bucket bucket
-data values[
+data values [
     [0] : test-data0
     [1] : test-data1
     [2] : test-data2
@@ -25,7 +25,7 @@ data values[
     [4] : test-data4
 ]
 Delete object store entries with keys greater than 'test-key1'
-data values after clear[
+data values after clear [
     [0] : test-data0
     [1] : test-data1
     [2] : null

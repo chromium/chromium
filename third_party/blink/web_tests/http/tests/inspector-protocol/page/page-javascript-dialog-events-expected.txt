@@ -3,7 +3,7 @@ Tests Page.javascriptDialogOpening event
 Page.javascriptDialogOpening: {
     method : Page.javascriptDialogOpening
     params : {
-        defaultPrompt : 
+        defaultPrompt :
         frameId : <string>
         hasBrowserHandler : true
         message : Hello World
@@ -18,7 +18,7 @@ Page.javascriptDialogClosed: {
     params : {
         frameId : <string>
         result : true
-        userInput : 
+        userInput :
     }
     sessionId : <string>
 }

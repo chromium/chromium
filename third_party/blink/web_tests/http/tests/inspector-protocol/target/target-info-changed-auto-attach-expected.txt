@@ -5,9 +5,9 @@ Tests that Target.targetInfoChanged is dispatched for auto-attached targets.
     canAccessOpener : false
     parentFrameId : <string>
     targetId : <string>
-    title : 
+    title :
     type : iframe
-    url : 
+    url :
 }
 {
     targetInfo : {

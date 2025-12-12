@@ -13,7 +13,7 @@ Running test: expectGetAttributesForElementWorksCorrectly
     children : [
         [0] : {
             backendNodeId : <number>
-            localName : 
+            localName :
             nodeId : <number>
             nodeName : #text
             nodeType : 3
@@ -25,7 +25,7 @@ Running test: expectGetAttributesForElementWorksCorrectly
     nodeId : <number>
     nodeName : P
     nodeType : 1
-    nodeValue : 
+    nodeValue :
     parentId : <number>
 }
 [
@@ -56,7 +56,7 @@ Running test: expectGetAttributesOnNonElementReturnsError
                     nodeId : <number>
                     nodeName : HEAD
                     nodeType : 1
-                    nodeValue : 
+                    nodeValue :
                     parentId : <number>
                 }
                 [1] : {
@@ -68,7 +68,7 @@ Running test: expectGetAttributesOnNonElementReturnsError
                     nodeId : <number>
                     nodeName : BODY
                     nodeType : 1
-                    nodeValue : 
+                    nodeValue :
                     parentId : <number>
                 }
             ]
@@ -77,18 +77,18 @@ Running test: expectGetAttributesOnNonElementReturnsError
             nodeId : <number>
             nodeName : HTML
             nodeType : 1
-            nodeValue : 
+            nodeValue :
             parentId : <number>
         }
     ]
     compatibilityMode : QuirksMode
     documentURL : <string>
-    localName : 
+    localName :
     nodeId : <number>
     nodeName : #document
     nodeType : 9
-    nodeValue : 
-    xmlVersion : 
+    nodeValue :
+    xmlVersion :
 }
 {
     code : -32000

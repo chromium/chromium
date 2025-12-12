@@ -39,7 +39,7 @@ Tests ARIA 1.1 accessibility markup.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -273,7 +273,7 @@ Tests ARIA 1.1 accessibility markup.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>

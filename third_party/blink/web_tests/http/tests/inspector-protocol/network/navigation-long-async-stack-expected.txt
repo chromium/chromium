@@ -9,7 +9,7 @@ Initiator:
                 functionName : f
                 lineNumber : 4
                 scriptId : <string>
-                url : 
+                url :
             }
         ]
         parent : {
@@ -19,7 +19,7 @@ Initiator:
                     functionName : eval
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
             ]
             description : Promise.then

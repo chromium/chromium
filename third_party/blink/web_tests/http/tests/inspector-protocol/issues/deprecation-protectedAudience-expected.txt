@@ -12,7 +12,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -31,7 +31,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -50,7 +50,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -69,7 +69,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -88,7 +88,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -107,7 +107,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -126,7 +126,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -145,7 +145,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -164,7 +164,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -183,7 +183,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -202,7 +202,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -221,7 +221,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }
@@ -240,7 +240,7 @@ Inspector issue: {
                     columnNumber : 11
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : Fledge
             }

@@ -23,7 +23,7 @@ Nodes:
         nodeId : <number>
         nodeName : SLOT
         nodeType : 1
-        nodeValue : 
+        nodeValue :
     }
 }
 {
@@ -47,7 +47,7 @@ Nodes:
         nodeId : <number>
         nodeName : SPAN
         nodeType : 1
-        nodeValue : 
+        nodeValue :
     }
 }
 {
@@ -64,7 +64,7 @@ Nodes:
         nodeId : <number>
         nodeName : DIV
         nodeType : 1
-        nodeValue : 
+        nodeValue :
     }
 }
 

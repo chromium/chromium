@@ -39,7 +39,7 @@ Tests name sources in inputs.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -1060,7 +1060,7 @@ Tests name sources in inputs.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>

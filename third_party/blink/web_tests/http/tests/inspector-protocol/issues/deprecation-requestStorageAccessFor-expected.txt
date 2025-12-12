@@ -11,7 +11,7 @@ Inspector issue: {
                     columnNumber : 10
                     lineNumber : 0
                     scriptId : <string>
-                    url : 
+                    url :
                 }
                 type : StorageAccessAPI_requestStorageAccessFor_Method
             }

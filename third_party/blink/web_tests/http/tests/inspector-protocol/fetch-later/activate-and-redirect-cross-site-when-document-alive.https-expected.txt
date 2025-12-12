@@ -1,5 +1,5 @@
 Tests that appropriate Network domain events are dispatched during a fetchLater request following redirects cross site.
-Network.requestWillBeSent{
+Network.requestWillBeSent {
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -30,7 +30,7 @@ Network.requestWillBeSent{
     type : Fetch
     wallTime : <number>
 }
-Network.requestWillBeSent{
+Network.requestWillBeSent {
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -42,10 +42,10 @@ Network.requestWillBeSent{
     redirectHasExtraInfo : false
     redirectResponse : {
         alternateProtocolUsage : unspecifiedReason
-        charset : 
+        charset :
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 248
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : false
         fromServiceWorker : false
@@ -91,18 +91,18 @@ Network.requestWillBeSent{
     type : Fetch
     wallTime : <number>
 }
-Network.loadingFailed{
+Network.loadingFailed {
     canceled : false
     corsErrorStatus : {
         corsError : MissingAllowOriginHeader
-        failedParameter : 
+        failedParameter :
     }
     errorText : net::ERR_FAILED
     requestId : <string>
     timestamp : <number>
     type : Fetch
 }
-Unable to get fetchLater response body{
+Unable to get fetchLater response body {
     code : -32000
     message : No resource with given identifier found
 }

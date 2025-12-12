@@ -19,7 +19,7 @@ Tests name sources when used with aria-labelledby.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>

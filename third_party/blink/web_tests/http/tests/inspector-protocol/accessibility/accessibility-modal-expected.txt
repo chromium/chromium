@@ -23,7 +23,7 @@ Tests accessibility values in modal dialog.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -75,7 +75,7 @@ Tests accessibility values in modal dialog.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -110,7 +110,7 @@ Tests accessibility values in modal dialog.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -152,7 +152,7 @@ Tests accessibility values in modal dialog.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -194,7 +194,7 @@ Tests accessibility values in modal dialog.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>
@@ -260,7 +260,7 @@ Tests accessibility values in modal dialog.
             }
         ]
         type : computedString
-        value : 
+        value :
     }
     nodeId : <string>
     parentId : <string>

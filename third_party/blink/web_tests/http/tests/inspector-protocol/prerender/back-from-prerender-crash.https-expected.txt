@@ -7,9 +7,9 @@ Tests that we don't crash when navigating from pre-rendered page to BF-cached or
         canAccessOpener : false
         subtype : prerender
         targetId : <string>
-        title : 
+        title :
         type : page
-        url : 
+        url :
     }
     waitingForDebugger : true
 }

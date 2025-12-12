@@ -14,14 +14,14 @@ Tests DOM.getNodeStackTraces method.
                 functionName : createElementForStackTraces
                 lineNumber : 1
                 scriptId : <string>
-                url : 
+                url :
             }
             [1] : {
                 columnNumber : 4
-                functionName : 
+                functionName :
                 lineNumber : 4
                 scriptId : <string>
-                url : 
+                url :
             }
         ]
     }
