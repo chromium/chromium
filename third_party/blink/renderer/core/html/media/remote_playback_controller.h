@@ -30,11 +30,14 @@ class CORE_EXPORT RemotePlaybackController : public GarbageCollectedMixin {
   void Trace(Visitor*) const override;
 
  protected:
-  RemotePlaybackController() = default;
+  explicit RemotePlaybackController(HTMLMediaElement&);
 
   // To be called by RemotePlayback implementation to register its
   // implementation.
   static void ProvideTo(HTMLMediaElement&, RemotePlaybackController*);
+
+ private:
+  Member<HTMLMediaElement> html_media_element_;
 };
 
 }  // namespace blink
