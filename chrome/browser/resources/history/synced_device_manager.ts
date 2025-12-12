@@ -22,7 +22,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import {HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, TabsSyncState} from './constants.js';
+import {HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState} from './constants.js';
 import type {ForeignSession, ForeignSessionTab, HistoryIdentityState} from './externs.js';
 import type {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 import {getCss} from './synced_device_manager.css.js';
@@ -116,7 +116,8 @@ export class HistorySyncedDeviceManagerElement extends
 
   private accessor historyIdentityState_: HistoryIdentityState = {
     signIn: HistorySignInState.SIGNED_OUT,
-    tabsSync: TabsSyncState.TURNED_OFF,
+    tabsSync: SyncState.TURNED_OFF,
+    historySync: SyncState.TURNED_OFF,
   };
   accessor searchTerm: string = '';
   accessor sessionList: ForeignSession[] = [];
@@ -337,11 +338,11 @@ export class HistorySyncedDeviceManagerElement extends
   }
 
   protected isTabsSyncTurnedOn_(): boolean {
-    return this.historyIdentityState_.tabsSync === TabsSyncState.TURNED_ON;
+    return this.historyIdentityState_.tabsSync === SyncState.TURNED_ON;
   }
 
   protected isTabsSyncDisabled_(): boolean {
-    return this.historyIdentityState_.tabsSync === TabsSyncState.DISABLED;
+    return this.historyIdentityState_.tabsSync === SyncState.DISABLED;
   }
 
   /**

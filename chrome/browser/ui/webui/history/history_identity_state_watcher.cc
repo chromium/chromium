@@ -38,7 +38,10 @@ HistoryIdentityState HistoryIdentityStateWatcher::GetHistoryIdentityState()
     const {
   HistoryIdentityState identity_state;
   identity_state.sign_in = GetHistorySignInState();
-  identity_state.tab_sync = GetHistoryTabsSyncState();
+  identity_state.tab_sync =
+      GetSyncStateForType(syncer::UserSelectableType::kTabs);
+  identity_state.history_sync =
+      GetSyncStateForType(syncer::UserSelectableType::kHistory);
   return identity_state;
 }
 
@@ -100,43 +103,50 @@ HistoryIdentityStateWatcher::GetHistorySignInState() const {
   }
 }
 
-HistoryIdentityState::TabsSync
-HistoryIdentityStateWatcher::GetHistoryTabsSyncState() const {
+HistoryIdentityState::SyncState
+HistoryIdentityStateWatcher::GetSyncStateForType(
+    syncer::UserSelectableType type) const {
   if (!base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     // Note: This intentionally does not check whether the history data type is
     // actually enabled (for historical reasons, mostly).
     return identity_manager_ && identity_manager_->HasPrimaryAccount(
                                     signin::ConsentLevel::kSync)
-               ? HistoryIdentityState::TabsSync::kTurnedOn
-               : HistoryIdentityState::TabsSync::kTurnedOff;
+               ? HistoryIdentityState::SyncState::kTurnedOn
+               : HistoryIdentityState::SyncState::kTurnedOff;
   }
 
+  // If the type is disabled by policy, we consider the corresponding sync
+  // state as disabled.
   if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-          sync_service_,
-          syncer::UserSelectableTypeSet({syncer::UserSelectableType::kTabs}))) {
-    return HistoryIdentityState::TabsSync::kDisabled;
+          sync_service_, syncer::UserSelectableTypeSet({type}))) {
+    return HistoryIdentityState::SyncState::kDisabled;
   }
   const signin_util::SignedInState signed_in_state =
       signin_util::GetSignedInState(identity_manager_);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (signed_in_state == signin_util::SignedInState::kSignedIn &&
+  // if the promo is related to history type, we need to check if any of the
+  // History-related types is explicitly disabled via the toggles.
+  if (type == syncer::UserSelectableType::kHistory &&
+      signed_in_state == signin_util::SignedInState::kSignedIn &&
       signin_util::HasExplicitlyDisabledHistorySync(sync_service_,
                                                     identity_manager_)) {
-    return HistoryIdentityState::TabsSync::kDisabled;
+    return HistoryIdentityState::SyncState::kDisabled;
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (sync_service_ && sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-                           syncer::UserSelectableType::kTabs)) {
-    return HistoryIdentityState::TabsSync::kTurnedOn;
+  if (sync_service_ &&
+      sync_service_->GetUserSettings()->GetSelectedTypes().Has(type)) {
+    return HistoryIdentityState::SyncState::kTurnedOn;
   }
-  // sync feature is enabled, but tabs sync is disabled.
+  // sync feature is enabled, but the specific type's sync is disabled.
   if (signed_in_state == signin_util::SignedInState::kSyncing ||
       signed_in_state == signin_util::SignedInState::kSyncPaused) {
-    return HistoryIdentityState::TabsSync::kDisabled;
+    return HistoryIdentityState::SyncState::kDisabled;
   }
-  return HistoryIdentityState::TabsSync::kTurnedOff;
+  return HistoryIdentityState::SyncState::kTurnedOff;
 }
+
+
 
 void HistoryIdentityStateWatcher::UpdateIdentityState() {
   HistoryIdentityState identity_state = GetHistoryIdentityState();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {HistorySignInState, TabsSyncState} from './constants.js';
+import type {HistorySignInState, SyncState} from './constants.js';
 
 /**
  * @fileoverview Externs for objects sent from C++ to chrome://history.
@@ -53,6 +53,7 @@ export interface ForeignSession {
 // LINT.IfChange(HistoryIdentityState)
 export interface HistoryIdentityState {
   signIn: HistorySignInState;
-  tabsSync: TabsSyncState;
+  tabsSync: SyncState;
+  historySync: SyncState;
 }
 // LINT.ThenChange(/chrome/browser/ui/webui/history/history_login_handler.cc:GetHistoryIdentityStateDict)

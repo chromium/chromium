@@ -24,14 +24,15 @@ export enum HistorySignInState {
 }
 // LINT.ThenChange(/chrome/browser/ui/webui/history/history_identity_state_watcher.h:HistoryIdentityState.SignIn)
 
-// This enum is used to differentiate all the relevant history-sync states.
-// LINT.IfChange(TabsSyncState)
-export enum TabsSyncState {
+// Enum below is used to differentiate all the relevant history-sync states.
+// LINT.IfChange(SyncState)
+export enum SyncState {
   TURNED_OFF = 0,
   TURNED_ON = 1,
   DISABLED = 2,
 }
-// LINT.ThenChange(/chrome/browser/ui/webui/history/history_identity_state_watcher.h:HistoryIdentityState.TabsSync)
+// LINT.ThenChange(/chrome/browser/ui/webui/history/history_identity_state_watcher.h:HistoryIdentityState.SyncState)
+
 
 /**
  * Histogram buckets for UMA tracking of which view is being shown to the user.
