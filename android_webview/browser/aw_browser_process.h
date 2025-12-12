@@ -108,6 +108,7 @@ class AwBrowserProcess {
 
   static void TriggerMinidumpUploading();
   static ApkType GetApkType();
+  static bool IsAppVisibleToUser();
 
   EnterpriseAuthenticationAppLinkManager*
   GetEnterpriseAuthenticationAppLinkManager();

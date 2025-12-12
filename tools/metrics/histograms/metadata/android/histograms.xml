@@ -8068,20 +8068,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.OnRenderProcessGoneResult"
+<histogram name="Android.WebView.OnRenderProcessGoneResult2"
     enum="AndroidWebViewRenderProcessGoneResult" expires_after="2026-06-21">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    This captures two pieces of information about renderer crashes: did the app
-    developer handle the renderer crash to recover and what type of crash was
-    this? This is recorded once each time the renderer process dies
-    unexpectedly, and is logged after we have notified the app via the
-    onRenderProcessGone() callback.
+    This captures three pieces of information about renderer crashes: did the
+    app developer handle the renderer crash to recover, what type of crash was
+    this and was the app in foreground or background? This is recorded once each
+    time the renderer process dies unexpectedly, and is logged after we have
+    notified the app via the onRenderProcessGone() callback.
 
-    Prior to M99, this histogram did not distinguish between crashes vs. kills
-    if the renderer crash was handled by the app. Warning: this histogram was
-    expired from 2024-06-21 to 2025-09-08; data may be missing.
+    Note that the foreground/background state tracked here is different from the
+    foreground/background state of WebView that we typically track. Those track
+    the state of the WebViews in an app while this tracks the state of the app
+    as a whole.
   </summary>
 </histogram>
 

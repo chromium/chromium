@@ -5,6 +5,7 @@
 package org.chromium.android_webview;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -447,6 +448,23 @@ public final class AwBrowserProcess {
     @CalledByNative
     public static @ApkType int getApkType() {
         return sApkType;
+    }
+
+    /**
+     * Returns whether the app is visible to the user. That is, the app is currently at the top of
+     * the screen which the user is interacting with.
+     *
+     * <p>Note that this is different from the Foreground/Background state of WebView that we track
+     * via AwContentsLifecycleNotifier/WebViewAppStateObserver. Those track the state of the
+     * WebViews in an app while this tracks the state of the app as a whole.
+     */
+    @CalledByNative
+    public static boolean isAppVisibleToUser() {
+        ActivityManager.RunningAppProcessInfo runningAppProcessInfo =
+                new ActivityManager.RunningAppProcessInfo();
+        ActivityManager.getMyMemoryState(runningAppProcessInfo);
+        return runningAppProcessInfo.importance
+                <= ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
     }
 
     /** Trigger minidump copying, which in turn triggers minidump uploading. */

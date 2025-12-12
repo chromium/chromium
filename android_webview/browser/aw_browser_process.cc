@@ -343,6 +343,12 @@ ApkType AwBrowserProcess::GetApkType() {
       Java_AwBrowserProcess_getApkType(base::android::AttachCurrentThread()));
 }
 
+// static
+bool AwBrowserProcess::IsAppVisibleToUser() {
+  return Java_AwBrowserProcess_isAppVisibleToUser(
+      base::android::AttachCurrentThread());
+}
+
 static void JNI_AwBrowserProcess_OnStartupComplete(JNIEnv* env) {
   AwBrowserProcess::GetInstance()->GetBrowserClient()->OnStartupComplete();
 }

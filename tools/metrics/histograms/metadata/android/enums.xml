@@ -429,12 +429,24 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AndroidWebViewRenderProcessGoneResult">
   <int value="0" label="Java Exception thrown inside onRenderProcessGone()"/>
-  <int value="1" label="Renderer crash not handled"/>
-  <int value="2" label="Renderer kill (OOM or update) not handled"/>
-  <int value="3" label="Crash or kill was handled for all WebViews"/>
+  <int value="1" label="Renderer crash not handled (deprecated)"/>
+  <int value="2"
+      label="Renderer kill (OOM or update) not handled (deprecated)"/>
+  <int value="3"
+      label="Crash or kill was handled for all WebViews (deprecated)"/>
   <int value="4" label="Renderer crash was handled for all WebViews"/>
   <int value="5"
       label="Renderer kill (OOM or update) was handled for all WebViews"/>
+  <int value="6"
+      label="Renderer crash not handled (app process visible to user)"/>
+  <int value="7"
+      label="Renderer crash not handled (app process in background)"/>
+  <int value="8"
+      label="Renderer kill (OOM or update) not handled (app process visible
+             to user)"/>
+  <int value="9"
+      label="Renderer kill (OOM or update) not handled (app process in
+             background)"/>
 </enum>
 
 <enum name="AndroidWebViewSafeModeActionName">
