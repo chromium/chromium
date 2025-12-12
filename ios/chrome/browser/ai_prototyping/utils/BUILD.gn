@@ -12,6 +12,7 @@ source_set("utils") {
 
   deps = [
     "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/web/public",
   ]
@@ -23,6 +24,7 @@ source_set("unit_tests") {
   deps = [
     ":utils",
     "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto_gen",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/web/find_in_page",
     "//ios/web/public/test/fakes",

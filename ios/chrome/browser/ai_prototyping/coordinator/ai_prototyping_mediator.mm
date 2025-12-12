@@ -7,6 +7,7 @@
 #import <string>
 
 #import "base/functional/bind.h"
+#import "base/logging.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -507,66 +508,16 @@
 
 - (void)serializePageContextToStorage:
     (const optimization_guide::proto::PageContext&)pageContext {
-  // Get the Documents directory path
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                       NSUserDomainMask, YES);
-  NSString* documentsDirectory = [paths objectAtIndex:0];
-
-  NSString* urlString = base::SysUTF8ToNSString(pageContext.url());
-  NSCharacterSet* illegalFileNameCharacters =
-      [NSCharacterSet characterSetWithCharactersInString:@"/\\?%*|\"<>:"];
-  NSString* fileName = [[[urlString
-      componentsSeparatedByCharactersInSet:illegalFileNameCharacters]
-      componentsJoinedByString:@""] stringByAppendingString:@".txtpb"];
-
-  NSString* filePath =
-      [documentsDirectory stringByAppendingPathComponent:fileName];
-
-  NSLog(@"NICMAC Attempting to save proto to: %@", filePath);
-
-  // Convert NSString path to a C_style string for fopen
-  std::string UTF8FilePath = base::SysNSStringToUTF8(filePath);
-  const char* cFilePath = UTF8FilePath.c_str();
-  if (cFilePath == nullptr) {
-    NSLog(@"NICMAC Error: Could not convert file path to C_style string.");
-    return;
+  SavePageContextResult result = SaveSerializedPageContextToDisk(pageContext);
+  if (!result.success) {
+    NSLog(@"[AIPrototypingMediator] Failed to save serialized page context to "
+          @"disk: %@",
+          base::SysUTF8ToNSString(result.error_message));
+  } else {
+    NSLog(@"[AIPrototypingMediator] Successfully saved serialized page context "
+          @"to: %@",
+          base::SysUTF8ToNSString(result.file_path.value()));
   }
-
-  // Open the file for writing in binary mode and get the file descriptor
-  FILE* fp = fopen(cFilePath, "wb");
-  if (fp == nullptr) {
-    NSLog(@"NICMAC Error: Could not open file '%s' for writing. Error: %s",
-          cFilePath, strerror(errno));
-    return;
-  }
-
-  // Get the file descriptor from the FILE pointer
-  int fd = fileno(fp);
-  if (fd == -1) {
-    NSLog(@"NICMAC Error: Could not get file descriptor for '%s'. Error: %s",
-          cFilePath, strerror(errno));
-    fclose(fp);
-    return;
-  }
-
-  // Serialize and write the message to the file
-  bool success = pageContext.SerializeToFileDescriptor(fd);
-
-  // Close the file
-  if (fclose(fp) != 0) {
-    NSLog(@"NICMAC Error: Could not close file '%s' properly. Error: %s",
-          cFilePath, strerror(errno));
-  }
-
-  if (!success) {
-    NSLog(@"NICMAC Error: Failed to serialize protobuf message to file: %@",
-          filePath);
-    // Delete the file if serialization failed partway
-    [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-    return;
-  }
-
-  NSLog(@"NICMAC Successfully saved protobuf message.");
 }
 
 @end

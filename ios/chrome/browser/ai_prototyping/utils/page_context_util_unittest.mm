@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
 
+#import "base/files/file_util.h"
 #import "base/functional/callback_helpers.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
@@ -99,4 +101,27 @@ TEST_F(PageContextUtilTest, PopulateWhenLoadingWithTimeout) {
   web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
 
   EXPECT_TRUE(fakeWrapper.populateCalled);
+}
+
+TEST_F(PageContextUtilTest, SaveAndLoadPageContext) {
+  optimization_guide::proto::PageContext page_context;
+  page_context.set_url("https://www.example.com");
+  page_context.set_title("Example");
+
+  SavePageContextResult result = SaveSerializedPageContextToDisk(page_context);
+  EXPECT_TRUE(result.success);
+  EXPECT_FALSE(result.file_path.empty());
+  EXPECT_TRUE(base::PathExists(result.file_path));
+
+  std::string file_content;
+  EXPECT_TRUE(base::ReadFileToString(result.file_path, &file_content));
+
+  optimization_guide::proto::PageContext loaded_context;
+  EXPECT_TRUE(loaded_context.ParseFromString(file_content));
+
+  EXPECT_EQ(page_context.url(), loaded_context.url());
+  EXPECT_EQ(page_context.title(), loaded_context.title());
+
+  // Clean up
+  EXPECT_TRUE(base::DeleteFile(result.file_path));
 }
