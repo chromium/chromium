@@ -153,10 +153,15 @@ public final class LocationRewriterTargetMethods {
         OVERLOAD_MAP.put(target, getDefaultOverload(target));
     }
 
-    private static boolean isExecuteOnLocationAwareExecutor(VisitableMethod method) {
-        return "executeOnExecutor".equals(method.name)
-                && "(Lorg/chromium/base/task/LocationAwareExecutor;)Lorg/chromium/base/task/AsyncTask;"
-                        .equals(method.descriptor);
+    private static boolean isExecuteAsyncTask(VisitableMethod method) {
+        return ("executeOnExecutor".equals(method.name)
+                        && "(Lorg/chromium/base/task/LocationAwareExecutor;)Lorg/chromium/base/task/AsyncTask;"
+                                .equals(method.descriptor))
+                || ("executeOnTaskRunner".equals(method.name)
+                        && "(Lorg/chromium/base/task/TaskRunner;)Lorg/chromium/base/task/AsyncTask;"
+                                .equals(method.descriptor))
+                || ("executeWithTaskTraits".equals(method.name)
+                        && "(I)Lorg/chromium/base/task/AsyncTask;".equals(method.descriptor));
     }
 
     public static VisitableMethod getOverload(VisitableMethod method) {
@@ -169,7 +174,7 @@ public final class LocationRewriterTargetMethods {
         // is moved to a later stage in the build pipeline and runs once per APK or module. For now,
         // there is only one method in the codebase that has this combination of method name and
         // descriptor so we can be confident that the method owner is a subclass of AsyncTask.
-        if (isExecuteOnLocationAwareExecutor(method)) {
+        if (isExecuteAsyncTask(method)) {
             return getDefaultOverload(method);
         }
 
