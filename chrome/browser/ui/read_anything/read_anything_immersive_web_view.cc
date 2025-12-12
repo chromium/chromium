@@ -28,6 +28,12 @@ ReadAnythingImmersiveWebView::ReadAnythingImmersiveWebView(
 
 ReadAnythingImmersiveWebView::~ReadAnythingImmersiveWebView() = default;
 
+std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+ReadAnythingImmersiveWebView::TakeContentsWrapper() {
+  contents_wrapper_->SetHost(nullptr);
+  return std::move(contents_wrapper_);
+}
+
 // WebUIContentsWrapper::Host:
 // Called by the WebUI on its embedder (this class) when the WebUI is ready to
 // be shown.
@@ -40,8 +46,15 @@ void ReadAnythingImmersiveWebView::ShowUI() {
   read_anything_controller->OnEntryShown(trigger_);
 }
 
+// Called by the WebUI on its embedder (this class) when the WebUI is ready to
+// be closed.
 void ReadAnythingImmersiveWebView::CloseUI() {
-  // TODO(crbug.com/450948683): Implement closing IRM
+  SetVisible(false);
+  auto* read_anything_controller = ReadAnythingControllerGlue::FromWebContents(
+                                       contents_wrapper_->web_contents())
+                                       ->controller();
+  CHECK(read_anything_controller);
+  read_anything_controller->OnEntryHidden();
 }
 
 BEGIN_METADATA(ReadAnythingImmersiveWebView)

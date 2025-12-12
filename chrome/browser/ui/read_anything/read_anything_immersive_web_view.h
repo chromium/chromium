@@ -35,6 +35,9 @@ class ReadAnythingImmersiveWebView : public views::WebView,
 
   ~ReadAnythingImmersiveWebView() override;
 
+  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+  TakeContentsWrapper();
+
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;

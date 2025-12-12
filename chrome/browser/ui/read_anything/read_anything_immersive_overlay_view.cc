@@ -31,5 +31,16 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
   SetVisible(true);
 }
 
+std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
+ReadAnythingImmersiveOverlayView::CloseUI() {
+  SetVisible(false);
+
+  CHECK(immersive_web_view_);
+  std::unique_ptr<ReadAnythingImmersiveWebView> web_view =
+      RemoveChildViewT(immersive_web_view_);
+  immersive_web_view_ = nullptr;
+  return web_view->TakeContentsWrapper();
+}
+
 BEGIN_METADATA(ReadAnythingImmersiveOverlayView)
 END_METADATA

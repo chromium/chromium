@@ -97,6 +97,10 @@ ReadAnythingController::ReadAnythingController(
 ReadAnythingController::~ReadAnythingController() {
   observers_.Notify(&Observer::OnDestroyed);
 
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    CloseImmersiveUI();
+  }
+
   // Notify the renderer that we don't need the main webpage treated as
   // visible anymore for IRM. Although we already do this in OnVisibilityChanged
   // when Reading Mode's visibility changes to hidden or occluded, that callback
@@ -158,9 +162,10 @@ void ReadAnythingController::OnTabStripModelChanged(
       is_active_tab_ = true;
     } else if (tab_->GetContents() == selection_change.old_contents &&
                change.type() != TabStripModelChange::kRemoved) {
-      // TODO(crbug.com/463730426): ReadAnythingController should close
-      // immersive reading mode when a tab becomes inactive.
       is_active_tab_ = false;
+      if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+        CloseImmersiveUI();
+      }
     }
   }
 }
@@ -218,6 +223,7 @@ void ReadAnythingController::SetWebUIWrapperForTest(
 void ReadAnythingController::TransferWebUiOwnership(
     std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
         web_ui_wrapper) {
+  CHECK(web_ui_wrapper);
   CHECK(!web_ui_wrapper_);
   web_ui_wrapper_ = std::move(web_ui_wrapper);
   presentation_state_ = PresentationState::kInactive;
@@ -247,6 +253,28 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
 void ReadAnythingController::ShowUI(SidePanelOpenTrigger trigger) {
   if (SidePanelUI* side_panel_ui = GetSidePanelUI()) {
     side_panel_ui->Show(SidePanelEntryId::kReadAnything, trigger);
+  }
+}
+
+void ReadAnythingController::CloseImmersiveUI() {
+  if (GetPresentationState() != PresentationState::kInImmersiveOverlay) {
+    return;
+  }
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(tab_->GetBrowserWindowInterface());
+  if (!browser_view || !browser_view->GetActiveContentsContainerView()) {
+    return;
+  }
+  auto* immersive_overlay_view = static_cast<ReadAnythingImmersiveOverlayView*>(
+      browser_view->GetActiveContentsContainerView()
+          ->read_anything_immersive_overlay_view());
+  CHECK(immersive_overlay_view);
+
+  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
+      immersive_overlay_view->CloseUI();
+  if (wrapper) {
+    TransferWebUiOwnership(std::move(wrapper));
   }
 }
 

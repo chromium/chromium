@@ -173,6 +173,143 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CloseImmersiveUI_SetsPresentationState) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInImmersiveOverlay);
+
+  controller->CloseImmersiveUI();
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInactive);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CloseImmersiveUI_HidesOverlay) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Show immersive mode and confirm it's showing
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* overlay_view =
+      browser_view->GetWidget()->GetContentsView()->GetViewByID(
+          VIEW_ID_READ_ANYTHING_OVERLAY);
+  ASSERT_TRUE(overlay_view);
+  ASSERT_TRUE(overlay_view->GetVisible());
+  ASSERT_FALSE(overlay_view->children().empty());
+
+  // Close immersive mode and confirm it's hidden
+  controller->CloseImmersiveUI();
+  EXPECT_FALSE(overlay_view->GetVisible());
+  EXPECT_TRUE(overlay_view->children().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CloseImmersiveUI_ReleasesMainPageCapture) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  content::WebContents* main_contents = tab->GetContents();
+  ASSERT_TRUE(main_contents);
+
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return main_contents->IsBeingVisiblyCaptured(); }));
+
+  controller->CloseImmersiveUI();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !main_contents->IsBeingVisiblyCaptured(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CloseImmersiveUI_PreservesWebUI) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Show immersive mode
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // Get the WebUI used in immersive mode
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* overlay_view =
+      browser_view->GetWidget()->GetContentsView()->GetViewByID(
+          VIEW_ID_READ_ANYTHING_OVERLAY);
+  // The first child should be the web view. We cast to WebView to get the
+  // WebContents.
+  views::WebView* web_view =
+      static_cast<views::WebView*>(overlay_view->children()[0]);
+  content::WebContents* web_contents1 = web_view->GetWebContents();
+  ASSERT_TRUE(web_contents1);
+
+  // Close immersive mode
+  controller->CloseImmersiveUI();
+
+  // Get the WebUI wrapper again (should be inactive now)
+  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
+      controller->GetOrCreateWebUIWrapper(
+          ReadAnythingController::PresentationState::kInactive);
+  ASSERT_TRUE(wrapper->web_contents());
+
+  // Verify it is the same WebContents
+  EXPECT_EQ(web_contents1, wrapper->web_contents());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       TabSwitch_ClosesImmersiveUI) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab1 =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(0));
+  ReadAnythingController* controller1 = ReadAnythingController::From(tab1);
+
+  // Show immersive mode on first tab
+  controller1->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_EQ(controller1->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInImmersiveOverlay);
+
+  // Add and switch to a second tab
+  chrome::AddTabAt(browser(), GURL("about:blank"), /* index= */ 1,
+                   /* foreground= */ true);
+
+  // Verify controller1 is no longer in immersive mode
+  EXPECT_EQ(controller1->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInactive);
+  // Verify overlay is hidden
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* overlay_view =
+      browser_view->GetWidget()->GetContentsView()->GetViewByID(
+          VIEW_ID_READ_ANYTHING_OVERLAY);
+  EXPECT_FALSE(overlay_view->GetVisible());
+  EXPECT_TRUE(overlay_view->children().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CloseImmersiveUI_Idempotency) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Ensure state is inactive
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kUndefined);
+
+  // Calling CloseImmersiveUI shouldn't crash or change state
+  controller->CloseImmersiveUI();
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kUndefined);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        ToggleSidePanelViaActionItem) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);

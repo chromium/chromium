@@ -127,6 +127,9 @@ class ReadAnythingController : public TabStripModelObserver {
   // Displays the Immersive Reading Mode UI in a full screen overlay.
   void ShowImmersiveUI(ReadAnythingOpenTrigger trigger);
 
+  // Closes the Immersive Reading Mode UI.
+  void CloseImmersiveUI();
+
   // Toggles the Reading Mode UI by utilizing the SidePanelUI on the active
   // tab.
   // TODO(crbug.com/447418049): Open immersive reading mode via this entrypoint.

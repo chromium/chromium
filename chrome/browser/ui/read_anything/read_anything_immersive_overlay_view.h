@@ -33,6 +33,10 @@ class ReadAnythingImmersiveOverlayView : public views::View {
                   contents_wrapper,
               ReadAnythingOpenTrigger trigger);
 
+  // Closes the overlay and returns ownership of the WebUIContentsWrapper to the
+  // caller.
+  std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> CloseUI();
+
  private:
   raw_ptr<ReadAnythingImmersiveWebView> immersive_web_view_ = nullptr;
 };
