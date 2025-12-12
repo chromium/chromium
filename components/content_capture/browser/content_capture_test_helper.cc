@@ -113,6 +113,8 @@ void ContentCaptureConsumerHelper::DidUpdateLanguageDetails(
     const std::string& detected_language,
     float language_confidence) {}
 
+void ContentCaptureConsumerHelper::ClearContentCaptureMetadata() {}
+
 bool ContentCaptureConsumerHelper::ShouldCapture(const GURL& url) {
   return false;
 }

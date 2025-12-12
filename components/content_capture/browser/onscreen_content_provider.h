@@ -67,6 +67,7 @@ class OnscreenContentProvider
   void DidUpdateSensitivityScore(float sensitivity_score);
   void DidUpdateLanguageDetails(const std::string& detected_language,
                                 float language_confidence);
+  void ClearContentCaptureMetadata();
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -76,6 +77,8 @@ class OnscreenContentProvider
   void DidUpdateFaviconURL(
       content::RenderFrameHost* render_frame_host,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   size_t GetFrameMapSizeForTesting() const { return frame_map_.size(); }
 

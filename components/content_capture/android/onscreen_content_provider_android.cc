@@ -256,6 +256,15 @@ void OnscreenContentProviderAndroid::DidUpdateLanguageDetails(
       static_cast<jfloat>(language_confidence));
 }
 
+void OnscreenContentProviderAndroid::ClearContentCaptureMetadata() {
+  JNIEnv* env = AttachCurrentThread();
+  if (!java_ref_.obj()) {
+    return;
+  }
+
+  Java_OnscreenContentProvider_clearContentCaptureMetadata(env, java_ref_);
+}
+
 bool OnscreenContentProviderAndroid::ShouldCapture(const GURL& url) {
   JNIEnv* env = AttachCurrentThread();
   return Java_OnscreenContentProvider_shouldCapture(

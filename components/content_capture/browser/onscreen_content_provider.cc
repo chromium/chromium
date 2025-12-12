@@ -289,6 +289,23 @@ void OnscreenContentProvider::DidUpdateLanguageDetails(
   }
 }
 
+void OnscreenContentProvider::ClearContentCaptureMetadata() {
+  if (!content_capture::features::ShouldSendMetadataForDataShare()) {
+    return;
+  }
+
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->ClearContentCaptureMetadata();
+  }
+}
+
+void OnscreenContentProvider::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // This signal comes when a navigation finished in the WebContents. Clearing
+  // the Java-side builder.
+  ClearContentCaptureMetadata();
+}
+
 void OnscreenContentProvider::BuildContentCaptureSession(
     ContentCaptureReceiver* content_capture_receiver,
     bool ancestor_only,
