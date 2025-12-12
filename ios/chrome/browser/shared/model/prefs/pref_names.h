@@ -503,7 +503,7 @@ inline constexpr char kOverflowMenuDestinationUsageHistory[] =
 // Boolean preference that tracks whether the destination usage history feature
 // is enabled on the overflow menu.
 extern inline constexpr char kOverflowMenuDestinationUsageHistoryEnabled[] =
-    "overflow_menu.destination_usage_history.enabled";
+    "overflow_menu.destination_usage_history_enabled";
 
 // List preference which tracks new destinations added to the overflow menu
 // carousel.
