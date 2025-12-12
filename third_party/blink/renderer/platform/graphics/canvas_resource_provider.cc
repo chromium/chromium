@@ -239,7 +239,11 @@ bool CanvasResourceProviderExternalBitmap::IsGpuContextLost() const {
 
 bool CanvasResourceProviderExternalBitmap::IsValid() const {
   if (!surface_) {
-    surface_ = CreateSkSurface();
+    const bool can_use_lcd_text = alpha_type_ == kOpaque_SkAlphaType;
+    const auto props =
+        skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
+    surface_ =
+        SkSurfaces::Raster(info_.makeAlphaType(kPremul_SkAlphaType), &props);
   }
   return surface_.get();
 }
