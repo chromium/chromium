@@ -69,12 +69,21 @@ std::u16string ReplaceEmptyUsername(const std::u16string& username,
 
 #if !BUILDFLAG(IS_ANDROID)
 Suggestion CreatePasskeyFromAnotherDeviceEntry(bool listed_passkeys) {
-  return Suggestion(
-      l10n_util::GetStringUTF8(listed_passkeys
-                                   ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
-                                   : IDS_PASSWORD_MANAGER_USE_PASSKEY),
-      /*label=*/"", Suggestion::Icon::kDevice,
-      SuggestionType::kWebauthnSignInWithAnotherDevice);
+  int title_id;
+#if !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem)) {
+    title_id = IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE;
+  } else
+#endif  // !BUILDFLAG(IS_IOS)
+  {
+    title_id = listed_passkeys ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
+                               : IDS_PASSWORD_MANAGER_USE_PASSKEY;
+  }
+  return Suggestion(l10n_util::GetStringUTF8(title_id),
+                    /*label=*/"", Suggestion::Icon::kDevice,
+                    SuggestionType::kWebauthnSignInWithAnotherDevice);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

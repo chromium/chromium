@@ -171,7 +171,7 @@ std::vector<Suggestion> CreateWebAuthnSuggestions(
   suggestions.back().acceptability = acceptability;
 
   suggestions.emplace_back(
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY),
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE),
       SuggestionType::kWebauthnSignInWithAnotherDevice);
   suggestions.back().acceptability = acceptability;
   suggestions.emplace_back(
