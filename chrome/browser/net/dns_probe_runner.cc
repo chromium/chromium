@@ -47,7 +47,11 @@ DnsProbeRunner::Result EvaluateResponse(
     case net::ERR_DNS_MALFORMED_RESPONSE:
     case net::ERR_DNS_SERVER_REQUIRES_TCP:  // Shouldn't happen; DnsTransaction
                                             // will retry with TCP.
-    case net::ERR_DNS_SERVER_FAILED:
+    case net::ERR_DNS_FORMAT_ERROR:
+    case net::ERR_DNS_SERVER_FAILURE:
+    case net::ERR_DNS_NOT_IMPLEMENTED:
+    case net::ERR_DNS_REFUSED:
+    case net::ERR_DNS_OTHER_FAILURE:
     case net::ERR_DNS_SORT_ERROR:  // Can only happen if the server responds.
       return DnsProbeRunner::FAILING;
 

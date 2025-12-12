@@ -1991,6 +1991,11 @@ Called by update_net_error_codes.py.-->
   <int value="-902" label="BLOB_FILE_WRITE_FAILED"/>
   <int value="-901" label="BLOB_OUT_OF_MEMORY"/>
   <int value="-900" label="BLOB_INVALID_CONSTRUCTION_ARGUMENTS"/>
+  <int value="-820" label="DNS_OTHER_FAILURE"/>
+  <int value="-819" label="DNS_REFUSED"/>
+  <int value="-818" label="DNS_NOT_IMPLEMENTED"/>
+  <int value="-817" label="DNS_SERVER_FAILURE"/>
+  <int value="-816" label="DNS_FORMAT_ERROR"/>
   <int value="-815" label="DNS_CACHE_INVALIDATION_IN_PROGRESS"/>
   <int value="-814" label="DNS_SECURE_PROBE_RECORD_INVALID"/>
   <int value="-813" label="DICTIONARY_ORIGIN_CHECK_FAILED"/>
@@ -21455,6 +21460,11 @@ Called by update_net_error_codes.py.-->
   <int value="813" label="DICTIONARY_ORIGIN_CHECK_FAILED"/>
   <int value="814" label="DNS_SECURE_PROBE_RECORD_INVALID"/>
   <int value="815" label="DNS_CACHE_INVALIDATION_IN_PROGRESS"/>
+  <int value="816" label="DNS_FORMAT_ERROR"/>
+  <int value="817" label="DNS_SERVER_FAILURE"/>
+  <int value="818" label="DNS_NOT_IMPLEMENTED"/>
+  <int value="819" label="DNS_REFUSED"/>
+  <int value="820" label="DNS_OTHER_FAILURE"/>
   <int value="900" label="BLOB_INVALID_CONSTRUCTION_ARGUMENTS"/>
   <int value="901" label="BLOB_OUT_OF_MEMORY"/>
   <int value="902" label="BLOB_FILE_WRITE_FAILED"/>

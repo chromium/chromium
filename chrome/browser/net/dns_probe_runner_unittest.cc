@@ -159,12 +159,23 @@ TEST_F(DnsProbeRunnerTest, Probe_NXDOMAIN) {
   RunTest(DnsProbeRunner::INCORRECT);
 }
 
-TEST_F(DnsProbeRunnerTest, Probe_FAILING) {
-  SetupTest(net::ERR_NAME_NOT_RESOLVED,
-            net::ResolveErrorInfo(net::ERR_DNS_SERVER_FAILED),
+class DnsProbeRunnerFailingTest : public DnsProbeRunnerTest,
+                                  public testing::WithParamInterface<int> {};
+
+TEST_P(DnsProbeRunnerFailingTest, Probe_FAILING) {
+  int net_error = GetParam();
+  SetupTest(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net_error),
             FakeHostResolver::kNoResponse);
   RunTest(DnsProbeRunner::FAILING);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DnsProbeRunnerFailingTest,
+                         testing::Values(net::ERR_DNS_FORMAT_ERROR,
+                                         net::ERR_DNS_SERVER_FAILURE,
+                                         net::ERR_DNS_NOT_IMPLEMENTED,
+                                         net::ERR_DNS_REFUSED,
+                                         net::ERR_DNS_OTHER_FAILURE));
 
 TEST_F(DnsProbeRunnerTest, Probe_DnsNotRun) {
   SetupTest(net::ERR_NAME_NOT_RESOLVED,

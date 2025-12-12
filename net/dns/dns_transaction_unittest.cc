@@ -1273,17 +1273,38 @@ TEST_F(DnsTransactionTest, ZeroSizeResponseAsync) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTest, ServerFail) {
-  AddAsyncQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL);
+struct RcodeError {
+  int rcode;
+  int net_error;
+};
 
-  TransactionHelper helper0(ERR_DNS_SERVER_FAILED);
+class DnsTransactionRcodeTest
+    : public DnsTransactionTest,
+      public ::testing::WithParamInterface<RcodeError> {};
+
+TEST_P(DnsTransactionRcodeTest, RcodeToError) {
+  const RcodeError& param = GetParam();
+  AddAsyncQueryAndRcode(kT0HostName, kT0Qtype, param.rcode);
+
+  TransactionHelper helper0(param.net_error);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                           false /* secure */, resolve_context_.get());
+                           /*secure=*/false, resolve_context_.get());
   helper0.RunUntilComplete();
 
   ASSERT_NE(helper0.response(), nullptr);
-  EXPECT_EQ(helper0.response()->rcode(), dns_protocol::kRcodeSERVFAIL);
+  EXPECT_EQ(helper0.response()->rcode(), param.rcode);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DnsTransactionRcodeTest,
+    ::testing::Values(
+        RcodeError{dns_protocol::kRcodeFORMERR, ERR_DNS_FORMAT_ERROR},
+        RcodeError{dns_protocol::kRcodeSERVFAIL, ERR_DNS_SERVER_FAILURE},
+        RcodeError{dns_protocol::kRcodeNOTIMP, ERR_DNS_NOT_IMPLEMENTED},
+        RcodeError{dns_protocol::kRcodeREFUSED, ERR_DNS_REFUSED},
+        // A random unassigned rcode.
+        RcodeError{15, ERR_DNS_OTHER_FAILURE}));
 
 TEST_F(DnsTransactionTest, NoDomain) {
   AddAsyncQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeNXDOMAIN);
@@ -1660,19 +1681,20 @@ TEST_F(DnsTransactionTest, HttpsGetLookup) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTest, HttpsGetFailure) {
-  ConfigureDohServers(false /* use_post */);
-  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
-                   SYNCHRONOUS, Transport::HTTPS,
-                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
-                   false /* enqueue_transaction_id */);
+TEST_P(DnsTransactionRcodeTest, HttpsGetFailure) {
+  const RcodeError& param = GetParam();
+  ConfigureDohServers(/*use_post=*/false);
+  AddQueryAndRcode(kT0HostName, kT0Qtype, param.rcode, SYNCHRONOUS,
+                   Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                   /*id=*/0, /*enqueue_transaction_id=*/false);
 
-  TransactionHelper helper0(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper0(param.net_error);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                           true /* secure */, resolve_context_.get());
+                           /*secure=*/true, resolve_context_.get());
   helper0.RunUntilComplete();
   ASSERT_NE(helper0.response(), nullptr);
-  EXPECT_EQ(helper0.response()->rcode(), dns_protocol::kRcodeSERVFAIL);
+  EXPECT_EQ(helper0.response()->rcode(), param.rcode);
 }
 
 TEST_F(DnsTransactionTest, HttpsGetMalformed) {
@@ -1700,19 +1722,20 @@ TEST_F(DnsTransactionTest, HttpsPostLookup) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTest, HttpsPostFailure) {
-  ConfigureDohServers(true /* use_post */);
-  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
-                   SYNCHRONOUS, Transport::HTTPS,
-                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
-                   false /* enqueue_transaction_id */);
+TEST_P(DnsTransactionRcodeTest, HttpsPostFailure) {
+  const RcodeError& param = GetParam();
+  ConfigureDohServers(/*use_post=*/true);
+  AddQueryAndRcode(kT0HostName, kT0Qtype, param.rcode, SYNCHRONOUS,
+                   Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                   /*id=*/0, /*enqueue_transaction_id=*/false);
 
-  TransactionHelper helper0(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper0(param.net_error);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                           true /* secure */, resolve_context_.get());
+                           /*secure=*/true, resolve_context_.get());
   helper0.RunUntilComplete();
   ASSERT_NE(helper0.response(), nullptr);
-  EXPECT_EQ(helper0.response()->rcode(), dns_protocol::kRcodeSERVFAIL);
+  EXPECT_EQ(helper0.response()->rcode(), param.rcode);
 }
 
 TEST_F(DnsTransactionTest, HttpsPostMalformed) {
@@ -3024,7 +3047,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails_FastTimeout) {
                    DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
                    false /* enqueue_transaction_id */);
 
-  TransactionHelper helper(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper(ERR_DNS_SERVER_FAILURE);
   std::unique_ptr<DnsTransaction> transaction =
       transaction_factory_->CreateTransaction(
           kT0HostName, kT0Qtype, NetLogWithSource(), true /* secure */,
@@ -3063,7 +3086,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFailsFirst) {
                    DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
                    false /* enqueue_transaction_id */);
 
-  TransactionHelper helper(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper(ERR_DNS_SERVER_FAILURE);
   std::unique_ptr<DnsTransaction> transaction =
       transaction_factory_->CreateTransaction(
           kT0HostName, kT0Qtype, NetLogWithSource(), true /* secure */,
@@ -3096,7 +3119,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFailsLast) {
                    DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
                    false /* enqueue_transaction_id */);
 
-  TransactionHelper helper(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper(ERR_DNS_SERVER_FAILURE);
   std::unique_ptr<DnsTransaction> transaction =
       transaction_factory_->CreateTransaction(
           kT0HostName, kT0Qtype, NetLogWithSource(), true /* secure */,
@@ -3171,7 +3194,7 @@ TEST_F(DnsTransactionTest, TCPFailure) {
   AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL, ASYNC,
                    Transport::TCP);
 
-  TransactionHelper helper0(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper0(ERR_DNS_SERVER_FAILURE);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            false /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
@@ -3579,7 +3602,7 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeAttemptServFailAffectsHistograms) {
       DohServerAutoupgradeStatus::kFailureWithNoPriorSuccesses, 1);
   histogram_tester.ExpectUniqueSample(
       "Net.DNS.DnsTransaction.SecureNotValidated.Other.FailureError",
-      std::abs(Error::ERR_DNS_SERVER_FAILED), 1);
+      std::abs(Error::ERR_DNS_SERVER_FAILURE), 1);
 }
 
 TEST_F(DnsTransactionTestWithMockTime,

@@ -91,6 +91,24 @@ namespace net {
 
 namespace {
 
+Error FailureRcodeToNetError(int rcode) {
+  DCHECK_NE(dns_protocol::kRcodeNOERROR, rcode);
+  switch (rcode) {
+    case dns_protocol::kRcodeFORMERR:
+      return ERR_DNS_FORMAT_ERROR;
+    case dns_protocol::kRcodeSERVFAIL:
+      return ERR_DNS_SERVER_FAILURE;
+    case dns_protocol::kRcodeNXDOMAIN:
+      return ERR_NAME_NOT_RESOLVED;
+    case dns_protocol::kRcodeNOTIMP:
+      return ERR_DNS_NOT_IMPLEMENTED;
+    case dns_protocol::kRcodeREFUSED:
+      return ERR_DNS_REFUSED;
+    default:
+      return ERR_DNS_OTHER_FAILURE;
+  }
+}
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("dns_transaction", R"(
         semantics {
@@ -351,22 +369,25 @@ class DnsUDPAttempt : public DnsAttempt {
 
   int DoReadResponseComplete(int rv) {
     DCHECK_NE(ERR_IO_PENDING, rv);
-    if (rv < 0)
+    if (rv < 0) {
       return rv;
+    }
     read_size_ = rv;
 
     bool parse_result = response_->InitParse(rv, *query_);
-    if (response_->id())
+    if (response_->id()) {
       udp_tracker_->RecordResponseId(query_->id(), response_->id().value());
+    }
 
-    if (!parse_result)
+    if (!parse_result) {
       return ERR_DNS_MALFORMED_RESPONSE;
-    if (response_->flags() & dns_protocol::kFlagTC)
+    }
+    if (response_->flags() & dns_protocol::kFlagTC) {
       return ERR_DNS_SERVER_REQUIRES_TCP;
-    if (response_->rcode() == dns_protocol::kRcodeNXDOMAIN)
-      return ERR_NAME_NOT_RESOLVED;
-    if (response_->rcode() != dns_protocol::kRcodeNOERROR)
-      return ERR_DNS_SERVER_FAILED;
+    }
+    if (response_->rcode() != dns_protocol::kRcodeNOERROR) {
+      return FailureRcodeToNetError(response_->rcode());
+    }
 
     return OK;
   }
@@ -651,20 +672,22 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     if (net_error != OK) {
       return net_error;
     }
-    if (!buffer_.get() || 0 == buffer_->capacity())
+    if (!buffer_.get() || 0 == buffer_->capacity()) {
       return ERR_DNS_MALFORMED_RESPONSE;
+    }
 
     size_t size = buffer_->offset();
     buffer_->set_offset(0);
-    if (size == 0u)
+    if (size == 0u) {
       return ERR_DNS_MALFORMED_RESPONSE;
+    }
     response_ = std::make_unique<DnsResponse>(buffer_, size);
-    if (!response_->InitParse(size, *query_))
+    if (!response_->InitParse(size, *query_)) {
       return ERR_DNS_MALFORMED_RESPONSE;
-    if (response_->rcode() == dns_protocol::kRcodeNXDOMAIN)
-      return ERR_NAME_NOT_RESOLVED;
-    if (response_->rcode() != dns_protocol::kRcodeNOERROR)
-      return ERR_DNS_SERVER_FAILED;
+    }
+    if (response_->rcode() != dns_protocol::kRcodeNOERROR) {
+      return FailureRcodeToNetError(response_->rcode());
+    }
     return OK;
   }
 
@@ -904,10 +927,12 @@ class DnsTCPAttempt : public DnsAttempt {
 
   int DoReadResponseComplete(int rv) {
     DCHECK_NE(ERR_IO_PENDING, rv);
-    if (rv < 0)
+    if (rv < 0) {
       return rv;
-    if (rv == 0)
+    }
+    if (rv == 0) {
       return ERR_CONNECTION_CLOSED;
+    }
 
     buffer_->DidConsume(rv);
     if (buffer_->BytesRemaining() > 0) {
@@ -915,15 +940,16 @@ class DnsTCPAttempt : public DnsAttempt {
       return OK;
     }
     DCHECK_GT(buffer_->BytesConsumed(), 0);
-    if (!response_->InitParse(buffer_->BytesConsumed(), *query_))
+    if (!response_->InitParse(buffer_->BytesConsumed(), *query_)) {
       return ERR_DNS_MALFORMED_RESPONSE;
-    if (response_->flags() & dns_protocol::kFlagTC)
+    }
+    if (response_->flags() & dns_protocol::kFlagTC) {
       return ERR_UNEXPECTED;
-    // TODO(szym): Frankly, none of these are expected.
-    if (response_->rcode() == dns_protocol::kRcodeNXDOMAIN)
-      return ERR_NAME_NOT_RESOLVED;
-    if (response_->rcode() != dns_protocol::kRcodeNOERROR)
-      return ERR_DNS_SERVER_FAILED;
+    }
+    if (response_->rcode() != dns_protocol::kRcodeNOERROR) {
+      // TODO(szym): Frankly, none of these are expected.
+      return FailureRcodeToNetError(response_->rcode());
+    }
 
     return OK;
   }

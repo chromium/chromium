@@ -1030,16 +1030,7 @@ NET_ERROR(DNS_MALFORMED_RESPONSE, -800)
 // DNS server requires TCP
 NET_ERROR(DNS_SERVER_REQUIRES_TCP, -801)
 
-// DNS server failed.  This error is returned for all of the following
-// error conditions:
-// 1 - Format error - The name server was unable to interpret the query.
-// 2 - Server failure - The name server was unable to process this query
-//     due to a problem with the name server.
-// 4 - Not Implemented - The name server does not support the requested
-//     kind of query.
-// 5 - Refused - The name server refuses to perform the specified
-//     operation for policy reasons.
-NET_ERROR(DNS_SERVER_FAILED, -802)
+// Error -802 was removed (DNS_SERVER_FAILED)
 
 // DNS transaction timed out.
 NET_ERROR(DNS_TIMED_OUT, -803)
@@ -1083,6 +1074,29 @@ NET_ERROR(DNS_SECURE_PROBE_RECORD_INVALID, -814)
 // Returned when DNS cache invalidation is in progress. This is a
 // transient error. Callers may want to retry later.
 NET_ERROR(DNS_CACHE_INVALIDATION_IN_PROGRESS, -815)
+
+// The DNS server responded with a format error response code.
+NET_ERROR(DNS_FORMAT_ERROR, -816)
+
+// The DNS server responded with a server failure response code.
+NET_ERROR(DNS_SERVER_FAILURE, -817)
+
+// The DNS server responded that the query type is not implemented.
+NET_ERROR(DNS_NOT_IMPLEMENTED, -818)
+
+// The DNS server responded that the request was refused.
+NET_ERROR(DNS_REFUSED, -819)
+
+// The DNS server responded with an rcode indicating that the request failed,
+// but the rcode is not one that we have a specific error code for. In other
+// words, the rcode was not one of the following:
+// - NOERR
+// - FORMERR
+// - SERVFAIL
+// - NXDOMAIN
+// - NOTIMP
+// - REFUSED
+NET_ERROR(DNS_OTHER_FAILURE, -820)
 
 // The following errors are for mapped from a subset of invalid
 // storage::BlobStatus.

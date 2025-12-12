@@ -484,7 +484,7 @@ TEST(HostResolverInternalResultTest, NoncachableErrorResult) {
 TEST(HostResolverInternalResultTest, RoundtripErrorResultThroughSerialization) {
   auto result = std::make_unique<HostResolverInternalErrorResult>(
       "domain4.test", DnsQueryType::A, base::TimeTicks(), base::Time(),
-      HostResolverInternalResult::Source::kDns, ERR_DNS_SERVER_FAILED);
+      HostResolverInternalResult::Source::kDns, ERR_DNS_SERVER_FAILURE);
 
   base::Value value = result->ToValue();
   auto deserialized = HostResolverInternalResult::FromValue(value);
@@ -502,17 +502,17 @@ TEST(HostResolverInternalResultTest, RoundtripErrorResultThroughSerialization) {
 
 // Expect results to serialize to a consistent base::Value format for
 // consumption by NetLog and similar.
-TEST(HostResolverInternalResultTest, SerializepErrorResult) {
+TEST(HostResolverInternalResultTest, SerializeErrorResult) {
   auto result = std::make_unique<HostResolverInternalErrorResult>(
       "domain4.test", DnsQueryType::A, base::TimeTicks(), base::Time(),
-      HostResolverInternalResult::Source::kDns, ERR_DNS_SERVER_FAILED);
+      HostResolverInternalResult::Source::kDns, ERR_DNS_SERVER_FAILURE);
   base::Value value = result->ToValue();
 
   std::optional<base::Value> expected = base::JSONReader::Read(
       R"(
         {
           "domain_name": "domain4.test",
-          "error": -802,
+          "error": -817,
           "query_type": "A",
           "source": "dns",
           "timed_expiration": "0",
@@ -528,7 +528,7 @@ TEST(HostResolverInternalResultTest, SerializepErrorResult) {
 TEST(HostResolverInternalResultTest, DeserializeMalformedErrorValue) {
   auto result = std::make_unique<HostResolverInternalErrorResult>(
       "domain4.test", DnsQueryType::A, base::TimeTicks(), base::Time(),
-      HostResolverInternalResult::Source::kDns, ERR_DNS_SERVER_FAILED);
+      HostResolverInternalResult::Source::kDns, ERR_DNS_SERVER_FAILURE);
   base::Value valid_value = result->ToValue();
   ASSERT_TRUE(HostResolverInternalErrorResult::FromValue(valid_value));
 

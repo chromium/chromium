@@ -687,8 +687,10 @@ bool HostResolverDnsTask::IsFatalTransactionFailure(
     DCHECK(transaction_info.error_behavior !=
            TransactionErrorBehavior::kFatalOrEmpty);
     error = HttpsTransactionError::kInsecureError;
-  } else if (transaction_error == ERR_DNS_SERVER_FAILED && response &&
-             response->rcode() != dns_protocol::kRcodeSERVFAIL) {
+  } else if (transaction_error == ERR_DNS_FORMAT_ERROR ||
+             transaction_error == ERR_DNS_NOT_IMPLEMENTED ||
+             transaction_error == ERR_DNS_REFUSED ||
+             transaction_error == ERR_DNS_OTHER_FAILURE) {
     // For server failures, only SERVFAIL is fatal.
     error = HttpsTransactionError::kNonFatalError;
   } else if (features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {
