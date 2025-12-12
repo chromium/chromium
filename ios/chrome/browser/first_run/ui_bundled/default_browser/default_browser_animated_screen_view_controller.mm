@@ -31,6 +31,8 @@ NSString* const kDefaultBrowserAnimationDarkmode =
     @"default_browser_animation_darkmode";
 NSString* const kDefaultBrowserAnimationRtlDarkmode =
     @"default_browser_animation_rtl_darkmode";
+// TODO(crbug.com/458333601): Update the animations to use the dynamically
+// colored Default Browser Lottie.
 NSString* const kDefaultBrowserDefaultAppsAnimation =
     @"default_browser_default_apps_animation";
 NSString* const kDefaultBrowserDefaultAppsAnimationRtl =
@@ -75,7 +77,6 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
       first_run::kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier;
   self.subtitleBottomMargin = 0;
   self.titleTopMarginWhenNoHeaderImage = kTitleTopMarginWhenNoHeaderImage;
-  self.preferToCompressContent = YES;
 
   NSArray<UITrait>* traits =
       TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
@@ -125,7 +126,7 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
     [contentStack.bottomAnchor
         constraintEqualToAnchor:self.specificContentView.bottomAnchor],
     [contentStack.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.specificContentView.topAnchor]
+        constraintEqualToAnchor:self.specificContentView.topAnchor]
   ]];
 
   [super viewDidLoad];
@@ -224,14 +225,14 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
   _animationViewWrapperDarkMode.animationView
       .translatesAutoresizingMaskIntoConstraints = NO;
 
-  // Set low compression resistance priority for the animation views to make
-  // their height dynamic.
+  // Set the content hugging priority for the animation views to make their
+  // height dynamic.
   [_animationViewWrapper.animationView
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                      forAxis:UILayoutConstraintAxisVertical];
+      setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
+                        forAxis:UILayoutConstraintAxisVertical];
   [_animationViewWrapperDarkMode.animationView
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                      forAxis:UILayoutConstraintAxisVertical];
+      setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
+                        forAxis:UILayoutConstraintAxisVertical];
 
   [self selectAnimationForCurrentStyle];
 }
