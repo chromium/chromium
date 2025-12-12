@@ -1071,8 +1071,13 @@ component("base") {
     "//build/config/compiler:wglobal_constructors",
   ]
 
+  # Circular includes are never ideal, but it is also a lot of trouble to split
+  # out span.h just for this shim.
+  allow_circular_includes_from = [ ":simdutf_shim" ]
+
   deps = [
     ":check_version_internal",
+    ":simdutf_shim",
     "//base/allocator:buildflags",
     "//base/third_party/cityhash",
     "//base/third_party/cityhash_v103",
@@ -2542,6 +2547,27 @@ component("base") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
+}
+
+# Separate simdutf from ":base", so simdutf cannot accidentally affect the
+# build config for ":base".
+source_set("simdutf_shim") {
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+  if (!is_win) {
+    # Generates -Werror,-Wsign-conversion
+    configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
+  }
+
+  public = [ "simdutf_shim.h" ]
+  sources = [ "simdutf_shim.cc" ]
+  deps = [
+    "//base/allocator/partition_allocator:buildflags",
+    "//base/allocator/partition_allocator:raw_ptr",
+    "//third_party/simdutf",
+  ]
 }
 
 if (is_android) {
@@ -5946,7 +5972,10 @@ fuzzer_test("base64_decode_fuzzer") {
 
 fuzzer_test("base64_encode_fuzzer") {
   sources = [ "base64_encode_fuzzer.cc" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
 }
 
 fuzzer_test("base64url_fuzzer") {

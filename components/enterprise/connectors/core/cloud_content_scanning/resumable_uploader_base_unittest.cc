@@ -785,7 +785,8 @@ std::string GetEncodedContentAnalysisResponse() {
   ContentAnalysisResponse response;
   auto* result = response.mutable_results()->Add();
   result->set_status(ContentAnalysisResponse::Result::SUCCESS);
-  return base::Base64Encode(response.SerializeAsString());
+  return base::Base64EncodeEarlyStartup(
+      base::as_byte_span(response.SerializeAsString()));
 }
 
 const std::vector<AsyncScanRequestUploadResult>& GetTestCases() {
