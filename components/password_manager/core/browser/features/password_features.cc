@@ -142,7 +142,6 @@ BASE_FEATURE(kRestartToGainAccessToKeychain,
 #endif
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-
 BASE_FEATURE(kShowRecoveryPassword, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowTabWithPasswordChangeOnSuccess,
@@ -186,9 +185,6 @@ BASE_FEATURE(kReduceRequirementsForPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kReloadPasswordsOnTrustedVaultEncryptionChange,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRetrieveTrustedVaultKeyKeyboardAccessoryAction,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)

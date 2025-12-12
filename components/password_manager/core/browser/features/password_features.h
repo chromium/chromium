@@ -171,7 +171,6 @@ BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-
 // Shows recovery password for the improved password change flow in the
 // management UI.
 BASE_DECLARE_FEATURE(kShowRecoveryPassword);
@@ -219,10 +218,6 @@ BASE_DECLARE_FEATURE(kRunPasswordChangeInBackgroundTab);
 BASE_DECLARE_FEATURE(kReduceRequirementsForPasswordChange);
 
 #if BUILDFLAG(IS_ANDROID)
-// The feature flag for reloading passwords when the trusted vault encryption
-// state changes.
-BASE_DECLARE_FEATURE(kReloadPasswordsOnTrustedVaultEncryptionChange);
-
 // The feature flag for showing an action to unlock passwords in case of a
 // trusted vault error in the keyboard accessory.
 BASE_DECLARE_FEATURE(kRetrieveTrustedVaultKeyKeyboardAccessoryAction);
