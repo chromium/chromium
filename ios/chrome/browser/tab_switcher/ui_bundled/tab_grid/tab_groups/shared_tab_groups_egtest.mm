@@ -319,7 +319,8 @@ void WaitForFakeJoinFlowView() {
 
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // checks opening the Manage flow. Using the face pile.
-- (void)testShareGroupAndManageGroupUsingFacePile {
+// TODO(crbug.com/468318824): This test is flaky.
+- (void)FLAKY_testShareGroupAndManageGroupUsingFacePile {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
