@@ -42,26 +42,26 @@ ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link) {
   base::TimeTicks callback_time =
       base::TimeTicks() + base::Seconds(display_link.timestamp);
   // The time interval that represents when the next frame displays.
-  base::TimeTicks next_callback_time =
+  base::TimeTicks target_time =
       base::TimeTicks() + base::Seconds(display_link.targetTimestamp);
 
   bool times_valid = true;
-  base::TimeDelta current_interval = next_callback_time - callback_time;
+  base::TimeDelta interval = base::Seconds(1) * display_link.duration;
 
   // Sanity check.
-  if (callback_time.is_null() || next_callback_time.is_null() ||
-      !current_interval.is_positive()) {
+  if (callback_time.is_null() || target_time.is_null() ||
+      !interval.is_positive()) {
     times_valid = false;
   }
 
   ui::VSyncParamsMac params;
   params.callback_times_valid = times_valid;
   params.callback_timebase = callback_time;
-  params.callback_interval = current_interval;
+  params.callback_interval = interval;
 
   params.display_times_valid = times_valid;
-  params.display_timebase = next_callback_time + 0.5 * current_interval;
-  params.display_interval = current_interval;
+  params.display_timebase = target_time;
+  params.display_interval = interval;
 
   return params;
 }
