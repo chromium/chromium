@@ -29,6 +29,10 @@ inline constexpr char kUninstallCompanionAppSwitch[] = "uninstall";
 // A suffix appended to the updater executable name before any file extension.
 extern const char kExecutableSuffix[];
 
+// The value of `request.updater` sent to the update server.
+// TODO(crbug.com/467929954): change this value to `PRODUCT_FULLNAME_STRING`.
+inline constexpr char kProdId[] = "updater";
+
 // "0.0.0.0". Historically, a null version has been used to indicate a
 // new install.
 inline constexpr char kNullVersion[] = "0.0.0.0";

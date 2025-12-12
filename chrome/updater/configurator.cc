@@ -147,7 +147,7 @@ GURL Configurator::CrashUploadURL() const {
 
 std::string Configurator::GetProdId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return "updater";
+  return kProdId;
 }
 
 base::Version Configurator::GetBrowserVersion() const {

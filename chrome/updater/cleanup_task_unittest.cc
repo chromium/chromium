@@ -13,12 +13,14 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/updater/configurator.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
+#include "components/update_client/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -59,14 +61,20 @@ TEST_F(CleanupTaskTest, RunCleanupObsoleteFiles) {
 
   // Set up mock update_client temp directories.
   ASSERT_TRUE(base::CreateNewTempDirectory(
-      FILE_PATH_LITERAL("chrome_url_fetcher_BazBar"), &chrome_url_fetcher_dir));
+      update_client::UTF8ToStringType(
+          base::StrCat({kProdId, "_chrome_url_fetcher_BazBar"})),
+      &chrome_url_fetcher_dir));
   ASSERT_TRUE(base::CreateNewTempDirectory(
-      FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzippingBazBar"),
+      update_client::UTF8ToStringType(
+          base::StrCat({kProdId, "_chrome_Unpacker_BeginUnzippingBazBar"})),
       &chrome_unpacker_dir));
   ASSERT_TRUE(base::CreateNewTempDirectory(
-      FILE_PATH_LITERAL("chrome_BITS_BazBar"), &chrome_bits_dir));
-  ASSERT_TRUE(base::CreateNewTempDirectory(FILE_PATH_LITERAL("random_temp"),
-                                           &random_temp_dir));
+      update_client::UTF8ToStringType(
+          base::StrCat({kProdId, "_chrome_BITS_BazBar"})),
+      &chrome_bits_dir));
+  ASSERT_TRUE(base::CreateNewTempDirectory(
+      update_client::UTF8ToStringType(base::StrCat({kProdId, "_random_temp"})),
+      &random_temp_dir));
 
   std::optional<base::FilePath> folder_path = GetVersionedInstallDirectory(
       GetUpdaterScopeForTesting(), base::Version("100"));
