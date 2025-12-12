@@ -10,9 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/crabbyavif/src/include/avif/avif.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -144,7 +144,8 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
   // Used to call UpdateBppHistogram<"Avif">() at most once to record the
   // bits-per-pixel value of the image when the image is successfully decoded.
-  base::OnceCallback<void(gfx::Size, size_t)> update_bpp_histogram_callback_;
+  CrossThreadOnceFunction<void(gfx::Size, size_t)>
+      update_bpp_histogram_callback_;
   // Whether the 'clap' (clean aperture) property should be ignored, e.g.
   // because the 'clap' property is invalid or unsupported.
   bool ignore_clap_ = false;

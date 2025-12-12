@@ -18,7 +18,6 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -31,6 +30,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/crabbyavif/src/include/avif/avif.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -979,7 +979,8 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
       avif_yuv_format_ != crabbyavif::AVIF_PIXEL_FORMAT_YUV400 &&
       !decoder_->alphaPresent && decoded_frame_count_ == 1) {
     static constexpr char kType[] = "Avif";
-    update_bpp_histogram_callback_ = base::BindOnce(&UpdateBppHistogram<kType>);
+    update_bpp_histogram_callback_ =
+        CrossThreadBindOnce(&UpdateBppHistogram<kType>);
   }
 
   unsigned width = container->width;
