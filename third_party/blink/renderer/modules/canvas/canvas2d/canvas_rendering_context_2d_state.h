@@ -389,6 +389,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   sk_sp<cc::DrawLooper>& EmptyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowOnlyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowAndForegroundDrawLooper() const;
+  float ShadowBlurAsSigma() const;
 
   TraceWrapperV8Reference<v8::String> unparsed_stroke_color_;
   TraceWrapperV8Reference<v8::String> unparsed_fill_color_;

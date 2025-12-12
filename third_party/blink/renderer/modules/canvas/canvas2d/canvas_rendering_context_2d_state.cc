@@ -647,6 +647,10 @@ sk_sp<cc::DrawLooper>& CanvasRenderingContext2DState::EmptyDrawLooper() const {
   return empty_draw_looper_;
 }
 
+float CanvasRenderingContext2DState::ShadowBlurAsSigma() const {
+  return BlurRadiusToStdDev(ClampTo<float>(shadow_blur_));
+}
+
 sk_sp<cc::DrawLooper>& CanvasRenderingContext2DState::ShadowOnlyDrawLooper()
     const {
   if (!shadow_only_draw_looper_) {
@@ -678,7 +682,7 @@ sk_sp<PaintFilter>& CanvasRenderingContext2DState::ShadowOnlyImageFilter()
     const {
   using ShadowMode = DropShadowPaintFilter::ShadowMode;
   if (!shadow_only_image_filter_) {
-    const auto sigma = BlurRadiusToStdDev(shadow_blur_);
+    const auto sigma = ShadowBlurAsSigma();
     shadow_only_image_filter_ = sk_make_sp<DropShadowPaintFilter>(
         shadow_offset_.x(), shadow_offset_.y(), sigma, sigma,
         shadow_color_.toSkColor4f(), ShadowMode::kDrawShadowOnly, nullptr);
@@ -690,7 +694,7 @@ sk_sp<PaintFilter>&
 CanvasRenderingContext2DState::ShadowAndForegroundImageFilter() const {
   using ShadowMode = DropShadowPaintFilter::ShadowMode;
   if (!shadow_and_foreground_image_filter_) {
-    const auto sigma = BlurRadiusToStdDev(shadow_blur_);
+    const auto sigma = ShadowBlurAsSigma();
     // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
     shadow_and_foreground_image_filter_ = sk_make_sp<DropShadowPaintFilter>(
         shadow_offset_.x(), shadow_offset_.y(), sigma, sigma,
