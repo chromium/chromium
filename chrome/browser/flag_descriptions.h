@@ -4138,13 +4138,6 @@ inline constexpr char kTabGroupMenuMoreEntryPointsName[] =
 inline constexpr char kTabGroupMenuMoreEntryPointsDescription[] =
     "Add options to menus to facilitate tab group creation and interaction";
 
-inline constexpr char kTabSearchPositionSettingId[] =
-    "tab-search-position-setting";
-inline constexpr char kTabSearchPositionSettingName[] =
-    "Tab Search Position Setting";
-inline constexpr char kTabSearchPositionSettingDescription[] =
-    "Whether to show the tab search position options in the settings page.";
-
 inline constexpr char kTextSafetyClassifierName[] = "Text Safety Classifier";
 inline constexpr char kTextSafetyClassifierDescription[] =
     "Enables text safety classifier for on-device models";

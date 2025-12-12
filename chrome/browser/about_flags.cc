@@ -7978,14 +7978,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          download::features::kDownloadNotificationServiceUnifiedAPI)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {flag_descriptions::kTabSearchPositionSettingId,
-     flag_descriptions::kTabSearchPositionSettingName,
-     flag_descriptions::kTabSearchPositionSettingDescription,
-     kOsCrOS | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(tabs::kTabSearchPositionSetting)},
-#endif
-
     {"enable-network-logging-to-file",
      flag_descriptions::kEnableNetworkLoggingToFileName,
      flag_descriptions::kEnableNetworkLoggingToFileDescription, kOsAll,

@@ -196,25 +196,6 @@
             label="$i18n{autoPinNewTabGroups}">
         </settings-toggle-button>
 
-        <template is="dom-if" if="[[showTabSearchPositionSettings_]]" restamp>
-          <div class="cr-row" id="tabSearchPositionRow">
-            <div class="flex cr-padded-text" aria-hidden="true">
-              $i18n{tabSearchPosition}
-            </div>
-            <template is="dom-if" if="[[showTabSearchPositionRestartButton_]]"
-                restamp>
-              <cr-button id="tabSearchPositionRestart" role="alert"
-                  on-click="onTabSearchPositionRestartClick_">
-                $i18n{restart}
-              </cr-button>
-            </template>
-            <settings-dropdown-menu id="tabSearchPositionDropdown"
-                label="$i18n{tabSearchPosition}"
-                pref="{{prefs.tab_search.is_right_aligned}}"
-                menu-options="[[tabSearchOptions_]]">
-            </settings-dropdown-menu>
-          </div>
-        </template>
         <div class="cr-row">
           <div class="flex cr-padded-text" aria-hidden="true">
             $i18n{sidePanelPosition}

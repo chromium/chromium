@@ -226,13 +226,6 @@ export class SettingsAppearancePageElement extends
         },
       },
 
-      showTabSearchPositionSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showTabSearchPositionSettings');
-        },
-      },
-
       showVerticalTabsEnabled_: {
         type: Boolean,
         value() {
@@ -312,7 +305,6 @@ export class SettingsAppearancePageElement extends
   declare private showCustomChromeFrame_: boolean;
   // </if>
 
-  declare private showTabSearchPositionSettings_: boolean;
   declare private showVerticalTabsEnabled_: boolean;
   declare private showTabSearchPositionRestartButton_: boolean;
   declare private showManagedThemeDialog_: boolean;

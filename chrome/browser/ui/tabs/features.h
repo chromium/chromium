@@ -15,13 +15,10 @@ BASE_DECLARE_FEATURE(kDebugUITabStrip);
 
 BASE_DECLARE_FEATURE(kTabGroupHome);
 
-BASE_DECLARE_FEATURE(kTabSearchPositionSetting);
-
 BASE_DECLARE_FEATURE(kVerticalTabs);
 
 BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
-bool CanShowTabSearchPositionSetting();
 bool IsVerticalTabsFeatureEnabled();
 
 }  // namespace tabs
