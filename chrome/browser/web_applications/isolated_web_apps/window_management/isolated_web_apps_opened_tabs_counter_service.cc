@@ -127,6 +127,10 @@ void IsolatedWebAppsOpenedTabsCounterService::Shutdown() {
   for (const webapps::AppId& app_id : app_ids_to_close) {
     CloseNotification(app_id);
   }
+
+  // CloseNotification() should have removed all `app_ids` from
+  // `apps_with_active_notifications_` under the hood.
+  CHECK(apps_with_active_notifications_.empty());
 }
 
 void IsolatedWebAppsOpenedTabsCounterService::OnWebContentsCreated(
