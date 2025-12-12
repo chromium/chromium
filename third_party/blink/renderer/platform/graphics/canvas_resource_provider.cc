@@ -323,7 +323,7 @@ sk_sp<SkSurface> CanvasResourceProviderExternalBitmap::CreateSkSurface() const {
   TRACE_EVENT0("blink",
                "CanvasResourceProviderExternalBitmap::CreateSkSurface");
 
-  const auto info = GetSkImageInfo().makeAlphaType(kPremul_SkAlphaType);
+  const auto info = info_.makeAlphaType(kPremul_SkAlphaType);
   const auto props = GetSkSurfaceProps();
   return SkSurfaces::Raster(info, &props);
 }
