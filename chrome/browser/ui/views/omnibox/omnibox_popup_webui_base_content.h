@@ -21,6 +21,10 @@ class OmniboxController;
 class OmniboxPopupPresenterBase;
 class OmniboxPopupUI;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace ui {
 class MenuModel;
 }  // namespace ui
@@ -66,7 +70,11 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
                              const blink::WebGestureEvent& event) override;
 
   // Notifies the page the widget was closed.
-  virtual void OnWidgetClosed() {}
+  virtual void OnWidgetClosed();
+
+  // Returns the WebContents from within the wrapper. Don't use GetWebContents()
+  // since that may be nullptr if the popup isn't visible.
+  content::WebContents* GetWrappedWebContents();
 
  protected:
   // Callback for cleaning up the `context_menu_` field.
