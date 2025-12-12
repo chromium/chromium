@@ -135,7 +135,16 @@ WaapUIMetricsService* WaapUIMetricsService::Get(Profile* profile) {
 void WaapUIMetricsService::OnBrowserWindowFirstPresentation(
     base::TimeTicks time) {
   static bool is_first_call = true;
-  CHECK(!time.is_null());
+  // It is possible for the presentation feedback to have a null timestamp even
+  // if the presentation was considered successful (e.g. if the OS/driver
+  // confirmed the swap but didn't provide a timestamp). In this case, we simply
+  // skip recording the metric.
+  // A longer term fix would require modifying
+  // `CompositorFrameSinkSupport::DidPresentCompositorFrame()`, which requires
+  // carefully auditing all callers. See https://crbug.com/464980749#comment10.
+  if (time.is_null()) {
+    return;
+  }
   CHECK(is_first_call);
   is_first_call = false;
 
