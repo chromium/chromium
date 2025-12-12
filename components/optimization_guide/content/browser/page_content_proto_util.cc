@@ -896,6 +896,12 @@ class Converter {
       render_frame_info =
           get_render_frame_info_.Run(source_frame_token.child_id, frame_token);
       if (!render_frame_info) {
+        if (base::FeatureList::IsEnabled(
+                blink::features::kAIPageContentMissingSubframesFailSilently)) {
+          // If the frame was removed ignore its subtree but don't fail APC
+          // generation for the whole tree.
+          return base::ok();
+        }
         return base::unexpected("could not find render_frame_info for iframe");
       }
 

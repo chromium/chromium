@@ -35,6 +35,13 @@ namespace blink::features {
 BASE_FEATURE(kAIPageContentIncludePopupWindows,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether a missing subframe while generating the APC proto is
+// silently dropped. If false, the entire APC is considered failed when this
+// happens. When true, the subframe is simply skipped but the rest of APC
+// generation is unaffected.
+BASE_FEATURE(kAIPageContentMissingSubframesFailSilently,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls the capturing of the Ad-Auction-Signals header, and the maximum
 // allowed Ad-Auction-Signals header value.
 BASE_FEATURE(kAdAuctionSignals, base::FEATURE_ENABLED_BY_DEFAULT);
