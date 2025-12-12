@@ -43,7 +43,7 @@ import UIKit
   // Generates a new snapshot, updates the snapshot storage, and runs a callback with the new
   // snapshot image.
   public func updateSnapshot(completion: @escaping ((UIImage?) -> Void)) {
-    #if swift(>=6.2.1)
+    #if swift(>=6.2.3)
       weak let weakSelf = self
     #else
       weak var weakSelf = self
@@ -103,7 +103,7 @@ import UIKit
   // Gets a grey snapshot for the current page, calling `completion` once it has been retrieved or
   // regenerated. If the snapshot cannot be generated, the `completion` will be called with nil.
   fileprivate func retrieveGreySnapshot(completion: @escaping (UIImage?) -> Void) {
-    #if swift(>=6.2.1)
+    #if swift(>=6.2.3)
       weak let weakSelf = self
     #else
       weak var weakSelf = self

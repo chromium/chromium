@@ -98,7 +98,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     if updatedConstant != newTabButtonLeadingConstraint?.constant {
       newTabButtonLeadingConstraint?.constant = updatedConstant
 
-      #if swift(>=6.2.1)
+      #if swift(>=6.2.3)
         weak let weakSelf = self
       #else
         weak var weakSelf = self

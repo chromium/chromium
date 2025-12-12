@@ -198,7 +198,7 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
 
     super.viewWillTransition(to: size, with: coordinator)
 
-    #if swift(>=6.2.1)
+    #if swift(>=6.2.3)
       weak let weakSelf = self
     #else
       weak var weakSelf = self
@@ -799,7 +799,7 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
           // On iOS 16, when the scroll animation and the insert animation
           // occur simultaneously, the resulting animation lacks of
           // smoothness.
-          #if swift(>=6.2.1)
+          #if swift(>=6.2.3)
             weak let weakSelf = self
           #else
             weak var weakSelf = self
@@ -1126,7 +1126,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
       // Drop synchronously if local object is available.
       if item.dragItem.localObject != nil {
 
-        #if swift(>=6.2.1)
+        #if swift(>=6.2.3)
           weak let weakSelf = self
         #else
           weak var weakSelf = self
