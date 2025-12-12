@@ -215,16 +215,13 @@ IOSWebViewPaymentsAutofillClient::GetPaymentsNetworkInterface() {
 
 MultipleRequestPaymentsNetworkInterface*
 IOSWebViewPaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
-  if (GetPrefService()->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
-    if (!multiple_request_payments_network_interface_) {
-      multiple_request_payments_network_interface_ =
-          std::make_unique<payments::MultipleRequestPaymentsNetworkInterface>(
-              client_->GetURLLoaderFactory(), *client_->GetIdentityManager(),
-              web_state_->GetBrowserState()->IsOffTheRecord());
-    }
-    return multiple_request_payments_network_interface_.get();
+  if (!multiple_request_payments_network_interface_) {
+    multiple_request_payments_network_interface_ =
+        std::make_unique<payments::MultipleRequestPaymentsNetworkInterface>(
+            client_->GetURLLoaderFactory(), *client_->GetIdentityManager(),
+            web_state_->GetBrowserState()->IsOffTheRecord());
   }
-  return nullptr;
+  return multiple_request_payments_network_interface_.get();
 }
 
 void IOSWebViewPaymentsAutofillClient::ShowAutofillErrorDialog(
