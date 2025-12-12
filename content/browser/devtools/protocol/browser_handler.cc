@@ -232,6 +232,10 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::WEB_APP_INSTALLATION;
   } else if (name == "local-network-access") {
     *permission_type = PermissionType::LOCAL_NETWORK_ACCESS;
+  } else if (name == "local-network") {
+    *permission_type = PermissionType::LOCAL_NETWORK;
+  } else if (name == "loopback-network") {
+    *permission_type = PermissionType::LOOPBACK_NETWORK;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);
@@ -328,6 +332,10 @@ Response FromProtocolPermissionType(
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::LocalNetworkAccess) {
     *out_type = PermissionType::LOCAL_NETWORK_ACCESS;
+  } else if (type == protocol::Browser::PermissionTypeEnum::LocalNetwork) {
+    *out_type = PermissionType::LOCAL_NETWORK;
+  } else if (type == protocol::Browser::PermissionTypeEnum::LoopbackNetwork) {
+    *out_type = PermissionType::LOOPBACK_NETWORK;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }

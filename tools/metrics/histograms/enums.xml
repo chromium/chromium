@@ -2588,6 +2588,8 @@ Called by update_net_error_codes.py.-->
   <int value="140" label="Device Attributes"/>
   <int value="141" label="Permission actions history setting"/>
   <int value="142" label="Suspicious notification show original"/>
+  <int value="143" label="Local network access - Local"/>
+  <int value="144" label="Local network access - Loopback"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
@@ -22682,6 +22684,8 @@ Called by update_net_error_codes.py.-->
   <int value="33" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
   <int value="34" label="PERMISSION_WEB_APP_INSTALLATION"/>
   <int value="35" label="PERMISSION_LOCAL_NETWORK_ACCESS"/>
+  <int value="36" label="PERMISSION_LOCAL_NETWORK"/>
+  <int value="37" label="PERMISSION_LOOPBACK_NETWORK"/>
 </enum>
 
 <enum name="PIIType">

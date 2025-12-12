@@ -49,7 +49,9 @@ domain Browser
       idleDetection
       keyboardLock
       localFonts
+      localNetwork
       localNetworkAccess
+      loopbackNetwork
       midi
       midiSysex
       nfc

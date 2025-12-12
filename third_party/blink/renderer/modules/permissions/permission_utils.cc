@@ -135,6 +135,10 @@ String PermissionNameToString(PermissionName name) {
       return "web-app-installation";
     case PermissionName::LOCAL_NETWORK_ACCESS:
       return "local-network-access";
+    case PermissionName::LOCAL_NETWORK:
+      return "local-network";
+    case PermissionName::LOOPBACK_NETWORK:
+      return "loopback-network";
     case PermissionName::VR:
       return "vr";
     case PermissionName::AR:
@@ -443,6 +447,23 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
 
   if (name == V8PermissionName::Enum::kLocalNetworkAccess) {
     return CreatePermissionDescriptor(PermissionName::LOCAL_NETWORK_ACCESS);
+  }
+
+  if (name == V8PermissionName::Enum::kLocalNetwork) {
+    if (!RuntimeEnabledFeatures::LocalNetworkAccessSplitPermissionsEnabled()) {
+      exception_state.ThrowTypeError(
+          "Local Network Access Split permissions are not enabled.");
+      return nullptr;
+    }
+    return CreatePermissionDescriptor(PermissionName::LOCAL_NETWORK);
+  }
+  if (name == V8PermissionName::Enum::kLoopbackNetwork) {
+    if (!RuntimeEnabledFeatures::LocalNetworkAccessSplitPermissionsEnabled()) {
+      exception_state.ThrowTypeError(
+          "Local Network Access Split permissions are not enabled.");
+      return nullptr;
+    }
+    return CreatePermissionDescriptor(PermissionName::LOOPBACK_NETWORK);
   }
   return nullptr;
 }

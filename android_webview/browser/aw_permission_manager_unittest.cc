@@ -281,6 +281,27 @@ TEST_F(AwPermissionManagerTest,
   EXPECT_EQ(PermissionStatus::GRANTED, resolved_permission_status[0]);
 }
 
+TEST_F(AwPermissionManagerTest, LocalAccessPermissionIsGrantedSynchronously) {
+  RequestPermissions(
+      {PermissionType::LOCAL_NETWORK}, render_frame_host,
+      GURL(kRequestingOrigin1), true,
+      base::BindOnce(&AwPermissionManagerTest::PermissionRequestResponse,
+                     base::Unretained(this), 0));
+  ASSERT_EQ(1u, resolved_permission_status.size());
+  EXPECT_EQ(PermissionStatus::GRANTED, resolved_permission_status[0]);
+}
+
+TEST_F(AwPermissionManagerTest,
+       LoopbackAccessPermissionIsGrantedSynchronously) {
+  RequestPermissions(
+      {PermissionType::LOOPBACK_NETWORK}, render_frame_host,
+      GURL(kRequestingOrigin1), true,
+      base::BindOnce(&AwPermissionManagerTest::PermissionRequestResponse,
+                     base::Unretained(this), 0));
+  ASSERT_EQ(1u, resolved_permission_status.size());
+  EXPECT_EQ(PermissionStatus::GRANTED, resolved_permission_status[0]);
+}
+
 // Test the case a delegate is called, and it resolves the permission
 // synchronously.
 TEST_F(AwPermissionManagerTest, SinglePermissionRequestIsGrantedSynchronously) {

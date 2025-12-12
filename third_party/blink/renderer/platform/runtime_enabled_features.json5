@@ -3202,6 +3202,15 @@
       // crbug.com/394009026).
     },
     {
+      name: "LocalNetworkAccessSplitPermissions",
+      base_feature: "none",
+      // No status because this blink runtime feature doesn't work by itself.
+      // It's controlled by
+      // network::features::kLocalNetworkAccessChecksSplitPermissions which
+      // needs to be enabled to make the whole feature work (see
+      // crbug.com/465491626).
+    },
+    {
       name: "LocalNetworkAccessWebRTC",
       base_feature: "none",
       // No status because this feature is controlled by

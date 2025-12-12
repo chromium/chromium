@@ -108,6 +108,8 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.SENSORS:
             case ContentSettingsType.VR:
             case ContentSettingsType.LOCAL_NETWORK_ACCESS:
+            case ContentSettingsType.LOCAL_NETWORK:
+            case ContentSettingsType.LOOPBACK_NETWORK:
             case ContentSettingsType.WINDOW_MANAGEMENT:
                 return WebsitePermissionsType.PERMISSION_INFO;
             case ContentSettingsType.STORAGE_ACCESS:

@@ -291,6 +291,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // policy currently blocks iframes from using it. crbug.com/442879527
   aw_feature_overrides.DisableFeature(
       network::features::kLocalNetworkAccessChecks);
+  aw_feature_overrides.DisableFeature(
+      network::features::kLocalNetworkAccessChecksSplitPermissions);
 
   // Disable background media for WebView, until we have consensus on long-term
   // behavior crbug.com/453706851

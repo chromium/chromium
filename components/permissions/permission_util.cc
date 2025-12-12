@@ -359,6 +359,12 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
       *out = PermissionType::LOCAL_NETWORK_ACCESS;
       break;
+    case ContentSettingsType::LOCAL_NETWORK:
+      *out = PermissionType::LOCAL_NETWORK;
+      break;
+    case ContentSettingsType::LOOPBACK_NETWORK:
+      *out = PermissionType::LOOPBACK_NETWORK;
+      break;
     default:
       return false;
   }
@@ -538,6 +544,10 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingsTypeSafe(
       return ContentSettingsType::WEB_APP_INSTALLATION;
     case PermissionType::LOCAL_NETWORK_ACCESS:
       return ContentSettingsType::LOCAL_NETWORK_ACCESS;
+    case PermissionType::LOCAL_NETWORK:
+      return ContentSettingsType::LOCAL_NETWORK;
+    case PermissionType::LOOPBACK_NETWORK:
+      return ContentSettingsType::LOOPBACK_NETWORK;
     case PermissionType::NUM:
       break;
   }

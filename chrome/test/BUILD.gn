@@ -3372,6 +3372,7 @@ if (!is_android) {
       "../browser/local_network_access/local_network_access_iframe_browsertest.cc",
       "../browser/local_network_access/local_network_access_policies_browsertest.cc",
       "../browser/local_network_access/local_network_access_prompt_browsertest.cc",
+      "../browser/local_network_access/local_network_access_split_permission_browsertest.cc",
       "../browser/local_network_access/local_network_access_workers_browsertest.cc",
       "../browser/locale_tests_browsertest.cc",
       "../browser/login_detection/login_detection_browsertest.cc",

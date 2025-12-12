@@ -90,7 +90,9 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <variant name="IdleDetection"/>
   <variant name="KeyboardLock"/>
   <variant name="LocalFonts"/>
+  <variant name="LocalNetwork"/>
   <variant name="LocalNetworkAccess"/>
+  <variant name="LoopbackNetwork"/>
   <variant name="MidiSysEx"/>
   <variant name="MultipleDownload"/>
   <variant name="Nfc"/>

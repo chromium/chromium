@@ -502,8 +502,12 @@ chromium-metrics-reviews@google.com.
     <variant name="javascript-jit" summary="JavaScript JIT"/>
     <variant name="javascript-optimizer" summary="JavaScript Optimizer"/>
     <variant name="keygen" summary="Keygen exceptions"/>
+    <variant name="local-network"
+        summary="Local network access(local-only) exceptions"/>
     <variant name="local-network-access"
         summary="Local network access exceptions"/>
+    <variant name="loopback-network"
+        summary="Local network access(loopback-only) exceptions"/>
     <variant name="media-engagement" summary="Media engagement exceptions"/>
     <variant name="media-stream-camera" summary="Camera exceptions"/>
     <variant name="media-stream-mic" summary="Microphone exceptions"/>

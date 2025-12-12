@@ -102,6 +102,10 @@ std::string GetPermissionString(PermissionType permission) {
       return "WebAppInstallation";
     case PermissionType::LOCAL_NETWORK_ACCESS:
       return "LocalNetworkAccess";
+    case PermissionType::LOCAL_NETWORK:
+      return "LocalNetwork";
+    case PermissionType::LOOPBACK_NETWORK:
+      return "LoopbackNetwork";
     case PermissionType::NUM:
       NOTREACHED();
   }
@@ -176,6 +180,10 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
     case PermissionType::NOTIFICATIONS:
     case PermissionType::KEYBOARD_LOCK:
     case PermissionType::POINTER_LOCK:
+    // TODO(crbug.com/465491626): Implement permission policy feature for both
+    // LOCAL_NETWORK and LOOPBACK_NETWORK
+    case PermissionType::LOCAL_NETWORK:
+    case PermissionType::LOOPBACK_NETWORK:
       return std::nullopt;
 
     case PermissionType::NUM:
@@ -335,6 +343,10 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::WEB_APP_INSTALLATION;
     case PermissionName::LOCAL_NETWORK_ACCESS:
       return PermissionType::LOCAL_NETWORK_ACCESS;
+    case PermissionName::LOCAL_NETWORK:
+      return PermissionType::LOCAL_NETWORK;
+    case PermissionName::LOOPBACK_NETWORK:
+      return PermissionType::LOOPBACK_NETWORK;
     case PermissionName::VR:
       return PermissionType::VR;
     case PermissionName::AR:

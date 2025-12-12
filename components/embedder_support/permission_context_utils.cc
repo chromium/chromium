@@ -13,6 +13,8 @@
 #include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/keyboard_lock_permission_context.h"
 #include "components/permissions/contexts/local_network_access_permission_context.h"
+#include "components/permissions/contexts/local_network_permission_context.h"
+#include "components/permissions/contexts/loopback_network_permission_context.h"
 #include "components/permissions/contexts/midi_permission_context.h"
 #include "components/permissions/contexts/midi_sysex_permission_context.h"
 #include "components/permissions/contexts/nfc_permission_context.h"
@@ -122,6 +124,12 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
           browser_context);
   permission_contexts[ContentSettingsType::LOCAL_NETWORK_ACCESS] =
       std::make_unique<permissions::LocalNetworkAccessPermissionContext>(
+          browser_context);
+  permission_contexts[ContentSettingsType::LOCAL_NETWORK] =
+      std::make_unique<permissions::LocalNetworkPermissionContext>(
+          browser_context);
+  permission_contexts[ContentSettingsType::LOOPBACK_NETWORK] =
+      std::make_unique<permissions::LoopbackNetworkPermissionContext>(
           browser_context);
   permission_contexts[ContentSettingsType::MIDI] =
       std::make_unique<permissions::MidiPermissionContext>(browser_context);

@@ -415,7 +415,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppLaunchQueue", raw_ref(features::kAndroidWebAppLaunchHandler)},
 #endif
           {"LocalNetworkAccessPermissionPolicy",
-           raw_ref(network::features::kLocalNetworkAccessChecks)}};
+           raw_ref(network::features::kLocalNetworkAccessChecks)},
+          {"LocalNetworkAccessSplitPermissions",
+           raw_ref(
+               network::features::kLocalNetworkAccessChecksSplitPermissions)}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {

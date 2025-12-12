@@ -397,9 +397,11 @@ void AwPermissionManager::RequestPermissions(
             content::PermissionResult(PermissionStatus::DENIED));
         break;
       case PermissionType::LOCAL_NETWORK_ACCESS:
-        // PermissionType::LOCAL_NETWORK_ACCESS requests are always granted so
-        // that local network requests in WebView work as-is. WebView is
-        // currently out-of-scope for Local Network Access restrictions.
+      case PermissionType::LOCAL_NETWORK:
+      case PermissionType::LOOPBACK_NETWORK:
+        // LNA permission requests are always granted so that local network
+        // requests in WebView work as-is. WebView is currently out-of-scope for
+        // Local Network Access restrictions.
         pending_request_raw->SetPermissionResult(
             permissions[i],
             content::PermissionResult(PermissionStatus::GRANTED));
@@ -520,6 +522,8 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::MIDI:
     case blink::PermissionType::SENSORS:
     case blink::PermissionType::LOCAL_NETWORK_ACCESS:
+    case blink::PermissionType::LOCAL_NETWORK:
+    case blink::PermissionType::LOOPBACK_NETWORK:
       // These permissions are auto-granted by WebView.
       return PermissionStatus::GRANTED;
 
@@ -721,6 +725,8 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::WAKE_LOCK_SCREEN:
       case PermissionType::WAKE_LOCK_SYSTEM:
       case PermissionType::LOCAL_NETWORK_ACCESS:
+      case PermissionType::LOCAL_NETWORK:
+      case PermissionType::LOOPBACK_NETWORK:
         // There is nothing to cancel so this is simply ignored.
         break;
       case PermissionType::NUM:

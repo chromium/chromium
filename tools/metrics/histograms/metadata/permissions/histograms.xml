@@ -42,7 +42,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IdleDetection"/>
   <variant name="KeyboardLock"/>
   <variant name="LocalFonts"/>
+  <variant name="LocalNetwork"/>
   <variant name="LocalNetworkAccess"/>
+  <variant name="LoopbackNetwork"/>
   <variant name="MidiSysEx"/>
   <variant name="MultipleDownload"/>
   <variant name="Nfc"/>

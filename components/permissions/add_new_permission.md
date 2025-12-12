@@ -103,9 +103,10 @@ update [IsAllowlistedPermissionType()](https://source.chromium.org/chromium/chro
       [controlled_frame_permissions_unittest.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
 
 ### Add ContentSettingsType
-1. In [content_settings_types.h](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h)
+1. In
+   [content_settings_types.mojo](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.mojom)
 update
-[ContentSettingsType](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h;l=17;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)
+[ContentSettingsType](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.mojom;bpv=1;bpt=1;l=18?gsn=ContentSettingsType&gs=KYTHE%3A%2F%2Fkythe%3A%2F%2Fchromium.googlesource.com%2Fcodesearch%2Fchromium%2Fsrc%2F%2Fmain%3Flang%3Dmojom%23content_settings.mojom.ContentSettingsType)
 2. In [content_settings_uma_util.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_uma_util.cc)
 update
 [kHistogramValue](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/browser/content_settings_uma_util.cc;drc=c6239d599e27bb680984bd6e86e69321b3fe5a9d;l=16)
@@ -184,15 +185,11 @@ update histograms:
     * `name="PermissionType"`
     * `name="ContentType"`
     * `name="PermissionRequestType"`
-2. In  [tools/metrics/histograms/metadata/histogram_suffixes_list.xml](https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/metadata/histogram_suffixes_list.xml)
-update histograms
-    * `name="PermissionTypes"`
-    * `name="PermissionRequestTypes"`
-3. In [tools/metrics/histograms/metadata/content/histograms.xml](https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/metadata/content/histograms.xml) update `<token key="ContentSettingsType">`
-4. In [permission_uma_util.h](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.h)
+1. In [tools/metrics/histograms/metadata/content/histograms.xml](https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/metadata/content/histograms.xml) update `<token key="ContentSettingsType">`
+1. In [permission_uma_util.h](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.h)
 updated enum
 [RequestTypeForUma](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.h;l=41;drc=796b971e6e0d1b033bda58b31e9f24d397ad6178)
-5. In [permission_uma_util.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.cc)
+1. In [permission_uma_util.cc](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.cc)
 updated methods:
     * [GetUmaValueForRequestType()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.cc;l=55;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
     * [GetPermissionRequestString()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.cc;l=117;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)

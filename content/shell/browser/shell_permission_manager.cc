@@ -76,6 +76,8 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::AUTOMATIC_FULLSCREEN:
     case PermissionType::WEB_APP_INSTALLATION:
     case PermissionType::LOCAL_NETWORK_ACCESS:
+    case PermissionType::LOCAL_NETWORK:
+    case PermissionType::LOOPBACK_NETWORK:
       return false;
   }
 

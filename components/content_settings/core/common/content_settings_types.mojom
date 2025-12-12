@@ -462,9 +462,13 @@ enum ContentSettingsType {
   // store revoked notification permissions of disruptive sites.
   REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
 
-  // Content setting for whether the site is allowed to make local network
-  // requests.
+  // Content settings for whether the site is allowed to make local network
+  // requests. Migration from LOCAL_NETWORK_ACCESS to the split setting of
+  // LOCAL_NETWORK AND LOOPBACK_NETWORK is in progress. See crbug.com/465491626
+  // for details.
   LOCAL_NETWORK_ACCESS,
+  LOCAL_NETWORK,
+  LOOPBACK_NETWORK,
 
   // Stores information on-device language packs for which a site has
   // installed using the Web Speech API.

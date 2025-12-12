@@ -259,6 +259,10 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::DEVICE_ATTRIBUTES, nullptr},
     {ContentSettingsType::PERMISSION_ACTIONS_HISTORY, nullptr},
     {ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL, nullptr},
+    // TODO(crbug.com/465491626): Implement UI for both LOCAL_NETWORK and
+    // LOOPBACK_NETWORK
+    {ContentSettingsType::LOCAL_NETWORK, nullptr},
+    {ContentSettingsType::LOOPBACK_NETWORK, nullptr},
 });
 
 static_assert(
