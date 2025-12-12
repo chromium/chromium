@@ -11,7 +11,6 @@
 #include "chrome/browser/actor/tools/observation_delay_test_util.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
-#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
@@ -75,11 +74,6 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithoutLoading) {
 IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithLoading) {
   base::HistogramTester histogram_tester;
 
-  // TODO(b/447664500): Remove when fixed.
-  content::DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::DisableForTestingReason::
-                          TEST_REQUIRES_NO_CACHING);
-
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
 
@@ -89,20 +83,23 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithLoading) {
 
   TestFuture<void> result;
   controller.Wait(*active_tab(), result.GetCallback());
+
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
+  ASSERT_FALSE(result.IsReady());
 
-  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
-  content::TestNavigationManager manager(web_contents(), url);
+  // Start a navigation to a page that finishes navigating but is deferred on
+  // the load event.
+  NavigateToLoadDeferredPage deferred_navigation(web_contents(),
+                                                 embedded_test_server());
+  ASSERT_TRUE(deferred_navigation.RunToDOMContentLoadedEvent());
 
-  ASSERT_TRUE(content::BeginNavigateToURLFromRenderer(web_contents(), url));
+  // The controller should reach the loading state and stay there.
+  ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForLoadCompletion));
+  EXPECT_FALSE(result.IsReady());
 
-  // Stop before committing the navigation. The observer should remain waiting
-  // on page stability.
-  ASSERT_TRUE(manager.WaitForResponse());
-  ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
-
-  // Complete the navigation. The controller should wait for load.
-  ASSERT_TRUE(manager.WaitForNavigationFinished());
+  // Unblock the subframe, the controller should now proceed through the
+  // remaining states.
+  ASSERT_TRUE(deferred_navigation.RunToLoadEvent());
 
   ASSERT_TRUE(result.Wait());
 
@@ -154,11 +151,6 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnPageStability) {
 
 IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnLoadCompletion) {
   base::HistogramTester histogram_tester;
-
-  // TODO(b/447664500): Remove when fixed.
-  content::DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::DisableForTestingReason::
-                          TEST_REQUIRES_NO_CACHING);
 
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
