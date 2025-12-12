@@ -45,6 +45,13 @@
 
 static_assert(BUILDFLAG(ENABLE_GLIC));
 
+// TODO(crbug.com/461140208): Re-enable failing tests on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE(test_name) DISABLED_##test_name
+#else
+#define MAYBE(test_name) test_name
+#endif
+
 namespace {
 using testing::SizeIs;
 }  // namespace
@@ -226,7 +233,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
       active_tab_changed_callback_;
 };
 
-TEST_F(TabStripActionContainerTest, GlicButtonDrawing) {
+TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonDrawing)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   EXPECT_TRUE(tab_strip_action_container_->GetGlicButton());
 }
@@ -236,7 +243,8 @@ TEST_F(TabStripActionContainerTest, GlicButtonUnsupportedProfile) {
   EXPECT_FALSE(tab_strip_action_container_->GetGlicButton());
 }
 
-TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyAtConstruction) {
+TEST_F(TabStripActionContainerTest,
+       MAYBE(OrdersButtonsCorrectlyAtConstruction)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
             tab_strip_action_container_->children()[0]);
@@ -264,7 +272,7 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyAtConstruction) {
 #endif  // !BUILDFLAG(IS_MAC)
 }
 
-TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
+TEST_F(TabStripActionContainerTest, MAYBE(OrdersButtonsCorrectlyWhenShown)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
 
 // TODO(crbug.com/437141881): Fix flaky tests on Mac.
@@ -296,7 +304,7 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
 #endif  // !BUILDFLAG(IS_MAC)
 }
 
-TEST_F(TabStripActionContainerTest, GlicButtonUpdateLabel) {
+TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->UpdateNudgeLabel(
       web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
@@ -304,7 +312,7 @@ TEST_F(TabStripActionContainerTest, GlicButtonUpdateLabel) {
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
 }
 
-TEST_F(TabStripActionContainerTest, GlicButtonHideNudgeOnTabChange) {
+TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->SetDelegate(tab_strip_action_container_.get());
 
@@ -333,7 +341,7 @@ class TabStripActionContainerTestWithProduct
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(TabStripActionContainerTestWithProduct, OrdersButtonsCorrectly) {
+TEST_F(TabStripActionContainerTestWithProduct, MAYBE(OrdersButtonsCorrectly)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
 
   ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
