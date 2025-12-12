@@ -5,9 +5,17 @@
 #ifndef COMPONENTS_CONTENT_CAPTURE_COMMON_CONTENT_CAPTURE_FEATURES_H_
 #define COMPONENTS_CONTENT_CAPTURE_COMMON_CONTENT_CAPTURE_FEATURES_H_
 
+#include "base/feature_list.h"
+
 namespace content_capture::features {
 
+// Enables sending content capture metadata (e.g. sensitivity score, language
+// string, language confidence) to the data share service.
+BASE_DECLARE_FEATURE(kContentCaptureSendMetadataForDataShare);
+
 bool IsContentCaptureEnabled();
+
+bool ShouldSendMetadataForDataShare();
 
 int TaskInitialDelayInMilliseconds();
 
