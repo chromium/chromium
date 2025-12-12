@@ -20,7 +20,7 @@ SourceBufferTrackBaseSupplement& SourceBufferTrackBaseSupplement::From(
     TrackBase& track) {
   SourceBufferTrackBaseSupplement* supplement = FromIfExists(track);
   if (!supplement) {
-    supplement = MakeGarbageCollected<SourceBufferTrackBaseSupplement>();
+    supplement = MakeGarbageCollected<SourceBufferTrackBaseSupplement>(track);
     track.SetSourceBufferTrackBaseSupplement(supplement);
   }
   return *supplement;
@@ -34,6 +34,10 @@ SourceBuffer* SourceBufferTrackBaseSupplement::sourceBuffer(TrackBase& track) {
   return nullptr;
 }
 
+SourceBufferTrackBaseSupplement::SourceBufferTrackBaseSupplement(
+    TrackBase& track)
+    : track_base_(track) {}
+
 void SourceBufferTrackBaseSupplement::SetSourceBuffer(
     TrackBase& track,
     SourceBuffer* source_buffer) {
@@ -42,6 +46,7 @@ void SourceBufferTrackBaseSupplement::SetSourceBuffer(
 
 void SourceBufferTrackBaseSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(source_buffer_);
+  visitor->Trace(track_base_);
 }
 
 }  // namespace blink
