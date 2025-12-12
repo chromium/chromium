@@ -1166,6 +1166,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
     settings.enable_free_with_size =
         (opts.free_with_size == PartitionOptions::kEnabled);
+    settings.enable_strict_free_size_check =
+        (opts.strict_free_size_check == PartitionOptions::kEnabled);
 
     initialized = true;
   }

@@ -1161,6 +1161,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   const bool enable_free_with_size =
       base::FeatureList::IsEnabled(base::features::kPartitionAllocFreeWithSize);
 
+  const bool enable_strict_free_size_check =
+      base::features::kPartitionAllocStrictFreeSizeCheck.Get();
+
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   // ShouldEnableMemoryTagging() checks kKillPartitionAllocMemoryTagging but
   // check here too to wrap the GetMemoryTaggingModeForCurrentThread() call.
@@ -1254,7 +1257,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       scheduler_loop_quarantine_thread_local_config,
       scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
       allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory),
-      allocator_shim::EnableFreeWithSize(enable_free_with_size));
+      allocator_shim::EnableFreeWithSize(enable_free_with_size),
+      allocator_shim::EnableStrictFreeSizeCheck(enable_strict_free_size_check));
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to

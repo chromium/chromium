@@ -218,6 +218,7 @@ struct PartitionOptions {
 #endif
 
   EnableToggle free_with_size = kDisabled;
+  EnableToggle strict_free_size_check = kEnabled;
 };
 
 constexpr PartitionOptions::PartitionOptions() = default;
@@ -303,6 +304,7 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif
 
     bool enable_free_with_size = false;
+    bool enable_strict_free_size_check = true;
   };
 
   Settings settings;
@@ -2154,10 +2156,20 @@ PartitionRoot::SizeToBucketSizeDetails(size_t requested_size,
     // determined without using `slot_span`.
     auto bucket_index =
         SizeToBucketIndex(raw_size, this->GetBucketDistribution());
-    PA_DCHECK(bucket_index ==
-              static_cast<uint16_t>(slot_span->bucket - this->buckets));
     auto slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-    PA_DCHECK(slot_size == slot_span->bucket->slot_size);
+    if (settings.enable_strict_free_size_check) {
+      // TODO(crbug.com/410190984): Remove this prefetch & CHECKS once the
+      // PA_CHECK of the given size against the slot span metadata is replaced
+      // with a PA_DCHECK.
+      PA_PREFETCH(slot_span);
+      PA_CHECK(bucket_index ==
+               static_cast<uint16_t>(slot_span->bucket - this->buckets));
+      PA_CHECK(slot_size == slot_span->bucket->slot_size);
+    } else {
+      PA_DCHECK(bucket_index ==
+                static_cast<uint16_t>(slot_span->bucket - this->buckets));
+      PA_DCHECK(slot_size == slot_span->bucket->slot_size);
+    }
     return internal::BucketSizeDetails{
         .bucket_index = bucket_index,
         .slot_size = slot_size,
