@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_ALLOCATOR_DISPATCHER_INTERNAL_DISPATCHER_INTERNAL_H_
 #define BASE_ALLOCATOR_DISPATCHER_INTERNAL_DISPATCHER_INTERNAL_H_
 
@@ -244,7 +239,7 @@ struct DispatcherImpl {
         allocator_dispatch_.next->batch_malloc_function(size, results,
                                                         num_requested, context);
     for (unsigned i = 0; i < num_allocated; ++i) {
-      DoNotifyAllocationForShim(results[i], size);
+      DoNotifyAllocationForShim(UNSAFE_TODO(results[i]), size);
     }
     return num_allocated;
   }
@@ -253,7 +248,7 @@ struct DispatcherImpl {
                           unsigned num_to_be_freed,
                           void* context) {
     for (unsigned i = 0; i < num_to_be_freed; ++i) {
-      DoNotifyFreeForShim(to_be_freed[i]);
+      DoNotifyFreeForShim(UNSAFE_TODO(to_be_freed[i]));
     }
 
     MUSTTAIL return allocator_dispatch_.next->batch_free_function(
