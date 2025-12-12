@@ -116,7 +116,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void AddTabContext(int32_t tab_id,
                      bool delay_upload,
                      AddTabContextCallback) override {}
-  void DeleteContext(const base::UnguessableToken& file_token) override {}
+  void DeleteContext(const base::UnguessableToken& file_token,
+                     bool from_automatic_chip) override {}
   void ClearFiles() override {}
   void SubmitQuery(const std::string& query_text,
                    uint8_t mouse_button,

@@ -5,6 +5,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
@@ -250,6 +251,36 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   std::optional<ContextualTask> task =
       contextual_tasks_controller->GetContextualTaskForTab(tab_id);
   EXPECT_TRUE(task.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
+                       DisableTabSuggestionAfterRemoving) {
+  // Add a new tab.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
+
+  ContextualTasksUiService* ui_service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(ui_service);
+  EXPECT_TRUE(ui_service->auto_tab_context_suggestion_enabled());
+
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  RunTestSequence(
+      Do([&]() {
+        // Open side panel.
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        content::WebContents* web_contents =
+            coordinator->GetActiveWebContentsForTesting();
+        ContextualTasksUI* ui = static_cast<ContextualTasksUI*>(
+            web_contents->GetWebUI()->GetController());
+
+        ASSERT_TRUE(ui);
+        ui->DisableActiveTabContextSuggestion();
+        EXPECT_FALSE(ui_service->auto_tab_context_suggestion_enabled());
+      }));
 }
 
 }  // namespace contextual_tasks

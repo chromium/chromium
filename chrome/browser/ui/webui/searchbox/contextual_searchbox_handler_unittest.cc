@@ -643,7 +643,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
 
   // Act
   // Delete context.
-  handler().DeleteContext(file_token);
+  handler().DeleteContext(file_token, /*from_automatic_chip=*/false);
   mock_searchbox_page_.FlushForTesting();
 
   // Assert
@@ -700,7 +700,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   // Delete the non-delayed context and ensure context input data now has a
   // value again because the only context left is of delayed type.
   auto token = future.Get().value();
-  handler().DeleteContext(token);
+  handler().DeleteContext(token, /*from_automatic_chip=*/false);
   mock_searchbox_page_.FlushForTesting();
   mock_searchbox_page_.FlushForTesting();
   ASSERT_TRUE(handler().context_input_data().has_value());

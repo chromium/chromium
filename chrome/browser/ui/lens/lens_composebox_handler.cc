@@ -187,7 +187,8 @@ void LensComposeboxHandler::OnThumbnailRemoved() {
 }
 
 void LensComposeboxHandler::DeleteContext(
-    const base::UnguessableToken& file_token) {
+    const base::UnguessableToken& file_token,
+    bool from_automatic_chip) {
   lens_composebox_controller_->DeleteContext(file_token);
 }
 

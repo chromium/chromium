@@ -138,3 +138,12 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
 void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
   // TODO(crbug.com/461911729): Implement when overlay is ready to integrate.
 }
+
+void ContextualTasksComposeboxHandler::DeleteContext(
+    const base::UnguessableToken& file_token,
+    bool from_automatic_chip) {
+  ComposeboxHandler::DeleteContext(file_token, from_automatic_chip);
+  if (from_automatic_chip) {
+    web_ui_controller_->DisableActiveTabContextSuggestion();
+  }
+}

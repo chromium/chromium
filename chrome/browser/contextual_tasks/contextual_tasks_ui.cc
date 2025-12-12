@@ -404,9 +404,17 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
   page_->OnSidePanelStateChanged();
 }
 
+void ContextualTasksUI::DisableActiveTabContextSuggestion() {
+  ui_service_->set_auto_tab_context_suggestion_enabled(false);
+}
+
 void ContextualTasksUI::OnActiveTabContextStatusChanged(
     TabContextStatus status) {
   if (!composebox_handler_) {
+    return;
+  }
+
+  if (!ui_service_->auto_tab_context_suggestion_enabled()) {
     return;
   }
 

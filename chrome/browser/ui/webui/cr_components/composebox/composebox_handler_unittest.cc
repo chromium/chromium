@@ -305,7 +305,7 @@ TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
   EXPECT_CALL(query_controller(), GetFileInfo)
       .WillOnce(testing::Return(file_info.get()));
 
-  handler().DeleteContext(delete_file_token);
+  handler().DeleteContext(delete_file_token, /*from_suggested_chip=*/false);
 
   SubmitQueryAndWaitForNavigation();
 

@@ -341,7 +341,10 @@ interface PageHandler {
 
   // Notify handler of context deletion. This removes the context data (e.g.
   // File, or tab page content) from the browser-side cache.
-  DeleteContext(mojo_base.mojom.UnguessableToken token);
+  // `from_automatic_chip` indicates whether the deleted context is auto
+  // suggested.
+  DeleteContext(mojo_base.mojom.UnguessableToken token,
+                bool from_automatic_chip);
 
   // Clears all files from cache.
   ClearFiles();
@@ -393,8 +396,8 @@ interface Page {
   AddFileContext(mojo_base.mojom.UnguessableToken token,
                  SelectedFileInfo file_info);
 
-  // Updates the suggested tab context on the UI. This call will replace the
-  // previously suggested tab with the new tab. If the provided tab is null, the
-  // suggested tab should be removed from the UI.
-  UpdateSuggestedTabContext(TabInfo? tab);
+  // Updates the automatically suggested tab context on the UI. This call will
+  // replace the previously auto suggested tab with the new tab. If the provided
+  // tab is null, the suggested tab should be removed from the UI.
+  UpdateAutoSuggestedTabContext(TabInfo? tab);
 };

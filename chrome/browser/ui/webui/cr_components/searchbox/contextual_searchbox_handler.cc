@@ -415,7 +415,8 @@ void ContextualSearchboxHandler::RecordTabClickedMetric(
 }
 
 void ContextualSearchboxHandler::DeleteContext(
-    const base::UnguessableToken& context_token) {
+    const base::UnguessableToken& context_token,
+    bool from_automatic_chip) {
   auto* contextual_session_handle = GetSessionHandle(web_contents_);
   int num_files = 0;
   if (contextual_session_handle) {

@@ -200,7 +200,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxShowCreateImageButton');
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
-  private suggestedTabToken_: UnguessableToken|null = null;
+  private automaticActiveTabChipToken_: UnguessableToken|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -255,7 +255,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
             title: file.title,
             url: file.url,
             delayUpload: file.delayUpload,
-            replaceSuggestedTabToken: false,
+            replaceAutoActiveTabToken: false,
           },
         }));
       } else {
@@ -369,15 +369,15 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     this.files_ = newFiles;
   }
 
-  updateSuggestedTabContext(tab: TabInfo|null) {
+  updateAutoActiveTabContext(tab: TabInfo|null) {
     // If there is already a suggested tab context, remove it.
-    if (this.suggestedTabToken_) {
+    if (this.automaticActiveTabChipToken_) {
       this.onDeleteFile_(new CustomEvent('deleteTabContext', {
         detail: {
-          uuid: this.suggestedTabToken_,
+          uuid: this.automaticActiveTabChipToken_,
         },
       }));
-      this.suggestedTabToken_ = null;
+      this.automaticActiveTabChipToken_ = null;
     }
 
     if (!tab) {
@@ -390,7 +390,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         title: tab.title,
         url: tab.url,
         delayUpload: /*delay_upload=*/ true,
-        replaceSuggestedTabToken: true,
+        replaceAutoActiveTabToken: true,
       },
     }));
   }
@@ -421,7 +421,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         title: tabAttachment.title,
         url: tabAttachment.url,
         delayUpload: /*delay_upload=*/ false,
-        replaceSuggestedTabToken: false,
+        replaceAutoActiveTabToken: false,
       },
     }));
   }
@@ -467,7 +467,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
-  protected onDeleteFile_(e: CustomEvent) {
+  protected onDeleteFile_(
+      e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>) {
     if (!e.detail.uuid || !this.files_.has(e.detail.uuid)) {
       return;
     }
@@ -478,9 +479,18 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
           ([id, _]) => id !== file.tabId));
     }
 
+    const fromAutoSuggestedChip =
+        e.detail.uuid === this.automaticActiveTabChipToken_ &&
+        (e.detail.fromUserAction === true);
+    if (fromAutoSuggestedChip) {
+      this.automaticActiveTabChipToken_ = null;
+    }
+
     this.files_ = new Map([...this.files_.entries()].filter(
         ([uuid, _]) => uuid !== e.detail.uuid));
-    this.fire('delete-context', {uuid: e.detail.uuid});
+    this.fire(
+        'delete-context',
+        {uuid: e.detail.uuid, fromAutoSuggestedChip: fromAutoSuggestedChip});
   }
 
   private handleProcessFilesError_(error: ProcessFilesError) {
@@ -586,7 +596,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     title: string,
     url: Url,
     delayUpload: boolean,
-    replaceSuggestedTabToken: boolean,
+    replaceAutoActiveTabToken: boolean,
   }>) {
     e.stopPropagation();
 
@@ -599,8 +609,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         this.files_ = new Map([...this.files_.entries(), [file.uuid, file]]);
         this.addedTabsIds_ = new Map(
             [...this.addedTabsIds_.entries(), [e.detail.id, file.uuid]]);
-        if (e.detail.replaceSuggestedTabToken) {
-          this.suggestedTabToken_ = file.uuid;
+        if (e.detail.replaceAutoActiveTabToken) {
+          this.automaticActiveTabChipToken_ = file.uuid;
         }
       },
     });
