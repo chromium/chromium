@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/profiler/stack_copier_suspend.h"
 
 #include <algorithm>
@@ -10,7 +15,6 @@
 #include <numeric>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/profiler/register_context_registers.h"
@@ -76,8 +80,8 @@ class TestSuspendableThreadDelegate : public SuspendableThreadDelegate {
   PlatformThreadId GetThreadId() const override { return PlatformThreadId(); }
 
   uintptr_t GetStackBaseAddress() const override {
-    return reinterpret_cast<uintptr_t>(
-        UNSAFE_TODO(&(*fake_stack_)[0] + fake_stack_->size()));
+    return reinterpret_cast<uintptr_t>(&(*fake_stack_)[0] +
+                                       fake_stack_->size());
   }
 
   bool CanCopyStack(uintptr_t stack_pointer) override { return true; }
@@ -122,8 +126,8 @@ TEST(StackCopierSuspendTest, CopyStack) {
 
   uintptr_t* stack_copy_bottom =
       reinterpret_cast<uintptr_t*>(stack_buffer.get()->buffer());
-  std::vector<uintptr_t> stack_copy(
-      stack_copy_bottom, UNSAFE_TODO(stack_copy_bottom + stack.size()));
+  std::vector<uintptr_t> stack_copy(stack_copy_bottom,
+                                    stack_copy_bottom + stack.size());
   EXPECT_EQ(stack, stack_copy);
 }
 
@@ -161,9 +165,8 @@ TEST(StackCopierSuspendTest, CopyStackBufferTooSmall) {
 
   uintptr_t* stack_copy_bottom =
       reinterpret_cast<uintptr_t*>(stack_buffer.get()->buffer());
-  std::vector<uintptr_t> stack_copy(
-      stack_copy_bottom,
-      UNSAFE_TODO(stack_copy_bottom + stack_buffer_elements));
+  std::vector<uintptr_t> stack_copy(stack_copy_bottom,
+                                    stack_copy_bottom + stack_buffer_elements);
   // Use the buffer not being overwritten as a proxy for the unwind being
   // aborted.
   EXPECT_THAT(stack_copy, Each(kBufferInitializer));
@@ -188,8 +191,8 @@ TEST(StackCopierSuspendTest, CopyStackAndRewritePointers) {
 
   uintptr_t* stack_copy_bottom =
       reinterpret_cast<uintptr_t*>(stack_buffer.get()->buffer());
-  std::vector<uintptr_t> stack_copy(
-      stack_copy_bottom, UNSAFE_TODO(stack_copy_bottom + stack.size()));
+  std::vector<uintptr_t> stack_copy(stack_copy_bottom,
+                                    stack_copy_bottom + stack.size());
   EXPECT_THAT(stack_copy,
               ElementsAre(reinterpret_cast<uintptr_t>(stack_copy_bottom),
                           reinterpret_cast<uintptr_t>(stack_copy_bottom) +

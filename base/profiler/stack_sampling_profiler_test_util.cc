@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 
 #include <string_view>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -175,7 +179,7 @@ std::unique_ptr<Unwinder> CreateChromeUnwinderAndroid32ForTesting(
   return std::make_unique<ChromeUnwinderAndroid32ForTesting>(
       std::move(cfi_file),
       base::CreateChromeUnwindInfoAndroid32(
-          UNSAFE_TODO({cfi_file->data(), cfi_file->length()})),
+          {cfi_file->data(), cfi_file->length()}),
       chrome_module_base_address,
       /* text_section_start_address= */ base::android::kStartOfText);
 }
@@ -281,8 +285,7 @@ NOINLINE FunctionAddressRange CallWithAlloca(OnceClosure wait_for_sample) {
   // optimized out.
   volatile char* const allocation =
       const_cast<volatile char*>(static_cast<char*>(alloca(alloca_size)));
-  for (volatile char* p = allocation; p < UNSAFE_TODO(allocation + alloca_size);
-       UNSAFE_TODO(++p)) {
+  for (volatile char* p = allocation; p < allocation + alloca_size; ++p) {
     *p = '\0';
   }
 
