@@ -37,7 +37,14 @@ class ObservationDelayMetrics;
 // frame is generated and presented.
 class ObservationDelayController : public content::WebContentsObserver {
  public:
-  using ReadyCallback = base::OnceClosure;
+  enum class Result {
+    kOk,
+    // This is returned if the primary main frame starts a new navigation
+    // while we are waiting. (ie. during a Wait call).
+    kPageNavigated,
+  };
+
+  using ReadyCallback = base::OnceCallback<void(Result)>;
 
   // Configuration for general page stability if enabled.
   struct PageStabilityConfig {
@@ -70,7 +77,15 @@ class ObservationDelayController : public content::WebContentsObserver {
   void Wait(tabs::TabInterface& target_tab, ReadyCallback callback);
 
   // content::WebContentsObserver
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;
+
+  // The navigation count is the number of subsequent navigations that have
+  // happend in a series and kPageNavigated being returned. Once the number
+  // exceeds too many, kPageNavigated will be returned.
+  size_t NavigationCount() const;
+  void SetNavigationCount(size_t);
 
   // Public for tests
   enum class State {
@@ -82,6 +97,7 @@ class ObservationDelayController : public content::WebContentsObserver {
     kMaybeDelayForLcp,
     kDelayForLcp,
     kDidTimeout,
+    kPageNavigated,
     kDone
   };
   static std::string_view StateToString(State state);
@@ -108,8 +124,10 @@ class ObservationDelayController : public content::WebContentsObserver {
       base::TimeDelta delay = base::TimeDelta());
 
   ReadyCallback ready_callback_;
+  Result result_ = Result::kOk;
   base::raw_ref<AggregatedJournal> journal_;
   TaskId task_id_;
+  size_t navigation_count_ = 0;
 
   // Async entry for entire duration after Wait is called.
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> wait_journal_entry_;

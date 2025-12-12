@@ -73,6 +73,10 @@ class ToolController {
   void PostValidate(mojom::ActionResultPtr result);
   void PostUpdateTask(mojom::ActionResultPtr result);
   void PostInvokeTool(mojom::ActionResultPtr result);
+  void WaitForObservation(mojom::ActionResultPtr action_result);
+  void ObservationDelayComplete(
+      mojom::ActionResultPtr action_result,
+      ObservationDelayController::Result observation_result);
 
   AggregatedJournal& journal() { return tool_delegate_->GetJournal(); }
 

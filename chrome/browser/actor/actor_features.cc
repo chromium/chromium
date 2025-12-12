@@ -128,4 +128,7 @@ const base::FeatureParam<
 
 BASE_FEATURE(kActorBindCreatedTabToTask, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kActorRestartObservationDelayControllerOnNavigate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace actor

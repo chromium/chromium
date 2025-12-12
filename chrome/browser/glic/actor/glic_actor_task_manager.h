@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
@@ -20,7 +21,6 @@ struct ActionResultWithLatencyInfo;
 class ActorKeyedService;
 class ActorTaskDelegate;
 class ActorTask;
-class ObservationDelayController;
 }  // namespace actor
 
 namespace glic {
@@ -76,7 +76,9 @@ class GlicActorTaskManager {
   void CreateActorTabFinished(
       glic::mojom::WebClientHandler::CreateActorTabCallback callback,
       tabs::TabInterface* new_tab);
-  void ReloadObserverDone(base::OnceClosure callback);
+  void ReloadObserverDone(tabs::TabHandle tab_handle,
+                          base::OnceClosure callback,
+                          actor::ObservationDelayController::Result result);
   void ResetTaskState();
 
   raw_ptr<Profile> profile_;

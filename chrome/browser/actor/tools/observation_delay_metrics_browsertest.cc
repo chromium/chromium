@@ -7,6 +7,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/observation_delay_test_util.h"
 #include "chrome/common/actor/task_id.h"
@@ -50,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithoutLoading) {
   TestObservationDelayController controller(*main_frame(), actor::TaskId(),
                                             journal(), PageStabilityConfig());
 
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(result.Wait());
@@ -71,7 +73,17 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithoutLoading) {
       /*sample=*/false, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithLoading) {
+class ObservationDelayMetricsNavigateTest
+    : public ObservationDelayMetricsTest,
+      public base::test::WithFeatureOverride {
+ public:
+  ObservationDelayMetricsNavigateTest()
+      : base::test::WithFeatureOverride(
+            kActorRestartObservationDelayControllerOnNavigate) {}
+};
+
+IN_PROC_BROWSER_TEST_P(ObservationDelayMetricsNavigateTest,
+                       CompleteWithLoading) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(
@@ -81,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithLoading) {
                                             journal(), PageStabilityConfig());
   ASSERT_TRUE(InitiateFetchRequest());
 
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
@@ -93,30 +105,44 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithLoading) {
                                                  embedded_test_server());
   ASSERT_TRUE(deferred_navigation.RunToDOMContentLoadedEvent());
 
-  // The controller should reach the loading state and stay there.
-  ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForLoadCompletion));
-  EXPECT_FALSE(result.IsReady());
+  if (IsParamFeatureEnabled()) {
+    ASSERT_EQ(result.Get(), ObservationDelayController::Result::kPageNavigated);
+    histogram_tester.ExpectUniqueSample(
+        kActorObservationDelayDidTimeoutMetricName,
+        /*sample=*/false, 1);
+    histogram_tester.ExpectUniqueSample(
+        kActorObservationDelayDidNavigateMetricName,
+        /*sample=*/true, 1);
+  } else {
+    // The controller should reach the loading state and stay there.
+    ASSERT_TRUE(
+        DoesReachSteadyState(controller, State::kWaitForLoadCompletion));
+    EXPECT_FALSE(result.IsReady());
 
-  // Unblock the subframe, the controller should now proceed through the
-  // remaining states.
-  ASSERT_TRUE(deferred_navigation.RunToLoadEvent());
+    // Unblock the subframe, the controller should now proceed through the
+    // remaining states.
+    ASSERT_TRUE(deferred_navigation.RunToLoadEvent());
 
-  ASSERT_TRUE(result.Wait());
-
-  histogram_tester.ExpectTotalCount(
-      kActorObservationDelayTotalWaitDurationMetricName, 1);
-  histogram_tester.ExpectTotalCount(
-      kActorObservationDelayStateDurationWaitForPageStabilityMetricName, 1);
-  histogram_tester.ExpectTotalCount(
-      kActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 1);
-  histogram_tester.ExpectTotalCount(
-      kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName, 1);
-  histogram_tester.ExpectUniqueSample(
-      kActorObservationDelayDidTimeoutMetricName,
-      /*sample=*/false, 1);
-  histogram_tester.ExpectUniqueSample(
-      kActorObservationDelayLcpDelayNeededMetricName,
-      /*sample=*/false, 1);
+    ASSERT_TRUE(result.Wait());
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayTotalWaitDurationMetricName, 1);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayStateDurationWaitForPageStabilityMetricName, 1);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 1);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        kActorObservationDelayDidTimeoutMetricName,
+        /*sample=*/false, 1);
+    histogram_tester.ExpectUniqueSample(
+        kActorObservationDelayDidNavigateMetricName,
+        /*sample=*/false, 1);
+    histogram_tester.ExpectUniqueSample(
+        kActorObservationDelayLcpDelayNeededMetricName,
+        /*sample=*/false, 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnPageStability) {
@@ -129,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnPageStability) {
                                             journal(), PageStabilityConfig());
   ASSERT_TRUE(InitiateFetchRequest());
 
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(result.Wait());
@@ -149,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnPageStability) {
       kActorObservationDelayLcpDelayNeededMetricName, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnLoadCompletion) {
+IN_PROC_BROWSER_TEST_P(ObservationDelayMetricsNavigateTest,
+                       TimeoutOnLoadCompletion) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(
@@ -162,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnLoadCompletion) {
 
   // Start waiting, since a fetch is in progress we should be waiting for page
   // stability.
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
@@ -174,25 +201,40 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, TimeoutOnLoadCompletion) {
                                                  embedded_test_server());
   ASSERT_TRUE(deferred_navigation.RunToDOMContentLoadedEvent());
 
-  // The controller should reach the loading state and stay there.
-  ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForLoadCompletion));
-  EXPECT_FALSE(result.IsReady());
+  if (IsParamFeatureEnabled()) {
+    ASSERT_EQ(result.Get(), ObservationDelayController::Result::kPageNavigated);
+    histogram_tester.ExpectUniqueSample(
+        kActorObservationDelayDidTimeoutMetricName,
+        /*sample=*/false, 1);
+    histogram_tester.ExpectUniqueSample(
+        kActorObservationDelayDidNavigateMetricName,
+        /*sample=*/true, 1);
+  } else {
+    // The controller should reach the loading state and stay there.
+    ASSERT_TRUE(
+        DoesReachSteadyState(controller, State::kWaitForLoadCompletion));
+    EXPECT_FALSE(result.IsReady());
 
-  ASSERT_TRUE(result.Wait());
+    ASSERT_TRUE(result.Wait());
 
-  histogram_tester.ExpectTotalCount(
-      kActorObservationDelayTotalWaitDurationMetricName, 0);
-  histogram_tester.ExpectTotalCount(
-      kActorObservationDelayStateDurationWaitForPageStabilityMetricName, 0);
-  histogram_tester.ExpectTotalCount(
-      kActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
-  histogram_tester.ExpectTotalCount(
-      kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName, 0);
-  histogram_tester.ExpectUniqueSample(
-      kActorObservationDelayDidTimeoutMetricName,
-      /*sample=*/true, 1);
-  histogram_tester.ExpectTotalCount(
-      kActorObservationDelayLcpDelayNeededMetricName, 0);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayTotalWaitDurationMetricName, 0);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayStateDurationWaitForPageStabilityMetricName, 0);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName,
+        0);
+    histogram_tester.ExpectUniqueSample(
+        kActorObservationDelayDidTimeoutMetricName,
+        /*sample=*/true, 1);
+    histogram_tester.ExpectUniqueSample(
+        kActorObservationDelayDidNavigateMetricName,
+        /*sample=*/false, 1);
+    histogram_tester.ExpectTotalCount(
+        kActorObservationDelayLcpDelayNeededMetricName, 0);
+  }
 }
 
 class ObservationDelayMetricsLcpDelayTest : public ObservationDelayTest {
@@ -226,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsLcpDelayTest, LcpDelayNeeded) {
   TestObservationDelayController controller(*main_frame(), actor::TaskId(),
                                             journal(), PageStabilityConfig());
 
-  TestFuture<void> result;
+  TestFuture<ObservationDelayController::Result> result;
   controller.Wait(*active_tab(), result.GetCallback());
 
   ASSERT_TRUE(controller.WaitForState(State::kDelayForLcp));
@@ -236,6 +278,8 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsLcpDelayTest, LcpDelayNeeded) {
       kActorObservationDelayLcpDelayNeededMetricName,
       /*sample=*/true, 1);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ObservationDelayMetricsNavigateTest);
 
 }  // namespace
 }  // namespace actor

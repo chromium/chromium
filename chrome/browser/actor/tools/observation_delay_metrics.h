@@ -21,6 +21,7 @@ extern const char
 extern const char kActorObservationDelayTotalWaitDurationMetricName[];
 extern const char kActorObservationDelayDidTimeoutMetricName[];
 extern const char kActorObservationDelayLcpDelayNeededMetricName[];
+extern const char kActorObservationDelayDidNavigateMetricName[];
 
 class ObservationDelayMetrics {
  public:
@@ -62,7 +63,10 @@ class ObservationDelayMetrics {
   StateDuration wait_for_visual_state_update_;
 
   // Whether the observation delay completed due to timeout.
-  bool did_timeout = false;
+  bool did_timeout_ = false;
+
+  // Whether the observation delay completed due to navigation.
+  bool did_navigate_ = false;
 
   // Whether additional delay is applied to wait for LCP. Will be `std::nullopt`
   // until `kMaybeDelayForLCP` state is entered.

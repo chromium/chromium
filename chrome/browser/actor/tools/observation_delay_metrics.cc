@@ -32,6 +32,9 @@ const char kActorObservationDelayDidTimeoutMetricName[] =
 const char kActorObservationDelayLcpDelayNeededMetricName[] =
     "Actor.ObservationDelay.LcpDelayNeeded";
 
+const char kActorObservationDelayDidNavigateMetricName[] =
+    "Actor.ObservationDelay.DidNavigate";
+
 ObservationDelayMetrics::ObservationDelayMetrics() = default;
 
 ObservationDelayMetrics::~ObservationDelayMetrics() = default;
@@ -65,13 +68,18 @@ void ObservationDelayMetrics::WillMoveToState(
       delay_for_lcp_ = true;
       break;
     case ObservationDelayController::State::kDidTimeout:
-      did_timeout = true;
+      did_timeout_ = true;
+      break;
+    case ObservationDelayController::State::kPageNavigated:
+      did_navigate_ = true;
       break;
     case ObservationDelayController::State::kDone:
       base::UmaHistogramBoolean(kActorObservationDelayDidTimeoutMetricName,
-                                did_timeout);
+                                did_timeout_);
+      base::UmaHistogramBoolean(kActorObservationDelayDidNavigateMetricName,
+                                did_navigate_);
 
-      if (!did_timeout) {
+      if (!did_timeout_ && !did_navigate_) {
         CHECK(!wait_start_time_.is_null());
         base::UmaHistogramTimes(
             kActorObservationDelayTotalWaitDurationMetricName,

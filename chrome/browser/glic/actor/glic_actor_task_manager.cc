@@ -15,7 +15,6 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -154,7 +153,8 @@ void GlicActorTaskManager::ReloadTab(actor::ActorTask& task,
         contents->GetController().Reload(content::ReloadType::NORMAL, true);
         reload_observer_->Wait(
             *tab, base::BindOnce(&GlicActorTaskManager::ReloadObserverDone,
-                                 base::Unretained(this), std::move(callback)));
+                                 base::Unretained(this), tab_handle,
+                                 std::move(callback)));
         return;
       }
     }
@@ -487,7 +487,25 @@ void GlicActorTaskManager::CreateActorTabFinished(
       CreateTabData(new_tab ? new_tab->GetContents() : nullptr));
 }
 
-void GlicActorTaskManager::ReloadObserverDone(base::OnceClosure callback) {
+void GlicActorTaskManager::ReloadObserverDone(
+    tabs::TabHandle tab_handle,
+    base::OnceClosure callback,
+    actor::ObservationDelayController::Result result) {
+  if (current_task_id_ &&
+      result == actor::ObservationDelayController::Result::kPageNavigated) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (tab) {
+      size_t last_navigation_count = reload_observer_->NavigationCount();
+      reload_observer_ = std::make_unique<actor::ObservationDelayController>(
+          current_task_id_, actor_keyed_service_->GetJournal());
+      reload_observer_->SetNavigationCount(last_navigation_count + 1);
+      reload_observer_->Wait(
+          *tab, base::BindOnce(&GlicActorTaskManager::ReloadObserverDone,
+                               base::Unretained(this), tab_handle,
+                               std::move(callback)));
+      return;
+    }
+  }
   reload_observer_.reset();
   std::move(callback).Run();
 }
