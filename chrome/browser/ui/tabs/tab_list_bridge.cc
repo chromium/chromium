@@ -34,6 +34,16 @@ BrowserWindowInterface* GetBrowserWithSessionId(
   return nullptr;
 }
 
+// Returns if the given `index` is in the middle of a tab group in the provided
+// `tab_strip_model`.
+bool IsInMiddleOfTabGroup(TabStripModel& tab_strip_model, int index) {
+  std::optional<tab_groups::TabGroupId> target_group =
+      tab_strip_model.GetTabGroupForTab(index);
+  std::optional<tab_groups::TabGroupId> adjacent_group =
+      tab_strip_model.GetTabGroupForTab(index - 1);
+  return target_group.has_value() && target_group == adjacent_group;
+}
+
 }  // namespace
 
 DEFINE_USER_DATA(TabListBridge);
@@ -243,19 +253,49 @@ void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
   // after the move.
   // `index_to_check` - 1 points to the tab that will be to the left of the
   // group after the move.
-  const size_t index_to_check =
+  const int index_to_check =
       target_index > tabs.start() ? target_index + tabs.length() : target_index;
 
-  std::optional<tab_groups::TabGroupId> target_group =
-      tab_strip_->GetTabGroupForTab(index_to_check);
-  std::optional<tab_groups::TabGroupId> adjacent_group =
-      tab_strip_->GetTabGroupForTab(index_to_check - 1);
-
-  // TODO(crbug.com/460650221) As mentioned in the comment in TabListInterface,
-  // use the closest valid index if `index_to_check` falls in the middle of a
+  // If `index_to_check` is in the middle of a tab group, then find the closest
+  // valid index to move to. This would either be the start or end of the tab
   // group.
-  CHECK(!target_group.has_value() || target_group != adjacent_group)
-      << "Cannot move tab group into the middle of another group.";
+  if (IsInMiddleOfTabGroup(tab_strip_.get(), index_to_check)) {
+    std::optional<tab_groups::TabGroupId> target_group_id =
+        tab_strip_->GetTabGroupForTab(index_to_check);
+    CHECK(target_group_id.has_value());
+    gfx::Range target_tabs =
+        tab_strip_->group_model()->GetTabGroup(*target_group_id)->ListTabs();
+    int target_start = target_tabs.start();
+    int target_end = target_tabs.end();
+
+    // Check that `index_to_check` is fully within the tab group.
+    CHECK_GT(index_to_check, target_start);
+    CHECK_GT(target_end, index_to_check);
+
+    // Check that `target_start` and `target_end` are not in the middle of any
+    // group.
+    DCHECK(!IsInMiddleOfTabGroup(tab_strip_.get(), target_start));
+    DCHECK(!IsInMiddleOfTabGroup(tab_strip_.get(), target_end));
+
+    // Find the offset between `index_to_check` and `target_start` and
+    // `target_end` and apply the lesser of the offsets to `target_index`.
+    // Note that `index_to_check` compensates for the displacement of tabs and
+    // groups to the right of `group_id` whereas `target_index`.
+    int start_offset = index_to_check - target_start;
+    int end_offset = target_end - index_to_check;
+    if (end_offset < start_offset) {
+      // Increment `target_index` so it points to the end of the tab group.
+      target_index += end_offset;
+    } else {
+      // Decrement `target_index` so it points to the start of the tab group.
+      target_index -= start_offset;
+    }
+
+    // Check that `target_index` is still within bounds.
+    CHECK_GE(static_cast<int>(target_index),
+             tab_strip_->IndexOfFirstNonPinnedTab());
+    CHECK_GE(tab_strip_->count() - tabs.length(), target_index);
+  }
 
   tab_strip_->MoveGroupTo(group_id, target_index);
 }

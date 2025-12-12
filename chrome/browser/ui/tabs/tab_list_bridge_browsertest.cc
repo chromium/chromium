@@ -25,6 +25,8 @@
 // TabListInterface browsertest, and use it on all relevant platforms?
 using TabListBridgeBrowserTest = InProcessBrowserTest;
 
+namespace {
+
 // Represents an event reported via `TabListInterfaceObserver`.
 struct Event {
   enum class Type {
@@ -83,6 +85,25 @@ MATCHER_P(MatchesTab, expected_url, "") {
   }
   return match;
 }
+
+// Creates `num_tabs` tabs and sets their WebContents IDs to match their
+// index.
+void SetupTabs(Browser* browser, size_t num_tabs) {
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+
+  for (auto i = 0u; i < num_tabs; i++) {
+    auto disposition = i == 0u ? WindowOpenDisposition::CURRENT_TAB
+                               : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser, GURL("about:blank"), disposition,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP))
+        << base::StringPrintf("Failed to open tab at index %u.", i);
+    SetID(tab_strip_model->GetWebContentsAt(i), i);
+  }
+}
+
+}  // namespace
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetTab) {
   const GURL url1("http://one.example");
@@ -555,22 +576,7 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Ungroup) {
   // Create three tabs.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_TRUE(tab_strip_model);
-
-  // Set the WebContents ID for all three tabs to their respective indices.
-  SetID(tab_strip_model->GetWebContentsAt(0), 0);
-  SetID(tab_strip_model->GetWebContentsAt(1), 1);
-  SetID(tab_strip_model->GetWebContentsAt(2), 2);
+  SetupTabs(browser(), 3);
 
   TabListInterface* tab_list_interface = TabListInterface::From(browser());
   ASSERT_TRUE(tab_list_interface);
@@ -581,6 +587,9 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Ungroup) {
                                   tab_list_interface->GetTab(1)->GetHandle(),
                                   tab_list_interface->GetTab(2)->GetHandle()});
   EXPECT_TRUE(group_id.has_value());
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
   EXPECT_EQ("0g0 1g0 2g0",
             GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
 
@@ -597,25 +606,12 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Ungroup) {
             GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
 }
 
+// Tests moving a tab group to valid indices only.
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, MoveGroupTo) {
+  SetupTabs(browser(), 10);
+
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(tab_strip_model);
-
-  // Creates `num_tabs` tabs and sets their WebContents IDs to match their
-  // index.
-  auto setup_tabs = [this, tab_strip_model](size_t num_tabs) {
-    for (auto i = 0u; i < num_tabs; i++) {
-      auto disposition = i == 0u ? WindowOpenDisposition::CURRENT_TAB
-                                 : WindowOpenDisposition::NEW_BACKGROUND_TAB;
-      ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-          browser(), GURL("about:blank"), disposition,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP))
-          << base::StringPrintf("Failed to open tab at index %u.", i);
-      SetID(tab_strip_model->GetWebContentsAt(i), i);
-    }
-  };
-
-  setup_tabs(10);
   ASSERT_EQ("0 1 2 3 4 5 6 7 8 9",
             GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
 
@@ -657,4 +653,142 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, MoveGroupTo) {
   EXPECT_EQ(third_group_id, tab_strip_model->GetTabGroupForTab(3));
   EXPECT_EQ(first_group_id, tab_strip_model->GetTabGroupForTab(5));
   EXPECT_EQ(second_group_id, tab_strip_model->GetTabGroupForTab(8));
+}
+
+// Tests moving a tab group to the middle of another group, where the closest
+// valid index will be used. The below four tests cover all cases for this.
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       MoveGroupTo_MiddleOfGroup_Right) {
+  SetupTabs(browser(), 10);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+  ASSERT_EQ("0 1 2 3 4 5 6 7 8 9",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  auto first_group_id = tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(0)->GetHandle(),
+                                  tab_list_interface->GetTab(1)->GetHandle(),
+                                  tab_list_interface->GetTab(2)->GetHandle()});
+  ASSERT_TRUE(first_group_id.has_value());
+
+  tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(5)->GetHandle(),
+                                  tab_list_interface->GetTab(6)->GetHandle(),
+                                  tab_list_interface->GetTab(7)->GetHandle(),
+                                  tab_list_interface->GetTab(8)->GetHandle(),
+                                  tab_list_interface->GetTab(9)->GetHandle()});
+  EXPECT_EQ("0g0 1g0 2g0 3 4 5g1 6g1 7g1 8g1 9g1",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  // Attempt to move the tab group rightwards to index 4, but the closest valid
+  // index is 2 so the moved group will end up just to the left of the other
+  // group.
+  tab_list_interface->MoveGroupTo(*first_group_id, 4);
+  EXPECT_EQ("3 4 0g0 1g0 2g0 5g1 6g1 7g1 8g1 9g1",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       MoveGroupTo_MiddleOfGroup_Right2) {
+  SetupTabs(browser(), 10);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+  ASSERT_EQ("0 1 2 3 4 5 6 7 8 9",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  auto first_group_id = tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(0)->GetHandle(),
+                                  tab_list_interface->GetTab(1)->GetHandle(),
+                                  tab_list_interface->GetTab(2)->GetHandle()});
+  ASSERT_TRUE(first_group_id.has_value());
+
+  tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(5)->GetHandle(),
+                                  tab_list_interface->GetTab(6)->GetHandle(),
+                                  tab_list_interface->GetTab(7)->GetHandle(),
+                                  tab_list_interface->GetTab(8)->GetHandle(),
+                                  tab_list_interface->GetTab(9)->GetHandle()});
+  EXPECT_EQ("0g0 1g0 2g0 3 4 5g1 6g1 7g1 8g1 9g1",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  // Attempt to move the tab group rightwards to index 5, but the closest valid
+  // index is 7 so the moved group will end up just to the right of the other
+  // group.
+  tab_list_interface->MoveGroupTo(*first_group_id, 5);
+  EXPECT_EQ("3 4 5g0 6g0 7g0 8g0 9g0 0g1 1g1 2g1",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       MoveGroupTo_MiddleOfGroup_Left) {
+  SetupTabs(browser(), 10);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+  ASSERT_EQ("0 1 2 3 4 5 6 7 8 9",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(1)->GetHandle(),
+                                  tab_list_interface->GetTab(2)->GetHandle(),
+                                  tab_list_interface->GetTab(3)->GetHandle()});
+
+  auto group_id = tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(6)->GetHandle(),
+                                  tab_list_interface->GetTab(7)->GetHandle(),
+                                  tab_list_interface->GetTab(8)->GetHandle()});
+  ASSERT_TRUE(group_id.has_value());
+  EXPECT_EQ("0 1g0 2g0 3g0 4 5 6g1 7g1 8g1 9",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  // Attempt to move the tab group leftwards to index 2, but the closest valid
+  // index is 1 so the moved group will end up just to the left of the other
+  // group.
+  tab_list_interface->MoveGroupTo(*group_id, 2);
+  EXPECT_EQ("0 6g0 7g0 8g0 1g1 2g1 3g1 4 5 9",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
+                       MoveGroupTo_MiddleOfGroup_Left2) {
+  SetupTabs(browser(), 10);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model);
+  ASSERT_EQ("0 1 2 3 4 5 6 7 8 9",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  TabListInterface* tab_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(1)->GetHandle(),
+                                  tab_list_interface->GetTab(2)->GetHandle(),
+                                  tab_list_interface->GetTab(3)->GetHandle()});
+
+  auto group_id = tab_list_interface->AddTabsToGroup(
+      /*group_id=*/std::nullopt, {tab_list_interface->GetTab(6)->GetHandle(),
+                                  tab_list_interface->GetTab(7)->GetHandle(),
+                                  tab_list_interface->GetTab(8)->GetHandle()});
+  ASSERT_TRUE(group_id.has_value());
+  EXPECT_EQ("0 1g0 2g0 3g0 4 5 6g1 7g1 8g1 9",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
+
+  // Attempt to move the tab group leftwards to index 3, but the closest valid
+  // index is 4 so the moved group will end up just to the right of the other
+  // group.
+  tab_list_interface->MoveGroupTo(*group_id, 3);
+  EXPECT_EQ("0 1g0 2g0 3g0 6g1 7g1 8g1 4 5 9",
+            GetTabStripStateString(tab_strip_model, /*annotate_groups=*/true));
 }
