@@ -410,9 +410,9 @@ determine_rpm_package_manager() {
   fi
 }
 
-DEFAULT_ARCH="@@ARCHITECTURE@@"
-YUM_REPO_FILE="/etc/yum.repos.d/@@PACKAGE@@.repo"
-ZYPPER_REPO_FILE="/etc/zypp/repos.d/@@PACKAGE@@.repo"
+DEFAULT_ARCH="@@architecture"
+YUM_REPO_FILE="/etc/yum.repos.d/@@PACKAGE.repo"
+ZYPPER_REPO_FILE="/etc/zypp/repos.d/@@PACKAGE.repo"
 
 install_yum() {
   install_rpm_key
@@ -423,8 +423,8 @@ install_yum() {
 
   if [ -d "/etc/yum.repos.d" ]; then
 cat > "$YUM_REPO_FILE" << REPOCONTENT
-[@@PACKAGE@@]
-name=@@PACKAGE@@
+[@@PACKAGE]
+name=@@PACKAGE
 baseurl=$REPOCONFIG/$DEFAULT_ARCH
 enabled=1
 gpgcheck=1
@@ -439,12 +439,12 @@ install_zypp() {
   fi
 
   # Ideally, we would run: zypper addrepo -t YUM -f \
-  # "$REPOCONFIG/$DEFAULT_ARCH" "@@PACKAGE@@"
+  # "$REPOCONFIG/$DEFAULT_ARCH" "@@PACKAGE"
   # but that does not work when zypper is running.
   if [ -d "/etc/zypp/repos.d" ]; then
 cat > "$ZYPPER_REPO_FILE" << REPOCONTENT
-[@@PACKAGE@@]
-name=@@PACKAGE@@
+[@@PACKAGE]
+name=@@PACKAGE
 enabled=1
 autorefresh=1
 baseurl=$REPOCONFIG/$DEFAULT_ARCH
@@ -537,12 +537,12 @@ update_repo_file() {
 #}
 #
 #remove_zypp() {
-#  # Ideally, we would run: zypper removerepo "@@PACKAGE@@"
+#  # Ideally, we would run: zypper removerepo "@@PACKAGE"
 #  # but that does not work when zypper is running.
-#  rm -f /etc/zypp/repos.d/@@PACKAGE@@.repo
+#  rm -f /etc/zypp/repos.d/@@PACKAGE.repo
 #}
 
-DEFAULT_ARCH="@@ARCHITECTURE@@"
+DEFAULT_ARCH="@@architecture"
 
 get_lib_dir() {
   if [ "$DEFAULT_ARCH" = "i386" ] || [ "$DEFAULT_ARCH" = "armhf" ] || \

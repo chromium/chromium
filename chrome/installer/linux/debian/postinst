@@ -24,7 +24,7 @@ set -e
 # browser (Firefox), in practice, we treat Epiphany as the lower bound,
 # resulting in the following scheme:
 
-CHANNEL=@@CHANNEL@@
+CHANNEL=@@channel
 case $CHANNEL in
   stable )
     # Good enough to be the default.
@@ -47,12 +47,12 @@ case $CHANNEL in
 esac
 
 update-alternatives --install /usr/bin/x-www-browser x-www-browser \
-  /usr/bin/@@USR_BIN_SYMLINK_NAME@@ $PRIORITY
+  /usr/bin/@@usr_bin_symlink_name $PRIORITY
 update-alternatives --install /usr/bin/gnome-www-browser gnome-www-browser \
-  /usr/bin/@@USR_BIN_SYMLINK_NAME@@ $PRIORITY
+  /usr/bin/@@usr_bin_symlink_name $PRIORITY
 
-update-alternatives --install /usr/bin/@@PACKAGE_ORIG@@ @@PACKAGE_ORIG@@ \
-  /usr/bin/@@USR_BIN_SYMLINK_NAME@@ $PRIORITY
+update-alternatives --install /usr/bin/@@package_orig @@package_orig \
+  /usr/bin/@@usr_bin_symlink_name $PRIORITY
 
 @@include@@../common/apt.include
 
@@ -67,4 +67,4 @@ if [ ! -e "$DEFAULTS_FILE" ]; then
 fi
 
 # Run the cron job immediately to perform repository configuration.
-nohup sh /etc/cron.daily/@@PACKAGE@@ > /dev/null 2>&1 &
+nohup sh /etc/cron.daily/@@PACKAGE > /dev/null 2>&1 &

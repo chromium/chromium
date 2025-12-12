@@ -7,9 +7,9 @@ add_nss_symlinks() {
   do
     target=$(echo $f | sed 's/\.[01]d$//')
     if [ -f "/$LIBDIR/$target" ]; then
-      ln -snf "/$LIBDIR/$target" "@@INSTALLDIR@@/$f"
+      ln -snf "/$LIBDIR/$target" "@@INSTALLDIR/$f"
     elif [ -f "/usr/$LIBDIR/$target" ]; then
-      ln -snf "/usr/$LIBDIR/$target" "@@INSTALLDIR@@/$f"
+      ln -snf "/usr/$LIBDIR/$target" "@@INSTALLDIR/$f"
     else
       echo $f not found in "/$LIBDIR/$target" or "/usr/$LIBDIR/$target".
       exit 1
@@ -20,10 +20,10 @@ add_nss_symlinks() {
 remove_nss_symlinks() {
   for f in $NSS_FILES
   do
-    rm -rf "@@INSTALLDIR@@/$f"
+    rm -rf "@@INSTALLDIR/$f"
   done
 }
 
 remove_udev_symlinks() {
-  rm -rf "@@INSTALLDIR@@/libudev.so.0"
+  rm -rf "@@INSTALLDIR/libudev.so.0"
 }

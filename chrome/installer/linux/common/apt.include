@@ -20,7 +20,7 @@ install_key() {
   # the keyring is installed as a binary blob.  base64 is used to decode the
   # ASCII keyring, which should always be available since it comes from the
   # coreutils.
-  (base64 -d > "$APT_TRUSTEDDIR/@@PACKAGE@@.gpg") <<KEYDATA
+  (base64 -d > "$APT_TRUSTEDDIR/@@PACKAGE.gpg") <<KEYDATA
 mQINBFcMjNMBEAC6Wr5QuLIFgz1V1EFPlg8ty2TsjQEl4VWftUAqWlMevJFWvYEx
 BOsOZ6kNFfBfjAxgJNWTkxZrHzDl74R7KW/nUx6X57bpFjUyRaB8F3/NpWKSeIGS
 pJT+0m2SgUNhLAn1WY/iNJGNaMl7lgUnaP+/ZsSNT9hyTBiH3Ev5VvAtMGhVI/u8
@@ -294,7 +294,7 @@ KEYDATA
 
 uninstall_key() {
   find_apt_trusted
-  rm -f "$APT_TRUSTEDDIR/@@PACKAGE@@.gpg"
+  rm -f "$APT_TRUSTEDDIR/@@PACKAGE.gpg"
 }
 
 # Set variables for the locations of the apt sources lists.
@@ -315,7 +315,7 @@ update_bad_sources() {
 
   find_apt_sources
 
-  SOURCELIST="$APT_SOURCESDIR/@@PACKAGE@@.list"
+  SOURCELIST="$APT_SOURCESDIR/@@PACKAGE.list"
   # Don't do anything if the file isn't there, since that probably means the
   # user disabled it.
   if [ ! -r "$SOURCELIST" ]; then
@@ -377,7 +377,7 @@ create_sources_lists() {
 
   find_apt_sources
 
-  SOURCELIST="$APT_SOURCESDIR/@@PACKAGE@@.list"
+  SOURCELIST="$APT_SOURCESDIR/@@PACKAGE.list"
   if [ -d "$APT_SOURCESDIR" ]; then
     printf "$SOURCES_PREAMBLE" > "$SOURCELIST"
     printf "$REPOCONFIG\n" >> "$SOURCELIST"
@@ -399,7 +399,7 @@ clean_sources_lists() {
 
   find_apt_sources
 
-  rm -f "$APT_SOURCESDIR/@@PACKAGE@@.list"
+  rm -f "$APT_SOURCESDIR/@@PACKAGE.list"
 }
 
 # Detect if the repo config was disabled by distro upgrade and enable if
@@ -410,7 +410,7 @@ handle_distro_upgrade() {
   fi
 
   find_apt_sources
-  SOURCELIST="$APT_SOURCESDIR/@@PACKAGE@@.list"
+  SOURCELIST="$APT_SOURCESDIR/@@PACKAGE.list"
   if [ -r "$SOURCELIST" ]; then
     REPOLINE=$(grep -E "^[[:space:]]*#[[:space:]]*$REPOCONFIGREGEX[[:space:]]*# disabled on upgrade to .*" "$SOURCELIST")
     if [ $? -eq 0 ]; then
@@ -424,7 +424,7 @@ handle_distro_upgrade() {
   fi
 }
 
-DEFAULT_ARCH="@@ARCHITECTURE@@"
+DEFAULT_ARCH="@@architecture"
 
 get_lib_dir() {
   if [ "$DEFAULT_ARCH" = "i386" ]; then

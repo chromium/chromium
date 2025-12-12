@@ -146,7 +146,7 @@ sed -i "s/^ -- $DEBEMAIL .*/ -- $DEBEMAIL  $DATE_RFC5322/" debian/changelog
 CRON_SCRIPT_DIR="${OUTPUT_PATH}/remoting/installer/cron"
 mkdir -p ${CRON_SCRIPT_DIR}
 process_template \
-    "${SCRIPTDIR}/../../../../chrome/installer/linux/common/repo.cron" \
+    "${SCRIPTDIR}/debian/repo.cron" \
     "${CRON_SCRIPT_DIR}/chrome-remote-desktop"
 
 # TODO(mmoss): This is a workaround for a problem where dpkg-shlibdeps was

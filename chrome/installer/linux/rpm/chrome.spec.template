@@ -5,18 +5,18 @@
 #------------------------------------------------------------------------------
 #   Prologue information
 #------------------------------------------------------------------------------
-Summary         : @@MENUNAME@@
-License         : Multiple, see @@PRODUCTURL@@
-Name            : @@PACKAGE_FILENAME@@
-Version         : @@VERSION@@
-Release         : @@PACKAGE_RELEASE@@
+Summary         : @@MENUNAME
+License         : Multiple, see @@PRODUCTURL
+Name            : @@rpm_package_filename
+Version         : @@version
+Release         : @@package_release
 Group           : Applications/Internet
-Vendor          : @@COMPANY_FULLNAME@@
-Url             : @@PRODUCTURL@@
-Packager        : @@MAINTNAME@@ <@@MAINTMAIL@@>
+Vendor          : @@COMPANY_FULLNAME
+Url             : @@PRODUCTURL
+Packager        : @@MAINTNAME <@@MAINTMAIL>
 
-Provides        : @@PROVIDES@@ = %{version}
-Requires        : @@DEPENDS@@
+Provides        : @@rpm_provides = %{version}
+Requires        : @@rpm_depends
 Requires(post)  : %{_sbindir}/update-alternatives
 Requires(preun) : %{_sbindir}/update-alternatives
 Autoreqprov     : No
@@ -31,9 +31,9 @@ prefix          : /opt
 #   Description
 #------------------------------------------------------------------------------
 %Description
-@@SHORTDESC@@
+@@SHORTDESC
 
-@@FULLDESC@@
+@@FULLDESC
 
 #------------------------------------------------------------------------------
 #   Build rule - How to make the package
@@ -47,13 +47,13 @@ prefix          : /opt
 %install
 rm -rf "$RPM_BUILD_ROOT"
 
-if [ -z "@@STAGEDIR@@" -o ! -d "@@STAGEDIR@@" ] ; then
-    echo "@@STAGEDIR@@ appears to be incorrectly set - aborting"
+if [ -z "@@staging_dir" -o ! -d "@@staging_dir" ] ; then
+    echo "@@staging_dir appears to be incorrectly set - aborting"
     exit 1
 fi
 
-if [ -z "@@INSTALLDIR@@" -o ! -d "@@STAGEDIR@@/@@INSTALLDIR@@" ] ; then
-    echo "@@INSTALLDIR@@ appears to be incorrectly set - aborting"
+if [ -z "@@INSTALLDIR" -o ! -d "@@staging_dir/@@INSTALLDIR" ] ; then
+    echo "@@INSTALLDIR appears to be incorrectly set - aborting"
     exit 1
 fi
 
@@ -62,9 +62,9 @@ install -m 755 -d \
   "$RPM_BUILD_ROOT/opt" \
   "$RPM_BUILD_ROOT/usr"
 # This is hard coded for now
-cp -a "@@STAGEDIR@@/etc/" "$RPM_BUILD_ROOT/"
-cp -a "@@STAGEDIR@@/opt/" "$RPM_BUILD_ROOT/"
-cp -a "@@STAGEDIR@@/usr/" "$RPM_BUILD_ROOT/"
+cp -a "@@staging_dir/etc/" "$RPM_BUILD_ROOT/"
+cp -a "@@staging_dir/opt/" "$RPM_BUILD_ROOT/"
+cp -a "@@staging_dir/usr/" "$RPM_BUILD_ROOT/"
 
 #------------------------------------------------------------------------------
 #   Rule to clean up a build
@@ -81,21 +81,21 @@ rm -rf "$RPM_BUILD_ROOT"
 
 # We cheat and just let RPM figure it out for us; everything we install
 # should go under this prefix anyways.
-@@INSTALLDIR@@
+@@INSTALLDIR
 
 # Be explicit about the files we scatter throughout the system we don't
 # accidentally "own" stuff that's not ours (crbug.com/123990).
-/etc/cron.daily/@@PACKAGE@@
-%ghost %attr(755,root,root) /usr/bin/@@PACKAGE_ORIG@@
-/usr/bin/@@USR_BIN_SYMLINK_NAME@@
-/usr/share/appdata/@@PACKAGE@@.appdata.xml
-/usr/share/applications/@@PACKAGE@@.desktop
-/usr/share/applications/@@RDN_DESKTOP@@.desktop
-/usr/share/gnome-control-center/default-apps/@@PACKAGE@@.xml
+/etc/cron.daily/@@PACKAGE
+%ghost %attr(755,root,root) /usr/bin/@@package_orig
+/usr/bin/@@usr_bin_symlink_name
+/usr/share/appdata/@@PACKAGE.appdata.xml
+/usr/share/applications/@@PACKAGE.desktop
+/usr/share/applications/@@rdn_desktop.desktop
+/usr/share/gnome-control-center/default-apps/@@PACKAGE.xml
 %docdir /usr/share/man/man1
 # These two files will be the same on non-stable channels.
-/usr/share/man/man1/@@PACKAGE@@.1.gz
-@@OPTIONAL_MAN_PAGE@@
+/usr/share/man/man1/@@PACKAGE.1.gz
+@@rpm_optional_man_page
 
 #------------------------------------------------------------------------------
 #   Pre install script
@@ -147,7 +147,7 @@ if [ "$repo_add_once" = "true" ]; then
   done
 fi
 
-CHANNEL=@@CHANNEL@@
+CHANNEL=@@channel
 case $CHANNEL in
   stable )
     PRIORITY=200
@@ -163,8 +163,8 @@ case $CHANNEL in
     ;;
 esac
 
-%{_sbindir}/update-alternatives --install /usr/bin/@@PACKAGE_ORIG@@ \
-  @@PACKAGE_ORIG@@ /usr/bin/@@USR_BIN_SYMLINK_NAME@@ $PRIORITY
+%{_sbindir}/update-alternatives --install /usr/bin/@@package_orig \
+  @@package_orig /usr/bin/@@usr_bin_symlink_name $PRIORITY
 
 exit 0
 
@@ -191,8 +191,8 @@ if [ "$mode" = "uninstall" ]; then
   remove_nss_symlinks
   remove_udev_symlinks
 
-  %{_sbindir}/update-alternatives --remove @@PACKAGE_ORIG@@ \
-    /usr/bin/@@USR_BIN_SYMLINK_NAME@@
+  %{_sbindir}/update-alternatives --remove @@package_orig \
+    /usr/bin/@@usr_bin_symlink_name
 fi
 
 # On Debian we only remove when we purge. However, RPM has no equivalent to
