@@ -30,6 +30,10 @@ public class PrefToValueMapBridge {
         mNativePrefToValueMapBridge = PrefToValueMapBridgeJni.get().init(this);
     }
 
+    public long getNativeBridgePtr() {
+        return mNativePrefToValueMapBridge;
+    }
+
     /** Destroys the native counterpart. */
     public void destroy() {
         if (mNativePrefToValueMapBridge != 0) {

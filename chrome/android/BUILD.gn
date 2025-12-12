@@ -471,6 +471,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/supervised_user:website_parent_approval_java",
       "//chrome/browser/sync/android:java",
       "//chrome/browser/sync/android:ui_java",
+      "//chrome/browser/sync/synced_set_up/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group_suggestion:java",
       "//chrome/browser/tab_group_suggestion:toolbar_java",

@@ -22,10 +22,7 @@ source_set("utils") {
     "//components/sync_preferences/cross_device_pref_tracker:timestamped_pref_value",
   ]
   if (is_android) {
-    deps += [
-      "android",
-      "android:java",
-    ]
+    deps += [ "android:jni_headers" ]
   }
 }
 
@@ -43,4 +40,10 @@ source_set("unit_tests") {
     "//components/sync_preferences/cross_device_pref_tracker:timestamped_pref_value",
     "//testing/gtest",
   ]
+  if (is_android) {
+    deps += [
+      "android",
+      "android:java",
+    ]
+  }
 }

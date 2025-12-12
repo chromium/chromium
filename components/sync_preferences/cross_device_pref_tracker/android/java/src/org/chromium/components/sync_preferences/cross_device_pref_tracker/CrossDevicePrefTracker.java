@@ -50,6 +50,10 @@ public class CrossDevicePrefTracker {
         mNativePtr = nativePtr;
     }
 
+    public long getNativePtr() {
+        return mNativePtr;
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
