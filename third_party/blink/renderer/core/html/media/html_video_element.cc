@@ -124,7 +124,7 @@ void HTMLVideoElement::Trace(Visitor* visitor) const {
   visitor->Trace(remoting_interstitial_);
   visitor->Trace(picture_in_picture_interstitial_);
   visitor->Trace(cache_deleting_timer_);
-  visitor->Trace(video_frame_callback_requester_);
+  Supplementable<HTMLVideoElement, 1>::Trace(visitor);
   HTMLMediaElement::Trace(visitor);
 }
 
@@ -827,15 +827,13 @@ void HTMLVideoElement::OnIntersectionChangedForLazyLoad(
 }
 
 void HTMLVideoElement::OnWebMediaPlayerCreated() {
-  if (video_frame_callback_requester_) {
-    video_frame_callback_requester_->OnWebMediaPlayerCreated();
-  }
+  if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this))
+    vfc_requester->OnWebMediaPlayerCreated();
 }
 
 void HTMLVideoElement::OnWebMediaPlayerCleared() {
-  if (video_frame_callback_requester_) {
-    video_frame_callback_requester_->OnWebMediaPlayerCleared();
-  }
+  if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this))
+    vfc_requester->OnWebMediaPlayerCleared();
 
   UpdateVideoVisibilityTracker();
 }
@@ -855,8 +853,8 @@ void HTMLVideoElement::AttributeChanged(
 }
 
 void HTMLVideoElement::OnRequestVideoFrameCallback() {
-  if (video_frame_callback_requester_) {
-    video_frame_callback_requester_->OnRequestVideoFrameCallback();
+  if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this)) {
+    vfc_requester->OnRequestVideoFrameCallback();
   }
 }
 

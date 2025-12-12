@@ -58,13 +58,12 @@ VideoFrameCallbackRequesterImpl::~VideoFrameCallbackRequesterImpl() = default;
 // static
 VideoFrameCallbackRequesterImpl& VideoFrameCallbackRequesterImpl::From(
     HTMLVideoElement& element) {
-  // TODO(sesse): Get rid of this cast.
   VideoFrameCallbackRequesterImpl* supplement =
-      static_cast<VideoFrameCallbackRequesterImpl*>(
-          element.GetVideoFrameCallbackRequester());
+      Supplement<HTMLVideoElement>::From<VideoFrameCallbackRequesterImpl>(
+          element);
   if (!supplement) {
     supplement = MakeGarbageCollected<VideoFrameCallbackRequesterImpl>(element);
-    element.SetVideoFrameCallbackRequester(supplement);
+    Supplement<HTMLVideoElement>::ProvideTo(element, supplement);
   }
 
   return *supplement;
@@ -88,7 +87,7 @@ void VideoFrameCallbackRequesterImpl::cancelVideoFrameCallback(
 
 void VideoFrameCallbackRequesterImpl::OnWebMediaPlayerCreated() {
   if (!callback_collection_->IsEmpty())
-    element_->GetWebMediaPlayer()->RequestVideoFrameCallback();
+    GetSupplementable()->GetWebMediaPlayer()->RequestVideoFrameCallback();
 }
 
 void VideoFrameCallbackRequesterImpl::OnWebMediaPlayerCleared() {
@@ -110,7 +109,8 @@ void VideoFrameCallbackRequesterImpl::OnWebMediaPlayerCleared() {
 }
 
 void VideoFrameCallbackRequesterImpl::ScheduleWindowRaf() {
-  element_->GetDocument()
+  GetSupplementable()
+      ->GetDocument()
       .GetScriptedAnimationController()
       .ScheduleVideoFrameCallbacksExecution(
           BindOnce(&VideoFrameCallbackRequesterImpl::OnExecution,
@@ -150,15 +150,14 @@ void VideoFrameCallbackRequesterImpl::OnImmersiveFrame() {
   if (callback_collection_->IsEmpty())
     return;
 
-  if (auto* player = element_->GetWebMediaPlayer()) {
+  if (auto* player = GetSupplementable()->GetWebMediaPlayer())
     player->UpdateFrameIfStale();
-  }
 }
 
 XRFrameProvider* VideoFrameCallbackRequesterImpl::GetXRFrameProvider() {
   // Do not force the lazy creation of the XRSystem.
   // If it doesn't exist already exist, the webpage isn't using XR.
-  auto* system = XRSystem::FromIfExists(element_->GetDocument());
+  auto* system = XRSystem::FromIfExists(GetSupplementable()->GetDocument());
   return system ? system->frameProvider() : nullptr;
 }
 
@@ -214,7 +213,8 @@ void VideoFrameCallbackRequesterImpl::ExecuteVideoFrameCallbacks(
   last_presented_frames_ = frame_metadata->presented_frames;
 
   auto* metadata = VideoFrameCallbackMetadata::Create();
-  auto& time_converter = element_->GetDocument().Loader()->GetTiming();
+  auto& time_converter =
+      GetSupplementable()->GetDocument().Loader()->GetTiming();
 
   metadata->setPresentationTime(GetClampedTimeInMillis(
       time_converter.MonotonicTimeToZeroBasedDocumentTime(
@@ -274,7 +274,7 @@ void VideoFrameCallbackRequesterImpl::OnExecution(double high_res_now_ms) {
   if (callback_collection_->IsEmpty())
     return;
 
-  auto* player = element_->GetWebMediaPlayer();
+  auto* player = GetSupplementable()->GetWebMediaPlayer();
   if (!player)
     return;
 
@@ -333,9 +333,8 @@ int VideoFrameCallbackRequesterImpl::requestVideoFrameCallback(
   TRACE_EVENT0("blink",
                "VideoFrameCallbackRequesterImpl::requestVideoFrameCallback");
 
-  if (auto* player = element_->GetWebMediaPlayer()) {
+  if (auto* player = GetSupplementable()->GetWebMediaPlayer())
     player->RequestVideoFrameCallback();
-  }
 
   auto* frame_callback = MakeGarbageCollected<
       VideoFrameRequestCallbackCollection::V8VideoFrameCallback>(callback);
