@@ -299,9 +299,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.RollbackTargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2025-03-02">
-  <owner>mpolzer@google.com</owner>
-  <owner>crisguerrero@chromium.org</owner>
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-05-03">
+  <owner>vsavu@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     First section of the ChromeOS target version set by device policy and sent
@@ -315,12 +314,15 @@ chromium-metrics-reviews@google.com.
     policy is set and rollback is enabled.
 
     This metric is specific to ChromeOS.
+
+    There is a gap in the histogram values because this metric was expired
+    between 2025-03-02 and 2025-12-13.
   </summary>
 </histogram>
 
 <histogram name="UpdateEngine.Check.TargetVersion"
     enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-05-03">
-  <owner>mpolzer@google.com</owner>
+  <owner>vsavu@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     First section of the Chrome OS target version set by device policy and sent
@@ -416,9 +418,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.EnterpriseRollback.BlockedByFSI"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-01-01">
-  <owner>mpolzer@google.com</owner>
-  <owner>crisguerrero@chromium.org</owner>
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-05-03">
+  <owner>vsavu@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     First section of the ChromeOS version to which an enterprise rollback
