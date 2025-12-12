@@ -271,45 +271,45 @@ void EtwConsumer::HandleFileIoEvent(const EVENT_HEADER& header,
   }
 
   switch (header.EventDescriptor.Opcode) {
-    case 64:  // FileIo_Create
+    case 64:
       if (!DecodeFileIoCreateEvent(header, buffer_context, pointer_size,
                                    packet_data)) {
         DLOG(ERROR) << "Error decoding FileIo_Create event";
       }
       break;
-    case 72:
-    case 77:  // FileIo_DirEnum
+    case 72:  // Directory enumeration
+    case 77:  // Directory notification
       if (!DecodeFileIoDirEnumEvent(header, buffer_context, pointer_size,
                                     packet_data)) {
         DLOG(ERROR) << "Error decoding FileIo_DirEnum event";
       }
       break;
-    case 67:
-    case 68:  // FileIo_ReadWrite
+    case 67:  // File read
+    case 68:  // File write
       if (!DecodeFileIoReadWriteEvent(header, buffer_context, pointer_size,
                                       packet_data)) {
         DLOG(ERROR) << "Error decoding FileIo_ReadWrite event";
       }
       break;
-    case 69:
-    case 70:
-    case 71:
-    case 74:
-    case 75:  // FileIo_Info
+    case 69:  // Set file information
+    case 70:  // Delete file
+    case 71:  // Rename file
+    case 74:  // Query file information
+    case 75:  // Filesystem control event
       if (!DecodeFileIoInfoEvent(header, buffer_context, pointer_size,
                                  packet_data)) {
         DLOG(ERROR) << "Error decoding FileIo_Info event";
       }
       break;
-    case 65:
-    case 66:
-    case 73:  // FileIo_SimpleOp
+    case 65:  // Clean up
+    case 66:  // Close
+    case 73:  // Flush
       if (!DecodeFileIoSimpleOpEvent(header, buffer_context, pointer_size,
                                      packet_data)) {
         DLOG(ERROR) << "Error decoding FileIo_SimpleOp event";
       }
       break;
-    case 76:  // FileIo_OpEnd
+    case 76:
       if (!DecodeFileIoOpEndEvent(header, buffer_context, pointer_size,
                                   packet_data)) {
         DLOG(ERROR) << "Error decoding FileIo_OpEnd event";
@@ -732,6 +732,7 @@ bool EtwConsumer::DecodeFileIoDirEnumEvent(
   if (!privacy_filtering_enabled_) {
     file_io_dir_enum->set_file_name(base::WideToUTF8(*CopyWString(iterator)));
   }
+  file_io_dir_enum->set_opcode(header.EventDescriptor.Opcode);
   return true;
 }
 
@@ -759,6 +760,7 @@ bool EtwConsumer::DecodeFileIoInfoEvent(
   file_io_info->set_extra_info(CopyPointer(iterator, pointer_size));
   file_io_info->set_ttid(*iterator.CopyObject<uint32_t>());
   file_io_info->set_info_class(*iterator.CopyObject<uint32_t>());
+  file_io_info->set_opcode(header.EventDescriptor.Opcode);
   return true;
 }
 
@@ -788,6 +790,7 @@ bool EtwConsumer::DecodeFileIoReadWriteEvent(
   file_io_read_write->set_ttid(*iterator.CopyObject<uint32_t>());
   file_io_read_write->set_io_size(*iterator.CopyObject<uint32_t>());
   file_io_read_write->set_io_flags(*iterator.CopyObject<uint32_t>());
+  file_io_read_write->set_opcode(header.EventDescriptor.Opcode);
   return true;
 }
 
@@ -813,6 +816,7 @@ bool EtwConsumer::DecodeFileIoSimpleOpEvent(
   file_io_simple_op->set_file_object(CopyPointerHash(iterator, pointer_size));
   file_io_simple_op->set_file_key(CopyPointerHash(iterator, pointer_size));
   file_io_simple_op->set_ttid(*iterator.CopyObject<uint32_t>());
+  file_io_simple_op->set_opcode(header.EventDescriptor.Opcode);
   return true;
 }
 

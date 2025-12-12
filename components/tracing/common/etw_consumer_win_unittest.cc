@@ -38,6 +38,11 @@ namespace tracing {
 
 namespace {
 
+static constexpr uint8_t kFileIoDirEnumOpcode = 72u;
+static constexpr uint8_t kFileIoInfoOpcode = 70u;
+static constexpr uint8_t kFileIoReadWriteOpcode = 67u;
+static constexpr uint8_t kFileIoSimpleOpOpcode = 73u;
+
 // A trace writer that creates TracePacket messages on the heap and sends their
 // serialized form to an owner-provided callback.
 class FakeTraceWriter : public perfetto::TraceWriterBase,
@@ -302,6 +307,7 @@ base::HeapArray<uint8_t> EncodeFileIoDirEnum(uint32_t ttid,
   std::ranges::copy(base::byte_span_from_ref(file_index), iter);
   std::ranges::copy(base::as_byte_span(file_name), iter);
   buffer.insert(buffer.end(), sizeof(wchar_t), 0);  // string terminator
+  std::ranges::copy(base::byte_span_from_ref(kFileIoDirEnumOpcode), iter);
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
 
@@ -316,6 +322,7 @@ base::HeapArray<uint8_t> EncodeFileIoInfo(uint32_t ttid, uint32_t info_class) {
   std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // ExtraInfo
   std::ranges::copy(base::byte_span_from_ref(ttid), iter);
   std::ranges::copy(base::byte_span_from_ref(info_class), iter);
+  std::ranges::copy(base::byte_span_from_ref(kFileIoInfoOpcode), iter);
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
 
@@ -334,6 +341,7 @@ base::HeapArray<uint8_t> EncodeFileIoReadWrite(uint32_t ttid,
   std::ranges::copy(base::byte_span_from_ref(ttid), iter);
   std::ranges::copy(base::byte_span_from_ref(io_size), iter);
   std::ranges::copy(base::byte_span_from_ref(io_flags), iter);
+  std::ranges::copy(base::byte_span_from_ref(kFileIoReadWriteOpcode), iter);
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
 
@@ -346,6 +354,7 @@ base::HeapArray<uint8_t> EncodeFileIoSimpleOp(uint32_t ttid) {
   std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // FileObject
   std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // FileKey
   std::ranges::copy(base::byte_span_from_ref(ttid), iter);
+  std::ranges::copy(base::byte_span_from_ref(kFileIoSimpleOpOpcode), iter);
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
 
@@ -524,7 +533,8 @@ class EtwConsumerTest : public testing::Test {
   // constructed from it.
   void ProcessFileIoDirEnumEvent(uint32_t thread_id,
                                  base::span<const uint8_t> packet_data) {
-    SendFileIoEvent(/*version=*/0u, /*opcode=*/72u, thread_id, packet_data);
+    SendFileIoEvent(/*version=*/0u, kFileIoDirEnumOpcode, thread_id,
+                    packet_data);
   }
 
   // Generates an ETW FileIo_ReadWrite event with `packet_data` as its payload
@@ -533,7 +543,8 @@ class EtwConsumerTest : public testing::Test {
   // decoder is constructed from it.
   void ProcessFileIoReadWriteEvent(uint32_t thread_id,
                                    base::span<const uint8_t> packet_data) {
-    SendFileIoEvent(/*version=*/0u, /*opcode=*/67u, thread_id, packet_data);
+    SendFileIoEvent(/*version=*/0u, kFileIoReadWriteOpcode, thread_id,
+                    packet_data);
   }
 
   // Generates an ETW FileIo_Info event with `packet_data` as its payload and
@@ -542,7 +553,7 @@ class EtwConsumerTest : public testing::Test {
   // constructed from it.
   void ProcessFileIoInfoEvent(uint32_t thread_id,
                               base::span<const uint8_t> packet_data) {
-    SendFileIoEvent(/*version=*/0u, /*opcode=*/69u, thread_id, packet_data);
+    SendFileIoEvent(/*version=*/0u, kFileIoInfoOpcode, thread_id, packet_data);
   }
 
   // Generates an ETW FileIo_SimpleOp event with `packet_data` as its payload
@@ -551,7 +562,8 @@ class EtwConsumerTest : public testing::Test {
   // decoder is constructed from it.
   void ProcessFileIoSimpleOpEvent(uint32_t thread_id,
                                   base::span<const uint8_t> packet_data) {
-    SendFileIoEvent(/*version=*/0u, /*opcode=*/65u, thread_id, packet_data);
+    SendFileIoEvent(/*version=*/0u, kFileIoSimpleOpOpcode, thread_id,
+                    packet_data);
   }
 
   // Generates an ETW FileIo_OpEnd event with `packet_data` as its payload and
@@ -1137,6 +1149,7 @@ TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoDirEnumEvent) {
                           file_io_dir_enum->file_name().size),
               base::WideToUTF8(kFileName));
   }
+  EXPECT_EQ(file_io_dir_enum->opcode(), kFileIoDirEnumOpcode);
 }
 
 // Tests that a FileIoInfoEtwEvent is emitted for a FileIo_Info ETW event.
@@ -1158,6 +1171,7 @@ TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoInfoEvent) {
   EXPECT_TRUE(file_io_info->has_extra_info());
   EXPECT_EQ(file_io_info->ttid(), kClientTid);
   EXPECT_EQ(file_io_info->info_class(), kInfoClass);
+  EXPECT_EQ(file_io_info->opcode(), kFileIoInfoOpcode);
 }
 
 // Tests that a FileIoReadWriteEtwEvent is emitted for a FileIo_ReadWrite ETW
@@ -1185,6 +1199,7 @@ TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoReadWriteEvent) {
   EXPECT_EQ(file_io_read_write->ttid(), kClientTid);
   EXPECT_EQ(file_io_read_write->io_size(), kIoSize);
   EXPECT_EQ(file_io_read_write->io_flags(), kIoFlags);
+  EXPECT_EQ(file_io_read_write->opcode(), kFileIoReadWriteOpcode);
 }
 
 // Tests that a FileIoSimpleOpEtwEvent is emitted for a FileIo_SimpleOp ETW
@@ -1204,6 +1219,7 @@ TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoSimpleOpEvent) {
   EXPECT_TRUE(file_io_simple_op->has_file_object());
   EXPECT_TRUE(file_io_simple_op->has_file_key());
   EXPECT_EQ(file_io_simple_op->ttid(), kClientTid);
+  EXPECT_EQ(file_io_simple_op->opcode(), kFileIoSimpleOpOpcode);
 }
 
 // Tests that a FileIoOpEndEtwEvent is emitted for a FileIo_OpEnd ETW event.
