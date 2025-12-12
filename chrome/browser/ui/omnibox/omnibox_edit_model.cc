@@ -2946,12 +2946,7 @@ void OmniboxEditModel::SetKeywordPlaceholder(
 }
 
 void OmniboxEditModel::SetIsKeywordHint(bool is_keyword_hint) {
-  const bool old_keyword_selected = is_keyword_selected();
   is_keyword_hint_ = is_keyword_hint;
-  const bool new_keyword_selected = is_keyword_selected();
-  if (old_keyword_selected != new_keyword_selected) {
-    observers_.Notify(&Observer::OnKeywordStateChanged, new_keyword_selected);
-  }
 }
 
 void OmniboxEditModel::RecordAiModeMetrics(const std::u16string& query_text,
