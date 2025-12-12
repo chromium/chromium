@@ -1528,6 +1528,10 @@ crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/strict-orig
 crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
 crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrer-policy-same-origin.sub.html [ Failure ]
 
+# Media queries
+crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
+crbug.com/40781325 external/wpt/css/mediaqueries/at-custom-media-basic.html [ Failure ]
+
 # ====== Style team owned tests to here ======
 
 # Tests only passing with RunSnapshotPostLayoutStateSteps enabled
@@ -3174,7 +3178,6 @@ crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/467728926 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_timezone_override/contexts.py [ Failure ]
 crbug.com/467435140 [ Win ] external/wpt/html/browsers/origin/api/origin-from-messageevent.window.html [ Crash Pass ]
 crbug.com/467185802 external/wpt/css/css-anchor-position/grid-position-area-basic.html [ Failure ]
-crbug.com/467194617 external/wpt/css/mediaqueries/at-custom-media-basic.html [ Failure ]
 crbug.com/467185802 virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-position/grid-position-area-basic.html [ Failure ]
 crbug.com/467185802 virtual/run-snapshot-post-layout/external/wpt/css/css-anchor-position/grid-position-area-basic.html [ Failure ]
 crbug.com/467079017 external/wpt/css/css-content/quotes-035.html [ Failure ]
@@ -7784,9 +7787,6 @@ http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failu
 
 # Sheriff 2023-01-23
 crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Crash Failure Pass Timeout ]
-
-# WPT for checking if the browser supports lazy loading of non matching media queries
-crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
 
 crbug.com/378787482 external/wpt/pointerevents/compat/pointerevent_touch_target_after_pointerdown_target_removed.tentative.html [ Failure ]
 crbug.com/368980630 [ Mac ] external/wpt/pointerevents/pointerevent_to_slotted_target.html?pen [ Failure Pass ]
