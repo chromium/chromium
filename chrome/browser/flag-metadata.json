@@ -8290,7 +8290,7 @@
   {
     "name": "permissive-usb-passthrough",
     "owners": [
-      "drmasquatch@chromium.org"
+      "drmasquatch@google.com"
     ],
     "expiry_milestone": 130
   },
