@@ -552,10 +552,6 @@ crbug.com/438691606 [ win ] conformance/extensions/khr-parallel-shader-compile.h
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 
-## Windows 11 ##
-
-crbug.com/467315110 [ win11 angle-d3d11 ] deqp/functional/gles3/* [ RetryOnFailure ]
-
 ## Win / NVIDIA ##
 
 crbug.com/1073613 [ angle-d3d11 win nvidia ] conformance2/textures/misc/tex-3d-mipmap-levels-intel-bug.html [ Failure ]
