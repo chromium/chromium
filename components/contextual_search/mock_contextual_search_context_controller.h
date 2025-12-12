@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/lens/contextual_input.h"
@@ -25,9 +26,10 @@ class MockContextualSearchContextController
 
   MOCK_METHOD(void, InitializeIfNeeded, (), (override));
   MOCK_METHOD(
-      GURL,
+      void,
       CreateSearchUrl,
-      (std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info),
+      (std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info,
+       base::OnceCallback<void(GURL)> callback),
       (override));
   MOCK_METHOD(lens::ClientToAimMessage,
               CreateClientToAimRequest,

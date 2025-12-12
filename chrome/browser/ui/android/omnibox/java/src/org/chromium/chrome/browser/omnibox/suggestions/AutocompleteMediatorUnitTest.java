@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -46,6 +47,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPausedSystemClock;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -1634,7 +1636,13 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
         GURL url = JUnitTestGURLs.BLUE_2;
-        when(mFuseboxCoordinator.getAimUrl(any())).thenReturn(url);
+        doAnswer(
+                        invocation -> {
+                            ((Callback<GURL>) invocation.getArgument(1)).onResult(url);
+                            return null;
+                        })
+                .when(mFuseboxCoordinator)
+                .getAimUrl(any(), any());
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
@@ -1662,10 +1670,14 @@ public class AutocompleteMediatorUnitTest {
         when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("test");
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
-        GURL url1 = JUnitTestGURLs.BLUE_1;
-        when(mFuseboxCoordinator.getAimUrl(any())).thenReturn(url1);
         GURL url2 = JUnitTestGURLs.BLUE_2;
-        when(mFuseboxCoordinator.getImageGenerationUrl(any())).thenReturn(url2);
+        doAnswer(
+                        invocation -> {
+                            ((Callback<GURL>) invocation.getArgument(1)).onResult(url2);
+                            return null;
+                        })
+                .when(mFuseboxCoordinator)
+                .getImageGenerationUrl(any(), any());
 
         AutocompleteMatch defaultMatch =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)

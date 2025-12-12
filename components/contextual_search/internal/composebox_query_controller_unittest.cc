@@ -1215,8 +1215,10 @@ TEST_F(
   search_url_request_info->query_text = "hello";
   search_url_request_info->query_start_time = kTestQueryStartTime;
   search_url_request_info->file_tokens.push_back(file_token);
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Check that the contextual inputs param contains the request ids.
   lens::LensOverlayContextualInputs contextual_inputs =
@@ -1439,8 +1441,10 @@ TEST_F(ComposeboxQueryControllerTest,
   search_url_request_info->query_text = "hello";
   search_url_request_info->query_start_time = kTestQueryStartTime;
   search_url_request_info->file_tokens.push_back(file_token);
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Check that the vsint is populated correctly.
   auto vsint = GetVsintFromUrl(aim_url);
@@ -1859,8 +1863,10 @@ TEST_F(ComposeboxQueryControllerTest,
       std::make_unique<CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = "test";
   search_url_request_info->query_start_time = kTestQueryStartTime;
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Assert: Lens request id is NOT added to unimodal text queries.
   std::string vsrid_value;
@@ -1899,8 +1905,10 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
       std::make_unique<CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = "test";
   search_url_request_info->query_start_time = kTestQueryStartTime;
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Assert: Lens request id is NOT added to unimodal text queries.
   std::string vsrid_value;
@@ -1955,8 +1963,10 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
   search_url_request_info->query_text = "hello";
   search_url_request_info->query_start_time = kTestQueryStartTime;
   search_url_request_info->file_tokens.push_back(file_token);
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Check that the vsint is populated correctly.
   auto vsint = GetVsintFromUrl(aim_url);
@@ -2073,8 +2083,10 @@ TEST_F(ComposeboxQueryControllerTest,
       ComposeboxQueryController::SearchUrlType::kStandard;
   search_url_request_info->file_tokens.push_back(file_token);
   search_url_request_info->query_start_time = kTestQueryStartTime;
-  GURL search_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
 
   // Check that the vsint is populated correctly.
   auto vsint = GetVsintFromUrl(search_url);
@@ -2127,8 +2139,10 @@ TEST_F(ComposeboxQueryControllerTest,
       ComposeboxQueryController::SearchUrlType::kStandard;
   search_url_request_info_no_query_text->query_start_time = kTestQueryStartTime;
   search_url_request_info_no_query_text->file_tokens.push_back(file_token);
-  GURL no_query_text_url = controller().CreateSearchUrl(
-      std::move(search_url_request_info_no_query_text));
+  base::test::TestFuture<GURL> url_future_2;
+  controller().CreateSearchUrl(std::move(search_url_request_info_no_query_text),
+                               url_future_2.GetCallback());
+  GURL no_query_text_url = url_future_2.Take();
 
   // Check that the vsint is populated correctly.
   auto vsint_2 = GetVsintFromUrl(no_query_text_url);
@@ -2187,8 +2201,10 @@ TEST_F(ComposeboxQueryControllerTest,
   controller().AddEndpointFetcherCreatedCallback(
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
 
-  GURL search_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL search_url = url_future.Take();
 
   // Check that an interaction request was created.
   run_loop.Run();
@@ -2271,8 +2287,10 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
   search_url_request_info->query_text = "hello";
   search_url_request_info->query_start_time = kTestQueryStartTime;
   search_url_request_info->file_tokens.push_back(file_token);
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Check that the vsint is populated correctly.
   auto vsint = GetVsintFromUrl(aim_url);
@@ -2365,8 +2383,10 @@ TEST_F(ComposeboxQueryControllerTest,
   search_url_request_info->query_text = "hello";
   search_url_request_info->query_start_time = kTestQueryStartTime;
   search_url_request_info->file_tokens.push_back(file_token);
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Assert: Lens request id is NOT added to unimodal text queries.
   std::string vsrid_value;
@@ -2559,8 +2579,10 @@ TEST_F(ComposeboxQueryControllerTest,
   search_url_request_info->query_text = "hello";
   search_url_request_info->query_start_time = kTestQueryStartTime;
   search_url_request_info->file_tokens.push_back(file_token);
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Assert: Lns surface is empty since it was suppressed due to no image.
   std::string lns_surface_value;
@@ -2594,8 +2616,10 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithLnsSurfaceAndNoImage) {
   search_url_request_info->query_text = "hello";
   search_url_request_info->query_start_time = kTestQueryStartTime;
   search_url_request_info->file_tokens.push_back(file_token);
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Assert: Lns surface is added to the url.
   std::string lns_surface_value;
@@ -2738,8 +2762,10 @@ TEST_F(ComposeboxQueryControllerTest,
   search_url_request_info->query_start_time = kTestQueryStartTime;
   search_url_request_info->file_tokens.push_back(first_file_token);
   search_url_request_info->file_tokens.push_back(second_file_token);
-  GURL aim_url =
-      controller().CreateSearchUrl(std::move(search_url_request_info));
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
 
   // Assert: Lens request id is NOT added to queries using multi-context flow.
   std::string vsrid_value;

@@ -101,9 +101,10 @@ class ContextualSearchSessionHandle {
   void ClearFiles();
 
   // Returns the search url for a new query for opening.
-  virtual GURL CreateSearchUrl(
+  virtual void CreateSearchUrl(
       std::unique_ptr<contextual_search::ContextualSearchContextController::
-                          CreateSearchUrlRequestInfo> search_url_request_info);
+                          CreateSearchUrlRequestInfo> search_url_request_info,
+      base::OnceCallback<void(GURL)> callback);
 
   // Returns the client to aim message for a new query for posting.
   lens::ClientToAimMessage CreateClientToAimRequest(

@@ -24,10 +24,11 @@ class MockContextualSearchSessionHandle : public ContextualSearchSessionHandle {
                std::optional<lens::ImageEncodingOptions> image_options),
               (override));
   MOCK_METHOD(
-      GURL,
+      void,
       CreateSearchUrl,
       (std::unique_ptr<contextual_search::ContextualSearchContextController::
-                           CreateSearchUrlRequestInfo> search_url_request_info),
+                           CreateSearchUrlRequestInfo> search_url_request_info,
+       base::OnceCallback<void(GURL)> callback),
       (override));
 };
 

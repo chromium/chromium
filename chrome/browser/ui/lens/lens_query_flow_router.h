@@ -128,7 +128,7 @@ class LensQueryFlowRouter {
       std::unique_ptr<CreateSearchUrlRequestInfo> request_info);
 
   // Opens the contextual tasks panel to a provided URL.
-  void OpenContextualTasksPanel(const GURL& url);
+  void OpenContextualTasksPanel(GURL url);
 
   // Uploads the viewport and page context using the provided session handle.
   void UploadContextualInputData(

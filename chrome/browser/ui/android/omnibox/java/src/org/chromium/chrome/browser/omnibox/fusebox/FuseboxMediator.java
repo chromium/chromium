@@ -250,19 +250,18 @@ public class FuseboxMediator {
 
     /**
      * @param url The search URL to get the AIM analog of.
-     * @return The URL for the AIM service.
+     * @param callback The callback to run with the URL for the AIM service.
      */
-    GURL getAimUrl(GURL url) {
-        return mComposeBoxQueryControllerBridge.getAimUrl(url);
+    void getAimUrl(GURL url, Callback<GURL> callback) {
+        mComposeBoxQueryControllerBridge.getAimUrl(url, callback);
     }
 
     /**
      * @param url The search URL to get the Image generator analog of.
-     * @param queryText The query text to be used for the image generation URL.
-     * @return The URL for the image generation service.
+     * @param callback The callback to run with the URL for the image generation service.
      */
-    GURL getImageGenerationUrl(GURL url) {
-        return mComposeBoxQueryControllerBridge.getImageGenerationUrl(url);
+    void getImageGenerationUrl(GURL url, Callback<GURL> callback) {
+        mComposeBoxQueryControllerBridge.getImageGenerationUrl(url, callback);
     }
 
     @VisibleForTesting

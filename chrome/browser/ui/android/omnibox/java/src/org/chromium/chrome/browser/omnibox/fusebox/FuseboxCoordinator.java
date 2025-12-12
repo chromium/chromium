@@ -293,15 +293,21 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     }
 
     /** Returns the URL associated with the current AIM session. */
-    public GURL getAimUrl(GURL url) {
-        if (mMediator == null) return GURL.emptyGURL();
-        return mMediator.getAimUrl(url);
+    public void getAimUrl(GURL url, Callback<GURL> callback) {
+        if (mMediator == null) {
+            callback.onResult(GURL.emptyGURL());
+            return;
+        }
+        mMediator.getAimUrl(url, callback);
     }
 
     /** Returns the URL associated with the current image generation session. */
-    public GURL getImageGenerationUrl(GURL url) {
-        if (mMediator == null) return GURL.emptyGURL();
-        return mMediator.getImageGenerationUrl(url);
+    public void getImageGenerationUrl(GURL url, Callback<GURL> callback) {
+        if (mMediator == null) {
+            callback.onResult(GURL.emptyGURL());
+            return;
+        }
+        mMediator.getImageGenerationUrl(url, callback);
     }
 
     public PropertyModel getModelForTesting() {

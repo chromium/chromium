@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_bitmap_processing.h"
@@ -167,8 +168,9 @@ class ContextualSearchContextController {
 
   // Called when a query has been submitted. `query_start_time` is the time
   // that the user clicked the submit button.
-  virtual GURL CreateSearchUrl(
-      std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info) = 0;
+  virtual void CreateSearchUrl(
+      std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info,
+      base::OnceCallback<void(GURL)> callback) = 0;
 
   // Called when a follow-up Aquery has been submitted. `query_start_time` is
   // the time that the user clicked the submit button.

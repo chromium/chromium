@@ -189,11 +189,13 @@ void LensQueryFlowRouter::LoadQueryInContextualTasks(
 void LensQueryFlowRouter::SendInteractionToContextualTasks(
     std::unique_ptr<CreateSearchUrlRequestInfo> request_info) {
   auto* session_handle = GetOrCreateContextualSearchSessionHandle();
-  auto search_url = session_handle->CreateSearchUrl(std::move(request_info));
-  OpenContextualTasksPanel(search_url);
+  session_handle->CreateSearchUrl(
+      std::move(request_info),
+      base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void LensQueryFlowRouter::OpenContextualTasksPanel(const GURL& url) {
+void LensQueryFlowRouter::OpenContextualTasksPanel(GURL url) {
   // Show the side panel. This will create a new task and associate it with the
   // active tab.
   contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
