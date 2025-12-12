@@ -642,6 +642,9 @@ void DismissPaymentBottomSheet() {
 
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
+  // Reloading the page will ensure that the payment bottom sheet is configured.
+  // Otherwise, it can get attached in-between the first tap and second tap
+  // which will result in a flaky test.
   [self loadURL];
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
@@ -729,17 +732,19 @@ void DismissPaymentBottomSheet() {
 
 // Tests that, after switching fields, the content size of the table view didn't
 // grow.
-// TODO(crbug.com/440045841): Re-enable when fixed.
-- (void)DISABLED_testCreditCardControllerKeepsRightSize {
-  // TODO(crbug.com/443204278): Fails on iOS 26 simulator.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
+- (void)testCreditCardControllerKeepsRightSize {
   [AutofillAppInterface saveLocalCreditCard];
+
+  // Reloading the page will ensure that the payment bottom sheet is configured.
+  // Otherwise, it can get attached in-between the first tap and second tap
+  // which will result in a flaky test.
+  [self loadURL];
 
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
+  DismissPaymentBottomSheet();
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -942,6 +947,9 @@ void DismissPaymentBottomSheet() {
   // Save a server card.
   [AutofillAppInterface saveMaskedCreditCard];
 
+  // Reloading the page will ensure that the payment bottom sheet is configured.
+  // Otherwise, it can get attached in-between the first tap and second tap
+  // which will result in a flaky test.
   [self loadURL];
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
@@ -1048,6 +1056,9 @@ void DismissPaymentBottomSheet() {
   NSString* masked_card_last_digits =
       [AutofillAppInterface saveMaskedCreditCard];
 
+  // Reloading the page will ensure that the payment bottom sheet is configured.
+  // Otherwise, it can get attached in-between the first tap and second tap
+  // which will result in a flaky test.
   [self loadURL];
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
