@@ -5,6 +5,8 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -49,6 +51,9 @@ class VerticalSplitTabViewTest
     return raw_contents;
   }
 };
+
+// TODO(crbug.com/464486134): All test flaky on Windows.
+#if !BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
   CreateSplitTab();
@@ -158,3 +163,5 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
   EXPECT_EQ(available_width, child1_layout->bounds.width());
   EXPECT_EQ(available_width, child2_layout->bounds.width());
 }
+
+#endif  // !BUILDFLAG(IS_WIN)
