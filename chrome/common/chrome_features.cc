@@ -842,6 +842,9 @@ extern const base::FeatureParam<std::string>
         "glic-record-actor-journal-feedback-category-tag",
         "gemini_in_chrome_actor_tt_df"};
 
+BASE_FEATURE(kGlicRecordMemoryFootprintMetrics,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicWebClientUnresponsiveMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

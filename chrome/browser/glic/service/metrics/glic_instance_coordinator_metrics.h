@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
@@ -52,8 +53,11 @@ class GlicInstanceCoordinatorMetrics {
       const std::optional<std::string>& target_instance_conversation_id,
       raw_ptr<GlicInstance> active_instance);
 
+  void OnMemoryPressure(base::MemoryPressureLevel level);
+
  private:
   // Helper to calculate currently visible instances using
+
   // data_provider_->GetInstances()
   int GetVisibleInstanceCount() const;
 

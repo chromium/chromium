@@ -6,9 +6,15 @@
 
 #include <algorithm>
 
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/common/chrome_features.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace glic {
 
@@ -56,6 +62,47 @@ void GlicInstanceCoordinatorMetrics::RecordSwitchConversationTarget(
   }
   base::UmaHistogramEnumeration("Glic.Interaction.SwitchConversationTarget",
                                 target);
+}
+
+void GlicInstanceCoordinatorMetrics::OnMemoryPressure(
+    base::MemoryPressureLevel level) {
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicRecordMemoryFootprintMetrics)) {
+    return;
+  }
+
+  for (auto* instance : data_provider_->GetInstances()) {
+    base::flat_set<content::RenderProcessHost*> unique_processes;
+    Host& host = instance->host();
+    if (auto* contents = host.webui_contents()) {
+      if (auto* process = contents->GetPrimaryMainFrame()->GetProcess()) {
+        unique_processes.insert(process);
+      }
+    }
+    if (auto* contents = host.web_client_contents()) {
+      if (auto* process = contents->GetPrimaryMainFrame()->GetProcess()) {
+        unique_processes.insert(process);
+      }
+    }
+
+    uint64_t instance_memory_bytes = 0;
+    for (auto* process : unique_processes) {
+      instance_memory_bytes += process->GetPrivateMemoryFootprint();
+    }
+
+    int instance_memory_mb =
+        static_cast<int>(instance_memory_bytes / 1024 / 1024);
+
+    if (level == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+      base::UmaHistogramMemoryLargeMB(
+          "Glic.Instance.PrivateMemoryFootprint.ModeratePressure",
+          instance_memory_mb);
+    } else if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+      base::UmaHistogramMemoryLargeMB(
+          "Glic.Instance.PrivateMemoryFootprint.CriticalPressure",
+          instance_memory_mb);
+    }
+  }
 }
 
 int GlicInstanceCoordinatorMetrics::GetVisibleInstanceCount() const {

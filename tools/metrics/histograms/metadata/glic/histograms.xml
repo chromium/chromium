@@ -818,6 +818,26 @@ chromium-metrics-reviews@google.com.
   <token key="EmbedderType" variants="EmbedderType"/>
 </histogram>
 
+<histogram name="Glic.Instance.PrivateMemoryFootprint.CriticalPressure"
+    units="MB" expires_after="2026-12-09">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@google.com</owner>
+  <summary>
+    Records the private memory footprint of each Glic instance (sum of WebUI +
+    WebClient) when a critical memory pressure event is received.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.PrivateMemoryFootprint.ModeratePressure"
+    units="MB" expires_after="2026-12-09">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@google.com</owner>
+  <summary>
+    Records the private memory footprint of each Glic instance (sum of WebUI +
+    WebClient) when a moderate memory pressure event is received.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.Session.CreateTabCount" units="count"
     expires_after="2026-10-27">
   <owner>birnie@google.com</owner>
@@ -1122,6 +1142,54 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration of a single, uninterrupted period of time that a
     GlicInstance was visible. Recorded each time an instance becomes hidden.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.WebClient.MaxPrivateMemoryFootprint" units="MB"
+    expires_after="2026-12-09">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@google.com</owner>
+  <summary>
+    Records the maximum observed private memory footprint of the Glic WebClient
+    renderer process. Recorded when the Glic instance is shut down. Note that
+    this is the maximum value observed during the 30-minute sampling intervals,
+    not necessarily the absolute peak memory usage.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.WebClient.PrivateMemoryFootprint" units="MB"
+    expires_after="2026-12-09">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@google.com</owner>
+  <summary>
+    Records the private memory footprint of the Glic WebClient renderer process.
+    Recorded every 30 minutes. This metric is biased towards long-running
+    instances. Instances that end before 30 minutes will not record a value.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.WebUI.MaxPrivateMemoryFootprint" units="MB"
+    expires_after="2026-12-09">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@google.com</owner>
+  <summary>
+    Records the maximum observed private memory footprint of the Glic WebUI
+    renderer process. Recorded when the Glic instance is shut down. Note that
+    this is the maximum value observed during the 30-minute sampling intervals,
+    not necessarily the absolute peak memory usage. WebUI memory is expected to
+    be significantly lower than WebClient memory.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.WebUI.PrivateMemoryFootprint" units="MB"
+    expires_after="2026-12-09">
+  <owner>birnie@google.com</owner>
+  <owner>bryantchandler@google.com</owner>
+  <summary>
+    Records the private memory footprint of the Glic WebUI renderer process.
+    Recorded every 30 minutes. This metric is biased towards long-running
+    instances. Instances that end before 30 minutes will not record a value.
+    WebUI memory is expected to be significantly lower than WebClient memory.
   </summary>
 </histogram>
 

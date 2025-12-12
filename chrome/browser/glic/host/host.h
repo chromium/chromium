@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/host/host_metrics.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
@@ -235,6 +236,9 @@ class Host : public GlicSharingManagerProvider {
   // Returns the WebUI web contents. May be null.
   content::WebContents* webui_contents() const;
 
+  // Returns the WebClient web contents. May be null.
+  content::WebContents* web_client_contents() const;
+
   // Returns whether `contents` is the glic WebUI web contents.
   bool IsGlicWebUi(content::WebContents* contents) const;
 
@@ -444,6 +448,11 @@ class Host : public GlicSharingManagerProvider {
 
   // The current view in the primary page handler.
   mojom::CurrentView primary_current_view_ = mojom::CurrentView::kConversation;
+
+  base::WeakPtr<content::WebContents> web_client_contents_;
+
+  HostMetrics metrics_;
+
   base::WeakPtrFactory<Host> weak_ptr_factory_{this};
 };
 

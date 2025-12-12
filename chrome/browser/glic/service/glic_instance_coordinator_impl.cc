@@ -644,6 +644,8 @@ void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
 
 void GlicInstanceCoordinatorImpl::OnMemoryPressure(
     base::MemoryPressureLevel level) {
+  metrics_.OnMemoryPressure(level);
+
   if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
