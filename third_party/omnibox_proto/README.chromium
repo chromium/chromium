@@ -19,4 +19,5 @@ blaze run //chrome/omnibox/tools/proto_export -- \
   --output=$CHROMIUM_SRC/third_party/omnibox_proto
 
 Local Modifications:
-Unchanged from the output of the export script.
+* Removed generate_py_runtime = true. This was done for testing purposes before
+  removing it from the export script.

@@ -19,4 +19,5 @@ blaze run //analysis/uma/proto_export:proto_export -- \
 
 
 Local Modifications:
-Unchanged from the output of the export script.
+* Removed generate_py_runtime = true. This was done for testing purposes before
+  removing it from the export script.
