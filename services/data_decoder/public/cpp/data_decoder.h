@@ -208,12 +208,6 @@ class DataDecoder {
   // or fails before this DataDecoder is destroyed.
   void ParseCbor(base::span<const uint8_t> cbor, ValueParseCallback callback);
 
-  // Parses the potentially unsafe CBOR bytes in |cbor|. This static helper
-  // uses a dedicated instance of the Data Decoder service on applicable
-  // platforms.
-  static void ParseCborIsolated(base::span<const uint8_t> cbor,
-                                ValueParseCallback callback);
-
   // Validates the format of the potentially unsafe `pix_code`.
   void ValidatePixCode(const std::string& pix_code,
                        ValidationCallback callback);

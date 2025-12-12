@@ -428,23 +428,6 @@ void DataDecoder::ParseCbor(base::span<const uint8_t> data,
                      request));
 }
 
-// static
-void DataDecoder::ParseCborIsolated(base::span<const uint8_t> data,
-                                    ValueParseCallback callback) {
-  auto decoder = std::make_unique<DataDecoder>();
-  auto* raw_decoder = decoder.get();
-
-  // We bind the DataDecoder's ownership into the result callback to ensure that
-  // it stays alive until the operation is complete.
-  raw_decoder->ParseCbor(
-      data, base::BindOnce(
-                [](std::unique_ptr<DataDecoder>, ValueParseCallback callback,
-                   ValueOrError result) {
-                  std::move(callback).Run(std::move(result));
-                },
-                std::move(decoder), std::move(callback)));
-}
-
 void DataDecoder::ValidatePixCode(const std::string& pix_code,
                                   ValidationCallback callback) {
   auto request = base::MakeRefCounted<
