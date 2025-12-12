@@ -9,8 +9,6 @@ import static android.view.WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
-import static java.lang.Boolean.FALSE;
-
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
@@ -321,7 +319,7 @@ public class AppHeaderCoordinator
         int rootViewBottomPadding = mRootView.getPaddingBottom();
         // Pad the root view with IME bottom insets only if E2E is active.
         int bottomInset =
-                FALSE.equals(mEdgeToEdgeStateProvider.get())
+                !mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled()
                         ? 0
                         : Math.max(mKeyboardInset, mNavBarInset);
 

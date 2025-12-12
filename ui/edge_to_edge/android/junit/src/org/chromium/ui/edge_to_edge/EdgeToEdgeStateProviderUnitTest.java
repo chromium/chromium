@@ -58,27 +58,33 @@ public class EdgeToEdgeStateProviderUnitTest {
     public void acquireAndRelease() {
         int token1 = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
         verify(mWindow).setDecorFitsSystemWindows(false);
-        assertTrue("Should start drawing edge to edge", mEdgeToEdgeStateProvider.get());
+        assertTrue(
+                "Should start drawing edge to edge",
+                mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
 
         mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(token1);
         verify(mWindow).setDecorFitsSystemWindows(true);
-        assertFalse("Edge to edge released.", mEdgeToEdgeStateProvider.get());
+        assertFalse("Edge to edge released.", mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
     }
 
     @Test
     public void acquireAndReleaseByMultipleClients() {
         int token1 = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
         verify(mWindow).setDecorFitsSystemWindows(false);
-        assertTrue("Drawing edge to edge.", mEdgeToEdgeStateProvider.get());
+        assertTrue("Drawing edge to edge.", mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
 
         int token2 = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
 
         mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(token1);
         verify(mWindow, times(0)).setDecorFitsSystemWindows(true);
-        assertTrue("Token not empty, still drawing edge to edge.", mEdgeToEdgeStateProvider.get());
+        assertTrue(
+                "Token not empty, still drawing edge to edge.",
+                mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
 
         mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(token2);
         verify(mWindow).setDecorFitsSystemWindows(true);
-        assertFalse("All token released, exit edge to edge.", mEdgeToEdgeStateProvider.get());
+        assertFalse(
+                "All token released, exit edge to edge.",
+                mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
     }
 }

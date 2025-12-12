@@ -4,42 +4,40 @@
 
 package org.chromium.ui.edge_to_edge;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.view.Window;
 
 import androidx.core.view.WindowCompat;
 
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.TokenHolder;
 
-/**
- * Activity level coordinator that manages edge to edge related interactions.
- *
- * <p>{@link #get()} never returns null for this class.
- */
+/** Activity level coordinator that manages edge to edge related interactions. */
 @NullMarked
-public class EdgeToEdgeStateProvider extends ObservableSupplierImpl<Boolean> {
-    private static final UnownedUserDataKey<EdgeToEdgeStateProvider> KEY =
+public class EdgeToEdgeStateProvider {
+    private static final UnownedUserDataKey<NonNullObservableSupplier<Boolean>> KEY =
             new UnownedUserDataKey<>();
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenUpdate);
     private final Window mWindow;
+    private final SettableNonNullObservableSupplier<Boolean> mSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     /** Attach the current instance to a WindowAndroid object. */
     public void attach(WindowAndroid windowAndroid) {
-        KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), this);
+        KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), mSupplier);
     }
 
     /**
      * Retrieve the EdgeToEdgeStateProvider associated with the given WindowAndroid as boolean
      * supplier.
      */
-    public static @Nullable ObservableSupplier<Boolean> from(WindowAndroid windowAndroid) {
+    public static @Nullable NonNullObservableSupplier<Boolean> from(WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
@@ -56,7 +54,7 @@ public class EdgeToEdgeStateProvider extends ObservableSupplierImpl<Boolean> {
 
     /** Detach this instance from all windows. */
     public void detach() {
-        KEY.detachFromAllHosts(this);
+        KEY.detachFromAllHosts(mSupplier);
     }
 
     /**
@@ -65,7 +63,6 @@ public class EdgeToEdgeStateProvider extends ObservableSupplierImpl<Boolean> {
      * @param window The activity window this provider is associated with.
      */
     public EdgeToEdgeStateProvider(Window window) {
-        super(/* initialValue= */ false);
         mWindow = window;
     }
 
@@ -89,12 +86,20 @@ public class EdgeToEdgeStateProvider extends ObservableSupplierImpl<Boolean> {
 
     private void onTokenUpdate() {
         boolean isEdgeToEdge = mTokenHolder.hasTokens();
-        if (isEdgeToEdge == assumeNonNull(get())) {
+        if (isEdgeToEdge == mSupplier.get()) {
             return;
         }
 
         // Edge to edge mode changed.
         WindowCompat.setDecorFitsSystemWindows(mWindow, !isEdgeToEdge);
-        set(isEdgeToEdge);
+        mSupplier.set(isEdgeToEdge);
+    }
+
+    public boolean isEdgeToEdgeEnabled() {
+        return mSupplier.get();
+    }
+
+    public NonNullObservableSupplier<Boolean> getSupplier() {
+        return mSupplier;
     }
 }

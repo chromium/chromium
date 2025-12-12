@@ -6,8 +6,6 @@ package org.chromium.components.browser_ui.modaldialog;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import static java.lang.Boolean.TRUE;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -27,7 +25,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.LayoutInflaterUtils;
@@ -56,7 +54,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     private @Nullable InsetObserver mInsetObserver;
     private @Nullable OnApplyWindowInsetsListener mWindowInsetsListener;
-    private @Nullable ObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
+    private @Nullable NonNullObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
     private boolean mIsEdgeToEdgeEverywhereEnabled;
 
     @SuppressWarnings("NullAway.Init")
@@ -239,7 +237,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     @Override
     protected void setEdgeToEdgeStateSupplier(
-            ObservableSupplier<Boolean> edgeToEdgeStateSupplier,
+            NonNullObservableSupplier<Boolean> edgeToEdgeStateSupplier,
             boolean isEdgeToEdgeEverywhereEnabled) {
         if (!ModalDialogFeatureMap.sModalDialogLayoutWithSystemInsets.isEnabled()) return;
         mEdgeToEdgeStateSupplier = edgeToEdgeStateSupplier;
@@ -366,7 +364,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     }
 
     private boolean isEdgeToEdgeActive() {
-        return mEdgeToEdgeStateSupplier != null && TRUE.equals(mEdgeToEdgeStateSupplier.get());
+        return mEdgeToEdgeStateSupplier != null && mEdgeToEdgeStateSupplier.get();
     }
 
     private boolean isFullScreenDialog(Context context, @Nullable PropertyModel model) {

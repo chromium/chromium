@@ -928,7 +928,8 @@ public class AppHeaderCoordinatorUnitTest {
                 mAppHeaderCoordinator.getAppHeaderState().isInDesktopWindow());
         verify(mBrowserControlsVisDelegate, atLeastOnce())
                 .showControlsPersistentAndClearOldToken(anyInt());
-        assertTrue("Edge to edge should be active.", mEdgeToEdgeStateProvider.get());
+        assertTrue(
+                "Edge to edge should be active.", mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
         assertTrue("Insets rect update should be consumed.", mInsetsRectUpdateConsumed);
     }
 
@@ -937,7 +938,9 @@ public class AppHeaderCoordinatorUnitTest {
                 error,
                 mAppHeaderCoordinator.getAppHeaderState() != null
                         && mAppHeaderCoordinator.getAppHeaderState().isInDesktopWindow());
-        assertFalse("Edge to edge should not be active.", mEdgeToEdgeStateProvider.get());
+        assertFalse(
+                "Edge to edge should not be active.",
+                mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
         assertFalse("Insets rect update should not be consumed.", mInsetsRectUpdateConsumed);
     }
 
