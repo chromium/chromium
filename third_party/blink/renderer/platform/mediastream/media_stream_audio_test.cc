@@ -114,7 +114,7 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource,
 
       // Deliver the next chunk of audio data. Each sample value is its offset
       // from the very first sample.
-      std::ranges::generate(audio_bus_->channel_span(0),
+      std::ranges::generate(audio_bus_->channel(0),
                             [this]() { return ++sample_count_; });
       CHECK_LT(sample_count_, kMaxValueSafelyConvertableToFloat);
       MediaStreamAudioSource::DeliverDataToTracks(*audio_bus_,
@@ -204,7 +204,7 @@ class FakeMediaStreamAudioSink final : public WebMediaStreamAudioSink {
       expected_sample_count_ = -1;  // Reset for when audio comes back.
     } else {
       base::subtle::NoBarrier_Store(&audio_is_silent_, 0);
-      base::span<const float> data = audio_bus.channel_span(0);
+      base::span<const float> data = audio_bus.channel(0);
       if (expected_sample_count_ == -1) {
         expected_sample_count_ = static_cast<int64_t>(data[0]);
       }

@@ -158,8 +158,8 @@ TEST_F(MediaStreamAudioLevelCalculatorTest, AmplitudeDecay) {
 TEST_F(MediaStreamAudioLevelCalculatorTest, MultiChannelMaxAmplitude) {
   auto audio_bus = media::AudioBus::Create(kDefaultChannels, kDefaultFrames);
   // Fill channel 0 with 0.5 and channel 1 with 0.8.
-  std::ranges::fill(audio_bus->channel_span(0), 0.5f);
-  std::ranges::fill(audio_bus->channel_span(1), 0.8f);
+  std::ranges::fill(audio_bus->channel(0), 0.5f);
+  std::ranges::fill(audio_bus->channel(1), 0.8f);
 
   for (int i = 0; i < kUpdateFrequency; ++i) {
     calculator_.Calculate(*audio_bus, false);

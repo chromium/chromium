@@ -372,7 +372,7 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
       media::AudioBus::Create(params_.channels(), params_.frames_per_buffer());
   data_bus->Zero();
   for (int i = 0; i < data_bus->frames(); ++i) {
-    data_bus->channel_span(0)[i] = (i % 11) * 0.1f - 0.5f;
+    data_bus->channel(0)[i] = (i % 11) * 0.1f - 0.5f;
   }
 
   // Test without and with audio processing enabled.
@@ -438,10 +438,10 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
             float left_channel_energy = 0.0f;
             float right_channel_energy = 0.0f;
             for (int i = 0; i < processed_audio.frames(); ++i) {
-              left_channel_energy += processed_audio.channel_span(0)[i] *
-                                     processed_audio.channel_span(0)[i];
-              right_channel_energy += processed_audio.channel_span(1)[i] *
-                                      processed_audio.channel_span(1)[i];
+              left_channel_energy +=
+                  processed_audio.channel(0)[i] * processed_audio.channel(0)[i];
+              right_channel_energy +=
+                  processed_audio.channel(1)[i] * processed_audio.channel(1)[i];
             }
             if (use_apm && num_preferred_channels <= 1) {
               // Mono output. Output channels are averaged.

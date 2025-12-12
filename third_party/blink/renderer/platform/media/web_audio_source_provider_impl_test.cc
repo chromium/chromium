@@ -220,7 +220,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
   std::vector<float*> audio_data = GetRawChannelPointers(bus1.get());
 
   // Verify provideInput() works before Initialize() and returns silence.
-  bus1->channel_span(0)[0] = 1;
+  bus1->channel(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
@@ -230,7 +230,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
 
   // Verify provideInput() is muted prior to Start() and no calls to the render
   // callback have occurred.
-  bus1->channel_span(0)[0] = 1;
+  bus1->channel(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
@@ -239,7 +239,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
   wasp_impl_->Start();
 
   // Ditto for Play().
-  bus1->channel_span(0)[0] = 1;
+  bus1->channel(0)[0] = 1;
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
   ASSERT_EQ(fake_callback_.last_delay(), base::TimeDelta::Max());
@@ -263,7 +263,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
 
   // Pause should return to silence.
   wasp_impl_->Pause();
-  bus1->channel_span(0)[0] = 1;
+  bus1->channel(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
@@ -289,7 +289,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
 
   // Stop() should return silence.
   wasp_impl_->Stop();
-  bus1->channel_span(0)[0] = 1;
+  bus1->channel(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
@@ -400,7 +400,7 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   std::vector<float*> audio_data = GetRawChannelPointers(bus1.get());
 
   // Verify provideInput() doesn't return silence and doesn't crash.
-  bus1->channel_span(0)[0] = 1;
+  bus1->channel(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_FALSE(CompareBusses(bus1.get(), bus2.get()));
@@ -437,7 +437,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
   zero_bus->Zero();
 
   // Verify ProvideInput() returns silence and doesn't crash.
-  bus->channel_span(0)[0] = 1;
+  bus->channel(0)[0] = 1;
   wasp_impl_->ProvideInput(audio_data, mono_params.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus.get(), zero_bus.get()));
 }

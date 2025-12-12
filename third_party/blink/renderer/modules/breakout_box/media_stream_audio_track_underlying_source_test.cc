@@ -115,7 +115,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
 
   void SetChannelData(media::AudioBus* bus, int channel, float value) {
     ASSERT_LE(channel, bus->channels());
-    std::ranges::fill(bus->channel_span(channel), value);
+    std::ranges::fill(bus->channel(channel), value);
   }
 
   bool DataMatches(scoped_refptr<media::AudioBuffer> buffer,
@@ -124,7 +124,7 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
     EXPECT_EQ(bus.frames(), buffer->frame_count());
 
     for (int ch = 0; ch < bus.channels(); ch++) {
-      base::span<const float> bus_channel = bus.channel_span(ch);
+      base::span<const float> bus_channel = bus.channel(ch);
       const float* buffer_channel =
           reinterpret_cast<float*>(buffer->channel_data()[ch]);
       for (int i = 0; i < bus.frames(); ++i) {

@@ -145,8 +145,8 @@ class AudioRendererMixerTest
 
   bool ValidateAudioData(int index, int frames, float scale, double epsilon) {
     for (int ch = 0; ch < audio_bus_->channels(); ++ch) {
-      auto expected_channel = expected_audio_bus_->channel_span(ch);
-      auto actual_channel = audio_bus_->channel_span(ch);
+      auto expected_channel = expected_audio_bus_->channel(ch);
+      auto actual_channel = audio_bus_->channel(ch);
 
       for (int sample = index; sample < frames; sample++) {
         const double error =

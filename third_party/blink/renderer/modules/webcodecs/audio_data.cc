@@ -639,7 +639,7 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
   CHECK_LT(channel, data_as_f32_bus_->channels());
   const size_t num_frames =
       base::checked_cast<size_t>(data_as_f32_bus_->frames());
-  base::span<float> src_data = data_as_f32_bus_->channel_span(channel);
+  base::span<float> src_data = data_as_f32_bus_->channel(channel);
   base::span<float> offset_src_data = src_data.subspan(offset);
   CHECK_LE(offset_src_data.subspan(frame_count).data(),
            src_data.subspan(num_frames).data());

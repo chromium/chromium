@@ -1346,7 +1346,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   const unsigned kTotalSamples = (kFrames * kChannels);
   const float kSampleMultiplier = 1.0 / kTotalSamples;
   for (unsigned ch = 0; ch < kChannels; ++ch) {
-    auto data = audio_bus->channel_span(ch);
+    auto data = audio_bus->channel(ch);
     for (unsigned i = 0; i < kFrames; ++i)
       data[i] = (i + ch * kFrames) * kSampleMultiplier;
   }

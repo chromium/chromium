@@ -293,8 +293,8 @@ TEST_P(PushableMediaStreamAudioSourceTest, ConvertsFormatInternally) {
 
   // Create reference planar data.
   auto expected_data = media::AudioBus::Create(kChannels, kFrames);
-  auto bus_data_ch_0 = expected_data->channel_span(0);
-  auto bus_data_ch_1 = expected_data->channel_span(1);
+  auto bus_data_ch_0 = expected_data->channel(0);
+  auto bus_data_ch_1 = expected_data->channel(1);
   for (int i = 0; i < kFrames; ++i) {
     float value = static_cast<float>(i) / kFrames;
     bus_data_ch_0[i] = value;

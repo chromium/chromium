@@ -146,8 +146,7 @@ int AudioDestination::Render(base::TimeDelta delay,
 
   // Associate the destination data array with the output bus.
   for (unsigned i = 0; i < number_of_output_channels_; ++i) {
-    output_bus_->SetChannelMemory(i, dest->channel_span(i).data(),
-                                  number_of_frames);
+    output_bus_->SetChannelMemory(i, dest->channel(i).data(), number_of_frames);
   }
 
   if (is_output_buffer_bypassed_) {
