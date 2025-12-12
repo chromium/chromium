@@ -21,6 +21,7 @@
 #include "chrome/browser/default_browser/default_browser_monitor.h"
 #include "chrome/browser/default_browser/setters/shell_integration_default_browser_setter.h"
 #include "chrome/browser/shell_integration.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
@@ -45,7 +46,7 @@ class ShellDelegateImpl
 
 #if BUILDFLAG(IS_WIN)
   void StartCheckDefaultClientProgId(
-      const std::string& scheme,
+      const GURL& scheme,
       base::OnceCallback<void(const std::u16string&)> callback) override {
     auto worker =
         base::MakeRefCounted<shell_integration::DefaultSchemeClientWorker>(
@@ -183,8 +184,9 @@ void DefaultBrowserManager::PerformDefaultBrowserCheckValidations(
     default_browser::DefaultBrowserState default_state) {
 #if BUILDFLAG(IS_WIN)
   shell_delegate_->StartCheckDefaultClientProgId(
-      "http", base::BindOnce(&CompareHttpProgIdWithDefaultState, default_state,
-                             "DefaultBrowser.HttpProgIdAssocValidationResult"));
+      GURL("http://"),
+      base::BindOnce(&CompareHttpProgIdWithDefaultState, default_state,
+                     "DefaultBrowser.HttpProgIdAssocValidationResult"));
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(

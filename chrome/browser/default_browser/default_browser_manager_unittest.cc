@@ -17,6 +17,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
@@ -55,10 +56,10 @@ class FakeShellDelegate : public DefaultBrowserManager::ShellDelegate {
 
 #if BUILDFLAG(IS_WIN)
   void StartCheckDefaultClientProgId(
-      const std::string& scheme,
+      const GURL& scheme,
       base::OnceCallback<void(const std::u16string&)> callback) override {
     std::u16string prog_id = u"";
-    if (scheme == "http") {
+    if (scheme.scheme() == "http") {
       prog_id = http_assoc_prog_id_;
     }
     std::move(callback).Run(prog_id);

@@ -10,7 +10,9 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "build/buildflag.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
+#include "url/gurl.h"
 
 namespace default_browser {
 
@@ -38,7 +40,7 @@ class DefaultBrowserManager {
     // Asynchronously fetches the program ID of the default client for the
     // given `scheme`.
     virtual void StartCheckDefaultClientProgId(
-        const std::string& scheme,
+        const GURL& scheme,
         base::OnceCallback<void(const std::u16string&)> callback) = 0;
 #endif  // BUILDFLAG(IS_WIN)
   };
