@@ -528,6 +528,10 @@ BASE_FEATURE(kGuestViewMPArch, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIdbPrioritizeForegroundClients,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This flag unconditionally enables the SQLite backing store. Used for
+// about:flags.
+BASE_FEATURE(kIdbSqliteBackingStore, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether we ignore duplicate navigations or not, in favor of
 // preserving the already ongoing navigation.
 BASE_FEATURE(kIgnoreDuplicateNavs, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -6028,6 +6028,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "idb-sqlite-backing-store",
+    "owners": ["evanstade@microsoft.com", "abhishek.shanthkumar@microsoft.com", "//content/browser/indexed_db/OWNERS"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "identity-confirmation-snackbar",
     "owners": ["jood@google.com", "treib@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 139

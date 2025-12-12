@@ -7535,6 +7535,12 @@ inline constexpr char kHybridChargerNotificationsName[] =
 inline constexpr char kHybridChargerNotificationsDescription[] =
     "Displays helpful notifications for devices with Hybrid Chargers.";
 
+inline constexpr char kIdbSqliteBackingStoreName[] = "IDB SQLite Backing Store";
+inline constexpr char kIdbSqliteBackingStoreDescription[] =
+    "Uses a SQLite-powered backing store for IndexedDB. No data is migrated "
+    "from existing backing stores, including LevelDB stores or SQLite stores "
+    "with older schemas; use at your own peril.";
+
 inline constexpr char kImeAssistMultiWordName[] =
     "Enable assistive multi word suggestions";
 inline constexpr char kImeAssistMultiWordDescription[] =

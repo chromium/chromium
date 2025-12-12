@@ -71,6 +71,7 @@
 #include "content/browser/indexed_db/instance/pending_connection.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "content/browser/indexed_db/status.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -174,10 +175,6 @@ DatabaseError CreateDefaultError() {
 
 }  // namespace
 
-// TODO(crbug.com/40253999): Move to blink when needed there.
-// This flag unconditionally enables the SQLite backing store. Used for testing.
-BASE_FEATURE(kIdbSqliteBackingStore, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This flag enables the SQLite backing store for in-memory contexts.
 BASE_FEATURE(kIdbSqliteBackingStoreInMemoryContexts,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -213,7 +210,7 @@ BucketContext::BucketContext(
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketContext::OnReceiverDisconnected, base::Unretained(this)));
   should_use_sqlite_ = g_should_use_sqlite_for_testing.value_or(
-      base::FeatureList::IsEnabled(kIdbSqliteBackingStore) ||
+      base::FeatureList::IsEnabled(features::kIdbSqliteBackingStore) ||
       (in_memory() &&
        base::FeatureList::IsEnabled(kIdbSqliteBackingStoreInMemoryContexts)));
 }
