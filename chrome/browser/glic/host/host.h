@@ -278,9 +278,6 @@ class Host : public GlicSharingManagerProvider {
   void NotifyZeroStateSuggestion(mojom::ZeroStateSuggestionsV2Ptr suggestions,
                                  mojom::ZeroStateSuggestionsOptions options);
 
-  // Sends a ViewChangeRequest to the primary client.
-  void SendViewChangeRequest(mojom::ViewChangeRequestPtr change_request);
-
   void NotifyInstanceActivationChanged(bool is_active);
 
   // Informs the web client that additional context is available.

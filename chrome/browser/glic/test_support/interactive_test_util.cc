@@ -82,22 +82,6 @@ void WebUiStateObserver::WebUiStateChanged(mojom::WebUiState state) {
   OnStateObserverStateChanged(state);
 }
 
-OnViewChangedObserver::OnViewChangedObserver(Host* host) : host_(host) {
-  observation_.Observe(host);
-}
-
-OnViewChangedObserver::~OnViewChangedObserver() {
-  observation_.Reset();
-}
-
-mojom::CurrentView OnViewChangedObserver::GetStateObserverInitialState() const {
-  return host_->GetPrimaryCurrentView();
-}
-
-void OnViewChangedObserver::OnViewChanged(mojom::CurrentView state) {
-  OnStateObserverStateChanged(state);
-}
-
 }  // namespace internal
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);

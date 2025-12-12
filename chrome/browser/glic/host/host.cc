@@ -458,12 +458,6 @@ void Host::NotifyZeroStateSuggestion(
   }
 }
 
-void Host::SendViewChangeRequest(mojom::ViewChangeRequestPtr change_request) {
-  if (GetPrimaryWebClient()) {
-    GetPrimaryWebClient()->RequestViewChange(std::move(change_request));
-  }
-}
-
 void Host::NotifyInstanceActivationChanged(bool is_active) {
   if (handler_info_ && handler_info_->web_client) {
     handler_info_->web_client->NotifyInstanceActivationChanged(is_active);

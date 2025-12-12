@@ -2953,24 +2953,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testSendsViewChangeRequestOnTaskIconOrGlicButtonToggle) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
-  CurrentViewListener listener(GetHost());
-  listener.WaitForCurrentView(mojom::CurrentView::kConversation);
-  StartTaskAndShowActorTaskIcon();
-  ExecuteJsTest();
-  RunTestSequence(ToggleGlicWindowFromSource(
-      GlicWindowMode::kDetached, kGlicActorTaskIconElementId,
-      mojom::InvocationSource::kActorTaskIcon));
-  ContinueJsTest();
-  listener.WaitForCurrentView(mojom::CurrentView::kActuation);
-  RunTestSequence(ToggleGlicWindowFromSource(
-      GlicWindowMode::kDetached, kGlicButtonElementId,
-      mojom::InvocationSource::kTopChromeButton));
-  ContinueJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testRemoveBlankInstanceOnClose) {
   if (!GetParam().multi_instance) {
     GTEST_SKIP() << "Only supported in multi-instance mode.";

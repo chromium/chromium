@@ -119,25 +119,6 @@ class WebUiStateObserver : public ui::test::StateObserver<mojom::WebUiState>,
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(WebUiStateObserver, kWebUiState);
 
-class OnViewChangedObserver
-    : public ui::test::StateObserver<mojom::CurrentView>,
-      public Host::Observer {
- public:
-  explicit OnViewChangedObserver(Host* host);
-
-  ~OnViewChangedObserver() override;
-
-  mojom::CurrentView GetStateObserverInitialState() const override;
-
-  void OnViewChanged(mojom::CurrentView state) override;
-
- private:
-  base::ScopedObservation<Host, Host::Observer> observation_{this};
-  raw_ptr<Host> host_;
-};
-
-DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(OnViewChangedObserver, kFloatyViewState);
-
 }  // namespace internal
 
 // The glic WebUI web contents.

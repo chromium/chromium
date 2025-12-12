@@ -301,12 +301,6 @@ void GlicWindowControllerImpl::Toggle(
     }
   };
 
-  // Send a change view request if the current view is different than the
-  // source.
-  // TODO(crbug.com/437140901): The client may not be connected yet. If not,
-  // this request is dropped.
-  MaybeSendViewChangeRequest(source);
-
   // If floaty is closed, open floaty
   if (state_ == State::kClosed) {
     Show(new_attached_browser, source, prompt_suggestion);
@@ -321,32 +315,16 @@ void GlicWindowControllerImpl::Toggle(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  // TODO(crbug.com/438164568): Add handling to always close on the second
-  // click of the same source.
-  // If floaty is focused and click is not from the Task Icon or Glic
-  // Button, close it. If floaty is open and the current view matches the
-  // expected view, close it. If floaty is unfocused and open, focus it.
-  if ((IsActive() && (source != mojom::InvocationSource::kActorTaskIcon &&
-                      source != mojom::InvocationSource::kTopChromeButton)) ||
-      (InvocationSourceMatchesCurrentView(source) &&
+  // If floaty is focused or the source is the top button, close it.
+  // If floaty is unfocused and open, focus it.
+  if (IsActive() ||
+      (source == mojom::InvocationSource::kTopChromeButton &&
        !base::FeatureList::IsEnabled(features::kGlicZOrderChanges))) {
     maybe_close();
   } else if (state_ == State::kOpen) {
     // TODO(crbug.com/404601783): Bring focus to the textbox.
     GetGlicWidget()->Activate();
     GetGlicView()->GetWebContents()->Focus();
-  }
-}
-
-void GlicWindowControllerImpl::MaybeSendViewChangeRequest(
-    mojom::InvocationSource source) {
-  auto current_view = host().GetPrimaryCurrentView();
-  if (source == mojom::InvocationSource::kActorTaskIcon &&
-      current_view == mojom::CurrentView::kConversation) {
-    MaybeSendActuationViewRequest();
-  } else if (source == mojom::InvocationSource::kTopChromeButton &&
-             current_view == mojom::CurrentView::kActuation) {
-    MaybeSendConversationViewRequest();
   }
 }
 
@@ -1499,29 +1477,6 @@ void GlicWindowControllerImpl::RemoveObserver(
     return;
   }
   modal_dialog_host_observers_.RemoveObserver(observer);
-}
-
-void GlicWindowControllerImpl::MaybeSendConversationViewRequest() {
-  auto request = mojom::ViewChangeRequest::New(
-      mojom::ViewChangeRequestDetails::NewConversation(
-          mojom::ViewChangeRequestConversation::New()));
-  host().SendViewChangeRequest(std::move(request));
-}
-
-void GlicWindowControllerImpl::MaybeSendActuationViewRequest() {
-  auto request = mojom::ViewChangeRequest::New(
-      mojom::ViewChangeRequestDetails::NewActuation(
-          mojom::ViewChangeRequestActuation::New()));
-  host().SendViewChangeRequest(std::move(request));
-}
-
-bool GlicWindowControllerImpl::InvocationSourceMatchesCurrentView(
-    mojom::InvocationSource source) {
-  auto current_view = host().GetPrimaryCurrentView();
-  return (source == mojom::InvocationSource::kActorTaskIcon &&
-          current_view == mojom::CurrentView::kActuation) ||
-         (source == mojom::InvocationSource::kTopChromeButton &&
-          current_view == mojom::CurrentView::kConversation);
 }
 
 glic::GlicInstanceMetrics* GlicWindowControllerImpl::instance_metrics() {

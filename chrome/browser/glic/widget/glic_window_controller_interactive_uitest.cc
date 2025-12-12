@@ -72,12 +72,6 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
   GlicWindowControllerUiTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kGlicHostLogging);
-    features_.InitWithFeaturesAndParameters(
-        {{features::kTabstripComboButton, {}},
-         {features::kGlicActor, {}},
-         {features::kGlicActorUi,
-          {{features::kGlicActorUiTaskIconName, "true"}}}},
-        {});
     TrackFloatingGlicInstance();
   }
   ~GlicWindowControllerUiTest() override = default;

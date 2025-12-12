@@ -1,8 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {CaptureRegionErrorReason, ClientView, HostCapability, MetricUserInputReactionType, PanelStateKind, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserProfileInfo, ViewChangeRequest, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import {CaptureRegionErrorReason, HostCapability, MetricUserInputReactionType, PanelStateKind, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
@@ -1769,26 +1769,6 @@ class ApiTests extends ApiTestFixtureBase {
       this.host.maybeRefreshUserStatus();
       await sleep(100);
     }
-  }
-
-  async testSendsViewChangeRequestOnTaskIconOrGlicButtonToggle() {
-    assertDefined(this.host.getViewChangeRequests);
-    assertDefined(this.host.onViewChanged);
-    // Set up observer before the request will be sent.
-    const viewChangeRequests =
-        observeSequence<ViewChangeRequest>(this.host.getViewChangeRequests());
-
-    await this.advanceToNextStep();
-    const actuationChangeRequest = await viewChangeRequests.next();
-    assertDefined(actuationChangeRequest.desiredView);
-    assertEquals(actuationChangeRequest.desiredView, ClientView.ACTUATION);
-    this.host.onViewChanged({currentView: actuationChangeRequest.desiredView});
-
-    await this.advanceToNextStep();
-    const conversationChangeRequest = await viewChangeRequests.next();
-    assertDefined(conversationChangeRequest.desiredView);
-    assertEquals(
-        conversationChangeRequest.desiredView, ClientView.CONVERSATION);
   }
 
   async testRemoveBlankInstanceOnClose() {
