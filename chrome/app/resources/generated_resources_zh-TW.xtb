@@ -8235,7 +8235,7 @@
 <translation id="672208878794563299">這個網站下次會再詢問你。</translation>
 <translation id="6722744767592605627">你可以復原 <ph name="EMAIL" />，但系統將刪除本機資料。</translation>
 <translation id="6723661294526996303">匯入書籤和設定...</translation>
-<translation id="6723740634201835758">在你的 Google 帳戶中</translation>
+<translation id="6723740634201835758">儲存到你的 Google 帳戶</translation>
 <translation id="6723839827191551955">控制目前投放的媒體</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723946439672043591">選擇其他設定檔</translation>
@@ -10489,7 +10489,7 @@
 <translation id="8263336784344783289">為這個群組命名</translation>
 <translation id="8264024885325823677">這項設定是由系統管理員管理。</translation>
 <translation id="8264195025773092348">只顯示支援的裝置。中斷連線之前，原生應用程式將無法再使用 USB 裝置。</translation>
-<translation id="8265018477030547118">僅儲存在這部裝置上</translation>
+<translation id="8265018477030547118">僅儲存到這部裝置</translation>
 <translation id="826511437356419340">已進入視窗總覽模式。滑動畫面或按下鍵盤上的 Tab 鍵即可瀏覽。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{重新啟動後，系統將不會開啟無痕視窗}other{重新啟動後，系統將不會重新開啟 {COUNT} 個無痕視窗}}</translation>
 <translation id="8266430295499893285">你必須先驗證身分，才能存取密碼</translation>
@@ -10822,7 +10822,7 @@
 <translation id="8483248364096924578">IP 位址</translation>
 <translation id="8486666913807228950">原因：在「強制開啟方式」清單中找到反轉規則 <ph name="REVERT_RULE" />。</translation>
 <translation id="8487678622945914333">放大</translation>
-<translation id="8487699605742506766">無線基地台</translation>
+<translation id="8487699605742506766">熱點</translation>
 <translation id="8488735603679729015">啟動按鍵前的延遲時間</translation>
 <translation id="8489156414266187072">個人建議只會在你的帳戶上顯示</translation>
 <translation id="8490896350101740396">下列 Kiosk 應用程式「<ph name="UPDATED_APPS" />」已更新。請重新啟動裝置，以完成更新程序。</translation>

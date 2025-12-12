@@ -741,7 +741,7 @@
 <translation id="1504253885059472207">固定拆分视图</translation>
 <translation id="1504551620756424144">在 Windows 中，共享文件夹是位于 <ph name="BASE_DIR" /> 下。</translation>
 <translation id="1505494256539862015">导出密码</translation>
-<translation id="1505654899813338756">您可以为标签页分组，让相关网页集中在一起，并在所有设备上同步保存</translation>
+<translation id="1505654899813338756">您可以将相关联的网页划为一组，并在所有设备上同步分组设置</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1506187449813838456">调高音调</translation>
 <translation id="1507170440449692343">已阻止此网页使用您的摄像头。</translation>
@@ -1826,7 +1826,7 @@
 <translation id="2245603955208828424">使用箭头键可在各项内容之间逐字母移动</translation>
 <translation id="2246129643805925002">您的 <ph name="DEVICE_TYPE" /> 会自动在后台更新，以便为您提供最新的功能和安全性方面的改进。您可在“设置”中查看更新偏好设置。</translation>
 <translation id="2246549592927364792">要从 Google 获取图片说明吗？</translation>
-<translation id="2247738527273549923">您的设备由贵单位管理</translation>
+<translation id="2247738527273549923">您的设备由您的组织管理</translation>
 <translation id="2247870315273396641">语音试听</translation>
 <translation id="224835741840550119">清理设备</translation>
 <translation id="2249111429176737533">在标签页窗口中打开</translation>
@@ -8536,7 +8536,7 @@
 <translation id="692135145298539227">删除</translation>
 <translation id="6922128026973287222">使用 Google 流量节省模式可以节省流量并加快加载速度。点击此处即可了解详情。</translation>
 <translation id="6922745772873733498">请输入 PIN 码以进行打印</translation>
-<translation id="6922763095098248079">您的设备由贵单位管理。管理员可访问此设备上任意个人资料中的数据。</translation>
+<translation id="6922763095098248079">您的设备由您的组织管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="6923633482430812883">装载共享时出错。请检查您要连接的文件服务器是否支持 SMBv2 或更高版本。</translation>
 <translation id="6924109527536857168">需要同步</translation>
 <translation id="6927200998271693557">如需快速重新访问浏览过的网站，请将历史记录和标签页同步到 <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -11385,7 +11385,7 @@
 <translation id="8872506776304248286">在应用中打开</translation>
 <translation id="8872774989979382243">声音已关闭。开启声音。</translation>
 <translation id="887292602123626481">详细了解默认搜索引擎</translation>
-<translation id="8873075098103007382">使用标签页分组保持井井有条</translation>
+<translation id="8873075098103007382">为标签页分组，让页面井井有条</translation>
 <translation id="8874341931345877644">投放到设备：</translation>
 <translation id="8874448314264883207">“<ph name="EXTENSION_NAME" />”已停用</translation>
 <translation id="8874647982044395866">有机</translation>
