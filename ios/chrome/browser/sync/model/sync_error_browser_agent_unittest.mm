@@ -13,11 +13,15 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
@@ -70,6 +74,12 @@ TEST_F(SyncErrorBrowserAgentTest,
        InfobarDisplayedOnPasswordFormParsedWithPasswordSyncError) {
   base::HistogramTester histogram_tester;
 
+  id mock_sync_presenter =
+      OCMStrictProtocolMock(@protocol(SyncPresenterCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_sync_presenter
+                   forProtocol:@protocol(SyncPresenterCommands)];
+
   web::WebState* web_state = InsertWebState(browser_.get());
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
@@ -90,4 +100,7 @@ TEST_F(SyncErrorBrowserAgentTest,
       "Sync.SyncErrorInfobarDisplayed2.PasswordForm",
       kSyncNeedsPassphraseBucket,
       /*count=*/1);
+
+  // Expect no interactions with the sync presenter.
+  EXPECT_OCMOCK_VERIFY(mock_sync_presenter);
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_SYNC_PRESENTER_H_
-#define IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_SYNC_PRESENTER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SYNC_PRESENTER_COMMANDS_H_
+#define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SYNC_PRESENTER_COMMANDS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -12,7 +12,7 @@ enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace trusted_vault
 
 // Protocol used to display sync-related UI.
-@protocol SyncPresenter
+@protocol SyncPresenterCommands
 
 // Asks the presenter to display the reauthenticate the primary account.
 // The primary should be available.
@@ -40,4 +40,4 @@ enum class TrustedVaultUserActionTriggerForUMA;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_SYNC_PRESENTER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SYNC_PRESENTER_COMMANDS_H_

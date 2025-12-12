@@ -268,6 +268,7 @@
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -425,6 +426,7 @@ const char kChromeAppStoreUrl[] =
     SigninPresenter,
     SnapshotGeneratorDelegate,
     StoreKitCoordinatorDelegate,
+    SyncPresenterCommands,
     TrustedVaultReauthenticationCoordinatorDelegate,
     UnitConversionCommands,
     URLLoadingDelegate,
@@ -1273,6 +1275,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(SaveToPhotosCommands),
     @protocol(SharedTabGroupLastTabAlertCommands),
     @protocol(SyncedSetUpCommands),
+    @protocol(SyncPresenterCommands),
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
@@ -2684,11 +2687,6 @@ const char kChromeAppStoreUrl[] =
   [_signinCoordinator start];
 }
 
-- (void)performReauthToRetrieveTrustedVaultKey:
-    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger {
-  [self showTrustedVaultReauthForFetchKeysWithTrigger:trigger];
-}
-
 - (void)showComposeboxFromEntrypoint:(ComposeboxEntrypoint)entrypoint
                            withQuery:(NSString*)query {
   CHECK(base::FeatureList::IsEnabled(kComposeboxIOS));
@@ -3484,7 +3482,7 @@ const char kChromeAppStoreUrl[] =
   // The view controller should have been created.
   DCHECK(self.viewController);
 
-  SyncErrorBrowserAgent::FromBrowser(self.browser)->SetUIProviders(self, self);
+  SyncErrorBrowserAgent::FromBrowser(self.browser)->SetUIProviders(self);
 
   WebStateDelegateBrowserAgent::FromBrowser(self.browser)
       ->SetUIProviders(self.contextMenuProvider,
@@ -3992,7 +3990,7 @@ const char kChromeAppStoreUrl[] =
   return self.browserContainerCoordinator.viewController.view;
 }
 
-#pragma mark - SyncPresenter (Public)
+#pragma mark - SyncPresenterCommands
 
 - (void)showPrimaryAccountReauth {
   if (_signinCoordinator.viewWillPersist) {
@@ -4053,7 +4051,7 @@ const char kChromeAppStoreUrl[] =
   [self showTrustedVaultReauthWithTrigger:trigger intent:intent];
 }
 
-#pragma mark - SyncPresenter helper
+#pragma mark - SyncPresenterCommands helper
 
 - (void)showTrustedVaultReauthWithTrigger:
             (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger

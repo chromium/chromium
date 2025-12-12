@@ -10,7 +10,6 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/re_signin_infobar_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -18,6 +17,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent_profile_state_observer.h"
@@ -102,12 +103,9 @@ SyncErrorBrowserAgent::~SyncErrorBrowserAgent() {
 }
 
 void SyncErrorBrowserAgent::SetUIProviders(
-    id<ReSigninPresenter> resignin_presenter_provider,
-    id<SyncPresenter> sync_presenter_provider) {
+    id<ReSigninPresenter> resignin_presenter_provider) {
   DCHECK(resignin_presenter_provider);
-  DCHECK(sync_presenter_provider);
   resignin_presenter_provider_ = resignin_presenter_provider;
-  sync_presenter_provider_ = sync_presenter_provider;
 
   // Re-evaluate all web states.
   TriggerInfobarOnAllWebStatesIfNeeded();
@@ -115,7 +113,6 @@ void SyncErrorBrowserAgent::SetUIProviders(
 
 void SyncErrorBrowserAgent::ClearUIProviders() {
   resignin_presenter_provider_ = nil;
-  sync_presenter_provider_ = nil;
 }
 
 void SyncErrorBrowserAgent::ProfileStateDidUpdateToFinalStage() {
@@ -160,7 +157,9 @@ void SyncErrorBrowserAgent::OnPasswordFormParsed(
   ProfileIOS* profile = browser_->GetProfile();
   if (active_web_state && active_web_state->IsRealized() &&
       UserActionRequiredToFixPasswordSyncError(profile)) {
-    DisplaySyncErrors(profile, active_web_state, sync_presenter_provider_,
+    DisplaySyncErrors(profile, active_web_state,
+                      HandlerForProtocol(browser_->GetCommandDispatcher(),
+                                         SyncPresenterCommands),
                       SyncErrorInfoBarTrigger::kPasswordFormParsed);
   }
 }
@@ -178,7 +177,9 @@ void SyncErrorBrowserAgent::TriggerInfobarOnAllWebStatesIfNeeded() {
 void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
     web::WebState* web_state) {
   CHECK(web_state->IsRealized());
-  if (!resignin_presenter_provider_ || !sync_presenter_provider_) {
+  if (!resignin_presenter_provider_ ||
+      ![browser_->GetCommandDispatcher()
+          dispatchingForProtocol:@protocol(SyncPresenterCommands)]) {
     return;
   }
 
@@ -199,6 +200,8 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
     return;
   }
 
-  DisplaySyncErrors(profile, web_state, sync_presenter_provider_,
+  DisplaySyncErrors(profile, web_state,
+                    HandlerForProtocol(browser_->GetCommandDispatcher(),
+                                       SyncPresenterCommands),
                     SyncErrorInfoBarTrigger::kNewTabOpened);
 }

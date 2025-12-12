@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
-#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
@@ -47,7 +47,7 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     profile_ = std::move(builder).Build();
-    presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenter));
+    presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenterCommands));
     web_state_.SetBrowserState(profile_.get());
     // Navigation manager is needed for infobar manager.
     web_state_.SetNavigationManager(
@@ -69,7 +69,7 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
     return InfoBarManagerImpl::FromWebState(&web_state_);
   }
 
-  id<SyncPresenter> presenter_;
+  id<SyncPresenterCommands> presenter_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   base::HistogramTester histogram_tester_;

@@ -12,7 +12,6 @@
 class Browser;
 @protocol ReSigninPresenter;
 @class SyncErrorBrowserAgentProfileStateObserver;
-@protocol SyncPresenter;
 
 namespace password_manager {
 class PasswordFormManager;
@@ -34,8 +33,7 @@ class SyncErrorBrowserAgent
   ~SyncErrorBrowserAgent() override;
 
   // Sets the UI providers to present sign in and sync UI when needed.
-  void SetUIProviders(id<ReSigninPresenter> signin_presenter_provider,
-                      id<SyncPresenter> sync_presenter_provider);
+  void SetUIProviders(id<ReSigninPresenter> signin_presenter_provider);
 
   // Clears the UI providers.
   void ClearUIProviders();
@@ -67,8 +65,7 @@ class SyncErrorBrowserAgent
 
   // Provider to a SignIn presenter
   __weak id<ReSigninPresenter> resignin_presenter_provider_;
-  // Provider to a Sync presenter
-  __weak id<SyncPresenter> sync_presenter_provider_;
+
   // Used to observe the ProfileState.
   __strong SyncErrorBrowserAgentProfileStateObserver* profile_state_observer_;
 };

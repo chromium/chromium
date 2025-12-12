@@ -16,7 +16,7 @@
 
 class ProfileIOS;
 enum class SyncErrorInfoBarTrigger;
-@protocol SyncPresenter;
+@protocol SyncPresenterCommands;
 
 namespace infobars {
 class InfoBarManager;
@@ -31,7 +31,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
                                  public syncer::SyncServiceObserver {
  public:
   SyncErrorInfoBarDelegate(ProfileIOS* profile,
-                           id<SyncPresenter> presenter,
+                           id<SyncPresenterCommands> sync_presenter_handler,
                            SyncErrorInfoBarTrigger trigger);
 
   SyncErrorInfoBarDelegate(const SyncErrorInfoBarDelegate&) = delete;
@@ -42,7 +42,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   // Creates a sync error infobar and adds it to `infobar_manager`.
   static bool Create(infobars::InfoBarManager* infobar_manager,
                      ProfileIOS* profile,
-                     id<SyncPresenter> presenter,
+                     id<SyncPresenterCommands> sync_presenter_handler,
                      SyncErrorInfoBarTrigger trigger);
 
   // InfoBarDelegate implementation.
@@ -71,7 +71,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   const raw_ptr<ProfileIOS> profile_;
   base::ScopedObservation<syncer::SyncService, SyncErrorInfoBarDelegate>
       sync_observation_{this};
-  const id<SyncPresenter> presenter_;
+  const id<SyncPresenterCommands> sync_presenter_handler_;
   const SyncErrorInfoBarTrigger trigger_;
   syncer::SyncService::UserActionableError error_state_;
   std::u16string title_;

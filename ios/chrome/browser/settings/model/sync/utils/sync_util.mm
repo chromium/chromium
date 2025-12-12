@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -357,7 +358,7 @@ bool ShouldShowSyncSettings(syncer::SyncService::UserActionableError error) {
 
 bool DisplaySyncErrors(ProfileIOS* profile,
                        web::WebState* web_state,
-                       id<SyncPresenter> presenter,
+                       id<SyncPresenterCommands> sync_presenter_handler,
                        SyncErrorInfoBarTrigger trigger) {
   // Avoid displaying sync errors on incognito tabs.
   if (profile->IsOffTheRecord()) {
@@ -400,7 +401,7 @@ bool DisplaySyncErrors(ProfileIOS* profile,
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infoBarManager);
   bool infobar_displayed = SyncErrorInfoBarDelegate::Create(
-      infoBarManager, profile, presenter, trigger);
+      infoBarManager, profile, sync_presenter_handler, trigger);
   if (infobar_displayed) {
     // Logs when an infobar is shown to user. See crbug.com/265352.
     base::UmaHistogramEnumeration(kSyncErrorInfobarDisplayedHistogramName,

@@ -13,7 +13,6 @@
 @class BrowserCoordinator;
 @class BrowserViewController;
 class ProfileIOS;
-@protocol SyncPresenter;
 
 // Implementation of BrowserProvider -- for the most part a wrapper around
 // BrowserCoordinator. This is a Wrangler (a class in need of further
@@ -28,7 +27,6 @@ class ProfileIOS;
 // The BrowserViewController showing the current tab. The API surface this
 // property exposes will be refactored so that the BVC class isn't exposed.
 @property(nonatomic, readonly) BrowserViewController* bvc;
-@property(nonatomic, readonly) id<SyncPresenter> syncPresenter;
 // The active browser. This can never be nullptr.
 @property(nonatomic, readonly) Browser* browser;
 // The inactive browser. This can be nullptr if in an incognito interface or if

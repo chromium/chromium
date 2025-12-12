@@ -36,10 +36,6 @@
   return self.coordinator.viewController;
 }
 
-- (id<SyncPresenter>)syncPresenter {
-  return self.coordinator;
-}
-
 - (Browser*)browser {
   return self.coordinator.browser;
 }

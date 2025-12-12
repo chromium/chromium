@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_commands.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -24,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -207,9 +207,8 @@ void TipsNotificationPresenter::StartTrustedVaultKeyRetrievalFlow() {
         TrustedVaultNotificationEvents::kTrustedVaultKeyAlreadyAvailable);
     return;
   }
-  [HandlerForProtocol(browser_->GetCommandDispatcher(),
-                      BrowserCoordinatorCommands)
-      performReauthToRetrieveTrustedVaultKey:
+  [HandlerForProtocol(browser_->GetCommandDispatcher(), SyncPresenterCommands)
+      showTrustedVaultReauthForFetchKeysWithTrigger:
           trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification];
   base::UmaHistogramEnumeration(
       metric_name, TrustedVaultNotificationEvents::kKeyRetrievalFlowStarted);

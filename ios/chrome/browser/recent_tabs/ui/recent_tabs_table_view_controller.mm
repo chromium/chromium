@@ -25,12 +25,9 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
-#import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
-#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
-#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
@@ -51,7 +48,6 @@
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
-#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -152,9 +148,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     SigninPromoViewConsumer,
     SigninPromoViewMediatorDelegate,
     SyncObserverModelBridge,
-    SyncPresenter,
     TableViewURLDragDataSource,
-    TrustedVaultReauthenticationCoordinatorDelegate,
     UIContextMenuInteractionDelegate,
     UIGestureRecognizerDelegate> {
   // The displayed recently closed tabs.
@@ -168,8 +162,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   std::vector<synced_sessions::DistantTabsSet> _displayedTabs;
 
   std::unique_ptr<SyncObserverBridge> _syncObserver;
-  TrustedVaultReauthenticationCoordinator*
-      _trustedVaultReauthenticationCoordinator;
 }
 // The service that manages the recently closed tabs
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
@@ -952,7 +944,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   [self disconnectMediator];
   [self stopSigninCoordinator];
   [self.tableView.contextMenuInteraction dismissMenu];
-  [self stopTrustedVaultReauthenticationCoordinator];
 }
 
 #pragma mark - UITableViewDelegate
@@ -1513,59 +1504,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   }
 }
 
-#pragma mark - SyncPresenter
-
-- (void)showPrimaryAccountReauth {
-  [self.presentationDelegate showPrimaryAccountReauth];
-}
-
-- (void)showSyncPassphraseSettings {
-  [self.settingsHandler showSyncPassphraseSettingsFromViewController:self];
-}
-
-- (void)showGoogleServicesSettings {
-  [self.settingsHandler showGoogleServicesSettingsFromViewController:self];
-}
-
-- (void)showAccountSettings {
-  [self.settingsHandler showAccountsSettingsFromViewController:self
-                                          skipIfUINotAvailable:NO];
-}
-
-- (void)showTrustedVaultReauthForFetchKeysWithTrigger:
-    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger {
-  trusted_vault::SecurityDomainId securityDomainID =
-      trusted_vault::SecurityDomainId::kChromeSync;
-  CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
-  _trustedVaultReauthenticationCoordinator =
-      [[TrustedVaultReauthenticationCoordinator alloc]
-          initWithBaseViewController:self
-                             browser:self.browser
-                              intent:SigninTrustedVaultDialogIntentFetchKeys
-                    securityDomainID:securityDomainID
-                             trigger:trigger];
-  _trustedVaultReauthenticationCoordinator.delegate = self;
-  [_trustedVaultReauthenticationCoordinator start];
-}
-
-- (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger {
-  trusted_vault::SecurityDomainId securityDomainID =
-      trusted_vault::SecurityDomainId::kChromeSync;
-  SigninTrustedVaultDialogIntent intent =
-      SigninTrustedVaultDialogIntentDegradedRecoverability;
-  CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
-  _trustedVaultReauthenticationCoordinator =
-      [[TrustedVaultReauthenticationCoordinator alloc]
-          initWithBaseViewController:self
-                             browser:self.browser
-                              intent:intent
-                    securityDomainID:securityDomainID
-                             trigger:trigger];
-  _trustedVaultReauthenticationCoordinator.delegate = self;
-  [_trustedVaultReauthenticationCoordinator start];
-}
-
 #pragma mark - SigninPromoViewMediatorDelegate
 
 - (void)showSignin:(SigninPromoViewMediator*)mediator
@@ -1637,20 +1575,14 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 
-#pragma mark - TrustedVaultReauthenticationCoordinatorDelegate
-
-- (void)trustedVaultReauthenticationCoordinatorWantsToBeStopped:
-    (TrustedVaultReauthenticationCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _trustedVaultReauthenticationCoordinator);
-  [self stopTrustedVaultReauthenticationCoordinator];
-}
-
 #pragma mark - Private Helpers
 
-- (void)stopTrustedVaultReauthenticationCoordinator {
-  [_trustedVaultReauthenticationCoordinator stop];
-  _trustedVaultReauthenticationCoordinator.delegate = nil;
-  _trustedVaultReauthenticationCoordinator = nil;
+- (void)showPrimaryAccountReauth {
+  [self.presentationDelegate showPrimaryAccountReauth];
+}
+
+- (void)showSyncPassphraseSettings {
+  [self.settingsHandler showSyncPassphraseSettingsFromViewController:self];
 }
 
 // Disconnects the mediator.

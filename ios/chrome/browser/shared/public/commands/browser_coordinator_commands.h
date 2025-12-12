@@ -140,11 +140,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
                        prefilledEmail:(NSString*)email;
 
-// Presents the Trusted Vault reauthentication dialog. `trigger` indicates an
-// entry point from which the trusted vault reauth has been triggered.
-- (void)performReauthToRetrieveTrustedVaultKey:
-    (trusted_vault::TrustedVaultUserActionTriggerForUMA)trigger;
-
 // Forces fullscreen mode which means that toolbars are collapsed.
 - (void)forceFullscreenMode;
 
