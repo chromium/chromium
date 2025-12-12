@@ -662,28 +662,30 @@ public abstract class FullscreenHtmlApiHandlerBase
 
     @SuppressWarnings("NewApi")
     private void returnFromTargetScreenIfNeeded() {
-        if (mTabInFullscreen != null) {
-            Pair<Long, Rect> homeAttrs =
-                    TabAttributes.from(mTabInFullscreen)
-                            .get(TabAttributeKeys.FULLSCREEN_START_POSITION);
-            clearFullscreenStartingPositionAndOptions(mTabInFullscreen);
+        if (mTabInFullscreen == null
+                || mTabInFullscreen.isDestroyed()
+                || !isWindowMoveAvailable()) {
+            return;
+        }
 
-            if (homeAttrs != null) {
-                if (!isWindowMoveAvailable()) return;
-                // Exiting fullscreen requires window to be focused. When exiting fullscreen as the
-                // result of action in another window, e.g. closing Presenter Notes window in
-                // Slides, window is not focused, as the last action was performed on another
-                // display. To allow fullscreen exit in that scenario, we are moving window to the
-                // front.
-                ensureTaskMovedToFront();
-                maybeExitActivityFullscreenMode(
-                        new OutcomeReceiver<@Nullable Void, Throwable>() {
-                            @Override
-                            public void onResult(@Nullable Void unused) {
-                                tryToMoveTaskTo(homeAttrs.first, homeAttrs.second);
-                            }
-                        });
-            }
+        Pair<Long, Rect> homeAttrs =
+                TabAttributes.from(mTabInFullscreen)
+                        .get(TabAttributeKeys.FULLSCREEN_START_POSITION);
+        clearFullscreenStartingPositionAndOptions(mTabInFullscreen);
+
+        if (homeAttrs != null) {
+            // Exiting fullscreen requires window to be focused. When exiting fullscreen as the
+            // result of action in another window, e.g. closing Presenter Notes window in Slides,
+            // window is not focused, as the last action was performed on another display. To allow
+            // fullscreen exit in that scenario, we are moving window to the front.
+            ensureTaskMovedToFront();
+            maybeExitActivityFullscreenMode(
+                    new OutcomeReceiver<@Nullable Void, Throwable>() {
+                        @Override
+                        public void onResult(@Nullable Void unused) {
+                            tryToMoveTaskTo(homeAttrs.first, homeAttrs.second);
+                        }
+                    });
         }
     }
 
