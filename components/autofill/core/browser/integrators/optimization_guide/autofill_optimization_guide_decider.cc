@@ -20,6 +20,8 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace autofill {
 
@@ -512,11 +514,13 @@ bool AutofillOptimizationGuideDecider::IsUrlEligibleForBnplIssuer(
 
 bool AutofillOptimizationGuideDecider::IsIframeUrlAllowlistedForActor(
     const GURL& url) const {
-  return decider_->CanApplyOptimization(
+  // To match server-side allowlisting, we require that the url is HTTPS.
+  return url.SchemeIs(url::kHttpsScheme) &&
+         decider_->CanApplyOptimization(
              url,
              optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST,
              /*optimization_metadata=*/nullptr) ==
-         optimization_guide::OptimizationGuideDecision::kTrue;
+             optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
 }  // namespace autofill

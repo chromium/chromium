@@ -1216,7 +1216,7 @@ TEST_F(AutofillOptimizationGuideDeciderTest, IsIframeUrlAllowlistedForActor) {
           Eq(optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST),
           Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
       .WillByDefault(WithArg<0>([](const GURL& url) {
-        return url == GURL("https://www.example.com")
+        return url.host() == "www.example.com"
                    ? OptimizationGuideDecision::kTrue
                    : OptimizationGuideDecision::kFalse;
       }));
@@ -1225,6 +1225,9 @@ TEST_F(AutofillOptimizationGuideDeciderTest, IsIframeUrlAllowlistedForActor) {
       guide().IsIframeUrlAllowlistedForActor(GURL("https://www.example.com")));
   EXPECT_FALSE(guide().IsIframeUrlAllowlistedForActor(
       GURL("https://www.othersite.com")));
+  // HTTP URLs should not be allowlisted even if the host is allowlisted.
+  EXPECT_FALSE(
+      guide().IsIframeUrlAllowlistedForActor(GURL("http://www.example.com")));
 }
 
 struct BenefitOptimizationToBenefitCategoryTestCase {
