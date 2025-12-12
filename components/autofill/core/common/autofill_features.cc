@@ -225,6 +225,10 @@ BASE_FEATURE(kAutofillAiNationalIdCard, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillAiPreferModelResponseOverHeuristics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, AutofillAi requires re-auth when filling obfuscated fields.
+// TODO(crbug.com/468236932): Remove once feature is launched.
+BASE_FEATURE(kAutofillAiReauthRequired, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, AutofillAi supports redress number.
 BASE_FEATURE(kAutofillAiRedressNumber, base::FEATURE_ENABLED_BY_DEFAULT);
 
