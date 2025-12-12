@@ -8,6 +8,7 @@ import("//third_party/protobuf/proto_library.gni")
 # This target is only for public headers for classes used outside this directory (i.e. services and factories).
 source_set("contextual_tasks") {
   sources = [
+    "ai_mode_context_library_converter.h",
     "contextual_tasks_context_controller.h",
     "contextual_tasks_context_controller_factory.h",
     "contextual_tasks_service_factory.h",
@@ -49,6 +50,7 @@ source_set("impl") {
   ]
 
   sources = [
+    "ai_mode_context_library_converter.cc",
     "contextual_tasks_context_controller.cc",
     "contextual_tasks_context_controller_factory.cc",
     "contextual_tasks_context_controller_impl.cc",
@@ -77,6 +79,7 @@ source_set("impl") {
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/common:channel_info",
+    "//components/contextual_search:public",
     "//components/contextual_tasks/internal",
     "//components/contextual_tasks/public",
     "//components/favicon/core",
@@ -86,6 +89,7 @@ source_set("impl") {
     "//components/sessions:session_id",
     "//components/sync/model",
     "//content/public/browser",
+    "//third_party/lens_server_proto:lens_overlay_proto",
   ]
   if (!is_android) {
     deps += [
@@ -259,6 +263,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "ai_mode_context_library_converter_unittest.cc",
     "contextual_tasks_context_controller_factory_unittest.cc",
     "contextual_tasks_context_controller_impl_unittest.cc",
     "contextual_tasks_service_factory_unittest.cc",
@@ -284,11 +289,13 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/sync",
     "//chrome/test:test_support",
+    "//components/contextual_search:public",
     "//components/contextual_tasks/public",
     "//content/test:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/lens_server_proto:lens_overlay_proto",
   ]
 
   if (!is_android) {

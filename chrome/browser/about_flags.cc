@@ -13076,6 +13076,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksSuggestionsEnabled)},
 
+    {"contextual-tasks-context-library",
+     contextual_tasks::flag_descriptions::kContextualTasksContextLibraryName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksContextLibraryDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksContextLibrary)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"create-new-tab-group-app-menu-top-level",
      flag_descriptions::kCreateNewTabGroupAppMenuTopLevelName,
