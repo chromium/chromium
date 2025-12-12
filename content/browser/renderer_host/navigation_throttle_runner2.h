@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/safety_checks.h"
 #include "content/browser/renderer_host/navigation_throttle_registry_impl.h"
 #include "content/common/content_export.h"
 

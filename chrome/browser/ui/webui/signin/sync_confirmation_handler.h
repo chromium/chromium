@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/safety_checks.h"
 #include "base/notreached.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"

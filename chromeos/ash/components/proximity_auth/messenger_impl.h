@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/safety_checks.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"

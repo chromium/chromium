@@ -50,7 +50,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/376575664): Remove this include directive when the
 // ADVANCED_MEMORY_SAFETY_CHECKS macro is removed.
-#include "base/memory/safety_checks.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #endif
 
 namespace cc {

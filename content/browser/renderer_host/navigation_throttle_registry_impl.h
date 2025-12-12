@@ -5,13 +5,13 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_THROTTLE_REGISTRY_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_THROTTLE_REGISTRY_IMPL_H_
 
-#include <optional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"

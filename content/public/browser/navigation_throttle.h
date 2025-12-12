@@ -8,9 +8,9 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/safety_checks.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "net/base/net_errors.h"

@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/safety_checks.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_item.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_surface_manager.h"
 #include "ui/aura/window_observer.h"

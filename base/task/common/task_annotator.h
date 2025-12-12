@@ -12,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/safety_checks.h"
 #include "base/pending_task.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"

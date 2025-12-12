@@ -12,8 +12,8 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/safety_checks.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "ui/compositor/layer_animation_observer.h"

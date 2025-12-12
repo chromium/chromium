@@ -5,7 +5,7 @@
 #ifndef UI_AURA_WINDOW_DELEGATE_H_
 #define UI_AURA_WINDOW_DELEGATE_H_
 
-#include "base/memory/safety_checks.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_constants.h"
