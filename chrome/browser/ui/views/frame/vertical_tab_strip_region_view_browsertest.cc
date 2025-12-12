@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -26,22 +27,15 @@
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/separator.h"
 
-class VerticalTabStripRegionViewTest : public InProcessBrowserTest {
+class VerticalTabStripRegionViewTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
-  VerticalTabStripRegionViewTest() = default;
-  ~VerticalTabStripRegionViewTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
-    InProcessBrowserTest::SetUp();
-  }
-
   VerticalTabStripRegionView* region_view() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->vertical_tab_strip_region_view();
   }
 
-  tabs::VerticalTabStripStateController* controller() {
+  tabs::VerticalTabStripStateController* state_controller() {
     return tabs::VerticalTabStripStateController::From(browser());
   }
 
@@ -64,18 +58,16 @@ class VerticalTabStripRegionViewTest : public InProcessBrowserTest {
     browser()->tab_strip_model()->SetTabPinned(index, true);
     return contents;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        SeparatorVisibilityChangesWithCollapsedState) {
-  controller()->SetCollapsed(true);
-  EXPECT_TRUE(controller()->IsCollapsed());
+  state_controller()->SetCollapsed(true);
+  EXPECT_TRUE(state_controller()->IsCollapsed());
   EXPECT_TRUE(region_view()->tabs_separator_for_testing()->GetVisible());
 
-  controller()->SetCollapsed(false);
-  EXPECT_FALSE(controller()->IsCollapsed());
+  state_controller()->SetCollapsed(false);
+  EXPECT_FALSE(state_controller()->IsCollapsed());
   EXPECT_FALSE(region_view()->tabs_separator_for_testing()->GetVisible());
 }
 
@@ -173,19 +165,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   verify_for_width(75);
 }
 
-class VerticalTabStripRegionViewWithSplitTabTest
-    : public VerticalTabStripRegionViewTest {
- public:
-  VerticalTabStripRegionViewWithSplitTabTest() = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({tabs::kVerticalTabs}, {});
-    InProcessBrowserTest::SetUp();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewWithSplitTabTest,
-                       SplitTabsShareSpace) {
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, SplitTabsShareSpace) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   // Add split tabs.
   content::WebContents* contents1 = AppendTab();

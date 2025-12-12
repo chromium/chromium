@@ -44,8 +44,8 @@ class VerticalTabsBrowserTestMixin : public T {
   }
 
   void SetUpOnMainThread() override {
-    T::SetUpOnMainThread();
     EnterVerticalTabsMode();
+    T::SetUpOnMainThread();
   }
 
   TabStripModel* tab_strip_model() { return T::browser()->tab_strip_model(); }
