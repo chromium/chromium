@@ -7223,7 +7223,6 @@ test("unit_tests") {
     "//components/policy/content",
     "//components/policy/core/browser:test_support",
     "//components/policy/core/common:common_constants",
-    "//components/policy/test_support:unittests",
     "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:privacy_sandbox_survey_service",
