@@ -8312,7 +8312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SaveState.Size" units="KB"
-    expires_after="2026-01-01">
+    expires_after="2026-12-11">
   <owner>peconn@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
