@@ -40,6 +40,8 @@
 
     <includes>
       <include name="IDR_ACTOR_OVERLAY_MAGIC_CURSOR" file="magic_cursor.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_ACTOR_AUTO_BROWSE_ICON" file="../../../app/vector_icons/screensaver_auto.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_ACTOR_AUTO_BROWSE_ICON_FILLED" file="../../../app/vector_icons/screensaver_auto.icon" type="BINDATA" compress="brotli" />
     </includes>
   </release>
 </grit>
