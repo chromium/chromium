@@ -4581,7 +4581,10 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledDefault",
+                    "name": "EnabledModelVariantD_20250825",
+                    "params": {
+                        "show_open_in_browser_menu_top": "true"
+                    },
                     "enable_features": [
                         "CCTAdaptiveButton"
                     ]
