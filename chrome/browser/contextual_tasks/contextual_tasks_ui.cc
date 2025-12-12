@@ -214,7 +214,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "expandedComposeboxShowVoiceSearch",
       contextual_tasks::GetIsSteadyComposeboxVoiceSearchEnabled());
   source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
-  source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", false);
+  source->AddBoolean("composeboxContextMenuEnableMultiTabSelection", true);
   source->AddBoolean("darkMode",
                      ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
                                 ->BrowserUsesDarkColors());

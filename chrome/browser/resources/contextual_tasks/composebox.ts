@@ -19,16 +19,6 @@ export interface ContextualTasksComposeboxElement {
   };
 }
 
-const DEBOUNCE_TIMEOUT: number = 20;
-
-function debounce(context: Object, func: () => void, delay: number) {
-  let timeout: number;
-  return function(...args: []) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), delay);
-  };
-}
-
 export class ContextualTasksComposeboxElement extends CrLitElement {
   static get is() {
     return 'contextual-tasks-composebox';
@@ -56,8 +46,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   protected accessor showContextMenu_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
   private eventTracker_: EventTracker = new EventTracker();
-  private composeboxResizeObserver_: ResizeObserver|null = null;
-  private composeboxDropdownResizeObserver_: ResizeObserver|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -80,32 +68,19 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         composebox.clearInput();
         composebox.clearAutocompleteMatches();
       });
-
-      this.composeboxResizeObserver_ = new ResizeObserver(debounce(this, () => {
-        this.composeboxHeight_ = composebox.offsetHeight;
-      }, DEBOUNCE_TIMEOUT));
-      this.composeboxDropdownResizeObserver_ =
-          new ResizeObserver(debounce(this, () => {
-            this.composeboxDropdownHeight_ =
-                composebox.getMatchesElement().offsetHeight;
-          }, DEBOUNCE_TIMEOUT));
-      this.composeboxResizeObserver_.observe(composebox);
-      this.composeboxDropdownResizeObserver_.observe(
-          composebox.getMatchesElement());
+      this.eventTracker_.add(
+          composebox, 'composebox-resize', (e: CustomEvent) => {
+            if (e.detail.carouselHeight !== undefined) {
+              composebox.style.setProperty(
+                  '--carousel-height', `${e.detail.carouselHeight}px`);
+            }
+          });
     }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
-    if (this.composeboxResizeObserver_) {
-      this.composeboxResizeObserver_.disconnect();
-      this.composeboxResizeObserver_ = null;
-    }
-    if (this.composeboxDropdownResizeObserver_) {
-      this.composeboxDropdownResizeObserver_.disconnect();
-      this.composeboxDropdownResizeObserver_ = null;
-    }
   }
 
   override render() {
