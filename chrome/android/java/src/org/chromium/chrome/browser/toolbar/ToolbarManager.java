@@ -1874,7 +1874,7 @@ public class ToolbarManager
                         mOmniboxFocusStateSupplier,
                         mFormFieldFocusedSupplier,
                         mFindInPageShowingSupplier,
-                        keyboardAccessoryStateSupplier,
+                        keyboardAccessoryStateSupplier.getInsetSupplier(),
                         mWindowAndroid.getKeyboardDelegate(),
                         mControlContainer,
                         mToolbarLayout,
