@@ -43,6 +43,7 @@ class WebStateList;
                 disconnectCallback:(base::OnceCallback<void(web::WebState*)>)
                                        disconnectCallback;
 
+/// Disconnect all observations and references.
 - (void)disconnect;
 
 @end

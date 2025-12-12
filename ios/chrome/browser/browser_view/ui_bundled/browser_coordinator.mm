@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo/coordinator/non_modal_signin_promo_coordinator.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
@@ -1509,6 +1510,13 @@ const char kChromeAppStoreUrl[] =
   } else {
     [_lensCoordinator stop];
     _lensCoordinator = nil;
+  }
+
+  // This can be removed if the browser agent guarenteed to be detroyed before
+  // profile keyed objects.
+  if (AutocompleteBrowserAgent* autocompleteBrowserAgent =
+          AutocompleteBrowserAgent::FromBrowser(self.browser)) {
+    autocompleteBrowserAgent->RemoveServices();
   }
 
   [self.downloadManagerCoordinator stop];

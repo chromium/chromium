@@ -463,15 +463,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   // The popup has to be destroyed before the location bar.
   [self.omniboxCoordinator stop];
-  // TODO(crbug.com/462700929): Cleanup the service's objects like when it was
-  // owned by the omnibox. Remove this workaround once the service can be safely
-  // cleaned up during shutdown.
   AutocompleteBrowserAgent* autocompleteBrowserAgent =
       AutocompleteBrowserAgent::FromBrowser(self.browser);
   if (autocompleteBrowserAgent) {
     autocompleteBrowserAgent->UnregisterWebStateListForPrefetching(
         self.webStateList);
-    autocompleteBrowserAgent->RemoveServices();
   }
   [self.badgeMediator disconnect];
   self.badgeMediator = nil;

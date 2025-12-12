@@ -5,6 +5,7 @@ include_rules = [
   "+ios/chrome/browser/app_launcher/model",
   "+ios/chrome/browser/app_store_rating/ui_bundled/features.h",
   "+ios/chrome/browser/authentication",
+  "+ios/chrome/browser/autocomplete/model",
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/autofill/ui_bundled",
   "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
