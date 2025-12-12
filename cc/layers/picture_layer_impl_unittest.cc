@@ -77,6 +77,10 @@ using ::testing::ElementsAre;
     EXPECT_FALSE(active_layer()->expression);  \
   } while (false)
 
+bool TreesInViz() {
+  return base::FeatureList::IsEnabled(features::kTreesInViz);
+}
+
 class PictureLayerImplTest : public TestLayerTreeHostBase {
  public:
   void SetUp() override {
@@ -838,10 +842,16 @@ TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
 
   // Zoom in a lot. Since we move in factors of two, we should get a scale that
   // is a power of 2 times 0.24. The tile at the lowest scale factor is now out
-  // of range and should be cleaned up as a result, leaving the number of tiles
-  // still at 3 due to the addition and removal.
+  // of range and should be cleaned up as a result. In non TreesInViz mode, this
+  // leaves the number of tiles still at 3 due to the addition and removal.
+  // In TreesInViz mode, due to tiling removal is delayed, the number of tiles
+  // is 4 due to the addition and delayed removal, pending viz to confirm.
   SetContentsScaleOnBothLayers(1.f, 1.0f, 1.f);
-  ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
+  if (TreesInViz()) {
+    ASSERT_EQ(4u, active_layer()->tilings()->num_tilings());
+  } else {
+    ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
+  }
   EXPECT_FLOAT_EQ(
       1.92f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
 }
