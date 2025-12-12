@@ -14,6 +14,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "components/legion/proto/legion.pb.h"
+#include "components/legion/proto_utils/generate_content_response_utils.h"
 
 namespace legion {
 
@@ -27,14 +28,14 @@ void OnGenerateContentRequestCompleted(
     return;
   }
 
-  if (result->candidates_size() == 0 ||
-      result->candidates(0).content().parts_size() == 0) {
+  auto text = ConvertGenerateContentResponseToText(*result);
+  if (!text.has_value()) {
     LOG(ERROR) << "GenerateContentResponse did not contain any content";
     std::move(cb).Run(base::unexpected(ErrorCode::kNoContent));
     return;
   }
 
-  std::move(cb).Run(result->candidates(0).content().parts(0).text());
+  std::move(cb).Run(text.value());
 }
 
 void OnRequestSent(
