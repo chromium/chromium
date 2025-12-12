@@ -1370,6 +1370,11 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   update->page_scale_transform = property_ids.page_scale_transform;
   update->display_transform_hint = tree.display_transform_hint();
   update->is_handling_interaction = host_impl_->IsHandlingInteraction();
+  if (tree.delegated_ink_metadata()) {
+    update->delegated_ink_metadata =
+        std::make_unique<gfx::DelegatedInkMetadata>(
+            *tree.delegated_ink_metadata());
+  }
   update->max_safe_area_inset_bottom = tree.max_safe_area_inset_bottom();
   update->browser_controls_params = tree.browser_controls_params();
   update->browser_controls_offset_tag_modifications =

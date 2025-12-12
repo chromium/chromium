@@ -1864,6 +1864,13 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       update->send_frame_token_to_embedder);
   host_impl_->set_is_handling_interaction_from_client(
       update->is_handling_interaction);
+  if (update->delegated_ink_metadata) {
+    layers.set_delegated_ink_metadata(
+        std::make_unique<gfx::DelegatedInkMetadata>(
+            *update->delegated_ink_metadata));
+  } else {
+    layers.clear_delegated_ink_metadata();
+  }
 
   {
     TRACE_EVENT1("viz", "DeserializeTilings", "TilingCount",

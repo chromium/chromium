@@ -22,6 +22,7 @@ import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
+import "ui/gfx/mojom/delegated_ink_metadata.mojom";
 
 // Describes a request to create or delete a UIResource in the service-side
 // display tree.
@@ -224,6 +225,9 @@ struct LayerTreeUpdate {
   // This includes during the touch interaction just prior to the initiation of
   // gesture scroll events.
   bool is_handling_interaction;
+
+  // Metadata for delegated ink trails.
+  gfx.mojom.DelegatedInkMetadata? delegated_ink_metadata;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
