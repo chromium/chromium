@@ -505,11 +505,10 @@ TEST_F(TriggerManagerTest, AdSamplerTrigger_Incognito) {
       StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
 }
 
-TEST_F(TriggerManagerTest,
-       CollectionWhenExtendedReportingDeprecationEnabledAllowOptinEnabled) {
-  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
+TEST_F(TriggerManagerTest, ReportSentWhenEsbIsEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
       kExtendedReportingRemovePrefDependency);
+  SetPref(prefs::kSafeBrowsingEnhanced, true);
 
   content::WebContents* web_contents = CreateWebContents();
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
@@ -518,17 +517,16 @@ TEST_F(TriggerManagerTest,
                                             web_contents, true));
 }
 
-TEST_F(TriggerManagerTest,
-       CollectionWhenExtendedReportingDeprecationEnabledAllowOptinDisabled) {
-  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
+TEST_F(TriggerManagerTest, ReportNotSentWhenEsbIsDisabled) {
   scoped_feature_list_.InitAndEnableFeature(
       kExtendedReportingRemovePrefDependency);
+  SetPref(prefs::kSafeBrowsingEnhanced, false);
 
   content::WebContents* web_contents = CreateWebContents();
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents));
-  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
-                                            web_contents, true));
+  EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                             web_contents, false));
 }
 
 TEST_F(TriggerManagerTest,

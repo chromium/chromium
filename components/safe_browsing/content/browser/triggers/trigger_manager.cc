@@ -129,7 +129,7 @@ TriggerManager::GetDataCollectionPermissions(
   return DataCollectionPermissions(
       IsExtendedReportingOptInAllowed(pref_service),
       web_contents->GetBrowserContext()->IsOffTheRecord(),
-      IsExtendedReportingEnabledBypassDeprecationFlag(pref_service));
+      IsExtendedReportingEnabled(pref_service));
 }
 
 bool TriggerManager::CanStartDataCollection(
