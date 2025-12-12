@@ -55,7 +55,7 @@ found in the LICENSE file.
         android:id="@+id/reset_zoom_button"
         style="@style/TextAppearance.PageZoomResetButton"
         android:layout_width="@dimen/reset_button_width"
-        android:layout_height="@dimen/reset_button_height"
+        android:layout_height="wrap_content"
         android:text="@string/reset"
         android:paddingTop="@dimen/reset_button_padding"
         android:paddingBottom="@dimen/reset_button_padding"

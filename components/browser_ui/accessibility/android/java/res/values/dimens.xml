@@ -30,7 +30,6 @@ found in the LICENSE file.
     <dimen name="zoom_buttons_margin_outwards">8dp</dimen>
     <dimen name="zoom_buttons_margin_inwards">12dp</dimen>
     <dimen name="reset_button_width">87dp</dimen>
-    <dimen name="reset_button_height">48dp</dimen>
     <dimen name="reset_button_padding">4dp</dimen>
 
     <!-- Page zoom item dimensions -->
