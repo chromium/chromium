@@ -104,7 +104,7 @@ TEST_F(TtsPlayerTest, RenderSingleFrame) {
   EXPECT_EQ(1, backing_observer_.end_count);
 
   EXPECT_EQ(1, frames_rendered);
-  auto actual = bus->channel_span(0).first<1u>();
+  auto actual = bus->channel(0).first<1u>();
   constexpr std::array<float, 1> kExpected = {0.7};
   EXPECT_EQ(actual, base::span(kExpected));
 }
@@ -135,7 +135,7 @@ TEST_F(TtsPlayerTest, RenderFramesFromPartialBuffers) {
   EXPECT_EQ(1, backing_observer_.end_count);
 
   EXPECT_EQ(5, frames_rendered);
-  auto actual = bus->channel_span(0).first<5u>();
+  auto actual = bus->channel(0).first<5u>();
   constexpr std::array<float, 5> kExpected = {0.1, 0.2, 0.3, 0.4, 0.5};
   EXPECT_EQ(actual, base::span(kExpected));
 }
@@ -176,7 +176,7 @@ TEST_F(TtsPlayerTest, RenderBusWithFramesFromEmptyAndPartialBuffers) {
   EXPECT_EQ(0, backing_observer_.end_count);
 
   EXPECT_EQ(5, frames_rendered);
-  auto actual = bus->channel_span(0).first<5u>();
+  auto actual = bus->channel(0).first<5u>();
   constexpr std::array<float, 5> kExpected = {0.1, 0.2, 0.3, 0.4, 0.5};
   EXPECT_EQ(actual, base::span(kExpected));
 }
@@ -214,7 +214,7 @@ TEST_F(TtsPlayerTest, RenderMultiBusFromMultiBuffers) {
   EXPECT_EQ(0, backing_observer_.end_count);
 
   EXPECT_EQ(5, frames_rendered);
-  auto first_actual = first_bus->channel_span(0).first<5u>();
+  auto first_actual = first_bus->channel(0).first<5u>();
   constexpr std::array<float, 5> kFirstExpected = {0.1, 0.2, 0.3, 0.4, 0.5};
   EXPECT_EQ(first_actual, base::span(kFirstExpected));
 
@@ -231,7 +231,7 @@ TEST_F(TtsPlayerTest, RenderMultiBusFromMultiBuffers) {
   EXPECT_EQ(1, backing_observer_.end_count);
 
   EXPECT_EQ(2, frames_rendered);
-  auto second_actual = second_bus->channel_span(0).first<2u>();
+  auto second_actual = second_bus->channel(0).first<2u>();
   constexpr std::array<float, 2> kSecondExpected = {0.6, 0.7};
   EXPECT_THAT(second_actual, base::span(kSecondExpected));
 }

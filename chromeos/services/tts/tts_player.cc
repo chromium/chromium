@@ -67,7 +67,7 @@ int TtsPlayer::Render(base::TimeDelta delay,
     if (buffers_.empty())
       return 0;
 
-    auto channel = dest->channel_span(0);
+    auto channel = dest->channel(0);
 
     AudioBuffer* buffer = &buffers_.front();
     for (size_t output_index = 0; output_index < frame_count;

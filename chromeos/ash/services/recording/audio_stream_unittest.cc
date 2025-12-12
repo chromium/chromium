@@ -209,7 +209,7 @@ TEST_F(AudioStreamTest, ConsumeToMisalignedDestination) {
   int mis_aligned_start_frame = 0;
   for (; mis_aligned_start_frame < destination->frames();
        ++mis_aligned_start_frame) {
-    if (!base::IsAligned(&destination->channel_span(0)[mis_aligned_start_frame],
+    if (!base::IsAligned(&destination->channel(0)[mis_aligned_start_frame],
                          media::vector_math::kRequiredAlignment)) {
       break;
     }
