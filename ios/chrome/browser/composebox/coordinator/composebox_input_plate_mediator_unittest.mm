@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -272,7 +274,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_TRUE(
       [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kVoice]);
-  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kLens]);
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
@@ -282,7 +283,6 @@ TEST_F(ComposeboxInputPlateMediatorTest, ShowsExtendedControlsWithGoogleDSE) {
   SetAIMEligible(true);
   SetDSEGoogle(true);
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kVoice]);
-  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kLens]);
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
@@ -295,7 +295,6 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kVoice]);
   EXPECT_TRUE(
       [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
-  EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kLens]);
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
