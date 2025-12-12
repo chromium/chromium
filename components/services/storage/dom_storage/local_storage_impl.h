@@ -63,13 +63,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // the implementation for details.
   void SetForceKeepSessionState() { force_keep_session_state_ = true; }
 
-  // Called when the owning BrowserContext is ending.
-  // Schedules the commit of any unsaved changes and will delete or keep data on
-  // disk per the content settings and special storage policies.  `callback` is
-  // invoked when shutdown is complete, which may happen even before ShutDown
-  // returns.
-  void ShutDown(base::OnceClosure callback);
-
   // Clears unused storage areas, when thresholds are reached.
   void PurgeUnusedAreasIfNeeded();
 
@@ -95,8 +88,11 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.
-  const base::SequenceBound<DomStorageDatabase>& GetDatabaseForTesting() const {
-    return database_->database();
+  base::SequenceBound<DomStorageDatabase>* GetDatabaseForTesting() {
+    if (database_) {
+      return &database_->database();
+    }
+    return nullptr;
   }
 
   // Wait for the database to be opened, or for opening to fail. If the database
@@ -112,6 +108,9 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   friend class DOMStorageBrowserTest;
 
   class StorageAreaHolder;
+
+  // Does dtor work. This is a distinct function mainly to retain git history.
+  void ShutDown();
 
   // Runs |callback| immediately if already connected to a database, otherwise
   // delays running |callback| untill after a connection has been established.
@@ -138,8 +137,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void OnGotWriteMetaData(GetUsageCallback callback,
                           StatusOr<DomStorageDatabase::Metadata> all_metadata);
 
-  void OnShutdownComplete();
-
   void GetStatistics(size_t* total_cache_size, size_t* unused_area_count);
   void OnCommitResult(DbStatus status);
 
@@ -159,8 +156,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   enum ConnectionState {
     NO_CONNECTION,
     CONNECTION_IN_PROGRESS,
-    CONNECTION_FINISHED,
-    CONNECTION_SHUTDOWN
+    CONNECTION_FINISHED
   } connection_state_ = NO_CONNECTION;
 
   bool force_keep_session_state_ = false;
@@ -187,8 +183,6 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   std::set<url::Origin> origins_to_purge_on_shutdown_;
 
   mojo::Receiver<mojom::LocalStorageControl> control_receiver_{this};
-
-  base::OnceClosure shutdown_complete_callback_;
 
   // We need to delay deleting stale storage areas until after any session
   // restore has taken place, otherwise we might fail to record current usage.

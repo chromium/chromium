@@ -319,39 +319,30 @@ void LocalStorageImpl::FlushStorageKeyForTesting(
   it->second->storage_area()->ScheduleImmediateCommit();
 }
 
-void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
-  CHECK_NE(connection_state_, CONNECTION_SHUTDOWN);
-  DCHECK(callback);
-
+void LocalStorageImpl::ShutDown() {
   control_receiver_.reset();
-  shutdown_complete_callback_ = std::move(callback);
 
   // Nothing to do if no connection to the database was ever finished.
-  if (connection_state_ != CONNECTION_FINISHED) {
-    connection_state_ = CONNECTION_SHUTDOWN;
-    OnShutdownComplete();
-    return;
+  if (connection_state_ == CONNECTION_FINISHED) {
+    // Flush any uncommitted data.
+    for (const auto& it : areas_) {
+      auto* area = it.second->storage_area();
+      LOCAL_HISTOGRAM_BOOLEAN(
+          "LocalStorageContext.ShutDown.MaybeDroppedChanges",
+          area->has_pending_load_tasks());
+      area->ScheduleImmediateCommit();
+      // TODO(dmurph): Monitor the above histogram, and if dropping changes is
+      // common then handle that here.
+      area->CancelAllPendingRequests();
+    }
+
+    if (!force_keep_session_state_ && !origins_to_purge_on_shutdown_.empty()) {
+      database_->PurgeOriginsForShutdown(
+          std::move(origins_to_purge_on_shutdown_));
+    }
   }
 
-  connection_state_ = CONNECTION_SHUTDOWN;
-
-  // Flush any uncommitted data.
-  for (const auto& it : areas_) {
-    auto* area = it.second->storage_area();
-    LOCAL_HISTOGRAM_BOOLEAN("LocalStorageContext.ShutDown.MaybeDroppedChanges",
-                            area->has_pending_load_tasks());
-    area->ScheduleImmediateCommit();
-    // TODO(dmurph): Monitor the above histogram, and if dropping changes is
-    // common then handle that here.
-    area->CancelAllPendingRequests();
-  }
-
-  if (!force_keep_session_state_ && !origins_to_purge_on_shutdown_.empty()) {
-    database_->PurgeOriginsForShutdown(
-        std::move(origins_to_purge_on_shutdown_));
-  }
-
-  OnShutdownComplete();
+  PurgeAllStorageAreas();
 }
 
 void LocalStorageImpl::PurgeMemory() {
@@ -468,22 +459,12 @@ void LocalStorageImpl::ForceFakeOpenStorageAreaForTesting(
 }
 
 LocalStorageImpl::~LocalStorageImpl() {
-  DCHECK_EQ(connection_state_, CONNECTION_SHUTDOWN);
-  // ShutDown() should run before this destructor and clear `areas_`. If this
-  // didn't occur, as a workaround, we clear the `areas_`to avoid a UaF crash
-  // in the StorageAreaHolder d'tor which tries to access `this`'s state.
-  // TODO(crbug.com/396030877): Remove this workaround once the issue is
-  // resolved.
-  if (!areas_.empty()) {
-    areas_.clear();
-  }
+  ShutDown();
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
 
 void LocalStorageImpl::RunWhenConnected(base::OnceClosure callback) {
-  DCHECK_NE(connection_state_, CONNECTION_SHUTDOWN);
-
   // If we don't have a database connection, we'll need to establish one.
   if (connection_state_ == NO_CONNECTION) {
     connection_state_ = CONNECTION_IN_PROGRESS;
@@ -506,9 +487,6 @@ void LocalStorageImpl::PurgeAllStorageAreas() {
 }
 
 void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
-  if (connection_state_ == CONNECTION_SHUTDOWN)
-    return;
-
   DCHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
 
   if (!directory_.empty() && directory_.IsAbsolute() && !in_memory_only) {
@@ -545,9 +523,6 @@ void LocalStorageImpl::OnDatabaseOpened(DbStatus status) {
 }
 
 void LocalStorageImpl::OnConnectionFinished() {
-  if (connection_state_ == CONNECTION_SHUTDOWN)
-    return;
-
   DCHECK_EQ(connection_state_, CONNECTION_IN_PROGRESS);
   // If connection was opened successfully, reset tried_to_recreate_during_open_
   // to enable recreating the database on future errors.
@@ -573,9 +548,6 @@ void LocalStorageImpl::OnConnectionFinished() {
 }
 
 void LocalStorageImpl::DeleteAndRecreateDatabase() {
-  if (connection_state_ == CONNECTION_SHUTDOWN)
-    return;
-
   // We're about to set database_ to null, so delete the StorageAreaImpls
   // that might still be using the old database.
   PurgeAllStorageAreas();
@@ -694,22 +666,6 @@ void LocalStorageImpl::OnGotWriteMetaData(
   std::move(callback).Run(std::move(result));
 }
 
-void LocalStorageImpl::OnShutdownComplete() {
-  DCHECK(shutdown_complete_callback_);
-  // Flush any final tasks on the DB task runner before invoking the callback.
-  PurgeAllStorageAreas();
-  bool database_created = !!database_;
-  database_.reset();
-  if (database_created && !in_memory_) {
-    AsyncDomStorageDatabase::GetTaskRunnerForDb(directory_,
-                                                kLocalStorageLeveldbName)
-        ->PostTaskAndReply(FROM_HERE, base::DoNothing(),
-                           std::move(shutdown_complete_callback_));
-  } else {
-    std::move(shutdown_complete_callback_).Run();
-  }
-}
-
 void LocalStorageImpl::GetStatistics(size_t* total_cache_size,
                                      size_t* unused_area_count) {
   *total_cache_size = 0;
@@ -722,17 +678,14 @@ void LocalStorageImpl::GetStatistics(size_t* total_cache_size,
 }
 
 void LocalStorageImpl::OnCommitResult(DbStatus status) {
-  DCHECK(connection_state_ == CONNECTION_FINISHED ||
-         connection_state_ == CONNECTION_SHUTDOWN)
-      << connection_state_;
+  DCHECK(connection_state_ == CONNECTION_FINISHED) << connection_state_;
   if (status.ok()) {
     commit_error_count_ = 0;
     return;
   }
 
   commit_error_count_++;
-  if (commit_error_count_ > kCommitErrorThreshold &&
-      connection_state_ != CONNECTION_SHUTDOWN) {
+  if (commit_error_count_ > kCommitErrorThreshold) {
     if (tried_to_recover_from_commit_errors_) {
       // We already tried to recover from a high commit error rate before, but
       // are still having problems: there isn't really anything left to try, so
