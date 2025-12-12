@@ -303,7 +303,7 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
 TEST_F(LensOverlayRequestIdGeneratorTest,
        GetRequestIdWithMultiContextId_SetsFields) {
   lens::LensOverlayRequestIdGenerator request_id_generator;
-  uint64_t context_id = 12345;
+  int64_t context_id = 12345;
   std::unique_ptr<lens::LensOverlayRequestId> request_id =
       request_id_generator.GetRequestIdWithMultiContextId(
           lens::LensOverlayRequestId::MEDIA_TYPE_PDF, context_id);

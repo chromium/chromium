@@ -78,7 +78,7 @@ class LensOverlayRequestIdGenerator {
   // sequence ID, or long context ID.
   std::unique_ptr<lens::LensOverlayRequestId> GetRequestIdWithMultiContextId(
       lens::LensOverlayRequestId::MediaType media_type,
-      uint64_t context_id);
+      int64_t context_id);
 
   // Returns the current analytics id as a base32 encoded string.
   std::string GetBase32EncodedAnalyticsId();
