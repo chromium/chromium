@@ -484,8 +484,10 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
                         time_keeper_->MaybeEmitIncomingWakeupFlow(ctx);
                       });
 
+    // TODO(crbug.com/458682617): Remove this.
     PerformFortuitousMemoryBarrierIfNecessary();
   } else {
+    // TODO(crbug.com/458682617): Remove this.
     PerformFortuitousMemoryBarrierIfNecessary();
 
     LogOnIdleMetrics(lazy_now);
