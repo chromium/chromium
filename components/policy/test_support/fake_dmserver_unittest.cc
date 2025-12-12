@@ -360,6 +360,29 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringStateKeysFails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
+TEST_F(FakeDMServerTest, GetClientFromValueNoUsernameSucceeds) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+  client_state_path_.MaybeAsASCII(),
+                             grpc_unix_socket_uri_);
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
+    {
+      "fake_device_id" : {
+        "device_id" : "fake_device_id",
+        "device_token" : "fake_device_token",
+        "machine_name" : "fake_machine_name",
+        "state_keys" : [ "fake_state_key" ],
+        "allowed_policy_types" : [ "google/chromeos/user" ]
+      }
+    }
+  )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=policy"),
+            net::HTTP_OK);
+}
+
 TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringPolicyTypesFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
@@ -378,10 +401,6 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringPolicyTypesFails) {
       }
     }
   )"));
-  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
-                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
-            net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
 TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {

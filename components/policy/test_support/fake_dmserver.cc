@@ -19,6 +19,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_util.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -829,7 +830,9 @@ base::Value::Dict FakeDMServer::GetValueFromClient(
   dict.Set(kDeviceIdKey, c.device_id);
   dict.Set(kDeviceTokenKey, c.device_token);
   dict.Set(kMachineNameKey, c.machine_name);
-  dict.Set(kUsernameKey, c.username.value_or(""));
+  if (c.username.has_value()) {
+    dict.Set(kUsernameKey, c.username.value());
+  }
   base::Value::List state_keys, allowed_policy_types;
   for (auto& key : c.state_keys) {
     state_keys.Append(key);
@@ -893,7 +896,6 @@ FakeDMServer::GetClientFromValue(const base::Value& v) {
   if (!FindKey(*dict, kDeviceIdKey, base::Value::Type::STRING) ||
       !FindKey(*dict, kDeviceTokenKey, base::Value::Type::STRING) ||
       !FindKey(*dict, kMachineNameKey, base::Value::Type::STRING) ||
-      !FindKey(*dict, kUsernameKey, base::Value::Type::STRING) ||
       !FindKey(*dict, kStateKeysKey, base::Value::Type::LIST) ||
       !FindKey(*dict, kAllowedPolicyTypesKey, base::Value::Type::LIST)) {
     return std::nullopt;
@@ -902,7 +904,7 @@ FakeDMServer::GetClientFromValue(const base::Value& v) {
   client_info.device_id = *dict->FindString(kDeviceIdKey);
   client_info.device_token = *dict->FindString(kDeviceTokenKey);
   client_info.machine_name = *dict->FindString(kMachineNameKey);
-  client_info.username = *dict->FindString(kUsernameKey);
+  client_info.username = base::OptionalFromPtr(dict->FindString(kUsernameKey));
   const base::Value::List* state_keys = dict->FindList(kStateKeysKey);
   for (const auto& it : *state_keys) {
     const std::string* key = it.GetIfString();
