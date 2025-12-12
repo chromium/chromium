@@ -1525,7 +1525,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           std::vector<int>() /* initiator_origin_trial_features */,
           std::string() /* href_translate */,
           false /* is_history_navigation_in_new_child_frame */,
-          base::TimeTicks::Now() /* input_start */,
+          base::TimeTicks() /* input_start */,
           network::mojom::RequestDestination::kEmpty);
   // Note that some params are set to default values (e.g. page_state set to
   // the default blink::PageState()) even if the DidCommit message that came
