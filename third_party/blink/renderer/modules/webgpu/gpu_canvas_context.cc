@@ -417,6 +417,15 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     return;
   }
 
+  const wgpu::TextureUsage usage =
+      AsDawnFlags<wgpu::TextureUsage>(descriptor->usage());
+  if (RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled() &&
+      usage & wgpu::TextureUsage::TransientAttachment) {
+    exception_state.ThrowTypeError(
+        String::Format("Unsupported TransientAttachment texture usage"));
+    return;
+  }
+
   // As soon as the validation for extensions for usage and formats passes, the
   // canvas is "configured" and calls to getNextTexture() will return GPUTexture
   // objects (valid or invalid) and not throw.
@@ -429,7 +438,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // GPUCanvasContext.[[texture_descriptor]] in the WebGPU spec.
   texture_descriptor_ = {
       // Set the values from the configuration descriptor
-      .usage = AsDawnFlags<wgpu::TextureUsage>(descriptor->usage()),
+      .usage = usage,
       .dimension = wgpu::TextureDimension::e2D,
       .size = {static_cast<uint32_t>(host_size.width()),
                static_cast<uint32_t>(host_size.height())},
