@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_LAYOUT_ALGORITHM_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_LAYOUT_ALGORITHM_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_LAYOUT_ALGORITHM_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_LAYOUT_ALGORITHM_H_
 
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_node.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
-#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_node.h"
 
 namespace blink {
 
@@ -185,4 +185,4 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_LAYOUT_ALGORITHM_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_LAYOUT_ALGORITHM_H_

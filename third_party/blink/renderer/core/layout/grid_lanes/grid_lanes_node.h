@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_NODE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_NODE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_NODE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_NODE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
-#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_item_group.h"
-#include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_item_group.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
 
 namespace blink {
 
@@ -61,4 +61,4 @@ struct DowncastTraits<GridLanesNode> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_NODE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_NODE_H_

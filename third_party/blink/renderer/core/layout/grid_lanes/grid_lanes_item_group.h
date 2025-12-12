@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_ITEM_GROUP_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_ITEM_GROUP_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_ITEM_GROUP_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_ITEM_GROUP_H_
 
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
@@ -79,4 +79,4 @@ struct HashTraits<GridLanesItemGroupProperties>
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::GridLanesItemGroup)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_ITEM_GROUP_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANES_ITEM_GROUP_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_running_positions.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
 
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"

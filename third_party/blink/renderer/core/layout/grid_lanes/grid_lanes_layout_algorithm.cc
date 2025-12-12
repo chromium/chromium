@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_layout_algorithm.h"
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
@@ -12,11 +12,11 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/stacking_baseline_accumulator.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_running_positions.h"
-#include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
-#include "third_party/blink/renderer/core/layout/masonry/stacking_baseline_accumulator.h"
 
 namespace blink {
 
