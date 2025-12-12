@@ -143,7 +143,7 @@ TEST_F(TransientKeepAlivePolicyTest, KeepAliveNotYetExpired) {
 // Test that the oldest render process host kept-alive that is currently tracked
 // is evicted once we are over the the limit of tracked items.
 // crbug.com/459626659
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE(x) DISABLED_##x
 #else
 #define MAYBE(x) x
