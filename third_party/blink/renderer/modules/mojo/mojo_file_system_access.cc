@@ -10,17 +10,21 @@
 
 namespace blink {
 
+MojoFileSystemAccess::MojoFileSystemAccess(Mojo& mojo) : mojo_(mojo) {}
+
 // static
 MojoFileSystemAccess& MojoFileSystemAccess::From(Mojo& mojo) {
   MojoFileSystemAccess* supplement = mojo.GetMojoFileSystemAccess();
   if (!supplement) {
-    supplement = MakeGarbageCollected<MojoFileSystemAccess>();
+    supplement = MakeGarbageCollected<MojoFileSystemAccess>(mojo);
     mojo.SetMojoFileSystemAccess(supplement);
   }
   return *supplement;
 }
 
-void MojoFileSystemAccess::Trace(Visitor* visitor) const {}
+void MojoFileSystemAccess::Trace(Visitor* visitor) const {
+  visitor->Trace(mojo_);
+}
 
 // static
 MojoHandle* MojoFileSystemAccess::getFileSystemAccessTransferToken(
