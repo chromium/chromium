@@ -6,59 +6,47 @@
 
 #import "base/check.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 
 namespace {
 
 // Returns the title to use depending on the provided `purpose`.
 NSString* GetTitleString(PasskeyWelcomeScreenPurpose purpose) {
-  NSString* stringID;
   switch (purpose) {
     case PasskeyWelcomeScreenPurpose::kEnroll:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_TITLE";
-      break;
+      return CredentialProviderPasskeyEnrollmentTitleString();
     case PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability:
-      stringID =
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_PARTIAL_BOOTSRAPPING_TITLE";
-      break;
+      return CredentialProviderPasskeyPartialBootsrappingTitleString();
     case PasskeyWelcomeScreenPurpose::kReauthenticate:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_TITLE";
-      break;
+      return CredentialProviderPasskeyBootsrappingTitleString();
   }
-  return NSLocalizedString(stringID, @"The title of the welcome screen.");
+  return @"";
 }
 
 // Returns the subtitle to use depending on the provided `purpose`.
 NSString* GetSubtitleString(PasskeyWelcomeScreenPurpose purpose) {
-  NSString* stringID;
   switch (purpose) {
     case PasskeyWelcomeScreenPurpose::kEnroll:
       return nil;
     case PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability:
-      stringID =
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_PARTIAL_BOOTSRAPPING_SUBTITLE";
-      break;
+      return CredentialProviderPasskeyPartialBootsrappingSubtitleString();
     case PasskeyWelcomeScreenPurpose::kReauthenticate:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_BOOTSRAPPING_SUBTITLE";
-      break;
+      return CredentialProviderPasskeyBootsrappingSubtitleString();
   }
-  return NSLocalizedString(stringID, @"The subtitle of the welcome screen.");
+  return @"";
 }
 
 // Returns the title to use for the primary button depending on the provided
 // `purpose`.
 NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
-  NSString* stringID;
   switch (purpose) {
     case PasskeyWelcomeScreenPurpose::kEnroll:
     case PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_GET_STARTED_BUTTON";
-      break;
+      return CredentialProviderGetStartedButtonString();
     case PasskeyWelcomeScreenPurpose::kReauthenticate:
-      stringID = @"IDS_IOS_CREDENTIAL_PROVIDER_NEXT_BUTTON";
-      break;
+      return CredentialProviderNextButtonString();
   }
-  return NSLocalizedString(
-      stringID, @"The title of the welcome screen's primary button.");
+  return @"";
 }
 
 // Returns an array of instructions or nil depending on the provided `purpose`.
@@ -68,15 +56,9 @@ NSArray<NSString*>* GetInstructions(PasskeyWelcomeScreenPurpose purpose) {
   }
 
   return @[
-    NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_1",
-        @"First step of the passkey enrollment instructions"),
-    NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_2",
-        @"Second step of the passkey enrollment instructions"),
-    NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_INSTRUCTIONS_STEP_3",
-        @"Third step of the passkey enrollment instructions"),
+    CredentialProviderPasskeyEnrollmentInstructionsStep1String(),
+    CredentialProviderPasskeyEnrollmentInstructionsStep2String(),
+    CredentialProviderPasskeyEnrollmentInstructionsStep3String(),
   ];
 }
 
@@ -88,16 +70,13 @@ PasskeyWelcomeScreenStrings* GetPasskeyWelcomeScreenStrings(
   NSString* footer = nil;
   if (purpose == PasskeyWelcomeScreenPurpose::kEnroll) {
     CHECK(userEmail);
-    NSString* stringWithPlaceholder = NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_FOOTER_MESSAGE",
-        @"Footer message shown at the bottom of the screen-specific view.");
+    NSString* stringWithPlaceholder =
+        CredentialProviderPasskeyEnrollmentFooterMessageString();
     footer =
         [stringWithPlaceholder stringByReplacingOccurrencesOfString:@"$1"
                                                          withString:userEmail];
   }
-  NSString* secondaryButton =
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NOT_NOW_BUTTON",
-                        @"The title of the welcome screen's secondary button.");
+  NSString* secondaryButton = CredentialProviderNotNowButtonString();
 
   return [[PasskeyWelcomeScreenStrings alloc]
         initWithTitle:GetTitleString(purpose)

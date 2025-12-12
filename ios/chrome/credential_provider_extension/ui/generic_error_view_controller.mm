@@ -4,8 +4,9 @@
 
 #import "ios/chrome/credential_provider_extension/ui/generic_error_view_controller.h"
 
-namespace {
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 
+namespace {
 // Point size of the SF Symbol used for the logo.
 const CGFloat kSymbolPointSize = 60.0;
 
@@ -31,9 +32,7 @@ NSString* const kErrorIconSymbol = @"exclamationmark.circle.fill";
           [UIImageSymbolConfiguration
               configurationWithHierarchicalColor:UIColor.secondaryLabelColor]];
   self.imageHasFixedSize = YES;
-  self.titleString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_ERROR_MESSAGE",
-      @"A generic error message.");
+  self.titleString = CredentialProviderNewPasswordErrorMessageString();
 
   [super loadView];
 }

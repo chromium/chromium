@@ -4,6 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/ui/passkey_error_alert_view_controller.h"
 
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -51,18 +52,12 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
   EXPECT_EQ(controller.customFaviconSideLength, 0);
   EXPECT_FALSE(controller.imageEnclosedWithShadowWithoutBadge);
   EXPECT_NSEQ(controller.titleString,
-              NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_"
-                                @"ENTERPRISE_DISABLED_TITLE",
-                                @""));
-  EXPECT_NSEQ(controller.subtitleString,
-              NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_"
-                                @"ENTERPRISE_DISABLED_SUBTITLE",
-                                @""));
+              CredentialProviderPasskeyCreationEnterpriseDisabledTitleString());
   EXPECT_NSEQ(
-      controller.primaryActionButton.titleLabel.text,
-      NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
-          @""));
+      controller.subtitleString,
+      CredentialProviderPasskeyCreationEnterpriseDisabledSubtitleString());
+  EXPECT_NSEQ(controller.primaryActionButton.titleLabel.text,
+              CredentialProviderPasskeyErrorAlertButtonTitleString());
 }
 
 // Tests that the view's content with the `kSignedOut` error type is as
@@ -78,17 +73,11 @@ TEST_F(PasskeyErrorAlertViewControllerTest, TestContentWithSignedOutErrorType) {
   EXPECT_EQ(controller.customFaviconSideLength, 42);
   EXPECT_TRUE(controller.imageEnclosedWithShadowWithoutBadge);
   EXPECT_NSEQ(controller.titleString,
-              NSLocalizedString(
-                  @"IDS_IOS_CREDENTIAL_PROVIDER_SIGNED_OUT_USER_TITLE", @""));
-  EXPECT_NSEQ(
-      controller.subtitleString,
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_SIGNED_OUT_USER_SUBTITLE",
-                        @""));
-  EXPECT_NSEQ(
-      controller.primaryActionButton.titleLabel.text,
-      NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
-          @""));
+              CredentialProviderSignedOutUserTitleString());
+  EXPECT_NSEQ(controller.subtitleString,
+              CredentialProviderSignedOutUserSubtitleString());
+  EXPECT_NSEQ(controller.primaryActionButton.titleLabel.text,
+              CredentialProviderPasskeyErrorAlertButtonTitleString());
 }
 
 // Tests that the view's content with the
@@ -104,20 +93,13 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
   EXPECT_TRUE(controller.imageHasFixedSize);
   EXPECT_EQ(controller.customFaviconSideLength, 42);
   EXPECT_TRUE(controller.imageEnclosedWithShadowWithoutBadge);
+  EXPECT_NSEQ(controller.titleString,
+              CredentialProviderPasskeyCreationUserDisabledTitleString());
   EXPECT_NSEQ(
-      controller.titleString,
-      NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_TITLE",
-          @""));
-  EXPECT_NSEQ(controller.subtitleString,
-              NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_"
-                                @"USER_DISABLED_IN_PASSWORD_SETTINGS_SUBTITLE",
-                                @""));
-  EXPECT_NSEQ(
-      controller.primaryActionButton.titleLabel.text,
-      NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
-          @""));
+      controller.subtitleString,
+      CredentialProviderPasskeyCreationUserDisabledInPasswordSettingsSubtitleString());
+  EXPECT_NSEQ(controller.primaryActionButton.titleLabel.text,
+              CredentialProviderPasskeyErrorAlertButtonTitleString());
 }
 
 // Tests that the view's content with the
@@ -133,18 +115,11 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
   EXPECT_TRUE(controller.imageHasFixedSize);
   EXPECT_EQ(controller.customFaviconSideLength, 42);
   EXPECT_TRUE(controller.imageEnclosedWithShadowWithoutBadge);
+  EXPECT_NSEQ(controller.titleString,
+              CredentialProviderPasskeyCreationUserDisabledTitleString());
   EXPECT_NSEQ(
-      controller.titleString,
-      NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_TITLE",
-          @""));
-  EXPECT_NSEQ(controller.subtitleString,
-              NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_"
-                                @"USER_DISABLED_FOR_ACCOUNT_SUBTITLE",
-                                @""));
-  EXPECT_NSEQ(
-      controller.primaryActionButton.titleLabel.text,
-      NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
-          @""));
+      controller.subtitleString,
+      CredentialProviderPasskeyCreationUserDisabledForAccountSubtitleString());
+  EXPECT_NSEQ(controller.primaryActionButton.titleLabel.text,
+              CredentialProviderPasskeyErrorAlertButtonTitleString());
 }

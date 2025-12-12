@@ -9,6 +9,7 @@
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 
 namespace {
 NSString* const kConsentViewControllerIdentifier =
@@ -34,21 +35,16 @@ NSString* const kConsentViewControllerIdentifier =
       /*default_value=*/@"");
 
   if (userEmail.length) {
-    NSString* baseLocalizedString = NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE_BRANDED_SYNC",
-        @"The subtitle in the consent screen.");
+    NSString* baseLocalizedString =
+        CredentialProviderConsentSubtitleBrandedSyncString();
     self.subtitleText =
         [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
                                                        withString:userEmail];
   } else {
-    self.subtitleText = NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE_BRANDED_NO_SYNC",
-        @"The subtitle in the consent screen.");
+    self.subtitleText = CredentialProviderConsentSubtitleBrandedNoSyncString();
   }
 
-  self.titleText =
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_TITLE",
-                        @"The title in the consent screen.");
+  self.titleText = CredentialProviderConsentTitleString();
   self.bannerSize = BannerImageSizeType::kStandard;
   self.shouldShowLearnMoreButton = YES;
   // Primary action button is initialized regardless of the visibility set and
@@ -56,8 +52,7 @@ NSString* const kConsentViewControllerIdentifier =
   self.configuration.primaryActionString = @"";
   self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
   self.shouldShowDismissButton = YES;
-  self.dismissButtonString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_DONE", @"The label of the done button.");
+  self.dismissButtonString = CredentialProviderDoneString();
 
   // Add consent view specific content.
   UILabel* captionLabel = [self drawCaptionLabel];
@@ -80,9 +75,7 @@ NSString* const kConsentViewControllerIdentifier =
 
 - (UILabel*)drawCaptionLabel {
   UILabel* captionLabel = [[UILabel alloc] init];
-  captionLabel.text = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_CAPTION",
-      @"Caption below subtitle to show when enabling the extension");
+  captionLabel.text = CredentialProviderConsentCaptionString();
   captionLabel.numberOfLines = 0;
   captionLabel.textAlignment = NSTextAlignmentCenter;
   captionLabel.font =

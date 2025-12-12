@@ -9,6 +9,7 @@
 #import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 
 @implementation ReauthenticationHandler {
   // Module containing the reauthentication mechanism used accessing passwords.
@@ -30,13 +31,8 @@
                   (void (^)(ReauthenticationResult))completionHandler
     presentReminderOnViewController:(UIViewController*)viewController {
   NSString* localizedReason =
-      forPasskeys
-          ? NSLocalizedString(
-                @"IDS_IOS_CREDENTIAL_PROVIDER_SCREENLOCK_REASON_PASSKEYS",
-                @"Access passkeys…")
-          : NSLocalizedString(
-                @"IDS_IOS_CREDENTIAL_PROVIDER_SCREENLOCK_REASON_PASSWORDS",
-                @"Accessing passwords…");
+      forPasskeys ? CredentialProviderScreenlockReasonPasskeysString()
+                  : CredentialProviderScreenlockReasonPasswordsString();
   if ([_weakReauthenticationModule canAttemptReauth]) {
     [_weakReauthenticationModule
         attemptReauthWithLocalizedReason:localizedReason
@@ -52,23 +48,13 @@
                             completionHandler:(void (^)(ReauthenticationResult))
                                                   completionHandler {
   UIAlertController* alertController = [UIAlertController
-      alertControllerWithTitle:
-          NSLocalizedString(
-              @"IDS_IOS_CREDENTIAL_PROVIDER_SET_UP_SCREENLOCK_TITLE",
-              @"Set A Passcode")
-                       message:NSLocalizedString(
-                                   @"IDS_IOS_CREDENTIAL_PROVIDER_SET_UP_"
-                                   @"SCREENLOCK_CONTENT",
-                                   @"To use passwords, you must first set a "
-                                   @"passcode on your device.")
+      alertControllerWithTitle:CredentialProviderSetUpScreenlockTitleString()
+                       message:CredentialProviderSetUpScreenlockContentString()
                 preferredStyle:UIAlertControllerStyleAlert];
 
   __weak UIResponder* opener = [self openerFromViewController:viewController];
   UIAlertAction* learnAction = [UIAlertAction
-      actionWithTitle:
-          NSLocalizedString(
-              @"IDS_IOS_CREDENTIAL_PROVIDER_SET_UP_SCREENLOCK_LEARN_HOW",
-              @"Learn How")
+      actionWithTitle:CredentialProviderSetUpScreenlockLearnHowString()
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction*) {
                 [self openAppWithURL:[NSURL
@@ -79,8 +65,7 @@
               }];
   [alertController addAction:learnAction];
   UIAlertAction* okAction = [UIAlertAction
-      actionWithTitle:NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_OK",
-                                        @"OK")
+      actionWithTitle:CredentialProviderOkString()
                 style:UIAlertActionStyleDefault
               handler:^(UIAlertAction*) {
                 completionHandler(ReauthenticationResult::kFailure);

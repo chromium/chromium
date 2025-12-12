@@ -8,6 +8,7 @@
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 
 namespace {
 
@@ -76,15 +77,9 @@ const CGFloat kBottomSpacing = 20;
       AppGroupUserDefaultsCredentialProviderUserEmail(),
       /*default_value=*/@"");
 
-  if (syncingUserEmail.length) {
-    return NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_BRANDED_HEADER_SYNC",
-        @"The information provided in the header of password list.");
-  } else {
-    return NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_BRANDED_HEADER_NO_SYNC",
-        @"The information provided in the header of password list.");
-  }
+  return syncingUserEmail.length
+             ? CredentialProviderCredentialListBrandedHeaderSyncString()
+             : CredentialProviderCredentialListBrandedHeaderNoSyncString();
 }
 
 @end

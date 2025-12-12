@@ -5,6 +5,7 @@
 #import "ios/chrome/credential_provider_extension/ui/passkey_error_alert_view_controller.h"
 
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 
 namespace {
 
@@ -61,45 +62,31 @@ BOOL ShouldShowImageAsFavicon(ErrorType error_type) {
 
 // Returns the title to use depending on the provided `error_type`.
 NSString* GetTitleString(ErrorType error_type) {
-  NSString* string_id;
   switch (error_type) {
     case ErrorType::kEnterpriseDisabledSavingCredentials:
-      string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_ENTERPRISE_"
-                  @"DISABLED_TITLE";
-      break;
+      return CredentialProviderPasskeyCreationEnterpriseDisabledTitleString();
     case ErrorType::kSignedOut:
-      string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_SIGNED_OUT_USER_TITLE";
-      break;
+      return CredentialProviderSignedOutUserTitleString();
     case ErrorType::kUserDisabledSavingCredentialsInPasswordSettings:
     case ErrorType::kUserDisabledSavingCredentialsToAccount:
-      string_id =
-          @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_TITLE";
-      break;
+      return CredentialProviderPasskeyCreationUserDisabledTitleString();
   }
-  return NSLocalizedString(string_id, @"The title of the screen.");
+  return @"";
 }
 
 // Returns the subtitle to use depending on the provided `error_type`.
 NSString* GetSubtitleString(ErrorType error_type) {
-  NSString* string_id;
   switch (error_type) {
     case ErrorType::kEnterpriseDisabledSavingCredentials:
-      string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_ENTERPRISE_"
-                  @"DISABLED_SUBTITLE";
-      break;
+      return CredentialProviderPasskeyCreationEnterpriseDisabledSubtitleString();
     case ErrorType::kSignedOut:
-      string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_SIGNED_OUT_USER_SUBTITLE";
-      break;
+      return CredentialProviderSignedOutUserSubtitleString();
     case ErrorType::kUserDisabledSavingCredentialsInPasswordSettings:
-      string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_"
-                  @"IN_PASSWORD_SETTINGS_SUBTITLE";
-      break;
+      return CredentialProviderPasskeyCreationUserDisabledInPasswordSettingsSubtitleString();
     case ErrorType::kUserDisabledSavingCredentialsToAccount:
-      string_id = @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_CREATION_USER_DISABLED_"
-                  @"FOR_ACCOUNT_SUBTITLE";
-      break;
+      return CredentialProviderPasskeyCreationUserDisabledForAccountSubtitleString();
   }
-  return NSLocalizedString(string_id, @"The subtitle of the screen.");
+  return @"";
 }
 
 }  // namespace
@@ -113,9 +100,8 @@ NSString* GetSubtitleString(ErrorType error_type) {
 - (instancetype)initForErrorType:(ErrorType)errorType {
   ButtonStackConfiguration* configuration =
       [[ButtonStackConfiguration alloc] init];
-  configuration.primaryActionString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
-      @"The primary action title.");
+  configuration.primaryActionString =
+      CredentialProviderPasskeyErrorAlertButtonTitleString();
   self = [super initWithConfiguration:configuration];
   if (self) {
     _errorType = errorType;

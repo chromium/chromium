@@ -4,6 +4,8 @@
 
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
+
 namespace {
 constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
 }  // namespace
@@ -15,12 +17,8 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 32;
 - (void)loadView {
   self.image = [UIImage imageNamed:@"empty_credentials_illustration"];
   self.customSpacingAfterImage = kStackViewSpacingAfterIllustration;
-  self.titleString =
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_STALE_CREDENTIALS_TITLE",
-                        @"The title in the stale credentials screen.");
-  self.subtitleString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_STALE_CREDENTIALS_SUBTITLE",
-      @"The subtitle in the stale credentials screen.");
+  self.titleString = CredentialProviderStaleCredentialsTitleString();
+  self.subtitleString = CredentialProviderStaleCredentialsSubtitleString();
 
   [super loadView];
 }

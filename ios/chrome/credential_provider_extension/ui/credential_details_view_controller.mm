@@ -12,6 +12,7 @@
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/password_note_cell.h"
@@ -130,36 +131,29 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
   switch (rowIdentifier) {
     case RowIdentifier::RowIdentifierURL:
       cell.accessoryView = nil;
-      cell.textLabel.text =
-          NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_URL", @"URL");
+      cell.textLabel.text = CredentialProviderDetailsUrlString();
       cell.detailTextLabel.text = self.credential.serviceIdentifier;
       break;
     case RowIdentifier::RowIdentifierUsername:
       cell.accessoryView = nil;
-      cell.textLabel.text = NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_USERNAME", @"Username");
+      cell.textLabel.text = CredentialProviderDetailsUsernameString();
       cell.detailTextLabel.text = self.credential.username;
       break;
     case RowIdentifier::RowIdentifierPassword:
       cell.accessoryView = [self passwordIconButton];
-      cell.textLabel.text = NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_PASSWORD", @"Password");
+      cell.textLabel.text = CredentialProviderDetailsPasswordString();
       cell.detailTextLabel.text = [self password];
       break;
     case RowIdentifier::RowIdentifierNote:
       break;
     case RowIdentifier::RowIdentifierUserDisplayName:
       cell.accessoryView = nil;
-      cell.textLabel.text = NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_USER_DISPLAY_NAME",
-          @"User Display Name");
+      cell.textLabel.text = CredentialProviderDetailsUserDisplayNameString();
       cell.detailTextLabel.text = self.credential.userDisplayName;
       break;
     case RowIdentifier::RowIdentifierCreationDate:
       cell.accessoryView = nil;
-      cell.textLabel.text = NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_SHOW_CREATION_DATE",
-          @"Passkey");
+      cell.textLabel.text = CredentialProviderDetailsShowCreationDateString();
       cell.detailTextLabel.text = [self creationDate];
       break;
     default:
@@ -179,48 +173,35 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
   switch ([self rowIdentifier:indexPath.row]) {
     case RowIdentifier::RowIdentifierURL:
-      [self
-          showTooltip:NSLocalizedString(
-                          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
-           atBottomOf:cell
-               action:@selector(copyURL)];
+      [self showTooltip:CredentialProviderDetailsCopyString()
+             atBottomOf:cell
+                 action:@selector(copyURL)];
       break;
     case RowIdentifier::RowIdentifierUsername:
-      [self
-          showTooltip:NSLocalizedString(
-                          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
-           atBottomOf:cell
-               action:@selector(copyUsername)];
+      [self showTooltip:CredentialProviderDetailsCopyString()
+             atBottomOf:cell
+                 action:@selector(copyUsername)];
       break;
     case RowIdentifier::RowIdentifierPassword:
       if (self.clearPassword) {
-        [self showTooltip:NSLocalizedString(
-                              @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY",
-                              @"Copy")
+        [self showTooltip:CredentialProviderDetailsCopyString()
                atBottomOf:cell
                    action:@selector(copyPassword)];
       } else {
-        [self showTooltip:
-                  NSLocalizedString(
-                      @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_SHOW_PASSWORD",
-                      @"Show Password")
+        [self showTooltip:CredentialProviderDetailsShowPasswordString()
                atBottomOf:cell
                    action:@selector(showPassword)];
       }
       break;
     case RowIdentifier::RowIdentifierUserDisplayName:
-      [self
-          showTooltip:NSLocalizedString(
-                          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
-           atBottomOf:cell
-               action:@selector(copyUserDisplayName)];
+      [self showTooltip:CredentialProviderDetailsCopyString()
+             atBottomOf:cell
+                 action:@selector(copyUserDisplayName)];
       break;
     case RowIdentifier::RowIdentifierCreationDate:
-      [self
-          showTooltip:NSLocalizedString(
-                          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_COPY", @"Copy")
-           atBottomOf:cell
-               action:@selector(copyCreationDate)];
+      [self showTooltip:CredentialProviderDetailsCopyString()
+             atBottomOf:cell
+                 action:@selector(copyCreationDate)];
       break;
     default:
       break;
@@ -317,8 +298,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 
 // Creates an enter button for the navigation item
 - (UIBarButtonItem*)navigationEnterButton {
-  NSString* title =
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_USE", @"Use");
+  NSString* title = CredentialProviderUseString();
   UIBarButtonItem* enterButton =
       [[UIBarButtonItem alloc] initWithTitle:title
                                        style:UIBarButtonItemStyleDone
@@ -332,8 +312,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 - (NSString*)creationDate {
   NSString* formattedDate =
       [self formattedDateForPasskeyCreationDate:self.credential.creationDate];
-  NSString* baseLocalizedString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_CREATION_DATE", @"00/00/00");
+  NSString* baseLocalizedString = CredentialProviderDetailsCreationDateString();
 
   return
       [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"

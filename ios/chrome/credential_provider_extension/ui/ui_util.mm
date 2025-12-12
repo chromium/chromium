@@ -6,6 +6,8 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
+
 namespace {
 
 // System SF symbol names for the hide and show actions.
@@ -54,9 +56,7 @@ NSString* PromptForServiceIdentifiers(
   if (!IDForPrompt) {
     return nil;
   }
-  NSString* baseLocalizedString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_TITLE_PROMPT",
-      @"Extra prompt telling the user what site they are looking at");
+  NSString* baseLocalizedString = CredentialProviderTitlePromptString();
   return [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
                                                         withString:IDForPrompt];
 }

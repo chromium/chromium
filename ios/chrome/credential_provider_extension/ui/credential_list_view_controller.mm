@@ -16,6 +16,7 @@
 #import "ios/chrome/common/ui/table_view/favicon_table_view_cell.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/credential_provider_extension/favicon_util.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_global_header_view.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_header_view.h"
@@ -87,9 +88,7 @@ UIColor* BackgroundColor() {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.title = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_BRANDED_TITLE",
-      @"Google Password Manager");
+  self.title = CredentialProviderCredentialListBrandedTitleString();
 
   self.view.backgroundColor = BackgroundColor();
   self.navigationItem.leftBarButtonItem = [self navigationCancelButton];
@@ -185,9 +184,7 @@ UIColor* BackgroundColor() {
                                     reuseIdentifier:kNewPasswordCellIdentifier];
     }
     cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    cell.textLabel.text =
-        NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CREATE_PASSWORD_ROW",
-                          @"Add New Password");
+    cell.textLabel.text = CredentialProviderCreatePasswordRowString();
     cell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
     return cell;
   }
@@ -333,9 +330,8 @@ UIColor* BackgroundColor() {
   [button addTarget:self
                 action:@selector(infoIconButtonTapped:event:)
       forControlEvents:UIControlEventTouchUpInside];
-  button.accessibilityLabel = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_SHOW_DETAILS_ACCESSIBILITY_LABEL",
-      @"Show Details.");
+  button.accessibilityLabel =
+      CredentialProviderShowDetailsAccessibilityLabelString();
 
   button.pointerInteractionEnabled = YES;
   button.pointerStyleProvider = ^UIPointerStyle*(
@@ -434,17 +430,14 @@ UIColor* BackgroundColor() {
 // Returns the title of the given section
 - (NSString*)titleForHeaderInSection:(NSInteger)section {
   if ([self isEmptyTable]) {
-    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NO_SEARCH_RESULTS",
-                             @"No search results found");
+    return CredentialProviderNoSearchResultsString();
   } else if ([self isSuggestedCredentialSection:section]) {
     return nil;
   } else if ([self.allCredentials count] > 0 &&
              self.allCredentials[0].isPasskey) {
-    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSKEYS",
-                             @"All Passkeys");
+    return CredentialProviderAllPasskeysString();
   } else {
-    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSWORDS",
-                             @"All Passwords");
+    return CredentialProviderAllPasswordsString();
   }
 }
 

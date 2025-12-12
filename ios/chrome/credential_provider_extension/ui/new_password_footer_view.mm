@@ -8,6 +8,7 @@
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 
 namespace {
 
@@ -71,16 +72,12 @@ const CGFloat kLabelSpacing = 8;
       /*default_value=*/@"");
 
   if (userEmail.length) {
-    NSString* baseLocalizedString = NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER_BRANDED_SYNC",
-        @"Disclaimer telling users what will happen to their passwords");
+    NSString* baseLocalizedString =
+        CredentialProviderNewPasswordFooterBrandedSyncString();
     return [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
                                                           withString:userEmail];
   } else {
-    return NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER_BRANDED_NO_SYNC",
-        @"Disclaimer telling non-logged in users what "
-        @"will happen to their passwords");
+    return CredentialProviderNewPasswordFooterBrandedNoSyncString();
   }
 }
 

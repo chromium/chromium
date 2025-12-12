@@ -5,6 +5,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_details_view_controller.h"
 
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_view_controller+Testing.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -107,24 +108,17 @@ TEST_F(CredentialDetailsViewControllerTest, TestPasskeyPresentation) {
   EXPECT_EQ([table_view numberOfRowsInSection:0], 4);
 
   // Check that the content of every table view cell is as expected.
-  CheckCell(GetTableViewCell(0, 0),
-            NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_URL", @""),
+  CheckCell(GetTableViewCell(0, 0), CredentialProviderDetailsUrlString(),
             credential.serviceIdentifier);
-  CheckCell(
-      GetTableViewCell(0, 1),
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_USERNAME", @""),
-      credential.username);
+  CheckCell(GetTableViewCell(0, 1), CredentialProviderDetailsUsernameString(),
+            credential.username);
   CheckCell(GetTableViewCell(0, 2),
-            NSLocalizedString(
-                @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_USER_DISPLAY_NAME", @""),
+            CredentialProviderDetailsUserDisplayNameString(),
             credential.userDisplayName);
 
   CheckCell(
-      GetTableViewCell(0, 3),
-      NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_SHOW_CREATION_DATE", @""),
-      [NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_CREATION_DATE",
-                         @"")
+      GetTableViewCell(0, 3), CredentialProviderDetailsShowCreationDateString(),
+      [CredentialProviderDetailsCreationDateString()
           stringByReplacingOccurrencesOfString:@"$1"
                                     withString:FormatTimestamp(kJan1st2024)]);
 }
