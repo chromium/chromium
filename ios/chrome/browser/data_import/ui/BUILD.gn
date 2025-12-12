@@ -7,6 +7,7 @@ source_set("ui") {
     "data_import_credential_conflict_mutator.h",
     "data_import_credential_conflict_resolution_view_controller.h",
     "data_import_credential_conflict_resolution_view_controller.mm",
+    "data_import_credential_conflict_resolution_view_controller_delegate.h",
     "data_import_import_stage_transition_handler.h",
     "data_import_invalid_passwords_view_controller.h",
     "data_import_invalid_passwords_view_controller.mm",

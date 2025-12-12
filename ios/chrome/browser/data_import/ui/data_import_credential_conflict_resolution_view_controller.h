@@ -11,6 +11,8 @@
 @class PasswordImportItem;
 @protocol DataImportImportStageTransitionHandler;
 @protocol DataImportCredentialConflictMutator;
+@protocol DataImportCredentialConflictResolutionViewControllerDelegate;
+@protocol ReauthenticationProtocol;
 
 /// View controller listing credential conflicts introduced by data import and
 /// allowing the user to resolve them.
@@ -19,6 +21,14 @@
 
 /// Mutator object to handle conflict resolution decision.
 @property(nonatomic, weak) id<DataImportCredentialConflictMutator> mutator;
+
+/// Module for reauthentication used when the user wants to reveal a password.
+@property(nonatomic, strong) id<ReauthenticationProtocol> reauthModule;
+
+/// Handles dismissal of this view.
+@property(nonatomic, weak)
+    id<DataImportCredentialConflictResolutionViewControllerDelegate>
+        delegate;
 
 - (instancetype)initWithPasswordConflicts:
                     (NSArray<PasswordImportItem*>*)passwords

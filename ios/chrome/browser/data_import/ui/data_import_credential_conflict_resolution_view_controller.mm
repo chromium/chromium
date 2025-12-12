@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_mutator.h"
+#import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller_delegate.h"
 #import "ios/chrome/browser/data_import/ui/data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/data_import/ui/password_import_item_cell_content_configuration.h"
 #import "ios/chrome/browser/data_import/ui/ui_utils.h"
@@ -50,8 +51,6 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   /// The "select" and "deselect" buttons.
   UIBarButtonItem* _selectButton;
   UIBarButtonItem* _deselectButton;
-  /// Module for reauthentication when user wants to see unmasked passwords.
-  ReauthenticationModule* _reauthModule;
 }
 
 #pragma mark - ChromeTableViewController
@@ -133,8 +132,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 - (void)didTapCancelButton {
   RecordDataImportDismissCredentialConflictScreen(
       DataImportCredentialConflictScreenAction::kCancel);
-  [self.presentingViewController dismissViewControllerAnimated:YES
-                                                    completion:nil];
+  [self.delegate cancelledConflictResolution];
 }
 
 - (void)didTapContinueButton {
@@ -153,8 +151,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   }
   [self.mutator continueToImportPasswords:passwordIdentifiers
                                  passkeys:passkeyIdentifiers];
-  [self.presentingViewController dismissViewControllerAnimated:YES
-                                                    completion:nil];
+  [self.delegate resolvedCredentialConflicts];
 }
 
 // If all rows in the table view are currently selected, deselects all.
@@ -186,7 +183,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 #pragma mark - Private
 
 /// Lazy-loader of the reauthentication module.
-- (ReauthenticationModule*)reauthenticationModule {
+- (ReauthenticationModule*)reauthModule {
   if (!_reauthModule) {
     _reauthModule = password_manager::BuildReauthenticationModule();
   }
@@ -351,7 +348,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
 /// Helper method to set up the accessory view.
 - (UIView*)accessoryViewForItemIdentifier:(ConflictItemIdentifier*)identifier {
   if (identifier.type == CredentialConflictType::kPasskey ||
-      ![[self reauthenticationModule] canAttemptReauth]) {
+      ![self.reauthModule canAttemptReauth]) {
     return nil;
   }
   BOOL forUnmaskAction =
@@ -389,8 +386,7 @@ NSString* const kDataImportCredentialConflictResolutionSection =
     return;
   }
 
-  if (!shouldUnmask || authenticated ||
-      ![[self reauthenticationModule] canAttemptReauth]) {
+  if (!shouldUnmask || authenticated || ![self.reauthModule canAttemptReauth]) {
     _shouldUnmaskPasswordAtIndex[identifier.index] = @(shouldUnmask);
     [self updateItemWithIdentifier:identifier];
     return;
@@ -407,9 +403,9 @@ NSString* const kDataImportCredentialConflictResolutionSection =
   };
   NSString* reason = l10n_util::GetNSString(
       IDS_IOS_SAFARI_IMPORT_PASSWORD_UNMASK_REAUTH_REASON);
-  [[self reauthenticationModule] attemptReauthWithLocalizedReason:reason
-                                             canReusePreviousAuth:YES
-                                                          handler:handler];
+  [self.reauthModule attemptReauthWithLocalizedReason:reason
+                                 canReusePreviousAuth:YES
+                                              handler:handler];
 }
 
 @end
