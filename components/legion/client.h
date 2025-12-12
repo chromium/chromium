@@ -25,21 +25,6 @@ namespace legion {
 // Interface for the legion client.
 class Client {
  public:
-  using BinaryEncodedProtoRequest = Request;
-  using BinaryEncodedProtoResponse = Response;
-
-  static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
-
-  struct RequestOptions {
-    base::TimeDelta timeout = kDefaultTimeout;
-  };
-
-  // Callback for when a `SendRequest` operation completes.
-  // If the operation is successful, the result will contain the server's
-  // response. Otherwise, it will contain an `ErrorCode` error.
-  using OnRequestCompletedCallback = base::OnceCallback<void(
-      base::expected<BinaryEncodedProtoResponse, ErrorCode> result)>;
-
   // Callback for when a `SendTextRequest` operation completes.
   using OnTextRequestCompletedCallback =
       base::OnceCallback<void(base::expected<std::string, ErrorCode> result)>;
@@ -52,6 +37,12 @@ class Client {
   using OnEstablishSessionCompletedCallback =
       base::OnceCallback<void(base::expected<void, ErrorCode>)>;
 
+  struct RequestOptions {
+    base::TimeDelta timeout = kDefaultTimeout;
+  };
+
+  static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
+
   static std::unique_ptr<Client> Create(
       network::mojom::NetworkContext* network_context);
 
@@ -59,10 +50,10 @@ class Client {
       const GURL& url,
       network::mojom::NetworkContext* network_context);
 
+  virtual ~Client() = default;
+
   // Takes a URL without scheme and an api_key and returns a URL.
   static GURL FormatUrl(const std::string& url, const std::string& api_key);
-
-  virtual ~Client() = default;
 
   // Establishes a secure session without sending a request. The callback will
   // be invoked upon completion. Calling this function is optional as a session

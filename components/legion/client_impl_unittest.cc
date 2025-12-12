@@ -66,15 +66,16 @@ class FakeSecureChannelFactory {
 };
 
 struct ResponseErrorTestParam {
-  Client::BinaryEncodedProtoResponse response_data;
+  ClientImpl::BinaryEncodedProtoResponse response_data;
   ErrorCode expected_error;
   bool mismatch_request_id = false;
 };
 
-void SetUpMockWrite(MockSecureChannelClient* mock_secure_channel,
-                    SecureChannel::ResponseCallback& response_callback,
-                    const Client::BinaryEncodedProtoResponse& response_template,
-                    bool mismatch_request_id = false) {
+void SetUpMockWrite(
+    MockSecureChannelClient* mock_secure_channel,
+    SecureChannel::ResponseCallback& response_callback,
+    const ClientImpl::BinaryEncodedProtoResponse& response_template,
+    bool mismatch_request_id = false) {
   EXPECT_CALL(*mock_secure_channel, Write(_))
       .WillOnce([=, &response_callback](const Request& request_payload) {
         proto::LegionRequest request;
@@ -82,7 +83,7 @@ void SetUpMockWrite(MockSecureChannelClient* mock_secure_channel,
                                            request_payload.size()));
 
         proto::LegionResponse response;
-        Client::BinaryEncodedProtoResponse response_data;
+        ClientImpl::BinaryEncodedProtoResponse response_data;
         if (response.ParseFromArray(response_template.data(),
                                     response_template.size())) {
           if (mismatch_request_id) {
@@ -139,8 +140,8 @@ TEST_F(ClientImplTest, SendTextRequestSuccess) {
 
   std::string serialized_response;
   legion_response.SerializeToString(&serialized_response);
-  Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
-                                                   serialized_response.end());
+  ClientImpl::BinaryEncodedProtoResponse response_data(
+      serialized_response.begin(), serialized_response.end());
 
   SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
                  response_data);
@@ -202,8 +203,8 @@ TEST_F(ClientImplTest, IgnoresResponseWithUnknownRequestId) {
 
   std::string serialized_response;
   legion_response.SerializeToString(&serialized_response);
-  Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
-                                                   serialized_response.end());
+  ClientImpl::BinaryEncodedProtoResponse response_data(
+      serialized_response.begin(), serialized_response.end());
 
   // Set up mock to respond with a mismatched request ID.
   SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
@@ -272,8 +273,8 @@ TEST_F(ClientImplTest, SecureChannelRecreation) {
 
   std::string serialized_response;
   legion_response.SerializeToString(&serialized_response);
-  Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
-                                                   serialized_response.end());
+  ClientImpl::BinaryEncodedProtoResponse response_data(
+      serialized_response.begin(), serialized_response.end());
 
   SetUpMockWrite(second_channel, factory_.response_callback_, response_data);
 
@@ -360,8 +361,8 @@ TEST_F(ClientImplTest, SendTextRequestResponseAfterTimeout) {
       ->set_text("late response");
   std::string serialized_response;
   legion_response.SerializeToString(&serialized_response);
-  Client::BinaryEncodedProtoResponse response_data(serialized_response.begin(),
-                                                   serialized_response.end());
+  ClientImpl::BinaryEncodedProtoResponse response_data(
+      serialized_response.begin(), serialized_response.end());
   factory_.response_callback_.Run(base::ok(response_data));
 
   // To ensure the task runner has a chance to run the callback (which should be
@@ -472,8 +473,8 @@ INSTANTIATE_TEST_SUITE_P(
                   response.mutable_generate_content_response();
                   std::string serialized;
                   response.SerializeToString(&serialized);
-                  return Client::BinaryEncodedProtoResponse(serialized.begin(),
-                                                            serialized.end());
+                  return ClientImpl::BinaryEncodedProtoResponse(
+                      serialized.begin(), serialized.end());
                 }(),
             .expected_error = ErrorCode::kNoContent},
         // Response with no content parts.
@@ -485,8 +486,8 @@ INSTANTIATE_TEST_SUITE_P(
                   gcr->add_candidates();
                   std::string serialized;
                   response.SerializeToString(&serialized);
-                  return Client::BinaryEncodedProtoResponse(serialized.begin(),
-                                                            serialized.end());
+                  return ClientImpl::BinaryEncodedProtoResponse(
+                      serialized.begin(), serialized.end());
                 }(),
             .expected_error = ErrorCode::kNoContent}));
 
@@ -552,7 +553,7 @@ INSTANTIATE_TEST_SUITE_P(
                   proto::LegionResponse legion_response;
                   std::string serialized_response;
                   legion_response.SerializeToString(&serialized_response);
-                  return Client::BinaryEncodedProtoResponse(
+                  return ClientImpl::BinaryEncodedProtoResponse(
                       serialized_response.begin(), serialized_response.end());
                 }(),
             .expected_error = ErrorCode::kNoResponse}));

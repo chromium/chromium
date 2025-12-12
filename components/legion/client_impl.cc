@@ -40,7 +40,7 @@ void OnGenerateContentRequestCompleted(
 
 void OnRequestSent(
     Client::OnGenerateContentRequestCompletedCallback cb,
-    base::expected<Client::BinaryEncodedProtoResponse, ErrorCode> result) {
+    base::expected<ClientImpl::BinaryEncodedProtoResponse, ErrorCode> result) {
   if (!result.has_value()) {
     std::move(cb).Run(base::unexpected(result.error()));
     return;
