@@ -15,11 +15,13 @@ IOSChromeAimEligibilityService::IOSChromeAimEligibilityService(
     PrefService* pref_service,
     TemplateURLService* template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    bool is_off_the_record)
     : AimEligibilityService(*pref_service,
                             template_url_service,
                             url_loader_factory,
-                            identity_manager) {}
+                            identity_manager,
+                            is_off_the_record) {}
 
 IOSChromeAimEligibilityService::~IOSChromeAimEligibilityService() = default;
 
