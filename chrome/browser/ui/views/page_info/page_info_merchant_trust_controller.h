@@ -37,11 +37,7 @@ class PageInfoMerchantTrustController : public content::WebContentsObserver {
       std::optional<page_info::MerchantData> merchant_data);
   void LearnMoreLinkPressed(const ui::Event& event);
   void ViewReviewsPressed();
-  void HatsButtonPressed();
-  void OnSurveyLoaded();
-  void OnSurveyFailed();
   void InitCallbacks();
-  void RecordInteractionPref();
   void RecordInteraction(page_info::MerchantTrustInteraction interaction);
 
   raw_ptr<PageInfoMerchantTrustContentView> content_view_;
@@ -49,7 +45,6 @@ class PageInfoMerchantTrustController : public content::WebContentsObserver {
 
   base::CallbackListSubscription learn_more_link_callback_;
   base::CallbackListSubscription view_reviews_button_callback_;
-  base::CallbackListSubscription hats_button_callback_;
 
   base::OneShotTimer interaction_timer_;
   raw_ptr<page_info::MerchantTrustService> service_;

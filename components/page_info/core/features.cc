@@ -75,46 +75,4 @@ extern bool IsMerchantTrustFeatureEnabled(const std::string& country_code,
          base::ToLowerASCII(locale) == kMerchantTrustEnabledForLocale;
 }
 
-BASE_FEATURE(kMerchantTrustEvaluationControlSurvey,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta>
-    kMerchantTrustEvaluationControlMinTimeToShowSurvey{
-        &kMerchantTrustEvaluationControlSurvey, "MinTimeToShowSurvey",
-        base::Minutes(2)};
-
-const base::FeatureParam<base::TimeDelta>
-    kMerchantTrustEvaluationControlMaxTimeToShowSurvey{
-        &kMerchantTrustEvaluationControlSurvey, "MaxTimeToShowSurvey",
-        base::Minutes(60)};
-
-BASE_FEATURE(kMerchantTrustEvaluationExperimentSurvey,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta>
-    kMerchantTrustEvaluationExperimentMinTimeToShowSurvey{
-        &kMerchantTrustEvaluationExperimentSurvey, "MinTimeToShowSurvey",
-        base::Minutes(2)};
-
-const base::FeatureParam<base::TimeDelta>
-    kMerchantTrustEvaluationExperimentMaxTimeToShowSurvey{
-        &kMerchantTrustEvaluationExperimentSurvey, "MaxTimeToShowSurvey",
-        base::Minutes(60)};
-
-const base::FeatureParam<base::TimeDelta>
-    kMerchantTrustRequiredInteractionDuration{
-        &kMerchantTrustEvaluationExperimentSurvey,
-        "RequiredInteractionDuration", base::Seconds(5)};
-
-BASE_FEATURE(kMerchantTrustLearnSurvey, base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<std::string> kMerchantTrustLearnSurveyTriggerId{
-    &kMerchantTrustLearnSurvey, "trigger_id", "EA14LFXPG0ugnJ3q1cK0Y6Gtj3De"};
-
-extern const base::FeatureParam<double> kMerchantTrustLearnSurveyProbability{
-    &kMerchantTrustLearnSurvey, "probability", 1.0};
-
-extern const base::FeatureParam<bool> kMerchantTrustLearnSurveyUserPrompted{
-    &kMerchantTrustLearnSurvey, "user_prompted", true};
-
 }  // namespace page_info

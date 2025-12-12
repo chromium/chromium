@@ -904,6 +904,10 @@ constexpr char kReduceUserAgentMinorVersion[] = "user_agent_reduction";
 
 // Deprecated 12/2025.
 constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
+constexpr char kMerchantTrustUiLastInteractionTime[] =
+    "merchant_trust.ui.last_interaction_time";
+constexpr char kMerchantTrustPageInfoLastOpenTime[] =
+    "merchant_trust.page_info.last_open_time";
 
 // Deprecated 12/2025.
 constexpr char kTrackingProtectionEligibleSince[] =
@@ -1285,6 +1289,8 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 12/2025.
   registry->RegisterBooleanPref(kReduceUserAgentMinorVersion, false);
+  registry->RegisterTimePref(kMerchantTrustUiLastInteractionTime, base::Time());
+  registry->RegisterTimePref(kMerchantTrustPageInfoLastOpenTime, base::Time());
 }
 
 }  // namespace
@@ -1647,7 +1653,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   media_device_salt::MediaDeviceIDSalt::RegisterProfilePrefs(registry);
   MediaEngagementService::RegisterProfilePrefs(registry);
   MediaStorageIdSalt::RegisterProfilePrefs(registry);
-  page_info::MerchantTrustService::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);
   NotificationDisplayServiceImpl::RegisterProfilePrefs(registry);
   NotifierStateTracker::RegisterProfilePrefs(registry);
@@ -2511,6 +2516,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 12/2025.
   profile_prefs->ClearPref(kReduceUserAgentMinorVersion);
+  profile_prefs->ClearPref(kMerchantTrustUiLastInteractionTime);
+  profile_prefs->ClearPref(kMerchantTrustPageInfoLastOpenTime);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

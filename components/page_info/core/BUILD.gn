@@ -43,7 +43,6 @@ static_library("core") {
     "page_info_history_data_source.h",
     "page_info_types.cc",
     "page_info_types.h",
-    "pref_names.h",
     "privacy_policy_insights_service.cc",
     "privacy_policy_insights_service.h",
   ]

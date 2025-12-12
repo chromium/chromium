@@ -208,12 +208,6 @@ constexpr char
         "plus-address-filled-plus-address-via-manual-fallback";
 constexpr char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[] =
     "privacy-sandbox-sentiment-survey";
-constexpr char kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey[] =
-    "merchant-trust-evaluation-control-survey";
-constexpr char kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey[] =
-    "merchant-trust-evaluation-experiment-survey";
-constexpr char kHatsSurveyTriggerMerchantTrustLearnSurvey[] =
-    "merchant-trust-learn-survey";
 constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =
     "omnibox-on-focus-happiness";
 constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[] =
@@ -742,31 +736,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &lens::features::kLensOverlaySurvey, kHatsSurveyTriggerLensOverlayResults,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{"ID that's tied to your Google Lens session"});
-
-  // Merchant trust surveys
-  survey_configs.emplace_back(
-      &page_info::kMerchantTrustEvaluationControlSurvey,
-      kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey);
-
-  survey_configs.emplace_back(
-      &page_info::kMerchantTrustEvaluationExperimentSurvey,
-      kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey);
-
-  // The reason for this survey params being set here instead of in a finch
-  // config is that our MerchantTrust config has 2 HaTS surveys, one manually
-  // triggered and one pop-up (default HaTS behavior), and the finch config only
-  // supports one HaTS survey per study group. e.g. There can't be 2
-  // features with same param names within the same group, hence we need to set
-  // the one of the surveys params here.
-  hats::SurveyConfig merchant_trust_learn_survey_config(
-      &page_info::kMerchantTrustLearnSurvey,
-      kHatsSurveyTriggerMerchantTrustLearnSurvey,
-      page_info::kMerchantTrustLearnSurveyTriggerId.Get());
-  merchant_trust_learn_survey_config.user_prompted =
-      page_info::kMerchantTrustLearnSurveyUserPrompted.Get();
-  merchant_trust_learn_survey_config.probability =
-      page_info::kMerchantTrustLearnSurveyProbability.Get();
-  survey_configs.push_back(merchant_trust_learn_survey_config);
 
   // Automated password change surveys.
   survey_configs.emplace_back(

@@ -10591,7 +10591,6 @@ test("unit_tests") {
       "../browser/ui/views/page_info/page_info_bubble_specification_unittest.cc",
       "../browser/ui/views/page_info/page_info_bubble_view_unittest.cc",
       "../browser/ui/views/page_info/page_info_cookies_content_view_unittest.cc",
-      "../browser/ui/views/page_info/page_info_merchant_trust_unittest.cc",
       "../browser/ui/views/page_info/page_info_permission_content_view_unittest.cc",
       "../browser/ui/views/page_info/safety_tip_page_info_bubble_view_unittest.cc",
       "../browser/ui/views/page_info/star_rating_view_unittest.cc",

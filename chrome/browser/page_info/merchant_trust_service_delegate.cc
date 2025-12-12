@@ -17,26 +17,6 @@ MerchantTrustServiceDelegate::MerchantTrustServiceDelegate(Profile* profile)
 
 MerchantTrustServiceDelegate::~MerchantTrustServiceDelegate() = default;
 
-void MerchantTrustServiceDelegate::ShowEvaluationSurvey() {
-  auto* hats_service =
-      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
-  if (!hats_service) {
-    return;
-  }
-
-  if (page_info::IsMerchantTrustFeatureEnabled()) {
-    CHECK(base::FeatureList::IsEnabled(
-        page_info::kMerchantTrustEvaluationExperimentSurvey));
-    hats_service->LaunchSurvey(
-        kHatsSurveyTriggerMerchantTrustEvaluationExperimentSurvey);
-  } else {
-    CHECK(base::FeatureList::IsEnabled(
-        page_info::kMerchantTrustEvaluationControlSurvey));
-    hats_service->LaunchSurvey(
-        kHatsSurveyTriggerMerchantTrustEvaluationControlSurvey);
-  }
-}
-
 double MerchantTrustServiceDelegate::GetSiteEngagementScore(const GURL url) {
   auto* site_engagement_service =
       site_engagement::SiteEngagementServiceFactory::GetForProfile(profile_);

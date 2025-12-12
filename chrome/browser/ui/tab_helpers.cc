@@ -689,11 +689,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           features::kHappinessTrackingSurveysForDesktopDemo) ||
       base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey) ||
       base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2) ||
-      PerformanceControlsHatsServiceFactory::IsAnySurveyFeatureEnabled() ||
-      base::FeatureList::IsEnabled(
-          page_info::kMerchantTrustEvaluationControlSurvey) ||
-      base::FeatureList::IsEnabled(
-          page_info::kMerchantTrustEvaluationExperimentSurvey)) {
+      PerformanceControlsHatsServiceFactory::IsAnySurveyFeatureEnabled()) {
     HatsHelper::CreateForWebContents(web_contents);
   }
   SharedHighlightingPromo::CreateForWebContents(web_contents);

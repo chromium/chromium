@@ -20,10 +20,6 @@ class MerchantTrustServiceDelegate
   MerchantTrustServiceDelegate& operator=(const MerchantTrustServiceDelegate&) =
       delete;
 
-  // Attempt to show an evaluation survey. It will show either a control or an
-  // experiment survey depending on the feature state.
-  void ShowEvaluationSurvey() override;
-
   double GetSiteEngagementScore(const GURL url) override;
 
  private:

@@ -411,9 +411,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 
     // Fetch the data when the UI is enabled or if the control survey may be
     // shown.
-    if (merchant_trust_section_ ||
-        base::FeatureList::IsEnabled(
-            page_info::kMerchantTrustEvaluationControlSurvey)) {
+    if (merchant_trust_section_) {
       ui_delegate_->GetMerchantTrustInfo(
           base::BindOnce(&PageInfoMainView::OnMerchantTrustDataFetched,
                          weak_factory_.GetWeakPtr()));
@@ -563,8 +561,6 @@ void PageInfoMainView::OnMerchantTrustDataFetched(
   if (!merchant_data.has_value()) {
     return;
   }
-
-  ui_delegate_->RecordPageInfoWithMerchantTrustOpenTime();
 
   if (!merchant_trust_section_) {
     return;

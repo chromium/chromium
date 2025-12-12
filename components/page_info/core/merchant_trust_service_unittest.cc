@@ -23,7 +23,6 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/merchant_trust_validation.h"
-#include "components/page_info/core/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,7 +65,6 @@ OptimizationMetadata BuildMerchantTrustResponse() {
 
 class MockMerchantTrustServiceDelegate : public MerchantTrustService::Delegate {
  public:
-  MOCK_METHOD(void, ShowEvaluationSurvey, (), (override));
   MOCK_METHOD(double, GetSiteEngagementScore, (const GURL url), (override));
 };
 
@@ -86,10 +84,6 @@ class MockMerchantTrustService : public MerchantTrustService {
 
 class MerchantTrustServiceTest : public ::testing::Test {
  public:
-  MerchantTrustServiceTest() {
-    page_info::MerchantTrustService::RegisterProfilePrefs(prefs()->registry());
-  }
-
   void SetUp() override {
     auto delegate = std::make_unique<MockMerchantTrustServiceDelegate>();
     delegate_ = delegate.get();
@@ -340,97 +334,6 @@ TEST_F(MerchantTrustServiceTest, ValidProtoMissingReviewsSummaryNoData) {
   run_loop.Run();
   t.ExpectUniqueSample("Security.PageInfo.MerchantTrustStatus",
                        MerchantTrustStatus::kValidWithMissingReviewsSummary, 1);
-}
-// Tests for control evaluation survey.
-TEST_F(MerchantTrustServiceTest, ControlSurvey) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(1);
-  feature_list.InitWithFeatureState(kMerchantTrustEvaluationControlSurvey,
-                                    true);
-
-  prefs()->SetTime(prefs::kMerchantTrustPageInfoLastOpenTime, clock()->Now());
-  clock()->Advance(kMerchantTrustEvaluationControlMinTimeToShowSurvey.Get());
-  service()->MaybeShowEvaluationSurvey();
-}
-
-TEST_F(MerchantTrustServiceTest, ControlSurveyInteractionTooEarly) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(0);
-  feature_list.InitWithFeatureState(kMerchantTrustEvaluationControlSurvey,
-                                    true);
-
-  prefs()->SetTime(prefs::kMerchantTrustPageInfoLastOpenTime, clock()->Now());
-  clock()->Advance(kMerchantTrustEvaluationControlMinTimeToShowSurvey.Get() -
-                   base::Seconds(1));
-  service()->MaybeShowEvaluationSurvey();
-}
-
-TEST_F(MerchantTrustServiceTest, ControlSurveyInteractionExpired) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(0);
-  feature_list.InitWithFeatureState(kMerchantTrustEvaluationControlSurvey,
-                                    true);
-
-  prefs()->SetTime(prefs::kMerchantTrustPageInfoLastOpenTime, clock()->Now());
-  clock()->Advance(kMerchantTrustEvaluationControlMaxTimeToShowSurvey.Get() +
-                   base::Seconds(1));
-  service()->MaybeShowEvaluationSurvey();
-}
-
-// Test for control evaluation survey disabled.
-TEST_F(MerchantTrustServiceTest, ControlSurveyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(0);
-
-  feature_list.InitWithFeatureState(kMerchantTrustEvaluationControlSurvey,
-                                    false);
-  service()->MaybeShowEvaluationSurvey();
-}
-
-// Tests for experiment evaluation survey.
-TEST_F(MerchantTrustServiceTest, ExperimentSurvey) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(1);
-  feature_list.InitWithFeatureState(kMerchantTrustEvaluationExperimentSurvey,
-                                    true);
-
-  prefs()->SetTime(prefs::kMerchantTrustUiLastInteractionTime, clock()->Now());
-  clock()->Advance(kMerchantTrustEvaluationExperimentMinTimeToShowSurvey.Get());
-  service()->MaybeShowEvaluationSurvey();
-}
-
-TEST_F(MerchantTrustServiceTest, ExperimentSurveyInteractionTooEarly) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(0);
-  feature_list.InitWithFeatureState(kMerchantTrustEvaluationExperimentSurvey,
-                                    true);
-
-  prefs()->SetTime(prefs::kMerchantTrustUiLastInteractionTime, clock()->Now());
-  clock()->Advance(kMerchantTrustEvaluationExperimentMinTimeToShowSurvey.Get() -
-                   base::Seconds(1));
-  service()->MaybeShowEvaluationSurvey();
-}
-
-TEST_F(MerchantTrustServiceTest, ExperimentSurveyInteractionExpired) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(0);
-  feature_list.InitWithFeatureState(kMerchantTrustEvaluationExperimentSurvey,
-                                    true);
-
-  prefs()->SetTime(prefs::kMerchantTrustUiLastInteractionTime, clock()->Now());
-  clock()->Advance(kMerchantTrustEvaluationExperimentMaxTimeToShowSurvey.Get() +
-                   base::Seconds(1));
-  service()->MaybeShowEvaluationSurvey();
-}
-
-// Test for experiment evaluation survey disabled.
-TEST_F(MerchantTrustServiceTest, ExperimentSurveyDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  EXPECT_CALL(*delegate(), ShowEvaluationSurvey()).Times(0);
-
-  feature_list.InitWithFeatureState(kMerchantTrustEvaluationExperimentSurvey,
-                                    false);
-  service()->MaybeShowEvaluationSurvey();
 }
 
 TEST_F(MerchantTrustServiceTest, RecordMerchantTrustInteractionFamiliarSite) {
