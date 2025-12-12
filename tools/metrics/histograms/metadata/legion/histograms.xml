@@ -120,6 +120,25 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Legion.OakSessionSandboxStability.{CallName}"
+    enum="BooleanSuccess" expires_after="2026-12-01">
+  <owner>nikhiljakhar@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <owner>saeideid@google.com</owner>
+  <summary>
+    Records the stability of the {CallName} from SecureSessionAsyncImpl to the
+    Oak Session service sandbox. True for success, false for failure.
+  </summary>
+  <token key="CallName">
+    <variant name="CompleteHandshake" summary="CompleteHandshake call"/>
+    <variant name="Decrypt" summary="Decrypt call"/>
+    <variant name="Encrypt" summary="Encrypt call"/>
+    <variant name="InitiateHandshake" summary="InitiateHandshake call"/>
+  </token>
+</histogram>
+
 <histogram name="Legion.SecureChannel.GetAttestationRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>

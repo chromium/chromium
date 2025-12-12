@@ -10,8 +10,10 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/legion/crypto/constants.h"
 #include "components/legion/mojom/oak_session.mojom.h"
 #include "content/public/browser/service_process_host.h"
@@ -96,14 +98,26 @@ SecureSessionAsyncImpl::~SecureSessionAsyncImpl() = default;
 
 void SecureSessionAsyncImpl::GetHandshakeMessage(
     SecureSession::GetHandshakeMessageOnceCallback original_callback) {
-  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(original_callback), std::nullopt);
+  auto split_callback = base::SplitOnceCallback(std::move(original_callback));
 
-  service_->InitiateHandshake(base::BindOnce(
-      [](GetHandshakeMessageOnceCallback callback, HandshakeMessage message) {
-        std::move(callback).Run(ConvertToRequestProto(message));
-      },
-      std::move(wrapped_callback)));
+  auto callback = mojo::WrapCallbackWithDropHandler(
+      base::BindOnce(
+          [](GetHandshakeMessageOnceCallback callback,
+             HandshakeMessage message) {
+            base::UmaHistogramBoolean(
+                "Legion.OakSessionSandboxStability.InitiateHandshake", true);
+            std::move(callback).Run(ConvertToRequestProto(message));
+          },
+          std::move(split_callback.first)),
+      base::BindOnce(
+          [](GetHandshakeMessageOnceCallback callback) {
+            base::UmaHistogramBoolean(
+                "Legion.OakSessionSandboxStability.InitiateHandshake", false);
+            std::move(callback).Run(std::nullopt);
+          },
+          std::move(split_callback.second)));
+
+  service_->InitiateHandshake(std::move(callback));
 }
 
 void SecureSessionAsyncImpl::ProcessHandshakeResponse(
@@ -116,15 +130,23 @@ void SecureSessionAsyncImpl::ProcessHandshakeResponse(
     return;
   }
 
-  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(original_callback), false);
+  auto split_callback = base::SplitOnceCallback(std::move(original_callback));
 
-  auto callback = base::BindOnce(
-      [](ProcessHandshakeResponseOnceCallback callback,
-         bool handshake_verified) {
-        std::move(callback).Run(handshake_verified);
-      },
-      std::move(wrapped_callback));
+  auto callback = mojo::WrapCallbackWithDropHandler(
+      base::BindOnce(
+          [](ProcessHandshakeResponseOnceCallback callback, bool result) {
+            base::UmaHistogramBoolean(
+                "Legion.OakSessionSandboxStability.CompleteHandshake", true);
+            std::move(callback).Run(result);
+          },
+          std::move(split_callback.first)),
+      base::BindOnce(
+          [](ProcessHandshakeResponseOnceCallback callback) {
+            base::UmaHistogramBoolean(
+                "Legion.OakSessionSandboxStability.CompleteHandshake", false);
+            std::move(callback).Run(false);
+          },
+          std::move(split_callback.second)));
 
   service_->CompleteHandshake(std::move(handshake_msg.value()),
                               std::move(callback));
@@ -132,14 +154,24 @@ void SecureSessionAsyncImpl::ProcessHandshakeResponse(
 
 void SecureSessionAsyncImpl::Encrypt(const Request& data,
                                      EncryptOnceCallback original_callback) {
-  auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+  auto split_callback = base::SplitOnceCallback(std::move(original_callback));
+
+  auto callback = mojo::WrapCallbackWithDropHandler(
       base::BindOnce(
           [](EncryptOnceCallback callback,
              const std::optional<std::vector<uint8_t>>& encrypted_data) {
+            base::UmaHistogramBoolean(
+                "Legion.OakSessionSandboxStability.Encrypt", true);
             std::move(callback).Run(ConvertToEncryptedMessage(encrypted_data));
           },
-          std::move(original_callback)),
-      std::nullopt);
+          std::move(split_callback.first)),
+      base::BindOnce(
+          [](EncryptOnceCallback callback) {
+            base::UmaHistogramBoolean(
+                "Legion.OakSessionSandboxStability.Encrypt", false);
+            std::move(callback).Run(std::nullopt);
+          },
+          std::move(split_callback.second)));
 
   service_->Encrypt(data, std::move(callback));
 }
@@ -147,8 +179,24 @@ void SecureSessionAsyncImpl::Encrypt(const Request& data,
 void SecureSessionAsyncImpl::Decrypt(
     const oak::session::v1::EncryptedMessage& data,
     DecryptOnceCallback original_callback) {
-  auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(original_callback), std::nullopt);
+  auto split_callback = base::SplitOnceCallback(std::move(original_callback));
+
+  auto callback = mojo::WrapCallbackWithDropHandler(
+      base::BindOnce(
+          [](DecryptOnceCallback callback,
+             const std::optional<std::vector<uint8_t>>& decrypted_data) {
+            base::UmaHistogramBoolean(
+                "Legion.OakSessionSandboxStability.Decrypt", true);
+            std::move(callback).Run(decrypted_data);
+          },
+          std::move(split_callback.first)),
+      base::BindOnce(
+          [](DecryptOnceCallback callback) {
+            base::UmaHistogramBoolean(
+                "Legion.OakSessionSandboxStability.Decrypt", false);
+            std::move(callback).Run(std::nullopt);
+          },
+          std::move(split_callback.second)));
 
   service_->Decrypt(ConvertToBytes(data), std::move(callback));
 }
