@@ -276,6 +276,9 @@ pub fn collect_dependencies(
         .collect::<HashSet<_>>();
     let feature_set = cargo_set.target_features().union(cargo_set.host_features());
     let package_set = feature_set.to_package_set();
+    // TODO(crbug.com/468223119): Remove this once exact_length_collection is
+    // stabilized: https://github.com/rust-lang/rust/issues/149266
+    #[allow(unstable_name_collisions)]
     let root_id = cargo_set
         .initials()
         .to_package_set()

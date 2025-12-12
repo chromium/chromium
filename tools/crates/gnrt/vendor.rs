@@ -177,6 +177,9 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
         vec!["--offline".to_string()],
         HashMap::new(),
     )?;
+    // TODO(crbug.com/468223119): Remove this once exact_length_collection is
+    // stabilized: https://github.com/rust-lang/rust/issues/149266
+    #[allow(unstable_name_collisions)]
     let root = match graph.query_workspace().initials().exactly_one() {
         Ok(root) => root,
         Err(_) => anyhow::bail!("cargo workspace must contain exactly one package"),
