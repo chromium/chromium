@@ -1303,7 +1303,8 @@ TEST_F(AutofillStructuredAddressAddressComponent,
 
   // |one| and |two| are note mergeable because they contain completely
   // different values.
-  EXPECT_FALSE(one.MergeWithComponent(two));
+  EXPECT_FALSE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
   // Since |one| and |two| are not mergeable, it is expected that the value of
   // |one| is preserved.
   EXPECT_EQ(one.GetValue(), u"Peter");
@@ -1318,7 +1319,8 @@ TEST_F(AutofillStructuredAddressAddressComponent,
   TestAtomicFirstNameAddressComponent two;
   two.SetValue(u"Peter", VerificationStatus::kUserVerified);
 
-  EXPECT_TRUE(one.MergeWithComponent(two));
+  EXPECT_TRUE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
   EXPECT_EQ(one.GetValue(), u"Peter");
 
   // The actual action is that the higher verification status is picked.
@@ -1334,7 +1336,8 @@ TEST_F(AutofillStructuredAddressAddressComponent,
   two.SetValue(u"Muller", VerificationStatus::kUserVerified);
 
   // Should be mergeable because the values are the same after normalization.
-  EXPECT_TRUE(one.MergeWithComponent(two));
+  EXPECT_TRUE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
   // The value should be Muller because of its higher validation status.
   EXPECT_EQ(one.GetValue(), u"Muller");
 
@@ -1350,14 +1353,16 @@ TEST_F(AutofillStructuredAddressAddressComponent,
   TestAtomicFirstNameAddressComponent two;
   two.SetValue(u"Pan Peter", VerificationStatus::kUserVerified);
 
-  EXPECT_TRUE(one.MergeWithComponent(two));
+  EXPECT_TRUE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
   EXPECT_EQ(one.GetValue(), u"Pan Peter");
   EXPECT_EQ(one.GetVerificationStatus(), VerificationStatus::kUserVerified);
 
   // If the merging is applied the other way round, the value of two is not
   // altered because |two| has the higher validation status.
   one.SetValue(u"Peter Pan", VerificationStatus::kFormatted);
-  EXPECT_TRUE(two.MergeWithComponent(one));
+  EXPECT_TRUE(
+      two.MergeWithComponent(one, /*newer_was_more_recently_used=*/true));
   EXPECT_EQ(two.GetValue(), u"Pan Peter");
   EXPECT_EQ(two.GetVerificationStatus(), VerificationStatus::kUserVerified);
 }
@@ -1452,7 +1457,8 @@ TEST_F(AutofillStructuredAddressAddressComponent,
   EXPECT_EQ(two.GetValueForType(NAME_FULL), u"First LastFirst LastSecond");
   EXPECT_EQ(two.GetValueForType(NAME_MIDDLE), u"");
 
-  EXPECT_TRUE(one.MergeWithComponent(two));
+  EXPECT_TRUE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
   EXPECT_EQ(one.GetValueForType(NAME_FULL), u"First LastFirst LastSecond");
   EXPECT_EQ(one.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kUserVerified);
@@ -1495,7 +1501,8 @@ TEST_F(AutofillStructuredAddressAddressComponent, MergePermutedComponent) {
 
   TestCompoundNameAddressComponent copy_of_one;
   copy_of_one.CopyFrom(one);
-  EXPECT_TRUE(one.MergeWithComponent(two));
+  EXPECT_TRUE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
 
   // As a result of the merging, the unstructured representation should be
   // maintained, but the substructure should be corrected
@@ -1513,7 +1520,8 @@ TEST_F(AutofillStructuredAddressAddressComponent, MergePermutedComponent) {
             VerificationStatus::kObserved);
 
   // The merging should work in both directions the same way.
-  EXPECT_TRUE(two.MergeWithComponent(copy_of_one));
+  EXPECT_TRUE(two.MergeWithComponent(copy_of_one,
+                                     /*newer_was_more_recently_used=*/true));
   EXPECT_EQ(two.GetValueForType(NAME_FULL), u"Last First Middle");
   EXPECT_EQ(two.GetVerificationStatusForType(NAME_FULL),
             VerificationStatus::kUserVerified);
@@ -1728,7 +1736,8 @@ TEST_F(AutofillStructuredAddressAddressComponent, MergeChildsAndReformatRoot) {
   SetTestValues(&unmergeable_newer, unmergeable_values);
 
   EXPECT_TRUE(older.IsMergeableWithComponent(newer));
-  EXPECT_TRUE(older.MergeWithComponent(newer));
+  EXPECT_TRUE(
+      older.MergeWithComponent(newer, /*newer_was_more_recently_used=*/true));
 
   VerifyTestValues(&older, expectation);
 
@@ -1736,7 +1745,8 @@ TEST_F(AutofillStructuredAddressAddressComponent, MergeChildsAndReformatRoot) {
   SetTestValues(&older, older_values);
   SetTestValues(&unmergeable_newer, unmergeable_values);
   EXPECT_FALSE(older.IsMergeableWithComponent(unmergeable_newer));
-  EXPECT_FALSE(older.MergeWithComponent(unmergeable_newer));
+  EXPECT_FALSE(older.MergeWithComponent(unmergeable_newer,
+                                        /*newer_was_more_recently_used=*/true));
   VerifyTestValues(&older, older_values);
 }
 

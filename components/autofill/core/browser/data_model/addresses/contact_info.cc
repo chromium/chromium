@@ -250,7 +250,8 @@ void MergeNameComponents(const NameInfo& new_name_info,
                          const NameInfo& old_name_info,
                          const AddressCountryCode old_country_code,
                          const FieldType name_type,
-                         AddressComponent& name_component) {
+                         AddressComponent& name_component,
+                         bool newer_was_more_recently_used) {
   DCHECK(name_type == NAME_FULL || name_type == ALTERNATIVE_FULL_NAME);
 
   const AddressCountryCode common_country_code =
@@ -284,7 +285,8 @@ void MergeNameComponents(const NameInfo& new_name_info,
   }
   // Try to apply a direct merging.
   if (name_component.MergeWithComponent(
-          *new_name_info.GetRootForType(name_type))) {
+          *new_name_info.GetRootForType(name_type),
+          newer_was_more_recently_used)) {
     return;
   }
   // If the name in `old_profile` is a variant of `new_profile` use the one in
@@ -336,6 +338,7 @@ bool NameInfo::MergeNames(const NameInfo& new_name_info,
                           const AddressCountryCode new_country_code,
                           const NameInfo& old_name_info,
                           const AddressCountryCode old_country_code,
+                          bool newer_was_more_recently_used,
                           NameInfo& result_name_info) {
   DCHECK(AreNamesMergeable(new_name_info, new_country_code, old_name_info,
                            old_country_code));
@@ -350,14 +353,15 @@ bool NameInfo::MergeNames(const NameInfo& new_name_info,
   // TODO(crbug.com/375383124): Update `MergeNames` to provide meaningful
   // return values.
   MergeNameComponents(new_name_info, new_country_code, old_name_info,
-                      old_country_code, NAME_FULL, *name_full);
+                      old_country_code, NAME_FULL, *name_full,
+                      newer_was_more_recently_used);
   if (new_name_info.IsAlternativeNameSupported() &&
       base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
     alternative_full_name = std::make_unique<AlternativeFullName>();
     MergeNameComponents(new_name_info, new_country_code, old_name_info,
                         old_country_code, ALTERNATIVE_FULL_NAME,
-                        *alternative_full_name);
+                        *alternative_full_name, newer_was_more_recently_used);
   }
   result_name_info =
       NameInfo(std::move(name_full), std::move(alternative_full_name));
@@ -397,12 +401,14 @@ bool NameInfo::AreAlternativeNamesMergeable(
                                     country_code_2, ALTERNATIVE_FULL_NAME);
 }
 
-bool NameInfo::MergeStructuredName(const NameInfo& newer) {
-  if (name_->MergeWithComponent(*newer.name_)) {
+bool NameInfo::MergeStructuredName(const NameInfo& newer,
+                                   bool newer_was_more_recently_used) {
+  if (name_->MergeWithComponent(*newer.name_, newer_was_more_recently_used)) {
     if (IsAlternativeNameSupported() && newer.IsAlternativeNameSupported() &&
         base::FeatureList::IsEnabled(
             features::kAutofillSupportPhoneticNameForJP)) {
-      return alternative_name_->MergeWithComponent(*newer.alternative_name_);
+      return alternative_name_->MergeWithComponent(
+          *newer.alternative_name_, newer_was_more_recently_used);
     }
     return true;
   }

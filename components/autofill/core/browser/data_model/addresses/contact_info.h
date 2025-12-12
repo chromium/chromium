@@ -52,6 +52,7 @@ class NameInfo : public FormGroup {
                          AddressCountryCode new_country_code,
                          const NameInfo& old_name_info,
                          AddressCountryCode old_country_code,
+                         bool newer_was_more_recently_used,
                          NameInfo& result_name_info);
 
   // Returns true if `name_info_1` and `name_info_2` names are mergeable,
@@ -113,7 +114,8 @@ class NameInfo : public FormGroup {
   bool IsStructuredNameMergeable(const NameInfo& newer) const;
 
   // Merges the structured name-information of |newer| into |this|.
-  bool MergeStructuredName(const NameInfo& newer);
+  bool MergeStructuredName(const NameInfo& newer,
+                           bool newer_was_more_recently_used);
 
   // Merges the validation statuses of |newer| into |this|.
   // If two tokens of the same type have the exact same value, the validation

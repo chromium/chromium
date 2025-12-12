@@ -649,7 +649,8 @@ TEST(AutofillStructuredName, MergePermutedNames) {
   EXPECT_EQ(two.GetValueForType(NAME_FIRST), u"First");
   EXPECT_EQ(two.GetValueForType(NAME_LAST), u"Last");
 
-  EXPECT_TRUE(one.MergeWithComponent(two));
+  EXPECT_TRUE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
 
   // It is expected that the alternative representation of the second component
   // is merged into the first one, while maintaining the observed substructure.
@@ -797,12 +798,14 @@ TEST(AutofillStructuredName,
   // structure of |one| is maintained, while the substructure of the last name
   // is taken from two.
   NameFull copy_of_one(one);
-  EXPECT_TRUE(one.MergeWithComponent(two));
+  EXPECT_TRUE(
+      one.MergeWithComponent(two, /*newer_was_more_recently_used=*/true));
 
   VerifyTestValues(&one, merge_expectation);
 
   // The merging should work in both directions equally.
-  EXPECT_TRUE(two.MergeWithComponent(copy_of_one));
+  EXPECT_TRUE(two.MergeWithComponent(copy_of_one,
+                                     /*newer_was_more_recently_used=*/true));
 
   VerifyTestValues(&two, merge_expectation);
 }

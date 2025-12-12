@@ -854,10 +854,12 @@ TEST_F(AutofillStructuredAddress,
                               VerificationStatus::kParsed);
   new_shorter_street->SetValue(u"123 Main St Av", VerificationStatus::kParsed);
 
-  old_street_1->MergeWithComponent(*new_longer_street);
+  old_street_1->MergeWithComponent(*new_longer_street,
+                                   /*newer_was_more_recently_used=*/true);
   EXPECT_EQ(old_street_1->GetValue(), new_longer_street->GetValue());
 
-  old_street_2->MergeWithComponent(*new_shorter_street);
+  old_street_2->MergeWithComponent(*new_shorter_street,
+                                   /*newer_was_more_recently_used=*/true);
   EXPECT_NE(old_street_2->GetValue(), new_shorter_street->GetValue());
 }
 
@@ -944,7 +946,8 @@ TEST_P(MergeStatesWithCanonicalNamesTest, MergeTest) {
       i18n_model_definition::CreateAddressComponentModel();
   SetTestValues(expectation_address.Root(), expectation_values);
 
-  older_address.Root()->MergeWithComponent(*newer_address.Root());
+  older_address.Root()->MergeWithComponent(
+      *newer_address.Root(), /*newer_was_more_recently_used=*/true);
   EXPECT_TRUE(older_address.Root()->SameAs(*expectation_address.Root()));
 }
 
@@ -3238,7 +3241,8 @@ TEST_P(AutofillStructuredAddressMergeReformatTest, MergeAndReformat) {
           AddressCountryCode(test_case.country_code));
   SetTestValues(newer_address.Root(), test_case.new_address);
 
-  older_address.Root()->MergeWithComponent(*newer_address.Root());
+  older_address.Root()->MergeWithComponent(
+      *newer_address.Root(), /*newer_was_more_recently_used=*/true);
   older_address.Root()->CompleteFullTree();
   VerifyTestValues(older_address.Root(), test_case.expected_address);
 }

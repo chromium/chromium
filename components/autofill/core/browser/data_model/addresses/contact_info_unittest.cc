@@ -118,8 +118,9 @@ class NameInfoTest : public testing::Test {
                            const NameInfo& b,
                            const NameInfo& expected) {
     NameInfo actual(/*alternative_names_supported=*/false);
-    ASSERT_TRUE(NameInfo::MergeNames(a, kLegacyHierarchyCountryCode, b,
-                                     kLegacyHierarchyCountryCode, actual));
+    ASSERT_TRUE(NameInfo::MergeNames(
+        a, kLegacyHierarchyCountryCode, b, kLegacyHierarchyCountryCode,
+        /*newer_was_more_recently_used=*/true, actual));
 
     // Is the "processed" data correct?
     EXPECT_EQ(expected.GetInfo(NAME_FULL, kLocale),
@@ -500,7 +501,8 @@ TEST_F(NameInfoTest, MergeStructuredName) {
                                    {.type = NAME_FULL, .value = "John Doe"},
                                    {.type = NAME_LAST, .value = "Doe"}});
 
-  EXPECT_TRUE(name1.MergeStructuredName(name2));
+  EXPECT_TRUE(
+      name1.MergeStructuredName(name2, /*newer_was_more_recently_used=*/true));
 
   test::VerifyFormGroupValues(name1, {{.type = NAME_FULL, .value = "John Doe"},
                                       {.type = NAME_FIRST, .value = "John"},
@@ -524,7 +526,8 @@ TEST_F(NameInfoTest, MergeStructuredAlternativeName) {
        {.type = ALTERNATIVE_FAMILY_NAME, .value = "やまもと"},
        {.type = ALTERNATIVE_FULL_NAME, .value = "やまもと あおい"}});
 
-  EXPECT_TRUE(stored_profile.MergeStructuredName(submitted_data));
+  EXPECT_TRUE(stored_profile.MergeStructuredName(
+      submitted_data, /*newer_was_more_recently_used=*/true));
 
   test::VerifyFormGroupValues(
       stored_profile,
@@ -552,7 +555,8 @@ TEST_F(NameInfoTest, MergeStructuredNameMergingBoth) {
                        {.type = ALTERNATIVE_FAMILY_NAME, .value = "Doe"},
                        {.type = ALTERNATIVE_FULL_NAME, .value = "John Doe"}});
 
-  EXPECT_TRUE(stored_profile.MergeStructuredName(submitted_data));
+  EXPECT_TRUE(stored_profile.MergeStructuredName(
+      submitted_data, /*newer_was_more_recently_used=*/true));
 
   test::VerifyFormGroupValues(
       stored_profile, {{.type = NAME_LAST, .value = "Doe"},
@@ -585,7 +589,8 @@ TEST_F(NameInfoTest, MergeNames_WithPermutation) {
 
   NameInfo merged_name(/*alternative_names_supported=*/false);
   NameInfo::MergeNames(name1, kLegacyHierarchyCountryCode, name2,
-                       kLegacyHierarchyCountryCode, merged_name);
+                       kLegacyHierarchyCountryCode,
+                       /*newer_was_more_recently_used=*/true, merged_name);
 
   // The merged name should maintain the structure but use the observation of
   // the custom-formatted full name.
@@ -1169,7 +1174,8 @@ TEST_F(NameInfoTest, NameInfoWithAdditionalLastNameIsMergeable) {
   NameInfo expected = CreateNameInfo(u"John", u"", u"Doe", u"", u"", u"");
   NameInfo actual(/*alternative_names_supported=*/false);
   NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
-                       kLegacyHierarchyCountryCode, actual);
+                       kLegacyHierarchyCountryCode,
+                       /*newer_was_more_recently_used=*/true, actual);
   EXPECT_EQ(expected, actual);
 }
 
@@ -1184,7 +1190,8 @@ TEST_F(NameInfoTest, NameInfoWithExtraMiddleNameIsMergeable) {
   NameInfo expected = CreateNameInfo(u"John", u"Fitzgerald", u"Kennedy", u"", u"", u"");
   NameInfo actual(/*alternative_names_supported=*/false);
   NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
-                           kLegacyHierarchyCountryCode, actual);
+                       kLegacyHierarchyCountryCode,
+                       /*newer_was_more_recently_used=*/true, actual);
   EXPECT_EQ(expected, actual);
 }
 
@@ -1230,7 +1237,8 @@ TEST_F(NameInfoTest, MergingNotSupportedAlternativeNames) {
 
   NameInfo result(/*alternative_names_supported=*/false);
   NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
-                       kLegacyHierarchyCountryCode, result);
+                       kLegacyHierarchyCountryCode,
+                       /*newer_was_more_recently_used=*/true, result);
   EXPECT_FALSE(result.GetRawInfo(NAME_FULL).empty());
   EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_GIVEN_NAME), testing::IsEmpty());
   EXPECT_THAT(result.GetRawInfo(ALTERNATIVE_FAMILY_NAME), testing::IsEmpty());

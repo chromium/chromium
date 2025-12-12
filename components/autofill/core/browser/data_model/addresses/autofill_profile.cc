@@ -741,7 +741,9 @@ void AutofillProfile::OverwriteDataFromForLegacySync(
   NameInfo name_info = GetNameInfo();
   is_structured_name_mergeable =
       name_info.IsStructuredNameMergeable(profile.GetNameInfo());
-  name_info.MergeStructuredName(profile.GetNameInfo());
+  name_info.MergeStructuredName(
+      profile.GetNameInfo(),
+      usage_history().use_date() < profile.usage_history().use_date());
 
   // ProfileTokenQuality is not synced through legacy sync - and as a result,
   // `profile` has no observations. Make sure that observations for token values
@@ -788,9 +790,11 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
   // accepting updates instead of preserving the original data. I.e., passing
   // the incoming profile first accepts case and diacritic changes, for example,
   // the other ways does not.
-  if (!NameInfo::MergeNames(profile.GetNameInfo(),
-                            profile.GetAddressCountryCode(), GetNameInfo(),
-                            GetAddressCountryCode(), name) ||
+  if (!NameInfo::MergeNames(
+          profile.GetNameInfo(), profile.GetAddressCountryCode(), GetNameInfo(),
+          GetAddressCountryCode(),
+          usage_history().use_date() < profile.usage_history().use_date(),
+          name) ||
       !comparator.MergeEmailAddresses(profile, *this, email) ||
       !comparator.MergeCompanyNames(profile, *this, company) ||
       !comparator.MergePhoneNumbers(profile, *this, phone_number) ||

@@ -322,7 +322,7 @@ class AddressComponent {
   // `newer_was_more_recently_used` indicates that the newer component was also
   // more recently used for filling a form.
   virtual bool MergeWithComponent(const AddressComponent& newer_component,
-                                  bool newer_was_more_recently_used = true);
+                                  bool newer_was_more_recently_used);
 
   // Merge `newer_component` into this AddressComponent.
   // The merging is possible iff the value of both root nodes is token
