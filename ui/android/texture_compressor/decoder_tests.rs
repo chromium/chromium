@@ -8,9 +8,9 @@ chromium::import! {
 
 use rust_gtest_interop::expect_eq;
 use rust_gtest_interop::prelude::*;
-
 use texture_compressor::decoder::apply_modifier;
 use texture_compressor::decoder::decode_etc1_block;
+use texture_compressor::decoder::morton_interleave;
 use texture_compressor::decoder::parse_block_metadata;
 use texture_compressor::decoder::read_delta_bits;
 use texture_compressor::decoder::scale_4bit_to_8bit;
@@ -106,24 +106,25 @@ fn test() {
     // G, B], and Output format is 0xAABBGGRR.
     let base = [16, 16, 16];
 
-    // If negative = true, large = true, then the modifier value is -8. Therefore,
-    // the expected components is [16-8, 16-8, 16-8]
-    // Note that for the test cases here, pixel_idx is 0, so bit 0 corresponds to
-    // the `negative` bit and bit 16 corresponds to the `large` bit. The other bits
-    // are not used and left zeroed.
-    expect_eq!(0x_FF_08_08_08, apply_modifier(0x0001_0001, 0, base, 0b000));
+    // If negative = true, large = true, pixel_mod is 0b_11.
+    // This results in a modifier value of -8.
+    // Therefore, the expected components are [16-8, 16-8, 16-8].
+    expect_eq!(0x_FF_08_08_08, apply_modifier(base, 0b000, 0b_11));
 
-    // If negative = true, large = false, then the modifier value is -2. Therefore,
-    // the expected components is [16-2, 16-2, 16-2]
-    expect_eq!(0x_FF_0E_0E_0E, apply_modifier(0x0001_0000, 0, base, 0b000));
+    // If negative = true, large = false, pixel_mod is 0b_10.
+    // This results in a modifier value of -2.
+    // Therefore, the expected components are [16-2, 16-2, 16-2].
+    expect_eq!(0x_FF_0E_0E_0E, apply_modifier(base, 0b000, 0b_10));
 
-    // If negative = false, large = false, then the modifier value is 2. Therefore,
-    // the expected components is [16+2, 16+2, 16+2]
-    expect_eq!(0x_FF_12_12_12, apply_modifier(0x0000_0000, 0, base, 0b000));
+    // If negative = false, large = false, pixel_mod is 0b_00.
+    // This results in a modifier value of 2.
+    // Therefore, the expected components are [16+2, 16+2, 16+2].
+    expect_eq!(0x_FF_12_12_12, apply_modifier(base, 0b000, 0b_00));
 
-    // If negative = false, large = true, then the modifier value is 8. So expected
-    // components is [16+8, 16+8, 16+8]
-    expect_eq!(0x_FF_18_18_18, apply_modifier(0x0000_0001, 0, base, 0b000));
+    // If negative = false, large = true, pixel_mod is 0b_01.
+    // This results in a modifier value of 8.
+    // Therefore, the expected components are [16+8, 16+8, 16+8].
+    expect_eq!(0x_FF_18_18_18, apply_modifier(base, 0b000, 0b_01));
 }
 
 #[gtest(TextureCompressorTest, ApplyModifierClampToMax)]
@@ -132,7 +133,7 @@ fn test() {
     // If negative = false, large = true, and the modifier table [-29, -9, 9, 29]
     // is used, then the modifier value is +29. So expected components is
     // [231+29, 8+29, 16+29], resulting in the color[255, 37, 45]
-    expect_eq!(0b_11111111_00101101_00100101_11111111, apply_modifier(0x0000_0001, 0, base, 0b010));
+    expect_eq!(0b_11111111_00101101_00100101_11111111, apply_modifier(base, 0b010, 0b01));
 }
 
 #[gtest(TextureCompressorTest, ApplyModifierClampToMin)]
@@ -141,7 +142,7 @@ fn test() {
     // If negative = true, large = true, and the modifier table [-29, -9, 9, 29] is
     // used, then the modifier value is -29. So expected components is [231-29,
     // 8-29, 16-29], resulting in the color[202, 0, 0]
-    expect_eq!(0b_11111111_00000000_00000000_11001010, apply_modifier(0x0001_0001, 0, base, 0b010));
+    expect_eq!(0b_11111111_00000000_00000000_11001010, apply_modifier(base, 0b010, 0b11));
 }
 
 #[gtest(TextureCompressorTest, DecodeETC1BlockFlipFalse)]
@@ -180,4 +181,17 @@ fn test() {
     ];
 
     expect_eq!(expected, decode_etc1_block(input));
+}
+
+#[gtest(TextureCompressorTest, BitInterleaving)]
+fn test() {
+    expect_eq!(morton_interleave(0b1_00000000_00000001), 0b_11);
+    expect_eq!(
+        morton_interleave(0b_10000000_00000000_10000000_00000000),
+        0b_11000000_00000000_00000000_00000000
+    );
+    expect_eq!(
+        morton_interleave(0b_00000001_00000000_00000001_00000000),
+        0b_00000000_00000011_00000000_00000000
+    );
 }

@@ -169,27 +169,14 @@ const fn generate_modifier_table() -> [[i32; 4]; 8] {
 
 // Applies the modifier (luminance change) to a single pixel and calculates the
 // RGBA value.
-// - `input_etc1`: should be the full 64-bit ETC1 data.
-// - `shift`: should be the index of the pixel(0-15).
 // - `base`: should be the base color as an [R, G, B].
 // - `subblock_mod`: should be the index for the modifier table. (range 0-7).
+// - `pixel_mod': should be the index for the specific delta value. (range 0-3).
 // The return value is a u32 packed in the 0xAABBGGRR layout.
-pub fn apply_modifier(input_etc1: u64, shift: usize, base: [i32; 3], subblock_mod: u32) -> u32 {
-    // The lower-32 bit contains indices for the color modifiers of all 16
-    // pixels(a-p).
-    //
-    // Bits 16-31 (the upper 16 bit) decides whether the modifier value is negative
-    // or not. Bit 16 corresponds to pixel 'a', ..., Bit 31 to pixel 'p'
-    //
-    // Bits 0-15 (the lower 16 bit) decides whether the modifier value is large or
-    // not. Bit 0 corresponds to pixel 'a', ..., Bit 15 to pixel 'p'
-    let large = (input_etc1 >> shift) & 1;
-    let negative = (input_etc1 >> (shift + 16)) & 1;
-    let pixel_mod = negative << 1 | large;
-
+pub fn apply_modifier(base: [i32; 3], subblock_mod: u32, pixel_mod: u32) -> u32 {
     let modifier_delta = OPTIMIZED_MODIFIER_TABLE[subblock_mod as usize][pixel_mod as usize];
 
-    let mut output_rgba: u32 = 0xFF000000; // Set Alpha to 255
+    let mut output_rgba: u32 = 0xFF000000; // Set alpha channel to 255
 
     for i in 0..3 {
         let channel_color = (base[i] + modifier_delta).clamp(0, 255) as u32;
@@ -200,8 +187,45 @@ pub fn apply_modifier(input_etc1: u64, shift: usize, base: [i32; 3], subblock_mo
     return output_rgba;
 }
 
+// Expands the lower 16 bits into 32 bits by inserting a 0 bit between each bit.
+// Input: 0b_abcd..op
+// Output: 0b_0a0b0c..0o0p
+fn morton_spread(x: u32) -> u32 {
+    let x = x & 0x0000FFFF;
+    let x = (x | (x << 8)) & 0x00FF00FF;
+    let x = (x | (x << 4)) & 0x0F0F0F0F;
+    let x = (x | (x << 2)) & 0x33333333;
+    (x | (x << 1)) & 0x55555555
+}
+
+// Interleaves the upper and lower 16-bit halves into a single 32-bit sequence.
+// To calculate the lookup index for each pixel, we need to combine 1 bit from
+// the upper half and 1 bit from the lower half.
+// Comparison:
+//  - Naive: 32 shifts + 32 masks (total: 64 ops).
+//  - Interleaved: 13 ops (shuffle) * 2 + 16 shifts + 16 masks (total: 58 ops).
+//  -> This results in fewer operations and faster execution.
+// This function is for performing the bit shuffling.
+// Input: 0b_ab..op_AB..OP
+// Output: 0b_aAbB..oOpP
+pub fn morton_interleave(input_etc1: u32) -> u32 {
+    let upper = morton_spread(input_etc1 >> 16);
+    let lower = morton_spread(input_etc1);
+    (upper << 1) | lower
+}
+
+// Extracts the 2-bit pixel modifier index for the specified coordinates.
+fn get_pixel_modifier_index(row: usize, col: usize, morton_interleaved: u32) -> u32 {
+    let shift = (row + col * 4) * 2;
+    (morton_interleaved >> shift) & 0b11
+}
+
 pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
     let metadata = parse_block_metadata(input_etc1);
+    assert!(metadata.table_idx_1 < 8);
+    assert!(metadata.table_idx_2 < 8);
+
+    let morton_interleaved = morton_interleave(input_etc1 as u32);
 
     // The output layout is
     // [[ a e i m ],
@@ -220,26 +244,25 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
         // When flip bit = 1, the block is divided into two 4×2 subblocks.
         // - Pixels a,e,i,m, b,f,j,n (rows 0, 1) use base color 1.
         // - Pixels c,g,k,o, d,h,l,p (rows 2, 3) use base color 2.
+
         for row in 0..2 {
             for col in 0..4 {
                 // TODO: base[0] actually means base color 1, and base[1] means base color 2.
                 //       Refactor this section for clarity.
                 output[row][col] = apply_modifier(
-                    input_etc1,
-                    row + col * 4,
                     metadata.base[0],
                     metadata.table_idx_1,
+                    get_pixel_modifier_index(row, col, morton_interleaved),
                 );
             }
         }
         for row in 2..4 {
             for col in 0..4 {
                 output[row][col] = apply_modifier(
-                    input_etc1,
-                    row + col * 4,
                     metadata.base[1],
-                    metadata.table_idx_2,
-                );
+                    metadata.table_idx_1,
+                    get_pixel_modifier_index(row, col, morton_interleaved),
+                )
             }
         }
     } else {
@@ -249,21 +272,19 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
         for row in 0..4 {
             for col in 0..2 {
                 output[row][col] = apply_modifier(
-                    input_etc1,
-                    row + col * 4,
                     metadata.base[0],
                     metadata.table_idx_1,
-                );
+                    get_pixel_modifier_index(row, col, morton_interleaved),
+                )
             }
         }
         for row in 0..4 {
             for col in 2..4 {
                 output[row][col] = apply_modifier(
-                    input_etc1,
-                    row + col * 4,
                     metadata.base[1],
-                    metadata.table_idx_2,
-                );
+                    metadata.table_idx_1,
+                    get_pixel_modifier_index(row, col, morton_interleaved),
+                )
             }
         }
     }
