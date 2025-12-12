@@ -282,8 +282,12 @@ void GlicFloatingUi::Show(const ShowOptions& options) {
   GetGlicView()->UpdateBackgroundColor();
   application_hotkey_manager_->InitializeAccelerators();
   glic_panel_hotkey_manager_->InitializeAccelerators();
+
   // TODO: Set up manual resize.
-  window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
+  if (!base::FeatureList::IsEnabled(features::kGlicHandleDraggingNatively)) {
+    window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
+  }
+
   // Add capability to show web modal dialogs (e.g. Data Controls Dialogs for
   // enterprise users) via constrained_window APIs.
   web_modal::WebContentsModalDialogManager::CreateForWebContents(

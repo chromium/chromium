@@ -534,7 +534,8 @@ void GlicWindowControllerImpl::AfterViewShown() {
     // This indicates that we've warmed the web client and it has hit a login
     // page. See LoginPageCommitted.
     GlicLoadedAndReadyToDisplay();
-  } else if (IsDetached()) {
+  } else if (IsDetached() && !base::FeatureList::IsEnabled(
+                                 features::kGlicHandleDraggingNatively)) {
     // This adds dragging functionality to special case panels (e.g. error,
     // offline, loading).
     window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
@@ -742,7 +743,10 @@ void GlicWindowControllerImpl::GlicLoadedAndReadyToDisplay() {
   // TODO(crbug.com/390637019): Fully fix and remove this comment.
   GetGlicView()->GetWebContents()->Focus();
 
-  window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
+  if (!base::FeatureList::IsEnabled(features::kGlicHandleDraggingNatively)) {
+    window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
+  }
+
   NotifyIfPanelStateChanged();
 }
 
@@ -808,7 +812,10 @@ void GlicWindowControllerImpl::Detach() {
 
   // Open the panel detached.
   SetupAndShowGlicWidget(current_browser);
-  window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
+  if (!base::FeatureList::IsEnabled(features::kGlicHandleDraggingNatively)) {
+    window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
+  }
+
   SetWindowState(State::kOpen);
   NotifyIfPanelStateChanged();
 }
