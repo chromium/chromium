@@ -230,7 +230,7 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
   bool IsDependentOnAvailableSize() const;
 
  protected:
-  friend class MasonryLayoutAlgorithmTest;
+  friend class GridLanesLayoutAlgorithmTest;
 
   struct Baselines {
     Vector<LayoutUnit, 16> major;
@@ -473,7 +473,7 @@ class CORE_EXPORT GridSizingTrackCollection final
  private:
   friend class GridLayoutAlgorithmTest;
   friend class GridTrackCollectionTest;
-  friend class MasonryLayoutAlgorithmTest;
+  friend class GridLanesLayoutAlgorithmTest;
 
   // These methods are internal implementations also used in testing.
   void BuildSets(const GridTrackList& explicit_track_list,

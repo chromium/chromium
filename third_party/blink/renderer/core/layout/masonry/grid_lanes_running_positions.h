@@ -27,9 +27,9 @@ class GridLayoutTrackCollection;
 class CORE_EXPORT GridLanesRunningPositions {
  public:
   GridLanesRunningPositions(const GridLayoutTrackCollection& track_collection,
-                          const ComputedStyle& style,
-                          LayoutUnit tie_threshold,
-                          const Vector<wtf_size_t>& collapsed_track_indexes)
+                            const ComputedStyle& style,
+                            LayoutUnit tie_threshold,
+                            const Vector<wtf_size_t>& collapsed_track_indexes)
       : running_positions_(/*size=*/track_collection.EndLineOfImplicitGrid(),
                            LayoutUnit()),
         auto_placement_cursor_(style.IsReverseGridLanesDirection()
@@ -116,26 +116,26 @@ class CORE_EXPORT GridLanesRunningPositions {
       const GridTrackSizingDirection grid_axis_direction);
 
   // If we can find an eligible track opening to fit the item, set
-  // `grid_lanes_item` to have the updated span location, adjust the track opening
-  // as needed (either erasing it or reducing the size), and return the running
-  // position at which the item will be placed. This method is only used when
-  // dense-packing is set.
+  // `grid_lanes_item` to have the updated span location, adjust the track
+  // opening as needed (either erasing it or reducing the size), and return the
+  // running position at which the item will be placed. This method is only used
+  // when dense-packing is set.
   LayoutUnit GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
       wtf_size_t start_offset,
       GridItemData& grid_lanes_item,
       const LayoutUnit item_height,
       const GridLayoutTrackCollection& track_collection);
 
-  // If the span of `grid_lanes_item` is indefinite this method will find and set
-  // the span where the item should be placed. Then, this method will return the
-  // maximum running position of the span where the item will be placed.
+  // If the span of `grid_lanes_item` is indefinite this method will find and
+  // set the span where the item should be placed. Then, this method will return
+  // the maximum running position of the span where the item will be placed.
   LayoutUnit FinalizeItemSpanAndGetMaxPosition(
       wtf_size_t start_offset,
       GridItemData& grid_lanes_item,
       const GridLayoutTrackCollection& track_collection);
 
  private:
-  friend class MasonryLayoutAlgorithmTest;
+  friend class GridLanesLayoutAlgorithmTest;
 
   // Struct to keep track of a span of tracks' start lines and their
   // max-positions, where the max-position of a span represents the maximum
@@ -168,8 +168,8 @@ class CORE_EXPORT GridLanesRunningPositions {
 
   // For testing only.
   GridLanesRunningPositions(const Vector<LayoutUnit>& running_positions,
-                          LayoutUnit tie_threshold,
-                          const Vector<wtf_size_t>& collapsed_track_indexes)
+                            LayoutUnit tie_threshold,
+                            const Vector<wtf_size_t>& collapsed_track_indexes)
       : running_positions_(running_positions), tie_threshold_(tie_threshold) {
     // To avoid placing items in collapsed tracks, set such tracks to the max
     // size.

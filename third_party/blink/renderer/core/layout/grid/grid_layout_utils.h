@@ -64,12 +64,12 @@ wtf_size_t CalculateAutomaticRepetitions(
     LayoutUnit max_available_size,
     const Vector<LayoutUnit>* intrinsic_repeat_track_sizes = nullptr);
 
-// Common out-of-flow positioning utilities shared between grid and masonry.
+// Common out-of-flow positioning utilities shared between grid and grid-lanes.
 
 // Computes the start offset and size for an out-of-flow item in a single
 // direction (either inline or block).
 //
-// `is_masonry_axis` indicates whether this is for masonry's stacking axis,
+// `is_grid_lanes_axis` indicates whether this is for gid lane's stacking axis,
 // which ignores grid placement and uses the full container size.
 void ComputeOutOfFlowOffsetAndSize(
     const GridItemData& out_of_flow_item,
@@ -78,7 +78,7 @@ void ComputeOutOfFlowOffsetAndSize(
     const LogicalSize& border_box_size,
     LayoutUnit* start_offset,
     LayoutUnit* size,
-    bool is_masonry_axis = false);
+    bool is_grid_lanes_axis = false);
 
 // Computes alignment offset for out-of-flow items.
 void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
@@ -93,8 +93,8 @@ void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
 // When `special_spanning_criteria` is true, always use the automatic minimum
 // size - this usually happens when an item spans at least one track with a min
 // track size of 'auto' or if an item spans more than one non-flexible track.
-// However, in masonry, we don't have this information when initially
-// calculating the virtual item contributions, so masonry needs this var to
+// However, in grid-lanes, we don't have this information when initially
+// calculating the virtual item contributions, so grid-lanes needs this var to
 // force this to both true and false to get both potential contributions for use
 // later when more information is known about the tracks a virtual item spans.
 //

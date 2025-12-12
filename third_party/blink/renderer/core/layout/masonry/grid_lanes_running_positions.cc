@@ -392,8 +392,9 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
                 span_size);
     DCHECK_EQ(grid_lanes_item.resolved_position.SpanSize(grid_axis_direction),
               highest_eligible_opening_span.SpanSize());
-    grid_lanes_item.UpdateSpan(highest_eligible_opening_span, grid_axis_direction,
-                            start_offset, track_collection);
+    grid_lanes_item.UpdateSpan(highest_eligible_opening_span,
+                               grid_axis_direction, start_offset,
+                               track_collection);
   }
 
   return highest_eligible_track_opening_result.start_position;

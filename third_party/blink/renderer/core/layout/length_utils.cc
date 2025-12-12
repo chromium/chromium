@@ -1391,8 +1391,8 @@ std::optional<LayoutUnit> ResolveItemToleranceLength(
                                available_size.ClampIndefiniteToZero());
 }
 
-LayoutUnit ResolveItemToleranceForMasonry(const ComputedStyle& style,
-                                          const LogicalSize& available_size) {
+LayoutUnit ResolveItemToleranceForGridLanes(const ComputedStyle& style,
+                                            const LogicalSize& available_size) {
   return ResolveItemToleranceLength(
              style, (style.GridLanesTrackSizingDirection() == kForColumns)
                         ? available_size.block_size

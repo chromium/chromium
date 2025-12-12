@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
-#include "third_party/blink/renderer/core/layout/masonry/masonry_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 #include "third_party/blink/renderer/core/layout/paginated_root_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
@@ -935,7 +935,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
           To<LayoutGrid>(containing_box).CachedPlacementData(), layout_data,
           style, borders, size, item);
     } else {
-      rect = MasonryLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+      rect = GridLanesLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
           To<LayoutGridLanes>(containing_box).CachedPlacementData(),
           layout_data, style, borders, size, item);
     }

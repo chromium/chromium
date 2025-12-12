@@ -352,15 +352,15 @@ void ComputeOutOfFlowOffsetAndSize(
     const LogicalSize& border_box_size,
     LayoutUnit* start_offset,
     LayoutUnit* size,
-    bool is_masonry_axis) {
+    bool is_grid_lanes_axis) {
   DCHECK(start_offset && size && out_of_flow_item.IsOutOfFlow());
   OutOfFlowItemPlacement item_placement;
   LayoutUnit end_offset;
 
   // For the normal grid axis, determine axis from track collection direction.
-  // For the masonry stacking axis, invert the direction to get the stacking
+  // For the grid-lanes stacking axis, invert the direction to get the stacking
   // axis.
-  const bool is_for_columns = is_masonry_axis
+  const bool is_for_columns = is_grid_lanes_axis
                                   ? track_collection.Direction() == kForRows
                                   : track_collection.Direction() == kForColumns;
 
@@ -376,10 +376,11 @@ void ComputeOutOfFlowOffsetAndSize(
     end_offset = border_box_size.block_size - borders.block_end;
   }
 
-  // For the masonry stacking axis, ignore grid placement and use border edges.
-  // If the start line is defined, the size will be calculated by subtracting
-  // the offset at `start_index`; otherwise, use the computed border start.
-  if (!is_masonry_axis && item_placement.range_index.begin != kNotFound) {
+  // For the grid-lanes stacking axis, ignore grid placement and use border
+  // edges. If the start line is defined, the size will be calculated by
+  // subtracting the offset at `start_index`; otherwise, use the computed border
+  // start.
+  if (!is_grid_lanes_axis && item_placement.range_index.begin != kNotFound) {
     DCHECK_NE(item_placement.offset_in_range.begin, kNotFound);
 
     *start_offset =
@@ -390,7 +391,7 @@ void ComputeOutOfFlowOffsetAndSize(
   // If the end line is defined, the offset (which can be the offset at the
   // start index or the start border) and the added grid gap after the spanned
   // tracks are subtracted from the offset at the end index.
-  if (!is_masonry_axis && item_placement.range_index.end != kNotFound) {
+  if (!is_grid_lanes_axis && item_placement.range_index.end != kNotFound) {
     DCHECK_NE(item_placement.offset_in_range.end, kNotFound);
 
     end_offset =

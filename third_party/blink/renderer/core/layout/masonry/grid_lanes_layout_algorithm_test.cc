@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/masonry/masonry_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
@@ -13,15 +13,11 @@
 
 namespace blink {
 
-namespace {
-
-}  // namespace
-
-class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
+class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
-  void ComputeGeometry(const MasonryLayoutAlgorithm& algorithm) {
+  void ComputeGeometry(const GridLanesLayoutAlgorithm& algorithm) {
     wtf_size_t start_offset;
     const auto& style = algorithm.Style();
     const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
@@ -57,17 +53,17 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
     ASSERT_EQ(grid_axis_direction, style.GridLanesTrackSizingDirection());
 
-    for (const auto& masonry_item : algorithm.BuildVirtualMasonryItems(
+    for (const auto& grid_lanes_item : algorithm.BuildVirtualGridLanesItems(
              line_resolver, grid_lanes_items, needs_intrinsic_track_size,
              SizingConstraint::kLayout,
              line_resolver.AutoRepetitions(grid_axis_direction),
              start_offset)) {
-      MasonryItemCachedData item_data;
+      GridLanesItemCachedData item_data;
 
       item_data.resolved_span =
-          masonry_item.resolved_position.Span(grid_axis_direction);
-      if (masonry_item.contribution_sizes) {
-        item_data.contribution_sizes = *masonry_item.contribution_sizes;
+          grid_lanes_item.resolved_position.Span(grid_axis_direction);
+      if (grid_lanes_item.contribution_sizes) {
+        item_data.contribution_sizes = *grid_lanes_item.contribution_sizes;
       }
       virtual_items_data_.emplace_back(std::move(item_data));
     }
@@ -123,12 +119,12 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
  private:
-  struct MasonryItemCachedData {
+  struct GridLanesItemCachedData {
     GridItemData::VirtualItemContributions contribution_sizes;
     GridSpan resolved_span{GridSpan::IndefiniteGridSpan()};
   };
 
-  const MasonryItemCachedData& VirtualItemData(wtf_size_t index) {
+  const GridLanesItemCachedData& VirtualItemData(wtf_size_t index) {
     DCHECK_LT(index, virtual_items_data_.size());
     return virtual_items_data_[index];
   }
@@ -137,13 +133,13 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
   // Virtual items represent the contributions of item groups in track sizing
   // and are not directly related to any children of the container.
-  Vector<MasonryItemCachedData> virtual_items_data_;
+  Vector<GridLanesItemCachedData> virtual_items_data_;
 
   // List of track indexes that have been collapsed.
   Vector<wtf_size_t> collapsed_track_indexes_;
 };
 
-TEST_F(MasonryLayoutAlgorithmTest, ConstructGridLanesItems) {
+TEST_F(GridLanesLayoutAlgorithmTest, ConstructGridLanesItems) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -189,7 +185,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ConstructGridLanesItems) {
   }
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
+TEST_F(GridLanesLayoutAlgorithmTest, BuildRanges) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -214,7 +210,7 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   // The first item spans 2 tracks before the explicit grid, creating the first
@@ -236,7 +232,7 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRanges) {
   }
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, BuildFixedTrackSizes) {
+TEST_F(GridLanesLayoutAlgorithmTest, BuildFixedTrackSizes) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -258,7 +254,7 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildFixedTrackSizes) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(5), LayoutUnit(30),
@@ -266,7 +262,7 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildFixedTrackSizes) {
                                               LayoutUnit(5), LayoutUnit(20)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, CollectGridLanesItemGroups) {
+TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroups) {
   SetBodyInnerHTML(R"HTML(
     <div id="grid-lanes" style="display: grid-lanes">
       <div></div>
@@ -304,7 +300,7 @@ TEST_F(MasonryLayoutAlgorithmTest, CollectGridLanesItemGroups) {
   }
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, ExplicitlyPlacedVirtualItems) {
+TEST_F(GridLanesLayoutAlgorithmTest, ExplicitlyPlacedVirtualItems) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -332,7 +328,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ExplicitlyPlacedVirtualItems) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   const auto item_count = VirtualItemCount();
@@ -353,7 +349,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ExplicitlyPlacedVirtualItems) {
   }
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, AutoPlacedVirtualItems) {
+TEST_F(GridLanesLayoutAlgorithmTest, AutoPlacedVirtualItems) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -383,7 +379,7 @@ TEST_F(MasonryLayoutAlgorithmTest, AutoPlacedVirtualItems) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   const auto item_count = VirtualItemCount();
@@ -407,7 +403,7 @@ TEST_F(MasonryLayoutAlgorithmTest, AutoPlacedVirtualItems) {
   }
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, BuildIntrinsicTrackSizes) {
+TEST_F(GridLanesLayoutAlgorithmTest, BuildIntrinsicTrackSizes) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -435,14 +431,14 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildIntrinsicTrackSizes) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(TrackSizes(),
             Vector<LayoutUnit>({LayoutUnit(30), LayoutUnit(170)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
+TEST_F(GridLanesLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -469,7 +465,7 @@ TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   // First track starts at 15px, but should be resolved to 30px (which is the
@@ -482,7 +478,7 @@ TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
                                               LayoutUnit(25)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, ExpandFlexibleTracks) {
+TEST_F(GridLanesLayoutAlgorithmTest, ExpandFlexibleTracks) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -504,14 +500,14 @@ TEST_F(MasonryLayoutAlgorithmTest, ExpandFlexibleTracks) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(10), LayoutUnit(50),
                                               LayoutUnit(30), LayoutUnit(10)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, BuildRowSizes) {
+TEST_F(GridLanesLayoutAlgorithmTest, BuildRowSizes) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -535,14 +531,14 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildRowSizes) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(20), LayoutUnit(50),
                                               LayoutUnit(30)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest, ColumnAutoFitAutoPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -574,7 +570,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(100), LayoutUnit(100),
@@ -582,7 +578,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoPlacement) {
                                               LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoAndExplicitPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest, ColumnAutoFitAutoAndExplicitPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -614,7 +610,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoAndExplicitPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(100), LayoutUnit(100),
@@ -622,7 +618,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoAndExplicitPlacement) {
                                               LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoPlacement) {
   SetBodyInnerHTML(R"HTML(
   <style>
   #grid-lanes {
@@ -655,7 +651,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(
@@ -664,7 +660,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoPlacement) {
                           LayoutUnit(100), LayoutUnit(100), LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitNoCollapse) {
+TEST_F(GridLanesLayoutAlgorithmTest, ColumnAutoFillAutoFitNoCollapse) {
   SetBodyInnerHTML(R"HTML(
   <style>
   #grid-lanes {
@@ -696,7 +692,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitNoCollapse) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(
@@ -707,7 +703,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitNoCollapse) {
                           LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoSizeAutoPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest, ColumnAutoFitAutoSizeAutoPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -740,7 +736,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoSizeAutoPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   // These don't end up being 100px wide because auto tracks get stretched after
@@ -750,7 +746,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoSizeAutoPlacement) {
                                 LayoutUnit(250), LayoutUnit(250)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest,
+TEST_F(GridLanesLayoutAlgorithmTest,
        ColumnAutoFitAutoSizeAndAutoAndExplicitPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -785,7 +781,7 @@ TEST_F(MasonryLayoutAlgorithmTest,
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   // These don't end up being 100px wide because auto tracks get stretched after
@@ -795,7 +791,8 @@ TEST_F(MasonryLayoutAlgorithmTest,
                                               LayoutUnit(200)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoAndAutoPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest,
+       ColumnAutoFillAutoFitAutoAndAutoPlacement) {
   SetBodyInnerHTML(R"HTML(
   <style>
   #grid-lanes {
@@ -828,7 +825,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoAndAutoPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   // The last auto-fit column is 500px because it stretches to fill the
@@ -839,7 +836,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoAndAutoPlacement) {
                           LayoutUnit(100), LayoutUnit(100), LayoutUnit(500)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoNoCollapse) {
+TEST_F(GridLanesLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoNoCollapse) {
   SetBodyInnerHTML(R"HTML(
   <style>
   #grid-lanes {
@@ -871,7 +868,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoNoCollapse) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(
@@ -882,7 +879,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoNoCollapse) {
                           LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest, RowAutoFitAutoPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -916,7 +913,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(100), LayoutUnit(100),
@@ -924,7 +921,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoPlacement) {
                                               LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoAndExplicitPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest, RowAutoFitAutoAndExplicitPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -958,7 +955,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoAndExplicitPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(100), LayoutUnit(100),
@@ -966,7 +963,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoAndExplicitPlacement) {
                                               LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest, RowAutoFillAutoFitAutoPlacement) {
   SetBodyInnerHTML(R"HTML(
   <style>
   #grid-lanes {
@@ -1001,7 +998,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(
@@ -1010,7 +1007,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoPlacement) {
                           LayoutUnit(100), LayoutUnit(100), LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitNoCollapse) {
+TEST_F(GridLanesLayoutAlgorithmTest, RowAutoFillAutoFitNoCollapse) {
   SetBodyInnerHTML(R"HTML(
   <style>
   #grid-lanes {
@@ -1044,7 +1041,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitNoCollapse) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(
@@ -1055,7 +1052,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitNoCollapse) {
                           LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoSizeAutoPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest, RowAutoFitAutoSizeAutoPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -1090,7 +1087,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoSizeAutoPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   // These don't end up being 100px wide because auto tracks get stretched after
@@ -1100,7 +1097,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoSizeAutoPlacement) {
                                 LayoutUnit(250), LayoutUnit(250)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest,
+TEST_F(GridLanesLayoutAlgorithmTest,
        RowAutoFitAutoSizeAndAutoAndExplicitPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1135,7 +1132,7 @@ TEST_F(MasonryLayoutAlgorithmTest,
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   // These don't end up being 100px wide because auto tracks get stretched after
@@ -1145,7 +1142,7 @@ TEST_F(MasonryLayoutAlgorithmTest,
                                               LayoutUnit(200)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoAndAutoPlacement) {
+TEST_F(GridLanesLayoutAlgorithmTest, RowAutoFillAutoFitAutoAndAutoPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
     #grid-lanes {
@@ -1180,7 +1177,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoAndAutoPlacement) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   // The last auto-fit row is 500px because it stretches to fill the remaining
@@ -1191,7 +1188,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoAndAutoPlacement) {
                           LayoutUnit(100), LayoutUnit(100), LayoutUnit(500)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoNoCollapse) {
+TEST_F(GridLanesLayoutAlgorithmTest, RowAutoFillAutoFitAutoNoCollapse) {
   SetBodyInnerHTML(R"HTML(
   <style>
   #grid-lanes {
@@ -1225,7 +1222,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoNoCollapse) {
   const auto fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
 
-  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   ComputeGeometry(algorithm);
 
   EXPECT_EQ(
@@ -1236,7 +1233,7 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoNoCollapse) {
                           LayoutUnit(100)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
+TEST_F(GridLanesLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
   Vector<wtf_size_t> collapsed_track_indexes;
   GridLanesRunningPositions running_positions =
       InitializeGridLanesRunningPositions(
@@ -1262,7 +1259,7 @@ TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
   EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, GetFirstEligibleLine) {
+TEST_F(GridLanesLayoutAlgorithmTest, GetFirstEligibleLine) {
   auto running_positions = InitializeGridLanesRunningPositions(
       {LayoutUnit(2.0), LayoutUnit(3.0), LayoutUnit(3.5), LayoutUnit(2.5)},
       /*tie_threshold=*/LayoutUnit(0.5));
@@ -1303,7 +1300,7 @@ TEST_F(MasonryLayoutAlgorithmTest, GetFirstEligibleLine) {
   EXPECT_EQ(max_position, LayoutUnit(3));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, GetMaxPositionsForAllTracks) {
+TEST_F(GridLanesLayoutAlgorithmTest, GetMaxPositionsForAllTracks) {
   auto running_positions = InitializeGridLanesRunningPositions(
       {LayoutUnit(2.0), LayoutUnit(3.0), LayoutUnit(3.5), LayoutUnit(2.5)},
       /*tie_threshold=*/LayoutUnit());
