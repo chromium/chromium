@@ -3185,7 +3185,6 @@ crbug.com/467107674 external/wpt/css/css-text-decor/text-emphasis-position-auto-
 crbug.com/467095511 [ Win ] external/wpt/css/css-text/hyphens/lang-tag-case-insensitive.html [ Failure ]
 crbug.com/467094968 [ Android ] external/wpt/webdriver/tests/bidi/script/realm_created/window_open.py [ Failure ]
 crbug.com/466401982 external/wpt/css/css-fonts/matching/font-weight-search-direction.html [ Failure ]
-crbug.com/466395258 [ Mac ] external/wpt/css/css-highlight-api/highlight-text-across-elements.html [ Failure ]
 crbug.com/466442690 [ Android ] external/wpt/webdriver/tests/bidi/emulation/combined/multiple_emulations.py [ Failure ]
 crbug.com/466442690 external/wpt/webdriver/tests/bidi/emulation/set_screen_settings_override/contexts.py [ Failure ]
 crbug.com/466442690 external/wpt/webdriver/tests/bidi/emulation/set_screen_settings_override/invalid.py [ Failure ]
@@ -6596,8 +6595,8 @@ crbug.com/40770317 http/tests/devtools/bfcache/bfcache-elements-update.js [ Fail
 crbug.com/1163437 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-below-grammar.html [ Failure ]
 crbug.com/1521187 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-staticrange-005.html [ Failure Pass ]
 crbug.com/357946492 external/wpt/css/css-highlight-api/highlight-image.html [ Failure ]
-crbug.com/359253683 [ Linux ] external/wpt/css/css-highlight-api/highlight-text-across-elements.html [ Failure Pass ]
-crbug.com/359253683 [ Mac ] external/wpt/css/css-highlight-api/highlight-text-decorations.html [ Failure ]
+crbug.com/359253683 external/wpt/css/css-highlight-api/highlight-text-across-elements.html [ Failure Pass ]
+crbug.com/359253683 external/wpt/css/css-highlight-api/highlight-text-decorations.html [ Failure Pass ]
 
 crbug.com/1455239 http/tests/security/drag-drop-different-origin.html [ Failure Pass ]
 
