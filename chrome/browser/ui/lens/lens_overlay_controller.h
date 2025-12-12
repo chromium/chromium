@@ -882,6 +882,8 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   void FetchSupportedLanguages(
       FetchSupportedLanguagesCallback callback) override;
   void FinishReshowOverlay() override;
+  void AcceptPrivacyNotice() override;
+  void DismissPrivacyNotice() override;
 
   // Tries to show the translate feature promo after the translate button
   // element is shown.
@@ -959,10 +961,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // exist.
   void SetOverlayWebViewOpacity(float opacity);
 
-  // Grants the permissions needed for contextualization if the non-blocking
-  // privacy notice is being used and the permissions have not already been
-  // granted.
-  void MaybeGrantLensOverlayPermissions();
+  // For the current session only, grants the permissions needed for
+  // contextualization if the non-blocking privacy notice is being used and the
+  // permissions have not already been permanently granted.
+  void MaybeGrantLensOverlayPermissionsForSession();
 
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();
@@ -1192,6 +1194,10 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Whether to use AIM for visual searches.
   bool use_aim_for_visual_search_ = false;
+
+  // Whether the user performed an interaction without accepting the privacy
+  // notice.
+  bool user_interacted_without_accepting_privacy_notice = false;
 
   // --------------------Browser window scoped state: END---------------------
 

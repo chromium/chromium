@@ -167,6 +167,11 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                u"\">", l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_LEARN_MORE),
                u"</a>"})));
   html_source->AddLocalizedString(
+      "privacyNoticeCancel", IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON);
+  html_source->AddLocalizedString(
+      "privacyNoticeContinue",
+      IDS_LENS_PERMISSION_BUBBLE_DIALOG_CONTINUE_BUTTON);
+  html_source->AddLocalizedString(
       "tabToContinue", IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE);
 
   // Add default theme colors.

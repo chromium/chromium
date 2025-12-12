@@ -220,6 +220,14 @@ interface LensPageHandler {
   // Notifies the browser that the overlay WebUI is ready to be reshown so it
   // can reshow the blur with the appropriate live page screenshot.
   FinishReshowOverlay();
+
+  // Notifies the browser that the user has accepted the privacy notice in the
+  // overlay.
+  AcceptPrivacyNotice();
+
+  // Notifies the browser that the user has dismissed the privacy notice in the
+  // overlay.
+  DismissPrivacyNotice();
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
