@@ -22,7 +22,7 @@
 #include "device/fido/public/cable_discovery_data.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/public_key_credential_descriptor.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-data-view.h"
 
 namespace cbor {
 class Value;

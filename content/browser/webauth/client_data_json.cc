@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "components/webauthn/core/browser/common_utils.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 using webauthn::ToJSONString;
 

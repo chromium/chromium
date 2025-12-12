@@ -7,7 +7,7 @@
 
 #include "components/webauthn/core/browser/client_data_json.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace content {
 

@@ -19,7 +19,7 @@
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-data-view.h"
 #include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
