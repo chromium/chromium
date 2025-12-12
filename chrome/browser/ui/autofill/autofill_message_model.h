@@ -28,6 +28,9 @@ class AutofillMessageModel {
     kSaveCardFailure = 1,
     // Used when a virtual card has failed to have been enrolled.
     kVirtualCardEnrollFailure = 2,
+    // Used when the user is prompted to save a new or update an existing
+    // `EntityInstance`.
+    kEntitySaveUpdateFlow = 3,
   };
 
   AutofillMessageModel(std::unique_ptr<messages::MessageWrapper> message,

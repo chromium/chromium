@@ -7920,6 +7920,7 @@ test("unit_tests") {
       "../browser/touch_to_fill/password_manager/touch_to_fill_controller_webauthn_delegate_unittest.cc",
       "../browser/translate/android/translate_bridge_unittest.cc",
       "../browser/translate/translate_manager_render_view_host_android_unittest.cc",
+      "../browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager_unittest.cc",
       "../browser/ui/android/autofill/autofill_cvc_save_message_delegate_unittest.cc",
       "../browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge_unittest.cc",
       "../browser/ui/android/autofill/autofill_save_card_delegate_android_unittest.cc",

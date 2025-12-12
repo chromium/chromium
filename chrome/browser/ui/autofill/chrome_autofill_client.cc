@@ -164,6 +164,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
+#include "chrome/browser/ui/android/autofill/autofill_ai_save_update_entity_flow_manager.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
@@ -1246,6 +1247,11 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
                   web_contents->GetBrowserContext())));
   }
 #if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
+    autofill_ai_save_update_entity_flow_manager_ =
+        std::make_unique<AutofillAiSaveUpdateEntityFlowManager>(
+            GetAutofillMessageController());
+  }
   save_update_address_profile_flow_manager_ =
       std::make_unique<SaveUpdateAddressProfileFlowManager>();
   fast_checkout_client_ = std::make_unique<FastCheckoutClientImpl>(this);
@@ -1404,16 +1410,21 @@ void ChromeAutofillClient::ShowEntityImportBubble(
     EntityInstance new_entity,
     std::optional<EntityInstance> old_entity,
     EntityImportPromptResultCallback prompt_closed_callback) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  autofill_ai_save_update_entity_flow_manager_->OfferSave(new_entity);
+  // TODO: crbug.com/460410690 - Pass the callback to the flow manager.
+  std::move(prompt_closed_callback)
+      .Run(AutofillClient::AutofillAiBubbleClosedReason::kClosed);
+#else
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
           &*web_contents(), GetAppLocale())) {
     controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
                            std::move(prompt_closed_callback));
-    return;
+  } else {
+    std::move(prompt_closed_callback)
+        .Run(AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
-  std::move(prompt_closed_callback)
-      .Run(AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill

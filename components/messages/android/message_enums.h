@@ -154,6 +154,7 @@ enum class MessageIdentifier {
   RELOAD_PAGE = 64,
   MULTI_INSTANCE_CREATION_LIMIT = 65,
   PERMISSION_PROMPT_LOUD = 66,
+  SAVE_UPDATE_ENTITY = 67,
   // Insert new values before this line.
   COUNT
 };

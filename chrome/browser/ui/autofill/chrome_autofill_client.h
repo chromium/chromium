@@ -58,6 +58,7 @@ namespace autofill {
 #if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/364089352): When //c/b/ui/android/autofill gets modularized,
 // //c/b/ui/autofill/ can depend directly on it.
+class AutofillAiSaveUpdateEntityFlowManager;
 class SaveUpdateAddressProfileFlowManager;
 class AutofillMessageController;
 #endif
@@ -322,6 +323,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool keep_popup_open_for_testing_ = false;
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillMessageController> autofill_message_controller_;
+  std::unique_ptr<AutofillAiSaveUpdateEntityFlowManager>
+      autofill_ai_save_update_entity_flow_manager_;
   std::unique_ptr<SaveUpdateAddressProfileFlowManager>
       save_update_address_profile_flow_manager_;
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;

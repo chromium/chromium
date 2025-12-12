@@ -5011,6 +5011,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     additional details on when each individual logging event happens.
   </summary>
   <token key="MessageType">
+    <variant name="EntitySaveUpdateFlow"
+        summary="Autofill Android Message shown to prompt a user to save an
+                 entity to Chrome (like password, driver's license, etc.)"/>
     <variant name="SaveCardFailure"
         summary="Autofill Android Message shown after a credit card has
                  failed to have been saved to the server."/>

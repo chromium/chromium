@@ -111,6 +111,8 @@ std::string_view AutofillMessageModel::TypeToString(Type message_type) {
       return "SaveCardFailure";
     case Type::kVirtualCardEnrollFailure:
       return "VirtualCardEnrollFailure";
+    case Type::kEntitySaveUpdateFlow:
+      return "EntitySaveUpdateFlow";
   }
 }
 

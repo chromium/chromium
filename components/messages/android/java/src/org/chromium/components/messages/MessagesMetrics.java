@@ -362,6 +362,8 @@ public class MessagesMetrics {
                 return "MultiInstanceCreationLimit";
             case MessageIdentifier.PERMISSION_PROMPT_LOUD:
                 return "PermissionPromptLoud";
+            case MessageIdentifier.SAVE_UPDATE_ENTITY:
+                return "SaveUpdateEntity";
             default:
                 return "Unknown";
         }
