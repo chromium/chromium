@@ -257,6 +257,7 @@ copy("common_packaging_files") {
     "common/default-app-block.template",
     "common/default-app.template",
     "common/desktop.template",
+    "common/key.include",
     "common/postinst.include",
     "common/prerm.include",
     "common/repo.cron",
