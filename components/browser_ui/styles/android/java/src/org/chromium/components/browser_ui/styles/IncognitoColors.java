@@ -20,6 +20,13 @@ import org.chromium.ui.util.ColorUtils;
  */
 @NullMarked
 public class IncognitoColors {
+    /** {@see SemanticColorUtils#getColorSurface} */
+    public static @ColorInt int getColorSurface(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.gm3_baseline_surface_dark)
+                : SemanticColorUtils.getColorSurface(context);
+    }
+
     /** {@see SemanticColorUtils#getColorSurfaceContainerHigh} */
     public static @ColorInt int getColorSurfaceContainerHigh(Context context, boolean isIncognito) {
         return isIncognito
