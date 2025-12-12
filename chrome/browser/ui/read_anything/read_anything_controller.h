@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_
 
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -122,6 +124,9 @@ class ReadAnythingController : public TabStripModelObserver {
   // TODO(crbug.com/447418049): Open immersive reading mode via this entrypoint.
   void ShowUI(SidePanelOpenTrigger trigger);
 
+  // Displays the Immersive Reading Mode UI in a full screen overlay.
+  void ShowImmersiveUI(ReadAnythingOpenTrigger trigger);
+
   // Toggles the Reading Mode UI by utilizing the SidePanelUI on the active
   // tab.
   // TODO(crbug.com/447418049): Open immersive reading mode via this entrypoint.
@@ -212,6 +217,23 @@ class ReadAnythingController : public TabStripModelObserver {
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   PresentationState presentation_state_ = PresentationState::kUndefined;
+
+  // When the Immersive Reading Mode overlay is shown, it covers the main web
+  // contents, changing it's visibility to Visibility::OCCLUDED. This causes
+  // the renderer to make optimizations that break Reading Mode (namely, that it
+  // can stop generating accessibility events). This method tells the renderer
+  // that even though the webpage is technically occluded, we want it treated as
+  // if it were visible.
+  void CaptureMainContentsAsVisible();
+  // Reset the main contents capturer handle_ when we no longer need to force
+  // the main webpage to be treated as visible for IRM purposes.
+  void ReleaseMainContentsCapture();
+  // The handle returned by web_contents_->IncrementCapturerCount. This is used
+  // to release the capture when the ReadAnythingController is destroyed.
+  // Note: Do not access this directly. Use CaptureMainContentsAsVisible() and
+  // ReleaseMainContentsCapture() instead to ensure the handle is correctly
+  // managed.
+  base::ScopedClosureRunner main_contents_capturer_handle_;
 
   base::WeakPtrFactory<ReadAnythingController> weak_factory_{this};
 };

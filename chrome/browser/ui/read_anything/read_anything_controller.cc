@@ -8,9 +8,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/read_anything/read_anything_immersive_overlay_view.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -93,6 +96,13 @@ ReadAnythingController::ReadAnythingController(
 
 ReadAnythingController::~ReadAnythingController() {
   observers_.Notify(&Observer::OnDestroyed);
+
+  // Notify the renderer that we don't need the main webpage treated as
+  // visible anymore for IRM. Although we already do this in OnVisibilityChanged
+  // when Reading Mode's visibility changes to hidden or occluded, that callback
+  // doesn't seem to be reliably called when a tab is closed, so we need to do
+  // this here too.
+  ReleaseMainContentsCapture();
 
   if (tab_->GetBrowserWindowInterface() &&
       tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
@@ -213,6 +223,23 @@ void ReadAnythingController::TransferWebUiOwnership(
   presentation_state_ = PresentationState::kInactive;
 }
 
+void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(tab_->GetBrowserWindowInterface());
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    return;
+  }
+  if (!browser_view || !browser_view->GetActiveContentsContainerView()) {
+    return;
+  }
+  auto* immersive_overlay_view = static_cast<ReadAnythingImmersiveOverlayView*>(
+      browser_view->GetActiveContentsContainerView()
+          ->read_anything_immersive_overlay_view());
+  CHECK(immersive_overlay_view);
+  immersive_overlay_view->ShowUI(
+      GetOrCreateWebUIWrapper(PresentationState::kInImmersiveOverlay), trigger);
+}
+
 // TODO(crbug.com/447418049): Open immersive reading mode via this
 // entrypoint. Currently just open side panel reading mode via
 // ReadAnythingController when is_immersive_read_anything_enabled_ flag is
@@ -251,5 +278,35 @@ void ReadAnythingController::OnReadAnythingVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::VISIBLE) {
     has_shown_ui_ = true;
+    // When IRM is being shown either for the first time or after being visible
+    // again after being occluded, we tell the renderer that the main webpage
+    // needs to be treated as visible even though it's occluded, so it can
+    // generate accessibility events we need for RM to function.
+    if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+      CaptureMainContentsAsVisible();
+    }
+  } else {
+    // We don't need the main web contents treated as visible anymore because
+    // Reading Mode is hidden or occluded.
+    ReleaseMainContentsCapture();
   }
+}
+
+void ReadAnythingController::CaptureMainContentsAsVisible() {
+  // Don't increment the capturer count of the main contents if we already are
+  // capturing it.
+  if (main_contents_capturer_handle_) {
+    return;
+  }
+
+  // To let the renderer know that the content is still needed, we increment the
+  // capturer count and set `stay_hidden` to false, which forces the renderer to
+  // treat the content as visible.
+  main_contents_capturer_handle_ = tab_->GetContents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false,
+      /*is_activity=*/true);
+}
+
+void ReadAnythingController::ReleaseMainContentsCapture() {
+  main_contents_capturer_handle_.RunAndReset();
 }
