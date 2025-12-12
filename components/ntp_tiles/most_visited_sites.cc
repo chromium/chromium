@@ -193,7 +193,6 @@ MostVisitedSites::MostVisitedSites(
       enterprise_shortcuts_manager_(std::move(enterprise_shortcuts_manager)),
       icon_cacher_(std::move(icon_cacher)),
       is_default_chrome_app_migrated_(is_default_chrome_app_migrated),
-      max_num_sites_(0u),
       is_observing_(false) {
   DCHECK(prefs_);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -248,11 +247,19 @@ void MostVisitedSites::SetHomepageClient(
 
 void MostVisitedSites::AddMostVisitedURLsObserver(Observer* observer,
                                                   size_t max_num_sites) {
+  AddMostVisitedURLsObserver(observer, max_num_sites, std::nullopt);
+}
+
+void MostVisitedSites::AddMostVisitedURLsObserver(
+    Observer* observer,
+    size_t max_num_sites,
+    std::optional<size_t> max_num_non_custom_sites) {
   observers_.AddObserver(observer);
 
   // All observer must provide the same |max_num_sites| value.
   DCHECK(max_num_sites_ == 0u || max_num_sites_ == max_num_sites);
   max_num_sites_ = max_num_sites;
+  max_num_non_custom_sites_ = max_num_non_custom_sites;
 
   // Starts observing the following sources when the first observer is added.
   if (!is_observing_) {
@@ -353,7 +360,7 @@ bool MostVisitedSites::IsCustomLinksInitialized() const {
 
 void MostVisitedSites::EnableTileTypes(
     const MostVisitedSites::EnableTileTypesOptions& options) {
-  // Mixing of personal types is only supported on Android.
+  // Mixing of personal types is only supported on mobile.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (options.enable_top_sites && options.enable_custom_links) {
     NOTIMPLEMENTED();
@@ -536,7 +543,7 @@ void MostVisitedSites::ResetProfilePrefs(PrefService* prefs) {
 }
 
 size_t MostVisitedSites::GetMaxNumSites() const {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // The "Add new" button (for custom tiles) is not a Tile; don't include.
   return max_num_sites_;
 #else
@@ -891,8 +898,12 @@ NTPTilesVector MostVisitedSites::ImposeCustomLinks(NTPTilesVector tiles) {
   NTPTilesVector out_tiles(custom_links_cache_.GetList());
 
   // Insert |tiles| if there are aren't enough non-custom links.
-  size_t max_num_tiles_without_custom = GetMaxNumSites();
-  if (out_tiles.size() < max_num_tiles_without_custom) {
+  size_t num_tiles = GetMaxNumSites();
+  if (max_num_non_custom_sites_.has_value()) {
+    num_tiles = std::min(num_tiles,
+                         out_tiles.size() + max_num_non_custom_sites_.value());
+  }
+  if (out_tiles.size() < num_tiles) {
     // Exclude |tiles| elements with |url| found in |custom_links_cache_|.
     std::copy_if(tiles.begin(), tiles.end(), std::back_inserter(out_tiles),
                  [&](const NTPTile& tile) -> bool {
@@ -901,7 +912,7 @@ NTPTilesVector MostVisitedSites::ImposeCustomLinks(NTPTilesVector tiles) {
     // Note that |out_tiles| truncation only happens under the "if" clause.
     // So if |out_tiles| started with more than GetMaxNumSites() custom links,
     // then no truncation takes place.
-    out_tiles.resize(std::min(out_tiles.size(), max_num_tiles_without_custom));
+    out_tiles.resize(std::min(out_tiles.size(), num_tiles));
   }
 
   return out_tiles;

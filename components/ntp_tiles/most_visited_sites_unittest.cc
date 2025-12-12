@@ -467,7 +467,7 @@ class MostVisitedSitesTest : public ::testing::Test {
 
     // Custom links needs to be nullptr when MostVisitedSites is created, unless
     // the custom links feature is enabled. Custom links is disabled for
-    // Android, iOS, and third-party NTPs.
+    // third-party NTPs.
     std::unique_ptr<StrictMock<MockCustomLinksManager>>
         mock_custom_links_manager;
     if (is_custom_links_enabled_) {
@@ -1113,8 +1113,6 @@ TEST_F(MostVisitedSitesTest, ShouldDeduplicateDomainByReplacingMobilePrefixes) {
 
 // TODO(crbug.com/397422358): Adapt MostVisitedSitesWithCustomLinksTest for
 // Android, which will require calling EnableCustomLinkMixing() in the CTOR.
-
-#if !BUILDFLAG(IS_IOS)
 class MostVisitedSitesWithCustomLinksTest : public MostVisitedSitesTest {
  public:
   MostVisitedSitesWithCustomLinksTest() {
@@ -1864,6 +1862,53 @@ TEST_F(MostVisitedSitesWithCustomLinksTest, RebuildTilesOnCustomLinksChanged) {
               MatchesTile(kTestTitle1, kTestUrl1, TileSource::TOP_SITES));
 }
 
+// The number of none custom links should be limited to the
+// `max_num_non_custom_sites` parameter.
+TEST_F(MostVisitedSitesWithCustomLinksTest, ShouldHonorMaxNumNonCustomLinks) {
+  // Establish mock sites.
+  const char kTestCustomUrl[] = "http://customsite/";
+  const char16_t kTestCustomTitle[] = u"Custom Site";
+  std::string kTestUrl1 = "https://site1/";
+  std::u16string kTestTitle1 = u"Site 1";
+  std::string kTestUrl2 = "https://site2/";
+  std::u16string kTestTitle2 = u"Site 2";
+  MostVisitedURLList mock_top_sites =
+      MostVisitedURLList{MakeMostVisitedURL(kTestTitle1, kTestUrl1),
+                         MakeMostVisitedURL(kTestTitle2, kTestUrl2)};
+  std::vector<CustomLinksManager::Link> mock_custom_links(
+      {CustomLinksManager::Link{GURL(kTestCustomUrl), kTestCustomTitle}});
+  std::map<SectionType, NTPTilesVector> sections;
+  // Enable site mixing.
+  EnableTopSites();
+  // Build tiles when custom links is initialized and not disabled. Tiles should
+  // contain custom links.
+  EXPECT_CALL(*mock_top_sites_, GetMostVisitedURLs(_))
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(mock_top_sites));
+  EXPECT_CALL(*mock_custom_links_manager_, IsInitialized())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_custom_links_manager_, GetLinks())
+      .WillOnce(ReturnRef(mock_custom_links));
+  // Enable top sites as well as custom links.
+  most_visited_sites_->EnableTileTypes(
+      MostVisitedSites::EnableTileTypesOptions()
+          .with_top_sites(true)
+          .with_custom_links(true));
+  base::RunLoop().RunUntilIdle();
+  // Observe the sites.
+  EXPECT_CALL(*mock_custom_links_manager_, RegisterCallbackForOnChanged(_));
+  SetUpBuildWithTopSitesAndCustomLinks(mock_top_sites, mock_custom_links,
+                                       &sections);
+  most_visited_sites_->AddMostVisitedURLsObserver(
+      &mock_observer_, /*max_num_sites=*/3, /*max_num_non_custom_sites=*/1);
+  base::RunLoop().RunUntilIdle();
+  // Check that there is only one custom link and one top site instead of two.
+  EXPECT_THAT(
+      sections.at(SectionType::PERSONALIZED),
+      ElementsAre(MatchesTile(kTestCustomTitle, kTestCustomUrl,
+                              TileSource::CUSTOM_LINKS),
+                  MatchesTile(kTestTitle1, kTestUrl1, TileSource::TOP_SITES)));
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
 class MostVisitedSitesWithEnterpriseShortcutsTest
@@ -2281,9 +2326,6 @@ TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest,
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_CHROMEOS)
-
-// These exclude Android and iOS.
-#endif  // !BUILDFLAG(IS_IOS)
 
 // This a test for MostVisitedSites::MergeTiles(...) method, and thus has the
 // same scope as the method itself. This tests merging popular sites with

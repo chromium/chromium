@@ -168,6 +168,19 @@ class MostVisitedSites :
   virtual void AddMostVisitedURLsObserver(Observer* observer,
                                           size_t max_num_sites);
 
+  // Adds the observer and immediately fetches the current suggestions, but with
+  // a maximum number of non-custom sites. If |max_num_non_custom_sites| is
+  // unset, there is no limit to the number of non custom sites to be returned
+  // as long as the total number of sites does not exceed |max_num_sites|.
+  //
+  // Note: like |max_num_sites|, only observers that require the same
+  // |max_num_non_custom_sites| could observe the same MostVisitedSites
+  // instance. Otherwise, a new Instance should be created for the observer.
+  void AddMostVisitedURLsObserver(
+      Observer* observer,
+      size_t max_num_sites,
+      std::optional<size_t> max_num_non_custom_sites);
+
   // Removes the observer.
   virtual void RemoveMostVisitedURLsObserver(Observer* observer);
 
@@ -495,7 +508,10 @@ class MostVisitedSites :
 
   // The maximum number of most visited sites to return.
   // Do not use directly. Use GetMaxNumSites() instead.
-  size_t max_num_sites_;
+  size_t max_num_sites_ = 0u;
+
+  // The maximum number of non-custom sites. Optional.
+  std::optional<size_t> max_num_non_custom_sites_ = std::nullopt;
 
   // Number of actions after custom link initialization. Set to -1 and not
   // incremented if custom links was not initialized during this session.

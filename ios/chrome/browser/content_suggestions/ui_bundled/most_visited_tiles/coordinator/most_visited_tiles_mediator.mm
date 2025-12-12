@@ -51,8 +51,11 @@
 
 namespace {
 
+// Maximum number of most visited tiles fetched that are not pinned sites.
+const NSInteger kMaxNumNonCustomMostVisitedTiles = 4;
+
 // Maximum number of most visited tiles fetched.
-const NSInteger kMaxNumMostVisitedTiles = 4;
+const NSInteger kMaxNumMostVisitedTiles = 8;
 
 // Size below which the provider returns a colored tile instead of an image.
 const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
@@ -115,8 +118,9 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
               .with_top_sites(true)
               .with_custom_links(true));
     }
-    _mostVisitedSites->AddMostVisitedURLsObserver(_mostVisitedBridge.get(),
-                                                  kMaxNumMostVisitedTiles);
+    _mostVisitedSites->AddMostVisitedURLsObserver(
+        _mostVisitedBridge.get(), [MostVisitedTilesMediator maxSitesShown],
+        kMaxNumNonCustomMostVisitedTiles);
   }
   return self;
 }
@@ -129,7 +133,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 }
 
 + (NSUInteger)maxSitesShown {
-  return kMaxNumMostVisitedTiles;
+  return IsContentSuggestionsCustomizable() ? kMaxNumMostVisitedTiles
+                                            : kMaxNumNonCustomMostVisitedTiles;
 }
 
 - (void)refreshMostVisitedTiles {
