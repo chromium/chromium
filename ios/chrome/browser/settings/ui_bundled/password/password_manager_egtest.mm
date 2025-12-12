@@ -1186,7 +1186,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Checks that deleting a password from password details can be cancelled.
-- (void)testCancelDeletionInDetailView {
+// TODO(crbug.com/468309777): This test is flaky.
+- (void)FLAKY_testCancelDeletionInDetailView {
   // Save form to be deleted later.
   SavePasswordFormToProfileStore();
 
