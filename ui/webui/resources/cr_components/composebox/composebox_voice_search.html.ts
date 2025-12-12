@@ -22,6 +22,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
           ?hidden="${this.showErrorScrim_}" disabled>
       </textarea>
       <cr-icon-button id="closeButton" class="icon-clear"
+          part="voice-close-button"
           title="Close" @click="${this.onCloseClick_}">
       </cr-icon-button>
     </div>

@@ -36,7 +36,9 @@ export function getHtml(this: SearchAnimatedGlowElement) {
     <div class="double-gradient"></div>
     <div class="double-gradient-mask"></div>
     <div class="gradient"></div>
-    <div class="background"></div>
+    <div class="background"
+        part="composebox-background">
+    </div>
     ${this.requiresVoice ? html`
       <audio-wave
           ?is-listening="${this.animationState === GlowAnimationState.LISTENING}"

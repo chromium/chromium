@@ -91,6 +91,24 @@ const base::FeatureParam<bool> kEnableLensInContextualTasks(
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
     &kContextualTasks, "user-agent-suffix", "WGA/1.0 Cobrowsing/1.0"};
 
+const base::FeatureParam<bool> kEnableSteadyComposeboxVoiceSearch(
+    &kContextualTasksContext,
+    "EnableSteadyComposeboxVoiceSearch",
+    true);
+
+const base::FeatureParam<bool> kEnableExpandedComposeboxVoiceSearch(
+    &kContextualTasksContext,
+    "EnableExpandedComposeboxVoiceSearch",
+    true);
+
+bool GetIsExpandedComposeboxVoiceSearchEnabled() {
+  return kEnableExpandedComposeboxVoiceSearch.Get();
+}
+
+bool GetIsSteadyComposeboxVoiceSearchEnabled() {
+  return kEnableSteadyComposeboxVoiceSearch.Get();
+}
+
 std::string GetContextualTasksAiPageUrl() {
   return kContextualTasksAiPageUrl.Get();
 }

@@ -32,7 +32,8 @@ export function getHtml(this: ComposeboxElement) {
       .entrypointName="${this.entrypointName}"
       .requiresVoice="${this.shouldShowVoiceSearch_()}"
       .transcript="${this.transcript_}"
-      .receivedSpeech="${this.receivedSpeech_}">
+      .receivedSpeech="${this.receivedSpeech_}"
+      exportparts="composebox-background">
   </search-animated-glow>
   <ntp-error-scrim id="errorScrim" part="error-scrim"
     ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
@@ -145,7 +146,8 @@ export function getHtml(this: ComposeboxElement) {
       @voice-search-cancel="${this.onVoiceSearchClose_}"
       @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
       @transcript-update="${this.onTranscriptUpdate_}"
-      @speech-received="${this.onSpeechReceived_}">
+      @speech-received="${this.onSpeechReceived_}"
+      exportparts="voice-close-button">
   </cr-composebox-voice-search>
   ${this.shouldShowSuggestionActivityLink_() ? html`
     <div id="suggestionActivity">

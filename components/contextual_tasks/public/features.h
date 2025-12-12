@@ -72,6 +72,12 @@ extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount;
 // The user agent suffix to use for requests from the contextual tasks UI.
 extern const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix;
 
+// Returns if voice search is allowed in expanded composebox.
+extern bool GetIsExpandedComposeboxVoiceSearchEnabled();
+
+// Returns if voice search is allowed in base steady composebox.
+extern bool GetIsSteadyComposeboxVoiceSearchEnabled();
+
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
 

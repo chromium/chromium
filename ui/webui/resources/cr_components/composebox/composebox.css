@@ -714,7 +714,7 @@ cr-composebox-voice-search {
   @starting-style {
     opacity: 0;  /* Since hidden elements have no previous state. */
   }
-  transition: opacity 90ms ease-in-out, display 110ms allow-discrete;
+  transition: opacity 100ms ease-in-out, display 200ms allow-discrete;
   z-index: 2;
 }
 

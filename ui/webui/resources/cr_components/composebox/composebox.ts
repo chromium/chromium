@@ -656,7 +656,13 @@ export class ComposeboxElement extends I18nMixinLit
     e.detail.onPreviewFetched(previewDataUrl || '');
   }
 
+  protected voiceSearchEndCleanup_() {
+    this.inVoiceSearchMode_ = false;
+    this.animationState = GlowAnimationState.NONE;
+  }
+
   protected onVoiceSearchFinalResult_(e: CustomEvent<string>) {
+    this.voiceSearchEndCleanup_();
     this.searchboxHandler_.submitQuery(
         e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
         /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
@@ -669,8 +675,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onVoiceSearchClose_() {
-    this.inVoiceSearchMode_ = false;
-    this.animationState = GlowAnimationState.NONE;
+    this.voiceSearchEndCleanup_();
     this.receivedSpeech_ = false;
   }
 
