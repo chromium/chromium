@@ -248,7 +248,7 @@ scoped_refptr<StaticBitmapImage>
 CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
     ImageOrientation orientation /*= ImageOrientationEnum::kDefault*/) {
-  draw_callback(Canvas());
+  draw_callback(recorder_->getRecordingCanvas());
 
   if (!surface_) {
     const auto info = info_.makeAlphaType(kPremul_SkAlphaType);
