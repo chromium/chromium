@@ -193,7 +193,11 @@ GpuFeatureStatus GetWebGL2FeatureStatus(
 
 GpuFeatureStatus GetWebGPUFeatureStatus(
     const std::set<int>& blocklisted_features,
+    const GpuPreferences& gpu_preferences,
     bool use_swift_shader) {
+  if (!gpu_preferences.enable_webgpu) {
+    return kGpuFeatureStatusDisabled;
+  }
   if (use_swift_shader)
     return kGpuFeatureStatusSoftware;
   if (blocklisted_features.count(GPU_FEATURE_TYPE_ACCELERATED_WEBGPU))
@@ -625,7 +629,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       GetWebGL2FeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGPU] =
-      GetWebGPUFeatureStatus(blocklisted_features, use_software_gl);
+      GetWebGPUFeatureStatus(blocklisted_features, gpu_preferences,
+                             use_software_gl);
 
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
       GetWebGPUOnVulkanViaGLInterop(blocklisted_features, gpu_preferences,
