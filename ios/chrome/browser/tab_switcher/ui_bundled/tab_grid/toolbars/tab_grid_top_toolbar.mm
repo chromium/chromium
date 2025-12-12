@@ -406,7 +406,6 @@ CGFloat HorizontalMargin() {
 
   BOOL overflowEnabled = base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu);
   _overflowMenuButton.hidden = !overflowEnabled;
-  _editButton.hidden = overflowEnabled;
 
   if ([self shouldUseCompactLayout:traitCollection]) {
     switch (_mode) {

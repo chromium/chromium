@@ -119,20 +119,8 @@ id<GREYMatcher> SelectAllButton() {
 }
 
 id<GREYMatcher> VisibleTabGridEditButton() {
-  // Both the top toolbar and bottom toolbar "Edit" buttons are recognized so
-  // specify the top or bottom toolbar "Edit" button depending on the device.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    id<GREYMatcher> topToolbar = grey_kindOfClassName(@"TabGridTopToolbar");
-    return grey_allOf(chrome_test_util::TabGridEditButton(),
-                      grey_ancestor(topToolbar), grey_sufficientlyVisible(),
-                      nil);
-  } else {
-    id<GREYMatcher> bottomToolbar =
-        grey_kindOfClassName(@"TabGridBottomToolbar");
-    return grey_allOf(chrome_test_util::TabGridEditButton(),
-                      grey_ancestor(bottomToolbar), grey_sufficientlyVisible(),
-                      nil);
-  }
+  return grey_allOf(chrome_test_util::TabGridEditButton(),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the scrim view on the tab search.
@@ -237,13 +225,13 @@ void PerformTabGridSearch(NSString* text) {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 }
 
-// Taps the edit button in the bottom toolbar on the tab grid.
+// Taps the edit button on the tab grid.
 void TapVisibleTabGridEditButton() {
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
       performAction:grey_tap()];
 }
 
-// Taps the overflow menu button in the tab grid.
+// Taps the overflow menu button on the tab grid.
 void TapTabGridOverflowMenuButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
@@ -420,19 +408,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // The Top and Bottom toolbar treat the Edit button differently. Assert the
-  // correct behavior depending on which toolbar the Edit button button is on.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
-        assertWithMatcher:grey_allOf(grey_notNil(),
-                                     grey_accessibilityTrait(
-                                         UIAccessibilityTraitNotEnabled),
-                                     nil)];
-  } else {
     [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
         assertWithMatcher:grey_nil()];
-  }
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridRegularTabsEmptyStateView()]
