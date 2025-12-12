@@ -55,7 +55,10 @@ test("fuzzing_unittests") {
       "//testing/libfuzzer/fuzzers:string_compare_proto_fuzzer",
     ]
 
-    data += [ "data/uaf" ]
+    data += [
+      "data/check",
+      "data/uaf",
+    ]
 
     # TODO(crbug.com/40603084): Get these tests working on Windows.
     if (!is_win) {

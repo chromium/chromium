@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_view_util.h"
@@ -19,6 +20,10 @@ NOINLINE int TriggerUAF() {
   return *dangling;
 }
 
+NOINLINE int TriggerCheck() {
+  CHECK(false);
+}
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // SAFETY: libFuzzer and compatible fuzzing engines pass valid data.
   auto bytes = UNSAFE_BUFFERS(base::span(data, size));
@@ -26,6 +31,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   if (str == "uaf") {
     return TriggerUAF();
+  }
+  if (str == "check") {
+    return TriggerCheck();
   }
   return 0;
 }
