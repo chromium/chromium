@@ -15,8 +15,10 @@ class SourceBuffer;
 
 class SourceBufferTrackBaseSupplement
     : public GarbageCollected<SourceBufferTrackBaseSupplement>,
-      public GarbageCollectedMixin {
+      public Supplement<TrackBase> {
  public:
+  static const unsigned kSupplementIndex;
+
   static SourceBuffer* sourceBuffer(TrackBase&);
   static void SetSourceBuffer(TrackBase&, SourceBuffer*);
 
@@ -27,7 +29,6 @@ class SourceBufferTrackBaseSupplement
   static SourceBufferTrackBaseSupplement& From(TrackBase&);
   static SourceBufferTrackBaseSupplement* FromIfExists(TrackBase&);
 
-  Member<TrackBase> track_base_;
   Member<SourceBuffer> source_buffer_;
 };
 
