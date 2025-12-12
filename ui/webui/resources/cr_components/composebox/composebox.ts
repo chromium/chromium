@@ -43,6 +43,11 @@ import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoi
 import {ComposeboxMode} from './contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from './error_scrim.js';
 
+export enum VoiceSearchAction {
+  ACTIVATE = 0,
+  QUERY_SUBMITTED = 1,
+}
+
 export interface ComposeboxElement {
   $: {
     cancelIcon: CrIconButtonElement,
@@ -675,7 +680,10 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onVoiceSearchFinalResult_(e: CustomEvent<string>) {
+    e.stopPropagation();
     this.voiceSearchEndCleanup_();
+    this.fire(
+        'voice-search-action', {value: VoiceSearchAction.QUERY_SUBMITTED});
     this.searchboxHandler_.submitQuery(
         e.detail, /*mouse_button=*/ 0, /*alt_key=*/ false,
         /*ctrl_key=*/ false, /*meta_key=*/ false, /*shift_key=*/ false);
@@ -684,6 +692,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected openAimVoiceSearch_() {
     this.inVoiceSearchMode_ = true;
     this.animationState = GlowAnimationState.LISTENING;
+    this.fire('voice-search-action', {value: VoiceSearchAction.ACTIVATE});
     this.$.voiceSearch.start();
   }
 

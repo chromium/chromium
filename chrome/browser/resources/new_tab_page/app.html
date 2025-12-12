@@ -66,6 +66,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
               @composebox-initialized="${this.onComposeboxInitialized_}"
               @close-composebox="${this.closeComposebox_}"
               @composebox-input-focus-changed="${this.onInputFocusChanged_}"
+              @voice-search-action="${this.onComposeVoiceSearchAction_}"
               searchbox-layout-mode="${this.realboxLayoutMode_}">
           </cr-composebox>
         </dialog>
@@ -75,6 +76,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
             @composebox-initialized="${this.onComposeboxInitialized_}"
             @close-composebox="${this.closeComposebox_}"
             @composebox-input-focus-changed="${this.onInputFocusChanged_}"
+            @voice-search-query="${this.onComposeVoiceSearchAction_}"
             searchbox-layout-mode="${this.realboxLayoutMode_}">
         </cr-composebox>
       `}

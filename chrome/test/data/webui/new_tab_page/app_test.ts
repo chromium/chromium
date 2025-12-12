@@ -6,7 +6,7 @@ import {ActionChipsHandlerRemote, ChipType, PageCallbackRouter as ActionChipsPag
 import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection} from 'chrome://new-tab-page/customize_chrome.mojom-webui.js';
-import {ActionChipsApiProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {ActionChipsApiProxyImpl, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
@@ -28,6 +28,8 @@ import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
+
+const VOICE_ACTIONS_METRIC = 'NewTabPage.VoiceActions';
 
 suite('NewTabPageAppTest', () => {
   let app: AppElement;
@@ -149,11 +151,9 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
-      assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
+      assertEquals(1, metrics.count(VOICE_ACTIONS_METRIC));
       assertEquals(
-          1,
-          metrics.count(
-              'NewTabPage.VoiceActions', VoiceAction.ACTIVATE_SEARCH_BOX));
+          1, metrics.count(VOICE_ACTIONS_METRIC, VoiceAction.ACTIVATE));
     });
 
     test('voice search keyboard shortcut', async () => {
@@ -168,11 +168,10 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
-      assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
+      assertEquals(1, metrics.count(VOICE_ACTIONS_METRIC));
       assertEquals(
           1,
-          metrics.count(
-              'NewTabPage.VoiceActions', VoiceAction.ACTIVATE_KEYBOARD));
+          metrics.count(VOICE_ACTIONS_METRIC, VoiceAction.ACTIVATE_KEYBOARD));
 
       // Test other shortcut doesn't close voice search.
       // Act
@@ -1202,6 +1201,7 @@ suite('NewTabPageAppTest', () => {
       bubbles: true,
       composed: true,
     };
+
     suiteSetup(() => {
       loadTimeData.overrideValues({
         searchboxShowComposeEntrypoint: true,
@@ -1212,6 +1212,7 @@ suite('NewTabPageAppTest', () => {
       // Needed so `.click()` calls don't navigate.
       window.open = () => null;
     });
+
     test('toggle composebox visibility', async () => {
       // Arrange.
       callbackRouterRemote.setTheme(createTheme());
@@ -1285,7 +1286,6 @@ suite('NewTabPageAppTest', () => {
     test(
         'Clicking the searchbox composebox button notifies composebox handler',
         async () => {
-          searchboxHandler.reset();
           assertEquals(
               searchboxHandler.getCallCount('notifySessionStarted'), 0);
           assertEquals(
@@ -1313,7 +1313,6 @@ suite('NewTabPageAppTest', () => {
     test(
         'Clicking the searchbox composebox button displays the composebox',
         async () => {
-          searchboxHandler.reset();
           const composeButton = getComposeButton();
           assertTrue(!!composeButton);
 
@@ -1331,8 +1330,6 @@ suite('NewTabPageAppTest', () => {
     test(
         'Clicking the searchbox composebox button with text navigates',
         async () => {
-          searchboxHandler.reset();
-
           const searchboxContainer =
               app.shadowRoot.querySelector('cr-searchbox');
           const composeButton = getComposeButton();
@@ -1351,13 +1348,31 @@ suite('NewTabPageAppTest', () => {
               metrics.count(
                   'NewTabPage.ComposeEntrypoint.Click.UserTextPresent', true));
         });
+    test('Voice search action records metric', async () => {
+      // Act.
+      const searchbox = $$(app, '#searchbox');
+      assertTrue(!!searchbox);
+      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {searchboxText: '', contextFiles: []},
+      }));
+      await microtasksFinished();
+      const composebox = $$(app, '#composebox');
+      assertTrue(!!composebox);
+      composebox.dispatchEvent(new CustomEvent(
+          'voice-search-action',
+          {detail: {value: VoiceSearchAction.ACTIVATE}}));
+      await microtasksFinished();
 
+      // Assert.
+      assertEquals(1, metrics.count(VOICE_ACTIONS_METRIC));
+      assertEquals(
+          1, metrics.count(VOICE_ACTIONS_METRIC, VoiceAction.ACTIVATE));
+    });
     [false, true].forEach((ntpRealboxNextEnabled) => {
       test(
           `Propagate composebox text when closed when ntpRealboxNextEnabled is ${
               ntpRealboxNextEnabled}`,
           async () => {
-            searchboxHandler.reset();
             const searchbox = $$(app, '#searchbox');
             assertTrue(!!searchbox);
             searchbox.dispatchEvent(new CustomEvent('open-composebox', {
