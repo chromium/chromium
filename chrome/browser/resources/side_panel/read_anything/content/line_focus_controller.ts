@@ -4,6 +4,8 @@
 import {assert} from '//resources/js/assert.js';
 
 import {type LineFocus, LineFocusType} from '../content/read_anything_types.js';
+import {currentReadHighlightClass, PARENT_OF_HIGHLIGHT_CLASS} from '../read_aloud/movement.js';
+import {SpeechController} from '../read_aloud/speech_controller.js';
 
 import {LineFocusModel} from './line_focus_model.js';
 
@@ -15,6 +17,12 @@ export interface LineFocusListener {
 export class LineFocusController {
   private readonly listeners_: LineFocusListener[] = [];
   private model_: LineFocusModel = new LineFocusModel();
+  private highlightObserver_: MutationObserver;
+  private speechController_ = SpeechController.getInstance();
+
+  constructor() {
+    this.highlightObserver_ = new MutationObserver(this.onMutation_.bind(this));
+  }
 
   getTop(): number {
     return this.model_.getTop();
@@ -42,7 +50,9 @@ export class LineFocusController {
   }
 
   onMouseMove(y: number) {
-    if (this.isEnabled()) {
+    // Line focus should follow along with speech if it's active, so ignore
+    // mouse movements.
+    if (this.isEnabled() && !this.speechController_.isSpeechActive()) {
       this.setY_(Math.max(this.model_.getMinY(), y));
     }
   }
@@ -50,7 +60,13 @@ export class LineFocusController {
   onTextLocationsChange(container: HTMLElement, height: number) {
     if (this.isEnabled()) {
       this.calculateNewPositions_(container, height);
-      this.setY_(this.model_.getY());
+      if (this.speechController_.isSpeechActive()) {
+        const highlights = container.querySelectorAll<HTMLElement>(
+            `.${currentReadHighlightClass}`);
+        this.moveBelowHighlights_(Array.from(highlights));
+      } else {
+        this.setY_(this.model_.getY());
+      }
     }
   }
 
@@ -122,6 +138,39 @@ export class LineFocusController {
     this.model_.setDefaultWindowHeight(
         currentLineFocus.lines * (uniqueLines.at(-1)! - uniqueLines.at(0)!) /
         (uniqueLines.length - 1));
+
+    this.highlightObserver_.disconnect();
+    // Listen for node additions because speech is highlighted by replacing a
+    // node with its parts split into multiple nodes and styled differently.
+    this.highlightObserver_.observe(container, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  private onMutation_(mutations: MutationRecord[]) {
+    if (!this.isEnabled()) {
+      return;
+    }
+
+    // Extract the current highlights from the mutations.
+    const isHighlightParent = (node: Node): node is HTMLElement =>
+        node instanceof HTMLElement &&
+        node.classList.contains(PARENT_OF_HIGHLIGHT_CLASS);
+    const getCurrentHighlights = (el: HTMLElement): HTMLElement[] => Array.from(
+        el.querySelectorAll<HTMLElement>(`.${currentReadHighlightClass}`));
+    const highlights = mutations.flatMap(m => Array.from(m.addedNodes))
+                           .filter(isHighlightParent)
+                           .flatMap(getCurrentHighlights);
+    this.moveBelowHighlights_(highlights);
+  }
+
+  private moveBelowHighlights_(highlights: HTMLElement[]) {
+    if (highlights.length > 0) {
+      const maxY =
+          Math.max(...highlights.map(h => h.getBoundingClientRect().bottom));
+      this.setY_(maxY);
+    }
   }
 
   static getInstance(): LineFocusController {

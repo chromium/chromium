@@ -301,6 +301,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     if (this.isReadAloudEnabled_) {
       this.speechController_.onScroll();
     }
+    this.onTextLocationsChange_();
   }
 
   protected onContainerScrollEnd_() {
