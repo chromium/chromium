@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "ui/gfx/image/image.h"
@@ -40,6 +41,7 @@ class ValuablesDataManager : public KeyedService,
   };
 
   ValuablesDataManager(scoped_refptr<AutofillWebDataService> webdata_service,
+                       PrefService* pref_service,
                        AutofillImageFetcherBase* image_fetcher);
   ValuablesDataManager(const ValuablesDataManager&) = delete;
   ValuablesDataManager& operator=(const ValuablesDataManager&) = delete;
@@ -72,6 +74,9 @@ class ValuablesDataManager : public KeyedService,
   // `AutofillImageFetcher`. If the card art image is not present in the cache,
   // this function will return a nullptr.
   const gfx::Image* GetCachedValuableImageForUrl(const GURL& image_url) const;
+
+  // Returns the value of the `kAutofillCreditCardEnabled` pref.
+  virtual bool IsAutofillPaymentMethodsEnabled() const;
 
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::DataType data_type) override;
@@ -116,6 +121,10 @@ class ValuablesDataManager : public KeyedService,
 
   // The result of the last successful `LoadLoyaltyCards()` query.
   std::vector<LoyaltyCard> loyalty_cards_;
+
+  // The PrefService that this instance uses to read preferences.
+  // Must outlive this instance.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   base::WeakPtrFactory<ValuablesDataManager> weak_ptr_factory_{this};
 };
