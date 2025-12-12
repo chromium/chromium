@@ -31,6 +31,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/base/features.h"

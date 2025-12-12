@@ -28,7 +28,7 @@
 
 #include <set>
 
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
@@ -56,8 +56,9 @@
 #include "ui/gfx/geometry/quad_f.h"
 
 namespace base {
+class ScopedClosureRunner;
 class SingleThreadTaskRunner;
-}
+}  // namespace base
 
 namespace cc {
 class AnimationHost;
@@ -195,17 +196,15 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   //
   // SnapAtCurrentPosition() calls SnapForEndPosition() with the current
   // scroll position.
-  bool SnapAtCurrentPosition(
-      bool scrolled_x,
-      bool scrolled_y,
-      cc::ScrollSourceType source_type,
-      base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
-  bool SnapForEndPosition(
-      const gfx::PointF& end_position,
-      bool scrolled_x,
-      bool scrolled_y,
-      cc::ScrollSourceType source_type,
-      base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
+  bool SnapAtCurrentPosition(bool scrolled_x,
+                             bool scrolled_y,
+                             cc::ScrollSourceType source_type,
+                             base::ScopedClosureRunner on_finish);
+  bool SnapForEndPosition(const gfx::PointF& end_position,
+                          bool scrolled_x,
+                          bool scrolled_y,
+                          cc::ScrollSourceType source_type,
+                          base::ScopedClosureRunner on_finish);
   bool SnapForDirection(ScrollDirectionPhysical direction);
   bool SnapForPageScroll(ScrollDirectionPhysical direction);
   bool SnapForDocumentScroll(ScrollDirectionPhysical direction);
@@ -711,13 +710,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   gfx::Size PageSize() const;
 
   // Returns true if a snap point was found.
-  bool PerformSnapping(
-      const cc::SnapSelectionStrategy& strategy,
-      cc::ScrollSourceType source_type,
-      mojom::blink::ScrollBehavior behavior =
-          mojom::blink::ScrollBehavior::kSmooth,
-      base::ScopedClosureRunner on_finish = base::ScopedClosureRunner(),
-      bool preserve_pinned_marker = false);
+  bool PerformSnapping(const cc::SnapSelectionStrategy& strategy,
+                       cc::ScrollSourceType source_type,
+                       mojom::blink::ScrollBehavior behavior,
+                       base::ScopedClosureRunner on_finish,
+                       bool preserve_pinned_marker);
 
   void ScrollToScrollInitialTarget(const LayoutObject*);
 

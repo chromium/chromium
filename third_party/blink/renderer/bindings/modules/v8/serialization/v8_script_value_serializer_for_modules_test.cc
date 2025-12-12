@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_serializer_for_modules.h"
 
 #include "base/containers/to_vector.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"

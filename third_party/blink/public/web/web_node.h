@@ -34,13 +34,17 @@
 #include <iosfwd>
 #include <vector>
 
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback_forward.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_dom_event.h"
 #include "v8/include/v8-forward.h"
+
+namespace base {
+class ScopedClosureRunner;
+}  // namespace base
 
 namespace blink {
 

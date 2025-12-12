@@ -33,6 +33,7 @@
 
 #include <limits>
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -1164,7 +1165,8 @@ void ScrollableArea::SnapAfterScrollbarScrolling(
     ScrollbarOrientation orientation,
     cc::ScrollSourceType source_type) {
   SnapAtCurrentPosition(orientation == kHorizontalScrollbar,
-                        orientation == kVerticalScrollbar, source_type);
+                        orientation == kVerticalScrollbar, source_type,
+                        base::ScopedClosureRunner());
 }
 
 bool ScrollableArea::SnapAtCurrentPosition(
@@ -1187,9 +1189,9 @@ bool ScrollableArea::SnapForEndPosition(const gfx::PointF& end_position,
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndPosition(end_position, scrolled_x,
                                                       scrolled_y);
-  return PerformSnapping(*strategy, source_type,
-                         mojom::blink::ScrollBehavior::kSmooth,
-                         std::move(on_finish));
+  return PerformSnapping(
+      *strategy, source_type, mojom::blink::ScrollBehavior::kSmooth,
+      std::move(on_finish), /*preserve_pinned_marker=*/false);
 }
 
 bool ScrollableArea::SnapForDirection(ScrollDirectionPhysical direction) {
@@ -1205,7 +1207,9 @@ bool ScrollableArea::SnapForDirection(ScrollDirectionPhysical direction) {
   // Only called for arrow key press scrolls, which are relative scrolls.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
   return PerformSnapping(*strategy, cc::ScrollSourceType::kRelativeScroll,
-                         mojom::blink::ScrollBehavior::kSmooth);
+                         mojom::blink::ScrollBehavior::kSmooth,
+                         base::ScopedClosureRunner(),
+                         /*preserve_pinned_marker=*/false);
 }
 
 bool ScrollableArea::SnapForPageScroll(ScrollDirectionPhysical direction) {
@@ -1214,7 +1218,10 @@ bool ScrollableArea::SnapForPageScroll(ScrollDirectionPhysical direction) {
       PageScrollSnapStrategy(direction);
   // Only called for PgUp/PgDn key press scrolls, which are relative scrolls.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
-  return PerformSnapping(*strategy, cc::ScrollSourceType::kRelativeScroll);
+  return PerformSnapping(*strategy, cc::ScrollSourceType::kRelativeScroll,
+                         mojom::blink::ScrollBehavior::kSmooth,
+                         base::ScopedClosureRunner(),
+                         /*preserve_pinned_marker=*/false);
 }
 
 bool ScrollableArea::SnapForDocumentScroll(ScrollDirectionPhysical direction) {
@@ -1227,7 +1234,8 @@ bool ScrollableArea::SnapForDocumentScroll(ScrollDirectionPhysical direction) {
   // Only called for Home/End key press scrolls, which are absolute scrolls.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
   return SnapForEndPosition(end_position, scrolled_x, scrolled_y,
-                            cc::ScrollSourceType::kAbsoluteScroll);
+                            cc::ScrollSourceType::kAbsoluteScroll,
+                            base::ScopedClosureRunner());
 }
 
 std::unique_ptr<cc::SnapSelectionStrategy>
@@ -1250,7 +1258,7 @@ void ScrollableArea::SnapAfterLayout() {
       cc::SnapSelectionStrategy::CreateForTargetElement(current_position);
   PerformSnapping(*strategy, cc::ScrollSourceType::kStationaryScroll,
                   mojom::blink::ScrollBehavior::kInstant,
-                  base::ScopedClosureRunner(), true);
+                  base::ScopedClosureRunner(), /*preserve_pinned_marker=*/true);
 }
 
 bool ScrollableArea::PerformSnapping(
