@@ -21,7 +21,8 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
     tabs::VerticalTabStripStateController* state_controller,
     actions::ActionItem* root_action_item,
     BrowserWindowInterface* browser)
-    : browser_(browser),
+    : root_action_item_(root_action_item),
+      browser_(browser),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
