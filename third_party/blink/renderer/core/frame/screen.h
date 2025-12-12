@@ -32,8 +32,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -44,12 +44,15 @@ struct ScreenInfo;
 namespace blink {
 
 class LocalDOMWindow;
-class ScreenScreenOrientation;
 
-class CORE_EXPORT Screen : public EventTarget, public ExecutionContextClient {
+class CORE_EXPORT Screen : public EventTarget,
+                           public ExecutionContextClient,
+                           public Supplementable<Screen, 1> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class Supplements { kScreenScreenOrientation = 0 };
+
   Screen(LocalDOMWindow*, int64_t display_id);
 
   static bool AreWebExposedScreenPropertiesEqual(
@@ -83,15 +86,6 @@ class CORE_EXPORT Screen : public EventTarget, public ExecutionContextClient {
   int64_t DisplayId() const { return display_id_; }
   void UpdateDisplayId(int64_t display_id) { display_id_ = display_id; }
 
-  ForwardDeclaredMember<ScreenScreenOrientation> GetScreenScreenOrientation()
-      const {
-    return screen_screen_orientation_;
-  }
-  void SetScreenScreenOrientation(ForwardDeclaredMember<ScreenScreenOrientation>
-                                      screen_screen_orientation) {
-    screen_screen_orientation_ = screen_screen_orientation;
-  }
-
  protected:
   // Helpers to access screen information.
   gfx::Rect GetRect(bool available) const;
@@ -99,8 +93,6 @@ class CORE_EXPORT Screen : public EventTarget, public ExecutionContextClient {
 
   // The internal id of the underlying display, to support multi-screen devices.
   int64_t display_id_;
-
-  ForwardDeclaredMember<ScreenScreenOrientation> screen_screen_orientation_;
 };
 
 }  // namespace blink

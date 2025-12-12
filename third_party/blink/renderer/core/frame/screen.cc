@@ -136,7 +136,7 @@ int Screen::availWidth() const {
 void Screen::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
-  visitor->Trace(screen_screen_orientation_);
+  Supplementable::Trace(visitor);
 }
 
 const AtomicString& Screen::InterfaceName() const {
