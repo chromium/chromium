@@ -277,7 +277,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   [self.consumer setBadgeConfig:config];
   [self.consumer collapseBadgeContainer];
   [self.consumer showBadge];
-  [self logBadgeShown:config.badgeType];
+  [self badgeShown:config.badgeType];
 
   if ([self shouldShowIPH:config.badgeType]) {
     [self startIPHTimer:config];
@@ -392,8 +392,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 
   [self.delegate disableFullscreen];
   [self.consumer expandBadgeContainer];
-
-  // TODO(crbug.com/454072799): Add metric log for chip showing.
+  [self chipShown:badgeConfig.badgeType];
   [self startEndPromoTimer];
 }
 
@@ -550,8 +549,8 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   }
 }
 
-// Logs metrics or preferences for a specific `badgeType` being shown.
-- (void)logBadgeShown:(LocationBarBadgeType)badgeType {
+// Handles additional logic for `badgeType` when badge is shown.
+- (void)badgeShown:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
     case LocationBarBadgeType::kGeminiContextualCueChip:
       _tracker->NotifyEvent(
@@ -563,6 +562,28 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
       break;
   }
   RecordLocationBarBadgeShown(badgeType);
+}
+
+// Handles additional logic for `badgeType` when the chip is shown.
+- (void)chipShown:(LocationBarBadgeType)badgeType {
+  switch (badgeType) {
+    case LocationBarBadgeType::kContextualPanelEntryPointSample:
+    case LocationBarBadgeType::kPriceInsights:
+    case LocationBarBadgeType::kReaderMode: {
+      ContextualPanelTabHelper* contextualPanelTabHelper =
+          ContextualPanelTabHelper::FromWebState(
+              _webStateList->GetActiveWebState());
+      std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
+          metricsData = contextualPanelTabHelper->GetMetricsData();
+      if (metricsData) {
+        metricsData->largeEntrypointWasShown = true;
+      }
+      contextualPanelTabHelper->SetLoudMomentEntrypointShown(true);
+      break;
+    }
+    default:
+      break;
+  }
 }
 
 // Whether to show Gemini contextual chip. Checks if the page is eligible for
