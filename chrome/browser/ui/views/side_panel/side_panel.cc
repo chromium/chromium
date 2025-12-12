@@ -876,7 +876,17 @@ double SidePanel::GetAnimationValueFor(
 }
 
 bool SidePanel::ShouldShowAnimation() const {
-  return gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_;
+  bool should_show_animations =
+      gfx::Animation::ShouldRenderRichAnimation() && !animations_disabled_;
+#if BUILDFLAG(IS_WIN)
+  // Don't show open/close animations for the toolbar height panel on Windows
+  // due to jank. The "show from" animation should still run which is the only
+  // time |content_starting_bounds_| has a value.
+  if (type_ == SidePanelEntry::PanelType::kToolbar) {
+    should_show_animations &= content_starting_bounds_.has_value();
+  }
+#endif
+  return should_show_animations;
 }
 
 void SidePanel::AnnounceResize() {

@@ -21,6 +21,8 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
@@ -3164,6 +3166,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_GT(content_x_at_first_step, content_x_at_second_step);
 }
 
+// TODO(crbug.com/467727720): Re-enable on Windows when the underlying jank is
+// resolved.
+#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        ClosingMidShowFromAnimationReparentsContentView) {
   // Deregister and reregister kAboutThisSite side panel with kToolbar
@@ -3223,6 +3228,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   ASSERT_EQ(
       toolbar_height_side_panel->GetContentParentView()->children().size(), 1);
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorTest,
