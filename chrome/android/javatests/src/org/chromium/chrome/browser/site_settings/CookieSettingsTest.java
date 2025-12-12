@@ -53,7 +53,7 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.RELATED_WEBSITE_SETS_UI})
 public class CookieSettingsTest {
-    private static final int RENDER_TEST_REVISION = 1;
+    private static final int RENDER_TEST_REVISION = 2;
 
     @Rule
     public SettingsActivityTestRule<SingleCategorySettings> mSettingsActivityTestRule =
