@@ -30,6 +30,7 @@ build_webui_tests("build") {
     "//chrome/test/data/webui:build_ts",
     "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_components/search:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
