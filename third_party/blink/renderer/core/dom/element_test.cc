@@ -22,12 +22,14 @@
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -1527,6 +1529,55 @@ TEST_F(ElementTest, OverscrollPseudoElementLayoutStructure) {
             GetElementById("previous-sibling")->GetLayoutObject());
   EXPECT_EQ(scroller->GetLayoutObject()->NextSibling(),
             GetElementById("next-sibling")->GetLayoutObject());
+}
+
+TEST_F(ElementTest, OverscrollPropertyTrees) {
+  ScopedCSSOverscrollGesturesForTest enabled(true);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container {
+        overscroll-area: --foo, --bar;
+        overflow: auto;
+      }
+    </style>
+    <div id="container"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* container = GetElementById("container");
+  PseudoElement* foo = container->GetPseudoElement(
+      kPseudoIdOverscrollAreaParent, AtomicString("--foo"));
+  PseudoElement* bar = container->GetPseudoElement(
+      kPseudoIdOverscrollAreaParent, AtomicString("--bar"));
+
+  // ::-internal-overscroll-area-parent skips the scrollers scroll translation.
+  for (auto* pseudo_element : {foo, bar}) {
+    EXPECT_EQ(pseudo_element->GetLayoutObject()
+                  ->FirstFragment()
+                  .PaintProperties()
+                  ->PaintOffsetTranslation()
+                  ->Parent(),
+              container->GetLayoutObject()
+                  ->FirstFragment()
+                  .PaintProperties()
+                  ->PaintOffsetTranslation());
+  }
+
+  // Scroll chains from the element, to the overscroll-area-parents, to the
+  // root.
+  HeapVector<Member<const ScrollPaintPropertyNode>> scroll_chain(
+      {container->GetLayoutObject()
+           ->FirstFragment()
+           .PaintProperties()
+           ->Scroll(),
+       bar->GetLayoutObject()->FirstFragment().PaintProperties()->Scroll(),
+       foo->GetLayoutObject()->FirstFragment().PaintProperties()->Scroll(),
+       GetDocument().View()->GetPage()->GetVisualViewport().GetScrollNode()});
+  for (size_t i = 1; i < scroll_chain.size(); ++i) {
+    const ScrollPaintPropertyNode* child = scroll_chain[i - 1];
+    const ScrollPaintPropertyNode* parent = scroll_chain[i];
+    EXPECT_EQ(child->Parent(), parent);
+  }
 }
 
 TEST_F(ElementTest, ReorderOverscrollPseudoElements) {

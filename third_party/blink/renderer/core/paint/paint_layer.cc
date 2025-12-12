@@ -864,10 +864,13 @@ void PaintLayer::UpdateStackingNode() {
 }
 
 bool PaintLayer::RequiresScrollableArea() const {
-  if (!GetLayoutBox())
+  const LayoutBox* box = GetLayoutBox();
+  if (!box) {
     return false;
-  if (GetLayoutObject().IsScrollContainer())
+  }
+  if (box->Style()->HasOverscrollArea() || box->IsScrollContainer()) {
     return true;
+  }
   // Iframes with the resize property can be resized. This requires
   // scroll corner painting, which is implemented, in part, by
   // PaintLayerScrollableArea.

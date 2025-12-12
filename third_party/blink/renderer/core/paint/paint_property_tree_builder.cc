@@ -459,6 +459,12 @@ class FragmentPaintPropertyTreeBuilder {
 static bool NeedsScrollAndScrollTranslation(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons) {
+  if (object.IsOverscrollContainer()) {
+    // Overscroll containing boxes require a scroll node in order to chain
+    // overscroll to their respective ::-internal-overscroll-area-parent
+    // pseudo-elements.
+    return true;
+  }
   if (!object.IsScrollContainer()) {
     return false;
   }
@@ -789,8 +795,20 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
                     CompositorElementIdNamespace::kDOMNodeId)
               : cc::ElementId();
     }
-    OnUpdateTransform(properties_->UpdatePaintOffsetTranslation(
-        *context_.current.transform, std::move(state)));
+    // Skip the ScrollTranslation of the containing scroller for
+    // ::-internal-overscroll-area-parent.
+    bool skip_parent_scroll_translation =
+        object_.IsPseudoElement() &&
+        To<PseudoElement>(object_.GetNode())->GetPseudoId() ==
+            kPseudoIdOverscrollAreaParent;
+    const TransformPaintPropertyNodeOrAlias* parent =
+        skip_parent_scroll_translation ? context_.current.transform->Unalias()
+                                             .NearestScrollTranslationNode()
+                                             .Parent()
+                                       : context_.current.transform;
+
+    OnUpdateTransform(
+        properties_->UpdatePaintOffsetTranslation(*parent, std::move(state)));
     context_.current.transform = properties_->PaintOffsetTranslation();
     if (IsA<LayoutView>(object_)) {
       context_.absolute_position.transform =
@@ -3133,6 +3151,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollNode() {
 
   OnUpdateScroll(
       properties_->UpdateScroll(*context_.current.scroll, std::move(state)));
+  if (object_.IsPseudoElement() &&
+      To<PseudoElement>(object_.GetNode())->GetPseudoId() ==
+          kPseudoIdOverscrollAreaParent) {
+    context_.current.SetOverscrollParent(*properties_->Scroll());
+  }
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlEffects() {
