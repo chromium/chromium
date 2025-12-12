@@ -12,6 +12,8 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer_bridge.h"
@@ -28,6 +30,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -222,7 +225,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   _infobarBadgesCurrentlyShown = infobarBadgesCurrentlyShown;
 
   if (_infobarBadgesCurrentlyShown) {
-    // TODO(crbug.com/454351425): Add dismissEntrypointIPHAnimated.
+    [self dismissIPHAnimated:YES];
   }
 
   [self.consumer setInfobarBadgesCurrentlyShown:_infobarBadgesCurrentlyShown];
@@ -284,6 +287,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 #pragma mark - LocationBarBadgeMutator
 
 - (void)dismissIPHAnimated:(BOOL)animated {
+  [_entrypointHelpHandler dismissContextualPanelEntrypointIPH:animated];
   [self.consumer highlightBadge:NO];
 }
 
@@ -367,6 +371,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 
 // Changes the UI to the default badge state.
 - (void)cleanupAndTransitionToDefaultBadgeState {
+  [self dismissIPHAnimated:YES];
   [self.consumer collapseBadgeContainer];
   [self.delegate enableFullscreen];
 }
@@ -453,6 +458,35 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   return isPageEligible && isConsentEligible && eligibleTimeWindow &&
          _tracker->ShouldTriggerHelpUI(
              feature_engagement::kIPHiOSGeminiContextualCueChip);
+}
+
+#pragma mark - Private ContextualPanelEntrypoint
+
+// Updates the entrypoint state whenever the active tab changes or new data is
+// provided.
+- (void)activeTabHasNewData:(ContextualPanelItemConfiguration*)config {
+  // TODO(crbug.com/467506403): Implement activeTabHasNewData.
+}
+
+// Whether to show the Contextual Panel Entrypoint IPH given a `config`.
+- (BOOL)canShowEntrypointIPHWithConfig:
+    (ContextualPanelItemConfiguration*)config {
+  return [self canShowLoudEntrypointMoment] && config &&
+         config->CanShowEntrypointIPH() &&
+         _tracker->WouldTriggerHelpUI(*config->iph_feature);
+}
+
+// Whether to show a loud contextual panel entrypoint moment.
+- (BOOL)canShowLoudEntrypointMoment {
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+
+  return !_infobarBadgesCurrentlyShown &&
+         !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
+         !contextualPanelTabHelper->WasLoudMomentEntrypointShown() &&
+         !contextualPanelTabHelper->WasLoudMomentEntrypointCanceled() &&
+         [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }
 
 @end
