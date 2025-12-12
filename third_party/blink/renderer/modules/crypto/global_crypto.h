@@ -28,10 +28,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://w3c.github.io/webcrypto/Overview.html#crypto-interface
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_GLOBAL_CRYPTO_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_GLOBAL_CRYPTO_H_
 
-[
-    ImplementedAs=DOMWindowCrypto
-] partial interface Window {
-    readonly attribute Crypto crypto;
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
+
+namespace blink {
+
+class Crypto;
+class ExecutionContext;
+
+class GlobalCrypto final : public GarbageCollected<GlobalCrypto>,
+                           public Supplement<ExecutionContext> {
+ public:
+  static const char kSupplementName[];
+
+  static GlobalCrypto& From(ExecutionContext&);
+  static Crypto* crypto(ExecutionContext&);
+
+  explicit GlobalCrypto(ExecutionContext& execution_context);
+
+  void Trace(Visitor*) const override;
+
+ private:
+  Crypto* crypto() const;
+
+  mutable Member<Crypto> crypto_;
 };
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_GLOBAL_CRYPTO_H_

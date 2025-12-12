@@ -28,42 +28,41 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/modules/crypto/dom_window_crypto.h"
+#include "third_party/blink/renderer/modules/crypto/global_crypto.h"
 
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/crypto/crypto.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
-DOMWindowCrypto::DOMWindowCrypto(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {}
+const char GlobalCrypto::kSupplementName[] = "GlobalCrypto";
 
-const char DOMWindowCrypto::kSupplementName[] = "DOMWindowCrypto";
+GlobalCrypto::GlobalCrypto(ExecutionContext& execution_context)
+    : Supplement<ExecutionContext>(execution_context) {}
 
-DOMWindowCrypto& DOMWindowCrypto::From(LocalDOMWindow& window) {
-  DOMWindowCrypto* supplement =
-      Supplement<LocalDOMWindow>::From<DOMWindowCrypto>(window);
+GlobalCrypto& GlobalCrypto::From(ExecutionContext& execution_context) {
+  GlobalCrypto* supplement =
+      Supplement<ExecutionContext>::From<GlobalCrypto>(execution_context);
   if (!supplement) {
-    supplement = MakeGarbageCollected<DOMWindowCrypto>(window);
-    ProvideTo(window, supplement);
+    supplement = MakeGarbageCollected<GlobalCrypto>(execution_context);
+    Supplement<ExecutionContext>::ProvideTo(execution_context, supplement);
   }
   return *supplement;
 }
-
-Crypto* DOMWindowCrypto::crypto(LocalDOMWindow& window) {
-  return DOMWindowCrypto::From(window).crypto();
+Crypto* GlobalCrypto::crypto(ExecutionContext& execution_context) {
+  return GlobalCrypto::From(execution_context).crypto();
 }
 
-Crypto* DOMWindowCrypto::crypto() const {
-  if (!crypto_)
+Crypto* GlobalCrypto::crypto() const {
+  if (!crypto_) {
     crypto_ = MakeGarbageCollected<Crypto>();
+  }
   return crypto_.Get();
 }
 
-void DOMWindowCrypto::Trace(Visitor* visitor) const {
+void GlobalCrypto::Trace(Visitor* visitor) const {
   visitor->Trace(crypto_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 }  // namespace blink

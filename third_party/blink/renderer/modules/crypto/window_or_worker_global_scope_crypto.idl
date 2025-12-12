@@ -28,35 +28,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_WORKER_GLOBAL_SCOPE_CRYPTO_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_WORKER_GLOBAL_SCOPE_CRYPTO_H_
+// https://w3c.github.io/webcrypto/#crypto-interface
 
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-
-namespace blink {
-
-class Crypto;
-class WorkerGlobalScope;
-
-class WorkerGlobalScopeCrypto final
-    : public GarbageCollected<WorkerGlobalScopeCrypto>,
-      public Supplement<WorkerGlobalScope> {
- public:
-  static const char kSupplementName[];
-
-  static WorkerGlobalScopeCrypto& From(WorkerGlobalScope&);
-  static Crypto* crypto(WorkerGlobalScope&);
-  Crypto* crypto() const;
-
-  explicit WorkerGlobalScopeCrypto(WorkerGlobalScope& worker_scope);
-
-  void Trace(Visitor*) const override;
-
- private:
-  mutable Member<Crypto> crypto_;
+[
+    ImplementedAs=GlobalCrypto
+] partial interface mixin WindowOrWorkerGlobalScope {
+    [SameObject] readonly attribute Crypto crypto;
 };
-
-}  // namespace blink
-
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CRYPTO_WORKER_GLOBAL_SCOPE_CRYPTO_H_
