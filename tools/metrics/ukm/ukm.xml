@@ -2388,6 +2388,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.AiAmountExtractionComplete" singular="true">
+  <owner>jamessun@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the final result of the AI-based checkout amount extraction process.
+    Recorded once per page load, either when the model execution completes
+    (successfully, with failure, or with invalid data) or when the client-side
+    timeout is reached.
+  </summary>
+  <metric name="Result" enum="AiAmountExtractionResult">
+    <summary>
+      The result of the AI amount extraction.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Autofill.AmountExtractionComplete" singular="true">
   <owner>jamessun@google.com</owner>
   <owner>longsheng@google.com</owner>

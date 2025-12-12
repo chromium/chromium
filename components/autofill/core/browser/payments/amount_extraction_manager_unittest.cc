@@ -1055,6 +1055,72 @@ TEST_F(AmountExtractionManagerTest,
       /*expected_count=*/1);
 }
 
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Success) {
+  ukm::SourceId kTestUkmSourceId = 12345;
+  autofill::autofill_metrics::LogAiAmountExtractionResult(
+      autofill_metrics::AiAmountExtractionResult::kSuccess, kTestUkmSourceId);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtractionComplete::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtractionComplete::kResultName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
+            static_cast<int64_t>(
+                autofill_metrics::AiAmountExtractionResult::kSuccess));
+  EXPECT_EQ(ukm_entries[0].source_id, kTestUkmSourceId);
+}
+
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Failed) {
+  ukm::SourceId kTestUkmSourceId = 12345;
+  autofill::autofill_metrics::LogAiAmountExtractionResult(
+      autofill_metrics::AiAmountExtractionResult::kFailed, kTestUkmSourceId);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtractionComplete::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtractionComplete::kResultName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
+            static_cast<int64_t>(
+                autofill_metrics::AiAmountExtractionResult::kFailed));
+  EXPECT_EQ(ukm_entries[0].source_id, kTestUkmSourceId);
+}
+
+TEST_F(AmountExtractionManagerTest,
+       AiAmountExtraction_UkmResult_InvalidResponse) {
+  ukm::SourceId kTestUkmSourceId = 12345;
+  autofill::autofill_metrics::LogAiAmountExtractionResult(
+      autofill_metrics::AiAmountExtractionResult::kInvalidResponse,
+      kTestUkmSourceId);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtractionComplete::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtractionComplete::kResultName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
+            static_cast<int64_t>(
+                autofill_metrics::AiAmountExtractionResult::kInvalidResponse));
+  EXPECT_EQ(ukm_entries[0].source_id, kTestUkmSourceId);
+}
+
+TEST_F(AmountExtractionManagerTest, AiAmountExtraction_UkmResult_Timeout) {
+  ukm::SourceId kTestUkmSourceId = 12345;
+  autofill::autofill_metrics::LogAiAmountExtractionResult(
+      autofill_metrics::AiAmountExtractionResult::kTimeout, kTestUkmSourceId);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      ukm::builders::Autofill_AiAmountExtractionComplete::kEntryName,
+      {ukm::builders::Autofill_AiAmountExtractionComplete::kResultName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].metrics.at("Result"),
+            static_cast<int64_t>(
+                autofill_metrics::AiAmountExtractionResult::kTimeout));
+  EXPECT_EQ(ukm_entries[0].source_id, kTestUkmSourceId);
+}
+
 TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {
   mock_amount_extraction_manager_ =
       std::make_unique<MockAmountExtractionManager>(&autofill_manager());

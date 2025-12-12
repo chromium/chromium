@@ -411,7 +411,8 @@ void AmountExtractionManager::Reset() {
 void AmountExtractionManager::LogAiAmountExtractionResultIfApplicable(
     autofill_metrics::AiAmountExtractionResult result) {
   if (!has_logged_amount_extraction_result_) {
-    LogAiAmountExtractionResult(result);
+    LogAiAmountExtractionResult(result,
+                                GetMainFrameDriver()->GetPageUkmSourceId());
     has_logged_amount_extraction_result_ = true;
   }
 }
