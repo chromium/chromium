@@ -12982,21 +12982,6 @@
             ]
         }
     ],
-    "IOSAutofillBottomSheetNewBlur": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillBottomSheetNewBlur"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillPaymentsSheetV3": [
         {
             "platforms": [
