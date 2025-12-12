@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_like_background.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -20,17 +22,32 @@ MainBackgroundRegionView::MainBackgroundRegionView(BrowserView& browser_view)
     : browser_view_(browser_view) {
   SetCanProcessEventsWithinSubtree(false);
   SetVisible(false);
+
+  leading_corner_background_ = AddChildView(std::make_unique<views::View>());
+  leading_corner_background_->SetBackground(
+      std::make_unique<TabStripLikeBackground>(&browser_view_.get()));
+  trailing_corner_background_ = AddChildView(std::make_unique<views::View>());
+  trailing_corner_background_->SetBackground(
+      std::make_unique<TabStripLikeBackground>(&browser_view_.get()));
+  background_view_ = AddChildView(std::make_unique<views::View>());
+  background_view_->SetBackground(
+      std::make_unique<TopContainerBackground>(&browser_view_.get()));
 }
 MainBackgroundRegionView::~MainBackgroundRegionView() = default;
 
 void MainBackgroundRegionView::Layout(PassKey) {
+  background_view_->SetBoundsRect(GetLocalBounds());
   if (ImmersiveModeController::From(browser_view_->browser())->IsEnabled()) {
     // Rounded top corners are not needed in immersive mode, so use an empty
     // clip path.
-    SetClipPath(SkPathBuilder().detach());
+    background_view_->SetClipPath(SkPathBuilder().detach());
   } else {
     const int corner_radius =
         GetLayoutConstant(MAIN_BACKGROUND_REGION_CORNER_RADIUS);
+
+    leading_corner_background_->SetBounds(0, 0, corner_radius, corner_radius);
+    trailing_corner_background_->SetBounds(width() - corner_radius, 0,
+                                           corner_radius, corner_radius);
 
     // Clip path that outlines the main background region with rounded corners
     // at the top left and top right of the view.
@@ -48,12 +65,12 @@ void MainBackgroundRegionView::Layout(PassKey) {
             .lineTo(width(), height())
             .lineTo(0, height())
             .detach();
-    SetClipPath(path);
+    background_view_->SetClipPath(path);
   }
-}
 
-void MainBackgroundRegionView::OnPaint(gfx::Canvas* canvas) {
-  TopContainerBackground::PaintBackground(canvas, this, &browser_view_.get());
+  // Call super implementation to ensure layout manager and child layouts
+  // happen.
+  LayoutSuperclass<views::View>(this);
 }
 
 BEGIN_METADATA(MainBackgroundRegionView) END_METADATA

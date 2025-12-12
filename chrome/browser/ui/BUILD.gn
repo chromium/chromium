@@ -4469,6 +4469,8 @@ static_library("ui") {
       "views/tabs/tab_strip_layout_helper.cc",
       "views/tabs/tab_strip_layout_helper.h",
       "views/tabs/tab_strip_layout_types.h",
+      "views/tabs/tab_strip_like_background.cc",
+      "views/tabs/tab_strip_like_background.h",
       "views/tabs/tab_strip_nudge_button.cc",
       "views/tabs/tab_strip_nudge_button.h",
       "views/tabs/tab_style_views.cc",
