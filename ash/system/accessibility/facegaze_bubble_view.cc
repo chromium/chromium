@@ -109,8 +109,16 @@ FaceGazeBubbleView::FaceGazeBubbleView(
   main_content_view_ =
       AddChildView(std::make_unique<FaceGazeBubbleMainContentView>(
           std::move(on_mouse_entered)));
-  close_view_ = AddChildView(std::make_unique<FaceGazeBubbleCloseView>(
-      std::move(on_close_button_clicked)));
+
+  auto close_button =
+      std::make_unique<views::ImageButton>(std::move(on_close_button_clicked));
+  close_button->SetImageModel(
+      views::ImageButton::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(kMediumOrLargeCloseButtonIcon,
+                                     kColorAshTextColorPrimary));
+  close_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_FACEGAZE_CLOSE_BUTTON_TEXT));
+  close_view_ = AddChildView(std::move(close_button));
 }
 
 FaceGazeBubbleView::~FaceGazeBubbleView() = default;
@@ -172,38 +180,6 @@ void FaceGazeBubbleMainContentView::UpdateColor(bool is_warning) {
 }
 
 BEGIN_METADATA(FaceGazeBubbleMainContentView)
-END_METADATA
-
-FaceGazeBubbleCloseView::FaceGazeBubbleCloseView(
-    const base::RepeatingCallback<void(const ui::Event& event)>&
-        on_close_button_clicked)
-    : on_close_button_clicked_(std::move(on_close_button_clicked)) {
-  // Create layout.
-  auto layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal);
-  SetLayoutManager(std::move(layout));
-
-  // Add close button to view structure.
-  AddChildView(CreateImageView(&close_button_, kMediumOrLargeCloseButtonIcon));
-  close_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_FACEGAZE_CLOSE_BUTTON_TEXT));
-}
-
-FaceGazeBubbleCloseView::~FaceGazeBubbleCloseView() = default;
-
-bool FaceGazeBubbleCloseView::OnMousePressed(const ui::MouseEvent& event) {
-  on_close_button_clicked_.Run(event);
-  return false;
-}
-
-void FaceGazeBubbleCloseView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::EventType::kGestureTap) {
-    on_close_button_clicked_.Run(*event);
-    event->SetHandled();
-  }
-}
-
-BEGIN_METADATA(FaceGazeBubbleCloseView)
 END_METADATA
 
 }  // namespace ash

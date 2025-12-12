@@ -15,6 +15,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
 
 namespace ash {
 
@@ -47,7 +48,7 @@ class FaceGazeBubbleControllerTest : public AshTestBase {
     return GetController()->facegaze_bubble_view_;
   }
 
-  const raw_ptr<FaceGazeBubbleCloseView> GetCloseView() {
+  const raw_ptr<views::ImageButton> GetCloseView() {
     return GetView()->GetCloseViewForTesting();
   }
 
