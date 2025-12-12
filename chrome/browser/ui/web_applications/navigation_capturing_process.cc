@@ -874,8 +874,7 @@ void NavigationCapturingProcess::MaybeNotifyIwaTabCounterService(
     return;
   }
 
-  counter_service->OnWebContentsCreated(*iwa_opener_app_id, &web_contents,
-                                        provider->clock().Now());
+  counter_service->OnWebContentsCreated(*iwa_opener_app_id);
 }
 
 // static
