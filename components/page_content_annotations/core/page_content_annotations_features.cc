@@ -31,6 +31,13 @@ constexpr auto enabled_by_default_non_ios =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
+constexpr auto enabled_by_default_non_arm32 =
+#if defined(ARCH_CPU_ARMEL)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#endif
+
 constexpr char enabled_all_mobile_locales_en_us_desktop_only[] =
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     "*";
@@ -105,6 +112,10 @@ bool IsSupportedCountry(const std::string& country_code,
 // Enables page content to be annotated.
 BASE_FEATURE(kPageContentAnnotations, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the page visibility model to be annotated on every page load.
+BASE_FEATURE(kPageVisibilityPageContentAnnotations,
+             enabled_by_default_non_arm32);
+
 BASE_FEATURE(kPageContentAnnotationsValidation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -168,13 +179,10 @@ bool ShouldExtractRelatedSearches() {
 }
 
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
-#if defined(ARCH_CPU_ARMEL)
-  return false;
-#else
-  return IsSupportedLocale(
-      locale,
-      /*default_value=*/"ar,en,es,fa,fr,hi,id,pl,pt,tr,vi");
-#endif
+  return base::FeatureList::IsEnabled(kPageVisibilityPageContentAnnotations) &&
+         IsSupportedLocaleForFeature(
+             locale, kPageVisibilityPageContentAnnotations,
+             /*default_value=*/"ar,en,es,fa,fr,hi,id,pl,pt,tr,vi");
 }
 
 bool RemotePageMetadataEnabled(const std::string& locale,

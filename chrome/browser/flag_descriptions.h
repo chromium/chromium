@@ -3351,6 +3351,12 @@ inline constexpr char kGeolocationPermissionControlDescription[] =
     "Enables the Geolocation Permission Control feature, which allows the "
     "use of the HTML 'geolocation' element.";
 
+inline constexpr char kPageVisibilityPageContentAnnotationsName[] =
+    "Page visibility content annotations";
+inline constexpr char kPageVisibilityPageContentAnnotationsDescription[] =
+    "Enables annotating the page visibility model for each page load "
+    "on-device.";
+
 inline constexpr char kParallelDownloadingName[] = "Parallel downloading";
 inline constexpr char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";

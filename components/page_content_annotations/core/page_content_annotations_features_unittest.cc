@@ -42,26 +42,30 @@ TEST(PageContentAnnotationsFeaturesTest, ValidPageContentRAPPORMetrics) {
 }
 
 TEST(PageContentAnnotationsFeaturesTest,
-     ShouldExecutePageVisibilityModelOnPageContent) {
-#if defined(ARCH_CPU_ARMEL)
-  constexpr bool expected_enabled = false;
-#else
-  constexpr bool expected_enabled = true;
-#endif
+     ShouldExecutePageVisibilityModelOnPageContentDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPageVisibilityPageContentAnnotations);
+
+  EXPECT_FALSE(
+      features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+}
+
+TEST(PageContentAnnotationsFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentEmptyAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPageVisibilityPageContentAnnotations);
 
   // These are default enabled values.
-  EXPECT_EQ(expected_enabled,
-            features::ShouldExecutePageVisibilityModelOnPageContent("en"));
-  EXPECT_EQ(expected_enabled,
-            features::ShouldExecutePageVisibilityModelOnPageContent("en-AU"));
-  EXPECT_EQ(expected_enabled,
-            features::ShouldExecutePageVisibilityModelOnPageContent("en-CA"));
-  EXPECT_EQ(expected_enabled,
-            features::ShouldExecutePageVisibilityModelOnPageContent("en-GB"));
-  EXPECT_EQ(expected_enabled,
-            features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
-  EXPECT_EQ(expected_enabled,
-            features::ShouldExecutePageVisibilityModelOnPageContent("fr"));
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en"));
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-AU"));
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-CA"));
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-GB"));
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("fr"));
 
   EXPECT_FALSE(
       features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
@@ -93,6 +97,20 @@ TEST(PageContentAnnotationsFeaturesTest, RemotePageMetadataEnabledWildcard) {
   EXPECT_TRUE(features::RemotePageMetadataEnabled("", ""));
   EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
   EXPECT_TRUE(features::RemotePageMetadataEnabled("badlocale", "US"));
+}
+
+TEST(PageContentAnnotationsFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentWithAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPageVisibilityPageContentAnnotations,
+      {{"supported_locales", "en,zh-TW"}});
+
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
+  EXPECT_FALSE(
+      features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
 }
 
 TEST(PageContentAnnotationsFeaturesTest, ShouldPersistSalientImageMetadata) {

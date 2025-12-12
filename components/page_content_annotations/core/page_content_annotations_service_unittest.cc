@@ -145,7 +145,8 @@ class PageContentAnnotationsServiceTest : public testing::Test {
               {"write_to_history_service", "true"},
               {"pca_service_wait_for_title_delay_in_milliseconds", "4999"},
               {"annotate_visit_batch_size", "1"},
-          }}},
+          }},
+         {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{
             optimization_guide::features::kPreventLongRunningPredictionModels});
   }

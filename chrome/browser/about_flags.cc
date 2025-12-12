@@ -7607,6 +7607,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageContentCacheDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(page_content_annotations::features::kPageContentCache)},
 
+    {"page-visibility-page-content-annotations",
+     flag_descriptions::kPageVisibilityPageContentAnnotationsName,
+     flag_descriptions::kPageVisibilityPageContentAnnotationsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(page_content_annotations::features::
+                            kPageVisibilityPageContentAnnotations)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"language-packs-in-settings",
      flag_descriptions::kLanguagePacksInSettingsName,

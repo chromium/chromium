@@ -58,9 +58,10 @@ class ModelObserverTracker
 class PageContentAnnotationsModelManagerTest : public testing::Test {
  public:
   PageContentAnnotationsModelManagerTest() {
-    // Disable Entities.
-    scoped_feature_list_.InitAndDisableFeature(
-        optimization_guide::features::kPreventLongRunningPredictionModels);
+    // Enable Visibility but disable Entities.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPageVisibilityPageContentAnnotations},
+        {optimization_guide::features::kPreventLongRunningPredictionModels});
   }
   ~PageContentAnnotationsModelManagerTest() override = default;
 

@@ -1946,6 +1946,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          page_content_annotations::features::kRemotePageMetadata)},
+    {"page-visibility-page-content-annotations",
+     flag_descriptions::kPageVisibilityPageContentAnnotationsName,
+     flag_descriptions::kPageVisibilityPageContentAnnotationsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(page_content_annotations::features::
+                            kPageVisibilityPageContentAnnotations)},
     {"enhanced-safe-browsing-promo",
      flag_descriptions::kEnhancedSafeBrowsingPromoName,
      flag_descriptions::kEnhancedSafeBrowsingPromoDescription, flags_ui::kOsIos,
