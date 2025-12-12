@@ -35,22 +35,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Unsupported request from prefetch only document"/>
 </enum>
 
-<enum name="BmpCompressionType">
-<!-- LINT.IfChange(BmpCompressionType) -->
-
-  <int value="0" label="RGB"/>
-  <int value="1" label="RLE8"/>
-  <int value="2" label="RLE4"/>
-  <int value="3" label="BITFIELDS"/>
-  <int value="4" label="JPEG"/>
-  <int value="5" label="PNG"/>
-  <int value="6" label="ALPHABITFIELDS"/>
-  <int value="7" label="HUFFMAN1D"/>
-  <int value="8" label="RLE24"/>
-<!-- LINT.ThenChange(//third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h:CompressionType) -->
-
-</enum>
-
 <enum name="BooleanContentChangeMode">
   <int value="0" label="Discard Content"/>
   <int value="1" label="Retain Content"/>

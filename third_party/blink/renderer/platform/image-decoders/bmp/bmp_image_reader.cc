@@ -8,7 +8,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -87,11 +86,6 @@ bool BMPImageReader::DecodeBMP(bool only_size) {
   if ((decoded_offset_ < header_end) && !ProcessInfoHeader()) {
     return false;
   }
-
-  // TODO(https://crbug.com/452667935): Clean this up once we have sufficient
-  // data (when M143 or M144 reach Stable?).
-  base::UmaHistogramEnumeration("Blink.DecodedImage.BMP.CompressionType",
-                                info_header_.compression);
 
   // If there is an applicable color profile, it must be processed now, since
   // once the image size is available, the decoding machinery assumes the color

@@ -1009,18 +1009,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.DecodedImage.BMP.CompressionType"
-    enum="BmpCompressionType" expires_after="2026-03-22">
-  <owner>lukasza@chromium.org</owner>
-  <owner>dcheng@chromium.org</owner>
-  <owner>kjlubick@chromium.org</owner>
-  <summary>
-    BMP compression type as seen by `blink::BMPImageReader::DecodeBMP` when a
-    BMP image is decoded (typically when rendering an image from the web, but
-    Blink decoders are also used in other code).
-  </summary>
-</histogram>
-
 <histogram name="Blink.DecodedImage.JpegDensity.Count.{ImageArea}"
     units="0.01 bits per pixel" expires_after="2026-04-26">
   <owner>wtc@google.com</owner>

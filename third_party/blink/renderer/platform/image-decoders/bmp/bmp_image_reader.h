@@ -66,17 +66,6 @@ class PLATFORM_EXPORT BMPImageReader final {
 
   // The various BMP compression types.  We don't currently decode all
   // these.
-  //
-  // Corresponding specs:
-  //
-  // * https://learn.microsoft.com/en-us/previous-versions/dd183376(v=vs.85)
-  //   (search for `biCompression` - defines `BI_RGB`, `BI_RLE8`, `BI_RLE4`,
-  //   `BI_BITFIELDS`, `BI_JPEG`, and `BI_PNG`.
-  // * https://learn.microsoft.com/en-us/previous-versions/windows/embedded/aa452885(v=msdn.10)
-  //   (search for `biCompression` - defines `BI_RGB`, `BI_BITFIELDS`, and
-  //   `BI_ALPHABITFIELDS`)
-  //
-  // LINT.IfChange(CompressionType)
   enum CompressionType {
     // Universal types
     RGB = 0,
@@ -90,11 +79,7 @@ class PLATFORM_EXPORT BMPImageReader final {
     // OS/2 2.x-only
     HUFFMAN1D,  // Stored in file as 3
     RLE24,      // Stored in file as 4
-
-    // `kMaxValue` is needed to support `base::UmaHistogramEnumeration`:
-    kMaxValue = RLE24,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:BmpCompressionType)
   enum ProcessingResult {
     kSuccess,
     kFailure,
