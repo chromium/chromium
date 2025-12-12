@@ -6410,6 +6410,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5762" label="SVGFETileElement"/>
   <int value="5763" label="SVGFETurbulenceElement"/>
   <int value="5764" label="UnframedIwa"/>
+  <int value="5765" label="DigitalCredentialsProtocolOpenId4VpUnsigned"/>
+  <int value="5766" label="DigitalCredentialsProtocolOpenId4VpSigned"/>
+  <int value="5767" label="DigitalCredentialsProtocolOpenId4VpMultisigned"/>
+  <int value="5768" label="DigitalCredentialsProtocolOrgIsoMdoc"/>
+  <int value="5769" label="DigitalCredentialsProtocolOpenId4Vci"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

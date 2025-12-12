@@ -439,6 +439,7 @@ source_set("unit_tests") {
     "cookie_store/cookie_store_unittest.cc",
     "credentialmanagement/authentication_credentials_container_test.cc",
     "credentialmanagement/credential_manager_type_converters_unittest.cc",
+    "credentialmanagement/digital_identity_credential_protocol_test.cc",
     "credentialmanagement/digital_identity_credential_test.cc",
     "credentialmanagement/password_credential_test.cc",
     "credentialmanagement/public_key_credential_unittest.cc",

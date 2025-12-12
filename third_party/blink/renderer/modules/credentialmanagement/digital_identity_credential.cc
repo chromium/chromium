@@ -34,6 +34,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
 
@@ -154,6 +156,25 @@ bool IsSerializable(ScriptState* script_state, ScriptObject data) {
          !try_catch.HasCaught();
 }
 
+void RecordProtocolUseCounters(ExecutionContext* execution_context,
+                               const String& protocol) {
+  static const auto* protocol_map = new HashMap<String, WebFeature>({
+      {"openid4vp-v1-unsigned",
+       WebFeature::kDigitalCredentialsProtocolOpenId4VpUnsigned},
+      {"openid4vp-v1-signed",
+       WebFeature::kDigitalCredentialsProtocolOpenId4VpSigned},
+      {"openid4vp-v1-multisigned",
+       WebFeature::kDigitalCredentialsProtocolOpenId4VpMultisigned},
+      {"org-iso-mdoc", WebFeature::kDigitalCredentialsProtocolOrgIsoMdoc},
+      {"openid4vci", WebFeature::kDigitalCredentialsProtocolOpenId4Vci},
+  });
+
+  auto it = protocol_map->find(protocol);
+  if (it != protocol_map->end()) {
+    UseCounter::Count(execution_context, it->value);
+  }
+}
+
 }  // anonymous namespace
 
 bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
@@ -200,6 +221,8 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
         digital_credential_request =
             blink::mojom::blink::DigitalCredentialGetRequest::New();
     digital_credential_request->protocol = request->protocol();
+    RecordProtocolUseCounters(resolver->GetExecutionContext(),
+                              request->protocol());
     std::unique_ptr<base::Value> digital_credential_request_data =
         converter->FromV8Value(request->data().V8Object(),
                                resolver->GetScriptState()->GetContext());
@@ -272,6 +295,8 @@ void CreateDigitalIdentityCredentialInExternalSource(
         digital_credential_request =
             blink::mojom::blink::DigitalCredentialCreateRequest::New();
     digital_credential_request->protocol = request->protocol();
+    RecordProtocolUseCounters(resolver->GetExecutionContext(),
+                              request->protocol());
     std::unique_ptr<base::Value> digital_credential_request_data =
         converter->FromV8Value(request->data().V8Object(),
                                resolver->GetScriptState()->GetContext());
