@@ -109,17 +109,17 @@ class RecodingTimeAfterBackForwardCacheRestoreFrameCallback
 
 // static
 PaintTiming& PaintTiming::From(Document& document) {
-  PaintTiming* timing = document.GetPaintTiming();
+  PaintTiming* timing = Supplement<Document>::From<PaintTiming>(document);
   if (!timing) {
     timing = MakeGarbageCollected<PaintTiming>(document);
-    document.SetPaintTiming(timing);
+    ProvideTo(document, timing);
   }
   return *timing;
 }
 
 // static
 const PaintTiming* PaintTiming::From(const Document& document) {
-  PaintTiming* timing = document.GetPaintTiming();
+  PaintTiming* timing = Supplement<Document>::From<PaintTiming>(document);
   return timing;
 }
 
@@ -441,23 +441,22 @@ void PaintTiming::SetTickClockForTesting(const base::TickClock* clock) {
 }
 
 void PaintTiming::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(fmp_detector_);
+  Supplement<Document>::Trace(visitor);
 }
 
 PaintTiming::PaintTiming(Document& document)
-    : document_(document),
+    : Supplement<Document>(document),
       fmp_detector_(MakeGarbageCollected<FirstMeaningfulPaintDetector>(this)),
       clock_(base::DefaultTickClock::GetInstance()) {}
 
 LocalFrame* PaintTiming::GetFrame() const {
-  return document_->GetFrame();
+  return GetSupplementable()->GetFrame();
 }
 
 void PaintTiming::NotifyPaintTimingChanged() {
-  if (document_->Loader()) {
-    document_->Loader()->DidChangePerformanceTiming();
-  }
+  if (GetSupplementable()->Loader())
+    GetSupplementable()->Loader()->DidChangePerformanceTiming();
 }
 
 void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
@@ -597,7 +596,7 @@ void PaintTiming::SetFirstPaintPresentation(
     first_paint_presentation_for_ukm_ = paint_timing_info.presentation_time;
   }
   probe::PaintTiming(
-      document_, "firstPaint",
+      GetSupplementable(), "firstPaint",
       relevant_paint_details.first_paint_presentation_.since_origin()
           .InSecondsF());
   NotifyPaintTimingChanged();
@@ -615,7 +614,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(
   CHECK(first_contentful_paint_presentation_.is_null());
   first_contentful_paint_presentation_ = paint_timing_info.presentation_time;
   probe::PaintTiming(
-      document_, "firstContentfulPaint",
+      GetSupplementable(), "firstContentfulPaint",
       relevant_paint_details.first_contentful_paint_presentation_.since_origin()
           .InSecondsF());
 
@@ -623,7 +622,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(
   fmp_detector_->NotifyFirstContentfulPaint(
       paint_details_.first_contentful_paint_presentation_);
   InteractiveDetector* interactive_detector =
-      InteractiveDetector::From(*document_);
+      InteractiveDetector::From(*GetSupplementable());
   if (interactive_detector) {
     interactive_detector->OnFirstContentfulPaint(
         paint_details_.first_contentful_paint_presentation_);
@@ -638,7 +637,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(
         timing_for_reporting->NavigationStartAsMonotonicTime());
     GetFrame()->Loader().Progress().DidFirstContentfulPaint();
 
-    auto* coordinator = document_->GetResourceCoordinator();
+    auto* coordinator = GetSupplementable()->GetResourceCoordinator();
     if (coordinator && GetFrame()->IsOutermostMainFrame()) {
       coordinator->OnFirstContentfulPaint(
           paint_timing_info.presentation_time -
@@ -652,7 +651,7 @@ void PaintTiming::SetFirstImagePaintPresentation(base::TimeTicks stamp) {
   DCHECK(relevant_paint_details.first_image_paint_presentation_.is_null());
   relevant_paint_details.first_image_paint_presentation_ = stamp;
   probe::PaintTiming(
-      document_, "firstImagePaint",
+      GetSupplementable(), "firstImagePaint",
       relevant_paint_details.first_image_paint_presentation_.since_origin()
           .InSecondsF());
   NotifyPaintTimingChanged();

@@ -11,10 +11,11 @@
 namespace blink {
 
 DocumentParserTiming& DocumentParserTiming::From(Document& document) {
-  DocumentParserTiming* timing = document.GetDocumentParserTiming();
+  DocumentParserTiming* timing =
+      Supplement<Document>::From<DocumentParserTiming>(document);
   if (!timing) {
     timing = MakeGarbageCollected<DocumentParserTiming>(document);
-    document.SetDocumentParserTiming(timing);
+    ProvideTo(document, timing);
   }
   return *timing;
 }
@@ -63,16 +64,15 @@ void DocumentParserTiming::RecordParserBlockedOnScriptExecutionDuration(
 }
 
 void DocumentParserTiming::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
+  Supplement<Document>::Trace(visitor);
 }
 
 DocumentParserTiming::DocumentParserTiming(Document& document)
-    : document_(document) {}
+    : Supplement<Document>(document) {}
 
 void DocumentParserTiming::NotifyDocumentParserTimingChanged() {
-  if (document_->Loader()) {
-    document_->Loader()->DidChangePerformanceTiming();
-  }
+  if (GetSupplementable()->Loader())
+    GetSupplementable()->Loader()->DidChangePerformanceTiming();
 }
 
 }  // namespace blink

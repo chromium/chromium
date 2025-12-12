@@ -14,8 +14,10 @@ class Document;
 class ProcessingInstruction;
 
 class DocumentXSLT final : public GarbageCollected<DocumentXSLT>,
-                           public GarbageCollectedMixin {
+                           public Supplement<Document> {
  public:
+  static const unsigned kSupplementIndex;
+
   static void SetHasTransformSource(Document&);
 
   // The following static methods don't use any instance of DocumentXSLT.
@@ -33,8 +35,6 @@ class DocumentXSLT final : public GarbageCollected<DocumentXSLT>,
   DocumentXSLT(const DocumentXSLT&) = delete;
   DocumentXSLT& operator=(const DocumentXSLT&) = delete;
   void Trace(Visitor*) const override;
-
-  Member<Document> document_;
 };
 
 }  // namespace blink

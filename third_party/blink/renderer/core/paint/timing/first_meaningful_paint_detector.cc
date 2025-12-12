@@ -38,7 +38,7 @@ FirstMeaningfulPaintDetector::FirstMeaningfulPaintDetector(
 }
 
 Document* FirstMeaningfulPaintDetector::GetDocument() {
-  return paint_timing_->document_;
+  return paint_timing_->GetSupplementable();
 }
 
 // Computes "layout significance" (http://goo.gl/rytlPL) of a layout operation.

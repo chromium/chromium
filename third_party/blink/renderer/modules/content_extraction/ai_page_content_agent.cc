@@ -882,8 +882,12 @@ void OffsetNodeGeometry(mojom::blink::AIPageContentNode& node,
 }  // namespace
 
 // static
+const unsigned AIPageContentAgent::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kAIPageContentAgent);
+
+// static
 AIPageContentAgent* AIPageContentAgent::From(Document& document) {
-  return document.GetAIPageContentAgent();
+  return Supplement<Document>::From<AIPageContentAgent>(document);
 }
 
 // static
@@ -898,7 +902,7 @@ void AIPageContentAgent::BindReceiver(
   if (!agent) {
     agent = MakeGarbageCollected<AIPageContentAgent>(
         base::PassKey<AIPageContentAgent>(), *frame);
-    document.SetAIPageContentAgent(agent);
+    Supplement<Document>::ProvideTo(document, agent);
   }
   agent->Bind(std::move(receiver));
 }
@@ -911,7 +915,7 @@ AIPageContentAgent* AIPageContentAgent::GetOrCreateForTesting(
     DCHECK(document.GetFrame());
     agent = MakeGarbageCollected<AIPageContentAgent>(
         base::PassKey<AIPageContentAgent>(), *document.GetFrame());
-    document.SetAIPageContentAgent(agent);
+    Supplement<Document>::ProvideTo(document, agent);
   }
   return agent;
 }
@@ -940,7 +944,8 @@ void AIPageContentAgent::
 
 AIPageContentAgent::AIPageContentAgent(base::PassKey<AIPageContentAgent>,
                                        LocalFrame& frame)
-    : document_(*frame.GetDocument()), receiver_set_(this, frame.DomWindow()) {
+    : Supplement<Document>(*frame.GetDocument()),
+      receiver_set_(this, frame.DomWindow()) {
   DCHECK(frame.GetDocument());
 }
 
@@ -950,12 +955,12 @@ void AIPageContentAgent::Bind(
     mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver) {
   receiver_set_.Add(
       std::move(receiver),
-      document_->GetTaskRunner(TaskType::kInternalUserInteraction));
+      GetSupplementable()->GetTaskRunner(TaskType::kInternalUserInteraction));
 }
 
 void AIPageContentAgent::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(receiver_set_);
+  Supplement<Document>::Trace(visitor);
 }
 
 void AIPageContentAgent::DidFinishPostLifecycleSteps(const LocalFrameView&) {
@@ -973,7 +978,7 @@ void AIPageContentAgent::GetAIPageContent(
     GetAIPageContentCallback callback) {
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  LocalFrameView* view = document_->View();
+  LocalFrameView* view = GetSupplementable()->View();
 
   // If there's no lifecycle pending, we can't rely on post lifecycle
   // notifications and the layout is likely clean.
@@ -1007,7 +1012,8 @@ void AIPageContentAgent::GetAIPageContentSync(
 
   const auto end_time = base::TimeTicks::Now();
   RecordLatencyMetrics(start_time, sync_start_time, end_time,
-                       document_->GetFrame()->IsOutermostMainFrame(), *options);
+                       GetSupplementable()->GetFrame()->IsOutermostMainFrame(),
+                       *options);
   std::move(callback).Run(std::move(content));
 }
 
@@ -1015,8 +1021,8 @@ void AIPageContentAgent::EnsureLifecycleObserverRegistered() {
   if (is_lifecycle_observer_registered_) {
     return;
   }
-  DCHECK(document_);
-  if (auto* view = document_->View()) {
+  DCHECK(GetSupplementable());
+  if (auto* view = GetSupplementable()->View()) {
     view->RegisterForLifecycleNotifications(this);
     is_lifecycle_observer_registered_ = true;
   }
@@ -1028,10 +1034,10 @@ void AIPageContentAgent::MaybeRunAutomaticActionableExtraction() {
     return;
   }
 
-  if (!document_->LoadEventFinished()) {
+  if (!GetSupplementable()->LoadEventFinished()) {
     return;
   }
-  LocalFrame* frame = document_->GetFrame();
+  LocalFrame* frame = GetSupplementable()->GetFrame();
   if (!frame) {
     return;
   }
@@ -1084,7 +1090,7 @@ String AIPageContentAgent::DumpContentNodeForTest(Node* node) {
 
 mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
     const mojom::blink::AIPageContentOptions& options) const {
-  LocalFrame* frame = document_->GetFrame();
+  LocalFrame* frame = GetSupplementable()->GetFrame();
   if (!frame || !frame->GetDocument() || !frame->GetDocument()->View()) {
     return nullptr;
   }

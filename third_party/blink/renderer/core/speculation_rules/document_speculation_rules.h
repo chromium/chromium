@@ -25,8 +25,11 @@ class SpeculationRuleLoader;
 // Updates are pushed asynchronously.
 class CORE_EXPORT DocumentSpeculationRules
     : public GarbageCollected<DocumentSpeculationRules>,
-      public GarbageCollectedMixin {
+      public Supplement<Document> {
  public:
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kDocumentSpeculationRules;
+
   static DocumentSpeculationRules& From(Document&);
   static DocumentSpeculationRules* FromIfExists(Document&);
 
@@ -142,7 +145,6 @@ class CORE_EXPORT DocumentSpeculationRules
                PendingUpdateState::kMicrotaskQueuedWithForcedStyleUpdate;
   }
 
-  Member<Document> document_;
   HeapVector<Member<SpeculationRuleSet>> rule_sets_;
   HeapMojoRemote<mojom::blink::SpeculationHost> host_;
   HeapHashSet<Member<SpeculationRuleLoader>> speculation_rule_loaders_;

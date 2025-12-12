@@ -73,7 +73,7 @@ AnnotationAgentContainerImpl* AnnotationAgentContainerImpl::CreateIfNeeded(
   if (!container) {
     container =
         MakeGarbageCollected<AnnotationAgentContainerImpl>(document, PassKey());
-    document.SetAnnotationAgentContainerImpl(container);
+    Supplement<Document>::ProvideTo(document, container);
   }
 
   return container;
@@ -82,7 +82,7 @@ AnnotationAgentContainerImpl* AnnotationAgentContainerImpl::CreateIfNeeded(
 // static
 AnnotationAgentContainerImpl* AnnotationAgentContainerImpl::FromIfExists(
     Document& document) {
-  return document.GetAnnotationAgentContainerImpl();
+  return Supplement<Document>::From<AnnotationAgentContainerImpl>(document);
 }
 
 // static
@@ -118,7 +118,8 @@ void AnnotationAgentContainerImpl::BindReceiver(
 
 AnnotationAgentContainerImpl::AnnotationAgentContainerImpl(Document& document,
                                                            PassKey)
-    : document_(document), receivers_(this, document.GetExecutionContext()) {
+    : Supplement<Document>(document),
+      receivers_(this, document.GetExecutionContext()) {
   LocalFrame* frame = document.GetFrame();
   DCHECK(frame);
 
@@ -133,11 +134,11 @@ void AnnotationAgentContainerImpl::Bind(
 }
 
 void AnnotationAgentContainerImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(receivers_);
   visitor->Trace(agents_);
   visitor->Trace(annotation_agent_generator_);
   visitor->Trace(observers_);
+  Supplement<Document>::Trace(visitor);
 }
 
 void AnnotationAgentContainerImpl::PerformInitialAttachments() {
@@ -211,7 +212,7 @@ void AnnotationAgentContainerImpl::CreateAgent(
     std::optional<DOMNodeId> search_range_start_node_id) {
   TRACE_EVENT("blink", "AnnotationAgentContainerImpl::CreateAgent", "type",
               ToString(type), "selector", ToString(*selector));
-  DCHECK(document_);
+  DCHECK(GetSupplementable());
 
   AnnotationSelector* annotation_selector;
   switch (selector->which()) {
@@ -293,7 +294,7 @@ void AnnotationAgentContainerImpl::DidFinishSelectorGeneration(
 
   // If the document was detached then selector generation must have returned
   // an error.
-  CHECK(document_);
+  CHECK(GetSupplementable());
 
   // TODO(bokan): Why doesn't this clear selection?
   GetFrame().Selection().Clear();
@@ -375,7 +376,7 @@ void AnnotationAgentContainerImpl::ScheduleBeginMainFrame() {
 }
 
 Document& AnnotationAgentContainerImpl::GetDocument() const {
-  Document* document = document_;
+  Document* document = GetSupplementable();
   CHECK(document);
   return *document;
 }

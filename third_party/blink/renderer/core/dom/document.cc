@@ -108,7 +108,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
-#include "third_party/blink/renderer/core/css/css_selector_watch.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/cssom/caret_position.h"
@@ -235,7 +234,6 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/document_all_name_collection.h"
 #include "third_party/blink/renderer/core/html/document_name_collection.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -327,7 +325,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
-#include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/core/permissions_policy/dom_feature_policy.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -355,8 +352,6 @@
 #include "third_party/blink/renderer/core/view_transition/page_reveal_event.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
-#include "third_party/blink/renderer/core/xml/document_xpath_evaluator.h"
-#include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.h"
 #include "third_party/blink/renderer/core/xml_names.h"
@@ -9539,33 +9534,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(payment_link_handler_);
 #endif  // BUILDFLAG(IS_ANDROID)
   visitor->Trace(view_transitions_);
-  visitor->Trace(ai_page_content_agent_);
-  visitor->Trace(anchor_element_metrics_sender_);
-  visitor->Trace(anchor_element_viewport_position_tracker_);
-  visitor->Trace(annotation_agent_container_impl_);
-  visitor->Trace(browsing_topics_document_supplement_);
-  visitor->Trace(css_selector_watch_);
-  visitor->Trace(credential_metrics_);
-  visitor->Trace(disabled_acceleration_counter_supplement_);
-  visitor->Trace(document_fenced_frames_);
-  visitor->Trace(document_metadata_server_);
-  visitor->Trace(document_parser_timing_);
-  visitor->Trace(document_speculation_rules_);
-  visitor->Trace(document_storage_access_);
-  visitor->Trace(document_xpath_evaluator_);
-  visitor->Trace(document_xslt_);
-  visitor->Trace(font_face_set_document_);
-  visitor->Trace(frame_metadata_observer_registry_);
-  visitor->Trace(inner_html_agent_);
-  visitor->Trace(inner_text_agent_);
-  visitor->Trace(interactive_detector_);
-  visitor->Trace(paint_timing_);
-  visitor->Trace(patch_supplement_);
-  visitor->Trace(picture_in_picture_controller_);
-  visitor->Trace(rtc_peer_connection_controller_);
-  visitor->Trace(render_blocking_metrics_reporter_);
-  visitor->Trace(route_map_);
-  visitor->Trace(transfer_to_gpu_texture_invoked_supplement_);
+  Supplementable::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
 }

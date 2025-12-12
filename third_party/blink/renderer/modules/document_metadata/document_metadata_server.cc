@@ -11,8 +11,12 @@
 namespace blink {
 
 // static
+const unsigned DocumentMetadataServer::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kDocumentMetadataServer);
+
+// static
 DocumentMetadataServer* DocumentMetadataServer::From(Document& document) {
-  return document.GetDocumentMetadataServer();
+  return Supplement<Document>::From<DocumentMetadataServer>(document);
 }
 
 // static
@@ -25,7 +29,7 @@ void DocumentMetadataServer::BindReceiver(
   if (!server) {
     server = MakeGarbageCollected<DocumentMetadataServer>(
         base::PassKey<DocumentMetadataServer>(), *frame);
-    document.SetDocumentMetadataServer(server);
+    Supplement<Document>::ProvideTo(document, server);
   }
   server->Bind(std::move(receiver));
 }
@@ -33,7 +37,8 @@ void DocumentMetadataServer::BindReceiver(
 DocumentMetadataServer::DocumentMetadataServer(
     base::PassKey<DocumentMetadataServer>,
     LocalFrame& frame)
-    : document_(*frame.GetDocument()), receiver_(this, frame.DomWindow()) {}
+    : Supplement<Document>(*frame.GetDocument()),
+      receiver_(this, frame.DomWindow()) {}
 
 void DocumentMetadataServer::Bind(
     mojo::PendingReceiver<mojom::blink::DocumentMetadata> receiver) {
@@ -41,17 +46,18 @@ void DocumentMetadataServer::Bind(
   // to service the GetEntities() call.
   receiver_.reset();
   // See https://bit.ly/2S0zRAS for task types.
-  receiver_.Bind(std::move(receiver),
-                 document_->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
+                                          TaskType::kMiscPlatformAPI));
 }
 
 void DocumentMetadataServer::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(receiver_);
+  Supplement<Document>::Trace(visitor);
 }
 
 void DocumentMetadataServer::GetEntities(GetEntitiesCallback callback) {
-  std::move(callback).Run(DocumentMetadataExtractor::Extract(*document_));
+  std::move(callback).Run(
+      DocumentMetadataExtractor::Extract(*GetSupplementable()));
 }
 
 }  // namespace blink

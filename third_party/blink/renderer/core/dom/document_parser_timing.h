@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -15,8 +16,11 @@ namespace blink {
 // given document.
 class DocumentParserTiming final
     : public GarbageCollected<DocumentParserTiming>,
-      public GarbageCollectedMixin {
+      public Supplement<Document> {
  public:
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kDocumentParserTiming;
+
   explicit DocumentParserTiming(Document&);
   DocumentParserTiming(const DocumentParserTiming&) = delete;
   DocumentParserTiming& operator=(const DocumentParserTiming&) = delete;
@@ -99,7 +103,6 @@ class DocumentParserTiming final
  private:
   void NotifyDocumentParserTimingChanged();
 
-  Member<Document> document_;
   base::TimeTicks parser_start_;
   base::TimeTicks parser_stop_;
   base::TimeDelta parser_blocked_on_script_load_duration_;

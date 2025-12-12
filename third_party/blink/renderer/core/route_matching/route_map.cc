@@ -23,15 +23,15 @@ namespace {
 
 }  // anonymous namespace
 
-RouteMap::RouteMap(Document& document) : document_(document) {}
-RouteMap::RouteMap() {
+RouteMap::RouteMap(Document& document) : Supplement<Document>(document) {}
+RouteMap::RouteMap() : Supplement<Document>(nullptr) {
   CHECK_IS_TEST();
 }
 
 void RouteMap::Trace(Visitor* v) const {
-  v->Trace(document_);
   v->Trace(routes_);
   v->Trace(anonymous_routes_);
+  Supplement<Document>::Trace(v);
   ScriptWrappable::Trace(v);
 }
 
@@ -45,25 +45,28 @@ Route* RouteMap::get(const String& route_name) {
 
 // BEGIN Supplement support:
 
+const unsigned RouteMap::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kRouteMap);
+
 const RouteMap* RouteMap::Get(const Document* document) {
   if (!document) {
     return nullptr;
   }
-  return document->GetRouteMap();
+  return Supplement<Document>::From<RouteMap>(*document);
 }
 
 RouteMap* RouteMap::Get(Document* document) {
   if (!document) {
     return nullptr;
   }
-  return document->GetRouteMap();
+  return Supplement<Document>::From<RouteMap>(*document);
 }
 
 RouteMap& RouteMap::Ensure(Document& document) {
   RouteMap* route_map = Get(&document);
   if (!route_map) {
     route_map = MakeGarbageCollected<RouteMap>(document);
-    document.SetRouteMap(route_map);
+    Supplement<Document>::ProvideTo<RouteMap>(document, route_map);
   }
   return *route_map;
 }

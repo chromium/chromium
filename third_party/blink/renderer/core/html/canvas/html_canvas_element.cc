@@ -167,25 +167,27 @@ constexpr int kDefaultCanvasHeight = 150;
 constexpr int kUndefinedQualityValue = -1.0;
 constexpr int kMinimumAccelerated2dCanvasSize = 128 * 129;
 
-}  // namespace
-
 // Tracks whether canvases should start out with acceleration disabled.
 class DisabledAccelerationCounterSupplement final
     : public GarbageCollected<DisabledAccelerationCounterSupplement>,
-      public GarbageCollectedMixin {
+      public Supplement<Document> {
  public:
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kDisabledAccelerationCounterSupplement;
+
   static DisabledAccelerationCounterSupplement& From(Document& d) {
     DisabledAccelerationCounterSupplement* supplement =
-        d.GetDisabledAccelerationCounterSupplement();
+        Supplement<Document>::From<DisabledAccelerationCounterSupplement>(d);
     if (!supplement) {
       supplement =
           MakeGarbageCollected<DisabledAccelerationCounterSupplement>(d);
-      d.SetDisabledAccelerationCounterSupplement(supplement);
+      ProvideTo(d, supplement);
     }
     return *supplement;
   }
 
-  explicit DisabledAccelerationCounterSupplement(Document& d) : document_(d) {}
+  explicit DisabledAccelerationCounterSupplement(Document& d)
+      : Supplement<Document>(d) {}
 
   // Called when acceleration has been disabled on a canvas.
   void IncrementDisabledCount() {
@@ -199,8 +201,6 @@ class DisabledAccelerationCounterSupplement final
     return acceleration_disabled_;
   }
 
-  void Trace(Visitor* visitor) const override { visitor->Trace(document_); }
-
  private:
   void UpdateAccelerationDisabled() {
     if (acceleration_disabled_) {
@@ -209,13 +209,12 @@ class DisabledAccelerationCounterSupplement final
     if (acceleration_disabled_count_ < kDisableAccelerationThreshold) {
       return;
     }
-    if (acceleration_disabled_count_ * 100 / document_->GetNumberOfCanvases() >=
+    if (acceleration_disabled_count_ * 100 /
+            GetSupplementable()->GetNumberOfCanvases() >=
         kDisableAccelerationPercent) {
       acceleration_disabled_ = true;
     }
   }
-
-  Member<Document> document_;
 
   // Number of canvases with acceleration disabled.
   unsigned acceleration_disabled_count_ = 0;
@@ -226,20 +225,24 @@ class DisabledAccelerationCounterSupplement final
 // element created within the associated Document.
 class TransferToGPUTextureInvokedSupplement final
     : public GarbageCollected<TransferToGPUTextureInvokedSupplement>,
-      public GarbageCollectedMixin {
+      public Supplement<Document> {
  public:
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kTransferToGPUTextureInvokedSupplement;
+
   static TransferToGPUTextureInvokedSupplement& From(Document& d) {
     TransferToGPUTextureInvokedSupplement* supplement =
-        d.GetTransferToGPUTextureInvokedSupplement();
+        Supplement<Document>::From<TransferToGPUTextureInvokedSupplement>(d);
     if (!supplement) {
       supplement =
           MakeGarbageCollected<TransferToGPUTextureInvokedSupplement>(d);
-      d.SetTransferToGPUTextureInvokedSupplement(supplement);
+      ProvideTo(d, supplement);
     }
     return *supplement;
   }
 
-  explicit TransferToGPUTextureInvokedSupplement(Document& d) : document_(d) {}
+  explicit TransferToGPUTextureInvokedSupplement(Document& d)
+      : Supplement<Document>(d) {}
 
   void SetTransferToGPUTextureWasInvoked() {
     transfer_to_gpu_texture_was_invoked_ = true;
@@ -249,14 +252,9 @@ class TransferToGPUTextureInvokedSupplement final
     return transfer_to_gpu_texture_was_invoked_;
   }
 
-  void Trace(Visitor* visitor) const override { visitor->Trace(document_); }
-
  private:
-  Member<Document> document_;
   bool transfer_to_gpu_texture_was_invoked_ = false;
 };
-
-namespace {
 
 // Adapter for wrapping a CanvasResourceReleaseCallback into a
 // viz::ReleaseCallback

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/buildflags.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -24,8 +25,10 @@ class TreeScope;
 // is an interface that the module will implement and add a provider for.
 class CORE_EXPORT PictureInPictureController
     : public GarbageCollected<PictureInPictureController>,
-      public GarbageCollectedMixin {
+      public Supplement<Document> {
  public:
+  static const unsigned kSupplementIndex;
+
   PictureInPictureController(const PictureInPictureController&) = delete;
   PictureInPictureController& operator=(const PictureInPictureController&) =
       delete;
@@ -127,8 +130,6 @@ class CORE_EXPORT PictureInPictureController
   // picture-in-picture window. Returns null if the this is not attached to a
   // document picture-in-picture window.
   virtual LocalDOMWindow* GetDocumentPictureInPictureOwner() const = 0;
-
-  Member<Document> document_;
 };
 
 }  // namespace blink

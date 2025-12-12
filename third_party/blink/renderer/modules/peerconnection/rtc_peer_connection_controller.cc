@@ -12,16 +12,16 @@ namespace blink {
 RTCPeerConnectionController& RTCPeerConnectionController::From(
     Document& document) {
   RTCPeerConnectionController* supplement =
-      document.GetRTCPeerConnectionController();
+      Supplement<Document>::From<RTCPeerConnectionController>(document);
   if (!supplement) {
     supplement = MakeGarbageCollected<RTCPeerConnectionController>(document);
-    document.SetRTCPeerConnectionController(supplement);
+    Supplement<Document>::ProvideTo(document, supplement);
   }
   return *supplement;
 }
 
 RTCPeerConnectionController::RTCPeerConnectionController(Document& document)
-    : document_(&document) {}
+    : Supplement<Document>(document) {}
 
 void RTCPeerConnectionController::MaybeReportComplexSdp(
     ComplexSdpCategory complex_sdp_category) {
@@ -31,14 +31,14 @@ void RTCPeerConnectionController::MaybeReportComplexSdp(
   // Report only the first observation for the document and ignore all others.
   // This provides a good balance between privacy and meaningful metrics.
   has_reported_ukm_ = true;
-  ukm::SourceId source_id = document_->UkmSourceID();
+  ukm::SourceId source_id = GetSupplementable()->UkmSourceID();
   ukm::builders::WebRTC_ComplexSdp(source_id)
       .SetCategory(static_cast<int64_t>(complex_sdp_category))
-      .Record(document_->UkmRecorder());
+      .Record(GetSupplementable()->UkmRecorder());
 }
 
 void RTCPeerConnectionController::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
+  Supplement<Document>::Trace(visitor);
 }
 
 }  // namespace blink

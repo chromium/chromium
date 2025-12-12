@@ -85,7 +85,6 @@
 #include "third_party/blink/renderer/core/frame/widget_creation_observer.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
-#include "third_party/blink/renderer/platform/forward_declared_member.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -94,6 +93,7 @@
 #include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -274,34 +274,6 @@ class WebMouseEvent;
 class WorkletAnimationController;
 class V8VisibilityState;
 
-class AnchorElementMetricsSender;
-class AnchorElementViewportPositionTracker;
-class AnnotationAgentContainerImpl;
-class CSSSelectorWatch;
-class DisabledAccelerationCounterSupplement;
-class DocumentFencedFrames;
-class DocumentParserTiming;
-class DocumentSpeculationRules;
-class DocumentStorageAccess;
-class DocumentXPathEvaluator;
-class DocumentXSLT;
-class FontFaceSetDocument;
-class InteractiveDetector;
-class PaintTiming;
-class PatchSupplement;
-class PictureInPictureController;
-class RenderBlockingMetricsReporter;
-class RouteMap;
-class TransferToGPUTextureInvokedSupplement;
-class AIPageContentAgent;
-class BrowsingTopicsDocumentSupplement;
-class CredentialMetrics;
-class DocumentMetadataServer;
-class FrameMetadataObserverRegistry;
-class InnerHtmlAgent;
-class InnerTextAgent;
-class RTCPeerConnectionController;
-
 template <typename EventType>
 class EventWithHitTestResults;
 
@@ -387,10 +359,41 @@ struct UnloadEventTimingInfo {
 class CORE_EXPORT Document : public ContainerNode,
                              public TreeScope,
                              public UseCounter,
-                             public WidgetCreationObserver {
+                             public WidgetCreationObserver,
+                             public Supplementable<Document, 27> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class Supplements {
+    kAnnotationAgentContainerImpl = 0,
+    kBrowsingTopicsDocumentSupplement = 1,
+    kRouteMap = 2,
+    kRenderBlockingMetricsReporter = 3,
+    kPatchSupplement = 4,
+    kDocumentMetadataServer = 5,
+    kPaintTiming = 6,
+    kPictureInPictureController = 7,
+    kAnchorElementMetricsSender = 8,
+    kAnchorElementViewportPositionTracker = 9,
+    kDocumentParserTiming = 10,
+    kDisabledAccelerationCounterSupplement = 11,
+    kTransferToGPUTextureInvokedSupplement = 12,
+    kDocumentFencedFrames = 13,
+    kCSSSelectorWatch = 14,
+    kFontFaceSetDocument = 15,
+    kDocumentStorageAccess = 16,
+    kInteractiveDetector = 17,
+    kRTCPeerConnectionController = 18,
+    kDocumentXSLT = 19,
+    kAIPageContentAgent = 20,
+    kInnerHtmlAgent = 21,
+    kFrameMetadataObserverRegistry = 22,
+    kDocumentXPathEvaluator = 23,
+    kCredentialMetrics = 24,
+    kInnerTextAgent = 25,
+    kDocumentSpeculationRules = 26
+  };
+
   // Factory for web-exposed Document constructor. The argument document must be
   // a document instance representing window.document, and it works as the
   // source of ExecutionContext and security origin of the new document.
@@ -2319,218 +2322,6 @@ class CORE_EXPORT Document : public ContainerNode,
     }
   }
 
-  AnchorElementMetricsSender* GetAnchorElementMetricsSender() const {
-    return anchor_element_metrics_sender_;
-  }
-  void SetAnchorElementMetricsSender(
-      AnchorElementMetricsSender* anchor_element_metrics_sender) {
-    anchor_element_metrics_sender_ = anchor_element_metrics_sender;
-  }
-
-  AnchorElementViewportPositionTracker*
-  GetAnchorElementViewportPositionTracker() const {
-    return anchor_element_viewport_position_tracker_;
-  }
-  void SetAnchorElementViewportPositionTracker(
-      AnchorElementViewportPositionTracker*
-          anchor_element_viewport_position_tracker) {
-    anchor_element_viewport_position_tracker_ =
-        anchor_element_viewport_position_tracker;
-  }
-
-  AnnotationAgentContainerImpl* GetAnnotationAgentContainerImpl() const {
-    return annotation_agent_container_impl_;
-  }
-  void SetAnnotationAgentContainerImpl(
-      AnnotationAgentContainerImpl* annotation_agent_container_impl) {
-    annotation_agent_container_impl_ = annotation_agent_container_impl;
-  }
-
-  CSSSelectorWatch* GetCSSSelectorWatch() const { return css_selector_watch_; }
-  void SetCSSSelectorWatch(CSSSelectorWatch* css_selector_watch) {
-    css_selector_watch_ = css_selector_watch;
-  }
-
-  ForwardDeclaredMember<DisabledAccelerationCounterSupplement>
-  GetDisabledAccelerationCounterSupplement() const {
-    return disabled_acceleration_counter_supplement_;
-  }
-  void SetDisabledAccelerationCounterSupplement(
-      ForwardDeclaredMember<DisabledAccelerationCounterSupplement>
-          disabled_acceleration_counter_supplement) {
-    disabled_acceleration_counter_supplement_ =
-        disabled_acceleration_counter_supplement;
-  }
-
-  DocumentFencedFrames* GetDocumentFencedFrames() const {
-    return document_fenced_frames_;
-  }
-  void SetDocumentFencedFrames(DocumentFencedFrames* document_fenced_frames) {
-    document_fenced_frames_ = document_fenced_frames;
-  }
-
-  DocumentParserTiming* GetDocumentParserTiming() const {
-    return document_parser_timing_;
-  }
-  void SetDocumentParserTiming(DocumentParserTiming* document_parser_timing) {
-    document_parser_timing_ = document_parser_timing;
-  }
-
-  DocumentSpeculationRules* GetDocumentSpeculationRules() const {
-    return document_speculation_rules_;
-  }
-  void SetDocumentSpeculationRules(
-      DocumentSpeculationRules* document_speculation_rules) {
-    document_speculation_rules_ = document_speculation_rules;
-  }
-
-  ForwardDeclaredMember<DocumentStorageAccess> GetDocumentStorageAccess()
-      const {
-    return document_storage_access_;
-  }
-  void SetDocumentStorageAccess(
-      ForwardDeclaredMember<DocumentStorageAccess> document_storage_access) {
-    document_storage_access_ = document_storage_access;
-  }
-
-  DocumentXPathEvaluator* GetDocumentXPathEvaluator() const {
-    return document_xpath_evaluator_;
-  }
-  void SetDocumentXPathEvaluator(
-      DocumentXPathEvaluator* document_xpath_evaluator) {
-    document_xpath_evaluator_ = document_xpath_evaluator;
-  }
-
-  DocumentXSLT* GetDocumentXSLT() const { return document_xslt_; }
-  void SetDocumentXSLT(DocumentXSLT* document_xslt) {
-    document_xslt_ = document_xslt;
-  }
-
-  FontFaceSetDocument* GetFontFaceSetDocument() const {
-    return font_face_set_document_;
-  }
-  void SetFontFaceSetDocument(FontFaceSetDocument* font_face_set_document) {
-    font_face_set_document_ = font_face_set_document;
-  }
-
-  InteractiveDetector* GetInteractiveDetector() const {
-    return interactive_detector_;
-  }
-  void SetInteractiveDetector(InteractiveDetector* interactive_detector) {
-    interactive_detector_ = interactive_detector;
-  }
-
-  PaintTiming* GetPaintTiming() const { return paint_timing_; }
-  void SetPaintTiming(PaintTiming* paint_timing) {
-    paint_timing_ = paint_timing;
-  }
-
-  PatchSupplement* GetPatchSupplement() const { return patch_supplement_; }
-  void SetPatchSupplement(PatchSupplement* patch_supplement) {
-    patch_supplement_ = patch_supplement;
-  }
-
-  PictureInPictureController* GetPictureInPictureController() const {
-    return picture_in_picture_controller_;
-  }
-  void SetPictureInPictureController(
-      PictureInPictureController* picture_in_picture_controller) {
-    picture_in_picture_controller_ = picture_in_picture_controller;
-  }
-
-  RenderBlockingMetricsReporter* GetRenderBlockingMetricsReporter() const {
-    return render_blocking_metrics_reporter_;
-  }
-  void SetRenderBlockingMetricsReporter(
-      RenderBlockingMetricsReporter* render_blocking_metrics_reporter) {
-    render_blocking_metrics_reporter_ = render_blocking_metrics_reporter;
-  }
-
-  RouteMap* GetRouteMap() const { return route_map_; }
-  void SetRouteMap(RouteMap* route_map) { route_map_ = route_map; }
-
-  ForwardDeclaredMember<TransferToGPUTextureInvokedSupplement>
-  GetTransferToGPUTextureInvokedSupplement() const {
-    return transfer_to_gpu_texture_invoked_supplement_;
-  }
-  void SetTransferToGPUTextureInvokedSupplement(
-      ForwardDeclaredMember<TransferToGPUTextureInvokedSupplement>
-          transfer_to_gpu_texture_invoked_supplement) {
-    transfer_to_gpu_texture_invoked_supplement_ =
-        transfer_to_gpu_texture_invoked_supplement;
-  }
-
-  ForwardDeclaredMember<AIPageContentAgent> GetAIPageContentAgent() const {
-    return ai_page_content_agent_;
-  }
-  void SetAIPageContentAgent(
-      ForwardDeclaredMember<AIPageContentAgent> ai_page_content_agent) {
-    ai_page_content_agent_ = ai_page_content_agent;
-  }
-
-  ForwardDeclaredMember<BrowsingTopicsDocumentSupplement>
-  GetBrowsingTopicsDocumentSupplement() const {
-    return browsing_topics_document_supplement_;
-  }
-  void SetBrowsingTopicsDocumentSupplement(
-      ForwardDeclaredMember<BrowsingTopicsDocumentSupplement>
-          browsing_topics_document_supplement) {
-    browsing_topics_document_supplement_ = browsing_topics_document_supplement;
-  }
-
-  ForwardDeclaredMember<CredentialMetrics> GetCredentialMetrics() const {
-    return credential_metrics_;
-  }
-  void SetCredentialMetrics(
-      ForwardDeclaredMember<CredentialMetrics> credential_metrics) {
-    credential_metrics_ = credential_metrics;
-  }
-
-  ForwardDeclaredMember<DocumentMetadataServer> GetDocumentMetadataServer()
-      const {
-    return document_metadata_server_;
-  }
-  void SetDocumentMetadataServer(
-      ForwardDeclaredMember<DocumentMetadataServer> document_metadata_server) {
-    document_metadata_server_ = document_metadata_server;
-  }
-
-  ForwardDeclaredMember<FrameMetadataObserverRegistry>
-  GetFrameMetadataObserverRegistry() const {
-    return frame_metadata_observer_registry_;
-  }
-  void SetFrameMetadataObserverRegistry(
-      ForwardDeclaredMember<FrameMetadataObserverRegistry>
-          frame_metadata_observer_registry) {
-    frame_metadata_observer_registry_ = frame_metadata_observer_registry;
-  }
-
-  ForwardDeclaredMember<InnerHtmlAgent> GetInnerHtmlAgent() const {
-    return inner_html_agent_;
-  }
-  void SetInnerHtmlAgent(
-      ForwardDeclaredMember<InnerHtmlAgent> inner_html_agent) {
-    inner_html_agent_ = inner_html_agent;
-  }
-
-  ForwardDeclaredMember<InnerTextAgent> GetInnerTextAgent() const {
-    return inner_text_agent_;
-  }
-  void SetInnerTextAgent(
-      ForwardDeclaredMember<InnerTextAgent> inner_text_agent) {
-    inner_text_agent_ = inner_text_agent;
-  }
-
-  ForwardDeclaredMember<RTCPeerConnectionController>
-  GetRTCPeerConnectionController() const {
-    return rtc_peer_connection_controller_;
-  }
-  void SetRTCPeerConnectionController(
-      ForwardDeclaredMember<RTCPeerConnectionController>
-          rtc_peer_connection_controller) {
-    rtc_peer_connection_controller_ = rtc_peer_connection_controller;
-  }
-
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
@@ -3453,40 +3244,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool responsive_embedded_sizing_ = false;
 
-  Member<AnchorElementMetricsSender> anchor_element_metrics_sender_;
-  Member<AnchorElementViewportPositionTracker>
-      anchor_element_viewport_position_tracker_;
-  Member<AnnotationAgentContainerImpl> annotation_agent_container_impl_;
-  Member<CSSSelectorWatch> css_selector_watch_;
-  Member<DocumentFencedFrames> document_fenced_frames_;
-  Member<DocumentParserTiming> document_parser_timing_;
-  Member<DocumentSpeculationRules> document_speculation_rules_;
-  ForwardDeclaredMember<DocumentStorageAccess> document_storage_access_;
-  Member<DocumentXPathEvaluator> document_xpath_evaluator_;
-  Member<DocumentXSLT> document_xslt_;
-  Member<FontFaceSetDocument> font_face_set_document_;
-  Member<InteractiveDetector> interactive_detector_;
-  Member<PaintTiming> paint_timing_;
-  Member<PatchSupplement> patch_supplement_;
-  Member<PictureInPictureController> picture_in_picture_controller_;
-  Member<RenderBlockingMetricsReporter> render_blocking_metrics_reporter_;
-  Member<RouteMap> route_map_;
-  ForwardDeclaredMember<TransferToGPUTextureInvokedSupplement>
-      transfer_to_gpu_texture_invoked_supplement_;
-  ForwardDeclaredMember<AIPageContentAgent> ai_page_content_agent_;
-  ForwardDeclaredMember<BrowsingTopicsDocumentSupplement>
-      browsing_topics_document_supplement_;
-  ForwardDeclaredMember<CredentialMetrics> credential_metrics_;
-  ForwardDeclaredMember<DisabledAccelerationCounterSupplement>
-      disabled_acceleration_counter_supplement_;
-  ForwardDeclaredMember<DocumentMetadataServer> document_metadata_server_;
-  ForwardDeclaredMember<FrameMetadataObserverRegistry>
-      frame_metadata_observer_registry_;
-  ForwardDeclaredMember<InnerHtmlAgent> inner_html_agent_;
-  ForwardDeclaredMember<InnerTextAgent> inner_text_agent_;
-  ForwardDeclaredMember<RTCPeerConnectionController>
-      rtc_peer_connection_controller_;
-
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very
   // popular header, and the size of document.h affects build time
@@ -3500,6 +3257,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // If you need to add new data members to blink::Document and it requires new
   // #includes, add them to blink::DocumentData instead.
 };
+
+extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Document>;
 
 inline void Document::ScheduleLayoutTreeUpdateIfNeeded() {
   // Inline early out to avoid the function calls below.

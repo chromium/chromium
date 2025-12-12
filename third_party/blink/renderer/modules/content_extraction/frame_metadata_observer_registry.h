@@ -35,8 +35,10 @@ class LocalFrame;
 class MODULES_EXPORT FrameMetadataObserverRegistry final
     : public GarbageCollected<FrameMetadataObserverRegistry>,
       public mojom::blink::FrameMetadataObserverRegistry,
-      public GarbageCollectedMixin {
+      public Supplement<Document> {
  public:
+  static constexpr auto kSupplementIndex =
+      Document::Supplements::kFrameMetadataObserverRegistry;
   static FrameMetadataObserverRegistry* From(Document&);
   static void BindReceiver(
       LocalFrame* frame,
@@ -164,7 +166,7 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
     }
 
     ExecutionContext* GetExecutionContext() const override {
-      return registry_->document_->GetExecutionContext();
+      return registry_->GetSupplementable()->GetExecutionContext();
     }
 
     void Deliver(const HeapVector<Member<MutationRecord>>& records,
@@ -240,8 +242,6 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
 
   void DisconnectHandler(mojo::RemoteSetElementId);
   void PaidContentDisconnectHandler(mojo::RemoteSetElementId);
-
-  Member<Document> document_;
 
   HeapMojoReceiverSet<mojom::blink::FrameMetadataObserverRegistry,
                       FrameMetadataObserverRegistry>

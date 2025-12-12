@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace base {
@@ -37,7 +38,7 @@ using OptionalPaintTimingCallback = std::optional<PaintTimingCallback>;
 // PaintTiming is responsible for tracking paint-related timings for a given
 // document.
 class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
-                                      public GarbageCollectedMixin {
+                                      public Supplement<Document> {
   friend class FirstMeaningfulPaintDetector;
   using ReportTimeCallback =
       base::OnceCallback<void(const viz::FrameTimingDetails&)>;
@@ -47,6 +48,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
           kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>;
 
  public:
+  static constexpr auto kSupplementIndex = Document::Supplements::kPaintTiming;
+
   struct PaintTimingInfo {
     // https://w3c.github.io/paint-timing/#paint-timing-info-rendering-update-end-time
     base::TimeTicks rendering_update_end_time;
@@ -229,8 +232,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks FirstPaintRendered() const {
     return paint_details_.first_paint_;
   }
-
-  Member<Document> document_;
 
   Vector<base::TimeTicks>
       first_paints_after_back_forward_cache_restore_presentation_;

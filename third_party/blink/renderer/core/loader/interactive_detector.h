@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -37,9 +38,12 @@ class Event;
 // Interactive. Implement First Idle.
 class CORE_EXPORT InteractiveDetector
     : public GarbageCollected<InteractiveDetector>,
+      public Supplement<Document>,
       public ExecutionContextLifecycleObserver,
       public LongTaskObserver {
  public:
+  static const unsigned kSupplementIndex;
+
   // This class can be easily switched out to allow better testing of
   // InteractiveDetector.
   class CORE_EXPORT NetworkActivityChecker {
@@ -123,8 +127,6 @@ class CORE_EXPORT InteractiveDetector
 
  private:
   friend class InteractiveDetectorTest;
-
-  Member<Document> document_;
 
   const base::TickClock* clock_;
 

@@ -296,7 +296,8 @@ bool TextFragmentAnchor::InvokeSelector() {
 
 void TextFragmentAnchor::Installed() {
   AnnotationAgentContainerImpl* container =
-      frame_->GetDocument()->GetAnnotationAgentContainerImpl();
+      Supplement<Document>::From<AnnotationAgentContainerImpl>(
+          frame_->GetDocument());
   CHECK(container);
   container->AddObserver(this);
 }
@@ -468,7 +469,8 @@ void TextFragmentAnchor::DidFinishSearch() {
   }
 
   AnnotationAgentContainerImpl* container =
-      frame_->GetDocument()->GetAnnotationAgentContainerImpl();
+      Supplement<Document>::From<AnnotationAgentContainerImpl>(
+          frame_->GetDocument());
   CHECK(container);
   container->RemoveObserver(this);
 

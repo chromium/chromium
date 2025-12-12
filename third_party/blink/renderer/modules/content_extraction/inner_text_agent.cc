@@ -11,8 +11,12 @@
 namespace blink {
 
 // static
+const unsigned InnerTextAgent::kSupplementIndex =
+    static_cast<unsigned>(Document::Supplements::kInnerTextAgent);
+
+// static
 InnerTextAgent* InnerTextAgent::From(Document& document) {
-  return document.GetInnerTextAgent();
+  return Supplement<Document>::From<InnerTextAgent>(document);
 }
 
 // static
@@ -25,13 +29,14 @@ void InnerTextAgent::BindReceiver(
   if (!agent) {
     agent = MakeGarbageCollected<InnerTextAgent>(
         base::PassKey<InnerTextAgent>(), *frame);
-    document.SetInnerTextAgent(agent);
+    Supplement<Document>::ProvideTo(document, agent);
   }
   agent->Bind(std::move(receiver));
 }
 
 InnerTextAgent::InnerTextAgent(base::PassKey<InnerTextAgent>, LocalFrame& frame)
-    : document_(frame.GetDocument()), receiver_set_(this, frame.DomWindow()) {}
+    : Supplement<Document>(*frame.GetDocument()),
+      receiver_set_(this, frame.DomWindow()) {}
 
 InnerTextAgent::~InnerTextAgent() = default;
 
@@ -41,17 +46,17 @@ void InnerTextAgent::Bind(
   // a response to the user.
   receiver_set_.Add(
       std::move(receiver),
-      document_->GetTaskRunner(TaskType::kInternalUserInteraction));
+      GetSupplementable()->GetTaskRunner(TaskType::kInternalUserInteraction));
 }
 
 void InnerTextAgent::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(receiver_set_);
+  Supplement<Document>::Trace(visitor);
 }
 
 void InnerTextAgent::GetInnerText(mojom::blink::InnerTextParamsPtr params,
                                   GetInnerTextCallback callback) {
-  LocalFrame* frame = document_->GetFrame();
+  LocalFrame* frame = GetSupplementable()->GetFrame();
   if (!frame) {
     std::move(callback).Run(nullptr);
     return;

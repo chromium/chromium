@@ -62,31 +62,30 @@ bool PictureInPictureControllerImpl::PictureInPictureEnabled() const {
 
 PictureInPictureController::Status
 PictureInPictureControllerImpl::IsDocumentAllowed(bool report_failure) const {
-  DCHECK(document_);
+  DCHECK(GetSupplementable());
 
   // If document has been detached from a frame, return kFrameDetached status.
-  LocalFrame* frame = document_->GetFrame();
+  LocalFrame* frame = GetSupplementable()->GetFrame();
   if (!frame)
     return Status::kFrameDetached;
 
   // Picture-in-Picture is not allowed if the window is a document
   // Picture-in-Picture window.
   if (RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled(
-          document_->GetExecutionContext()) &&
+          GetSupplementable()->GetExecutionContext()) &&
       DomWindow() && DomWindow()->IsPictureInPictureWindow()) {
     return Status::kDocumentPip;
   }
 
   // `GetPictureInPictureEnabled()` returns false when the embedder or the
   // system forbids the page from using Picture-in-Picture.
-  DCHECK(document_->GetSettings());
-  if (!document_->GetSettings()->GetPictureInPictureEnabled()) {
+  DCHECK(GetSupplementable()->GetSettings());
+  if (!GetSupplementable()->GetSettings()->GetPictureInPictureEnabled())
     return Status::kDisabledBySystem;
-  }
 
   // If document is not allowed to use the policy-controlled feature named
   // "picture-in-picture", return kDisabledByPermissionsPolicy status.
-  if (!document_->GetExecutionContext()->IsFeatureEnabled(
+  if (!GetSupplementable()->GetExecutionContext()->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kPictureInPicture,
           report_failure ? ReportOptions::kReportOnFailure
                          : ReportOptions::kDoNotReport)) {
@@ -144,7 +143,7 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
 
   if (video_element->GetDisplayType() ==
       WebMediaPlayer::DisplayType::kFullscreen) {
-    Fullscreen::ExitFullscreen(*document_);
+    Fullscreen::ExitFullscreen(*GetSupplementable());
   }
 
   video_element->GetWebMediaPlayer()->OnRequestPictureInPicture();
@@ -289,12 +288,11 @@ void PictureInPictureControllerImpl::ExitPictureInPicture(
 
 void PictureInPictureControllerImpl::OnExitedPictureInPicture(
     ScriptPromiseResolver<IDLUndefined>* resolver) {
-  DCHECK(document_);
+  DCHECK(GetSupplementable());
 
   // Bail out if document is not active.
-  if (!document_->IsActive()) {
+  if (!GetSupplementable()->IsActive())
     return;
-  }
 
   // Now that this widget is not responsible for providing the content for a
   // Picture in Picture window, we should not be producing CompositorFrames
@@ -455,7 +453,8 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
 
   // Give the pip document's PictureInPictureControllerImpl a pointer to our
   // window as its owner/opener.
-  From(*pip_document).SetDocumentPictureInPictureOwner(document_->domWindow());
+  From(*pip_document)
+      .SetDocumentPictureInPictureOwner(GetSupplementable()->domWindow());
 
   // There should not be an unresolved ScriptPromiseResolverBase at this point.
   // Leaving one unresolved and letting it get garbage collected will crash the
@@ -583,17 +582,18 @@ void PictureInPictureControllerImpl::OnStopped() {
 
 void PictureInPictureControllerImpl::SetMayThrottleIfUndrawnFrames(
     bool may_throttle) {
-  if (!document_->GetFrame() ||
-      !document_->GetFrame()->GetWidgetForLocalRoot()) {
+  if (!GetSupplementable()->GetFrame() ||
+      !GetSupplementable()->GetFrame()->GetWidgetForLocalRoot()) {
     // Tests do not always have a frame or widget.
     return;
   }
-  document_->GetFrame()->GetWidgetForLocalRoot()->SetMayThrottleIfUndrawnFrames(
-      may_throttle);
+  GetSupplementable()
+      ->GetFrame()
+      ->GetWidgetForLocalRoot()
+      ->SetMayThrottleIfUndrawnFrames(may_throttle);
 }
 
 void PictureInPictureControllerImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(document_picture_in_picture_window_);
   visitor->Trace(document_picture_in_picture_owner_);
   visitor->Trace(document_pip_context_observer_);
@@ -619,13 +619,13 @@ bool PictureInPictureControllerImpl::EnsureService() {
   if (picture_in_picture_service_.is_bound())
     return true;
 
-  if (!document_->GetFrame()) {
+  if (!GetSupplementable()->GetFrame())
     return false;
-  }
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      document_->GetFrame()->GetTaskRunner(TaskType::kMediaElementEvent);
-  document_->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
+      GetSupplementable()->GetFrame()->GetTaskRunner(
+          TaskType::kMediaElementEvent);
+  GetSupplementable()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       picture_in_picture_service_.BindNewPipeAndPassReceiver(task_runner));
   return true;
 }

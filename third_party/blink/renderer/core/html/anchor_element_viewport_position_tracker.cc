@@ -91,9 +91,14 @@ void AnchorElementViewportPositionTracker::Observer::AnchorPositionUpdate::
   visitor->Trace(anchor_element);
 }
 
+// static
+const unsigned AnchorElementViewportPositionTracker::kSupplementIndex =
+    static_cast<unsigned>(
+        Document::Supplements::kAnchorElementViewportPositionTracker);
+
 AnchorElementViewportPositionTracker::AnchorElementViewportPositionTracker(
     Document& document)
-    : document_(document),
+    : Supplement<Document>(document),
       max_number_of_observations_(GetMaxNumberOfObservations()),
       intersection_observer_delay_(GetIntersectionObserverDelay()),
       position_update_timer_(
@@ -119,7 +124,7 @@ AnchorElementViewportPositionTracker::~AnchorElementViewportPositionTracker() =
     default;
 
 void AnchorElementViewportPositionTracker::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
+  Supplement<Document>::Trace(visitor);
   visitor->Trace(intersection_observer_);
   visitor->Trace(anchors_in_viewport_);
   visitor->Trace(position_update_timer_);
@@ -135,14 +140,15 @@ AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(Document& document) {
   }
 
   AnchorElementViewportPositionTracker* tracker =
-      document.GetAnchorElementViewportPositionTracker();
+      Supplement<Document>::From<AnchorElementViewportPositionTracker>(
+          document);
   if (tracker) {
     return tracker;
   }
 
   tracker =
       MakeGarbageCollected<AnchorElementViewportPositionTracker>(document);
-  document.SetAnchorElementViewportPositionTracker(tracker);
+  ProvideTo(document, tracker);
   return tracker;
 }
 
@@ -242,7 +248,8 @@ void AnchorElementViewportPositionTracker::RecordPointerDown(
   gfx::PointF pointer_down_location = pointer_event.AbsoluteLocation();
   pointer_down_location =
       document->GetFrame()->View()->FrameToViewport(pointer_down_location);
-  pointer_down_location.Offset(0, GetBrowserControlsHeight(*document_));
+  pointer_down_location.Offset(0,
+                               GetBrowserControlsHeight(*GetSupplementable()));
   last_pointer_down_ = pointer_down_location.y();
 }
 
@@ -290,7 +297,7 @@ void AnchorElementViewportPositionTracker::UpdateVisibleAnchors(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   DCHECK(base::FeatureList::IsEnabled(features::kNavigationPredictor));
   DCHECK(!entries.empty());
-  if (!document_->GetFrame()) {
+  if (!GetSupplementable()->GetFrame()) {
     return;
   }
 
@@ -326,7 +333,7 @@ void AnchorElementViewportPositionTracker::UpdateVisibleAnchors(
 void AnchorElementViewportPositionTracker::PositionUpdateTimerFired(
     TimerBase*) {
   CHECK(ShouldReportViewportPositions());
-  if (LocalFrameView* view = document_->View()) {
+  if (LocalFrameView* view = GetSupplementable()->View()) {
     view->ScheduleAnimation();
     RegisterForLifecycleNotifications();
   }
@@ -340,13 +347,13 @@ void AnchorElementViewportPositionTracker::DidFinishLifecycleUpdate(
       DocumentLifecycle::kAfterPerformLayout) {
     return;
   }
-  if (!document_->GetFrame()) {
+  if (!GetSupplementable()->GetFrame()) {
     return;
   }
   DispatchAnchorElementsPositionUpdates();
-  DCHECK_EQ(&local_frame_view, document_->View());
+  DCHECK_EQ(&local_frame_view, GetSupplementable()->View());
   DCHECK(is_registered_for_lifecycle_notifications_);
-  document_->View()->UnregisterFromLifecycleNotifications(this);
+  GetSupplementable()->View()->UnregisterFromLifecycleNotifications(this);
   is_registered_for_lifecycle_notifications_ = false;
 }
 
@@ -354,9 +361,10 @@ void AnchorElementViewportPositionTracker::
     DispatchAnchorElementsPositionUpdates() {
   CHECK(ShouldReportViewportPositions());
 
-  Screen* screen = document_->domWindow()->screen();
-  FrameWidget* widget = document_->GetFrame()->GetWidgetForLocalRoot();
-  Page* page = document_->GetPage();
+  Screen* screen = GetSupplementable()->domWindow()->screen();
+  FrameWidget* widget =
+      GetSupplementable()->GetFrame()->GetWidgetForLocalRoot();
+  Page* page = GetSupplementable()->GetPage();
   if (!screen || !widget || !page) {
     return;
   }
@@ -368,7 +376,8 @@ void AnchorElementViewportPositionTracker::
   }
 
   const float screen_height = widget->DIPsToBlinkSpace(screen_height_dips);
-  const float browser_controls_height = GetBrowserControlsHeight(*document_);
+  const float browser_controls_height =
+      GetBrowserControlsHeight(*GetSupplementable());
 
   HeapVector<Member<Observer::AnchorPositionUpdate>> position_updates;
   for (const HTMLAnchorElementBase* anchor : anchors_in_viewport_) {
@@ -429,7 +438,7 @@ void AnchorElementViewportPositionTracker::RegisterForLifecycleNotifications() {
     return;
   }
 
-  if (LocalFrameView* view = document_->View()) {
+  if (LocalFrameView* view = GetSupplementable()->View()) {
     view->RegisterForLifecycleNotifications(this);
     is_registered_for_lifecycle_notifications_ = true;
   }
@@ -438,7 +447,7 @@ void AnchorElementViewportPositionTracker::RegisterForLifecycleNotifications() {
 void AnchorElementViewportPositionTracker::InitializeIntersectionObserver() {
   CHECK(!intersection_observer_);
   intersection_observer_ = IntersectionObserver::Create(
-      *document_,
+      *GetSupplementable(),
       BindRepeating(&AnchorElementViewportPositionTracker::UpdateVisibleAnchors,
                     WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,

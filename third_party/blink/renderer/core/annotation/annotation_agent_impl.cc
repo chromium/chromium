@@ -243,8 +243,9 @@ AnnotationAgentImpl::AnnotationAgentImpl(
     AnnotationSelector& selector,
     std::optional<DOMNodeId> search_range_start_node_id,
     AnnotationAgentContainerImpl::PassKey)
-    : agent_host_(owning_container.GetDocument().GetExecutionContext()),
-      receiver_(this, owning_container.GetDocument().GetExecutionContext()),
+    : agent_host_(owning_container.GetSupplementable()->GetExecutionContext()),
+      receiver_(this,
+                owning_container.GetSupplementable()->GetExecutionContext()),
       owning_container_(&owning_container),
       selector_(&selector),
       search_range_start_node_id_(search_range_start_node_id),
@@ -268,7 +269,7 @@ void AnnotationAgentImpl::Bind(
   DCHECK(!IsRemoved());
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      owning_container_->GetDocument().GetTaskRunner(
+      owning_container_->GetSupplementable()->GetTaskRunner(
           TaskType::kInternalDefault);
 
   agent_host_.Bind(std::move(host_remote), task_runner);
@@ -299,7 +300,7 @@ void AnnotationAgentImpl::Attach(AnnotationAgentContainerImpl::PassKey) {
 
   // Create the search range within which the agent will attempt to match the
   // selector in.
-  Document* document = &owning_container_->GetDocument();
+  Document* document = owning_container_->GetSupplementable();
   Range* search_range = document->createRange();
   if (document->body()) {
     search_range->selectNode(document->body());
@@ -384,7 +385,7 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
   CHECK(range.Nodes().begin() != range.Nodes().end());
   Node& first_node = *range.Nodes().begin();
 
-  Document& document = owning_container_->GetDocument();
+  Document& document = *owning_container_->GetSupplementable();
   document.EnsurePaintLocationDataValidForNode(
       &first_node, DocumentUpdateReason::kFindInPage);
 
@@ -502,7 +503,7 @@ void AnnotationAgentImpl::DidFinishFindRange(const RangeInFlatTree* range) {
   } else {
     // TODO(bokan): We may need to force an animation frame e.g. if we're in a
     // throttled iframe.
-    Document& document = owning_container_->GetDocument();
+    Document& document = *owning_container_->GetSupplementable();
     document.EnqueueAnimationFrameTask(
         BindOnce(&AnnotationAgentImpl::PerformPreAttachDOMMutation,
                  WrapPersistent(this)));
@@ -656,7 +657,8 @@ mojom::blink::ScrollBehavior AnnotationAgentImpl::ComputeScrollIntoViewBehavior(
   using mojom::blink::AnnotationType;
   using mojom::blink::ScrollBehavior;
 
-  Document* document = &owning_container_->GetDocument();
+  CHECK(owning_container_->GetSupplementable());
+  Document* document = owning_container_->GetSupplementable();
   if (document->GetSettings() &&
       document->GetSettings()->GetPrefersReducedMotion()) {
     return ScrollBehavior::kInstant;

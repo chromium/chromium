@@ -202,15 +202,15 @@ class SubtreePatchSink : public UnderlyingSinkBase {
 
 // static
 PatchSupplement* PatchSupplement::FromIfExists(const Document& document) {
-  return document.GetPatchSupplement();
+  return Supplement<Document>::From<PatchSupplement>(document);
 }
 
 // static
 PatchSupplement* PatchSupplement::From(Document& document) {
-  auto* supplement = document.GetPatchSupplement();
+  auto* supplement = Supplement<Document>::From<PatchSupplement>(document);
   if (!supplement) {
     supplement = MakeGarbageCollected<PatchSupplement>(document);
-    document.SetPatchSupplement(supplement);
+    Supplement<Document>::ProvideTo(document, supplement);
   }
   return supplement;
 }
@@ -274,8 +274,8 @@ WritableStream* PatchSupplement::CreateSubtreePatchStream(
 }
 
 void PatchSupplement::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(patches_);
+  Supplement<Document>::Trace(visitor);
 }
 
 }  // namespace blink

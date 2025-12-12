@@ -66,7 +66,7 @@ class InteractiveDetectorTest : public testing::Test,
     // By this time, the DummyPageHolder has created an InteractiveDetector, and
     // sent DOMContentLoadedEnd. We overwrite it with our new
     // InteractiveDetector, which won't have received any timestamps.
-    document->SetInteractiveDetector(detector_.Get());
+    Supplement<Document>::ProvideTo(*document, detector_.Get());
 
     // Ensure the document is using the injected InteractiveDetector.
     DCHECK_EQ(detector_, InteractiveDetector::From(*document));

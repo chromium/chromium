@@ -45,7 +45,7 @@
 namespace blink {
 
 CSSSelectorWatch::CSSSelectorWatch(Document& document)
-    : document_(document),
+    : Supplement<Document>(document),
       callback_selector_change_timer_(
           document.GetTaskRunner(TaskType::kInternalDefault),
           this,
@@ -56,13 +56,13 @@ CSSSelectorWatch& CSSSelectorWatch::From(Document& document) {
   CSSSelectorWatch* watch = FromIfExists(document);
   if (!watch) {
     watch = MakeGarbageCollected<CSSSelectorWatch>(document);
-    document.SetCSSSelectorWatch(watch);
+    ProvideTo(document, watch);
   }
   return *watch;
 }
 
 CSSSelectorWatch* CSSSelectorWatch::FromIfExists(Document& document) {
-  return document.GetCSSSelectorWatch();
+  return Supplement<Document>::From<CSSSelectorWatch>(document);
 }
 
 void CSSSelectorWatch::CallbackSelectorChangeTimerFired(TimerBase*) {
@@ -74,11 +74,11 @@ void CSSSelectorWatch::CallbackSelectorChangeTimerFired(TimerBase*) {
     callback_selector_change_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
     return;
   }
-  if (document_->GetFrame()) {
+  if (GetSupplementable()->GetFrame()) {
     Vector<String> added_selectors(added_selectors_);
     Vector<String> removed_selectors(removed_selectors_);
-    document_->GetFrame()->Client()->SelectorMatchChanged(added_selectors,
-                                                          removed_selectors);
+    GetSupplementable()->GetFrame()->Client()->SelectorMatchChanged(
+        added_selectors, removed_selectors);
   }
   added_selectors_.clear();
   removed_selectors_.clear();
@@ -178,13 +178,13 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
 
     watched_callback_selectors_.push_back(style_rule);
   }
-  document_->GetStyleEngine().WatchedSelectorsChanged();
+  GetSupplementable()->GetStyleEngine().WatchedSelectorsChanged();
 }
 
 void CSSSelectorWatch::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   visitor->Trace(watched_callback_selectors_);
   visitor->Trace(callback_selector_change_timer_);
+  Supplement<Document>::Trace(visitor);
 }
 
 }  // namespace blink
