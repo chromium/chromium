@@ -398,8 +398,9 @@ export class AppElement extends AppElementBase {
   protected accessor composeboxInputFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
   protected accessor contextMenuGlifAnimationState_: GlifAnimationState =
-      this.ntpNextFeaturesEnabled_ ? GlifAnimationState.SPINNER_ONLY :
-                                     GlifAnimationState.INELIGIBLE;
+      this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ?
+      GlifAnimationState.SPINNER_ONLY :
+      GlifAnimationState.INELIGIBLE;
   protected enableModalComposebox_: boolean =
       loadTimeData.getBoolean('enableModalComposebox');
 
@@ -1359,10 +1360,22 @@ export class AppElement extends AppElementBase {
     // UPDATED => STARTED (or FINISHED if cr_context_menu_entrypoint sets it)
     // To avoid going back (or continuing) GlifAnimationState.STARTED, we stop
     // updating the field when the current state is STARTED or FINISHED.
+    // There are a few cases to consider:
+    // - IsActionChipsVisible_ is false (and remains so): no event from the
+    //   action chips element, and thus the animation state remains INELIGIBLE.
+    // - IsActionChipsVisible_ is false and later becomes true: the change
+    //   triggers the rendering of the action chips element, and this in turn
+    //   causes an event with ActionChipsRetrievalState.REQUESTED to be fired.
+    //   After some time, an event with ActionChipsRetrievalState.UPDATED will
+    //   fire, and this starts the animation.
+    // - IsActionChipsVisible_ is true from the beginning: Same as above.
     if ([GlifAnimationState.STARTED, GlifAnimationState.FINISHED].every(
-            s => s !== this.contextMenuGlifAnimationState_) &&
-        state === ActionChipsRetrievalState.UPDATED) {
-      this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
+            s => s !== this.contextMenuGlifAnimationState_)) {
+      if (state === ActionChipsRetrievalState.REQUESTED) {
+        this.contextMenuGlifAnimationState_ = GlifAnimationState.SPINNER_ONLY;
+      } else if (state === ActionChipsRetrievalState.UPDATED) {
+        this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
+      }
     }
   }
 }
