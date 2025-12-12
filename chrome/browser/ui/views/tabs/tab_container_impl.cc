@@ -888,6 +888,14 @@ gfx::Size TabContainerImpl::CalculatePreferredSize(
 
 views::View* TabContainerImpl::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
+  if (!GetVisible()) {
+    // TODO(crbug.com/468100896): Remove this once the parent view is destroyed
+    // instead of hidden. From crbug.com/467968232, early return if the view is
+    // hidden to avoid race condition between the horizontal and vertical tab
+    // strip.
+    return nullptr;
+  }
+
   if (!HitTestPoint(point)) {
     return nullptr;
   }
