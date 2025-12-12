@@ -2106,6 +2106,21 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
   EXPECT_EQ("about:blank", *url);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, GetBrowserContexts) {
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  AttachToBrowserTarget();
+  SendCommandSync("Target.getBrowserContexts");
+  const base::Value::List* contexts = result()->FindList("browserContextIds");
+  EXPECT_TRUE(contexts);
+
+  const std::string* default_context_id =
+      result()->FindString("defaultBrowserContextId");
+  EXPECT_TRUE(default_context_id);
+  for (const auto& context : *contexts) {
+    EXPECT_NE(context.GetString(), *default_context_id);
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VirtualTimeTest) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();

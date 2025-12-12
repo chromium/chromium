@@ -1520,7 +1520,8 @@ void TargetHandler::CreateBrowserContext(
 }
 
 protocol::Response TargetHandler::GetBrowserContexts(
-    std::unique_ptr<protocol::Array<protocol::String>>* browser_context_ids) {
+    std::unique_ptr<protocol::Array<protocol::String>>* browser_context_ids,
+    std::optional<std::string>* default_browser_context_id) {
   if (access_mode_ != AccessMode::kBrowser) {
     return Response::ServerError(kNotAllowedError);
   }
@@ -1535,6 +1536,11 @@ protocol::Response TargetHandler::GetBrowserContexts(
   *browser_context_ids = std::make_unique<protocol::Array<protocol::String>>();
   for (auto* context : contexts) {
     (*browser_context_ids)->emplace_back(context->UniqueId());
+  }
+
+  BrowserContext* default_context = delegate->GetDefaultBrowserContext();
+  if (default_context) {
+    *default_browser_context_id = default_context->UniqueId();
   }
   return Response::Success();
 }

@@ -115,7 +115,8 @@ class TargetHandler : public DevToolsDomainHandler,
       const std::string& context_id,
       std::unique_ptr<DisposeBrowserContextCallback> callback) override;
   Response GetBrowserContexts(
-      std::unique_ptr<protocol::Array<String>>* browser_context_ids) override;
+      std::unique_ptr<protocol::Array<String>>* browser_context_ids,
+      std::optional<std::string>* default_browser_context_id) override;
   Response CreateTarget(const std::string& url,
                         std::optional<int> left,
                         std::optional<int> top,

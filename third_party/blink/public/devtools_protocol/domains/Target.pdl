@@ -132,6 +132,8 @@ domain Target
     returns
       # An array of browser context ids.
       array of Browser.BrowserContextID browserContextIds
+      # The id of the default browser context if available.
+      experimental optional Browser.BrowserContextID defaultBrowserContextId
 
   # Creates a new page.
   command createTarget
