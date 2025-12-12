@@ -400,7 +400,9 @@ void PressInfoButtonForCell(NSString* cellId) {
 
 // Tests that the Password Leak detection toggle doesn't under Standard
 // Protection if the the feature is enabled.
-- (void)testPasswordLeakCheckToggle_PresentWhenFeatureFlagDisabled {
+//
+// TODO(crbug.com/468292645): This test is flaky.
+- (void)FLAKY_testPasswordLeakCheckToggle_PresentWhenFeatureFlagDisabled {
   // Ensure that Safe Browsing and password leak detection opt-outs start in
   // their default (opted-in) state.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
