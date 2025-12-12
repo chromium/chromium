@@ -9,7 +9,7 @@ namespace ios::provider {
 // Script to check whether PageContext should be detached from the request.
 constexpr const char16_t* kShouldDetachPageContextScript = u"return false;";
 
-void StartBwgOverlay(BWGConfiguration* bwg_configuration) {}
+void StartBwgOverlay(GeminiConfiguration* gemini_configuration) {}
 
 const std::u16string GetPageContextShouldDetachScript() {
   return kShouldDetachPageContextScript;

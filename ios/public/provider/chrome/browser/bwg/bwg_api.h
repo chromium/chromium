@@ -13,7 +13,7 @@
 #import "services/network/public/cpp/resource_request.h"
 
 class AuthenticationService;
-@class BWGConfiguration;
+@class GeminiConfiguration;
 @class GeminiPageContext;
 @class GeminiSettingsMetadata;
 @protocol BWGGatewayProtocol;
@@ -79,7 +79,7 @@ enum class BWGPageContextAttachmentState {
 };
 
 // Starts the overlay experience with the given configuration.
-void StartBwgOverlay(BWGConfiguration* bwg_configuration);
+void StartBwgOverlay(GeminiConfiguration* gemini_configuration);
 
 // Gets the portion of the PageContext script that checks whether PageContext
 // should be detached from the request.

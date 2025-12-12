@@ -8,13 +8,13 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
@@ -144,7 +144,7 @@ void BwgBrowserAgent::PresentBwgOverlayWithState(
 
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
 
-  BWGConfiguration* config = [[BWGConfiguration alloc] init];
+  GeminiConfiguration* config = [[GeminiConfiguration alloc] init];
   config.baseViewController = base_view_controller;
   config.authService =
       AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());

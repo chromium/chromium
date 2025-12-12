@@ -6,7 +6,7 @@
 
 namespace ios::provider {
 
-void StartBwgOverlay(BWGConfiguration* bwg_configuration) {}
+void StartBwgOverlay(GeminiConfiguration* gemini_configuration) {}
 
 const std::u16string GetPageContextShouldDetachScript() {
   return uR"JS(

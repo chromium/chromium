@@ -141,9 +141,8 @@ source_set("bwg_service_factory") {
 
 source_set("config") {
   sources = [
-    "bwg_configuration.h",
-    "bwg_configuration.mm",
     "gemini_configuration.h",
+    "gemini_configuration.mm",
   ]
   deps = [
     "//base",

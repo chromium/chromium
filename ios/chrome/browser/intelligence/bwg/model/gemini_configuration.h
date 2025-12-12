@@ -27,10 +27,9 @@ class PageContext;
 
 @protocol BWGGatewayProtocol;
 
-// BWGConfiguration is a configuration class that holds all the data necessary
-// to start the BWG overlay.
-// TODO(crbug.com/467339920): Rename this class to GeminiConfiguration.
-@interface BWGConfiguration : NSObject
+// GeminiConfiguration is a configuration class that holds all the data
+// necessary to start the Gemini overlay.
+@interface GeminiConfiguration : NSObject
 
 // The base view controller to present the UI on.
 @property(nonatomic, weak) UIViewController* baseViewController;
@@ -91,9 +90,5 @@ class PageContext;
 @property(nonatomic, strong) UIImage* imageAttachment;
 
 @end
-
-// TODO(crbug.com/467339920): Remove once BWGConfiguration has been renamed to
-// GeminiConfiguration.
-@compatibility_alias GeminiConfiguration BWGConfiguration;
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_CONFIGURATION_H_

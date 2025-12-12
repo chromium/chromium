@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_configuration.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 
 #import "base/check.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
-@implementation BWGConfiguration {
+@implementation GeminiConfiguration {
   // The current configuration's PageContext.
   std::unique_ptr<optimization_guide::proto::PageContext> _uniquePageContext;
 }
