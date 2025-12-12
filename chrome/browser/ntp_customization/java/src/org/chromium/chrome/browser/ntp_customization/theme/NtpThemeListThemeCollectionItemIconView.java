@@ -62,7 +62,7 @@ public class NtpThemeListThemeCollectionItemIconView extends FrameLayout {
 
         final Context context = getContext();
         final @ColorInt int surfaceColor =
-                ContextCompat.getColor(context, R.color.sheet_on_scrim_bg_color);
+                ContextCompat.getColor(context, R.color.bottom_sheet_bg_color);
         final @ColorInt int colorSurfaceContainer =
                 SemanticColorUtils.getColorSurfaceContainerHigh(context);
 

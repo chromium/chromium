@@ -1552,6 +1552,6 @@ class BottomSheet extends FrameLayout
      * @return The {@link ColorInt} for the background of a bottom sheet showing on a scrim
      */
     private static @ColorInt int getSheetOnScrimBackgroundColor(Context context) {
-        return ContextCompat.getColor(context, R.color.sheet_on_scrim_bg_color);
+        return ContextCompat.getColor(context, R.color.bottom_sheet_bg_color);
     }
 }
