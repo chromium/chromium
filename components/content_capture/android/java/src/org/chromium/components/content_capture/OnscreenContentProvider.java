@@ -4,6 +4,8 @@
 
 package org.chromium.components.content_capture;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Build;
 import android.view.View;
@@ -19,6 +21,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.content_capture.ContentCaptureMetadataProto.ContentCaptureMetadata;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 
@@ -190,6 +193,21 @@ public class OnscreenContentProvider {
         }
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
             Log.i(TAG, "Updated Favicon: %s", mainFrame.getFavicon());
+        }
+    }
+
+    @CalledByNative
+    private void didUpdateSensitivityScore(String url, float sensitivityScore) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return;
+        }
+
+        ContentCaptureMetadata metadata =
+                ContentCaptureMetadata.newBuilder().setSensitivityScore(sensitivityScore).build();
+        assumeNonNull(PlatformContentCaptureController.getInstance()).shareData(url, metadata);
+
+        if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
+            Log.i(TAG, "Updated sensitivity score: %f", sensitivityScore);
         }
     }
 

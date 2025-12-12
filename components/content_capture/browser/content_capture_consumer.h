@@ -61,6 +61,10 @@ class ContentCaptureConsumer {
   virtual void DidUpdateTitle(const ContentCaptureFrame& main_frame) = 0;
   // Invoked when the given |main_frame|'s favicon updated.
   virtual void DidUpdateFavicon(const ContentCaptureFrame& main_frame) = 0;
+  // Invoked when the sensitivity score for the corresponding WebContents has
+  // been updated.
+  virtual void DidUpdateSensitivityScore(const GURL& url,
+                                         float sensitivity_score) = 0;
 
   // Return if the |url| shall be captured. Even return false, the content might
   // still be streamed because of the other consumers require it. Consumer can

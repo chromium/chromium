@@ -10,9 +10,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.LocusId;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
+import android.os.ParcelFileDescriptor.AutoCloseOutputStream;
 import android.view.contentcapture.ContentCaptureCondition;
 import android.view.contentcapture.ContentCaptureManager;
 import android.view.contentcapture.DataRemovalRequest;
+import android.view.contentcapture.DataShareRequest;
+import android.view.contentcapture.DataShareWriteAdapter;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -20,9 +24,12 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.AndroidInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.content_capture.ContentCaptureMetadataProto.ContentCaptureMetadata;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,6 +44,7 @@ import java.util.regex.Pattern;
 public class PlatformContentCaptureController {
     private static final String TAG = "ContentCapture";
     private static final String AIAI_PACKAGE_NAME = "com.google.android.as";
+    private static final String MIME_TYPE = "application/protobuf";
 
     private static @Nullable PlatformContentCaptureController sContentCaptureController;
 
@@ -148,6 +156,36 @@ public class PlatformContentCaptureController {
                             new LocusId(url), /* Signals that we aren't using extra flags */ 0);
         }
         mContentCaptureManager.removeData(builder.build());
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    public void shareData(String url, ContentCaptureMetadata metadata) {
+        if (mContentCaptureManager == null) return;
+
+        mContentCaptureManager.shareData(
+                new DataShareRequest(new LocusId(url), MIME_TYPE),
+                AsyncTask.SERIAL_EXECUTOR,
+                new DataShareWriteAdapter() {
+                    @Override
+                    public void onWrite(ParcelFileDescriptor destination) {
+                        try (OutputStream outputStream = new AutoCloseOutputStream(destination)) {
+                            metadata.writeTo(outputStream);
+                            log("Successfully sent data share");
+                        } catch (Exception e) {
+                            log("Error writing metadata to data share stream: " + e);
+                        }
+                    }
+
+                    @Override
+                    public void onRejected() {
+                        log("Data share rejected by Content Capture service.");
+                    }
+
+                    @Override
+                    public void onError(int errorCode) {
+                        log("Data share failed with error code " + errorCode);
+                    }
+                });
     }
 
     /**

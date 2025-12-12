@@ -80,6 +80,9 @@ class ContentCaptureConsumerHelper : public ContentCaptureConsumer {
 
   void DidUpdateFavicon(const ContentCaptureFrame& main_frame) override;
 
+  void DidUpdateSensitivityScore(const GURL& url,
+                                 float sensitivity_score) override;
+
   bool ShouldCapture(const GURL& url) override;
 
   const ContentCaptureSession& parent_session() const {

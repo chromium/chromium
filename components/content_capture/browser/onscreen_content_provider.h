@@ -63,6 +63,9 @@ class OnscreenContentProvider
   void DidUpdateTitle(ContentCaptureReceiver* content_capture_receiver);
   void DidUpdateFavicon(ContentCaptureReceiver* content_capture_receiver);
 
+  // The methods called by metadata providers.
+  void DidUpdateSensitivityScore(float sensitivity_score);
+
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;

@@ -230,6 +230,17 @@ void OnscreenContentProviderAndroid::DidUpdateFavicon(
   Java_OnscreenContentProvider_didUpdateFavicon(env, java_ref_, jdata);
 }
 
+void OnscreenContentProviderAndroid::DidUpdateSensitivityScore(
+    const GURL& url,
+    float sensitivity_score) {
+  JNIEnv* env = AttachCurrentThread();
+  DCHECK(java_ref_.obj());
+
+  Java_OnscreenContentProvider_didUpdateSensitivityScore(
+      env, java_ref_, ConvertUTF8ToJavaString(env, url.spec()),
+      static_cast<jfloat>(sensitivity_score));
+}
+
 bool OnscreenContentProviderAndroid::ShouldCapture(const GURL& url) {
   JNIEnv* env = AttachCurrentThread();
   return Java_OnscreenContentProvider_shouldCapture(

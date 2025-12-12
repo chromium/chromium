@@ -35,6 +35,8 @@ class OnscreenContentProviderAndroid : public ContentCaptureConsumer {
   void DidRemoveSession(const ContentCaptureSession& session) override;
   void DidUpdateTitle(const ContentCaptureFrame& main_frame) override;
   void DidUpdateFavicon(const ContentCaptureFrame& main_frame) override;
+  void DidUpdateSensitivityScore(const GURL& url,
+                                 float sensitivity_score) override;
   bool ShouldCapture(const GURL& url) override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

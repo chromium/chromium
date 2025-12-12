@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "components/content_capture/browser/content_capture_consumer.h"
 #include "components/content_capture/browser/content_capture_receiver.h"
+#include "components/content_capture/common/content_capture_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -260,6 +261,18 @@ void OnscreenContentProvider::DidUpdateFavicon(
   DCHECK(session.size() == 1);
   for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
     consumer->DidUpdateFavicon(*session.begin());
+  }
+}
+
+void OnscreenContentProvider::DidUpdateSensitivityScore(
+    float sensitivity_score) {
+  if (!content_capture::features::ShouldSendMetadataForDataShare() ||
+      !ShouldCapture(web_contents()->GetLastCommittedURL())) {
+    return;
+  }
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->DidUpdateSensitivityScore(web_contents()->GetLastCommittedURL(),
+                                        sensitivity_score);
   }
 }
 
