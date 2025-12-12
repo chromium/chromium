@@ -552,14 +552,12 @@ void FullscreenController::EnterFullscreenModeInternal(
     content::RenderFrameHost* requesting_frame,
     FullscreenTabParams fullscreen_tab_params) {
 #if !BUILDFLAG(IS_MAC)
+
+  Profile* profile = exclusive_access_manager()->context()->GetProfile();
   // Do not enter fullscreen mode if disallowed by pref. This prevents the user
   // from manually entering fullscreen mode and also disables kiosk mode on
   // desktop platforms.
-  if (!exclusive_access_manager()
-           ->context()
-           ->GetProfile()
-           ->GetPrefs()
-           ->GetBoolean(prefs::kFullscreenAllowed)) {
+  if (!profile || !profile->GetPrefs()->GetBoolean(prefs::kFullscreenAllowed)) {
     return;
   }
 #endif
