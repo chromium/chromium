@@ -20,8 +20,6 @@ class IsolatedWebAppsOpenedTabsCounterServiceDelegate
   IsolatedWebAppsOpenedTabsCounterServiceDelegate(
       Profile* profile,
       const webapps::AppId& app_id,
-      IsolatedWebAppsOpenedTabsCounterService::CloseWebContentsCallback
-          close_web_contents_callback,
       IsolatedWebAppsOpenedTabsCounterService::NotificationAcknowledgedCallback
           notification_acknowledged_callback,
       IsolatedWebAppsOpenedTabsCounterService::CloseNotificationCallback
@@ -44,8 +42,6 @@ class IsolatedWebAppsOpenedTabsCounterServiceDelegate
   const raw_ref<Profile> profile_;
   const webapps::AppId app_id_;
 
-  IsolatedWebAppsOpenedTabsCounterService::CloseWebContentsCallback
-      close_web_contents_callback_;
   IsolatedWebAppsOpenedTabsCounterService::NotificationAcknowledgedCallback
       notification_acknowledged_callback_;
   IsolatedWebAppsOpenedTabsCounterService::CloseNotificationCallback

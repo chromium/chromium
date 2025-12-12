@@ -23,7 +23,7 @@ namespace web_app {
 
 namespace {
 
-BASE_FEATURE(kIsolatedWebAppsOpenedTabsCounterServiceNotification,
+BASE_FEATURE(kIsolatedWebAppsWindowOpenPermissionServiceNotification,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
@@ -60,7 +60,7 @@ std::unique_ptr<KeyedService> IsolatedWebAppsOpenedTabsCounterServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* browser_context) const {
   if (!base::FeatureList::IsEnabled(
-          kIsolatedWebAppsOpenedTabsCounterServiceNotification)) {
+          kIsolatedWebAppsWindowOpenPermissionServiceNotification)) {
     return nullptr;
   }
   return std::make_unique<IsolatedWebAppsOpenedTabsCounterService>(

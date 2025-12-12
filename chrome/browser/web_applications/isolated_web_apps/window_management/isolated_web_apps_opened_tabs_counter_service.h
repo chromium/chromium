@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -49,11 +50,10 @@ namespace web_app {
 //    notification remains visible
 class IsolatedWebAppsOpenedTabsCounterService : public KeyedService {
  public:
-  using CloseWebContentsCallback =
-      base::RepeatingCallback<void(const webapps::AppId&)>;
   using NotificationAcknowledgedCallback =
       base::RepeatingCallback<void(const webapps::AppId&)>;
-  using CloseNotificationCallback = base::RepeatingClosure;
+  using CloseNotificationCallback =
+      base::RepeatingCallback<void(const webapps::AppId&)>;
 
   explicit IsolatedWebAppsOpenedTabsCounterService(Profile* profile);
   ~IsolatedWebAppsOpenedTabsCounterService() override;
@@ -63,65 +63,29 @@ class IsolatedWebAppsOpenedTabsCounterService : public KeyedService {
 
   // Called by the `web_app::NavigationCapturingProcess` when a new WebContents
   // is created by an IWA.
-  void OnWebContentsCreated(const webapps::AppId& opener_app_id,
-                            content::WebContents* new_contents,
-                            base::Time navigation_start_time);
+  void OnWebContentsCreated(const webapps::AppId& opener_app_id);
 
   void OnNotificationAcknowledged(const webapps::AppId& app_id);
   void CloseNotification(const webapps::AppId& app_id);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(
-      IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
-      ClickCloseWindowsButtonClosesChildWindowsAndNotification);
-  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
-                           ForceInstalledIwaNeverShowsNotification);
-  class TabObserver : public content::WebContentsObserver {
-   public:
-    TabObserver(content::WebContents* web_contents,
-                IsolatedWebAppsOpenedTabsCounterService* service)
-        : content::WebContentsObserver(web_contents), service_(service) {}
-    ~TabObserver() override = default;
-
-    // content::WebContentsObserver:
-    void WebContentsDestroyed() override;
-
-   private:
-    raw_ptr<IsolatedWebAppsOpenedTabsCounterService> service_;
-  };
-
-  // Holds data about a WebContents opened by an IWA.
-  struct TrackedTabData;
-
   void RetrieveNotificationStates();
   void OnAllAppsLockAcquiredForStateRetrieval(web_app::AllAppsLock& lock,
                                               base::Value::Dict& debug_value);
 
-  // Called by `TabObserver` when a tracked WebContents is destroyed.
-  void HandleTabClosure(content::WebContents* contents);
-
-  void AddTabTimestampForApp(const webapps::AppId& app_id,
-                             base::Time timestamp);
-  void RemoveTabTimestampForApp(const webapps::AppId& app_id,
-                                base::Time timestamp);
-
-  void UpdateOrRemoveNotificationForOpener(const webapps::AppId& app_id);
   void RegisterFirstTimeActiveAppNotification(const webapps::AppId& app_id);
-  void CreateAndDisplayNotification(const webapps::AppId& app_id,
-                                    int current_tab_count);
-  void CloseAllWebContentsOpenedByApp(const webapps::AppId& app_id);
+  void CreateAndDisplayNotification(const webapps::AppId& app_id);
 
-  void PersistNotificationState(const webapps::AppId& app_id);
+  void PersistNotificationState(
+      const webapps::AppId& app_id,
+      const web_app::IsolationData::OpenedTabsCounterNotificationState&
+          current_notification_state);
 
   Profile* profile() { return &profile_.get(); }
+  WebAppProvider* provider() const { return provider_; }
 
   const raw_ref<Profile> profile_;
-
-  base::flat_map<webapps::AppId, std::vector<base::Time>> app_tab_timestamps_;
-
-  // Tracks WebContents opened by IWAs, mapping each to its opener's AppId
-  // and an observer that handles its destruction.
-  base::flat_map<content::WebContents*, TrackedTabData> tracked_tabs_;
+  const raw_ptr<WebAppProvider> provider_;
 
   // In-memory cache of notification states, loaded on startup.
   std::map<webapps::AppId,
