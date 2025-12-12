@@ -3,6 +3,3 @@
 enterprise-policy-review@google.com
 
 include ENTERPRISE_POLICY_OWNERS
-
-ftirelo@chromium.org #{LAST_RESORT_SUGGESTION}
-nicolaso@chromium.org #{LAST_RESORT_SUGGESTION}
