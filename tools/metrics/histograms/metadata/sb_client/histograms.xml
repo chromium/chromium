@@ -604,7 +604,21 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.CreditCardFormEvent2.{EventName}"
+<histogram name="SBClientPhishing.CreditCardFormDedupedEvent"
+    enum="CreditCardFormEvent" expires_after="2026-12-10">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>bcb@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records a credit card form event that may trigger a CSD ping, with an enum
+    that represents the permutation of details for that event. This is recorded
+    on every event that may trigger a CREDIT_CARD_FORM classification attempt,
+    after checking for ESB, and after filtering to only the first event of a URL
+    visit.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.CreditCardFormEvent"
     enum="CreditCardFormEvent" expires_after="2026-11-13">
   <owner>andysjlim@chromium.org</owner>
   <owner>bcb@chromium.org</owner>
@@ -612,15 +626,9 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Records a credit card form event that may trigger a CSD ping, with an enum
     that represents the permutation of details for that event. This is recorded
-    on every {EventName} event that may trigger a CREDIT_CARD_FORM
-    classification attempt, after checking for ESB.
+    on every event that may trigger a CREDIT_CARD_FORM classification attempt,
+    after checking for ESB.
   </summary>
-  <token key="EventName">
-    <variant name="OnAfterFocusOnFormField"
-        summary="Autofill OnAfterFocusOnFormField"/>
-    <variant name="OnFieldTypesDetermined"
-        summary="Autofill OnFieldTypesDetermined"/>
-  </token>
 </histogram>
 
 <histogram name="SBClientPhishing.CSDPhishingCachedDataAvailable"

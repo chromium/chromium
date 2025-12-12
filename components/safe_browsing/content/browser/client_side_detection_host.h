@@ -518,7 +518,6 @@ class ClientSideDetectionHost
   // it determines whether a credit card from event should trigger a CSD
   // ping.
   void OnCreditCardFormVisitCount(
-      std::string event_name,
       std::optional<base::TimeTicks> start_time,
       credit_card_form::FieldDetectionHeuristic field_heuristic,
       history::VisibleVisitCountToHostResult history_result);

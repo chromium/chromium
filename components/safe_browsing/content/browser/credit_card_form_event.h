@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CREDIT_CARD_FORM_EVENT_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CREDIT_CARD_FORM_EVENT_H_
 
-#include <optional>
-#include <string>
-#include <string_view>
-
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -116,16 +112,15 @@ CreditCardFormEvent GetCreditCardFormEvent(SiteVisit site_visit,
 // Translates a ReferringAppInfo to the matching ReferringApp value.
 ReferringApp FromReferringAppInfo(internal::ReferringAppInfo info);
 
-void LogEvent(std::string_view event_name,
-              SiteVisit site_visit,
+#endif
+
+void LogEvent(SiteVisit site_visit,
               ReferringApp referring_app,
               FieldDetectionHeuristic field_heuristic);
 
-#endif
-
-void LogEvent(std::string_view event_name,
-              SiteVisit site_visit,
-              FieldDetectionHeuristic field_heuristic);
+void LogDedupedEvent(SiteVisit site_visit,
+                     ReferringApp referring_app,
+                     FieldDetectionHeuristic field_heuristic);
 
 }  // namespace safe_browsing::credit_card_form
 

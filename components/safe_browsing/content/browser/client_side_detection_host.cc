@@ -984,13 +984,6 @@ void ClientSideDetectionHost::OnAfterFocusOnFormField(
     return;
   }
 
-  // Early exit if preclassification has already been done for this
-  // event triggering CREDIT_CARD_FORM and this URL.
-  if (HasDonePreclassificationCheckOnSameURL(
-          ClientSideDetectionType::CREDIT_CARD_FORM)) {
-    return;
-  }
-
   credit_card_form::FieldDetectionHeuristic field_heuristic =
       credit_card_form::kNoDetectionHeuristic;
   if (form &&
@@ -1016,20 +1009,18 @@ void ClientSideDetectionHost::OnAfterFocusOnFormField(
     history_service_->GetVisibleVisitCountToHost(
         url,
         base::BindOnce(&ClientSideDetectionHost::OnCreditCardFormVisitCount,
-                       weak_factory_.GetWeakPtr(), "OnAfterFocusOnFormField",
-                       base::TimeTicks::Now(), field_heuristic),
+                       weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                       field_heuristic),
         &task_tracker_);
   } else {
     history::VisibleVisitCountToHostResult history_result =
         cached_history_result.value_or(
             history::VisibleVisitCountToHostResult{/*success=*/false});
-    OnCreditCardFormVisitCount("OnAfterFocusOnFormField", std::nullopt,
-                               field_heuristic, history_result);
+    OnCreditCardFormVisitCount(std::nullopt, field_heuristic, history_result);
   }
 }
 
 void ClientSideDetectionHost::OnCreditCardFormVisitCount(
-    std::string event_name,
     std::optional<base::TimeTicks> start_time,
     credit_card_form::FieldDetectionHeuristic field_heuristic,
     history::VisibleVisitCountToHostResult history_result) {
@@ -1048,15 +1039,26 @@ void ClientSideDetectionHost::OnCreditCardFormVisitCount(
                      : credit_card_form::kNewSiteVisit;
   }
 
-#if BUILDFLAG(IS_ANDROID)
   credit_card_form::ReferringApp referring_app =
+#if BUILDFLAG(IS_ANDROID)
       credit_card_form::FromReferringAppInfo(
           delegate_->GetReferringAppInfo(web_contents()));
-  credit_card_form::LogEvent(event_name, site_visit, referring_app,
-                             field_heuristic);
 #else
-  credit_card_form::LogEvent(event_name, site_visit, field_heuristic);
+      credit_card_form::kNoReferringApp;
 #endif
+  credit_card_form::LogEvent(site_visit, referring_app, field_heuristic);
+
+  // Do not proceed with preclassification if it has already been done for
+  // CREDIT_CARD_FORM on this URL. Only the first credit card event on this
+  // page will go through preclassification and none further.
+  if (HasDonePreclassificationCheckOnSameURL(
+          ClientSideDetectionType::CREDIT_CARD_FORM)) {
+    return;
+  }
+
+  // Log the event after URL deduplication to provide event telemetry that
+  // corresponds to the preclassification check.
+  credit_card_form::LogDedupedEvent(site_visit, referring_app, field_heuristic);
 
   // Early exit if the user has visited this site before.
   if (kCsdCreditCardFormEnableNewSiteFilter.Get() &&

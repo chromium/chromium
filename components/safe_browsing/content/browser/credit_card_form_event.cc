@@ -8,20 +8,8 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 
 namespace safe_browsing::credit_card_form {
-
-namespace {
-
-void LogCreditCardFormEvent(std::string_view event_name,
-                            CreditCardFormEvent event) {
-  base::UmaHistogramSparse(
-      base::StrCat({"SBClientPhishing.CreditCardFormEvent2.", event_name}),
-      static_cast<int>(event));
-}
-
-}  // namespace
 
 CreditCardFormEvent GetCreditCardFormEvent(SiteVisit site_visit,
                                            ReferringApp referring_app,
@@ -59,23 +47,24 @@ ReferringApp FromReferringAppInfo(internal::ReferringAppInfo info) {
   return kOtherApp;
 }
 
-void LogEvent(std::string_view event_name,
-              SiteVisit site_visit,
+#endif
+
+void LogEvent(SiteVisit site_visit,
               ReferringApp referring_app,
               FieldDetectionHeuristic field_heuristic) {
   CreditCardFormEvent event =
       GetCreditCardFormEvent(site_visit, referring_app, field_heuristic);
-  LogCreditCardFormEvent(event_name, event);
+  base::UmaHistogramSparse("SBClientPhishing.CreditCardFormEvent",
+                           static_cast<int>(event));
 }
 
-#endif
-
-void LogEvent(std::string_view event_name,
-              SiteVisit site_visit,
-              FieldDetectionHeuristic field_heuristic) {
+void LogDedupedEvent(SiteVisit site_visit,
+                     ReferringApp referring_app,
+                     FieldDetectionHeuristic field_heuristic) {
   CreditCardFormEvent event =
-      GetCreditCardFormEvent(site_visit, kNoReferringApp, field_heuristic);
-  LogCreditCardFormEvent(event_name, event);
+      GetCreditCardFormEvent(site_visit, referring_app, field_heuristic);
+  base::UmaHistogramSparse("SBClientPhishing.CreditCardFormDedupedEvent",
+                           static_cast<int>(event));
 }
 
 }  // namespace safe_browsing::credit_card_form
