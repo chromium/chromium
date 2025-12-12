@@ -43,7 +43,7 @@ declare_args() {
   #
   # Setting the variable 'use_internal_autofill_patterns' in args.gn overrides
   # this default.
-  use_internal_autofill_patterns = enable_src_internal
+  use_internal_autofill_patterns = is_chrome_branded
 }
 
 buildflag_header("buildflags") {

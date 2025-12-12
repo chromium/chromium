@@ -33,7 +33,7 @@ declare_args() {
 
 if (use_official_google_api_keys == "") {
   # No override set. Determine the default behavior.
-  if (is_internal_chrome_branded) {
+  if (is_chrome_branded) {
     # Chrome-branded builds default to behaving as if
     #`use_official_google_api_keys` was explicitly set to true and will fail to
     # build if the file is missing.
@@ -52,8 +52,8 @@ if (use_official_google_api_keys == "") {
 # Official API keys should always be used for Chrome-branded builds except on
 # iOS (see https://crbug.com/1183709) and Fuchsia (see the description of
 # https://crbug.com/1171510 for background).
-assert(use_official_google_api_keys || !is_internal_chrome_branded || is_ios ||
-       is_fuchsia)
+assert(
+    use_official_google_api_keys || !is_chrome_branded || is_ios || is_fuchsia)
 
 declare_args() {
   # Whether the SetAPIKey() method is defined.
