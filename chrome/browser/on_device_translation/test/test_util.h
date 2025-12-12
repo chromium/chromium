@@ -113,8 +113,6 @@ class MockTranslationManagerImpl : public TranslationManagerImpl {
   MockTranslationManagerImpl& operator=(const MockTranslationManagerImpl&) =
       delete;
 
-  MOCK_METHOD(base::TimeDelta, GetTranslatorDownloadDelay, (), (override));
-
   MOCK_METHOD(component_updater::ComponentUpdateService*,
               GetComponentUpdateService,
               (),

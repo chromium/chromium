@@ -139,8 +139,7 @@ interface TranslationManager {
   // disconnected, the creation process will be aborted.
   CreateTranslator(
       pending_remote<TranslationManagerCreateTranslatorClient> client,
-      TranslatorCreateOptions options,
-      bool add_fake_download_delay);
+      TranslatorCreateOptions options);
 
   // Returns the availability of the language pair translation.
   TranslationAvailable(

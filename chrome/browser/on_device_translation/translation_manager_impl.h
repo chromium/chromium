@@ -14,9 +14,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_model_download_progress_manager.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -78,27 +80,12 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   std::optional<std::string> GetBestFitLanguageCode(
       std::string requested_language);
 
-  // Returns a delay upon initial translator creation to safeguard against
-  // fingerprinting resulting from timing translator creation duration.
-  //
-  // The delay is triggered when the `availability()` of the translation
-  // evaluates to "downloadable", even though all required resources for
-  // translation have already been downloaded and available.
-  //
-  // Overridden for testing.
-  virtual base::TimeDelta GetTranslatorDownloadDelay();
   virtual component_updater::ComponentUpdateService*
   GetComponentUpdateService();
 
   // Returns whether the "crash" language code is allowed. This is used for
   // testing.
   virtual bool CrashesAllowed();
-
-  void CreateTranslatorImpl(
-      mojo::PendingRemote<
-          blink::mojom::TranslationManagerCreateTranslatorClient> client,
-      const std::string& source_language,
-      const std::string& target_language);
 
   // Determines if the Translator API has been accessed from a valid storage
   // partition.
@@ -135,12 +122,19 @@ class TranslationManagerImpl : public base::SupportsUserData::Data,
   std::set<std::pair<std::string, std::string>>
       transient_initialized_translations_;
 
+  void CreateTranslatorImpl(
+      mojo::PendingRemote<
+          blink::mojom::TranslationManagerCreateTranslatorClient> client,
+      const std::string& source_language,
+      const std::string& target_language,
+      base::expected<mojo::PendingRemote<mojom::Translator>,
+                     blink::mojom::CreateTranslatorError> result);
+
   // `blink::mojom::TranslationManager` implementation.
   void CreateTranslator(
       mojo::PendingRemote<
           blink::mojom::TranslationManagerCreateTranslatorClient> client,
-      blink::mojom::TranslatorCreateOptionsPtr options,
-      bool add_fake_download_delay) override;
+      blink::mojom::TranslatorCreateOptionsPtr options) override;
 
   void TranslationAvailable(blink::mojom::TranslatorLanguageCodePtr source_lang,
                             blink::mojom::TranslatorLanguageCodePtr target_lang,

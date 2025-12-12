@@ -1239,78 +1239,6 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   TestTranslationAvailable(browser(), "en", "ja", "downloadable");
 }
 
-// A delay is triggered for a "downloadable" translation containing a language
-// outside of English + preferred languages.
-IN_PROC_BROWSER_TEST_F(
-    OnDeviceTranslationBrowserTest,
-    CreateTranslator_Delay_ForMaskedDownloadableTranslation) {
-  // Setup Translate Kit Component and select Spanish as the preferred language.
-  SetSelectedLanguages("en,es");
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.InstallMockTranslateKitComponent();
-  NavigateToEmptyPage();
-
-  auto manager = MockTranslationManagerImpl(
-      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
-
-  // Simulate the download of an additional language pack (Japanese) by another
-  // site.
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
-
-  // The delay is triggered upon the initial translator creation for Japanese,
-  // given that it is not a preferred language.
-  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(1);
-  TestSimpleTranslationWorks(browser(), "en", "ja");
-
-  // The delay does not occur on subsequent uses of the same language pair.
-  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
-  TestSimpleTranslationWorks(browser(), "en", "ja");
-}
-
-// TODO(crbug.com/421947718): Disabled because there's a race between triggering
-// user activation and consuming it when calling `create` multiple times.
-//
-// A delay is triggered when a second translator for a given translation is
-// created during the delay time window of an initial translator's creation
-// (which is also expected to trigger a delay).
-IN_PROC_BROWSER_TEST_F(
-    OnDeviceTranslationBrowserTest,
-    DISABLED_CreateTranslator_Delay_ForTranslatorCreatedDuringInitialTranslatorCreationWithDelay) {
-  SetSelectedLanguages("es");
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.InstallMockTranslateKitComponent();
-  NavigateToEmptyPage();
-
-  auto manager = MockTranslationManagerImpl(
-      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
-
-  // Simulate the download of an additional language pack (Japanese) by another
-  // site.
-  mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ja);
-
-  EXPECT_TRUE(ExecJs("self.createPromises = [];"));
-
-  std::string create_translator_script = R"(
-    self.createPromises.push(
-        Translator.create({sourceLanguage: 'en', targetLanguage: 'ja'}));
-  )";
-
-  // The added delay should be triggered twice, once for each translator
-  // creation.
-  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(2);
-
-  // Each call to `Translator.create` must be in a separate `ExecJs` call.
-  // `Translator.create` consumes user activation if not english or preferred,
-  // and `ExecJs` provides an initial user activation on each call.
-  EXPECT_TRUE(ExecJs(create_translator_script));
-  EXPECT_TRUE(ExecJs(create_translator_script));
-  ASSERT_EQ(EvalJsCatchingError(R"(
-    await Promise.all(self.createPromises);
-    return 'OK';
-  )"),
-            "OK");
-}
-
 // `Translator.create` should still require user activation if the language pair
 // is readily available but the site hasn't created a Translator for the
 // language pair yet.
@@ -1333,50 +1261,6 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                           browser(), content::EXECUTE_SCRIPT_NO_USER_GESTURE),
       "NotAllowedError: Requires a user gesture when availability is "
       "\"downloading\" or \"downloadable\".");
-}
-
-// No delay is triggered for a "downloadable" translation between English +
-// preferred languages.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       CreateTranslator_NoDelay_DownloadableTranslation) {
-  SetSelectedLanguages("en,es");
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.InstallMockTranslateKitComponent();
-  NavigateToEmptyPage();
-
-  auto manager = MockTranslationManagerImpl(
-      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
-  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
-      {LanguagePackKey::kEn_Es});
-  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
-  TestSimpleTranslationWorks(browser(), "en", "es");
-
-  // No delay is triggered now that the translation is "available".
-  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
-  TestSimpleTranslationWorks(browser(), "en", "es");
-}
-
-// No delay is triggered in attempt to create a translator for an unsupported
-// language.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       CreateTranslator_NoDelay_UnsupportedLanguage) {
-  SetSelectedLanguages("en,xx");
-  MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.InstallMockTranslateKitComponent();
-  NavigateToEmptyPage();
-
-  auto manager = MockTranslationManagerImpl(
-      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
-
-  EXPECT_CALL(manager, GetTranslatorDownloadDelay()).Times(0);
-  EXPECT_NE(EvalJsCatchingError(R"(
-      const translator = await Translator.create({
-        sourceLanguage: 'en',
-        targetLanguage: 'xx',
-      });
-      return await translator.translate('hello');
-    )"),
-            "en to xx: hello");
 }
 
 // Tests the behavior of the crash of calling create() and availability().
