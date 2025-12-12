@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">Google Lens ഉപയോഗിച്ച് ഈ ടാബ് തിരയുക</translation>
 <translation id="1849248141818021764">നിങ്ങളുടെ പാസ്ഫ്രെയ്‌സ് ഉള്ള ആളുകൾക്ക് മാത്രമേ, എൻക്രിപ്റ്റ് ചെയ്‌ത ഡാറ്റ വായിക്കാൻ കഴിയൂ. Google-ലേക്ക് പാസ്ഫ്രെയ്‌സ് അയയ്ക്കുകയോ സംഭരിക്കുകയോ ചെയ്യുന്നില്ല. നിങ്ങൾ പാസ്‌ഫ്രെയ്‌സ് മറന്നുപോയെങ്കിലോ ഈ ക്രമീകരണം മാറ്റണമെന്നുണ്ടെങ്കിലോ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ ഇല്ലാതാക്കേണ്ടതുണ്ട്<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">ഈ സൈറ്റിനായി, Chrome-ന് നിങ്ങളുടെ ക്യാമറ ആക്‌സസ് ചെയ്യാനുള്ള അനുമതി ആവശ്യമാണ്</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ഉപയോഗിക്കാൻ നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="1873233029667955273">Google Chrome നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറല്ല</translation>
 <translation id="1874309113135274312">Google Chrome ബീറ്റ (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome കാലഹരണപ്പെട്ടതാണ്</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">ചില ഡൗൺലോഡുകൾ Chrome ബ്ലോക്ക് ചെയ്യുന്നത് എന്തുകൊണ്ടാണെന്ന് അറിയുക</translation>
 <translation id="2861074815332034794">Chrome അപ്‌ഡേറ്റ് ചെയ്യുന്നു (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">നിങ്ങൾ Chrome-ൽ സൈൻ ഇൻ ചെയ്‌തു!</translation>
+<translation id="2875053229394024379">നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുമ്പോൾ, Gemini-യ്‌ക്കൊപ്പം നിങ്ങളുടെ Chrome പ്രൊഫൈൽ ഉപയോഗിക്കാം. <ph name="BEGIN_LINK" />Chrome-ലേക്ക് എങ്ങനെ സൈൻ ഇൻ ചെയ്യാമെന്ന് അറിയുക<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome നിങ്ങളുടെ ഡാറ്റ എങ്ങനെ സ്വകാര്യമായി നിലനിർത്തുന്നു<ph name="END_LINK" /> എന്നതിനെക്കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="2885378588091291677">ടാസ്‌ക് മാനേജര്‍</translation>
 <translation id="2888126860611144412">Chrome-നെ കുറിച്ച്</translation>
@@ -223,6 +225,7 @@
 <translation id="3352986031709923790">തിരയൽ ഏരിയയുടെ മുകളിലെ വലത് മൂല: വലതുഭാഗത്ത് <ph name="RIGHT" />%, മുകളിൽ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome സഹായി‌</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ഇപ്പോൾ വീണ്ടും സമാരംഭിക്കും}=1{ഒരു സെക്കൻഡിൽ Chrome വീണ്ടും സമാരംഭിക്കും}other{# സെക്കൻഡിൽ Chrome വീണ്ടും സമാരംഭിക്കും}}</translation>
+<translation id="3380249972812870825">Chrome-ലെ Gemini തുറക്കാൻ, <ph name="GLOBAL_HOTKEY" /> അമർത്തുക</translation>
 <translation id="3396977131400919238">ഇന്‍സ്റ്റാള്‍ ചെയ്യുന്ന സമയത്ത് ഒരു ഓപ്പറേറ്റിംഗ് സിസ്റ്റം പിശക് സംഭവിച്ചു. ദയവായി Google Chrome വീണ്ടും ഡൗൺലോഡ് ചെയ്യുക.</translation>
 <translation id="3428747202529429621">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താനും ഉപയോഗിച്ചേക്കാം</translation>
 <translation id="3434246496373299699">നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുമ്പോൾ, Chrome-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാവും</translation>
@@ -351,6 +354,7 @@
 <translation id="4891791193823137474">പശ്ചാത്തലത്തില്‍ Google Chrome പ്രവര്‍ത്തിക്കാന്‍ അനുവദിക്കുക</translation>
 <translation id="4895437082222824641">പുതിയ Chrome &amp;ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="4918844574251943176">ചിത്രം പകർത്തി</translation>
+<translation id="4926882258455737990">Chrome-ലെ Gemini-യിൽ മറ്റൊരു Google Account ഉപയോഗിക്കാൻ, <ph name="BEGIN_LINK" />പുതിയൊരു പ്രൊഫൈൽ സൃഷ്ടിച്ച്<ph name="END_LINK" /> നിങ്ങൾക്ക് ആവശ്യമുള്ള അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="492720062778050435">ഈ വിപുലീകരണം അവലോകനം ചെയ്യണമെന്ന് Chrome നിർദ്ദേശിക്കുന്നു</translation>
 <translation id="4946912144186040233">Chrome ഫോമുകൾ നന്നായി മനസ്സിലാക്കുന്നു, നിങ്ങൾക്കായി അവ വേഗത്തിൽ സ്വയമേവ പൂരിപ്പിക്കുകയും ചെയ്യും. ഈ ക്രമീകരണം ഓഫാണ്.</translation>
 <translation id="4953650215774548573">Google Chrome-നെ നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറായി സജ്ജീകരിക്കുക</translation>
@@ -376,6 +380,7 @@
 ചില സവിശേഷതകൾ ലഭ്യമല്ലാതായിരിക്കാം. ദയവായി ഒരു വ്യത്യസ്തമായ പ്രൊഫൈൽ ഡയറക്ടറി വ്യക്തമാക്കുക അല്ലെങ്കിൽ Chrome-ന്റെ ഒരു പുതിയ പതിപ്പ് ഉപയോഗിക്കുക.</translation>
 <translation id="5174969993834422967">നിങ്ങൾ സാധാരണയായി അറിയിപ്പുകൾ ബ്ലോക്ക് ചെയ്യാറുണ്ട്. നിങ്ങൾക്ക് അറിയിപ്പ് അയയ്ക്കുന്നതിന് ഈ സൈറ്റിനെ അനുവദിക്കാൻ, നിങ്ങളുടെ ലൊക്കേഷൻ ബാറിന്റെ വലത് മൂലയിലെ അറിയിപ്പ് ഐക്കൺ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="5174983315706567306">മതിയായ ഡിസ്‌ക് സ്പെയ്‌സ് ഇല്ല.</translation>
+<translation id="5179933070463113976">Chrome-ലെ Gemini ഉപയോഗിക്കാൻ, നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="5190467473654176081">Chrome-ന് പുതിയ രൂപം നൽകാൻ അത് ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="5201744974236816379">Chrome അപ്‌ഡേറ്റ്</translation>
 <translation id="521447420733633466">നിങ്ങളൊരു ഉപകരണം പങ്കിടുകയാണെങ്കിൽ, സുഹൃത്തുക്കൾക്കും കുടുബാംഗങ്ങൾക്കും വെവ്വേറെ ബ്രൗസ് ചെയ്യാനും അവർക്ക് താൽപ്പര്യമുള്ള തരത്തിൽ Chrome സജ്ജമാക്കാനുമാകും</translation>
@@ -396,6 +401,7 @@
 <translation id="5430073640787465221">നിങ്ങളുടെ മുൻഗണനാ ഫയൽ കേടായതാണ് അല്ലെങ്കിൽ അസാധുവാണ്.
 
 നിങ്ങളുടെ ക്രമീകരണം വീണ്ടെടുക്കാൻ Google Chrome-ന് കഴിയില്ല.</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-യ്ക്ക് ഒപ്പം ഉപയോഗിക്കാൻ ഒരു Chrome പ്രൊഫൈൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5468572406162360320">ഈ ഫീച്ചറുകൾ മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന്, Chrome-മായി നിങ്ങൾ നടത്തുന്ന ഇടപഴകലുകൾ അത് Google-ലേക്ക് അയയ്ക്കുന്നു. അവലോകനം ചെയ്യുന്നവർ ഈ ഡാറ്റ വായിക്കുകയും പ്രോസസ് ചെയ്യുകയും വ്യാഖ്യാനിക്കുകയും ചെയ്തേക്കാം.</translation>
 <translation id="5510398294750420479">നിങ്ങൾ എവിടെയായിരുന്നാലും, അധിക സുരക്ഷയ്ക്കായി ഫോണിൽ Chrome ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="5524890928877629608">തിരയൽ ഏരിയയുടെ മുകളിലെ ഇടത് മൂല: ഇടതുഭാഗത്ത് <ph name="LEFT" />%, മുകളിൽ <ph name="TOP" />%</translation>
@@ -615,6 +621,7 @@
 <translation id="7655472416356262023">Chrome-ൽ നിന്ന് അക്കൗണ്ട് നീക്കം ചെയ്യുക</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7670287553302121848">Chrome അക്കൗണ്ട് വീണ്ടും പരിശോധിച്ചുറപ്പിക്കേണ്ടതുണ്ട്</translation>
+<translation id="7675756456029023637">Chrome-നോട് ചോദിക്കൂ</translation>
 <translation id="769538538642757151">നിങ്ങളുടെ അവലോകനം ആവശ്യമുള്ള എന്തെങ്കിലും ഉണ്ടെങ്കിൽ Chrome നിങ്ങളെ അറിയിക്കും</translation>
 <translation id="769906121737764913">Chrome ബീറ്റയിലെ Gemini അടയ്ക്കുക</translation>
 <translation id="7716950018788545737">ടാസ്‌ക്(കൾ) അവസാനിച്ചു.</translation>

@@ -79,6 +79,7 @@
 <translation id="1843347690926158494">使用 Google 智能镜头搜索此标签页</translation>
 <translation id="1849248141818021764">只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了口令或想更改此设置，将需要<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="1860536484129686729">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
+<translation id="1867503717113754604">使用 Google 账号登录 Chrome，即可使用 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome 不是您的默认浏览器</translation>
 <translation id="1874309113135274312">Google Chrome 测试版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本太旧</translation>
@@ -169,6 +170,7 @@
 <translation id="286025080868315611">了解 Chrome 为何会拦截部分下载内容</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">您已登录 Chrome！</translation>
+<translation id="2875053229394024379">使用 Google 账号登录 Chrome 后，您就可以搭配 Chrome 资料使用 Gemini 了。<ph name="BEGIN_LINK" />了解如何登录 Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">详细了解 <ph name="BEGIN_LINK" />Chrome 如何确保您数据的私密性<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2888126860611144412">关于 Chrome</translation>
@@ -219,6 +221,7 @@
 <translation id="3352986031709923790">搜索区域的右上角：右侧 <ph name="RIGHT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome 浏览器帮助应用</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 将立即重新启动}=1{Chrome 将在 1 秒后重新启动}other{Chrome 将在 # 秒后重新启动}}</translation>
+<translation id="3380249972812870825">如需打开 Chrome 中的 Gemini，请按 <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">安装过程中出现操作系统错误。请重新下载 Google Chrome。</translation>
 <translation id="3428747202529429621">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="3434246496373299699">您需要先登录 Google 账号才能使用 Chrome 的密码检查功能。</translation>
@@ -346,6 +349,7 @@
 <translation id="4891791193823137474">让 Google Chrome 浏览器在后台运行</translation>
 <translation id="4895437082222824641">在 Chrome 新标签页中打开链接(&amp;T)</translation>
 <translation id="4918844574251943176">已复制图片</translation>
+<translation id="4926882258455737990">如需通过其他 Google 账号使用 Chrome 中的 Gemini，请<ph name="BEGIN_LINK" />新建资料<ph name="END_LINK" />并使用所需的账号登录</translation>
 <translation id="492720062778050435">Chrome 建议您检查此扩展程序</translation>
 <translation id="4946912144186040233">Chrome 可以更好地理解表单，并更快地为您自动填充表单。此设置已关闭。</translation>
 <translation id="4953650215774548573">将Google Chrome设为默认浏览器</translation>
@@ -369,6 +373,7 @@
 <translation id="5170938038195470297">您的个人资料来自新版 Google Chrome 浏览器，因此无法使用。某些功能可能无法使用。请指定其他个人资料目录，或使用新版 Chrome 浏览器。</translation>
 <translation id="5174969993834422967">您通常会屏蔽通知。要允许此网站向您发送通知，请点击位置栏右侧的通知图标。</translation>
 <translation id="5174983315706567306">磁盘可用空间不足。</translation>
+<translation id="5179933070463113976">如需使用 Chrome 中的 Gemini，您需要使用 Google 账号登录 Chrome</translation>
 <translation id="5190467473654176081">自定义 Chrome，让界面焕然一新</translation>
 <translation id="5201744974236816379">Chrome 更新</translation>
 <translation id="521447420733633466">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chrome</translation>
@@ -387,6 +392,7 @@
 <translation id="5394833366792865639">共享 Chrome 标签页</translation>
 <translation id="5402307365844630024">在 Chrome Beta 版中开启/关闭 Gemini</translation>
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
+<translation id="5465210843490471889">选择要搭配 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> 使用的 Chrome 资料</translation>
 <translation id="5468572406162360320">为帮助改进这些功能，Chrome 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
 <translation id="5510398294750420479">在手机上下载 Chrome，随时随地享受额外安全保障</translation>
 <translation id="5524890928877629608">搜索区域的左上角：左侧 <ph name="LEFT" />%，顶部 <ph name="TOP" />%</translation>
@@ -606,6 +612,7 @@
 <translation id="7655472416356262023">从 Chrome 中移除账号</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670287553302121848">Chrome 账号需要重新验证身份</translation>
+<translation id="7675756456029023637">问问 Chrome</translation>
 <translation id="769538538642757151">如有任何事项需要您审核，Chrome 会通知您</translation>
 <translation id="769906121737764913">关闭 Chrome Beta 版中的 Gemini</translation>
 <translation id="7716950018788545737">任务已结束。</translation>

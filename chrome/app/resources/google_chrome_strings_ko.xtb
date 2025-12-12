@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">Google 렌즈로 이 탭 검색</translation>
 <translation id="1849248141818021764">암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />해야 합니다.</translation>
 <translation id="1860536484129686729">이 사이트에서 카메라에 액세스하려면 Chrome에 권한이 필요합니다</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />를 사용하려면 Google 계정으로 Chrome에 로그인하세요</translation>
 <translation id="1873233029667955273">Chrome이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="1874309113135274312">Chrome 베타(mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">Chrome에서 일부 다운로드를 차단하는 이유 알아보기</translation>
 <translation id="2861074815332034794">Chrome 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome에 로그인되어 있습니다.</translation>
+<translation id="2875053229394024379">Google 계정으로 Chrome에 로그인하면 Gemini에서 Chrome 프로필을 사용할 수 있습니다. <ph name="BEGIN_LINK" />Chrome에 로그인하는 방법 알아보기<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="2885378588091291677">작업 관리자</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
@@ -223,6 +225,7 @@
 <translation id="3352986031709923790">검색 영역의 오른쪽 상단: 오른쪽 <ph name="RIGHT" />%, 상단 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome 도우미</translation>
 <translation id="3379938682270551431">{0,plural, =0{지금 Chrome이 다시 시작됩니다}=1{1초 후 Chrome이 다시 시작됩니다}other{#초 후 Chrome이 다시 시작됩니다}}</translation>
+<translation id="3380249972812870825">Chrome의 Gemini를 열려면 <ph name="GLOBAL_HOTKEY" /> 키를 누르세요</translation>
 <translation id="3396977131400919238">설치 중 운영체제 오류가 발생했습니다. Chrome을 다시 다운로드하세요.</translation>
 <translation id="3428747202529429621">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 개선하는 데 사용될 수 있습니다.</translation>
 <translation id="3434246496373299699">Google 계정으로 로그인하면 Chrome에서 비밀번호를 확인할 수 있습니다.</translation>
@@ -350,6 +353,7 @@
 <translation id="4891791193823137474">백그라운드에서 Chrome을 실행</translation>
 <translation id="4895437082222824641">새 Chrome 탭에서 링크 열기(&amp;T)</translation>
 <translation id="4918844574251943176">이미지 복사됨</translation>
+<translation id="4926882258455737990">Chrome의 Gemini에서 다른 Google 계정을 사용하려면 <ph name="BEGIN_LINK" />새 프로필을 만들고<ph name="END_LINK" /> 원하는 계정으로 로그인하세요</translation>
 <translation id="492720062778050435">Chrome에서는 이 확장 프로그램을 검토할 것을 권장합니다.</translation>
 <translation id="4946912144186040233">Chrome이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다. 설정이 사용 중지되어 있습니다</translation>
 <translation id="4953650215774548573">Chrome을 기본 브라우저로 설정</translation>
@@ -375,6 +379,7 @@
 일부 기능은 사용하지 못할 수 있습니다. 다른 프로필 디렉터리를 지정하거나 최신 버전의 Chrome을 사용하세요.</translation>
 <translation id="5174969993834422967">기본적으로 알림을 차단하는 중입니다. 이 사이트의 알림을 허용하려면 위치 표시줄의 오른쪽 모서리에 있는 알림 아이콘을 클릭하세요.</translation>
 <translation id="5174983315706567306">디스크 공간이 충분하지 않습니다.</translation>
+<translation id="5179933070463113976">Chrome의 Gemini를 사용하려면 Google 계정으로 Chrome에 로그인해야 합니다</translation>
 <translation id="5190467473654176081">Chrome을 맞춤설정하여 새로운 디자인으로 변경하세요.</translation>
 <translation id="5201744974236816379">Chrome 업데이트</translation>
 <translation id="521447420733633466">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chrome을 설정할 수 있습니다.</translation>
@@ -395,6 +400,7 @@
 <translation id="5430073640787465221">환경설정 파일이 손상되었거나 잘못되었습니다.
 
 Chrome에서 설정을 복구할 수 없습니다.</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />와 함께 사용할 Chrome 프로필을 선택하세요</translation>
 <translation id="5468572406162360320">이러한 기능을 개선할 수 있도록 Chrome은 사용자와의 상호작용을 Google에 전송합니다. 검토자가 이 데이터를 읽고 처리하고 이 데이터에 주석을 달 수 있습니다.</translation>
 <translation id="5510398294750420479">이동 중에 보안을 한층 더 강화하려면 휴대전화에 Chrome을 다운로드하세요.</translation>
 <translation id="5524890928877629608">검색 영역의 왼쪽 상단: 왼쪽 <ph name="LEFT" />%, 상단 <ph name="TOP" />%</translation>
@@ -614,6 +620,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7655472416356262023">Chrome에서 계정 삭제</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7670287553302121848">Chrome 계정에 재인증이 필요함</translation>
+<translation id="7675756456029023637">Chrome에 질문하기</translation>
 <translation id="769538538642757151">검토가 필요한 사항이 있으면 Chrome에서 알려 드립니다.</translation>
 <translation id="769906121737764913">Chrome 베타의 Gemini 닫기</translation>
 <translation id="7716950018788545737">작업이 종료되었습니다.</translation>

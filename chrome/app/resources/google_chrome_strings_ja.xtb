@@ -79,6 +79,7 @@
 <translation id="1843347690926158494">Google レンズでこのタブを検索</translation>
 <translation id="1849248141818021764">パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />する必要があります。</translation>
 <translation id="1860536484129686729">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> を使用するには、Google アカウントで Chrome にログインしてください</translation>
 <translation id="1873233029667955273">Google Chrome はデフォルトのブラウザとして設定されていません</translation>
 <translation id="1874309113135274312">Google Chrome ベータ版（mDNS-In）</translation>
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
@@ -169,6 +170,7 @@
 <translation id="286025080868315611">Chrome で一部のダウンロードがブロックされる理由</translation>
 <translation id="2861074815332034794">Chrome を更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="2871893339301912279">Chrome にログインしました</translation>
+<translation id="2875053229394024379">Google アカウントで Chrome にログインすると、ご自分の Chrome プロファイルで Gemini を使用できます。<ph name="BEGIN_LINK" />Chrome にログインする方法について<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome でユーザーデータのプライバシーを保護する方法<ph name="END_LINK" />についての詳細</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2888126860611144412">Chrome について</translation>
@@ -219,6 +221,7 @@
 <translation id="3352986031709923790">検索範囲の右上隅: 右 <ph name="RIGHT" />%、上 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome は今すぐ再起動されます}=1{Chrome は 1 秒後に再起動されます}other{Chrome は # 秒後に再起動されます}}</translation>
+<translation id="3380249972812870825">Gemini in Chrome を開くには、<ph name="GLOBAL_HOTKEY" /> キーを押します</translation>
 <translation id="3396977131400919238">インストール中にオペレーティング システム エラーが発生しました。Google Chrome をダウンロード直してください。</translation>
 <translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3434246496373299699">Google アカウントでログインすると、Chrome がパスワードを確認できます。</translation>
@@ -346,6 +349,7 @@
 <translation id="4891791193823137474">Google Chrome のバックグラウンドでの実行を許可する</translation>
 <translation id="4895437082222824641">新しい Chrome タブでリンクを開く(&amp;T)</translation>
 <translation id="4918844574251943176">画像をコピーしました</translation>
+<translation id="4926882258455737990">Gemini in Chrome で別の Google アカウントを使用するには、<ph name="BEGIN_LINK" />新しいプロファイルを作成<ph name="END_LINK" />し、使用するアカウントでログインしてください</translation>
 <translation id="492720062778050435">この拡張機能を確認することをおすすめします</translation>
 <translation id="4946912144186040233">Chrome でフォームの内容を正確に把握して、すばやく自動入力できます。この設定はオフになっています。</translation>
 <translation id="4953650215774548573">Google Chrome を既定のブラウザとして設定する</translation>
@@ -369,6 +373,7 @@
 <translation id="5170938038195470297">バージョンが新しい Google Chrome のプロファイルは使用できません。一部の機能が利用できない可能性があります。別の場所のプロファイルを指定するか、新しいバージョンの Chrome をご使用ください。</translation>
 <translation id="5174969993834422967">通知はデフォルトでブロックされています。このサイトの通知を表示するには、ロケーション バーの右上にある通知アイコンをクリックしてください。</translation>
 <translation id="5174983315706567306">ディスクの空き容量が不足しています。</translation>
+<translation id="5179933070463113976">Gemini in Chrome を使用するには、Google アカウントで Chrome にログインする必要があります</translation>
 <translation id="5190467473654176081">Chrome をカスタマイズしてレイアウトを変更</translation>
 <translation id="5201744974236816379">Chrome の更新</translation>
 <translation id="521447420733633466">デバイスを共有している場合でも、友だちや家族はそれぞれ Chrome を自分専用のブラウザとして自分用の設定をして使うことができます</translation>
@@ -387,6 +392,7 @@
 <translation id="5394833366792865639">Chrome タブの共有</translation>
 <translation id="5402307365844630024">Gemini in Chrome Beta を切り替える</translation>
 <translation id="5430073640787465221">ユーザー設定ファイルが壊れているか無効です。設定を復元できません。</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> を使用する Chrome プロファイルを選択してください</translation>
 <translation id="5468572406162360320">Chrome では、これらの機能を改善するため、ユーザーの操作内容を Google に送信します。このデータは人間のレビュアーによって読み取られ、処理され、注釈が付けられる可能性があります。</translation>
 <translation id="5510398294750420479">スマートフォンに Chrome をダウンロードして、外出先でのセキュリティを強化できます</translation>
 <translation id="5524890928877629608">検索範囲の左上隅: 左 <ph name="LEFT" />%、上 <ph name="TOP" />%</translation>
@@ -606,6 +612,7 @@
 <translation id="7655472416356262023">Chrome からアカウントを削除</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7670287553302121848">Chrome アカウントの再認証が必要です</translation>
+<translation id="7675756456029023637">Chrome に質問</translation>
 <translation id="769538538642757151">確認の必要な項目がありましたらお知らせします</translation>
 <translation id="769906121737764913">Gemini in Chrome Beta を閉じる</translation>
 <translation id="7716950018788545737">タスクを終了しました。</translation>

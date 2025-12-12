@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">ამ ჩანართში ძიება Google Lens-ის მეშვეობით</translation>
 <translation id="1849248141818021764">თქვენი დაშიფრული მონაცემების წაკითხვა შეუძლია მხოლოდ მას, ვინც თქვენი საიდუმლო ფრაზა იცის. საიდუმლო ფრაზა არ იგზავნება Google-ში და არ ინახება მის მიერ. თუ საიდუმლო ფრაზა დაგავიწყდათ ან ამ პარამეტრის შეცვლა გსურთ, <ph name="BEGIN_LINK" />თქვენს ანგარიშში Chrome მონაცემების<ph name="END_LINK" /> წაშლა მოგიწევთ.</translation>
 <translation id="1860536484129686729">Chrome საჭიროებს თქვენს კამერაზე წვდომის ნებართვას ამ საიტისთვის</translation>
+<translation id="1867503717113754604">შედით Chrome-ში თქვენი Google ანგარიშით, რომ <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> გამოიყენოთ</translation>
 <translation id="1873233029667955273">Google Chrome არ არის თქვენი ნაგულისხმევი ბრაუზერი</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome მოძველებულია</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">შეიტყვეთ, რატომ ბლოკავს Chrome ზოგიერთ ჩამოტვირთვას</translation>
 <translation id="2861074815332034794">მიმდინარეობს Chrome-ის განახლება (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">თქვენ შესული ხართ Chrome-ში!</translation>
+<translation id="2875053229394024379">Chrome-ში თქვენი Google ანგარიშით შესვლისას შეგიძლიათ, გამოიყენოთ Chrome-ის პროფილი Gemini-სთან. <ph name="BEGIN_LINK" />შეიტყვეთ, როგორ შეხვიდეთ Chrome-ში<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">შეიტყვეთ მეტი იმის შესახებ, თუ <ph name="BEGIN_LINK" />როგორ ინარჩუნებს Chrome თქვენი მონაცემების კონფიდენციალურობას<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">ამოცანების მმართველი</translation>
 <translation id="2888126860611144412">Chrome-ის შესახებ</translation>
@@ -223,6 +225,7 @@
 <translation id="3352986031709923790">ძიების არეალის ზედა მარჯვენა კუთხე: მარჯვნივ <ph name="RIGHT" />%, ზემოთ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome-ის დამხმარე</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ახლა ხელახლა გაეშვება}=1{Chrome ხელახლა გაეშვება 1 წამში}other{Chrome ხელახლა გაეშვება # წამში}}</translation>
+<translation id="3380249972812870825">იმისათვის, რომ გახსნათ Gemini Chrome-ში, დააჭირეთ <ph name="GLOBAL_HOTKEY" />-ს</translation>
 <translation id="3396977131400919238">ინსტალაციის დროს წარმოიქმნა ოპერატიული სისტემის შეცდომა. ხელახლა ჩამოტვირთეთ Google Chrome.</translation>
 <translation id="3428747202529429621">უზრუნველყოფს თქვენს უსაფრთხოებას Chrome-ში და Google-ის სხვა აპებში, როცა სისტემაში შესული ხართ</translation>
 <translation id="3434246496373299699">პაროლების Chrome-ის მეშვეობით შესამოწმებლად შედით სისტემაში თქვენი Google ანგარიშით</translation>
@@ -351,6 +354,7 @@
 <translation id="4891791193823137474">Google Chrome გაიშვას ფონურ რეჟიმში</translation>
 <translation id="4895437082222824641">ბმულის გახსნა Chrome-ის ახალ ჩა&amp;ნართში</translation>
 <translation id="4918844574251943176">სურათი დაკოპირდა</translation>
+<translation id="4926882258455737990">Gemini Chrome-ში სხვა Google ანგარიშის გამოსაყენებლად <ph name="BEGIN_LINK" />შექმენით ახალი პროფილი<ph name="END_LINK" /> და შედით სასურველი ანგარიშით</translation>
 <translation id="492720062778050435">Chrome გირჩევთ, შეამოწმოთ ეს გაფართოება</translation>
 <translation id="4946912144186040233">Chrome ფორმებს უკეთ აღიქვამს და უფრო სწრაფად შეუძლია მათი შევსება. ეს პარამეტრი გამორთულია.</translation>
 <translation id="4953650215774548573">Google Chrome-ის დაყენება ნაგულისხმევ ბრაუზერად</translation>
@@ -376,6 +380,7 @@
 ზოგიერთი ფუნქცია შეიძლება მიუწვდომელი იყოს. მიუთითეთ პროფილის სხვა დირექტორია ან გამოიყენეთ Chrome-ის უფრო ახალი ვერსია.</translation>
 <translation id="5174969993834422967">როგორც წესი, თქვენ ბლოკავთ შეტყობინებებს. ამ საიტისგან შეტყობინებების მისაღებად დააწკაპუნეთ მდებარეობის ზოლის მარჯვენა კუთხეში მდებარე ხატულას.</translation>
 <translation id="5174983315706567306">სივრცე დისკზე საკმარისი არ არის.</translation>
+<translation id="5179933070463113976">იმისათვის რომ Gemini Chrome-ში გამოიყენოთ, საჭიროა, რომ Chrome-ში შესული იყოთ თქვენი Google ანგარიშით</translation>
 <translation id="5190467473654176081">მოირგეთ Chrome, რომ მას ახალი იერი შესძინოთ</translation>
 <translation id="5201744974236816379">Chrome-ის განახლება</translation>
 <translation id="521447420733633466">თუ საზიარო მოწყობილობა გაქვთ, თქვენს მეგობრებსა და ოჯახის წევრებს შეუძლიათ ვების დამოუკიდებლად დათვალიერება და Chrome-ის საკუთარი შეხედულებისამებრ დაყენება</translation>
@@ -396,6 +401,7 @@
 <translation id="5430073640787465221">თქვენი გამორჩეული ფაილი დაზიანებულია ან არასწორია.
 
 Google Chrome ვერ შეძლებს თქვენი პარამეტრების აღდგენას.</translation>
+<translation id="5465210843490471889">აირჩიეთ Chrome-ის პროფილი, რომელსაც გამოიყენებთ <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-სთან ერთად</translation>
 <translation id="5468572406162360320">ამ ფუნქციების გაუმჯობესების მიზნით, თქვენს მათთან ურთიერთქმედებას Chrome გაუგზავნის Google-ს. აღნიშნული მონაცემების წაკითხვა, დამუშავება და ანოტირება, შესაძლოა, განხორციელდეს ადამიანი მიმომხილველების მიერ.</translation>
 <translation id="5510398294750420479">ჩამოტვირთეთ Chrome თქვენს ტელეფონში, რომ დაამატოთ დაცვის დამატებითი ზომები მგზავრობისთვის</translation>
 <translation id="5524890928877629608">ძიების არეალის ზედა მარცხენა კუთხე: მარცხნივ <ph name="LEFT" />%, ზემოთ <ph name="TOP" />%</translation>
@@ -615,6 +621,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7655472416356262023">ანგარიშის ამოშლა Chrome-იდან</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7670287553302121848">Chrome ანგარიში საჭიროებს ხელახლა ავტორიზაციას</translation>
+<translation id="7675756456029023637">ჰკითხეთ Chrome-ს</translation>
 <translation id="769538538642757151">Chrome გაცნობებთ, თუ რაიმეს შემოწმება დაგჭირდებათ</translation>
 <translation id="769906121737764913">Gemini Chrome Beta-ში დახურვა</translation>
 <translation id="7716950018788545737">ამოცანა(ები) დასრულდა.</translation>

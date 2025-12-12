@@ -666,7 +666,7 @@
 <translation id="355765753469272474">復原</translation>
 <translation id="3565012355885596568">無法載入圖片</translation>
 <translation id="3565930036634619844">分頁。第 <ph name="NUMBER_OF_TABS" /> 個，共 <ph name="TAB_INDEX" /> 個。</translation>
-<translation id="3572607909481582402">在你的 Google 帳戶中</translation>
+<translation id="3572607909481582402">儲存到你的 Google 帳戶</translation>
 <translation id="3575234738189584619">使用智慧鏡頭搜尋</translation>
 <translation id="3575426792457739946">這份清單包含已載入的所有設定檔。</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />，該帳戶由貴機構管理。</translation>
@@ -1537,7 +1537,7 @@
 <translation id="6710079714193676716">由貴機構管理，部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">修改日期：<ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">收到的分頁</translation>
-<translation id="6723740634201835758">在你的 Google 帳戶中</translation>
+<translation id="6723740634201835758">儲存到你的 Google 帳戶</translation>
 <translation id="6724024423419410528">顏色</translation>
 <translation id="672735642903863329">在任何裝置上存取書籤、密碼及其他設定。</translation>
 <translation id="6729493062119577923">共用分頁群組活動</translation>

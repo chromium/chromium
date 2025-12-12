@@ -401,6 +401,7 @@
 <translation id="1252987234827889034">프로필 오류가 발생했습니다.</translation>
 <translation id="1254034280040157728">그랜드캐니언</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
+<translation id="1255095393630332248">탭이 공유되면 탭의 페이지 콘텐츠, 미디어, URL이 Google로 전송됩니다.</translation>
 <translation id="1256588359404100567">이전 기기에서 동기화된 설정</translation>
 <translation id="1257336506558170607">선택한 인증서 내보내기</translation>
 <translation id="1258491128795710625">새로운 기능</translation>
@@ -525,6 +526,7 @@
 <translation id="1342886103232377846">유출된 비밀번호가 있는지 확인하려면 Google 비밀번호 관리자로 이동하세요</translation>
 <translation id="1343920184519992513">중단한 위치에서 계속하고 특정 페이지 모음 열기</translation>
 <translation id="1344141078024003905">화면을 전송하고 있습니다. 언제든지 화면 전송을 일시중지하거나 중지할 수 있습니다.</translation>
+<translation id="13449088910457661">Gemini는 탭에서 작동하여 사용자가 지정한 작업을 완료합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK1_END" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">확인 후 다시 시작</translation>
 <translation id="1346748346194534595">오른쪽</translation>
@@ -587,6 +589,7 @@
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />님은 <ph name="PRINTER_NAME" /> 프린터로 인쇄할 권한이 없습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1392047138650695757">사용자 사전</translation>
 <translation id="139300021892314943">로그인할 수 있는 사용자 제한</translation>
+<translation id="1393235015225624732">{NUM_TABS,plural, =1{Gemini와 탭 공유 중지}other{Gemini와 탭 #개 공유 중지}}</translation>
 <translation id="1393283411312835250">태양과 구름</translation>
 <translation id="1395832189806039783">키보드 포커스로 항목 강조표시</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> 폴더로 돌아가기</translation>
@@ -730,6 +733,7 @@
 <translation id="1486616492435615702">초안을 작성하거나 기존 과제물을 다듬어 보세요.</translation>
 <translation id="1487335504823219454">사용 - 맞춤 설정</translation>
 <translation id="1489101155914355052">이 문서의 추천 생성 중…</translation>
+<translation id="1493152297698462486">Gemini로 이미지 만들기</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />을(를) 기다리는 중...</translation>
 <translation id="1494349716233667318">사이트에서 기기에 설치된 글꼴 사용을 요청할 수 있음</translation>
 <translation id="1494429729245089920">가상 머신 '<ph name="VM_NAME" />'이(가) 존재하지만 유효한 <ph name="APP_NAME" /> 가상 머신이 아닌 것 같습니다. 관리자에게 문의해 주세요.</translation>
@@ -829,6 +833,7 @@
 <translation id="1561331397460162942">이렇게 하면 앱, 위치 정보 액세스 권한이 있는 웹사이트, 시스템 서비스에 대한 위치 액세스가 허용됩니다.</translation>
 <translation id="1562119309884184621">이 연락처를 추가하면 다음번 공유 시 연락처에 내 기기가 표시됩니다.</translation>
 <translation id="1562585387501039294">조직(<ph name="ACCOUNT_MANAGER" />)에서 관리 프로필을 요구하며, 다음과 같은 일부 정보를 볼 수 있습니다</translation>
+<translation id="156345786953026804">Gemini가 작업을 수행하는 동안 사용하는 페이지 콘텐츠와 URL은 Google과 공유됩니다.</translation>
 <translation id="1566049601598938765">웹사이트</translation>
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
 <translation id="1566329594234563241">비활성 상태이며 전원에 연결되어 있는 동안</translation>
@@ -1026,6 +1031,7 @@
 <translation id="167983332380191032">관리 서비스에서 HTTP 오류를 전송했습니다.</translation>
 <translation id="167997285881077031">텍스트 음성 변환 음성 설정</translation>
 <translation id="1680849702532889074">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
+<translation id="1682195225331129001">사용해 보기</translation>
 <translation id="1682548588986054654">새 시크릿 창</translation>
 <translation id="1682696837763999627">큰 마우스 커서</translation>
 <translation id="1682867089915960590">캐럿 브라우징을 사용 설정하시겠습니까?</translation>
@@ -1133,6 +1139,7 @@
 <translation id="1753557900380512635">인테리어</translation>
 <translation id="1753905327828125965">자주 방문한 페이지</translation>
 <translation id="1755601632425835748">텍스트 크기</translation>
+<translation id="1756963401828337401">캡처할 화면 선택</translation>
 <translation id="1757132445735080748">Linux 설정을 완료하려면 ChromeOS Flex를 업데이트하고 다시 시도하세요.</translation>
 <translation id="1757301747492736405">제거 대기 중</translation>
 <translation id="175772926354468439">테마 사용</translation>
@@ -2139,6 +2146,7 @@
 <translation id="2435248616906486374">네트워크 연결 끊김</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2436385001956947090">링크 복사(&amp;L)</translation>
+<translation id="2437105255211187922">{NUM_TABS,plural, =1{선택한 탭을 공유하면 공유 한도를 초과합니다}other{탭 #개를 공유하면 공유 한도를 초과합니다}}</translation>
 <translation id="2437561292559037753">데이터 공유</translation>
 <translation id="2438853563451647815">프린터에 연결되어 있지 않음</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> 비밀번호 재설정</translation>
@@ -2352,6 +2360,7 @@
 <translation id="2573276323521243649">아바타 선택 페이지에서 이전 페이지로 돌아가기</translation>
 <translation id="2573417407488272418">앱과 파일을 파일 &gt; 내 파일에 백업한 후 업그레이드합니다.</translation>
 <translation id="2573831315551295105">'<ph name="ACTION" />'에 스위치 할당</translation>
+<translation id="2574037773163798130">{NUM_TABS,plural, =1{Gemini와 탭 공유}other{Gemini와 탭 #개 공유}}</translation>
 <translation id="2575247648642144396">현재 페이지에서 확장 프로그램을 실행할 수 있으면 아이콘이 표시됩니다. 아이콘을 클릭하거나 <ph name="EXTENSION_SHORTCUT" />을(를) 눌러 확장 프로그램을 사용합니다.</translation>
 <translation id="2575407791320728464">잘못된 URL입니다. 형식이 올바른지 확인하세요.</translation>
 <translation id="2575441894380764255">방해가 되거나 사용자를 현혹하는 광고 표시가 허용되지 않음</translation>
@@ -2810,6 +2819,7 @@
 <translation id="2886119409731773154">최대 30분 걸릴 수 있습니다.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> 외 <ph name="NUMBER_OF_DEVICES" />개</translation>
+<translation id="2887344147309501015">Chrome의 Gemini와 채팅하며 탐색하면서 답변을 얻고 핵심 내용 등을 확인하세요.</translation>
 <translation id="2889043468805635730">문제가 발견되지 않음</translation>
 <translation id="2889064240420137087">다음으로 링크 열기...</translation>
 <translation id="2891464434568738544">현재 사용 가능한 사이트가 없습니다. 사이트를 방문하여 이 목록에 추가하세요.</translation>
@@ -3447,6 +3457,7 @@
 <translation id="3347086966102161372">이미지 주소 복사(&amp;O)</translation>
 <translation id="3348038390189153836">이동식 기기가 검색됨</translation>
 <translation id="3348973040180736882">압축 해제</translation>
+<translation id="3349610303043713601">AI로 둘러보기</translation>
 <translation id="3349933790966648062">메모리 사용량</translation>
 <translation id="3350450887151703713">10초 뒤로 이동</translation>
 <translation id="3351472127384196879">펜에서 버튼 추가 또는 찾기</translation>
@@ -4622,6 +4633,7 @@
 <translation id="4116480382905329353">1회 감지됨</translation>
 <translation id="4116704186509653070">다시 열기</translation>
 <translation id="4117714603282104018">터치패드 햅틱 반응</translation>
+<translation id="4117854923024277067">스크린샷은 프롬프트와 함께 사용하거나 삭제할 수 있습니다</translation>
 <translation id="4118579674665737931">기기를 재부팅한 후 다시 시도해 주세요.</translation>
 <translation id="4120388883569225797">보안 키를 재설정할 수 없습니다.</translation>
 <translation id="4120817667028078560">경로가 너무 김</translation>
@@ -4674,6 +4686,7 @@
 <translation id="4158315983204257156">웹사이트 텍스트 크기 및 글꼴</translation>
 <translation id="4158364720893025815">통과</translation>
 <translation id="4159784952369912983">보라색</translation>
+<translation id="4162545316103024845">{NUM_TABS,plural, =1{선택한 탭을 공유하면 공유 한도를 초과합니다}other{탭 #개를 공유하면 공유 한도를 초과합니다}}</translation>
 <translation id="4163560723127662357">알 수 없는 키보드</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" />님이 유효한 조직에 속해 있지 않습니다. 관리자에게 문의하세요. 관리자인 경우 g.co/ChromeEnterpriseAccount를 방문하여 조직을 설정할 수 있습니다.</translation>
 <translation id="4165986682804962316">사이트 설정</translation>
@@ -4684,6 +4697,8 @@
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />(마지막 4자리: <ph name="LAST_FOUR_DIGITS" />)</translation>
 <translation id="4169535189173047238">허용 안함</translation>
 <translation id="4170314459383239649">종료 시 삭제</translation>
+<translation id="417112242673828206">{NUM_TABS,plural, =1{Gemini와 탭 공유}other{Gemini와 탭 #개 공유}}</translation>
+<translation id="4173129130568053653">Gemini는 약속 잡기, 장바구니 만들기 또는 사용자가 지정한 기타 작업을 처리하는 데 도움이 됩니다.</translation>
 <translation id="4175137578744761569">연한 보라색 및 흰색</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="4176864026061939326">관리되는 기기입니다. 기기 관리자에게 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 새 프로필이 필요합니다</translation>
@@ -4717,6 +4732,7 @@
 <translation id="4200689466366162458">맞춤 단어</translation>
 <translation id="4200983522494130825">새 탭(&amp;T)</translation>
 <translation id="4201546031411513170">언제든지 설정에서 동기화할 항목을 선택할 수 있습니다.</translation>
+<translation id="4202536110335087135">지금 사용해 보기</translation>
 <translation id="4203065553461038553">파일 이름 또는 위치가 너무 긺</translation>
 <translation id="4203769790323223880">카메라가 허용되지 않음</translation>
 <translation id="4204415812590935863">지금은 테마를 만들 수 없습니다</translation>
@@ -6158,6 +6174,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5205484256512407285">전송에 모바일 데이터를 사용하지 않음</translation>
 <translation id="520568280985468584">네트워크가 추가되었습니다. 셀룰러 네트워크가 활성화되려면 몇 분 정도 걸릴 수 있습니다.</translation>
+<translation id="520576054436518354">Gemini가 대신 탐색하도록 허용</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />에서 내가 사용 중인 ChromeOS 기기가 적합한지 확인하려고 합니다.</translation>
 <translation id="5208722776934437424">권한 변경하기</translation>
@@ -6173,6 +6190,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5215450412607891876">보안 업데이트 연장 사용 설정</translation>
 <translation id="5215502535566372932">국가 선택</translation>
 <translation id="5216674789212441076">실시간 자막을 자동으로 번역합니다. 자막이 Google로 전송되어 번역됩니다.</translation>
+<translation id="5216951551945455224">{NUM_TABS,plural, =1{Gemini와 탭 공유 중지}other{Gemini와 탭 #개 공유 중지}}</translation>
 <translation id="5220011581825921581">검색 + 위쪽 화살표</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" />을(를) 전송할 수 없습니다</translation>
 <translation id="5221834113325601057">목록에서 탭이 제외됨</translation>
@@ -6246,6 +6264,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호받으세요.</translation>
 <translation id="5269659747698455324">패스키 잠금 해제</translation>
 <translation id="5269977353971873915">인쇄 실패</translation>
+<translation id="5271124474068841290">탭을 전환해도 현재 탭이 Gemini와 계속 공유됩니다. 사용자의 데이터는 생성형 AI 모델을 개선하는 데 사용되지 않습니다.</translation>
 <translation id="5271578170655641944">Google Drive 액세스 권한을 삭제하시겠습니까?</translation>
 <translation id="5272198173084686007">다른 기기의 탭 없음</translation>
 <translation id="527335345740023523">현재 <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> 등이 있습니다. 조직(<ph name="ACCOUNT_MANAGER" />)에서 이 데이터를 보고 관리할 수 있습니다.</translation>
@@ -6335,6 +6354,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5333896723098573627">앱을 삭제하려면 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 앱 또는 애플리케이션 관리자로 이동합니다. 그런 다음 제거하려는 앱을 탭합니다(앱을 찾으려면 오른쪽이나 왼쪽으로 스와이프해야 할 수 있음). 그런 다음 제거 또는 사용 중지를 탭합니다.</translation>
 <translation id="5334113802138581043">마이크 액세스</translation>
 <translation id="5334142896108694079">스크립트 캐시</translation>
+<translation id="5335370353987155592">Gemini를 신중하고 <ph name="BEGIN_LINK1" />안전하게<ph name="LINK_END1" /> 사용하세요. 작업을 수행하는 동안 Gemini의 작업에 대한 책임은 사용자에게 있으며, 여기에는 실수 및 <ph name="BEGIN_LINK2" />예상치 못한 결과<ph name="LINK_END2" />(예: 구매)가 포함됩니다.</translation>
 <translation id="5336688142483283574">이 페이지도 방문 기록 및 <ph name="SEARCH_ENGINE" /> 활동에서 삭제됩니다.</translation>
 <translation id="5336689872433667741">커서 및 터치패드</translation>
 <translation id="5337207153202941678">강조 표시 사용 중지</translation>
@@ -6639,6 +6659,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
 <translation id="554535686826424776">쿠폰 찾기</translation>
 <translation id="5546865291508181392">찾기</translation>
+<translation id="5547868626772433490">Gemini에게 물어보기</translation>
 <translation id="5548075230008247516">모든 항목이 선택 해제되었으며 선택 모드가 종료되었습니다.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{‘<ph name="TAB_TITLE" />’}=1{‘<ph name="TAB_TITLE" />’ 외 탭 1개}other{‘<ph name="TAB_TITLE" />’ 외 탭 #개}}</translation>
 <translation id="5548644592758170183">왼쪽에 표시</translation>
@@ -6804,6 +6825,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5655296450510165335">기기 등록</translation>
 <translation id="5655823808357523308">화면에 색상이 표시되는 방식을 조정합니다.</translation>
 <translation id="5656845498778518563">Google에 의견 보내기</translation>
+<translation id="5656944594833183876">작업 관련 도움받기</translation>
 <translation id="5657667036353380798">외부 확장 프로그램을 사용하려면 Chrome 버전 <ph name="MINIMUM_CHROME_VERSION" /> 이상이 설치되어 있어야 합니다.</translation>
 <translation id="565899488479822148">최신 업데이트 설치 중</translation>
 <translation id="5659593005791499971">이메일</translation>
@@ -7596,6 +7618,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" />이(가) 오프라인 상태입니다. 인터넷에 연결하고 다시 시도해 보세요.</translation>
 <translation id="6220413761270491930">확장 프로그램 로드 중 오류</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" />에 파일을 복사할 수 없음}other{<ph name="CLOUD_PROVIDER" />에 파일을 복사할 수 없음}}</translation>
+<translation id="62229737360959019">채팅 또는 공유된 탭에서 열린 탭도 Gemini와 공유됩니다 Live 모드에서는 현재 탭만 기본으로 공유됩니다</translation>
 <translation id="6224481128663248237">포맷을 마쳤습니다.</translation>
 <translation id="622474711739321877">이미 존재하는 컨테이너입니다.</translation>
 <translation id="622484624075952240">아래</translation>
@@ -7807,6 +7830,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6367097275976877956">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
 <translation id="6367196786591004737">항목 삭제</translation>
 <translation id="6367396429435748845">마우스 키를 일시중지하고 다시 시작하려면 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 키를 누르세요.</translation>
+<translation id="6367853307713830174">Gemini는 작업 단계를 표시하고, 민감한 작업은 수행 전에 확인을 시도합니다. 언제든지 중지하거나 직접 작업을 수행할 수 있습니다.</translation>
 <translation id="6367985768157257101">Nearby Share로 받으시겠습니까?</translation>
 <translation id="6368157733310917710">주소 및 기타</translation>
 <translation id="6368276408895187373">사용 설정됨, <ph name="VARIATION_NAME" /></translation>
@@ -7856,6 +7880,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="640457954117263537">ChromeOS 및 Android의 앱과 서비스에 위치를 사용합니다.</translation>
 <translation id="6406303162637086258">브라우저 다시 시작 시뮬레이션</translation>
 <translation id="6406506848690869874">동기화</translation>
+<translation id="6406571339342621375">메뉴 바에 Gemini 표시 안함</translation>
 <translation id="6406708970972405507">설정 - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">기기에 데이터를 저장하도록 허용됨</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />의 데이터를 읽고 변경</translation>
@@ -8328,6 +8353,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6737663862851963468">Kerberos 티켓 삭제</translation>
 <translation id="6738180164164974883">서드 파티 쿠키 설정 허용</translation>
 <translation id="6738430949033571771">계정 확인 중...</translation>
+<translation id="6739153164244375709">Gemini 호스트 렌더러</translation>
 <translation id="6739266861259291931">기기 언어로 재설정</translation>
 <translation id="6739923123728562974">바탕화면 바로가기 표시</translation>
 <translation id="6739943577740687354">이 기능은 AI를 사용하며 정확하지 않을 수 있습니다.</translation>
@@ -8573,6 +8599,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6899427698619335650">유연한 발음 구별 부호 할당을 허용합니다. 예를 들어 'anh1' 또는 'a1nh'를 입력하여 'ánh'을 얻을 수 있습니다.</translation>
 <translation id="6900284862687837908">백그라운드 앱: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">향상된 보호 모드</translation>
+<translation id="6900632443249221072">Gemini로 이미지 만들기</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" />을(를) 업데이트하려면 다시 로그인하세요</translation>
 <translation id="6900654715912436255">이 검색엔진을 삭제하시겠습니까?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
@@ -9086,6 +9113,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7268412955622368206">새 USB 기기에 대한 팝업 알림 표시</translation>
 <translation id="7269229526547981029"><ph name="PROFILE_MANAGER" />에서 관리하는 프로필입니다. <ph name="ACCOUNT_MANAGER" />에게 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 새 프로필이 필요합니다</translation>
 <translation id="7269736181983384521">Nearby Share 데이터 사용량</translation>
+<translation id="7270447384127135313">탭을 탐색하는 동시에 Gemini에게 지금 공유하는 탭에 관해 손쉽게 질문할 수 있습니다.</translation>
 <translation id="7271278495464744706">상세한 설명 사용</translation>
 <translation id="7272674038937250585">제공된 설명이 없음</translation>
 <translation id="7273110280511444812">최근 첨부 날짜: <ph name="DATE" /></translation>
@@ -9583,6 +9611,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7617263010641145920">Play 스토어 사용 설정</translation>
 <translation id="7617648809369507487">조용한 메시지 전송 사용</translation>
 <translation id="7619937211696316184">유지보수가 완료되었습니다.</translation>
+<translation id="7620049858153799769">Gemini 개선을 위해 인적 검토자가 공유된 탭에 관한 대화를 볼 수 있습니다.</translation>
 <translation id="7620083113061729689">방문기록 동기화</translation>
 <translation id="7620616707541471029">계속하려면 계정을 선택하세요</translation>
 <translation id="7621382409404463535">시스템에서 기기 설정을 저장하지 못했습니다.</translation>

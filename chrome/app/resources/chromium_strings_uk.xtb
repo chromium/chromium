@@ -336,6 +336,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4724676981607797757">Не вдалося встановити через помилку непідтримуваного протоколу.</translation>
 <translation id="4746050847053251315">Усе одно вийти з Chromium?</translation>
 <translation id="4748217263233248895">Щойно було застосовано спеціальне оновлення для захисту Chromium. Перезапустіть веб-переглядач, і ваші вкладки буде відновлено.</translation>
+<translation id="4759645701210484457">Запитати в Chromium</translation>
 <translation id="4771701986670315895">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Chromium не може перевірити паролі. Повторіть спробу через 24 години або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Використовується та сама технологія перевірки правопису, що й у Пошуку Google. Текст, який ви вводите у веб-переглядачі, надсилається в Google. Це завжди можна змінити в налаштуваннях.</translation>

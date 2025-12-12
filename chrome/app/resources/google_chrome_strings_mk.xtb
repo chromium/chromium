@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">Пребарајте ја картичкава со Google Lens</translation>
 <translation id="1849248141818021764">Само лицата што ја имаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката ниту се испраќа до Google ниту Google ја складира. Ако ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ги <ph name="BEGIN_LINK" />избришете податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">На Chrome му треба дозвола за да пристапи до камерата за сајтов</translation>
+<translation id="1867503717113754604">Најавете се на Chrome со вашата сметка на Google за да користите го <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome не е вашиот стандарден прелистувач</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">Дознајте зошто Chrome блокира некои преземања</translation>
 <translation id="2861074815332034794">Chrome се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Најавени сте на Chrome!</translation>
+<translation id="2875053229394024379">Кога ќе се најавите на Chrome со вашата сметка на Google, може да го користите вашиот профил на Chrome со Gemini. <ph name="BEGIN_LINK" />Дознајте како да се најавите на Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Дознајте повеќе за тоа <ph name="BEGIN_LINK" />како Chrome ја штити приватноста на вашите податоци<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Управник со задачи</translation>
 <translation id="2888126860611144412">За Chrome</translation>
@@ -223,6 +225,7 @@
 <translation id="3352986031709923790">горен десен агол на областа за пребарување: десно <ph name="RIGHT" /> %, горе <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Помошник на Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ќе се рестартира сега}=1{Chrome ќе се рестартира по 1 секунда}one{Chrome ќе се рестартира по # секунда}other{Chrome ќе се рестартира по # секунди}}</translation>
+<translation id="3380249972812870825">За да го отворите Gemini во Chrome, притиснете <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Се појави грешка во оперативниот систем додека се инсталираше. Преземете го Google Chrome повторно.</translation>
 <translation id="3428747202529429621">Ја чува вашата безбедност на Chrome и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени</translation>
 <translation id="3434246496373299699">Chrome може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google</translation>
@@ -351,6 +354,7 @@
 <translation id="4891791193823137474">Остави Google Chrome да работи во заднина</translation>
 <translation id="4895437082222824641">Отвори го линкот во нова &amp;картичка на Chrome</translation>
 <translation id="4918844574251943176">Сликата е копирана</translation>
+<translation id="4926882258455737990">За да користите друга сметка на Google со Gemini во Chrome, <ph name="BEGIN_LINK" />создајте нов профил<ph name="END_LINK" /> и најавете се со саканата сметка</translation>
 <translation id="492720062778050435">Chrome препорачува да ја прегледате екстензијава</translation>
 <translation id="4946912144186040233">Chrome подобро ги разбира формуларите и може да ги пополнува автоматски побрзо за вас. Поставкава е исклучена.</translation>
 <translation id="4953650215774548573">Поставете го Google Chrome за ваш стандарден прелистувач</translation>
@@ -376,6 +380,7 @@
 Некои карактеристики можеби се недостапни. Наведете друг директориум на профили или користете понова верзија на Chrome.</translation>
 <translation id="5174969993834422967">Обично ги блокирате известувањата. За да овозможите сајтов да ве известува, кликнете ја иконата за известувања во десниот агол на лентата за локација.</translation>
 <translation id="5174983315706567306">Нема доволно простор на дискот.</translation>
+<translation id="5179933070463113976">За да го користите Gemini во Chrome, треба да бидете најавени на Chrome со вашата сметка на Google</translation>
 <translation id="5190467473654176081">Приспособете го Chrome за да му го подновите изгледот</translation>
 <translation id="5201744974236816379">новости на Chrome</translation>
 <translation id="521447420733633466">Ако споделувате уред, пријателите и членовите на семејството може одделно да прелистуваат и да го поставуваат Chrome како што сакаат</translation>
@@ -396,6 +401,7 @@
 <translation id="5430073640787465221">Вашата датотека со претпочитани вредности е оштетена или неважечка.
 
 Google Chrome не може да ги обнови вашите поставки.</translation>
+<translation id="5465210843490471889">Изберете профил на Chrome што ќе го користите со <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">За да помогне да се подобрат функцииве, Chrome ги испраќа вашите интеракции со нив до Google. Можно е податоциве да ги читаат, да ги обработуваат и да додаваат прибелешки во нив човечки рецензенти.</translation>
 <translation id="5510398294750420479">Преземете го Chrome на телефонот за да додадете дополнителен слој заштита кога сте во движење</translation>
 <translation id="5524890928877629608">горен лев агол на областа за пребарување: лево <ph name="LEFT" /> %, горе <ph name="TOP" /> %</translation>
@@ -615,6 +621,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7655472416356262023">Отстранете ја сметката од Chrome</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7670287553302121848">Сметката на Chrome треба да се автентицира повторно</translation>
+<translation id="7675756456029023637">Прашајте го Chrome</translation>
 <translation id="769538538642757151">Chrome ќе ве извести ако треба да се прегледа нешто</translation>
 <translation id="769906121737764913">Затворете го Gemini во Chrome Beta</translation>
 <translation id="7716950018788545737">Задачите се сопрени.</translation>

@@ -82,6 +82,7 @@
 <translation id="1843347690926158494">Google Lens-р энэ табаас хайх</translation>
 <translation id="1849248141818021764">Зөвхөн таны нэвтрэх үгтэй хүн шифрлэгдсэн өгөгдлийг тань унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй бөгөөд хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчилмөөр байвал <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг устгах<ph name="END_LINK" /> шаардлагатай болно.</translation>
 <translation id="1860536484129686729">Энэ сайтыг ашиглахын тулд Chrome-д зөвшөөрөл шаардлагатай</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-г ашиглахын тулд Google Бүртгэлээрээ Chrome-д нэвтэрнэ үү</translation>
 <translation id="1873233029667955273">Google Chrome таны өгөгдмөл хөтөч биш юм</translation>
 <translation id="1874309113135274312">Google Chrome Бета (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
@@ -172,6 +173,7 @@
 <translation id="286025080868315611">Chrome зарим татаж авсан файлыг яагаад блоклодог болохыг мэдэж авах</translation>
 <translation id="2861074815332034794">Chrome-г шинэчилж байна (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Та Chrome-д нэвтэрсэн байна!</translation>
+<translation id="2875053229394024379">Та Google Бүртгэлээрээ Chrome-д нэвтрэх үедээ Chrome профайлаа Gemini-тай хамт ашиглах боломжтой. <ph name="BEGIN_LINK" />Chrome-д хэрхэн нэвтрэхийг мэдэж авах<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome таны өгөгдлийг хэрхэн хувийн байлгадаг<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авах</translation>
 <translation id="2885378588091291677">Асуудлын менежер</translation>
 <translation id="2888126860611144412">Chrome-н тухай</translation>
@@ -222,6 +224,7 @@
 <translation id="3352986031709923790">хайлтын хэсгийн баруун дээд булан: баруун <ph name="RIGHT" />%, дээд <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome-г одоо дахин ажиллуулж байна}=1{Chrome-г 1 секундийн дотор дахин ажиллуулна}other{Chrome-г # секундийн дотор дахин ажиллуулна}}</translation>
+<translation id="3380249972812870825">Chrome дахь Gemini-г нээхийн тулд <ph name="GLOBAL_HOTKEY" /> дээр дарна уу</translation>
 <translation id="3396977131400919238">Суулгах явцад үйлдлийн системд алдаа гарлаа. Google Chrome-ыг дахин татаж авна уу.</translation>
 <translation id="3428747202529429621">Таныг нэвтэрсэн үед Chrome дээр таны аюулгүй байдлыг хангадаг бөгөөд Google-н бусад апп дахь таны аюулгүй байдлыг сайжруулахын тулд ашиглагдах боломжтой</translation>
 <translation id="3434246496373299699">Chrome нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгсийг шалгах боломжтой</translation>
@@ -350,6 +353,7 @@
 <translation id="4891791193823137474">Google Chrome-ыг энэ дэвсгэр дээр ажиллуулна уу</translation>
 <translation id="4895437082222824641">Холбоосыг шинэ Chrome-н табад нээх</translation>
 <translation id="4918844574251943176">Зургийг хуулсан</translation>
+<translation id="4926882258455737990">Chrome дахь Gemini-тай хамт өөр Google Бүртгэл ашиглахын тулд <ph name="BEGIN_LINK" />шинэ профайл үүсгэж<ph name="END_LINK" />, хүссэн бүртгэлээрээ нэвтэрнэ үү</translation>
 <translation id="492720062778050435">Chrome танд энэ өргөтгөлийг шалгахыг зөвлөж байна</translation>
 <translation id="4946912144186040233">Chrome маягтыг илүү сайн ойлгодог ба танд илүү хурдан автоматаар бөглөж өгөх боломжтой. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="4953650215774548573">Google Chrome-ыг өөрийн анхдагч веб хөтөч болгон тохируулна уу</translation>
@@ -375,6 +379,7 @@
 Зарим функц ажиллахгүй байж болох юм. Өөр профайл тодорхойл эсвэл Chrome-ийн шинэ хувилбарыг хэрэглэнэ үү.</translation>
 <translation id="5174969993834422967">Та ихэвчлэн мэдэгдлийг блоклодог. Энэ сайтад танд мэдэгдэхийг зөвшөөрөхийн тулд байршлын хэсгийн тань баруун дээд буланд байх мэдэгдлийн дүрс тэмдгийг товшино уу.</translation>
 <translation id="5174983315706567306">Дискийн зай хангалтгүй байна.</translation>
+<translation id="5179933070463113976">Та Chrome дахь Gemini-г ашиглахын тулд Google Бүртгэлээрээ Chrome-д нэвтэрсэн байх шаардлагатай</translation>
 <translation id="5190467473654176081">Chrome-д шинэ дүр төрх өгөхийн тулд тусгайлан өөрчилнө үү</translation>
 <translation id="5201744974236816379">Chrome-н шинэчлэлт</translation>
 <translation id="521447420733633466">Хэрэв та төхөөрөмжийг дундаа ашигладаг бол найз нөхөд, гэр бүл тань хөтчөөр тусдаа үзэж, Chrome-г хүссэнээрээ тохируулах боломжтой</translation>
@@ -395,6 +400,7 @@
 <translation id="5430073640787465221">Та сонгосон файл хүчин төгөлдөр бус эсвэл гэмтсэн байна.
 
 Google Chrome таны тохируулгыг дахин сэргээх боломжгүй байна.</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-тай ашиглах Chrome профайл сонгоно уу</translation>
 <translation id="5468572406162360320">Эдгээр онцлогийг сайжруулахад туслахын тулд Chrome таны түүнтэй хийсэн харилцан үйлдлүүдийг Google-д илгээнэ. Энэ өгөгдлийг хянагч хүмүүс уншиж, боловсруулж мөн тэмдэглэж магадгүй.</translation>
 <translation id="5510398294750420479">Та явж байх зуураа хамгаалалтын нэмэлт давхарга нэмэхийн тулд утсан дээрээ Chrome-г татаарай</translation>
 <translation id="5524890928877629608">хайлтын хэсгийн зүүн дээд булан: зүүн <ph name="LEFT" />%, дээд <ph name="TOP" />%</translation>
@@ -614,6 +620,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7655472416356262023">Chrome-с бүртгэл хасах</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7670287553302121848">Chrome бүртгэл дахин баталгаажуулахыг шаарддаг</translation>
+<translation id="7675756456029023637">Chrome-с асуух</translation>
 <translation id="769538538642757151">Та ямар нэг зүйлийг шалгах шаардлагатай бол Chrome танд мэдэгдэнэ</translation>
 <translation id="769906121737764913">Chrome Beta дахь Gemini-г хаах</translation>
 <translation id="7716950018788545737">Ажил(ууд) дууссан.</translation>

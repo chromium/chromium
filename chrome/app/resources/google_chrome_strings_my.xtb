@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">Google Lens သုံး၍ ဤတဘ်ကို ရှာရန်</translation>
 <translation id="1849248141818021764">သင်၏ စကားဝှက်စာသိသူသာ အသွင်ဝှက်ထားသော ဒေတာကို ဖတ်နိုင်သည်။ စကားဝှက်စာကို Google သို့ ပေးပို့ခြင်း (သို့) သိမ်းဆည်းခြင်းမရှိပါ။ သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chrome ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="1860536484129686729">ဤဝဘ်ဆိုက်အတွက် Chrome သည် သင်၏ကင်မရာကို အသုံးပြုခွင့်ရရန် လိုအပ်ပါသည်</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> သုံးရန် သင့် Google Account ဖြင့် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1873233029667955273">Google Chrome သည် သင်၏ မူရင်းဘရောင်ဇာ မဟုတ်ပါ</translation>
 <translation id="1874309113135274312">Google Chrome စမ်းသပ် (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome မှာ ဟောင်းသွားပြီ</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">ဒေါင်းလုဒ်အချို့ကို Chrome က ဘာကြောင့်ပိတ်ထားကြောင်း လေ့လာရန်</translation>
 <translation id="2861074815332034794">Chrome ကို အပ်ဒိတ်လုပ်နေသည် (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome သို့သင် ဝင်ရောက်ပြီးဖြစ်သည်။</translation>
+<translation id="2875053229394024379">သင့် Google Account ဖြင့် Chrome သို့ လက်မှတ်ထိုးဝင်သောအခါ သင်၏ Chrome ပရိုဖိုင်ကို Gemini ဖြင့် သုံးနိုင်သည်။ <ph name="BEGIN_LINK" />Chrome သို့ လက်မှတ်ထိုးဝင်နည်းကို လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome က သင့်ဒေတာကို သီးသန့်ထားပေးပုံ<ph name="END_LINK" /> အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2885378588091291677">အလုပ် မန်နေဂျာ</translation>
 <translation id="2888126860611144412">Chrome အကြောင်း</translation>
@@ -223,6 +225,7 @@
 <translation id="3352986031709923790">ရှာဖွေမှုနေရာ၏ ညာဘက်ထိပ်ထောင့်- ညာ <ph name="RIGHT" />%၊ ထိပ် <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome ကူညီပေးသူ</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ကို ယခု ပြန်လည်စတင်ပါမည်}=1{Chrome ကို ၁ စက္ကန့်အကြာတွင် ပြန်လည်စတင်ပါမည်}other{Chrome ကို # စက္ကန့်အကြာတွင် ပြန်လည်စတင်ပါမည်}}</translation>
+<translation id="3380249972812870825">Chrome တွင် Gemini ဖွင့်ရန် <ph name="GLOBAL_HOTKEY" /> ကို နှိပ်ပါ</translation>
 <translation id="3396977131400919238">ထည့်သွင်းစဉ်တွင် လည်ပတ်မှုစနစ် မှားယွင်းမှု ဖြစ်ပေါ်ခဲ့သည်။ Google Chrome ကို ကျေးဇူးပြု၍ ထပ်မံ ဒေါင်းလုဒ် ပြုလုပ်ပါ။</translation>
 <translation id="3428747202529429621">Chrome တွင် ဘေးကင်းစေပြီး သင်လက်မှတ်ထိုးဝင်သည့်အခါ အခြား Google အက်ပ်များတွင် သင့်လုံခြုံရေး ပိုကောင်းမွန်စေရန် အသုံးပြုနိုင်သည်</translation>
 <translation id="3434246496373299699">သင်၏ Google Account နှင့် လက်မှတ်ထိုးဝင်သည့်အခါ Chrome က သင့်စကားဝှက်များကို စစ်ဆေးနိုင်သည်</translation>
@@ -351,6 +354,7 @@
 <translation id="4891791193823137474">Google Chrome အားနောက်ခံတွင် ဖွင့်စေပါ</translation>
 <translation id="4895437082222824641">Chrome တဘ်အသစ်တွင် လင့်ခ်ကို ဖွင့်ရန်</translation>
 <translation id="4918844574251943176">ပုံကူးပြီးပြီ</translation>
+<translation id="4926882258455737990">Chrome ရှိ Gemini ဖြင့် အခြား Google Account သုံးရန် <ph name="BEGIN_LINK" />ပရိုဖိုင်အသစ် ပြုလုပ်ပါ<ph name="END_LINK" /> ပြီး သင်အသုံးပြုလိုသော အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="492720062778050435">ဤနောက်ဆက်တွဲကို စစ်ဆေးရန် Chrome က အကြံပြုပါသည်</translation>
 <translation id="4946912144186040233">Chrome သည် ဖောင်များကို ပိုမိုကောင်းမွန်စွာ နားလည်နိုင်ပြီး သင့်အတွက် ပိုမြန်ဆန်စွာ အော်တိုဖြည့်ပေးနိုင်သည်။ ဤဆက်တင်ကို ပိတ်ထားသည်။</translation>
 <translation id="4953650215774548573">Google Chrome ကို သင်၏ ပုံသေ ဘရောင်ဇာ အဖြစ် သတ်မှတ်ရန်</translation>
@@ -376,6 +380,7 @@
 အချို့သော အင်္ဂါရပ်များကို ရချင်မှ ရပါမည်။ ကျေးဇူးပြုပြီး အခြား ပရိုဖိုင် ဒါရိုက်ထရီ တစ်ခုကို ဖေါ်ပြပေးပါ သို့မဟုတ် Chrome ၏ ပိုသစ်သော ဗားရှင်းကို အသုံးပြုပါ။</translation>
 <translation id="5174969993834422967">သင်သည် ပုံမှန်အားဖြင့် အကြောင်းကြားချက်များ ပိတ်ထားတတ်သည်။ ဤဝဘ်ဆိုက်ကို အကြောင်းကြားခွင့်ပြုရန်အတွက် သင့်တည်နေရာပြဘား၏ ညာဘက်ထောင့်ရှိ အကြောင်းကြားချက် သင်္ကေတကို နှိပ်ပါ။</translation>
 <translation id="5174983315706567306">ဒစ်ခ်နေရာ မလုံလောက်ပါ။</translation>
+<translation id="5179933070463113976">Chrome ရှိ Gemini ကို သုံးရန် သင့် Google Account ဖြင့် Chrome သို့ လက်မှတ်ထိုးဝင်ရမည်</translation>
 <translation id="5190467473654176081">Chrome ကို အသွင်သစ်ပြုလုပ်ရန် စိတ်ကြိုက်ပြင်ဆင်ပါ</translation>
 <translation id="5201744974236816379">Chrome အပ်ဒိတ်</translation>
 <translation id="521447420733633466">စက်ကိုမျှဝေအသုံးပြုပါက မိတ်ဆွေများနှင့် မိသားစုသည် သီးခြားစီဝင်ကြည့်နိုင်ပြီး သူတို့စိတ်ကြိုက်ပုံစံဖြင့် Chrome ကို စနစ်ထည့်သွင်းနိုင်သည်</translation>
@@ -396,6 +401,7 @@
 <translation id="5430073640787465221">သင်၏ ဦးစားပေးမှု ဖိုင်မှာ ပျက်စီး သို့မဟုတ် မမှန်ကန်ပါ။
 
 Google Chrome သည် သင်၏ ဆက်တင်များကို ပြန်ပြီး မဖေါ်ထုတ်နိုင်ပါ။</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ဖြင့် သုံးရန် Chrome ပရိုဖိုင် ရွေးပါ</translation>
 <translation id="5468572406162360320">ဤဝန်ဆောင်မှုများ ပိုကောင်းမွန်စေရန် Chrome က သင်၏ ပြန်လှန်တုံ့ပြန်မှုများကို ၎င်းတို့နှင့်အတူ Google ထံသို့ပို့သည်။ ဤဒေတာကို သုံးသပ်ချက်ပေးသူ ပုဂ္ဂိုလ်များဖြင့် ဖတ်ပြီး စီမံဆောင်ရွက်ကာ မှတ်ချက်ရေးနိုင်သည်။</translation>
 <translation id="5510398294750420479">သွားရင်းလာရင်း အကာအကွယ် အပိုတစ်ထပ်ထည့်ရန် သင့်ဖုန်းတွင် Chrome ကို ဒေါင်းလုဒ်လုပ်နိုင်သည်</translation>
 <translation id="5524890928877629608">ရှာဖွေမှုနေရာ၏ ဘယ်ဘက်ထိပ်ထောင့်- ဘယ် <ph name="LEFT" />%၊ ထိပ် <ph name="TOP" />%</translation>
@@ -615,6 +621,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7655472416356262023">Chrome မှ အကောင့်ကို ဖယ်ရှားရန်</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7670287553302121848">Chrome အကောင့်ကို အထောက်အထားပြန်လည်စိစစ်ရန် လိုအပ်သည်</translation>
+<translation id="7675756456029023637">Chrome ကို မေးရန်</translation>
 <translation id="769538538642757151">သင်စစ်ဆေးရန် လိုအပ်ပါက Chrome က အသိပေးပါမည်</translation>
 <translation id="769906121737764913">Chrome စမ်းသပ်ဆော့ဖ်ဝဲတွင် Gemini ပိတ်ပါ</translation>
 <translation id="7716950018788545737">လုပ်ဆောင်စရာ(များ) အဆုံးသတ်သွားသည်။</translation>

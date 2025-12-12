@@ -81,6 +81,7 @@
 <translation id="1843347690926158494">‏البحث في علامة التبويب هذه باستخدام "عدسة Google"</translation>
 <translation id="1849248141818021764">‏لا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. وفي حال نسيتها أو أردت تغيير هذه الإعدادات، يجب <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
+<translation id="1867503717113754604">‏يجب تسجيل الدخول إلى Chrome بحسابك على Google لاستخدام <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">‏Google Chrome ليس متصفحك التلقائي.</translation>
 <translation id="1874309113135274312">‏الإصدار التجريبي من Google Chrome‏ (mDNS-In)</translation>
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
@@ -171,6 +172,7 @@
 <translation id="286025080868315611">‏تعرّف على سبب حظر Chrome لبعض عمليات التنزيل</translation>
 <translation id="2861074815332034794">‏جارٍ تحديث Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">‏تم تسجيل دخولك إلى Chrome!</translation>
+<translation id="2875053229394024379">‏عند تسجيل الدخول إلى Chrome بحسابك على Google، يمكنك استخدام ملفك الشخصي على Chrome مع Gemini. <ph name="BEGIN_LINK" />التعرّف على طريقة تسجيل الدخول إلى Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chrome للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">إدارة المهام</translation>
 <translation id="2888126860611144412">‏لمحة عن Chrome</translation>
@@ -221,6 +223,7 @@
 <translation id="3352986031709923790">أعلى يسار مساحة البحث: %<ph name="RIGHT" /> من الجهة اليسرى و%<ph name="TOP" /> من الأعلى</translation>
 <translation id="3360895254066713204">‏مساعد Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏ستتم إعادة تشغيل Chrome الآن}=1{‏ستتم إعادة تشغيل Chrome في غضون ثانية واحدة}two{‏ستتم إعادة تشغيل Chrome في غضون ثانيتين}few{‏ستتم إعادة تشغيل Chrome في غضون # ثوان}many{‏ستتم إعادة تشغيل Chrome في غضون # ثانيةً}other{‏ستتم إعادة تشغيل Chrome في غضون # ثانية}}</translation>
+<translation id="3380249972812870825">‏لفتح "Gemini في Chrome"، يُرجى الضغط على <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
 <translation id="3428747202529429621">‏يوفّر لك هذا الوضع حماية في Chrome، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجلًا دخولك.</translation>
 <translation id="3434246496373299699">‏لا يستطيع Chrome التحقّق من كلمات المرور إلا عند تسجيل الدخول باستخدام حسابك على Google.</translation>
@@ -349,6 +352,7 @@
 <translation id="4891791193823137474">‏دع Google Chrome يعمل في الخلفية</translation>
 <translation id="4895437082222824641">‏فتح الرابط في علامة تبويب جديدة في Chrome</translation>
 <translation id="4918844574251943176">تم نسخ الصورة.</translation>
+<translation id="4926882258455737990">‏لاستخدام حساب آخر على Google مع "Gemini في Chrome"، يُرجى <ph name="BEGIN_LINK" />إنشاء ملف شخصي جديد<ph name="END_LINK" /> وتسجيل الدخول بالحساب المطلوب</translation>
 <translation id="492720062778050435">‏ينصح Chrome بمراجعة هذه الإضافة.</translation>
 <translation id="4946912144186040233">‏يفهم متصفِّح Chrome النماذج بشكل أفضل ويمكنه ملء بياناتها تلقائيًا بشكل أسرع. هذا الإعداد غير مفعَّل.</translation>
 <translation id="4953650215774548573">‏تحديد Google Chrome المتصفح التلقائي</translation>
@@ -374,6 +378,7 @@
 قد تكون بعض الميزات غير متاحة. يُرجى تحديد دليل ملف شخصي مختلف أو استخدام إصدار أحدث من Chrome.</translation>
 <translation id="5174969993834422967">أنت تحظر الإشعارات عادةً. للسماح لهذا الموقع الإلكتروني بإرسال إشعارات، انقر على رمز الإشعارات في الزاوية اليسرى من شريط الموقع الجغرافي.</translation>
 <translation id="5174983315706567306">لا تتوفّر مساحة كافية على القرص.</translation>
+<translation id="5179933070463113976">‏لاستخدام Gemini في Chrome، يجب تسجيل الدخول إلى Chrome بحسابك على Google</translation>
 <translation id="5190467473654176081">‏تخصيص Chrome لإضفاء مظهر جديد عليه</translation>
 <translation id="5201744974236816379">‏تحديث Chrome</translation>
 <translation id="521447420733633466">‏في حال مشاركة جهاز مع الأصدقاء والعائلة، يمكنهم الحصول على تجربة تصفّح منفصلة وإعداد Chrome على النحو المفضّل لديهم.</translation>
@@ -392,6 +397,7 @@
 <translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
 <translation id="5402307365844630024">‏تفعيل Gemini أو إيقافه في "الإصدار التجريبي من Chrome"</translation>
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
+<translation id="5465210843490471889">‏يُرجى اختيار ملف شخصي على Chrome لاستخدامه مع <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">‏يُرسل Chrome تفاعلاتك مع هذه الميزات إلى Google للمساعدة في تحسينها. وقد يقرأ المراجعون هذه البيانات ويعالجونها ويضيفون تعليقات توضيحية إليها.</translation>
 <translation id="5510398294750420479">‏يكفي تنزيل متصفِّح Chrome على هاتفك للحصول على طبقة حماية إضافية أثناء التنقّل</translation>
 <translation id="5524890928877629608">أعلى يمين مساحة البحث: %<ph name="LEFT" /> من الجهة اليمنى و%<ph name="TOP" /> من الأعلى</translation>
@@ -611,6 +617,7 @@
 <translation id="7655472416356262023">‏إزالة الحساب من Chrome</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7670287553302121848">‏يتطلب حساب Chrome إعادة المصادقة</translation>
+<translation id="7675756456029023637">‏طرح سؤال في Chrome</translation>
 <translation id="769538538642757151">‏سيُعلِمك Chrome في حال العثور على اقتراحات مطلوب مراجعتها.</translation>
 <translation id="769906121737764913">‏إغلاق Gemini في الإصدار التجريبي من Chrome</translation>
 <translation id="7716950018788545737">انتهت المهام.</translation>

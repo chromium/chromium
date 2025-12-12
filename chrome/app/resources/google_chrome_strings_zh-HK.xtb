@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">使用「Google 智能鏡頭」搜尋此分頁</translation>
 <translation id="1849248141818021764">只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，你需要<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" /></translation>
 <translation id="1860536484129686729">Chrome 需要取得權限，才能讓這個網站存取您的相機</translation>
+<translation id="1867503717113754604">以 Google 帳戶登入 Chrome 即可使用 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome 並非您的預設瀏覽器</translation>
 <translation id="1874309113135274312">Google Chrome 測試版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">瞭解 Chrome 封鎖部分下載內容的原因</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">您已登入 Chrome！</translation>
+<translation id="2875053229394024379">以 Google 帳戶登入 Chrome 後，你便可配合 Gemini 使用 Chrome 設定檔。<ph name="BEGIN_LINK" />瞭解如何登入 Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何確保你的資料保密<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
@@ -223,6 +225,7 @@
 <translation id="3352986031709923790">搜尋區域嘅右上角：距右側 <ph name="RIGHT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome 輔助工具</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將於 1 秒後重新啟動}other{Chrome 將於 # 秒後重新啟動}}</translation>
+<translation id="3380249972812870825">如果要開啟 Chrome 版 Gemini，請㩒 <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
 <translation id="3428747202529429621">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性</translation>
 <translation id="3434246496373299699">Chrome 可在您使用 Google 帳戶登入時檢查密碼</translation>
@@ -350,6 +353,7 @@
 <translation id="4891791193823137474">讓 Google Chrome 在背景執行</translation>
 <translation id="4895437082222824641">在 Chrome 新分頁中開啟連結(&amp;T)</translation>
 <translation id="4918844574251943176">已複製圖片</translation>
+<translation id="4926882258455737990">如要在 Chrome 版 Gemini 中使用其他 Google 帳戶，請<ph name="BEGIN_LINK" />建立新設定檔<ph name="END_LINK" />並登入所需帳戶</translation>
 <translation id="492720062778050435">Chrome 建議你檢查此擴充程式</translation>
 <translation id="4946912144186040233">Chrome 可以更準確識別表格內容，更快自動填入相關資料。此設定已關閉。</translation>
 <translation id="4953650215774548573">將 Google Chrome 設為預設瀏覽器</translation>
@@ -375,6 +379,7 @@
 這表示您可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chrome。</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許此網站傳送通知，請按一下網址列右上角的通知圖示。</translation>
 <translation id="5174983315706567306">磁碟空間不足。</translation>
+<translation id="5179933070463113976">如要使用 Chrome 版 Gemini，你需要以 Google 帳戶登入 Chrome</translation>
 <translation id="5190467473654176081">自訂 Chrome 來為瀏覽器換上新風格</translation>
 <translation id="5201744974236816379">Chrome 更新</translation>
 <translation id="521447420733633466">如果您與親朋好友共用裝置，每人都能各自瀏覽網頁，並按需求設定 Chrome</translation>
@@ -395,6 +400,7 @@
 <translation id="5430073640787465221">您的偏好設定檔已損毀或無效。
 
 Google Chrome 無法復原您的設定。</translation>
+<translation id="5465210843490471889">選擇要配合 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> 使用的 Chrome 設定檔</translation>
 <translation id="5468572406162360320">為協助改善這些功能，Chrome 會向 Google 傳送你與功能的互動資料。人手審查員可能會讀取、處理這些資料，並加上註解。</translation>
 <translation id="5510398294750420479">在手機下載 Chrome，隨時隨地多添一重保障</translation>
 <translation id="5524890928877629608">搜尋區域嘅左上角：距左側 <ph name="LEFT" />%，距頂部 <ph name="TOP" />%</translation>
@@ -614,6 +620,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7655472416356262023">從 Chrome 移除帳戶</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670287553302121848">Chrome 帳戶需要重新驗證</translation>
+<translation id="7675756456029023637">問 Chrome</translation>
 <translation id="769538538642757151">如有任何需要審核的事項，Chrome 會通知你</translation>
 <translation id="769906121737764913">關閉 Chrome Beta 版 Gemini</translation>
 <translation id="7716950018788545737">工作已經結束。</translation>

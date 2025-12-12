@@ -81,6 +81,7 @@
 <translation id="1843347690926158494">Αναζήτηση σε αυτή την καρτέλα με το Google Lens</translation>
 <translation id="1849248141818021764">Μόνο κάποιος που γνωρίζει τη φράση πρόσβασης μπορεί να διαβάσει τα κρυπτογραφημένα δεδομένα σας. H φράση πρόσβασης δεν αποστέλλεται στην Google, ούτε αποθηκεύεται από αυτήν. Εάν ξεχάσετε τη φράση πρόσβασης ή θέλετε να αλλάξετε αυτή τη ρύθμιση, θα χρειαστεί να <ph name="BEGIN_LINK" />διαγράψετε τα δεδομένα του Chrome στον λογαριασμό σας<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Το Chrome χρειάζεται άδεια, για να αποκτήσει πρόσβαση στην κάμερα για αυτόν τον ιστότοπο</translation>
+<translation id="1867503717113754604">Συνδεθείτε στο Chrome με τον Λογαριασμό σας Google, για να χρησιμοποιήσετε το <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Το Google Chrome δεν είναι το προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Το Chrome δεν είναι ενημερωμένο</translation>
@@ -171,6 +172,7 @@
 <translation id="286025080868315611">Μάθετε γιατί το Chrome αποκλείει ορισμένες λήψεις</translation>
 <translation id="2861074815332034794">Ενημέρωση του Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Έχετε συνδεθεί στο Chrome!</translation>
+<translation id="2875053229394024379">Όταν συνδέεστε στο Chrome με τον Λογαριασμό σας Google, μπορείτε να χρησιμοποιείτε το προφίλ σας στο Chrome με το Gemini. <ph name="BEGIN_LINK" />Μάθετε πώς μπορείτε να συνδεθείτε στο Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Μάθετε περισσότερα σχετικά με το <ph name="BEGIN_LINK" />πώς το Chrome διατηρεί ιδιωτικά τα δεδομένα σας<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Διαχείριση εργασιών</translation>
 <translation id="2888126860611144412">Σχετικά με το Chrome</translation>
@@ -221,6 +223,7 @@
 <translation id="3352986031709923790">επάνω δεξιά γωνία της περιοχής αναζήτησης: δεξιά <ph name="RIGHT" />%, επάνω <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Η επανεκκίνηση του Chrome θα γίνει τώρα}=1{Η επανεκκίνηση του Chrome θα γίνει σε 1 δευτερόλεπτο}other{Η επανεκκίνηση του Chrome θα γίνει σε # δευτερόλεπτα}}</translation>
+<translation id="3380249972812870825">Για να ανοίξετε το Gemini στο Chrome, πατήστε <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Παρουσιάστηκε σφάλμα στο λειτουργικό σύστημα κατά την εγκατάσταση. Κατεβάστε το Google Chrome ξανά.</translation>
 <translation id="3428747202529429621">Διατηρεί την ασφάλειά σας στο Chrome και μπορεί να χρησιμοποιηθεί για τη βελτίωση της ασφάλειάς σας σε άλλες εφαρμογές Google όταν είστε συνδεδεμένοι.</translation>
 <translation id="3434246496373299699">Το Chrome μπορεί να ελέγξει τους κωδικούς πρόσβασής σας όταν συνδέεστε με τον Λογαριασμό σας Google.</translation>
@@ -349,6 +352,7 @@
 <translation id="4891791193823137474">Να επιτρέπεται στο Google Chrome να εκτελείται στο παρασκήνιο</translation>
 <translation id="4895437082222824641">Άνοιγμα συνδέσμου σε νέα καρτέ&amp;λα Chrome</translation>
 <translation id="4918844574251943176">Η εικόνα αντιγράφηκε</translation>
+<translation id="4926882258455737990">Για να χρησιμοποιήσετε διαφορετικό Λογαριασμό Google με το Gemini στο Chrome, <ph name="BEGIN_LINK" />δημιουργήστε ένα νέο προφίλ<ph name="END_LINK" /> και συνδεθείτε με τον λογαριασμό που θέλετε</translation>
 <translation id="492720062778050435">Το Chrome συνιστά να ελέγξετε αυτή την επέκταση</translation>
 <translation id="4946912144186040233">Το Chrome κατανοεί καλύτερα τις φόρμες και μπορεί να τις συμπληρώνει αυτόματα πιο γρήγορα για εσάς. Αυτή η ρύθμιση είναι απενεργοποιημένη.</translation>
 <translation id="4953650215774548573">Ορίστε το Google Chrome ως προεπιλεγμένο πρόγραμμα περιήγησης</translation>
@@ -374,6 +378,7 @@
 Ορισμένες λειτουργίες μπορεί να μην είναι διαθέσιμες. Προσδιορίστε έναν διαφορετικό κατάλογο προφίλ ή χρησιμοποιήστε μια νεότερη έκδοση του Chrome.</translation>
 <translation id="5174969993834422967">Συνήθως αποκλείετε τις ειδοποιήσεις. Για να επιτρέψετε σε αυτόν τον ιστότοπο να σας στέλνει ειδοποιήσεις, κάντε κλικ στο εικονίδιο ειδοποίησης στη δεξιά γωνία της γραμμής τοποθεσίας.</translation>
 <translation id="5174983315706567306">Δεν υπάρχει αρκετός χώρος δίσκου.</translation>
+<translation id="5179933070463113976">Για να χρησιμοποιήσετε το Gemini στο Chrome, πρέπει να είστε συνδεδεμένοι στο Chrome με τον Λογαριασμό σας Google</translation>
 <translation id="5190467473654176081">Προσαρμόστε το Chrome για να του δώσετε μια νέα εμφάνιση</translation>
 <translation id="5201744974236816379">Ενημέρωση chrome</translation>
 <translation id="521447420733633466">Εάν χρησιμοποιείτε μια συσκευή από κοινού με άλλα άτομα, οι φίλοι και τα μέλη της οικογένειάς σας μπορούν να περιηγούνται αυτόνομα και να ρυθμίζουν το Chrome ακριβώς όπως θέλουν.</translation>
@@ -392,6 +397,7 @@
 <translation id="5394833366792865639">Μοιραστείτε μια καρτέλα του Chrome</translation>
 <translation id="5402307365844630024">Ενεργοποίηση/Απενεργοποίηση Gemini στο Chrome Beta</translation>
 <translation id="5430073640787465221">Το αρχείο προτιμήσεών σας είναι κατεστραμμένο ή μη έγκυρο.Το Google Chrome δεν μπορεί να ανακτήσει τις ρυθμίσεις σας.</translation>
+<translation id="5465210843490471889">Επιλέξτε ένα προφίλ στο Chrome για χρήση με το <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Για να συμβάλετε στη βελτίωση αυτών των λειτουργιών, το Chrome στέλνει στην Google τις αλληλεπιδράσεις σας με τις λειτουργίες. Αυτά τα δεδομένα ενδέχεται να αναγνωστούν, να υποβληθούν σε επεξεργασία και να σχολιαστούν από αναθεωρητές.</translation>
 <translation id="5510398294750420479">Κατεβάστε το Chrome στο τηλέφωνό σας για να προσθέσετε ένα επιπλέον επίπεδο προστασίας όταν βρίσκεστε εν κινήσει</translation>
 <translation id="5524890928877629608">επάνω αριστερή γωνία της περιοχής αναζήτησης: αριστερά <ph name="LEFT" />%, επάνω <ph name="TOP" />%</translation>
@@ -611,6 +617,7 @@
 <translation id="7655472416356262023">Κατάργηση λογαριασμού από το Chrome</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7670287553302121848">Ο λογαριασμός Chrome απαιτεί εκ νέου έλεγχο ταυτότητας</translation>
+<translation id="7675756456029023637">Ρωτήστε το Chrome</translation>
 <translation id="769538538642757151">Το Chrome θα σας ενημερώσει σε περίπτωση που χρειαστεί να ελέγξετε κάτι</translation>
 <translation id="769906121737764913">Κλείσιμο του Gemini στο Chrome Beta</translation>
 <translation id="7716950018788545737">Οι εργασίες τερματίστηκαν.</translation>

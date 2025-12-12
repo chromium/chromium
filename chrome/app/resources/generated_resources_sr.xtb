@@ -403,6 +403,7 @@
 <translation id="1252987234827889034">Дошло је до грешке на профилу</translation>
 <translation id="1254034280040157728">Велики кањон</translation>
 <translation id="1254593899333212300">Директна веза са интернетом</translation>
+<translation id="1255095393630332248">Када се деле картице, њихови садржај, медији и URL-ови се шаљу Google-у.</translation>
 <translation id="1256588359404100567">Подешавање је синхронизовано са претходног уређаја.</translation>
 <translation id="1257336506558170607">Извезите изабрани сертификат</translation>
 <translation id="1258491128795710625">Шта је ново</translation>
@@ -527,6 +528,7 @@
 <translation id="1342886103232377846">Да бисте проверили да ли има угрожених лозинки, идите у Google менаџер лозинки</translation>
 <translation id="1343920184519992513">Наставите где сте стали и отворите одређену групу страница</translation>
 <translation id="1344141078024003905">Пребацујете екран. Пребацивање екрана можете да паузирате или зауставите у сваком тренутку.</translation>
+<translation id="13449088910457661">Gemini ради на картицама да би обављао задатке које му задате. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Шаљите податке о коришћењу и дијагностичке податке. Помозите нам да побољшамо Android доживљај за дете тако што ћете аутоматски слати Google-у податке о дијагностици и коришћењу уређаја и апликација. Те информације се неће користити за идентификацију детета и помоћи ће у одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. Ако за дете укључите додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. <ph name="BEGIN_LINK1" />Сазнајте више о показатељима<ph name="BEGIN_LINK1_END" />Сазнајте више<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Потврди и рестартуј</translation>
 <translation id="1346748346194534595">Удесно</translation>
@@ -589,6 +591,7 @@
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> нема овлашћење да штампа на: <ph name="PRINTER_NAME" />. Обратите се администратору.</translation>
 <translation id="1392047138650695757">Кориснички речници</translation>
 <translation id="139300021892314943">Ограничи ко може да се пријави</translation>
+<translation id="1393235015225624732">{NUM_TABS,plural, =1{Заустави дељење картице са Gemini-јем}one{Заустави дељење # картице са Gemini-јем}few{Заустави дељење # картице са Gemini-јем}other{Заустави дељење # картица са Gemini-јем}}</translation>
 <translation id="1393283411312835250">Сунце и облаци</translation>
 <translation id="1395832189806039783">Истакните ставку помоћу фокуса тастатуре</translation>
 <translation id="1396120028054416908">Назад на <ph name="FOLDER_TITLE" /></translation>
@@ -731,6 +734,7 @@
 <translation id="1486616492435615702">Направите радну верзију или побољшајте постојећи рад.</translation>
 <translation id="1487335504823219454">Укључено – прилагођена подешавања</translation>
 <translation id="1489101155914355052">Генеришу се предлози за овај документ…</translation>
+<translation id="1493152297698462486">Направи слику помоћу Gemini-ја</translation>
 <translation id="1493892686965953381">Чека се <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Сајтови могу да траже да користе фонтове инсталиране на уређају</translation>
 <translation id="1494429729245089920">Виртуелна машина „<ph name="VM_NAME" />“ постоји, али изгледа да није важећа <ph name="APP_NAME" /> виртуелна машина. Обратите се администратору.</translation>
@@ -827,6 +831,7 @@
 <translation id="1561331397460162942">То омогућава приступ локацији за апликације, веб-сајтове са дозволом за локацију и системске услуге</translation>
 <translation id="1562119309884184621">Ако додате контакт, биће запамћен за следеће дељење</translation>
 <translation id="1562585387501039294">Ваша организација, <ph name="ACCOUNT_MANAGER" />, захтева профил којим се управља и моћи ће да прегледа одређене информације, укључујући</translation>
+<translation id="156345786953026804">Садржај странице и URL-ови које Gemini користи током задатка делиће се са Google-ом.</translation>
 <translation id="1566049601598938765">Веб-сајт</translation>
 <translation id="15662109988763471">Изабрани штампач није доступан или није правилно инсталиран. Проверите штампач или изаберите неки други.</translation>
 <translation id="1566329594234563241">Док је неактиван и прикључен</translation>
@@ -1024,6 +1029,7 @@
 <translation id="167983332380191032">Услуга управљања је послала HTTP грешку.</translation>
 <translation id="167997285881077031">Подешавања гласа за претварање текста у говор</translation>
 <translation id="1680849702532889074">Дошло је до грешке током инсталирања Linux апликације.</translation>
+<translation id="1682195225331129001">Пробајте</translation>
 <translation id="1682548588986054654">Нови прозор без архивирања</translation>
 <translation id="1682696837763999627">Велики курсор миша</translation>
 <translation id="1682867089915960590">Желите да укључите навигацију курсором?</translation>
@@ -1123,6 +1129,7 @@
 <translation id="1753557900380512635">Ентеријер</translation>
 <translation id="1753905327828125965">Најпосећеније</translation>
 <translation id="1755601632425835748">Величина текста</translation>
+<translation id="1756963401828337401">Одаберите екран за снимање</translation>
 <translation id="1757132445735080748">Да бисте завршили подешавање Linux-а, ажурирајте Chrome OS Flex и пробајте поново.</translation>
 <translation id="1757301747492736405">Чека се деинсталирање</translation>
 <translation id="175772926354468439">Омогући тему</translation>
@@ -2122,6 +2129,7 @@
 <translation id="2435248616906486374">Веза са мрежом је прекинута</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="2436385001956947090">Копирај линк</translation>
+<translation id="2437105255211187922">{NUM_TABS,plural, =1{Дељење изабране картице би премашило ограничење за дељење}one{Дељење # картице би премашило ограничење за дељење}few{Дељење # картице би премашило ограничење за дељење}other{Дељење # картица би премашило ограничење за дељење}}</translation>
 <translation id="2437561292559037753">Дељење података</translation>
 <translation id="2438853563451647815">Није повезано са штампачем</translation>
 <translation id="2439152382014731627">Ресетујте лозинку за <ph name="DEVICE_TYPE" /></translation>
@@ -2335,6 +2343,7 @@
 <translation id="2573276323521243649">Вратите се са странице за избор аватара</translation>
 <translation id="2573417407488272418">Направите резервну копију апликација и фајлова у одељку Фајлови &gt; Моји фајлови пре него што надоградите.</translation>
 <translation id="2573831315551295105">Доделите прекидач за радњу <ph name="ACTION" /></translation>
+<translation id="2574037773163798130">{NUM_TABS,plural, =1{Дели картицу са Gemini-јем}one{Дели # картицу са Gemini-јем}few{Дели # картице са Gemini-јем}other{Дели # картица са Gemini-јем}}</translation>
 <translation id="2575247648642144396">Ова икона ће бити видљива када додатак буде могао да функционише на тренутној страници. Користите овај додатак кликом на икону или притиском на <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575407791320728464">Неважећи URL. Проверите да ли је форматиран како треба.</translation>
 <translation id="2575441894380764255">Није им дозвољено да приказују огласе који ометају активности или обмањујуће огласе</translation>
@@ -2793,6 +2802,7 @@
 <translation id="2886119409731773154">То може да потраје до 30 минута</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> и још <ph name="NUMBER_OF_DEVICES" /></translation>
+<translation id="2887344147309501015">Разговарајте са Gemini-јем у Chrome-у да бисте добили одговоре, кључне закључке и друго док прегледате</translation>
 <translation id="2889043468805635730">Није пронађен ниједан проблем</translation>
 <translation id="2889064240420137087">Отвори линк користећи...</translation>
 <translation id="2891464434568738544">Тренутно није доступан ниједан сајт. Посетите сајт да бисте га додали на ову листу.</translation>
@@ -3430,6 +3440,7 @@
 <translation id="3347086966102161372">К&amp;опирај адресу слике</translation>
 <translation id="3348038390189153836">Откривен је преносиви уређај</translation>
 <translation id="3348973040180736882">Декомпримује се</translation>
+<translation id="3349610303043713601">Прегледај помоћу вештачке интелигенције</translation>
 <translation id="3349933790966648062">Меморијски простор у употреби</translation>
 <translation id="3350450887151703713">Поново пусти 10 секунди</translation>
 <translation id="3351472127384196879">Додајте или пронађите дугмад на оловци</translation>
@@ -4607,6 +4618,7 @@
 <translation id="4116480382905329353">Откривено је једном</translation>
 <translation id="4116704186509653070">Отвори поново</translation>
 <translation id="4117714603282104018">Тактилни одзив тачпеда</translation>
+<translation id="4117854923024277067">Снимак екрана може да се користи са упитом или да се избрише</translation>
 <translation id="4118579674665737931">Рестартујте уређај и пробајте поново.</translation>
 <translation id="4120388883569225797">Ресетовање овог безбедносног кључа није успело</translation>
 <translation id="4120817667028078560">Путања је предугачка</translation>
@@ -4659,6 +4671,7 @@
 <translation id="4158315983204257156">Величина и фонт текста веб-сајта</translation>
 <translation id="4158364720893025815">Прошли смо</translation>
 <translation id="4159784952369912983">Љубичаста</translation>
+<translation id="4162545316103024845">{NUM_TABS,plural, =1{Дељење изабране картице би премашило ограничење за дељење}one{Дељење # картице би премашило ограничење за дељење}few{Дељење # картице би премашило ограничење за дељење}other{Дељење # картица би премашило ограничење за дељење}}</translation>
 <translation id="4163560723127662357">Непозната тастатура</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> не припада важећој организацији. Обратите се администратору. Ако сте ви администратор, можете да подесите организацију тако што ћете посетити g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Подешавања сајта</translation>
@@ -4669,6 +4682,8 @@
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> се завршава бројевима <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Не дозволи</translation>
 <translation id="4170314459383239649">Обриши при затварању</translation>
+<translation id="417112242673828206">{NUM_TABS,plural, =1{Дели картицу са Gemini-јем}one{Дели # картицу са Gemini-јем}few{Дели # картице са Gemini-јем}other{Дели # картица са Gemini-јем}}</translation>
+<translation id="4173129130568053653">Gemini може да вам помогне да заказујете термине, правите корпе за куповину или обављате друге задатке које му задате.</translation>
 <translation id="4175137578744761569">Светлољубичаста и бела</translation>
 <translation id="4176463684765177261">Онемогућено</translation>
 <translation id="4176864026061939326">Овим уређајем се управља. Администратор уређаја захтева нови профил за налог <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4702,6 +4717,7 @@
 <translation id="4200689466366162458">Прилагођене речи</translation>
 <translation id="4200983522494130825">Нова &amp;картица</translation>
 <translation id="4201546031411513170">Увек можете да одаберете шта ћете синхронизовати у подешавањима.</translation>
+<translation id="4202536110335087135">Пробајте</translation>
 <translation id="4203065553461038553">Назив или локација фајла је предугачка</translation>
 <translation id="4203769790323223880">Камера није дозвољена</translation>
 <translation id="4204415812590935863">Тренутно није могуће направити тему.</translation>
@@ -6142,6 +6158,7 @@
 <translation id="5204967432542742771">Унесите лозинку</translation>
 <translation id="5205484256512407285">Никада не користите мобилне податке за пренос</translation>
 <translation id="520568280985468584">Мрежа је додата. Можда ће проћи пар минута док мобилна мрежа постане активна.</translation>
+<translation id="520576054436518354">Дозволите да Gemini прегледа за вас</translation>
 <translation id="5207949376430453814">Истакни курсор за текст</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> жели да провери да ли користите Chrome ОС уређај који испуњава услове.</translation>
 <translation id="5208722776934437424">Промени дозволе</translation>
@@ -6157,6 +6174,7 @@
 <translation id="5215450412607891876">Укључите додатна безбедносна ажурирања</translation>
 <translation id="5215502535566372932">Изаберите земљу</translation>
 <translation id="5216674789212441076">Аутоматски преводи титл уживо. Титл се шаље Google-у на превод.</translation>
+<translation id="5216951551945455224">{NUM_TABS,plural, =1{Заустави дељење картице са Gemini-јем}one{Заустави дељење # картице са Gemini-јем}few{Заустави дељење # картице са Gemini-јем}other{Заустави дељење # картица са Gemini-јем}}</translation>
 <translation id="5220011581825921581">тастер за претрагу + стрелица нагоре</translation>
 <translation id="5221516927483787768">Пребацивање са сајта <ph name="HOST_NAME" /> није успело</translation>
 <translation id="5221834113325601057">Картица је изузета са листе</translation>
@@ -6230,6 +6248,7 @@
 <translation id="5267572070504076962">Укључите Безбедно прегледање да бисте добили заштиту од опасних сајтова</translation>
 <translation id="5269659747698455324">Откључај приступне кључеве</translation>
 <translation id="5269977353971873915">Штампање није успело</translation>
+<translation id="5271124474068841290">Дели актуелну картицу са Gemini-јем, чак и када мењате картице. Подаци се не користе за побољшавање модела генеративне вештачке интелигенције.</translation>
 <translation id="5271578170655641944">Желите да уклоните приступ Google диску?</translation>
 <translation id="5272198173084686007">Нема картица са других уређаја</translation>
 <translation id="527335345740023523">Тренутно имате <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> и друго. Ваша организација, <ph name="ACCOUNT_MANAGER" />, моћи ће да види ове податке и управља њима.</translation>
@@ -6318,6 +6337,7 @@
 <translation id="5333896723098573627">Да бисте уклонили апликације, идите у одељак Подешавања &gt; Апликације &gt; Google Play продавница &gt; Управљајте Android подешавањима &gt; Апликације или Менаџер апликација. Затим додирните апликацију коју желите да деинсталирате (можда ћете морати да превучете надесно или налево да бисте пронашли апликацију). Онда додирните Деинсталирај или Онемогући.</translation>
 <translation id="5334113802138581043">Приступ микрофону</translation>
 <translation id="5334142896108694079">Кеш скрипте</translation>
+<translation id="5335370353987155592">Користите Gemini пажљиво и <ph name="BEGIN_LINK1" />безбедно<ph name="LINK_END1" />. Одговорни сте за радње које Gemini предузме током задатка, укључујући грешке и <ph name="BEGIN_LINK2" />неочекиване резултате<ph name="LINK_END2" /> попут куповина.</translation>
 <translation id="5336688142483283574">Ова страница ће такође бити уклоњена из историје и из <ph name="SEARCH_ENGINE" /> активности.</translation>
 <translation id="5336689872433667741">Курсор и тачпед</translation>
 <translation id="5337207153202941678">Искључи истицање</translation>
@@ -6621,6 +6641,7 @@
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Додај картицу у групу}one{Додај картице у групу}few{Додај картице у групу}other{Додај картице у групу}}</translation>
 <translation id="554535686826424776">Пронађи купоне</translation>
 <translation id="5546865291508181392">Пронађи</translation>
+<translation id="5547868626772433490">Упитајте Gemini</translation>
 <translation id="5548075230008247516">Поништен је избор свих ставки. Напустили се режим избора.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и још 1 картица}one{„<ph name="TAB_TITLE" />“ и још # картица}few{„<ph name="TAB_TITLE" />“ и још # картице}other{„<ph name="TAB_TITLE" />“ и још # картица}}</translation>
 <translation id="5548644592758170183">Прикажи са леве стране</translation>
@@ -6787,6 +6808,7 @@
 <translation id="5655296450510165335">Регистрација уређаја</translation>
 <translation id="5655823808357523308">Прилагодите начин на који се боје приказују на екрану</translation>
 <translation id="5656845498778518563">Пошаљите повратне информације Google-у</translation>
+<translation id="5656944594833183876">Затражите помоћ са задацима</translation>
 <translation id="5657667036353380798">Спољни додатак захтева да буде инсталиран Chrome <ph name="MINIMUM_CHROME_VERSION" /> или новија верзија.</translation>
 <translation id="565899488479822148">Најновије ажурирање се инсталира</translation>
 <translation id="5659593005791499971">Имејл</translation>
@@ -7579,6 +7601,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> је офлајн. Повежите се на интернет и пробајте поново.</translation>
 <translation id="6220413761270491930">Грешка при учитавању додатка</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{Копирање фајла у <ph name="CLOUD_PROVIDER" /> није успело}one{Копирање фајлова у <ph name="CLOUD_PROVIDER" /> није успело}few{Копирање фајлова у <ph name="CLOUD_PROVIDER" /> није успело}other{Копирање фајлова у <ph name="CLOUD_PROVIDER" /> није успело}}</translation>
+<translation id="62229737360959019">Картице отворене из чета или дељене картице се такође деле са Gemini-јем. У режиму Live подразумевано се дели само актуелна картица.</translation>
 <translation id="6224481128663248237">Форматирање је довршено!</translation>
 <translation id="622474711739321877">Овај контејнер већ постоји.</translation>
 <translation id="622484624075952240">Надоле</translation>
@@ -7790,6 +7813,7 @@
 <translation id="6367097275976877956">Желите ли да активирате ChromeVox, уграђени читач екрана за Chrome ОС? Ако је тако, притисните тастер за размак.</translation>
 <translation id="6367196786591004737">Избриши унос</translation>
 <translation id="6367396429435748845">Притисните <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> да бисте паузирали и наставили коришћење тастера миша</translation>
+<translation id="6367853307713830174">Gemini приказује своје кораке и покушава да потврди пре него што предузме осетљиве радње. У сваком тренутку можете да зауставите или преузмете контролу.</translation>
 <translation id="6367985768157257101">Желите да примате садржај помоћу Дељења у близини?</translation>
 <translation id="6368157733310917710">Адресе и друго</translation>
 <translation id="6368276408895187373">Омогућено – <ph name="VARIATION_NAME" /></translation>
@@ -7839,6 +7863,7 @@
 <translation id="640457954117263537">Користи локацију за ChromeOS и Android апликације и услуге.</translation>
 <translation id="6406303162637086258">Симулирај поновно покретање прегледача</translation>
 <translation id="6406506848690869874">Синхронизација</translation>
+<translation id="6406571339342621375">Не приказуј Gemini на траци менија</translation>
 <translation id="6406708970972405507">Подешавања – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Дозвољено је чување података на уређају</translation>
 <translation id="6408118934673775994">Читање и мењање података на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и <ph name="WEBSITE_3" /></translation>
@@ -8315,6 +8340,7 @@
 <translation id="6737663862851963468">Уклоните Kerberos тикет</translation>
 <translation id="6738180164164974883">Дозволи подешавање колачића треће стране</translation>
 <translation id="6738430949033571771">Верификује се налог…</translation>
+<translation id="6739153164244375709">Приказивач Gemini хоста</translation>
 <translation id="6739266861259291931">Ресетуј на језик уређаја</translation>
 <translation id="6739923123728562974">Прикажи пречицу на радној површини</translation>
 <translation id="6739943577740687354">Ова функција користи вештачку интелигенцију и неће увек радити како треба</translation>
@@ -8560,6 +8586,7 @@
 <translation id="6899427698619335650">Дозволите флексибилну доделу дијакритичког садржаја. На пример, можете да унесете „anh1“ или „a1nh“ да бисте добили „anh“.</translation>
 <translation id="6900284862687837908">Апликација у позадини: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Напредна заштита</translation>
+<translation id="6900632443249221072">Направи слику помоћу Gemini-ја</translation>
 <translation id="6900651018461749106">Пријавите се поново да бисте ажурирали <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Желите ли стварно да избришете овај претраживач?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
@@ -9073,6 +9100,7 @@
 <translation id="7268412955622368206">Приказује искачуће обавештење за нове USB уређаје.</translation>
 <translation id="7269229526547981029">Овим профилом управља <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> захтева нови профил за налог <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7269736181983384521">Потрошња података Дељења у близини</translation>
+<translation id="7270447384127135313">Док прегледате, можете лако да постављате Gemini-ју питања о картицама које делите.</translation>
 <translation id="7271278495464744706">Омогући детаљне описе</translation>
 <translation id="7272674038937250585">Није наведен ниједан опис</translation>
 <translation id="7273110280511444812">последњи пут је прикључено <ph name="DATE" /></translation>
@@ -9571,6 +9599,7 @@
 <translation id="7617263010641145920">Укључите Play продавницу</translation>
 <translation id="7617648809369507487">Користи ненаметљиву размену порука</translation>
 <translation id="7619937211696316184">Одржавање је завршено</translation>
+<translation id="7620049858153799769">Конверзације о дељеним картицама могу да виде особе које прегледају ради побољшања Gemini-ја.</translation>
 <translation id="7620083113061729689">Синхронизуј историју</translation>
 <translation id="7620616707541471029">Одаберите налог да бисте наставили</translation>
 <translation id="7621382409404463535">Систем није успео да сачува конфигурацију уређаја.</translation>

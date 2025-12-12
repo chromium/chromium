@@ -401,6 +401,7 @@
 <translation id="1252987234827889034">設定檔發生錯誤</translation>
 <translation id="1254034280040157728">大峽谷</translation>
 <translation id="1254593899333212300">直接連線到互聯網</translation>
+<translation id="1255095393630332248">共用分頁時，系統會將頁面內容、媒體和網址傳送給 Google。</translation>
 <translation id="1256588359404100567">已經喺舊裝置度同步設定。</translation>
 <translation id="1257336506558170607">匯出揀咗嘅憑證</translation>
 <translation id="1258491128795710625">新功能</translation>
@@ -525,6 +526,7 @@
 <translation id="1342886103232377846">如要檢查密碼是否被盜用，請前往「Google 密碼管理工具」</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
 <translation id="1344141078024003905">您正在投放螢幕畫面。您可以隨時暫停或停止投放螢幕畫面。</translation>
+<translation id="13449088910457661">Gemini 會在分頁中完成你指派的任務。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">傳送使用情況和診斷資料。將診斷、裝置及應用程式的使用情況資料自動傳送至 Google，協助改善你子女的 Android 使用體驗。這些資料不會用來識別你子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果你為子女開啟「其他網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK1" />進一步瞭解數據<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">確認並重新啟動</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -587,6 +589,7 @@
 <translation id="1390907927270446471">「<ph name="PROFILE_USERNAME" />」無權透過「<ph name="PRINTER_NAME" />」列印。請聯絡您的管理員。</translation>
 <translation id="1392047138650695757">用戶字典</translation>
 <translation id="139300021892314943">限制可登入的使用者</translation>
+<translation id="1393235015225624732">{NUM_TABS,plural, =1{停止與 Gemini 分享分頁}other{停止與 Gemini 分享 # 個分頁}}</translation>
 <translation id="1393283411312835250">太陽和雲</translation>
 <translation id="1395832189806039783">突顯鍵盤焦點所在項目</translation>
 <translation id="1396120028054416908">返去「<ph name="FOLDER_TITLE" />」</translation>
@@ -730,6 +733,7 @@
 <translation id="1486616492435615702">建立草稿或修正現有作品。</translation>
 <translation id="1487335504823219454">開啟 - 自訂設定</translation>
 <translation id="1489101155914355052">正在生成與此文件相關的建議…</translation>
+<translation id="1493152297698462486">使用 Gemini 製作圖片</translation>
 <translation id="1493892686965953381">正在等待 <ph name="LOAD_STATE_PARAMETER" />…</translation>
 <translation id="1494349716233667318">網站可以要求使用裝置上安裝的字型</translation>
 <translation id="1494429729245089920">虛擬機器「<ph name="VM_NAME" />」已存在，但似乎不是有效的「<ph name="APP_NAME" />」虛擬機器。請聯絡您的管理員。</translation>
@@ -829,6 +833,7 @@
 <translation id="1561331397460162942">此操作會向應用程式、具有麥克風權限的網站及系統服務授予位置資料存取權</translation>
 <translation id="1562119309884184621">新增此聯絡人後，下次該聯絡人分享檔案時，系統將可辨識該聯絡人</translation>
 <translation id="1562585387501039294">你的機構 <ph name="ACCOUNT_MANAGER" /> 要求使用受管設定檔，並可以查看部分資料，包括</translation>
+<translation id="156345786953026804">Gemini 在處理任務期間所用的頁面內容和網址會與 Google 分享。</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">所選打印機無法使用或尚未正確安裝。請檢查打印機，或嘗試選取其他打印機。</translation>
 <translation id="1566329594234563241">處於閒置狀態並接上電源時</translation>
@@ -1026,6 +1031,7 @@
 <translation id="167983332380191032">裝置管理服務已傳送 HTTP 錯誤。</translation>
 <translation id="167997285881077031">「文字轉語音」聲音設定</translation>
 <translation id="1680849702532889074">安裝 Linux 應用程式時發生錯誤。</translation>
+<translation id="1682195225331129001">立即試用</translation>
 <translation id="1682548588986054654">新增無痕式視窗</translation>
 <translation id="1682696837763999627">大型滑鼠游標</translation>
 <translation id="1682867089915960590">要開啟「鍵盤瀏覽」功能嗎？</translation>
@@ -1132,6 +1138,7 @@
 <translation id="1753557900380512635">室內</translation>
 <translation id="1753905327828125965">最常瀏覽</translation>
 <translation id="1755601632425835748">文字大小</translation>
+<translation id="1756963401828337401">選擇要擷取的螢幕</translation>
 <translation id="1757132445735080748">如要完成 Linux 的設定程序，請更新 ChromeOS Flex，然後再試一次。</translation>
 <translation id="1757301747492736405">正在等待解除安裝</translation>
 <translation id="175772926354468439">啟用主題</translation>
@@ -2137,6 +2144,7 @@
 <translation id="2435248616906486374">網絡已中斷連線</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2436385001956947090">複製連結(&amp;L)</translation>
+<translation id="2437105255211187922">{NUM_TABS,plural, =1{分享所選分頁會超出分享限制}other{分享 # 個分頁會超出分享限制}}</translation>
 <translation id="2437561292559037753">資料分享</translation>
 <translation id="2438853563451647815">未連線至打印機</translation>
 <translation id="2439152382014731627">重設 <ph name="DEVICE_TYPE" /> 密碼</translation>
@@ -2350,6 +2358,7 @@
 <translation id="2573276323521243649">從選取顯示圖片頁面返回</translation>
 <translation id="2573417407488272418">升級前將應用程式和檔案備份至「檔案」&gt;「我的檔案」。</translation>
 <translation id="2573831315551295105">指派代表「<ph name="ACTION" />」的按鈕裝置</translation>
+<translation id="2574037773163798130">{NUM_TABS,plural, =1{與 Gemini 分享分頁}other{與 Gemini 分享 # 個分頁}}</translation>
 <translation id="2575247648642144396">畫面上顯示這個圖示時，表示擴充功能可在目前網頁上運作。如要啟用這項擴充功能，請按一下圖示或按下 <ph name="EXTENSION_SHORTCUT" />。</translation>
 <translation id="2575407791320728464">網址無效。請確保網址的格式正確。</translation>
 <translation id="2575441894380764255">不允許顯示滋擾性或誤導廣告</translation>
@@ -2807,6 +2816,7 @@
 <translation id="2886119409731773154">此操作大概需時 30 分鐘</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692">「<ph name="DEVICE" />」和另外 <ph name="NUMBER_OF_DEVICES" /> 部裝置</translation>
+<translation id="2887344147309501015">瀏覽時與 Chrome 版 Gemini 對話，取得答案、要點等內容</translation>
 <translation id="2889043468805635730">未發現問題</translation>
 <translation id="2889064240420137087">使用其他程式開啟連結…</translation>
 <translation id="2891464434568738544">目前沒有可用的網站。請前往網站以將其新增到此清單。</translation>
@@ -3442,6 +3452,7 @@
 <translation id="3347086966102161372">複製圖片位址(&amp;O)</translation>
 <translation id="3348038390189153836">偵測到卸除式裝置</translation>
 <translation id="3348973040180736882">正在解壓縮</translation>
+<translation id="3349610303043713601">使用 AI 瀏覽</translation>
 <translation id="3349933790966648062">記憶體使用量</translation>
 <translation id="3350450887151703713">重播 10 秒</translation>
 <translation id="3351472127384196879">新增或尋找觸控筆上的按鈕</translation>
@@ -4616,6 +4627,7 @@
 <translation id="4116480382905329353">偵測到 1 次</translation>
 <translation id="4116704186509653070">重新開啟</translation>
 <translation id="4117714603282104018">觸控板觸感反應</translation>
+<translation id="4117854923024277067">你可以配合提示使用或者刪除螢幕截圖</translation>
 <translation id="4118579674665737931">請重新啟動裝置，然後再試一次。</translation>
 <translation id="4120388883569225797">無法重設此安全密鑰</translation>
 <translation id="4120817667028078560">路徑名稱過長</translation>
@@ -4668,6 +4680,7 @@
 <translation id="4158315983204257156">網站文字大小和字型</translation>
 <translation id="4158364720893025815">通過</translation>
 <translation id="4159784952369912983">紫色</translation>
+<translation id="4162545316103024845">{NUM_TABS,plural, =1{分享所選分頁會超出分享限制}other{分享 # 個分頁會超出分享限制}}</translation>
 <translation id="4163560723127662357">未知的鍵盤</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> 不屬於有效的機構，請聯絡您的管理員。如果您是管理員，可前往 g.co/ChromeEnterpriseAccount 設定機構</translation>
 <translation id="4165986682804962316">網站設定</translation>
@@ -4678,6 +4691,8 @@
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />，尾碼係 <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4170314459383239649">退出時清除</translation>
+<translation id="417112242673828206">{NUM_TABS,plural, =1{與 Gemini 分享分頁}other{與 Gemini 分享 # 個分頁}}</translation>
+<translation id="4173129130568053653">Gemini 可助你預約、建立購物車，或執行你指派的其他任務。</translation>
 <translation id="4175137578744761569">淺紫色和白色</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176864026061939326">此裝置已受管理。裝置管理員要求為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立新的個人檔案</translation>
@@ -4711,6 +4726,7 @@
 <translation id="4200689466366162458">自訂字詞</translation>
 <translation id="4200983522494130825">新分頁(&amp;T)</translation>
 <translation id="4201546031411513170">您隨時可在設定中選擇要同步的資料。</translation>
+<translation id="4202536110335087135">立即試用</translation>
 <translation id="4203065553461038553">檔案名稱或路徑名稱太長</translation>
 <translation id="4203769790323223880">唔批准用攝錄機</translation>
 <translation id="4204415812590935863">目前無法建立主題。</translation>
@@ -6150,6 +6166,7 @@
 <translation id="5204967432542742771">輸入密碼</translation>
 <translation id="5205484256512407285">一律不使用流動數據進行傳輸</translation>
 <translation id="520568280985468584">已成功新增網絡。流動網絡可能需時幾分鐘才能啟用。</translation>
+<translation id="520576054436518354">讓 Gemini 為你瀏覽</translation>
 <translation id="5207949376430453814">突顯文字插入符號</translation>
 <translation id="520840839826327499">「<ph name="SERVICE_NAME" />」想檢查您是否使用符合資格的 Chrome OS 裝置。</translation>
 <translation id="5208722776934437424">變更權限</translation>
@@ -6165,6 +6182,7 @@
 <translation id="5215450412607891876">開啟延長安全更新</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="5216674789212441076">自動翻譯即時字幕。字幕會傳送至 Google 進行翻譯。</translation>
+<translation id="5216951551945455224">{NUM_TABS,plural, =1{停止與 Gemini 分享分頁}other{停止與 Gemini 分享 # 個分頁}}</translation>
 <translation id="5220011581825921581">搜尋鍵 + 向上箭咀鍵</translation>
 <translation id="5221516927483787768">無法投放 <ph name="HOST_NAME" /></translation>
 <translation id="5221834113325601057">喺清單度排除咗分頁</translation>
@@ -6238,6 +6256,7 @@
 <translation id="5267572070504076962">開啟「安全瀏覽」功能可避免受危險網站的攻擊</translation>
 <translation id="5269659747698455324">解鎖密鑰</translation>
 <translation id="5269977353971873915">列印失敗</translation>
+<translation id="5271124474068841290">與 Gemini 分享當前分頁，即使切換分頁亦然。你的資料不會用於改善生成式 AI 模型。</translation>
 <translation id="5271578170655641944">要移除「Google 雲端硬碟」存取權嗎？</translation>
 <translation id="5272198173084686007">沒有其他裝置的分頁</translation>
 <translation id="527335345740023523">目前有 <ph name="NUMBERED_ITEM_1" />、<ph name="NUMBERED_ITEM_2" />、<ph name="NUMBERED_ITEM_3" />和其他項目，你的機構 <ph name="ACCOUNT_MANAGER" /> 將可以查看和管理有關資料。</translation>
@@ -6326,6 +6345,7 @@
 <translation id="5333896723098573627">如要移除應用程式，請前往 [設定] &gt; [應用程式] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [應用程式] 或 [應用程式管理員]，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。</translation>
 <translation id="5334113802138581043">麥克風存取權</translation>
 <translation id="5334142896108694079">指令碼快取</translation>
+<translation id="5335370353987155592">使用 Gemini 時必須謹慎<ph name="BEGIN_LINK1" />安全<ph name="LINK_END1" />。Gemini 在處理任務期間所執行的操作 (包括出錯和<ph name="BEGIN_LINK2" />非預期的結果<ph name="LINK_END2" />，例如購物) 由你自行承擔責任。</translation>
 <translation id="5336688142483283574">此頁面也會從您的記錄和 <ph name="SEARCH_ENGINE" /> 活動中移除。</translation>
 <translation id="5336689872433667741">游標和觸控板</translation>
 <translation id="5337207153202941678">關閉突顯功能</translation>
@@ -6630,6 +6650,7 @@
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
 <translation id="554535686826424776">尋找優惠券</translation>
 <translation id="5546865291508181392">搜尋</translation>
+<translation id="5547868626772433490">問 Gemini</translation>
 <translation id="5548075230008247516">取消晒所有揀咗嘅項目，同埋結束選取模式。</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」和另外 1 個標籤}other{「<ph name="TAB_TITLE" />」和另外 # 個標籤}}</translation>
 <translation id="5548644592758170183">在左邊顯示</translation>
@@ -6793,6 +6814,7 @@
 <translation id="5655296450510165335">裝置註冊</translation>
 <translation id="5655823808357523308">調整畫面顏色顯示方式</translation>
 <translation id="5656845498778518563">傳送意見給 Google</translation>
+<translation id="5656944594833183876">協助處理工作</translation>
 <translation id="5657667036353380798">這個外部擴充功能需要安裝 <ph name="MINIMUM_CHROME_VERSION" /> 版本以上的 Chrome 瀏覽器。</translation>
 <translation id="565899488479822148">正在安裝最新的更新版本</translation>
 <translation id="5659593005791499971">電郵</translation>
@@ -7584,6 +7606,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> 已離線。請重新連線至互聯網，然後再試一次。</translation>
 <translation id="6220413761270491930">載入擴充功能時發生錯誤</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{無法將檔案複製至「<ph name="CLOUD_PROVIDER" />」}other{無法將檔案複製至「<ph name="CLOUD_PROVIDER" />」}}</translation>
+<translation id="62229737360959019">從對話或共用分頁所開啟的分頁亦會與 Gemini 分享。Live 模式預設只分享當前的分頁。</translation>
 <translation id="6224481128663248237">格式化成功完成！</translation>
 <translation id="622474711739321877">此容器已存在。</translation>
 <translation id="622484624075952240">向下鍵</translation>
@@ -7795,6 +7818,7 @@
 <translation id="6367097275976877956">係咪要啟動 Chrome OS 內置嘅螢幕閱讀器 ChromeVox？要嘅話請㩒空格鍵。</translation>
 <translation id="6367196786591004737">刪除項目</translation>
 <translation id="6367396429435748845">按 <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> 可暫停和恢復滑鼠鍵</translation>
+<translation id="6367853307713830174">Gemini 會顯示正在執行的步驟，並在採取敏感操作前請你確認。你可隨時停止操作或接手。</translation>
 <translation id="6367985768157257101">要透過咫尺共享接收嗎？</translation>
 <translation id="6368157733310917710">地址和其他資料(&amp;A)</translation>
 <translation id="6368276408895187373">已啟用 - <ph name="VARIATION_NAME" /></translation>
@@ -7844,6 +7868,7 @@
 <translation id="640457954117263537">讓 ChromeOS 和 Android 應用程式和服務使用位置資料。</translation>
 <translation id="6406303162637086258">模擬瀏覽器重新啟動</translation>
 <translation id="6406506848690869874">同步處理</translation>
+<translation id="6406571339342621375">不要在選單列顯示 Gemini</translation>
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">已允許在裝置上儲存資料</translation>
 <translation id="6408118934673775994">讀取及變更您在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 網站上的資料</translation>
@@ -8316,6 +8341,7 @@
 <translation id="6737663862851963468">移除 Kerberos 票證</translation>
 <translation id="6738180164164974883">允許設定第三方 Cookie</translation>
 <translation id="6738430949033571771">正在驗證帳戶…</translation>
+<translation id="6739153164244375709">Gemini 主機呈現器</translation>
 <translation id="6739266861259291931">重設為裝置語言</translation>
 <translation id="6739923123728562974">顯示桌面捷徑</translation>
 <translation id="6739943577740687354">此功能採用 AI，結果未必完全準確</translation>
@@ -8561,6 +8587,7 @@
 <translation id="6899427698619335650">允許彈性指派變音符號。例如，無論您輸入「anh1」還是「a1nh」，都可以得到「ánh」這個字。</translation>
 <translation id="6900284862687837908">背景應用程式：<ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">強化保護功能</translation>
+<translation id="6900632443249221072">使用 Gemini 製作圖片</translation>
 <translation id="6900651018461749106">再次登入即可更新 <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">確定要刪除此搜尋引擎嗎？</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
@@ -9074,6 +9101,7 @@
 <translation id="7268412955622368206">新 USB 裝置顯示彈出式通知。</translation>
 <translation id="7269229526547981029">此個人檔案由 <ph name="PROFILE_MANAGER" /> 管理。<ph name="ACCOUNT_MANAGER" /> 要求為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立新的個人檔案</translation>
 <translation id="7269736181983384521">「咫尺共享」數據用量</translation>
+<translation id="7270447384127135313">你可以在瀏覽時輕鬆問 Gemini 有關共用分頁的問題。</translation>
 <translation id="7271278495464744706">啟用詳細說明</translation>
 <translation id="7272674038937250585">未提供說明</translation>
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
@@ -9571,6 +9599,7 @@
 <translation id="7617263010641145920">開啟「Play 商店」</translation>
 <translation id="7617648809369507487">使用低擾式通知</translation>
 <translation id="7619937211696316184">維護已完成</translation>
+<translation id="7620049858153799769">為提升 Gemini 品質，人手審查員可能會查看有關共用分頁的對話。</translation>
 <translation id="7620083113061729689">同步記錄</translation>
 <translation id="7620616707541471029">選擇帳戶以便繼續操作</translation>
 <translation id="7621382409404463535">系統無法儲存裝置設定。</translation>

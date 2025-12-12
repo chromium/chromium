@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">Google Lens සමග මෙම පටිත්ත සොයන්න</translation>
 <translation id="1849248141818021764">ඔබේ සංකේතිත දත්ත කියවිය හැක්කේ ඔබේ මුර වැකිකඩ සහිත කෙනෙකුට පමණි. මුර වැකිකඩ Google වෙත යවන්නේ හෝ ගබඩා කරන්නේ නැත. ඔබට ඔබේ මුර-වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසුම වෙනස් කිරීමට අවශ්‍ය නම්, ඔබට <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකා දැමීමට<ph name="END_LINK" /> අවශ්‍ය වනු ඇත.</translation>
 <translation id="1860536484129686729">Chrome හට මෙම අඩවිය සදහා ඔබේ කැමරාවට ප්‍රවේශ වීමට අවසර අවශ්‍යයි</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> භාවිත කිරීමට ඔබේ Google ගිණුම සමග Chrome වෙත පුරන්න</translation>
 <translation id="1873233029667955273">Google Chrome ඔබේ පෙරනිමි බ්‍රව්සරය නොවේ</translation>
 <translation id="1874309113135274312">Google Chrome බීටා (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome යල් පැන ගොස් ඇත</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">Chrome සමහර බාගැනීම් අවහිර කරන හේතුව ඉගෙන ගන්න</translation>
 <translation id="2861074815332034794">Chrome යාවත්කාලීන කරමින් (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">ඔබ Chromeට සයින් ඉන් වී ඇත!</translation>
+<translation id="2875053229394024379">ඔබ ඔබේ Google ගිණුම සමග Chrome වෙත පුරනය වූ විට, ඔබට Gemini සමග ඔබේ Chrome පැතිකඩ භාවිත කළ හැක. <ph name="BEGIN_LINK" />Chrome වෙත පුරනය වන ආකාරය දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ඔබේ දත්ත පෞද්ගලිකව තබා ගන්නා ආකාරය<ph name="END_LINK" /> පිළිබඳව තව දැන ගන්න</translation>
 <translation id="2885378588091291677">කාර්ය කළමණාකරු</translation>
 <translation id="2888126860611144412">Chrome ගැන</translation>
@@ -223,6 +225,7 @@
 <translation id="3352986031709923790">සෙවීම් ප්‍රදේශයේ ඉහළම දකුණු කෙළවර: දකුණ <ph name="RIGHT" />%, ඉහළ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome සහායක</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome දැන් යළි දියත් වෙයි}=1{Chrome 1 තත්පරයකින් යළි දියත් වෙයි}one{Chrome තත්පර # කින් යළි දියත් වෙයි}other{Chrome තත්පර # කින් යළි දියත් වෙයි}}</translation>
+<translation id="3380249972812870825">Chrome හි Gemini විවෘත කිරීමට, <ph name="GLOBAL_HOTKEY" /> ඔබන්න</translation>
 <translation id="3396977131400919238">ස්ථාපනය අතරතුර මෙහෙයුම් පද්ධති දෝෂයක් මතුවිය. නැවතත් Google ක්‍රෝම් බාගෙන උත්සාහ කරන්න.</translation>
 <translation id="3428747202529429621">ඔබ පුරනය වී සිටින විට Chrome මත ඔබව ආරක්‍ෂිතව තබා ගන්නා අතර සහ අනෙකුත් Google යෙදුම් තුළ ඔබේ ආරක්ෂාව වැඩිදියුණු කිරීමට භාවිත කළ හැක</translation>
 <translation id="3434246496373299699">ඔබ ඔබේ Google ගිණුම මඟින් පුරන විට Chrome ඔබේ මුරපද පරීක්‍ෂා කළ හැක</translation>
@@ -350,6 +353,7 @@
 <translation id="4891791193823137474">Google Chrome හට පසුබිමේ ක්‍රියාත්මක වීමට ඉඩ දෙන්න</translation>
 <translation id="4895437082222824641">සබැඳිය නව Chrome ප&amp;ටිත්තක විවෘත කරන්න</translation>
 <translation id="4918844574251943176">රූපය පිටපත් කරන ලදි</translation>
+<translation id="4926882258455737990">Chrome හි Gemini සමග වෙනත් Google ගිණුමක් භාවිතා කිරීමට, <ph name="BEGIN_LINK" />නව පැතිකඩක් සාදන්න<ph name="END_LINK" /> සහ ඔබට අවශ්‍ය ගිණුම සමග පුරන්න</translation>
 <translation id="492720062778050435">Chrome ඔබට මෙම දිගුව සමාලෝචනය කිරීමට නිර්දේශ කරයි</translation>
 <translation id="4946912144186040233">Chrome විසින් පෝරම වඩා හොඳින් වටහා ගන්නා අතර ඔබ වෙනුවෙන් ඒවා ඉක්මනින් ස්වයංව පුරවා දීමට හැක. මෙම සැකසීම ක්‍රියාවිරහිතයි.</translation>
 <translation id="4953650215774548573">ඔබේ පෙරනිමි බ්‍රව්සරය ලෙස Google Chrome සකසන්න</translation>
@@ -375,6 +379,7 @@
 ඇතැම් විශේෂාංග නොපවතිනු ඇත. කරුණාකර Chrome නි නව සංස්කරණය භාවිතයට වෙනස් පැතිකඩ නාමාවලියක් භාවිත කරන්න.</translation>
 <translation id="5174969993834422967">ඔබ සාමාන්‍යයෙන් දැනුම් දීම් අවහිර කරයි. මෙම අඩවිය ඔබට දැනුම් දීමට ඉඩ දීමට, ඔබේ ස්ථාන තීරුවේ දකුණු කෙළවරේ ඇති දැනුම්දීම් නිරූපකය ක්ලික් කරන්න.</translation>
 <translation id="5174983315706567306">ප්‍රමාණවත් තැටි ඉඩක් නැත.</translation>
+<translation id="5179933070463113976">Chrome හි Gemini භාවිතා කිරීමට, ඔබ ඔබේ Google ගිණුම සමග Chrome වෙත පුරනය වී සිටිය යුතු යි</translation>
 <translation id="5190467473654176081">එයට නව පෙනුමක් ලබා දීමට Chrome අභිරුචි කරන්න</translation>
 <translation id="5201744974236816379">Chrome යාවත්කාලීන කිරීම</translation>
 <translation id="521447420733633466">ඔබ උපාංගයක් බෙදා ගන්නේ නම්, මිතුරන්ට සහ පවුලේ අයට වෙන්ව බ්‍රවුස් කළ හැකි අතර ඔවුනට අවශ්‍ය ආකාරයට Chrome පිහිටුවිය හැකිය.</translation>
@@ -395,6 +400,7 @@
 <translation id="5430073640787465221">ඔබගේ මනාප ගොනුව හානිවී හෝ අවලංගුයි.
 
 Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසාධනය කිරීමට නොහැක.</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> සමග භාවිත කිරීමට Chrome පැතිකඩක් තෝරා ගන්න</translation>
 <translation id="5468572406162360320">මෙම විශේෂාංග වැඩිදියුණු කිරීමට උදවු කිරීම සඳහා, Chrome ඒවා සමග ඔබේ අන්තර්ක්‍රියා Google වෙත යවයි. මෙම දත්ත මානව සමාලෝචකයින් විසින් කියවනු ලැබීමට, සකසනු ලැබීමට සහ විවරණ කරනු ලැබීමට හැකිය.</translation>
 <translation id="5510398294750420479">ඔබ ගමනේ යෙදී සිටින විට අමතර ආරක්ෂාවක් එක් කිරීමට ඔබේ දුරකථනයට Chrome බාගන්න</translation>
 <translation id="5524890928877629608">සෙවීම් ප්‍රදේශයේ ඉහළම වම් කෙළවර: වම <ph name="LEFT" />%, ඉහළ <ph name="TOP" />%</translation>
@@ -614,6 +620,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7655472416356262023">Chrome වෙතින් ගිණුම ඉවත් කරන්න</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7670287553302121848">Chrome ගිණුමට නැවත සත්‍යාපනය අවශ්‍යයි</translation>
+<translation id="7675756456029023637">Chrome වෙතින් අසන්න</translation>
 <translation id="769538538642757151">ඕනෑම දෙයකට ඔබේ සමාලෝචනය අවශ්‍ය නම් Chrome ඔබට දන්වනු ඇත</translation>
 <translation id="769906121737764913">Chrome බීටා හි Gemini වසන්න</translation>
 <translation id="7716950018788545737">කාර්යය(යන්) නිමා විය.</translation>

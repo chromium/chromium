@@ -79,6 +79,7 @@
 <translation id="1843347690926158494">Google Lens மூலம் இந்தப் பக்கத்தைத் தேடுங்கள்</translation>
 <translation id="1849248141818021764">உங்கள் கடவுச்சொற்றொடரை வைத்திருப்பவர்கள் மட்டுமே என்க்ரிப்ட் செய்யப்பட்ட உங்கள் தரவைப் படிக்க முடியும். கடவுச்சொற்றொடர் Googleளுக்கு அனுப்பப்படாது, அதை Google சேமிக்காது. கடவுச்சொற்றொடரை மறந்துவிட்டாலோ இந்த அமைப்பை மாற்ற விரும்பினாலோ <ph name="BEGIN_LINK" />உங்கள் கணக்கில் உள்ள Chrome தரவை நீக்க<ph name="END_LINK" /> வேண்டும்.</translation>
 <translation id="1860536484129686729">இந்தத் தளத்திற்காகக் கேமராவை அணுக Chromeமுக்கு அனுமதி தேவை</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Geminiயைப்<ph name="END_GLIC_STYLING" /> பயன்படுத்த உங்கள் Google கணக்கு மூலம் Chromeமில் உள்நுழையுங்கள்</translation>
 <translation id="1873233029667955273">Google Chrome உங்கள் இயல்புநிலை உலாவி அல்ல</translation>
 <translation id="1874309113135274312">Google Chrome பீட்டா (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome காலாவதியானது</translation>
@@ -169,6 +170,7 @@
 <translation id="286025080868315611">சில பதிவிறக்கங்களை Chrome ஏன் தடுக்கிறது என்பதைத் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="2861074815332034794">Chromeமைப் புதுப்பிக்கிறது (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome இல் உள்நுழைந்துள்ளீர்கள்!</translation>
+<translation id="2875053229394024379">உங்கள் Google கணக்கு மூலம் Chromeமில் உள்நுழையும்போது, உங்கள் Chrome சுயவிவரத்தை Gemini உடன் பயன்படுத்தலாம். <ph name="BEGIN_LINK" />Chromeமில் உள்நுழைவது எப்படி என்று தெரிந்துகொள்ளுங்கள்<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome உங்கள் தரவை எப்படித் தனிப்பட்டதாக வைத்திருக்கிறது<ph name="END_LINK" /> என்பது குறித்து மேலும் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="2885378588091291677">செயல் நிர்வாகி</translation>
 <translation id="2888126860611144412">Chrome அறிமுகம்</translation>
@@ -219,6 +221,7 @@
 <translation id="3352986031709923790">தேடல் பகுதியின் மேல் வலது மூலை: வலது <ph name="RIGHT" />%, மேல் <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome உதவி</translation>
 <translation id="3379938682270551431">{0,plural, =0{இப்போது Chrome மீண்டும் தொடங்கும்}=1{ஒரு வினாடியில் Chrome மீண்டும் தொடங்கும்}other{# வினாடிகளில் Chrome மீண்டும் தொடங்கும்}}</translation>
+<translation id="3380249972812870825">Chromeமில் Geminiயைத் திறக்க <ph name="GLOBAL_HOTKEY" /> அழுத்துங்கள்</translation>
 <translation id="3396977131400919238">நிறுவலின்போது இயக்கமுறைமையில் பிழை ஏற்பட்டது. Google Chromeமை மீண்டும் பதிவிறக்குக.</translation>
 <translation id="3428747202529429621">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்</translation>
 <translation id="3434246496373299699">Google கணக்கைப் பயன்படுத்தி நீங்கள் உள்நுழையும்போது Chrome உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியும்</translation>
@@ -347,6 +350,7 @@
 <translation id="4891791193823137474">பின்னணியில் Google Chrome ஐ இயக்கு</translation>
 <translation id="4895437082222824641">புதிய Chrome &amp;தாவலில் இணைப்பைத் திற</translation>
 <translation id="4918844574251943176">படம் நகலெடுக்கப்பட்டது</translation>
+<translation id="4926882258455737990">Chromeமில் Gemini உடன் வேறு Google கணக்கைப் பயன்படுத்த, <ph name="BEGIN_LINK" />புதிய சுயவிவரத்தை உருவாக்கி<ph name="END_LINK" /> நீங்கள் விரும்பும் கணக்கின் மூலம் உள்நுழையுங்கள்</translation>
 <translation id="492720062778050435">இந்த நீட்டிப்பைச் சரிபார்க்குமாறு Chrome பரிந்துரைக்கிறது</translation>
 <translation id="4946912144186040233">படிவங்களில் நிரப்ப வேண்டியவற்றை Chrome சிறப்பாகப் புரிந்துகொண்டு உங்கள் சார்பாக அவற்றை விரைவாகத் தானாக நிரப்பும். இந்த அமைப்பு ஆஃப் செய்யப்பட்டுள்ளது.</translation>
 <translation id="4953650215774548573">Google Chrome ஐ உங்கள் இயல்புநிலை உலாவியாக அமைக்கவும்</translation>
@@ -370,6 +374,7 @@
 <translation id="5170938038195470297">Google Chrome இன் புத்தம் புதிய பதிப்பு என்பதால், உங்கள் சுயவிவரத்தைப் பயன்படுத்த முடியாது. சில அம்சங்கள் கிடைக்காமல் போகலாம். வேறு சுயவிவர கோப்பகத்தைக் குறிப்பிடுக அல்லது Chrome இன் புதிய பதிப்பைப் பயன்படுத்துக.</translation>
 <translation id="5174969993834422967">பொதுவாக அறிவிப்புகளைத் தடுத்து விடுவீர்கள். இந்தத் தளம் உங்களுக்கு அறிவிப்புகளை வழங்க அனுமதிக்க, இடப் பட்டியின் வலது மூலையில் உள்ள அறிவிப்பு ஐகானைக் கிளிக் செய்யவும்.</translation>
 <translation id="5174983315706567306">டிஸ்க்கில் போதுமான சேமிப்பிடம் இல்லை.</translation>
+<translation id="5179933070463113976">Chromeமில் Geminiயைப் பயன்படுத்த, உங்கள் Google கணக்கு மூலம் Chromeமில் உள்நுழைந்திருக்க வேண்டும்</translation>
 <translation id="5190467473654176081">Chromeமைப் பிரத்தியேகமாக்கி அதற்குப் புதிய தோற்றத்தைக் கொடுக்கலாம்</translation>
 <translation id="5201744974236816379">Chrome புதுப்பிப்பு</translation>
 <translation id="521447420733633466">நீங்கள் சாதனத்தைப் பகிர்ந்தால், நண்பர்களும் குடும்பத்தினரும் தனிப்பட்ட முறையில் உலாவலாம், மேலும் Chromeமை அவர்கள் விருப்பத்திற்கு ஏற்ப அமைத்துக்கொள்ளலாம்</translation>
@@ -388,6 +393,7 @@
 <translation id="5394833366792865639">Chrome பக்கத்தைப் பகிர்</translation>
 <translation id="5402307365844630024">Chrome பீட்டாவில் Geminiயை ஆன்/ஆஃப் செய்யும்</translation>
 <translation id="5430073640787465221">உங்கள் விருப்பத்தேர்வுகளின் ஃபைல் சிதைவடைந்துள்ளது அல்லது தவறானது. உங்கள் அமைப்புகளை Google Chrome ஆல் மீட்டெடுக்க முடியவில்லை.</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> உடன் பயன்படுத்த ஒரு Chrome சுயவிவரத்தைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="5468572406162360320">இந்த அம்சங்களை மேம்படுத்த உதவ, அவற்றுடனான உங்கள் உரையாடல்களை Googleளுக்கு Chrome அனுப்பும். இந்தத் தரவை மதிப்பாய்வாளர்கள் படிக்கலாம், செயலாக்கலாம், அவற்றைப் பற்றி சிறு குறிப்புகளை எழுதலாம்.</translation>
 <translation id="5510398294750420479">நீங்கள் எங்கிருந்தாலும் கூடுதல் பாதுகாப்பைப் பெற மொபைலில் Chrome ஆப்ஸைப் பதிவிறக்குங்கள்</translation>
 <translation id="5524890928877629608">தேடல் பகுதியின் மேல் இடது மூலை: இடது <ph name="LEFT" />%, மேல் <ph name="TOP" />%</translation>
@@ -607,6 +613,7 @@
 <translation id="7655472416356262023">Chromeமில் இருந்து கணக்கை அகற்று</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7670287553302121848">Chrome கணக்கிற்கு மறு அடையாளச் சரிபார்ப்பு தேவைப்படுகிறது</translation>
+<translation id="7675756456029023637">Chromeமைக் கேளுங்கள்</translation>
 <translation id="769538538642757151">நீங்கள் ஏதேனும் நடவடிக்கை எடுக்க வேண்டியிருந்தால் அதுகுறித்து Chrome உங்களுக்குத் தெரியப்படுத்தும்</translation>
 <translation id="769906121737764913">Chrome பீட்டாவில் Geminiயை மூடும்</translation>
 <translation id="7716950018788545737">பணிகள் முடிந்தன.</translation>

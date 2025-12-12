@@ -81,6 +81,7 @@
 <translation id="1843347690926158494">Google Lens वापरून या टॅबमध्ये शोधा</translation>
 <translation id="1849248141818021764">फक्त तुमचा पासफ्रेझ असलेली कोणतीही व्यक्ती तुमचा एन्क्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेझ Google कडे पाठवला किंवा त्याद्वारे स्टोअर केलेला नाही. तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, तुम्हाला <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा हटवणे<ph name="END_LINK" /> हे करावे लागेल.</translation>
 <translation id="1860536484129686729">या साइटसाठी Chrome ला तुमचा कॅमेरा ॲक्सेस करण्याची परवानगी हवी आहे</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> वापरण्यासाठी तुमचे Google खाते वापरून Chrome मध्ये साइन इन करा</translation>
 <translation id="1873233029667955273">Google Chrome तुमचा डीफॉल्ट ब्राउझर नाही</translation>
 <translation id="1874309113135274312">Google Chrome बीटा (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome कालबाह्य आहे</translation>
@@ -171,6 +172,7 @@
 <translation id="286025080868315611">Chrome काही डाउनलोड ब्लॉक का करते हे जाणून घ्या</translation>
 <translation id="2861074815332034794">Chrome अपडेट करत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">तुम्ही Chrome मध्‍ये साइन इन केले आहे!</translation>
+<translation id="2875053229394024379">तुम्ही तुमचे Google खाते वापरून Chrome मध्ये साइन इन करता, तेव्हा तुम्ही Gemini सह तुमची Chrome प्रोफाइल वापरू शकता. <ph name="BEGIN_LINK" />Chrome मध्ये साइन इन कसे करावे हे जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome तुमचा डेटा खाजगी कसा ठेवते<ph name="END_LINK" /> याविषयी अधिक जाणून घ्या</translation>
 <translation id="2885378588091291677">टास्क मॅनेजर</translation>
 <translation id="2888126860611144412">Chrome बद्दल</translation>
@@ -221,6 +223,7 @@
 <translation id="3352986031709923790">शोध क्षेत्राचा सर्वात वरचा उजवा कोपरा: उजवीकडे <ph name="RIGHT" />%, सर्वात वरती <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome मदतनीस</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome आता पुन्हा लॉंच होईल}=1{Chrome एका सेकंदामध्ये पुन्हा लॉंच होईल}other{Chrome # सेकंदांमध्ये पुन्हा लॉंच होईल}}</translation>
+<translation id="3380249972812870825">Chrome मध्ये Gemini उघडण्यासाठी, <ph name="GLOBAL_HOTKEY" /> प्रेस करा</translation>
 <translation id="3396977131400919238">इंस्टॉल करताना एक ऑपरेटिंग सिस्टीम‍ एरर आली. कृपया Google Chrome पुन्हा डाउनलोड करा.</translation>
 <translation id="3428747202529429621">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षिततेत सुधारणा करण्यासाठी वापरले जाऊ शकते</translation>
 <translation id="3434246496373299699">तुम्ही तुमचे Google खाते वापरून साइन इन करता तेव्हा, Chrome तुमचे पासवर्ड तपासू शकते</translation>
@@ -349,6 +352,7 @@
 <translation id="4891791193823137474">बॅकग्राउंडमध्ये Google Chrome सुरू द्या</translation>
 <translation id="4895437082222824641">लिंक नवीन Chrome &amp;टॅबमध्ये उघडा</translation>
 <translation id="4918844574251943176">इमेज कॉपी केली</translation>
+<translation id="4926882258455737990">Chrome मधील Gemini सह वेगळे Google खाते वापरण्यासाठी, <ph name="BEGIN_LINK" />नवीन प्रोफाइल तयार करणे<ph name="END_LINK" /> हे करा आणि तुम्हाला हवे असलेले खाते वापरून साइन इन करा</translation>
 <translation id="492720062778050435">Chrome तुम्हाला या एक्स्टेंशनचे पुनरावलोकन करण्याची शिफारस करते</translation>
 <translation id="4946912144186040233">Chrome हे फॉर्म आणखी चांगल्या पद्धतीने समजू शकते आणि ते तुमच्यासाठी अधिक जलद ऑटोफिल करू शकते. हे सेटिंग बंद आहे.</translation>
 <translation id="4953650215774548573">तुमचा डीफॉल्ट ब्राउझर म्हणून Google Chrome सेट करा</translation>
@@ -373,6 +377,7 @@
 काही वैशिष्‍ट्ये अनुपलब्ध असू शकतात. कृपया एक भिन्न प्रोफाइल डिरेक्टरी नमूद करा किंवा Google Chrome ची नवीनतम आवृत्ती वापरा.</translation>
 <translation id="5174969993834422967">तुम्ही सहसा सूचना ब्लॉक करता. या साइटला तुम्हाला सूचित करू देण्यासाठी, तुमच्या स्थान बारच्या उजव्या कोपऱ्यातील नोटिफिकेशन आयकनवर क्लिक करा.</translation>
 <translation id="5174983315706567306">डिस्कमधील जागा पुरेशी नाही.</translation>
+<translation id="5179933070463113976">Chrome मधील Gemini वापरण्यासाठी, तुम्ही तुमचे Google खाते वापरून Chrome मध्ये साइन इन करणे आवश्यक आहे</translation>
 <translation id="5190467473654176081">Chrome ला नवीन लुक देण्यासाठी ते कस्टमाइझ करा</translation>
 <translation id="5201744974236816379">Chrome शी संबंधित अपडेट</translation>
 <translation id="521447420733633466">तुम्ही डिव्हाइस शेअर केल्यास, मित्रमैत्रिणी आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना हवे तसे Chrome सेट करू शकतात</translation>
@@ -393,6 +398,7 @@
 <translation id="5430073640787465221">तुमची प्राधान्ये फाइल दूषित किंवा चुकीचे आहेत.
 
 Google Chrome तुमची सेटिंग्ज पुन्हा मिळवू शकत नाही.</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> सह वापरण्यासाठी Chrome प्रोफाइल निवडा</translation>
 <translation id="5468572406162360320">ही वैशिष्ट्ये सुधारण्यात मदत करण्यासाठी, Chrome त्याच्यासोबतचे तुमचे संवाद Google कडे पाठवते. हा डेटा मानवी परीक्षणकर्त्यांद्वारे वाचला जाऊ शकतो, त्यावर प्रक्रिया केली जाऊ शकते आणि त्यावर भाष्य केले जाऊ शकते.</translation>
 <translation id="5510398294750420479">तुमच्या फोनमध्ये Chrome डाउनलोड करा आणि तुम्ही फिरतीवर असताना सुरक्षेचा अतिरिक्त स्तर जोडा</translation>
 <translation id="5524890928877629608">शोध क्षेत्राचा सर्वात वरचा डावा कोपरा: डावीकडे <ph name="LEFT" />%, सर्वात वरती <ph name="TOP" />%</translation>
@@ -611,6 +617,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7655472416356262023">Chrome मधून खाते काढून टाका</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7670287553302121848">Chrome खात्यासाठी री-ऑथेंटिकेशन आवश्यक आहे</translation>
+<translation id="7675756456029023637">Chrome ला विचारा</translation>
 <translation id="769538538642757151">तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, Chrome तुम्हाला कळवेल</translation>
 <translation id="769906121737764913">Chrome बीटा मधील Gemini बंद करा</translation>
 <translation id="7716950018788545737">टास्क संपले आहे (संपली आहेत).</translation>

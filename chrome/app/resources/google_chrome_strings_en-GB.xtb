@@ -83,6 +83,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1843347690926158494">Search this tab with Google Lens</translation>
 <translation id="1849248141818021764">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome needs permission to access your camera for this site</translation>
+<translation id="1867503717113754604">Sign in to Chrome with your Google Account to use <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome isn't your default browser</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
@@ -173,6 +174,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="286025080868315611">Learn why Chrome blocks some downloads</translation>
 <translation id="2861074815332034794">Updating Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">You're signed in to Chrome!</translation>
+<translation id="2875053229394024379">When you sign in to Chrome with your Google Account, you can use your Chrome profile with Gemini. <ph name="BEGIN_LINK" />Learn how to sign in to Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2888126860611144412">About Chrome</translation>
@@ -223,6 +225,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3352986031709923790">top-right corner of search area: right <ph name="RIGHT" />%, top <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
+<translation id="3380249972812870825">To open Gemini in Chrome, press <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">An operating system error occurred during installation. Please download Google Chrome again.</translation>
 <translation id="3428747202529429621">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in</translation>
 <translation id="3434246496373299699">Chrome can check your passwords when you sign in with your Google Account</translation>
@@ -351,6 +354,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4891791193823137474">Let Google Chrome run in the background</translation>
 <translation id="4895437082222824641">Open link in new Chrome &amp;tab</translation>
 <translation id="4918844574251943176">Image copied</translation>
+<translation id="4926882258455737990">To use a different Google Account with Gemini in Chrome, <ph name="BEGIN_LINK" />create a new profile<ph name="END_LINK" /> and sign in with the account that you want</translation>
 <translation id="492720062778050435">Chrome recommends you review this extension</translation>
 <translation id="4946912144186040233">Chrome understands forms better and can autofill them faster for you. This setting is off.</translation>
 <translation id="4953650215774548573">Set Google Chrome as your default browser</translation>
@@ -376,6 +380,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chrome.</translation>
 <translation id="5174969993834422967">You usually block notifications. To let this site notify you, click the notification icon on the right corner of your location bar.</translation>
 <translation id="5174983315706567306">Not enough disk space.</translation>
+<translation id="5179933070463113976">To use Gemini in Chrome, you need to be signed in to Chrome with your Google Account</translation>
 <translation id="5190467473654176081">Customise Chrome to give it a new look</translation>
 <translation id="5201744974236816379">Chrome update</translation>
 <translation id="521447420733633466">If you share a device, friends and family can browse separately and set up Chrome just the way they want</translation>
@@ -396,6 +401,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5430073640787465221">Your preferences file is corrupt or invalid.
 
 Google Chrome is unable to recover your settings.</translation>
+<translation id="5465210843490471889">Choose a Chrome profile to use with <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">To help improve these features, Chrome sends your interactions with them to Google. This data may be read, processed and annotated by human reviewers.</translation>
 <translation id="5510398294750420479">Download Chrome on your phone to add an extra layer of protection when you're on the go</translation>
 <translation id="5524890928877629608">top-left corner of search area: left <ph name="LEFT" />%, top <ph name="TOP" />%</translation>
@@ -615,6 +621,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7655472416356262023">Remove account from Chrome</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7670287553302121848">Chrome account requires re-authentication</translation>
+<translation id="7675756456029023637">Ask Chrome</translation>
 <translation id="769538538642757151">Chrome will let you know if anything needs your review</translation>
 <translation id="769906121737764913">Close Gemini in Chrome Beta</translation>
 <translation id="7716950018788545737">Task(s) ended.</translation>

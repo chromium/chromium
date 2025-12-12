@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">Бул өтмөктү Google Lens аркылуу издөө</translation>
 <translation id="1849248141818021764">Сыр сүйлөмүңүздү билген адам гана шифрленген маалыматыңызды окуй алат. Сыр сүйлөм Google'га жөнөтүлбөйт же анда сакталбайт. Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chrome маалыматын өчүрүшүңүз керек болот<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Бул сайтта иштөө үчүн Chrome камераңызды колдонушу керек</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini'ды<ph name="END_GLIC_STYLING" /> колдонуу үчүн Chrome'го Google аккаунтуңуз менен кириңиз</translation>
 <translation id="1873233029667955273">Google Chrome сиздин демейки серепчиңиз эмес</translation>
 <translation id="1874309113135274312">Google Chrome Бета (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome эскирип калган.</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">Chrome эмне үчүн айрым жүктөп алууларды бөгөттөп жатканын билип алыңыз</translation>
 <translation id="2861074815332034794">Chrome жаңыртылууда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome'го кирдиңиз!</translation>
+<translation id="2875053229394024379">Chrome'го Google аккаунтуңуз менен киргениңизде, Chrome профилиңизди Gemini менен колдоно аласыз. <ph name="BEGIN_LINK" />Chrome'го киргенди үйрөнүңүз<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome маалыматыңызды кантип купуя сактаары тууралуу<ph name="END_LINK" /> көбүрөөк билип алыңыз</translation>
 <translation id="2885378588091291677">Тапшырмаларды башкаргыч</translation>
 <translation id="2888126860611144412">Chrome тууралуу</translation>
@@ -223,6 +225,7 @@
 <translation id="3352986031709923790">издөө аймагынын жогорку оң бурчу: оң жагы <ph name="RIGHT" />%, жогору жагы <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Жардамчысы</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome азыр кайра иштетилет}=1{Chrome 1 секунддан кийин кайра иштетилет}other{Chrome # секунддан кийин кайра иштетилет}}</translation>
+<translation id="3380249972812870825">Chrome'до Gemini'ды ачуу үчүн <ph name="GLOBAL_HOTKEY" /> баскычтарын басыңыз</translation>
 <translation id="3396977131400919238">Орнотулуп жатканда иш системасында ката кетти. Google Chrome'ду кайра жүктөп алыңыз.</translation>
 <translation id="3428747202529429621">Аккаунтуңузга киргенде Chrome'до жана башка Google колдонмолорунда коопсуздугуңузду коргоп турат</translation>
 <translation id="3434246496373299699">Google аккаунтуңуз менен киргенде Chrome сырсөздөрүңүздү текшерет</translation>
@@ -351,6 +354,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4891791193823137474">Google Chrome'го фондо иштөө мүмкүнчүлүгүн берүү</translation>
 <translation id="4895437082222824641">Шилтемени жаңы Chrome &amp;өтмөгүндө ачуу</translation>
 <translation id="4918844574251943176">Сүрөт көчүрүлдү</translation>
+<translation id="4926882258455737990">Chrome'догу Gemini менен башка Google аккаунтун колдонуу үчүн <ph name="BEGIN_LINK" />жаңы профиль түзүп<ph name="END_LINK" />, каалаган аккаунт менен кириңиз</translation>
 <translation id="492720062778050435">Chrome бул кеңейтүүнү карап көрүүнү сунуштайт</translation>
 <translation id="4946912144186040233">Chrome формаларды жакшыраак түшүнүп, сизден тезирээк автотолтура алат. Бул параметр өчүк.</translation>
 <translation id="4953650215774548573">Google Chrome'ду демейки серепчи катары коюу</translation>
@@ -376,6 +380,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 Айрым мүмкүнчүлүктөрдү колдоно албашыңыз мүмкүн. Башка профиль каталогун көрсөтүңүз же Chrome'дун жаңыраак версиясын колдонуңуз.</translation>
 <translation id="5174969993834422967">Адатта сиз билдирмелерге тыюу саласыз. Бул сайттан билдирмелерди алуу үчүн дарек тилкесинин оң бурчундагы билдирменин сүрөтчөсүн басыңыз.</translation>
 <translation id="5174983315706567306">Дискте орун аз.</translation>
+<translation id="5179933070463113976">Chrome'догу Gemini'ды колдонуу үчүн Chrome'го Google аккаунтуңуз менен киришиңиз керек</translation>
 <translation id="5190467473654176081">Chrome'ду ыңгайлаштырып, анын көрүнүшүн жаңыртыңыз</translation>
 <translation id="5201744974236816379">Chrome жаңыртуусу</translation>
 <translation id="521447420733633466">Түзмөктү бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chrome'ду өзүлөрүнө ылайыктап жөндөп алышат</translation>
@@ -396,6 +401,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="5430073640787465221">Жеке параметрлер файлыңыз бузулган же жараксыз.
 
 Google Chrome параметрлериңизди калыбына келтире албайт.</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> менен колдонуу үчүн Chrome профилин тандаңыз</translation>
 <translation id="5468572406162360320">Бул функцияларды жакшыртууга жардам берүү үчүн Chrome алар менен болгон аракеттешүүңүз тууралуу маалыматты Google'га жөнөтөт. Бул маалыматты түзөтүүчү адамдар окуп, иштетип жана аннотациялашы мүмкүн.</translation>
 <translation id="5510398294750420479">Жолдо баратканда кошумча коргоо катмарын кошуу үчүн телефонуңузга Chrome'ду жүктөп алыңыз</translation>
 <translation id="5524890928877629608">издөө аймагынын жогорку сол бурчу: сол жагы <ph name="LEFT" />%, жогору жагы <ph name="TOP" />%</translation>
@@ -615,6 +621,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7655472416356262023">Аккаунтту Chrome'дон өчүрүү</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7670287553302121848">Chrome аккаунтунун аныктыгын кайрадан текшерүү керек</translation>
+<translation id="7675756456029023637">Chrome'дон суроо</translation>
 <translation id="769538538642757151">Бир нерсеге көңүл бурушуңуз керек болсо, Chrome сизге кабарлап коёт</translation>
 <translation id="769906121737764913">Chrome Бетадагы Gemini'ды жабуу</translation>
 <translation id="7716950018788545737">Жасалчу иш(-тер) аткарылды.</translation>

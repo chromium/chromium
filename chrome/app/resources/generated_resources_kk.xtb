@@ -401,6 +401,7 @@
 <translation id="1252987234827889034">Профиль қатесі кетті</translation>
 <translation id="1254034280040157728">Гранд-Каньон</translation>
 <translation id="1254593899333212300">Тікелей интернет қосылысы</translation>
+<translation id="1255095393630332248">Қойындыларды бөліскен кезде, олардың бет контенті, мультимедиасы мен URL мекенжайлары Google-ға жіберіледі.</translation>
 <translation id="1256588359404100567">Параметр алдыңғы құрылғыңыздан синхрондалған.</translation>
 <translation id="1257336506558170607">Таңдалған сертификатты экспорттау</translation>
 <translation id="1258491128795710625">Жаңалықтар</translation>
@@ -525,6 +526,7 @@
 <translation id="1342886103232377846">Құпия сөздердің ұрланған-ұрланбағанын тексеру үшін Google Password Manager-ге өтіңіз.</translation>
 <translation id="1343920184519992513">Тоқтаған жерден жалғастыру және арнайы беттер жинағын ашу</translation>
 <translation id="1344141078024003905">Экраныңызды трансляциялап жатырсыз. Экраныңызды трансляциялауды кез келген уақытта кідіртуге немесе тоқтатуға болады.</translation>
+<translation id="13449088910457661">Gemini сіз берген тапсырмаларды орындау үшін қойындыларыңызда істейді. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">Пайдалану және диагностика деректерін жіберу. Диагностика, құрылғы мен қолданбаларды пайдалану туралы деректі Google қызметіне автоматты түрде жіберу арқылы балаңыздың Android жүйесін пайдалану тәжірибесін жақсартуға көмектесіңіз. Бұл деректер баланың жеке басын анықтауға пайдаланылмайды. Олар жүйе мен қолданбалардың тұрақты жұмыс істеуіне және басқа да мүмкіндіктерді жақсартуға көмектеседі. Кейбір жиынтық дерек Google қолданбаларын жетілдіруге және Android әзірлеушілері сияқты серіктестердің жұмысына да көмектеседі. Интернет пен қолданбаларды пайдаланудың қосымша тарихы параметрі қосулы болса, бұл деректер балаңыздың Google аккаунтына сақталуы мүмкін. <ph name="BEGIN_LINK1" />Көрсеткіштер туралы толық ақпарат<ph name="BEGIN_LINK1_END" />Толық ақпарат<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">Растау және қайта бастау</translation>
 <translation id="1346748346194534595">Оңға</translation>
@@ -587,6 +589,7 @@
 <translation id="1390907927270446471">Пайдаланушының (<ph name="PROFILE_USERNAME" />) <ph name="PRINTER_NAME" /> принтеріне басып шығаруға рұқсаты жоқ. Әкімшіге хабарласыңыз.</translation>
 <translation id="1392047138650695757">Пайдаланушы сөздіктері</translation>
 <translation id="139300021892314943">Аккаунтқа кіре алатын пайдаланушылар санын шектеу</translation>
+<translation id="1393235015225624732">{NUM_TABS,plural, =1{Қойындыны Gemini-мен бөлісуді тоқтату}other{# қойындыны Gemini-мен бөлісуді тоқтату}}</translation>
 <translation id="1393283411312835250">Күн және бұлттар</translation>
 <translation id="1395832189806039783">Элементті пернетақта фокусымен ерекшелеу</translation>
 <translation id="1396120028054416908"><ph name="FOLDER_TITLE" /> қалтасына оралу</translation>
@@ -729,6 +732,7 @@
 <translation id="1486616492435615702">Нобай жасаңыз немесе жасалған жұмысты жақсартыңыз.</translation>
 <translation id="1487335504823219454">Қосу – пайдаланушылық параметрлер</translation>
 <translation id="1489101155914355052">Бұл құжатқа арналған ұсыныстар жасалып жатыр…</translation>
+<translation id="1493152297698462486">Gemini көмегімен cурет жасау</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> күту…</translation>
 <translation id="1494349716233667318">Сайттар құрылғыңызда орнатылған қаріптерді пайдалануға рұқсат сұрай алады</translation>
 <translation id="1494429729245089920">"<ph name="VM_NAME" />" виртуалдық компьютері бар, бірақ жарамды <ph name="APP_NAME" /> виртуалдық компьютері болып көрінбейді. Әкімшіге хабарласыңыз.</translation>
@@ -825,6 +829,7 @@
 <translation id="1561331397460162942">Локация пайдалану рұқсаты бар қолданбалар, веб-сайттар және жүйелік қызметтер локацияны пайдалана алады.</translation>
 <translation id="1562119309884184621">Бұл контактіні қосып қойсаңыз, ол маңайда болғанда қолжетімді болады.</translation>
 <translation id="1562585387501039294">Ұйымыңыз (<ph name="ACCOUNT_MANAGER" />) басқарылатын профиль талап етеді және келесідей кейбір ақпаратты көре алады:</translation>
+<translation id="156345786953026804">Gemini тапсырманы орындау кезінде пайдаланатын бет контенті мен URL мекенжайлары Google-ға жіберіледі.</translation>
 <translation id="1566049601598938765">Вебсайт</translation>
 <translation id="15662109988763471">Таңдалған принтер қолжетімді емес немесе дұрыс орнатылмаған. Принтеріңізді тексеріңіз немесе басқа принтерді таңдап көріңіз.</translation>
 <translation id="1566329594234563241">Әрекетсіз және жалғанған күйде болғанда</translation>
@@ -1022,6 +1027,7 @@
 <translation id="167983332380191032">Басқару қызметі HTTP қатесін жіберді.</translation>
 <translation id="167997285881077031">Мәтінді дыбыстаудың дауыстық параметрлері</translation>
 <translation id="1680849702532889074">Linux қолданбасын орнату кезінде қате кетті.</translation>
+<translation id="1682195225331129001">Қолданып көру</translation>
 <translation id="1682548588986054654">Жаңа жасырын терезе</translation>
 <translation id="1682696837763999627">Үлкен тінтуір курсоры</translation>
 <translation id="1682867089915960590">Белсенді курсор режимі қосылсын ба?</translation>
@@ -1121,6 +1127,7 @@
 <translation id="1753557900380512635">Интерьерлер</translation>
 <translation id="1753905327828125965">Ең көп қаралған</translation>
 <translation id="1755601632425835748">Мәтін өлшемі</translation>
+<translation id="1756963401828337401">Түсірілетін экранды таңдаңыз</translation>
 <translation id="1757132445735080748">Linux жүйесін реттеуді аяқтау үшін ChromeOS Flex операциялық жүйесін жаңартып, әрекетті қайталаңыз.</translation>
 <translation id="1757301747492736405">Жою күтілуде</translation>
 <translation id="175772926354468439">Тақырыпты қосу</translation>
@@ -2121,6 +2128,7 @@
 <translation id="2435248616906486374">Желі ажыратылды</translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="2436385001956947090">&amp;Сілтемені көшіру</translation>
+<translation id="2437105255211187922">{NUM_TABS,plural, =1{Таңдалған қойындыны бөлісу шектен асып кетеді}other{# қойындыны бөлісу шектен асып кетеді}}</translation>
 <translation id="2437561292559037753">Деректерді бөлісу</translation>
 <translation id="2438853563451647815">Принтерге қосылмаған</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> құпия сөзін қайта орнату</translation>
@@ -2334,6 +2342,7 @@
 <translation id="2573276323521243649">Аватар таңдау бетінен артқа қайту</translation>
 <translation id="2573417407488272418">Жаңартпас бұрын қолданбалар мен файлдардың сақтық көшірмесін "Файлдар&gt; Файлдарым" тармағына сақтаңыз.</translation>
 <translation id="2573831315551295105">"<ph name="ACTION" />" әрекетіне ауыстырғыш тағайындау</translation>
+<translation id="2574037773163798130">{NUM_TABS,plural, =1{Қойындыны Gemini-мен бөлісу}other{# қойындыны Gemini-мен бөлісу}}</translation>
 <translation id="2575247648642144396">Бұл бетбелгі кеңейтім ағымдағы бетте әрекет еткенде ғана көрінеді. Бұл кеңейтімді белгішені басу арқылы немесе <ph name="EXTENSION_SHORTCUT" /> басу арқылы пайдаланыңыз.</translation>
 <translation id="2575407791320728464">URL мекенжайы жарамсыз. Оның дұрыс форматталғанына көз жеткізіңіз.</translation>
 <translation id="2575441894380764255">Мазалайтын немесе жалған ақпаратты жарнамаларды көрсетуге рұқсаты жоқтар</translation>
@@ -2792,6 +2801,7 @@
 <translation id="2886119409731773154">Оған 30 минуттай уақыт кетуі мүмкін.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> және тағы <ph name="NUMBER_OF_DEVICES" /> құрылғы</translation>
+<translation id="2887344147309501015">Шолу жасаған кезде жауаптар, маңызды тұжырымдар және т.б. ақпарат алу үшін Chrome-дағы Gemini-мен чатта сөйлесіңіз.</translation>
 <translation id="2889043468805635730">Ешқандай мәселе табылмады.</translation>
 <translation id="2889064240420137087">Сілтеме ашу әдісі…</translation>
 <translation id="2891464434568738544">Әзірше ешқандай сайт қолжетімді емес. Сайтты осы тізімге қосу үшін оған кіріңіз.</translation>
@@ -3427,6 +3437,7 @@
 <translation id="3347086966102161372">Кескін мекенжайын к&amp;өшіру</translation>
 <translation id="3348038390189153836">Алынбалы құрылғы анықталды</translation>
 <translation id="3348973040180736882">Мұрағаттан шығарылып жатыр</translation>
+<translation id="3349610303043713601">Жасанды интеллект көмегімен шолу</translation>
 <translation id="3349933790966648062">Пайдаланылатын жад көлемі</translation>
 <translation id="3350450887151703713">10 секундты қайта ойнату</translation>
 <translation id="3351472127384196879">Қаламдағы түймелерді қосу немесе табу</translation>
@@ -4604,6 +4615,7 @@
 <translation id="4116480382905329353">1 рет анықталды</translation>
 <translation id="4116704186509653070">Қайта ашу</translation>
 <translation id="4117714603282104018">Сенсорлық тақтаның сенсорлық жауабы</translation>
+<translation id="4117854923024277067">Скриншотты нұсқауыңызбен бірге пайдалануға немесе жоюға болады</translation>
 <translation id="4118579674665737931">Құрылғыны қайта жүктеп, әрекетті қайталаңыз.</translation>
 <translation id="4120388883569225797">Қауіпсіздік кілті бастапқы күйге қайтарылмады.</translation>
 <translation id="4120817667028078560">Жол тым ұзын</translation>
@@ -4656,6 +4668,7 @@
 <translation id="4158315983204257156">Веб-сайт мәтінінің өлшемі мен қарпі</translation>
 <translation id="4158364720893025815">Тексеруден өтті</translation>
 <translation id="4159784952369912983">Күлгін</translation>
+<translation id="4162545316103024845">{NUM_TABS,plural, =1{Таңдалған қойындыны бөлісу шектен асып кетеді}other{# қойындыны бөлісу шектен асып кетеді}}</translation>
 <translation id="4163560723127662357">Белгісіз пернетақта</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> электрондық мекенжайы расталған ұйымға тиесілі емес. Әкімшіңізге хабарласыңыз. Егер әкімші болсаңыз, g.co/ChromeEnterpriseAccount бетіне өту арқылы ұйымыңызды реттей аласыз.</translation>
 <translation id="4165986682804962316">Сайт параметрлері</translation>
@@ -4666,6 +4679,8 @@
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> сандарына аяқталатын <ph name="NETWORK_NAME" /> несиелік картасы.</translation>
 <translation id="4169535189173047238">Рұқсат бермеу</translation>
 <translation id="4170314459383239649">Шыққан кезде тазалау</translation>
+<translation id="417112242673828206">{NUM_TABS,plural, =1{Қойындыны Gemini-мен бөлісу}other{# қойындыны Gemini-мен бөлісу}}</translation>
+<translation id="4173129130568053653">Gemini кездесулерді брондауға, шоппинг себеттерін жасауға немесе сіз берген басқа тапсырмаларды орындауға көмектесе алады.</translation>
 <translation id="4175137578744761569">Ашық күлгін және ақ</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
 <translation id="4176864026061939326">Бұл құрылғыны әкімші басқарады. Құрылғы әкімшісі <ph name="USER_EMAIL_ADDRESS" /> аккаунты үшін жаңа профиль талап етеді.</translation>
@@ -4699,6 +4714,7 @@
 <translation id="4200689466366162458">Арнаулы сөздер</translation>
 <translation id="4200983522494130825">Жаңа &amp;қойынды</translation>
 <translation id="4201546031411513170">Синхрондалатын контентті кез келген уақытта "Параметрлер" бөлімінде таңдай аласыз.</translation>
+<translation id="4202536110335087135">Қазір қолданып көру</translation>
 <translation id="4203065553461038553">Файл атауы немесе орны тым ұзын.</translation>
 <translation id="4203769790323223880">Камераға рұқсат берілмеді.</translation>
 <translation id="4204415812590935863">Әзірше тақырып жасау мүмкін емес.</translation>
@@ -6138,6 +6154,7 @@
 <translation id="5204967432542742771">Құпия сөз енгізу</translation>
 <translation id="5205484256512407285">Тасымалдау үшін ешқашан мобильдік интернетті пайдаланбау</translation>
 <translation id="520568280985468584">Желі қосылды. Ұялы желі белсенді болуы үшін бірнеше минут керек.</translation>
+<translation id="520576054436518354">Gemini сіздің орныңызға браузерді шола алады</translation>
 <translation id="5207949376430453814">Мәтін курсорын ерекшелеу</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> жарамды ChromeOS құрылғысын пайдаланып жатқаныңызды тексергісі келеді.</translation>
 <translation id="5208722776934437424">Рұқсаттарды өзгерту</translation>
@@ -6153,6 +6170,7 @@
 <translation id="5215450412607891876">Кеңейтілген қауіпсіздік жаңартуларын қосыңыз</translation>
 <translation id="5215502535566372932">Елді таңдаңыз</translation>
 <translation id="5216674789212441076">Тікелей субтитрлерді автоматты түрде аударады. Субтитрлер Google-ға жіберіліп, аударылады.</translation>
+<translation id="5216951551945455224">{NUM_TABS,plural, =1{Қойындыны Gemini-мен бөлісуді тоқтату}other{# қойындыны Gemini-мен бөлісуді тоқтату}}</translation>
 <translation id="5220011581825921581">іздеу + жоғары бағыт пернесі</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> сайтын трансляциялау мүмкін емес</translation>
 <translation id="5221834113325601057">Қойынды тізімнен шығарылды.</translation>
@@ -6226,6 +6244,7 @@
 <translation id="5267572070504076962">Қауіпті сайттардан қорғау үшін Safe Browsing функциясын қосыңыз.</translation>
 <translation id="5269659747698455324">Кіру кілттерінің құлпын ашу</translation>
 <translation id="5269977353971873915">Басып шығару сәтсіз аяқталды</translation>
+<translation id="5271124474068841290">Қойындыларды ауыстырған кезде де, қазіргі қойындыны Gemini-мен бөліседі. Деректеріңіз жасампаз жасанды интеллект модельдерін жақсарту үшін пайдаланылмайды.</translation>
 <translation id="5271578170655641944">Google Drive қызметін пайдалану рұқсатын өшіру керек пе?</translation>
 <translation id="5272198173084686007">Басқа құрылғыларда қойындылар жоқ</translation>
 <translation id="527335345740023523">Сізде қазір <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, <ph name="NUMBERED_ITEM_3" /> және т.б. бар. Ұйымыңыз (<ph name="ACCOUNT_MANAGER" />) бұл деректерді көріп, басқара алады.</translation>
@@ -6314,6 +6333,7 @@
 <translation id="5333896723098573627">Қолданбаларды өшіру үшін "Параметрлер &gt; Қолданбалар &gt; Google Play Store &gt; Android параметрлерін басқару &gt; Қолданбалар немесе Қолданба басқарушысы" тармағына өтіңіз. Одан кейін өшірілетін қолданбаны (қолданбаны табу үшін оңға немесе солға сырғыту керек) түртіңіз. Сосын "Жою" немесе "Өшіру" түймесін басыңыз.</translation>
 <translation id="5334113802138581043">Микрофонды пайдалану</translation>
 <translation id="5334142896108694079">Сценарий кэші</translation>
+<translation id="5335370353987155592">Gemini-ды мұқият әрі <ph name="BEGIN_LINK1" />сақтықпен<ph name="LINK_END1" /> пайдаланыңыз. Тапсырма орындау кезінде Gemini-дың әрекеттеріне, соның ішінде жіберген қателері мен <ph name="BEGIN_LINK2" />күтпеген нәтижелерге<ph name="LINK_END2" /> (мысалы, сатып алу әрекетіне) өзіңіз жауаптысыз.</translation>
 <translation id="5336688142483283574">Сонымен қатар бұл тарихтан және <ph name="SEARCH_ENGINE" /> әрекеттер тарихынан өшіріледі.</translation>
 <translation id="5336689872433667741">Курсор және сенсорлық тақта</translation>
 <translation id="5337207153202941678">Ерекшелеу функциясын өшіру</translation>
@@ -6618,6 +6638,7 @@
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Топқа қойынды қосу}other{Топқа қойындылар қосу}}</translation>
 <translation id="554535686826424776">Купондар табу</translation>
 <translation id="5546865291508181392">Табу</translation>
+<translation id="5547868626772433490">Gemini-дан сұрау</translation>
 <translation id="5548075230008247516">Барлық таңдалған элементтер алынып тасталды, таңдау режимі өшірілді.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" және тағы 1 қойынды}other{"<ph name="TAB_TITLE" />" және тағы # қойынды}}</translation>
 <translation id="5548644592758170183">Сол жақта көрсету</translation>
@@ -6781,6 +6802,7 @@
 <translation id="5655296450510165335">Құрылғыны тіркеу</translation>
 <translation id="5655823808357523308">Экраныңызда түстердің қалай көрсетілетінін реттеңіз.</translation>
 <translation id="5656845498778518563">Google-ға пікір жіберу</translation>
+<translation id="5656944594833183876">Тапсырмалар бойынша көмек алыңыз</translation>
 <translation id="5657667036353380798">Сыртқы кеңейтім <ph name="MINIMUM_CHROME_VERSION" /> немесе кейінгі Chrome нұсқасын орнатуды талап етеді.</translation>
 <translation id="565899488479822148">Соңғы жаңарту орнатылып жатыр</translation>
 <translation id="5659593005791499971">Электрондық пошта</translation>
@@ -7572,6 +7594,7 @@
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> офлайн режимде тұр. Интернетке қосылып, қайталап көріңіз.</translation>
 <translation id="6220413761270491930">Кеңейтім жүктеу қатесі</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{Файлды <ph name="CLOUD_PROVIDER" /> қызметіне көшіру мүмкін емес}other{Файлдарды <ph name="CLOUD_PROVIDER" /> қызметіне көшіру мүмкін емес}}</translation>
+<translation id="62229737360959019">Чаттан ашылған қойындылар немесе ортақ қойынды да Gemini-ға жіберіледі. Live режимінде әдепкісінше тек қазіргі қойынды жіберіледі.</translation>
 <translation id="6224481128663248237">Пішімдеу сәтті аяқталды!</translation>
 <translation id="622474711739321877">Бұл контейнер бұрыннан бар.</translation>
 <translation id="622484624075952240">Төмен</translation>
@@ -7783,6 +7806,7 @@
 <translation id="6367097275976877956">ChromeOS-ке арналған ендірілген ChromeVox экранды оқу құралын іске қосқыңыз келе ме? Іске қосқыңыз келсе, бос орын түймесін басыңыз.</translation>
 <translation id="6367196786591004737">Жазбаны жою</translation>
 <translation id="6367396429435748845">Тінтуір пернелерін пайдалануды кідірту және жалғастыру үшін <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> пернелерін басыңыз.</translation>
+<translation id="6367853307713830174">Gemini орындап жатқан қадамдарын көрсетеді және маңызды әрекетті орындамай тұрып, дұрыстығын тексеруге тырысады. Gemini-ды кез келген уақытта тоқтатуға немесе өзіңіз орындауға болады.</translation>
 <translation id="6367985768157257101">Nearby Share сұрауын қабылдау керек пе?</translation>
 <translation id="6368157733310917710">&amp;Мекенжайлар және т.б.</translation>
 <translation id="6368276408895187373">Қосулы – <ph name="VARIATION_NAME" /></translation>
@@ -7832,6 +7856,7 @@
 <translation id="640457954117263537">Локацияны ChromeOS және Android қолданбалары мен қызметтері үшін пайдаланыңыз.</translation>
 <translation id="6406303162637086258">Браузердің қайта іске қосылуын үлгілеу</translation>
 <translation id="6406506848690869874">Синхрондау</translation>
+<translation id="6406571339342621375">Gemini-ды мәзір жолағында көрсетпеу</translation>
 <translation id="6406708970972405507">Параметрлер – <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Құрылғыңызда деректерді сақтауға рұқсаты бар</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және <ph name="WEBSITE_3" /> сайттарындағы деректеріңізді оқу және өзгерту</translation>
@@ -8304,6 +8329,7 @@
 <translation id="6737663862851963468">Kerberos билетін өшіру</translation>
 <translation id="6738180164164974883">Үшінші тарап cookie файлдарын орнатуға рұқсат ету</translation>
 <translation id="6738430949033571771">Аккаунт расталуда...</translation>
+<translation id="6739153164244375709">Gemini Host Renderer</translation>
 <translation id="6739266861259291931">Құрылғы тілін бастапқы күйге қайтару</translation>
 <translation id="6739923123728562974">Жұмыс үстелі таңбашасын көрсету</translation>
 <translation id="6739943577740687354">Бұл функция AI технологиясын пайдаланады. Ол кейде қателесуі мүмкін.</translation>
@@ -8549,6 +8575,7 @@
 <translation id="6899427698619335650">Икемді диакритика тағайындауына рұқсат етіңіз. Мысалы, "ánh" дегенді алу үшін "anh1" немесе "a1nh" деп теруге болады.</translation>
 <translation id="6900284862687837908">Фондық қолданба: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Жақсартылған қорғау</translation>
+<translation id="6900632443249221072">Gemini көмегімен cурет жасау</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> аккаунтын жаңарту үшін оған қайта кіріңіз</translation>
 <translation id="6900654715912436255">Осы іздеу жүйесін шынымен жойғыңыз келе ме?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
@@ -9061,6 +9088,7 @@
 <translation id="7268412955622368206">Жаңа USB құрылғыларының қалқымалы хабарландыруын көрсету.</translation>
 <translation id="7269229526547981029">Бұл профильді <ph name="PROFILE_MANAGER" /> басқарады. Әкімші (<ph name="ACCOUNT_MANAGER" />) <ph name="USER_EMAIL_ADDRESS" /> аккаунты үшін жаңа профиль талап етеді.</translation>
 <translation id="7269736181983384521">Nearby Share дерек трафигі</translation>
+<translation id="7270447384127135313">Шолған кезде, Gemini-ға бөлісіп жатқан қойындылар туралы сұрақ қоюға болады.</translation>
 <translation id="7271278495464744706">Толық сипаттамаларды іске қосу</translation>
 <translation id="7272674038937250585">Сипаттама жазылмады</translation>
 <translation id="7273110280511444812">соңғы рет <ph name="DATE" /> күні жалғанған</translation>
@@ -9558,6 +9586,7 @@
 <translation id="7617263010641145920">Play Store қызметін қосу</translation>
 <translation id="7617648809369507487">Дыбыссыз хабарландыру</translation>
 <translation id="7619937211696316184">Техникалық қызмет көрсетілді</translation>
+<translation id="7620049858153799769">Gemini-ды жақсарту үшін тексерушілер ортақ қойындылар туралы әңгімелерді көруі мүмкін.</translation>
 <translation id="7620083113061729689">Тарихты синхрондау</translation>
 <translation id="7620616707541471029">Жалғастыру үшін аккаунт таңдаңыз</translation>
 <translation id="7621382409404463535">Жүйе құрылғы конфигурациясын сақтай алмады.</translation>

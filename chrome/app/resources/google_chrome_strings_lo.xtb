@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">ຊອກຫາແຖບນີ້ດ້ວຍ Google Lens</translation>
 <translation id="1849248141818021764">ມີພຽງບຸກຄົນທີ່ມີລະຫັດຜ່ານຂອງທ່ານເທົ່ານັ້ນທີ່ສາມາດອ່ານຂໍ້ມູນທີ່ໄດ້ຖືກເຂົ້າລະຫັດໄວ້ຂອງທ່ານໄດ້. Google ຈະບໍ່ໄດ້ຮັບ ຫຼື ຈັດເກັບລະຫັດຜ່ານດັ່ງກ່າວ. ຫາກທ່ານລືມລະຫັດຜ່ານຂອງຕົນເອງ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ທ່ານຈະຕ້ອງ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
+<translation id="1867503717113754604">ເຂົ້າສູ່ລະບົບ Chrome ດ້ວຍບັນຊີ Google ຂອງທ່ານເພື່ອໃຊ້ <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome ບໍ່ແມ່ນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome ລ້າສະໄໝແລ້ວ</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">ສຶກສາວ່າເປັນຫຍັງ Chrome ຈຶ່ງບລັອກການດາວໂຫຼດບາງລາຍການ</translation>
 <translation id="2861074815332034794">ກຳລັງອັບເດດ Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">ທ່ານລົງຊື່ເຂົ້າໃຊ້ Chrome ແລ້ວ.</translation>
+<translation id="2875053229394024379">ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ Chrome ດ້ວຍບັນຊີ Google ຂອງທ່ານແລ້ວ, ທ່ານຈະສາມາດໃຊ້ໂປຣໄຟລ໌ Chrome ຂອງທ່ານກັບ Gemini ໄດ້. <ph name="BEGIN_LINK" />ສຶກສາວິທີເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK" />ວິທີທີ່ Chrome ຮັກສາຂໍ້ມູນຂອງທ່ານໃຫ້ເປັນສ່ວນຕົວ<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="2888126860611144412">ກ່ຽວ​ກັບ Chrome</translation>
@@ -223,6 +225,7 @@
 <translation id="3352986031709923790">ມຸມຂວາເທິງຂອງພື້ນທີ່ຊອກຫາ: ຂວາ <ph name="RIGHT" />%, ເທິງ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">ຕົວຊ່ວຍ Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ຈະເປີດຄືນໃໝ່ດຽວນີ້}=1{Chrome ຈະເປີດຄືນໃໝ່ໃນ 1 ວິນາທີ}other{Chrome ຈະເປີດຄືນໃໝ່ໃນ # ວິນາທີ}}</translation>
+<translation id="3380249972812870825">ເພື່ອເປີດ Gemini ໃນ Chrome, ໃຫ້ກົດ <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">ເກີດຄວາມຜິດພາດກັບລະບົບປະຕິບັດ​ການ​ໃນລະຫວ່າງການຕິດຕັ້ງ. ກະລຸນາດາວໂຫຼດ Google Chrome ອີກ.</translation>
 <translation id="3428747202529429621">ຮັກສາໃຫ້ທ່ານປອດໄພໃນ Chrome ແລະ ອາດຈະຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພໃນແອັບອື່ນຂອງ Google ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ</translation>
 <translation id="3434246496373299699">Chrome ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານ ເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານໄດ້</translation>
@@ -351,6 +354,7 @@
 <translation id="4891791193823137474">ໃຫ້ Google Chrome ແລ່ນຢູ່ໃນພື້ນຫຼັງ</translation>
 <translation id="4895437082222824641">ເປີດລິ້ງໃນແຖບ Chrome ໃໝ່</translation>
 <translation id="4918844574251943176">ສຳເນົາຮູບແລ້ວ</translation>
+<translation id="4926882258455737990">ເພື່ອໃຊ້ບັນຊີ Google ອື່ນກັບ Gemini ໃນ Chrome, ໃຫ້ <ph name="BEGIN_LINK" />ສ້າງໂປຣໄຟລ໌ໃໝ່<ph name="END_LINK" /> ແລ້ວເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ທ່ານຕ້ອງການ</translation>
 <translation id="492720062778050435">Chrome ແນະນຳໃຫ້ທ່ານກວດສອບສ່ວນຂະຫຍາຍນີ້</translation>
 <translation id="4946912144186040233">Chrome ເຂົ້າໃຈແບບຟອມໄດ້ດີຂຶ້ນ ແລະ ສາມາດຕື່ມຂໍ້ມູນອັດຕະໂນມັດໃຫ້ທ່ານໄດ້ໄວຂຶ້ນ. ການຕັ້ງຄ່ານີ້ປິດຢູ່.</translation>
 <translation id="4953650215774548573">ຕັ້ງ Google Chrome ເປັນບຣາວ​ເຊີມາດຕະຖານຂອງທ່ານ</translation>
@@ -376,6 +380,7 @@
 ອາດຈະບໍ່ມີບາງຄຸນສົມບັດຢູ່. ກະລຸນາລະບຸໄດເຣັກຕໍຣີໂປຣໄຟລ໌ອື່ນ ຫຼືໃຊ້ Chrome ລຸ້ນໃໝ່ກ່ວາ.</translation>
 <translation id="5174969993834422967">ໂດຍປົກກະຕິແລ້ວທ່ານບລັອກການແຈ້ງເຕືອນ. ເພື່ອໃຫ້ເວັບໄຊນີ້ແຈ້ງເຕືອນທ່ານ, ໃຫ້ຄລິກທີ່ໄອຄອນການແຈ້ງເຕືອນຢູ່ມຸມຂວາຂອງແຖບສະຖານທີ່ຂອງທ່ານ.</translation>
 <translation id="5174983315706567306">ພື້ນທີ່ດິສກ໌ບໍ່ພຽງພໍ.</translation>
+<translation id="5179933070463113976">ເພື່ອໃຊ້ Gemini ໃນ Chrome, ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບ Chrome ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="5190467473654176081">ປັບແຕ່ງ Chrome ເພື່ອໃຫ້ມີຮູບລັກໃໝ່</translation>
 <translation id="5201744974236816379">ການອັບເດດ Chrome</translation>
 <translation id="521447420733633466">ຖ້າທ່ານໃຊ້ອຸປະກອນຮ່ວມກັນ, ໝູ່ ແລະ ຄອບຄົວສາມາດທ່ອງເວັບແຍກກັນ ແລະ ຕັ້ງຄ່າ Chrome ໃນແບບທີ່ເຂົາເຈົ້າຕ້ອງການໄດ້</translation>
@@ -396,6 +401,7 @@
 <translation id="5430073640787465221">ໄຟລ໌ທີ່ມັກຂອງທ່ານຂັດຂ້ອງ ຫຼືໃຊ້ບໍ່ໄດ້.
 
 Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ່າໄດ້.</translation>
+<translation id="5465210843490471889">ເລືອກໂປຣໄຟລ໌ Chrome ທີ່ຈະໃຊ້ກັບ <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">ເພື່ອຊ່ວຍປັບປຸງຄຸນສົມບັດເຫຼົ່ານີ້, Chrome ສົ່ງການໂຕ້ຕອບຂອງທ່ານກັບເຂົາເຈົ້າໄປຫາ Google. ຂໍ້ມູນນີ້ອາດຈະຖືກອ່ານ, ປະມວນຜົນ ແລະ ໃສ່ການອະທິບາຍຄວາມເຫັນໂດຍທີມງານກວດສອບ.</translation>
 <translation id="5510398294750420479">ດາວໂຫຼດ Chrome ຢູ່ໂທລະສັບຂອງທ່ານເພື່ອເພີ່ມຊັ້ນການປົກປ້ອງພິເສດເມື່ອທ່ານຢູ່ໃນໂໝດເວລາເດີນທາງ</translation>
 <translation id="5524890928877629608">ມຸມຊ້າຍເທິງຂອງພື້ນທີ່ຊອກຫາ: ຊ້າຍ <ph name="LEFT" />%, ເທິງ <ph name="TOP" />%</translation>
@@ -615,6 +621,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7655472416356262023">ລຶບບັນຊີອອກຈາກ Chrome</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7670287553302121848">ບັນຊີ Chrome ຕ້ອງມີການພິສູດຢືນຢັນຄືນໃໝ່</translation>
+<translation id="7675756456029023637">ຖາມ Chrome</translation>
 <translation id="769538538642757151">Chrome ຈະແຈ້ງໃຫ້ທ່ານຮູ້ຫາກມີສິ່ງໃດທີ່ທ່ານຕ້ອງກວດສອບ</translation>
 <translation id="769906121737764913">ປິດ Gemini ໃນ Chrome Beta</translation>
 <translation id="7716950018788545737">ໜ້າວຽກສິ້ນສຸດແລ້ວ.</translation>

@@ -79,6 +79,7 @@
 <translation id="1843347690926158494">Найти на этой вкладке с помощью Google Объектива</translation>
 <translation id="1849248141818021764">Прочесть ваши зашифрованные данные сможет только тот, кто знает кодовую фразу. Она не отправляется компании Google и не хранится на ее серверах. Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Для этого сайта Chrome запрашивает доступ к камере.</translation>
+<translation id="1867503717113754604">Чтобы использовать <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />, войдите в Chrome с аккаунтом Google.</translation>
 <translation id="1873233029667955273">Google Chrome не является браузером по умолчанию.</translation>
 <translation id="1874309113135274312">Google Chrome (бета, mDNS-In)</translation>
 <translation id="1877026089748256423">Версия Chrome устарела</translation>
@@ -169,6 +170,7 @@
 <translation id="286025080868315611">Подробнее о том, почему Chrome блокирует скачивание некоторых файлов…</translation>
 <translation id="2861074815332034794">Обновление Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Добро пожаловать в Chrome!</translation>
+<translation id="2875053229394024379">Войдя в Chrome с аккаунтом Google, вы сможете использовать Gemini в своем профиле. Узнайте, <ph name="BEGIN_LINK" />как войти в Chrome<ph name="END_LINK" />.</translation>
 <translation id="2876628302275096482">Подробнее о том, <ph name="BEGIN_LINK" />как Chrome обеспечивает конфиденциальность ваших данных<ph name="END_LINK" />…</translation>
 <translation id="2885378588091291677">Диспетчер задач</translation>
 <translation id="2888126860611144412">О браузере Chrome</translation>
@@ -219,6 +221,7 @@
 <translation id="3352986031709923790">правый верхний угол области поиска: <ph name="RIGHT" /> % справа, <ph name="TOP" /> % сверху</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome перезапускается}=1{Chrome перезапустится через 1 секунду}one{Chrome перезапустится через # секунду}few{Chrome перезапустится через # секунды}many{Chrome перезапустится через # секунд}other{Chrome перезапустится через # секунды}}</translation>
+<translation id="3380249972812870825">Чтобы открыть Gemini в Chrome, нажмите <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">При установке произошла ошибка операционной системы. Скачайте Google Chrome снова.</translation>
 <translation id="3428747202529429621">Защищает вас в браузере Chrome и может использоваться для повышения безопасности в других приложениях Google при входе в аккаунт.</translation>
 <translation id="3434246496373299699">Chrome сможет проверить ваши пароли, когда вы войдете в аккаунт Google.</translation>
@@ -346,6 +349,7 @@
 <translation id="4891791193823137474">Разрешить работу Google Chrome в фоновом режиме</translation>
 <translation id="4895437082222824641">Открыть ссылку в новой вкладке браузера Chrome</translation>
 <translation id="4918844574251943176">Изображение скопировано.</translation>
+<translation id="4926882258455737990">Чтобы использовать Gemini в Chrome в другом аккаунте Google, <ph name="BEGIN_LINK" />создайте профиль<ph name="END_LINK" /> и войдите в нужный аккаунт.</translation>
 <translation id="492720062778050435">Chrome рекомендует проверить это расширение.</translation>
 <translation id="4946912144186040233">Chrome лучше определяет формы и быстрее их заполняет. Параметр отключен.</translation>
 <translation id="4953650215774548573">Сделать Google Chrome браузером по умолчанию</translation>
@@ -369,6 +373,7 @@
 <translation id="5170938038195470297">Использовать этот профиль невозможно, так как он был создан в более новой версии Google Chrome. Некоторые функции могут быть недоступны. Укажите другой каталог профиля или установите более новую версию Chrome.</translation>
 <translation id="5174969993834422967">Обычно вы блокируете уведомления. Чтобы получать их с этого сайта, нажмите на значок оповещений в правом верхнем углу адресной строки.</translation>
 <translation id="5174983315706567306">Недостаточно места на диске.</translation>
+<translation id="5179933070463113976">Чтобы использовать Gemini в Chrome, войдите в браузер с аккаунтом Google.</translation>
 <translation id="5190467473654176081">Придайте Chrome новый вид</translation>
 <translation id="5201744974236816379">обновление Chrome</translation>
 <translation id="521447420733633466">Если кроме вас устройством пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chrome на свой вкус.</translation>
@@ -387,6 +392,7 @@
 <translation id="5394833366792865639">Откройте доступ к вкладке Chrome</translation>
 <translation id="5402307365844630024">Включить или отключить бета-версию Gemini в Chrome</translation>
 <translation id="5430073640787465221">Файл настроек поврежден или недействителен. Google Chrome не может восстановить ваши параметры.</translation>
+<translation id="5465210843490471889">Выберите, в каком профиле Chrome использовать <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Chrome отправляет в Google информацию о том, как вы используете эти функции, чтобы мы могли их улучшить. Наши специалисты могут изучать, аннотировать и обрабатывать эти данные.</translation>
 <translation id="5510398294750420479">Скачайте Chrome на телефон для дополнительной защиты устройства.</translation>
 <translation id="5524890928877629608">левый верхний угол области поиска: <ph name="LEFT" /> % слева, <ph name="TOP" /> % сверху</translation>
@@ -606,6 +612,7 @@
 <translation id="7655472416356262023">Удалить аккаунт из Chrome</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7670287553302121848">Необходимо снова войти в аккаунт Chrome</translation>
+<translation id="7675756456029023637">Спросить Chrome</translation>
 <translation id="769538538642757151">Мы сообщим, если потребуется что-то проверить</translation>
 <translation id="769906121737764913">Закрыть Gemini в бета-версии Chrome</translation>
 <translation id="7716950018788545737">Одна или несколько задач прерваны.</translation>

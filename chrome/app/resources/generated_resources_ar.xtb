@@ -405,6 +405,7 @@
 <translation id="1252987234827889034">حدث خطأ في الملف الشخصي</translation>
 <translation id="1254034280040157728">الأخدود العظيم</translation>
 <translation id="1254593899333212300">اتصال مباشر بالإنترنت</translation>
+<translation id="1255095393630332248">‏عند مشاركة علامات التبويب، يتم إرسال محتواها والوسائط وعناوين URL الخاصة بها إلى Google.</translation>
 <translation id="1256588359404100567">تمّت مزامنة الإعداد من جهازك السابق.</translation>
 <translation id="1257336506558170607">تصدير الشهادة التي تم اختيارها</translation>
 <translation id="1258491128795710625">الميزات الجديدة</translation>
@@ -529,6 +530,7 @@
 <translation id="1342886103232377846">‏للتحقّق من كلمات المرور المحتمَل تعرّضها للاختراق، يُرجى الانتقال إلى "مدير كلمات المرور في Google".</translation>
 <translation id="1343920184519992513">المتابعة من حيث توقفت وفتح مجموعة مُحدَّدة من الصفحات</translation>
 <translation id="1344141078024003905">يجري حاليًا بث المحتوى المعروض على شاشتك. يمكنك إيقاف البث مؤقتًا أو إيقافه متى شئت.</translation>
+<translation id="13449088910457661">‏يعمل Gemini في علامات التبويب لإكمال المهام التي تُطلب منه. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1346403631707626730">‏إرسال بيانات الاستخدام والتشخيص: يمكنك المساهمة في تحسين تجربة طفلك على Android من خلال إرسال بيانات التشخيص وبيانات استخدام التطبيقات والجهاز تلقائيًا إلى Google. ولن يتم استخدام هذه البيانات لتحديد هوية طفلك، بل ستُستخدَم لتعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. ستساعد أيضًا بعض البيانات المجمّعة تطبيقات Google وشركاءها، مثل مطوّري تطبيقات Android. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لطفلك، قد يتم حفظ هذه البيانات في حسابه على Google. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول المقاييس<ph name="BEGIN_LINK1_END" />مزيد من المعلومات<ph name="END_LINK1" /></translation>
 <translation id="1346630054604077329">التأكيد وإعادة التشغيل</translation>
 <translation id="1346748346194534595">يمين</translation>
@@ -591,6 +593,7 @@
 <translation id="1390907927270446471">غير مسموح لحساب <ph name="PROFILE_USERNAME" /> باستخدام الطابعة <ph name="PRINTER_NAME" />. يُرجى التواصل مع المشرف.</translation>
 <translation id="1392047138650695757">قواميس المستخدم</translation>
 <translation id="139300021892314943">حصر إمكانية تسجيل الدخول على مستخدمين معيّنين</translation>
+<translation id="1393235015225624732">{NUM_TABS,plural, =1{‏إيقاف مشاركة علامة التبويب مع Gemini}zero{‏إيقاف مشاركة # علامة تبويب مع Gemini}two{‏إيقاف مشاركة علامتَي التبويب مع Gemini}few{‏إيقاف مشاركة # علامات تبويب مع Gemini}many{‏إيقاف مشاركة # علامة تبويب مع Gemini}other{‏إيقاف مشاركة # علامة تبويب مع Gemini}}</translation>
 <translation id="1393283411312835250">الشمس والسحاب</translation>
 <translation id="1395832189806039783">تمييز العنصر باستخدام تركيز لوحة المفاتيح</translation>
 <translation id="1396120028054416908">الرجوع إلى "<ph name="FOLDER_TITLE" />"</translation>
@@ -732,6 +735,7 @@
 <translation id="1486616492435615702">يمكنك إنشاء مسودّة أو تحسين نص حالي.</translation>
 <translation id="1487335504823219454">قيد التفعيل - الإعدادات المخصصة</translation>
 <translation id="1489101155914355052">جارٍ إنشاء اقتراحات لهذا المستند…</translation>
+<translation id="1493152297698462486">‏إنشاء صورة باستخدام Gemini</translation>
 <translation id="1493892686965953381">في انتظار <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">السماح للمواقع الإلكترونية بطلب إذن باستخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="1494429729245089920">تم رصد جهاز افتراضي باسم "<ph name="VM_NAME" />"، لكن لا يبدو أنّه يستخدم "<ph name="APP_NAME" />" صالحًا. يُرجى التواصل مع المشرف.</translation>
@@ -831,6 +835,7 @@
 <translation id="1561331397460162942">يترتب على ذلك منح إذن الوصول إلى الموقع الجغرافي لكلّ من التطبيقات والمواقع الإلكترونية المسموح لها بذلك وخدمات النظام</translation>
 <translation id="1562119309884184621">عند إضافة جهة الاتصال هذه، سيتم تذكُّرها في المرات القادمة عند مشاركة الملفات.</translation>
 <translation id="1562585387501039294">تتطلب المؤسسة (<ph name="ACCOUNT_MANAGER" />) ملفًا شخصيًا مُدارًا وستتمكّن من الاطّلاع على بعض المعلومات، بما في ذلك:</translation>
+<translation id="156345786953026804">‏سيتم مشاركة عناوين URL ومحتوى الصفحات التي يستخدمها Gemini أثناء تنفيذ مَهمّة معيّنة مع Google.</translation>
 <translation id="1566049601598938765">موقع إلكتروني</translation>
 <translation id="15662109988763471">لا تتوفر الطابعة المختارة أو لم يتم تثبيتها بشكلٍ صحيح. يُرجى التحقق من الطابعة أو تجربة اختيار طابعة أخرى.</translation>
 <translation id="1566329594234563241">عندما يكون الجهاز غير نشط وموصولاً بمصدر طاقة</translation>
@@ -1028,6 +1033,7 @@
 <translation id="167983332380191032">‏أرسلت خدمة الإدارة خطأ HTTP.</translation>
 <translation id="167997285881077031">إعدادات الصوت في ميزة "تحويل النص إلى كلام"</translation>
 <translation id="1680849702532889074">‏لقد حدث خطأ أثناء تثبيت تطبيق Linux.</translation>
+<translation id="1682195225331129001">التجربة الآن</translation>
 <translation id="1682548588986054654">نافذة جديدة للتصفح المتخفي</translation>
 <translation id="1682696837763999627">مؤشر الماوس الكبير</translation>
 <translation id="1682867089915960590">هل تريد تفعيل ميزة "التصفُّح النصي بالمؤشر"؟</translation>
@@ -1127,6 +1133,7 @@
 <translation id="1753557900380512635">تصميمات داخلية</translation>
 <translation id="1753905327828125965">الأكثر زيارة</translation>
 <translation id="1755601632425835748">حجم النص</translation>
+<translation id="1756963401828337401">يُرجى اختيار شاشة لأخذ لقطة لها</translation>
 <translation id="1757132445735080748">‏لإكمال عملية إعداد نظام التشغيل Linux، يُرجى تحديث نظام التشغيل ChromeOS Flex وإعادة المحاولة.</translation>
 <translation id="1757301747492736405">إلغاء التثبيت معلَّق</translation>
 <translation id="175772926354468439">تفعيل المظهر</translation>
@@ -2129,6 +2136,7 @@
 <translation id="2435248616906486374">تم قطع الاتصال بالشبكة</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="2436385001956947090">نسخ &amp;الرابط</translation>
+<translation id="2437105255211187922">{NUM_TABS,plural, =1{ستؤدي مشاركة علامة التبويب المحدّدة إلى تجاوز الحدّ المسموح به للمشاركة}zero{ستؤدي مشاركة # علامة تبويب إلى تجاوز الحدّ المسموح به للمشاركة}two{ستؤدي مشاركة علامتَي تبويب إلى تجاوز الحدّ المسموح به للمشاركة}few{ستؤدي مشاركة # علامات تبويب إلى تجاوز الحدّ المسموح به للمشاركة}many{ستؤدي مشاركة # علامة تبويب إلى تجاوز الحدّ المسموح به للمشاركة}other{ستؤدي مشاركة # علامة تبويب إلى تجاوز الحدّ المسموح به للمشاركة}}</translation>
 <translation id="2437561292559037753">مشاركة البيانات</translation>
 <translation id="2438853563451647815">الجهاز غير متصّل بطابعة</translation>
 <translation id="2439152382014731627">إعادة ضبط كلمة مرور <ph name="DEVICE_TYPE" /></translation>
@@ -2342,6 +2350,7 @@
 <translation id="2573276323521243649">الرجوع من صفحة اختيار الأفاتار</translation>
 <translation id="2573417407488272418">احتفظ بنسخة احتياطية من التطبيقات والملفات في الملفات &gt; ملفاتي قبل الترقية.</translation>
 <translation id="2573831315551295105">تخصيص مفتاح تحكّم للإجراء "<ph name="ACTION" />"</translation>
+<translation id="2574037773163798130">{NUM_TABS,plural, =1{‏مشاركة علامة التبويب مع Gemini}zero{‏مشاركة # علامة تبويب مع Gemini}two{‏مشاركة علامتَي تبويب مع Gemini}few{‏مشاركة # علامات تبويب مع Gemini}many{‏مشاركة # علامة تبويب مع Gemini}other{‏مشاركة # علامة تبويب مع Gemini}}</translation>
 <translation id="2575247648642144396">سيكون هذا الرمز مرئيًا عندما تتمكن الإضافة من تنفيذ الإجراءات على الصفحة الحالية. يمكنك استخدام هذه الإضافة بالنقر على الرمز أو بالضغط على <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575407791320728464">‏عنوان URL غير صالح. يجب تنسيق العنوان بشكل صحيح.</translation>
 <translation id="2575441894380764255">المواقع الإلكترونية التي لا يُسمح لها بعرض الإعلانات المضلِّلة أو غير المرغوب فيها</translation>
@@ -2800,6 +2809,7 @@
 <translation id="2886119409731773154">يمكن أن تستغرق عملية الاحتفاظ بنسخة احتياطية ما يصل إلى 30 دقيقة.</translation>
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" /> و<ph name="NUMBER_OF_DEVICES" /> جهاز آخر</translation>
+<translation id="2887344147309501015">‏يمكنك إجراء محادثات مع "Gemini في Chrome" للحصول على إجابات لأسئلتك وأفكار رئيسية وغيرها أثناء التصفّح</translation>
 <translation id="2889043468805635730">لم يتم العثور على أي مشاكل.</translation>
 <translation id="2889064240420137087">فتح الرابط باستخدام...</translation>
 <translation id="2891464434568738544">ما مِن مواقع إلكترونية متوفّرة حاليًا. يُرجى زيارة أحد المواقع الإلكترونية لإضافته إلى هذه القائمة.</translation>
@@ -3437,6 +3447,7 @@
 <translation id="3347086966102161372">&amp;نسخ عنوان الصورة</translation>
 <translation id="3348038390189153836">تم اكتشاف جهاز قابل للإزالة</translation>
 <translation id="3348973040180736882">جارٍ فك ضغط الملف</translation>
+<translation id="3349610303043713601">التصفّح باستخدام الذكاء الاصطناعي</translation>
 <translation id="3349933790966648062">الذاكرة المستخدَمة</translation>
 <translation id="3350450887151703713">إعادة تشغيل 10 ثوانٍ</translation>
 <translation id="3351472127384196879">إضافة أزرار على قلم الشاشة أو تحديد مكانها</translation>
@@ -4612,6 +4623,7 @@
 <translation id="4116480382905329353">تمّ رصد الإيماءة مرة واحدة</translation>
 <translation id="4116704186509653070">فتح مرة أخرى</translation>
 <translation id="4117714603282104018">إعدادات التجاوب الحسّي في لوحة اللمس</translation>
+<translation id="4117854923024277067">يمكن استخدام لقطة الشاشة مع طلبك أو حذفها</translation>
 <translation id="4118579674665737931">يُرجى إعادة تشغيل الجهاز وإعادة المحاولة.</translation>
 <translation id="4120388883569225797">تعذّرت إعادة ضبط مفتاح الأمان هذا</translation>
 <translation id="4120817667028078560">المسار طويل جدًا</translation>
@@ -4664,6 +4676,7 @@
 <translation id="4158315983204257156">حجم وخط نصوص المواقع الإلكترونية</translation>
 <translation id="4158364720893025815">نجاح</translation>
 <translation id="4159784952369912983">أرجواني</translation>
+<translation id="4162545316103024845">{NUM_TABS,plural, =1{ستؤدي مشاركة علامة التبويب المحدّدة إلى تجاوز الحدّ المسموح به للمشاركة}zero{ستؤدي مشاركة # علامة تبويب إلى تجاوز الحدّ المسموح به للمشاركة}two{ستؤدي مشاركة علامتَي تبويب إلى تجاوز الحدّ المسموح به للمشاركة}few{ستؤدي مشاركة # علامات تبويب إلى تجاوز الحدّ المسموح به للمشاركة}many{ستؤدي مشاركة # علامة تبويب إلى تجاوز الحدّ المسموح به للمشاركة}other{ستؤدي مشاركة # علامة تبويب إلى تجاوز الحدّ المسموح به للمشاركة}}</translation>
 <translation id="4163560723127662357">لوحة مفاتيح غير معروفة</translation>
 <translation id="4165942112764990069">‏لا ينتمي البريد الإلكتروني <ph name="USER_EMAIL" /> إلى مؤسسة صالحة. يُرجى التواصل مع المشرف. وإذا كنت مشرفًا، يمكنك ضبط إعدادات مؤسستك بالانتقال إلى: g.co/ChromeEnterpriseAccount.</translation>
 <translation id="4165986682804962316">إعدادات الموقع الإلكتروني</translation>
@@ -4674,6 +4687,8 @@
 <translation id="4168651806173792090">بطاقة ائتمان من النوع <ph name="NETWORK_NAME" /> تنتهي بالرقم <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">عدم السماح</translation>
 <translation id="4170314459383239649">محو عند الخروج</translation>
+<translation id="417112242673828206">{NUM_TABS,plural, =1{‏مشاركة علامة التبويب مع Gemini}zero{‏مشاركة # علامة تبويب مع Gemini}two{‏مشاركة علامتَي تبويب مع Gemini}few{‏مشاركة # علامات تبويب مع Gemini}many{‏مشاركة # علامة تبويب مع Gemini}other{‏مشاركة # علامة تبويب مع Gemini}}</translation>
+<translation id="4173129130568053653">‏يمكن أن يساعدك Gemini في حجز المواعيد أو إنشاء سلّات التسوّق أو تنفيذ مهام أخرى تُحدَّد له.</translation>
 <translation id="4175137578744761569">أرجواني فاتح وأبيض</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
 <translation id="4176864026061939326">هذا الجهاز يديره أحد المشرفين. ويطلب هذا المشرف إنشاء ملف شخصي جديد لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -4707,6 +4722,7 @@
 <translation id="4200689466366162458">كلمات مخصصة</translation>
 <translation id="4200983522494130825">علامة تبويب جديدة</translation>
 <translation id="4201546031411513170">يمكنك دائمًا اختيار ما تريد مزامنته في الإعدادات.</translation>
+<translation id="4202536110335087135">التجربة الآن</translation>
 <translation id="4203065553461038553">اسم الملف أو المسار طويل جدًا.</translation>
 <translation id="4203769790323223880">تم رفض طلب الوصول إلى الكاميرا.</translation>
 <translation id="4204415812590935863">يتعذَّر إنشاء مظهر في الوقت الحالي</translation>
@@ -6147,6 +6163,7 @@
 <translation id="5204967432542742771">إدخال كلمة المرور</translation>
 <translation id="5205484256512407285">عدم استخدام بيانات الجوّال للنقل مطلقًا</translation>
 <translation id="520568280985468584">تمت إضافة الشبكة. قد يستغرق تفعيل شبكة الجوّال بضع دقائق.</translation>
+<translation id="520576054436518354">‏ما رأيك بالاستفادة من قدرات Gemini في التصفّح؟</translation>
 <translation id="5207949376430453814">تمييز علامة إقحام النص</translation>
 <translation id="520840839826327499">‏تريد خدمة <ph name="SERVICE_NAME" /> التحقق من أنّك تستخدم جهازًا مؤهَّلاً يعمل بنظام التشغيل Chrome.</translation>
 <translation id="5208722776934437424">تغيير الأذونات</translation>
@@ -6162,6 +6179,7 @@
 <translation id="5215450412607891876">تفعيل تحديثات الأمان الممتدة</translation>
 <translation id="5215502535566372932">اختيار البلد</translation>
 <translation id="5216674789212441076">‏تتم تلقائيًا ترجمة مقاطع الشرح عند استخدام ميزة "النسخ النصي التلقائي". ويتم إرسال مقاطع الشرح إلى Google لترجمتها.</translation>
+<translation id="5216951551945455224">{NUM_TABS,plural, =1{‏إيقاف مشاركة علامة التبويب مع Gemini}zero{‏إيقاف مشاركة # علامة تبويب مع Gemini}two{‏إيقاف مشاركة علامتَي التبويب مع Gemini}few{‏إيقاف مشاركة # علامات تبويب مع Gemini}many{‏إيقاف مشاركة # علامة تبويب مع Gemini}other{‏إيقاف مشاركة # علامة تبويب مع Gemini}}</translation>
 <translation id="5220011581825921581">مفتاح البحث + السهم المتّجه للأعلى</translation>
 <translation id="5221516927483787768">تعذَّر بث محتوى <ph name="HOST_NAME" /></translation>
 <translation id="5221834113325601057">تم استبعاد علامة التبويب من القائمة</translation>
@@ -6235,6 +6253,7 @@
 <translation id="5267572070504076962">يُرجى تفعيل إعداد "التصفُّح الآمن" للحصول على حماية من المواقع الإلكترونية الخطيرة</translation>
 <translation id="5269659747698455324">تفعيل مفاتيح المرور</translation>
 <translation id="5269977353971873915">تعذّرت الطباعة</translation>
+<translation id="5271124474068841290">‏تتم مشاركة علامة التبويب الحالية مع Gemini، حتى عند التبديل بين علامات التبويب. ولن تُستخدَم بياناتك لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="5271578170655641944">‏هل تريد إزالة إمكانية الوصول إلى Google Drive؟</translation>
 <translation id="5272198173084686007">ما مِن علامات تبويب من الأجهزة الأخرى</translation>
 <translation id="527335345740023523">لديك حاليًا <ph name="NUMBERED_ITEM_1" /> و<ph name="NUMBERED_ITEM_2" /> و<ph name="NUMBERED_ITEM_3" /> والمزيد. ستتمكّن المؤسسة (<ph name="ACCOUNT_MANAGER" />) من الاطّلاع على هذه البيانات وإدارتها.</translation>
@@ -6324,6 +6343,7 @@
 <translation id="5333896723098573627">‏لإزالة التطبيقات، انتقِل إلى الإعدادات &gt; التطبيقات &gt; "متجر Google Play" &gt; إدارة إعدادات Android المفضّلة &gt; التطبيقات أو مدير التطبيقات. وبعد ذلك، انقر على التطبيق الذي تريد إلغاء تثبيته (قد تحتاج إلى التمرير سريعًا جهة اليمين أو اليسار للبحث عن التطبيق)، ثم انقر على "إلغاء التثبيت" أو "إيقاف".</translation>
 <translation id="5334113802138581043">الوصول إلى الميكروفون</translation>
 <translation id="5334142896108694079">ذاكرة التخزين المؤقت للنص البرمجي</translation>
+<translation id="5335370353987155592">‏ننصحك باستخدام Gemini بعناية مع مراعاة <ph name="BEGIN_LINK1" />عوامل الأمان<ph name="LINK_END1" />، مع العِلم بأنّه تقع على عاتقك مسؤولية أي إجراء يتّخذه Gemini أثناء تنفيذ مَهمّة، بما في ذلك الأخطاء و<ph name="BEGIN_LINK2" />النتائج غير المتوقَّعة<ph name="LINK_END2" />، مثل عمليات الشراء.</translation>
 <translation id="5336688142483283574">سيتم أيضًا إزالة هذه الصفحة من السجلّ ونشاط <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">المؤشّر ولوحة اللمس</translation>
 <translation id="5337207153202941678">إيقاف ميزة تمييز النص</translation>
@@ -6628,6 +6648,7 @@
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{إضافة علامة التبويب إلى مجموعة}zero{إضافة علامات التبويب إلى مجموعة}two{إضافة علامتَي التبويب إلى مجموعة}few{إضافة علامات التبويب إلى مجموعة}many{إضافة علامات التبويب إلى مجموعة}other{إضافة علامات التبويب إلى مجموعة}}</translation>
 <translation id="554535686826424776">العثور على القسائم</translation>
 <translation id="5546865291508181392">بحث</translation>
+<translation id="5547868626772433490">‏اسأل Gemini</translation>
 <translation id="5548075230008247516">تم إلغاء اختيار كل الإشارات المرجعية وتم الخروج من وضع التحديد.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" وعلامة تبويب واحدة أخرى}two{"<ph name="TAB_TITLE" />" وعلامتا تبويب أخريان}few{"<ph name="TAB_TITLE" />" و# علامات تبويب أخرى}many{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}other{"<ph name="TAB_TITLE" />" و# علامة تبويب أخرى}}</translation>
 <translation id="5548644592758170183">عرض على الجانب الأيسر</translation>
@@ -6793,6 +6814,7 @@
 <translation id="5655296450510165335">تسجيل الجهاز</translation>
 <translation id="5655823808357523308">ضبط كيفية ظهور الألوان على الشاشة</translation>
 <translation id="5656845498778518563">‏إرسال ملاحظات إلى Google</translation>
+<translation id="5656944594833183876">إنجاز المهام أصبح أسهل الآن</translation>
 <translation id="5657667036353380798">‏تتطلب الإضافة الخارجية تثبيت chrome الإصدار <ph name="MINIMUM_CHROME_VERSION" /> أو أعلى.</translation>
 <translation id="565899488479822148">جارٍ تثبيت آخر تحديث</translation>
 <translation id="5659593005791499971">البريد الإلكتروني</translation>
@@ -7139,7 +7161,7 @@
 <translation id="5908474332780919512">تشغيل التطبيق تلقائيًا عند تسجيل الدخول</translation>
 <translation id="5910363049092958439">حفظ ال&amp;صورة باسم...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> غير متصل</translation>
-<translation id="5911030830365207728">‏الترجمة من Google</translation>
+<translation id="5911030830365207728">‏ترجمة Google</translation>
 <translation id="5911497236110691522">للتبديل إلى أسلوب الإدخال التالي، اضغط على <ph name="KEY_CODES" /></translation>
 <translation id="5911533659001334206">عارض الاختصارات</translation>
 <translation id="5911545422157959623">الإشارات المرجعية غير متاحة في وضع الضيف.</translation>
@@ -7585,6 +7607,7 @@
 <translation id="6218058416316985984">جهاز <ph name="DEVICE_TYPE" /> غير متّصل بالإنترنت. يُرجى الاتصال بالإنترنت وإعادة المحاولة.</translation>
 <translation id="6220413761270491930">خطأ في تحميل الإضافة</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{يتعذّر نسخ الملف إلى <ph name="CLOUD_PROVIDER" />.}zero{يتعذّر نسخ الملفات إلى <ph name="CLOUD_PROVIDER" />.}two{يتعذّر نسخ الملفين إلى <ph name="CLOUD_PROVIDER" />.}few{يتعذّر نسخ الملفات إلى <ph name="CLOUD_PROVIDER" />.}many{يتعذّر نسخ الملفات إلى <ph name="CLOUD_PROVIDER" />.}other{يتعذّر نسخ الملفات إلى <ph name="CLOUD_PROVIDER" />.}}</translation>
+<translation id="62229737360959019">‏تتم أيضًا مشاركة علامات التبويب المفتوحة من محادثة أو المشترَكة مع Gemini. وفي وضع Live، تتم تلقائيًا مشاركة علامة التبويب الحالية فقط.</translation>
 <translation id="6224481128663248237">انتهت عملية التنسيق بنجاح.</translation>
 <translation id="622474711739321877">تتوفّر حاوية بهذا الاسم حاليًا.</translation>
 <translation id="622484624075952240">Down</translation>
@@ -7796,6 +7819,7 @@
 <translation id="6367097275976877956">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن في نظام التشغيل Chrome؟ اضغط على شريط المسافة لتفعيل ChromeVox.</translation>
 <translation id="6367196786591004737">حذف الإدخال</translation>
 <translation id="6367396429435748845">اضغط على المفاتيح <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> لإيقاف مفاتيح الماوس مؤقتًا أو استئناف استخدامها</translation>
+<translation id="6367853307713830174">‏يوضّح Gemini الخطوات التي تتم عليه ويطلب تأكيدًا منك قبل تنفيذ أي خطوات حسّاسة. ويمكنك إيقاف المَهمّة أو تولّيها بنفسك في أي وقت.</translation>
 <translation id="6367985768157257101">هل تريد الاستلام عبر ميزة "المشاركة عن قرب"؟</translation>
 <translation id="6368157733310917710">العناوين والمزيد</translation>
 <translation id="6368276408895187373">تفعيل – <ph name="VARIATION_NAME" /></translation>
@@ -7845,6 +7869,7 @@
 <translation id="640457954117263537">‏منح تطبيقات ChromeOS وAndroid وخدماتهما إذن الوصول إلى الموقع الجغرافي:</translation>
 <translation id="6406303162637086258">محاكاة إعادة تشغيل المتصفح</translation>
 <translation id="6406506848690869874">المزامنة</translation>
+<translation id="6406571339342621375">‏عدم إظهار Gemini في شريط القوائم</translation>
 <translation id="6406708970972405507">الإعدادات - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">المواقع الإلكترونية المسموح لها بحفظ البيانات على جهازك</translation>
 <translation id="6408118934673775994">قراءة بياناتك وتغييرها في <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" /> و <ph name="WEBSITE_3" /></translation>
@@ -8325,6 +8350,7 @@
 <translation id="6737663862851963468">‏إزالة تذكرة Kerberos</translation>
 <translation id="6738180164164974883">السماح بتحديد ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="6738430949033571771">جارٍ إثبات ملكية الحساب...</translation>
+<translation id="6739153164244375709">‏عارِض مضيف Gemini</translation>
 <translation id="6739266861259291931">إعادة الضبط على لغة الجهاز</translation>
 <translation id="6739923123728562974">عرض اختصار على سطح المكتب</translation>
 <translation id="6739943577740687354">تستخدم هذه الميزة الذكاء الاصطناعي وقد تخطئ في بعض الأحيان</translation>
@@ -8570,6 +8596,7 @@
 <translation id="6899427698619335650">‏يتيح لك هذا الخيار تخصيص مفاتيح علامات التشكيل بمرونة. على سبيل المثال، يمكنك كتابة anh1 أو a1nh للحصول على ánh.</translation>
 <translation id="6900284862687837908">تطبيق الخلفية: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">الحماية المحسَّنة</translation>
+<translation id="6900632443249221072">‏إنشاء صورة باستخدام Gemini</translation>
 <translation id="6900651018461749106">تسجيل الدخول مرة أخرى لتحديث <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">هل تريد فعلاً حذف محرك البحث هذا؟</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
@@ -9084,6 +9111,7 @@
 <translation id="7268412955622368206">‏عرض إشعار منبثق لأجهزة USB الجديدة</translation>
 <translation id="7269229526547981029">تتم إدارة هذا الملف الشخصي من قِبَل <ph name="PROFILE_MANAGER" />. وهناك طلب من <ph name="ACCOUNT_MANAGER" /> لإنشاء ملف شخصي جديد لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7269736181983384521">استخدام البيانات في ميزة "المشاركة عن قرب"</translation>
+<translation id="7270447384127135313">‏يمكنك بسهولة طرح أسئلة على Gemini حول علامات التبويب التي تتم مشاركتها أثناء التصفّح.</translation>
 <translation id="7271278495464744706">تفعيل الأوصاف المطوَّلة</translation>
 <translation id="7272674038937250585">لم يتم تقديم أي وصف</translation>
 <translation id="7273110280511444812">تم آخر توصيل في <ph name="DATE" /></translation>
@@ -9581,6 +9609,7 @@
 <translation id="7617263010641145920">‏تفعيل "متجر Play"</translation>
 <translation id="7617648809369507487">استخدام طريقة أقل بروزًا لإرسال الإشعارات</translation>
 <translation id="7619937211696316184">اكتملت الصيانة</translation>
+<translation id="7620049858153799769">‏في إطار جهود تحسين Gemini، قد يطّلع فريق من المراجعين على المحادثات المتعلّقة بعلامات التبويب التي تمت مشاركتها.</translation>
 <translation id="7620083113061729689">مزامنة السجلّ</translation>
 <translation id="7620616707541471029">اختيار حساب للمتابعة</translation>
 <translation id="7621382409404463535">تعذّر على النظام حفظ ضبط الجهاز.</translation>
