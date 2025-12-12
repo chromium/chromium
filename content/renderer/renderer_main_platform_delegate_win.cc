@@ -86,8 +86,6 @@ bool RendererMainPlatformDelegate::EnableSandbox() {
       base::UmaHistogramBoolean("Process.Sandbox.DwriteHookStatus", hooked);
     }
 
-    sandbox::policy::MaybeDelayloadDbghelp();
-
     target_services->LowerToken();
     return true;
   }
