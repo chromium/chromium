@@ -83,7 +83,7 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
         mWindowAndroid = windowAndroid;
         mProfile = profile;
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) {
+        if (!(activity instanceof ModalDialogManagerHolder)) {
             onCancel();
             return;
         }
