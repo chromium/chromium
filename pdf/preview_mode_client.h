@@ -32,6 +32,7 @@ class PreviewModeClient : public PDFiumEngineClient {
 
   // PDFiumEngineClient:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
+  bool UseSkiaPremultipliedAlpha() override;
   void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
   void ScrollToX(int x_in_screen_coords, bool force_smooth_scroll) override;

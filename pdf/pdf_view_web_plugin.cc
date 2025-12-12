@@ -562,6 +562,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
                                           base::debug::CrashKeySize::Size256);
   base::debug::SetCrashKeyString(subresource_url, params->original_url);
 
+  use_skia_renderer_ = params->use_skia;
   PerProcessInitializer::GetInstance().Acquire(params->use_skia);
   initialized_ = true;
 
@@ -1113,6 +1114,11 @@ void PdfViewWebPlugin::ProposeDocumentLayout(const DocumentLayout& layout) {
   if (layout.dirty() && accessibility_state_ == AccessibilityState::kLoaded) {
     LoadAccessibility();
   }
+}
+
+bool PdfViewWebPlugin::UseSkiaPremultipliedAlpha() {
+  return use_skia_renderer_ &&
+         chrome_pdf::features::kPdfUseSkiaPremultiplied.Get();
 }
 
 void PdfViewWebPlugin::Invalidate(const gfx::Rect& rect) {
@@ -2678,11 +2684,13 @@ void PdfViewWebPlugin::OnViewportChanged(
   const gfx::Size new_image_size =
       PaintManager::GetNewContextSize(old_image_size, plugin_rect_.size());
   if (new_image_size != old_image_size) {
+    SkAlphaType alpha_type = UseSkiaPremultipliedAlpha()
+                                 ? kPremul_SkAlphaType
+                                 : kUnpremul_SkAlphaType;
     // Ignore the result. If the allocation fails, the image data buffer will be
     // empty and the code below will handle that.
-    (void)image_data_.tryAllocPixels(
-        SkImageInfo::MakeN32(new_image_size.width(), new_image_size.height(),
-                             kUnpremul_SkAlphaType));
+    (void)image_data_.tryAllocPixels(SkImageInfo::MakeN32(
+        new_image_size.width(), new_image_size.height(), alpha_type));
     first_paint_ = true;
   }
 

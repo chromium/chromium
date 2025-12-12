@@ -19,6 +19,12 @@ namespace {
 
 class SearchStringTestClient : public TestClient {
  public:
+  explicit SearchStringTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {}
+  SearchStringTestClient(const SearchStringTestClient&) = delete;
+  SearchStringTestClient& operator=(const SearchStringTestClient&) = delete;
+  ~SearchStringTestClient() override = default;
+
   std::vector<SearchStringResult> SearchString(const std::u16string& needle,
                                                const std::u16string& haystack,
                                                bool case_sensitive) override {
@@ -32,6 +38,8 @@ class SearchStringTestClient : public TestClient {
 
 class PDFiumTextFragmentFinderTest : public PDFiumTestBase {
  public:
+  PDFiumTextFragmentFinderTest() : client_(/*use_skia_renderer=*/GetParam()) {}
+
   [[nodiscard]] PDFiumEngine* CreateEngine(
       const base::FilePath::CharType* test_filename) {
     engine_ = InitializeEngine(&client_, test_filename);

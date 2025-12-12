@@ -52,6 +52,9 @@ class PDFiumEngineClient {
   // Informs the client that the given rect needs to be repainted.
   virtual void Invalidate(const gfx::Rect& rect) {}
 
+  // Returns true if the renderer is skia and premultiplied alpha should be used
+  virtual bool UseSkiaPremultipliedAlpha() = 0;
+
   // Informs the client to scroll the plugin area by the given offset.
   virtual void DidScroll(const gfx::Vector2d& offset) {}
 

@@ -24,7 +24,7 @@ namespace chrome_pdf {
 using PDFiumInkReaderTest = PDFiumTestBase;
 
 TEST_P(PDFiumInkReaderTest, Basic) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
   ASSERT_TRUE(engine);
@@ -72,14 +72,14 @@ class PDFiumInkReaderStrokeMarkedObjectsTests : public PDFiumInkReaderTest {
   void ValidateStrokeMarkedObjectsCount(
       const base::FilePath::CharType* pdf_name,
       int expected_count) {
-    TestClient client;
+    TestClient client(/*use_skia_renderer=*/GetParam());
     std::unique_ptr<PDFiumEngine> engine = InitializeEngine(&client, pdf_name);
     ASSERT_TRUE(engine);
 
     std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
     ASSERT_FALSE(saved_pdf_data.empty());
 
-    TestClient saved_client;
+    TestClient saved_client(/*use_skia_renderer=*/GetParam());
     std::unique_ptr<PDFiumEngine> saved_engine =
         InitializeEngineFromData(&saved_client, std::move(saved_pdf_data));
     ASSERT_TRUE(saved_engine);

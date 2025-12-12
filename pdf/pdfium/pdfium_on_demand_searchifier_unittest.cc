@@ -46,7 +46,8 @@ base::FilePath GetReferenceFilePathForPrint(std::string_view test_filename) {
 
 class SearchifierTestClient : public TestClient {
  public:
-  SearchifierTestClient() = default;
+  explicit SearchifierTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {}
   SearchifierTestClient(const SearchifierTestClient&) = delete;
   SearchifierTestClient& operator=(const SearchifierTestClient&) = delete;
   ~SearchifierTestClient() override = default;
@@ -99,6 +100,8 @@ VisualAnnotationPtr CreateSampleAnnotation(int call_number) {
 
 class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
  public:
+  PDFiumOnDemandSearchifierTest() : client_(/*use_skia_renderer=*/GetParam()) {}
+
   [[nodiscard]] PDFiumEngine* CreateEngine(
       const base::FilePath::CharType* test_filename) {
     engine_ = InitializeEngine(&client_, test_filename);

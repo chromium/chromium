@@ -48,6 +48,9 @@ BASE_FEATURE(kPdfUseShowSaveFilePicker, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPdfUseSkiaRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kPdfUseSkiaPremultiplied{
+    &kPdfUseSkiaRenderer, "premultiplied-alpha", false};
+
 // Feature has no effect if Chrome is built with no XFA support.
 BASE_FEATURE(kPdfXfaSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 

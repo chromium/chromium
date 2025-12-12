@@ -117,7 +117,8 @@ std::string GetPlatformTextExpectation(std::string expectation) {
 
 class MockTestClient : public TestClient {
  public:
-  MockTestClient() {
+  explicit MockTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {
     ON_CALL(*this, ProposeDocumentLayout)
         .WillByDefault([this](const DocumentLayout& layout) {
           TestClient::ProposeDocumentLayout(layout);
@@ -178,7 +179,7 @@ class PDFiumEngineTest : public PDFiumTestBase {
   // loaded incrementally. Note that this function will return `false` if
   // incremental loading fails, but also if incremental loading is disabled.
   bool TryLoadIncrementally() {
-    TestClient client;
+    TestClient client(/*use_skia_renderer=*/GetParam());
     InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
         &client, FILE_PATH_LITERAL("linearized.pdf"));
     if (!initialize_result.engine) {
@@ -236,7 +237,7 @@ class PDFiumEngineTest : public PDFiumTestBase {
 };
 
 TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdf) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
 
   // ProposeDocumentLayout() gets called twice during loading because
   // PDFiumEngine::ContinueLoadingDocument() calls LoadBody() (which eventually
@@ -260,7 +261,7 @@ TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdf) {
 }
 
 TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdfInTwoUpView) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -283,7 +284,7 @@ TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdfInTwoUpView) {
 }
 
 TEST_P(PDFiumEngineTest, AppendBlankPagesWithFewerPages) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   {
     InSequence normal_then_append;
     EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithSize(343, 1664)))
@@ -304,7 +305,7 @@ TEST_P(PDFiumEngineTest, AppendBlankPagesWithFewerPages) {
 }
 
 TEST_P(PDFiumEngineTest, AppendBlankPagesWithMorePages) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   {
     InSequence normal_then_append;
     EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithSize(343, 1664)))
@@ -329,7 +330,7 @@ TEST_P(PDFiumEngineTest, AppendBlankPagesWithMorePages) {
 }
 
 TEST_P(PDFiumEngineTest, ProposeDocumentLayoutWithOverlap) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -344,7 +345,7 @@ TEST_P(PDFiumEngineTest, ProposeDocumentLayoutWithOverlap) {
 }
 
 TEST_P(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -361,7 +362,7 @@ TEST_P(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
 }
 
 TEST_P(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -377,7 +378,7 @@ TEST_P(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
 }
 
 TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("embedded_attachments.pdf"));
   ASSERT_TRUE(engine);
@@ -436,7 +437,7 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
 }
 
 TEST_P(PDFiumEngineTest, GetInvalidDocumentAttachment) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("invalid_attachment.pdf"));
   ASSERT_TRUE(engine);
@@ -457,7 +458,7 @@ TEST_P(PDFiumEngineTest, GetInvalidDocumentAttachment) {
 }
 
 TEST_P(PDFiumEngineTest, GetDocumentAttachmentWithInvalidData) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("embedded_attachments_invalid_data.pdf"));
   ASSERT_TRUE(engine);
@@ -477,7 +478,7 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachmentWithInvalidData) {
 }
 
 TEST_P(PDFiumEngineTest, NoDocumentAttachmentInfo) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -486,7 +487,7 @@ TEST_P(PDFiumEngineTest, NoDocumentAttachmentInfo) {
 }
 
 TEST_P(PDFiumEngineTest, GetDocumentMetadata) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("document_info.pdf"));
   ASSERT_TRUE(engine);
@@ -515,7 +516,7 @@ TEST_P(PDFiumEngineTest, GetDocumentMetadata) {
 }
 
 TEST_P(PDFiumEngineTest, GetEmptyDocumentMetadata) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -536,7 +537,7 @@ TEST_P(PDFiumEngineTest, GetEmptyDocumentMetadata) {
 }
 
 TEST_P(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("linearized.pdf"));
   ASSERT_TRUE(engine);
@@ -544,7 +545,7 @@ TEST_P(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
 }
 
 TEST_P(PDFiumEngineTest, GetBadPdfVersion) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bad_version.pdf"));
   ASSERT_TRUE(engine);
@@ -554,7 +555,7 @@ TEST_P(PDFiumEngineTest, GetBadPdfVersion) {
 }
 
 TEST_P(PDFiumEngineTest, GetNamedDestination) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("named_destinations.pdf"));
   ASSERT_TRUE(engine);
@@ -587,7 +588,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
 }
 
 TEST_P(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -600,7 +601,7 @@ TEST_P(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
 }
 
 TEST_P(PDFiumEngineTest, PluginSizeUpdatedDuringLoad) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -614,7 +615,7 @@ TEST_P(PDFiumEngineTest, PluginSizeUpdatedDuringLoad) {
 }
 
 TEST_P(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -627,7 +628,7 @@ TEST_P(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
 }
 
 TEST_P(PDFiumEngineTest, OnLeftMouseDownBeforePluginSizeUpdated) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -642,7 +643,7 @@ TEST_P(PDFiumEngineTest, OnLeftMouseDownBeforePluginSizeUpdated) {
 }
 
 TEST_P(PDFiumEngineTest, OnLeftMouseDownAfterPluginSizeUpdated) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -674,7 +675,7 @@ TEST_P(PDFiumEngineTest, IncrementalLoadingFeatureDisabled) {
 }
 
 TEST_P(PDFiumEngineTest, GetPageSizeInPoints) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -702,7 +703,7 @@ TEST_P(PDFiumEngineTest, GetPageSizeInPoints) {
 }
 
 TEST_P(PDFiumEngineTest, RequestThumbnail) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -724,7 +725,7 @@ TEST_P(PDFiumEngineTest, RequestThumbnailLinearized) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("linearized.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -763,7 +764,7 @@ TEST_P(PDFiumEngineTest, RequestThumbnailLinearized) {
 }
 
 TEST_P(PDFiumEngineTest, HandleInputEventKeyDown) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -777,7 +778,7 @@ TEST_P(PDFiumEngineTest, HandleInputEventKeyDown) {
 }
 
 TEST_P(PDFiumEngineTest, HandleInputEventRawKeyDown) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -792,7 +793,7 @@ TEST_P(PDFiumEngineTest, HandleInputEventRawKeyDown) {
 }
 
 TEST_P(PDFiumEngineTest, GetPageText) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -805,7 +806,7 @@ TEST_P(PDFiumEngineTest, GetPageText) {
 }
 
 TEST_P(PDFiumEngineTest, LinkNavigates) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
@@ -823,7 +824,7 @@ TEST_P(PDFiumEngineTest, LinkNavigates) {
 
 // Test case for crbug.com/699000
 TEST_P(PDFiumEngineTest, LinkDisabledInPrintPreview) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
@@ -841,7 +842,7 @@ TEST_P(PDFiumEngineTest, LinkDisabledInPrintPreview) {
 }
 
 TEST_P(PDFiumEngineTest, RotateAfterSelectedText) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -875,7 +876,7 @@ TEST_P(PDFiumEngineTest, RotateAfterSelectedText) {
 }
 
 TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -908,7 +909,7 @@ TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
 }
 
 TEST_P(PDFiumEngineTest, GetCharUnicode) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -927,7 +928,7 @@ TEST_P(PDFiumEngineTest, GetCharUnicode) {
 }
 
 TEST_P(PDFiumEngineTest, GetScreenRectsForCaret) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -953,7 +954,7 @@ TEST_P(PDFiumEngineTest, GetScreenRectsForCaret) {
 }
 
 TEST_P(PDFiumEngineTest, GetScreenRectsForCaretBlankPage) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -965,7 +966,7 @@ TEST_P(PDFiumEngineTest, GetScreenRectsForCaretBlankPage) {
 }
 
 TEST_P(PDFiumEngineTest, GetScreenRectsForCaretMiniBlankPage) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank_mini.pdf"));
   ASSERT_TRUE(engine);
@@ -977,7 +978,7 @@ TEST_P(PDFiumEngineTest, GetScreenRectsForCaretMiniBlankPage) {
 }
 
 TEST_P(PDFiumEngineTest, GetTextRunInfoAt) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -989,7 +990,7 @@ TEST_P(PDFiumEngineTest, GetTextRunInfoAt) {
 }
 
 TEST_P(PDFiumEngineTest, GetTextRunInfoAtBlankPage) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -1000,7 +1001,7 @@ TEST_P(PDFiumEngineTest, GetTextRunInfoAtBlankPage) {
 }
 
 TEST_P(PDFiumEngineTest, InvalidateRect) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -1010,7 +1011,7 @@ TEST_P(PDFiumEngineTest, InvalidateRect) {
 }
 
 TEST_P(PDFiumEngineTest, IsSynthesizedNewline) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("text_newlines.pdf"));
   ASSERT_TRUE(engine);
@@ -1035,6 +1036,8 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
 
 class PDFiumEngineSelectionTest : public PDFiumEngineTest {
  public:
+  PDFiumEngineSelectionTest() : client_(/*use_skia_renderer=*/GetParam()) {}
+
   void TearDown() override {
     // Reset `engine_` before PDFium gets uninitialized.
     engine_.reset();
@@ -1471,7 +1474,7 @@ using PDFiumEngineDrawSelectionTest = PDFiumDrawSelectionTestBase;
 
 TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsHelloWorld) {
   constexpr int kPageIndex = 0;
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -1504,7 +1507,7 @@ TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsHelloWorld) {
 }
 
 TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsBigtableMicro) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bigtable_micro.pdf"));
   ASSERT_TRUE(engine);
@@ -1529,7 +1532,7 @@ TEST_P(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("linearized.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -1600,7 +1603,7 @@ TEST_P(PDFiumEngineTabbingTest, LinkUnderCursor) {
    * ++++ Highlight annotation
    * ++++ Link annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1633,7 +1636,7 @@ TEST_P(PDFiumEngineTabbingTest, LinkUnderCursor) {
 
 // Test case for crbug.com/1088296
 TEST_P(PDFiumEngineTabbingTest, LinkUnderCursorAfterTabAndRightClick) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1685,7 +1688,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingSupportedAnnots) {
    * ++++ Highlight annotation
    * ++++ Link annotation
    */
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1735,7 +1738,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingForward) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1788,7 +1791,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingBackward) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1846,7 +1849,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingWithModifiers) {
    * ++ Page 2
    * ++++ Annotation
    */
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1896,7 +1899,7 @@ TEST_P(PDFiumEngineTabbingTest, NoFocusableElementTabbing) {
    * ++ Page 1
    * ++ Page 2
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -1946,7 +1949,7 @@ TEST_P(PDFiumEngineTabbingTest, RestoringDocumentFocus) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1992,7 +1995,7 @@ TEST_P(PDFiumEngineTabbingTest, RestoringAnnotFocus) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -2044,7 +2047,7 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
    * ++++ Annotation (Text Field)
    * ++++ Annotation (Radio Button)
    */
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -2078,7 +2081,7 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
 }
 
 TEST_P(PDFiumEngineTabbingTest, ClearSelectionOnFocusInFormTextArea) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("form_text_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -2102,7 +2105,7 @@ TEST_P(PDFiumEngineTabbingTest, ClearSelectionOnFocusInFormTextArea) {
 }
 
 TEST_P(PDFiumEngineTabbingTest, RetainSelectionOnFocusNotInFormTextArea) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -2126,7 +2129,7 @@ TEST_P(PDFiumEngineTabbingTest, RetainSelectionOnFocusNotInFormTextArea) {
 }
 
 TEST_P(PDFiumEngineTabbingTest, SetFormHighlight) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -2148,10 +2151,11 @@ TEST_P(PDFiumEngineTabbingTest, SetFormHighlight) {
 
 class ScrollingTestClient : public TestClient {
  public:
-  ScrollingTestClient() = default;
-  ~ScrollingTestClient() override = default;
+  explicit ScrollingTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {}
   ScrollingTestClient(const ScrollingTestClient&) = delete;
   ScrollingTestClient& operator=(const ScrollingTestClient&) = delete;
+  ~ScrollingTestClient() override = default;
 
   // Mock PDFiumEngineClient methods.
   MOCK_METHOD(void, ScrollToX, (int, bool), (override));
@@ -2159,7 +2163,7 @@ class ScrollingTestClient : public TestClient {
 };
 
 TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
-  StrictMock<ScrollingTestClient> client;
+  StrictMock<ScrollingTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -2214,7 +2218,7 @@ TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
 }
 
 TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
-  StrictMock<ScrollingTestClient> client;
+  StrictMock<ScrollingTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -2267,7 +2271,7 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTabbingTest, testing::Bool());
 using PDFiumEngineReadOnlyTest = PDFiumEngineTabbingTest;
 
 TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -2294,7 +2298,7 @@ TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
 }
 
 TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -2321,7 +2325,7 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineReadOnlyTest, testing::Bool());
 using PDFiumEngineInkTest = PDFiumEngineTabbingTest;
 
 TEST_P(PDFiumEngineInkTest, KillFormFocusInAnnotationMode) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -2344,7 +2348,7 @@ TEST_P(PDFiumEngineInkTest, KillFormFocusInAnnotationMode) {
 }
 
 TEST_P(PDFiumEngineInkTest, CannotSelectTextInAnnotationMode) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -2362,7 +2366,7 @@ TEST_P(PDFiumEngineInkTest, CannotSelectTextInAnnotationMode) {
 }
 
 TEST_P(PDFiumEngineInkTest, ContainsV2InkPath) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2387,7 +2391,7 @@ TEST_P(PDFiumEngineInkTest, ContainsV2InkPath) {
 }
 
 TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
   ASSERT_TRUE(engine);
@@ -2414,7 +2418,7 @@ TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
 }
 
 TEST_P(PDFiumEngineInkTest, GetCanonicalToPdfTransform) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -2442,6 +2446,9 @@ class PDFiumEngineInkTextSelectionTest : public PDFiumEngineInkTest {
                                                           136.496f, 111.792f};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   static constexpr gfx::PointF kNonTextPositionPage0{5.0f, 5.0f};
+
+  PDFiumEngineInkTextSelectionTest()
+      : client_(/*use_skia_renderer=*/GetParam()) {}
 
   void TearDown() override {
     // Reset `engine_` before PDFium gets uninitialized.
@@ -2587,7 +2594,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 using PDFiumEngineInkDrawTest = PDFiumTestBase;
 
 TEST_P(PDFiumEngineInkDrawTest, NoStrokeData) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2598,7 +2605,7 @@ TEST_P(PDFiumEngineInkDrawTest, NoStrokeData) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2700,7 +2707,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2785,7 +2792,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
   ASSERT_TRUE(engine);
@@ -2850,7 +2857,7 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, ThumbnailsDoNotContainStrokes) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2915,7 +2922,7 @@ TEST_P(PDFiumEngineInkDrawTest, ThumbnailsDoNotContainStrokes) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, RotatedPdf) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rotated_multi_page_cropped.pdf"));
   ASSERT_TRUE(engine);
@@ -2972,7 +2979,7 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkDrawTest, testing::Values(false));
 using PDFiumEngineInkPrintTest = PDFiumTestBase;
 
 TEST_P(PDFiumEngineInkPrintTest, InkStrokes) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -3015,7 +3022,7 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
   static constexpr gfx::Size kAnnotationFormFieldsVisiblePageSize{816, 1056};
   static constexpr gfx::Size kHelloWorldExpectedVisiblePageSize{266, 266};
   static constexpr gfx::PointF kHelloWorldGoodbyeWorldCharB{85.0f, 118.0f};
-  PDFiumEngineCaretTest() = default;
+  PDFiumEngineCaretTest() : client_(/*use_skia_renderer=*/GetParam()) {}
   PDFiumEngineCaretTest(const PDFiumEngineCaretTest&) = delete;
   PDFiumEngineCaretTest& operator=(const PDFiumEngineCaretTest&) = delete;
   ~PDFiumEngineCaretTest() override = default;
@@ -3462,6 +3469,12 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineCaretTest, testing::Bool());
 
 class SearchStringTestClient : public TestClient {
  public:
+  explicit SearchStringTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {}
+  SearchStringTestClient(const SearchStringTestClient&) = delete;
+  SearchStringTestClient& operator=(const SearchStringTestClient&) = delete;
+  ~SearchStringTestClient() override = default;
+
   std::vector<SearchStringResult> SearchString(const std::u16string& needle,
                                                const std::u16string& haystack,
                                                bool case_sensitive) override {
@@ -3491,7 +3504,7 @@ class PDFiumEngineHighlightTextFragmentTest
 };
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, OnlyTextStart) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
   engine->FindAndHighlightTextFragments({"Spanner"});
@@ -3500,7 +3513,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, OnlyTextStart) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndEnd) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3510,7 +3523,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndEnd) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndTextSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3521,7 +3534,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndTextSuffix) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartEndAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3532,7 +3545,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartEndAndSuffix) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixAndTextStart) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3543,7 +3556,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixAndTextStart) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3554,7 +3567,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartAndSuffix) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartEndAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3565,7 +3578,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartEndAndSuffix) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, MultipleTextFragments) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3578,7 +3591,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, MultipleTextFragments) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, FragmentNotInPDF) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3612,7 +3625,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, FragmentNotInPDF) {
 
 // Assert that the second highlight should clear the existing highlight.
 TEST_P(PDFiumEngineHighlightTextFragmentTest, ConsecutiveHighlights) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3627,7 +3640,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, ConsecutiveHighlights) {
 // highlight.
 TEST_P(PDFiumEngineHighlightTextFragmentTest,
        ClearExistingHighlightOnFailedFind) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3639,7 +3652,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest,
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, RemoveTextFragments) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3651,7 +3664,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, RemoveTextFragments) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, ScrollToFirstTextFragment) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
   engine->PluginSizeUpdated({200, 400});
@@ -3666,7 +3679,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, ScrollToFirstTextFragment) {
 // Assert that OnNewTextFragmentsSearchStarted() is called for any text
 // fragment search.
 TEST_P(PDFiumEngineHighlightTextFragmentTest, OnNewTextFragmentsSearchStarted) {
-  SearchStringTestClient client;
+  SearchStringTestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 

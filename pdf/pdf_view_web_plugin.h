@@ -353,6 +353,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   // PDFiumEngineClient:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
+  bool UseSkiaPremultipliedAlpha() override;
   void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
   void ScrollToX(int x_screen_coords, bool force_smooth_scroll) override;
@@ -917,6 +918,9 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // viewport to screen coordinates. Divide by `device_scale_` to convert from
   // screen to viewport coordinates.
   float device_scale_ = 1.0f;
+
+  // Use Skia when set to true, or AGG when set to false.
+  bool use_skia_renderer_ = false;
 
   // True if we haven't painted the plugin viewport yet.
   bool first_paint_ = true;

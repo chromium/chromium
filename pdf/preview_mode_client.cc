@@ -30,6 +30,10 @@ void PreviewModeClient::ProposeDocumentLayout(const DocumentLayout& layout) {
   // occurs if and only if loading a non-PDF document with more than 1 page.
 }
 
+bool PreviewModeClient::UseSkiaPremultipliedAlpha() {
+  NOTREACHED();
+}
+
 void PreviewModeClient::Invalidate(const gfx::Rect& rect) {
   NOTREACHED();
 }

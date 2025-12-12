@@ -101,7 +101,7 @@ void CheckPdfRendering(base::span<const uint8_t> pdf_data,
 }  // namespace
 
 TEST_P(PDFiumPrintTest, Basic) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -149,7 +149,7 @@ TEST_P(PDFiumPrintTest, Basic) {
 }
 
 TEST_P(PDFiumPrintTest, AlterScalingDefault) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
   ASSERT_TRUE(engine);
@@ -178,7 +178,7 @@ TEST_P(PDFiumPrintTest, AlterScalingDefault) {
 }
 
 TEST_P(PDFiumPrintTest, AlterScalingFitPaper) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
   ASSERT_TRUE(engine);
@@ -209,7 +209,7 @@ TEST_P(PDFiumPrintTest, AlterScalingFitPaper) {
 }
 
 TEST_P(PDFiumPrintTest, AlterScalingFitPrintable) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
   ASSERT_TRUE(engine);
@@ -240,7 +240,7 @@ TEST_P(PDFiumPrintTest, AlterScalingFitPrintable) {
 }
 
 TEST_P(PDFiumPrintTest, CenterPositionCenterShrinkToFitPaper) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rectangles.pdf"));
   ASSERT_TRUE(engine);
@@ -271,7 +271,7 @@ TEST_P(PDFiumPrintTest, CenterPositionCenterShrinkToFitPaper) {
 }
 
 TEST_P(PDFiumPrintTest, CenterPositionRotatedCenterShrinkToFitPaper) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client,
       FILE_PATH_LITERAL("rotated_rectangles_smaller_than_size_letter.pdf"));
@@ -304,7 +304,7 @@ TEST_P(PDFiumPrintTest, CenterPositionRotatedCenterShrinkToFitPaper) {
 }
 
 TEST_P(PDFiumPrintTest, AlterScalingCenterShrinkToFitPaper) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("A4_rects.pdf"));
   ASSERT_TRUE(engine);

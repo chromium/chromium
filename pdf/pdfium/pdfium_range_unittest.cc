@@ -16,6 +16,8 @@ namespace chrome_pdf {
 
 class PDFiumRangeTest : public PDFiumTestBase {
  public:
+  PDFiumRangeTest() : client_(/*use_skia_renderer=*/GetParam()) {}
+
   void SetUp() override {
     PDFiumTestBase::SetUp();
     engine_ = InitializeEngine(&client_, FILE_PATH_LITERAL("hello_world2.pdf"));

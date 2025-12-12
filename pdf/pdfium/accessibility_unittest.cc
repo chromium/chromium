@@ -149,7 +149,7 @@ TEST_P(AccessibilityTest, GetAccessibilityPage) {
   static_assert(std::size(kExpectedChars) == kExpectedCharCount,
                 "Bad test expectation count");
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -201,7 +201,7 @@ TEST_P(AccessibilityTest, AccessibilityStructureTree) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(features::kPdfTags);
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("tags.pdf"));
   ASSERT_TRUE(engine);
@@ -228,7 +228,7 @@ TEST_P(AccessibilityTest, AccessibilityStructureTreeWithImages) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(features::kPdfTags);
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("image_alt_text.pdf"));
   ASSERT_TRUE(engine);
@@ -254,7 +254,7 @@ TEST_P(AccessibilityTest, AccessibilityStructureTreeWithMultipleMCIDs) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(features::kPdfTags);
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("tagged_marked_content.pdf"));
   ASSERT_TRUE(engine);
@@ -302,7 +302,7 @@ TEST_P(AccessibilityTest, GetAccessibilityPageWithTags) {
   static constexpr char kExpectedChars[] =
       "Article\r\nBlockQuote\r\nParagraph\r\nHeading1\r\nHeading2";
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("tags.pdf"));
   ASSERT_TRUE(engine);
@@ -339,7 +339,7 @@ TEST_P(AccessibilityTest, GetAccessibilityImageInfo) {
       {"Image 3", 0, {380, 678, 1, 1}, {}},
   });
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("image_alt_text.pdf"));
   ASSERT_TRUE(engine);
@@ -369,7 +369,7 @@ TEST_P(AccessibilityTest, GetAccessibilityImageInfo) {
 }
 
 TEST_P(AccessibilityTest, GetUnderlyingTextRangeForRect) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -409,7 +409,10 @@ TEST_P(AccessibilityTest, GetUnderlyingTextRangeForRect) {
 // call is made by tests.
 class ScrollEnabledTestClient : public TestClient {
  public:
-  ScrollEnabledTestClient() = default;
+  explicit ScrollEnabledTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {}
+  ScrollEnabledTestClient(const ScrollEnabledTestClient&) = delete;
+  ScrollEnabledTestClient& operator=(const ScrollEnabledTestClient&) = delete;
   ~ScrollEnabledTestClient() override = default;
 
   // Records the scroll delta received in a ScrollBy action request from tests.
@@ -430,7 +433,7 @@ class ScrollEnabledTestClient : public TestClient {
 TEST_P(AccessibilityTest, ScrollIntoViewActionHandling) {
   // This test checks that accessibility scroll action is passed
   // on to the ScrollEnabledTestClient implementation.
-  ScrollEnabledTestClient client;
+  ScrollEnabledTestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -511,7 +514,7 @@ TEST_P(AccessibilityTest, ScrollIntoViewActionHandling) {
 }
 
 TEST_P(AccessibilityTest, ScrollToNearestEdge) {
-  ScrollEnabledTestClient client;
+  ScrollEnabledTestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -550,7 +553,7 @@ TEST_P(AccessibilityTest, ScrollToNearestEdge) {
 }
 
 TEST_P(AccessibilityTest, ScrollToGlobalPoint) {
-  ScrollEnabledTestClient client;
+  ScrollEnabledTestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -576,7 +579,11 @@ TEST_P(AccessibilityTest, ScrollToGlobalPoint) {
 // keep the TestClient class clean for extension by others.
 class NavigationEnabledTestClient : public TestClient {
  public:
-  NavigationEnabledTestClient() = default;
+  explicit NavigationEnabledTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {}
+  NavigationEnabledTestClient(const NavigationEnabledTestClient&) = delete;
+  NavigationEnabledTestClient& operator=(const NavigationEnabledTestClient&) =
+      delete;
   ~NavigationEnabledTestClient() override = default;
 
   void NavigateTo(const std::string& url,
@@ -615,7 +622,7 @@ class NavigationEnabledTestClient : public TestClient {
 };
 
 TEST_P(AccessibilityTest, WebLinkClickActionHandling) {
-  NavigationEnabledTestClient client;
+  NavigationEnabledTestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("weblinks.pdf"));
   ASSERT_TRUE(engine);
@@ -631,7 +638,7 @@ TEST_P(AccessibilityTest, WebLinkClickActionHandling) {
 }
 
 TEST_P(AccessibilityTest, InternalLinkClickActionHandling) {
-  NavigationEnabledTestClient client;
+  NavigationEnabledTestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
@@ -661,7 +668,7 @@ TEST_P(AccessibilityTest, GetAccessibilityLinkInfo) {
     expected_link_info[1].bounds = {131, 120, 138, 22};
   }
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("weblinks.pdf"));
   ASSERT_TRUE(engine);
@@ -704,7 +711,7 @@ TEST_P(AccessibilityTest, GetAccessibilityHighlightInfo) {
           {"", 2, kHighlightNoColor, {192, 196, 13, 26}, {3, 1}},
       });
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("highlights.pdf"));
   ASSERT_TRUE(engine);
@@ -755,7 +762,7 @@ TEST_P(AccessibilityTest, GetAccessibilityTextFieldInfo) {
       {"Password", "", false, false, true, 3, 5, {138, 356, 135, 35}},
   });
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("form_text_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -818,7 +825,7 @@ TEST_P(AccessibilityTest, SelectionActionHandling) {
       {{{0, 10}, {2, 4}}, {{0, 4}, {0, 10}}},
   };
 
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -863,7 +870,7 @@ TEST_P(AccessibilityTest, SetSelectionAndScroll) {
       {{{1, 15}, {1, 15}}, {{1, 15}, {1, 15}}, {28, 517}},
   };
 
-  ScrollEnabledTestClient client;
+  ScrollEnabledTestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);

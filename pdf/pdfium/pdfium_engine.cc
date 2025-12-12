@@ -3798,7 +3798,13 @@ ScopedFPDFBitmap PDFiumEngine::CreateBitmap(const gfx::Rect& rect,
   if (!region.has_value()) {
     return nullptr;
   }
-  int format = has_alpha ? FPDFBitmap_BGRA : FPDFBitmap_BGRx;
+  int format;
+  if (has_alpha) {
+    format = client_->UseSkiaPremultipliedAlpha() ? FPDFBitmap_BGRA_Premul
+                                                  : FPDFBitmap_BGRA;
+  } else {
+    format = FPDFBitmap_BGRx;
+  }
   return ScopedFPDFBitmap(FPDFBitmap_CreateEx(
       rect.width(), rect.height(), format, region.value().buffer.data(),
       base::checked_cast<int>(region.value().stride)));
