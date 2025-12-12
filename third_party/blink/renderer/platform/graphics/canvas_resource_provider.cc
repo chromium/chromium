@@ -221,22 +221,17 @@ CanvasResourceProviderExternalBitmap::CanvasResourceProviderExternalBitmap(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space)
-    : recorder_(
-          std::make_unique<MemoryManagedPaintRecorder>(Size(),
-                                                       /*client=*/nullptr)),
-      size_(size),
-      format_(format),
-      alpha_type_(alpha_type),
-      color_space_(color_space),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
-      info_(SkImageInfo::Make(size.width(),
-                              size.height(),
-                              viz::ToClosestSkColorType(format),
-                              alpha_type,
-                              color_space.ToSkColorSpace())) {}
-
-CanvasResourceProviderExternalBitmap::~CanvasResourceProviderExternalBitmap() =
-    default;
+    : CanvasResourceProvider(kExternalBitmap,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             /*context_provider_wrapper=*/nullptr,
+                             /*delegate=*/nullptr) {}
+CanvasResourceProviderExternalBitmap::~CanvasResourceProviderExternalBitmap() {
+  // Clear `skia_canvas_` before `image_provider_` is destroyed.
+  skia_canvas_.reset();
+}
 
 bool CanvasResourceProviderExternalBitmap::IsGpuContextLost() const {
   return true;
@@ -264,6 +259,11 @@ CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
   }
 
   if (recorder_->HasReleasableDrawOps()) {
+    // If a previous flush rasterized some paint ops, we lost part of the
+    // recording and must fallback to raster printing instead of vectorial
+    // printing.
+    clear_frame_ = false;
+
     if (!skia_canvas_) {
       if (!image_provider_) {
         // Create an ImageDecodeCache for half float images only if the canvas
@@ -285,6 +285,8 @@ CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
     }
 
     skia_canvas_->drawPicture(recorder_->ReleaseMainRecording());
+
+    last_recording_ = std::nullopt;
   }
 
   cc::PaintImage paint_image;
@@ -312,6 +314,15 @@ CanvasResourceProviderExternalBitmap::DoExternalDrawAndSnapshot(
   DCHECK(!paint_image.IsTextureBacked());
   return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
                                                 orientation);
+}
+
+sk_sp<SkSurface> CanvasResourceProviderExternalBitmap::CreateSkSurface() const {
+  TRACE_EVENT0("blink",
+               "CanvasResourceProviderExternalBitmap::CreateSkSurface");
+
+  const auto info = info_.makeAlphaType(kPremul_SkAlphaType);
+  const auto props = GetSkSurfaceProps();
+  return SkSurfaces::Raster(info, &props);
 }
 
 sk_sp<SkSurface> Canvas2DResourceProviderBitmap::CreateSkSurface() const {
