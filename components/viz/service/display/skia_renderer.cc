@@ -2606,7 +2606,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       return true;
     }
     if (gfx::HdrMetadataAgtm::IsEnabled() &&
-        src_hdr_metadata.agtm.has_value()) {
+        src_hdr_metadata.getSerializedAgtm()) {
       return true;
     }
     return false;

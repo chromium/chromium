@@ -34,6 +34,10 @@ base::span<uint8_t> SkPixmapToWritableSpan(const SkPixmap& pixmap) {
 }
 
 base::span<const uint8_t> SkDataToSpan(sk_sp<const SkData> data) {
+  return SkDataToSpan(data.get());
+}
+
+base::span<const uint8_t> SkDataToSpan(const SkData* data) {
   if (!data) {
     return {};
   }

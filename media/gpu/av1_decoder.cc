@@ -480,12 +480,10 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       auto t35_payload_span = UNSAFE_BUFFERS(base::span<const uint8_t>(
           current_frame_->itut_t35().payload_bytes,
           static_cast<size_t>(current_frame_->itut_t35().payload_size)));
-      const std::optional<gfx::HdrMetadataAgtm> agtm =
-          GetHdrMetadataAgtmFromItutT35(current_frame_->itut_t35().country_code,
-                                        t35_payload_span);
-      if (agtm.has_value()) {
+      if (auto agtm = GetSerializedAgtmItutT35(
+              current_frame_->itut_t35().country_code, t35_payload_span)) {
         // Overwrite existing AGTM metadata if any.
-        hdr_metadata_.agtm = agtm;
+        hdr_metadata_.setSerializedAgtm(agtm);
       }
     }
 

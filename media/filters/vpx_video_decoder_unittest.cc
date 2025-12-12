@@ -390,8 +390,8 @@ TEST_F(VpxVideoDecoderTest, AgtmMetadata) {
   ASSERT_TRUE(decode_status.is_ok());
 
   const auto& frame = output_frames_.front();
-  ASSERT_TRUE(frame->hdr_metadata().agtm.has_value());
-  EXPECT_EQ(frame->hdr_metadata().agtm->payload->size(), 533u);
+  ASSERT_TRUE(frame->hdr_metadata().getSerializedAgtm());
+  EXPECT_EQ(frame->hdr_metadata().getSerializedAgtm()->size(), 533u);
 
   Destroy();
 }
@@ -420,8 +420,8 @@ TEST_F(VpxVideoDecoderTest, AgtmMetadataWithItut35CountryCodeExtension) {
   ASSERT_TRUE(decode_status.is_ok());
 
   const auto& frame = output_frames_.front();
-  ASSERT_TRUE(frame->hdr_metadata().agtm.has_value());
-  EXPECT_EQ(frame->hdr_metadata().agtm->payload->size(), 533u);
+  ASSERT_TRUE(frame->hdr_metadata().getSerializedAgtm());
+  EXPECT_EQ(frame->hdr_metadata().getSerializedAgtm()->size(), 533u);
 
   Destroy();
 }

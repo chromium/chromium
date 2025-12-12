@@ -8,6 +8,7 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace mojo {
 
@@ -67,21 +68,6 @@ struct StructTraits<gfx::mojom::HdrMetadataExtendedRangeDataView,
 };
 
 template <>
-struct StructTraits<gfx::mojom::HdrMetadataAgtmDataView, gfx::HdrMetadataAgtm> {
-  static std::vector<uint8_t> payload(const gfx::HdrMetadataAgtm& input) {
-    std::vector<uint8_t> result;
-    if (input.payload) {
-      result.assign(input.payload->bytes(),
-                    std::next(input.payload->bytes(), input.payload->size()));
-    }
-    return result;
-  }
-
-  static bool Read(gfx::mojom::HdrMetadataAgtmDataView data,
-                   gfx::HdrMetadataAgtm* output);
-};
-
-template <>
 struct StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata> {
   static const std::optional<gfx::HdrMetadataCta861_3>& cta_861_3(
       const gfx::HDRMetadata& input) {
@@ -99,9 +85,13 @@ struct StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata> {
       const gfx::HDRMetadata& input) {
     return input.extended_range;
   }
-  static const std::optional<gfx::HdrMetadataAgtm>& agtm(
+
+  static std::optional<base::span<const uint8_t>> agtm_serialized(
       const gfx::HDRMetadata& input) {
-    return input.agtm;
+    if (input.getSerializedAgtm()) {
+      return gfx::SkDataToSpan(input.getSerializedAgtm());
+    }
+    return std::nullopt;
   }
 
   static bool Read(gfx::mojom::HDRMetadataDataView data,

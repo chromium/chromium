@@ -208,17 +208,17 @@ bool ReadAgtmRoot(const base::Value& value, HdrMetadataAgtmParsed& params) {
 HdrMetadataAgtmParsed::HdrMetadataAgtmParsed() = default;
 HdrMetadataAgtmParsed::~HdrMetadataAgtmParsed() = default;
 
-bool HdrMetadataAgtmParsed::Parse(const HdrMetadataAgtm& agtm) {
+bool HdrMetadataAgtmParsed::Parse(const SkData* payload) {
   if (!HdrMetadataAgtm::IsEnabled()) {
     return false;
   }
-  if (!agtm.payload) {
+  if (!payload) {
     DVLOG(1) << "Empty AGTM payload";
     return false;
   }
   auto value = base::JSONReader::Read(
-      std::string_view(reinterpret_cast<const char*>(agtm.payload->data()),
-                       agtm.payload->size()),
+      std::string_view(reinterpret_cast<const char*>(payload->data()),
+                       payload->size()),
       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     DVLOG(1) << "Failed to parse AGTM metadata JSON";

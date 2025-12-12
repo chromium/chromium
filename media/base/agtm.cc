@@ -9,7 +9,7 @@
 namespace media {
 
 // Returns AGTM metadata if the ITU-T T.35 message contains some.
-std::optional<gfx::HdrMetadataAgtm> GetHdrMetadataAgtmFromItutT35(
+sk_sp<const SkData> GetSerializedAgtmItutT35(
     uint8_t t35_country_code,
     base::span<const uint8_t> t35_payload) {
   // The minimum header size needed for valid Agtm metadata.
@@ -26,12 +26,11 @@ std::optional<gfx::HdrMetadataAgtm> GetHdrMetadataAgtmFromItutT35(
                        // application_version u(8)
                        t35_payload[4] == 0x01;
   if (!is_agtm) {
-    return std::nullopt;
+    return nullptr;
   }
   const auto agtm_payload_span = t35_payload.subspan(kItuT35HeaderSize);
-  sk_sp<SkData> agtm_skdata =
-      SkData::MakeWithCopy(agtm_payload_span.data(), agtm_payload_span.size());
-  return gfx::HdrMetadataAgtm(std::move(agtm_skdata));
+  return SkData::MakeWithCopy(agtm_payload_span.data(),
+                              agtm_payload_span.size());
 }
 
 }  // namespace media

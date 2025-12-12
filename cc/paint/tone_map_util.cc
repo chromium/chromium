@@ -221,8 +221,7 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
   image->colorSpace()->transferFn(&trfn);
 
   gfx::HdrMetadataAgtmParsed agtm;
-  const bool agtm_parsed =
-      metadata.agtm.has_value() && agtm.Parse(metadata.agtm.value());
+  const bool agtm_parsed = agtm.Parse(metadata.getSerializedAgtm());
 
   // The remainder of the function will construct `filter` to perform all
   // transformations (scaling, OOTF, and tone mapping).

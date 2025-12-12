@@ -1045,8 +1045,8 @@ TEST_F(AV1DecoderTest, DecodeStreamWithAgtmMetadata) {
   }
   EXPECT_EQ(results, expected);
   const gfx::HDRMetadata hdr_metadata = decoder_->GetHDRMetadata();
-  ASSERT_TRUE(hdr_metadata.agtm.has_value());
-  EXPECT_EQ(hdr_metadata.agtm->payload->size(), 99u);
+  ASSERT_TRUE(hdr_metadata.getSerializedAgtm());
+  EXPECT_EQ(hdr_metadata.getSerializedAgtm()->size(), 99u);
 }
 
 // TODO(hiroh): Add more tests: reference frame tracking, render size change,

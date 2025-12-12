@@ -276,8 +276,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_AgtmMetadata) {
   ASSERT_EQ(1U, output_frames_.size());
 
   const auto& frame = output_frames_.front();
-  ASSERT_TRUE(frame->hdr_metadata().agtm.has_value());
-  EXPECT_EQ(frame->hdr_metadata().agtm->payload->size(), 99u);
+  ASSERT_TRUE(frame->hdr_metadata().getSerializedAgtm());
+  EXPECT_EQ(frame->hdr_metadata().getSerializedAgtm()->size(), 99u);
 }
 
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify

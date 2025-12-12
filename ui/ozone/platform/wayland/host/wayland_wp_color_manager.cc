@@ -104,7 +104,7 @@ TransferIdToTransferFunction(gfx::ColorSpace::TransferID transfer_id) {
 float GetReferenceLuminance(const gfx::ColorSpace& color_space,
                             const gfx::HDRMetadata& hdr_metadata) {
   gfx::HdrMetadataAgtmParsed agtm;
-  if (hdr_metadata.agtm.has_value() && agtm.Parse(hdr_metadata.agtm.value())) {
+  if (agtm.Parse(hdr_metadata.getSerializedAgtm())) {
     return agtm.hdr_reference_white;
   }
 

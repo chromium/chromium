@@ -14,7 +14,7 @@
 namespace media {
 
 // Returns AGTM metadata if the ITU-T T.35 message contains some.
-MEDIA_EXPORT std::optional<gfx::HdrMetadataAgtm> GetHdrMetadataAgtmFromItutT35(
+MEDIA_EXPORT sk_sp<const SkData> GetSerializedAgtmItutT35(
     uint8_t t35_country_code,
     base::span<const uint8_t> t35_payload);
 

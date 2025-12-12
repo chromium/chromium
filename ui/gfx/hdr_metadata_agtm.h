@@ -14,15 +14,13 @@
 
 namespace gfx {
 
-struct HdrMetadataAgtm;
-
 struct COLOR_SPACE_EXPORT HdrMetadataAgtmParsed {
   HdrMetadataAgtmParsed();
   HdrMetadataAgtmParsed(const HdrMetadataAgtmParsed&) = delete;
   HdrMetadataAgtmParsed& operator=(const HdrMetadataAgtmParsed&) = delete;
   ~HdrMetadataAgtmParsed();
 
-  bool Parse(const HdrMetadataAgtm& agtm);
+  bool Parse(const SkData* data);
 
   // Compute the alternate indices and their weights for tone mapping targeting
   // H_target. If w_i==0, then i may be kBaselineIndex, indicating that it does

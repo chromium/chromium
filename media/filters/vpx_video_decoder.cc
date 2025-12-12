@@ -341,11 +341,9 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
       side_data = side_data.subspan(1u);
     }
     auto [country_code, payload] = side_data.split_at<1u>();
-    const std::optional<gfx::HdrMetadataAgtm> agtm =
-        GetHdrMetadataAgtmFromItutT35(country_code.data()[0], payload);
-    if (agtm.has_value()) {
+    if (auto agtm = GetSerializedAgtmItutT35(country_code.data()[0], payload)) {
       gfx::HDRMetadata hdr_metadata = config_.hdr_metadata();
-      hdr_metadata.agtm = agtm;
+      hdr_metadata.setSerializedAgtm(agtm);
       config_.set_hdr_metadata(hdr_metadata);
     }
   }

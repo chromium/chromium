@@ -11,9 +11,32 @@
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "ui/gfx/skia_span_util.h"
 #include "ui/gfx/switches.h"
 
 namespace gfx {
+
+namespace {
+
+std::weak_ordering SkDataCompare(const sk_sp<const SkData>& a,
+                                 const sk_sp<const SkData>& b) {
+  if (!a && !b) {
+    return std::weak_ordering::equivalent;
+  }
+  if (!a) {
+    return std::weak_ordering::less;
+  }
+  if (!b) {
+    return std::weak_ordering::greater;
+  }
+  if (auto size_cmp = a->size() <=> b->size();
+      size_cmp != std::weak_ordering::equivalent) {
+    return size_cmp;
+  }
+  return gfx::SkDataToSpan(a) <=> SkDataToSpan(b);
+}
+
+}  // namespace
 
 std::string HdrMetadataCta861_3::ToString() const {
   std::stringstream ss;
@@ -64,51 +87,10 @@ std::string HdrMetadataExtendedRange::ToString() const {
   return ss.str();
 }
 
-HdrMetadataAgtm::HdrMetadataAgtm() = default;
-
-HdrMetadataAgtm::HdrMetadataAgtm(const void* payload, size_t size)
-    : payload(SkData::MakeWithCopy(payload, size)) {}
-
-HdrMetadataAgtm::HdrMetadataAgtm(sk_sp<SkData> payload)
-    : payload(std::move(payload)) {}
-
-HdrMetadataAgtm::HdrMetadataAgtm(const HdrMetadataAgtm& other) = default;
-HdrMetadataAgtm& HdrMetadataAgtm::operator=(const HdrMetadataAgtm& other) =
-    default;
-
-HdrMetadataAgtm::~HdrMetadataAgtm() = default;
-
 // static
 bool HdrMetadataAgtm::IsEnabled() {
   static bool result = base::FeatureList::IsEnabled(features::kHdrAgtm);
   return result;
-}
-
-std::string HdrMetadataAgtm::ToString() const {
-  return "agtm placeholder";
-}
-
-bool HdrMetadataAgtm::operator==(const HdrMetadataAgtm& rhs) const {
-  if (!payload) {
-    return !rhs.payload;
-  }
-  return payload->equals(rhs.payload.get());
-}
-
-std::strong_ordering HdrMetadataAgtm::operator<=>(
-    const HdrMetadataAgtm& rhs) const {
-  if (!payload && !rhs.payload) {
-    return std::strong_ordering::equal;
-  }
-  if (!payload) {
-    return std::strong_ordering::less;
-  }
-  if (!rhs.payload) {
-    return std::strong_ordering::greater;
-  }
-  return std::lexicographical_compare_three_way(
-      payload->byteSpan().begin(), payload->byteSpan().end(),
-      rhs.payload->byteSpan().begin(), rhs.payload->byteSpan().end());
 }
 
 HDRMetadata::HDRMetadata() = default;
@@ -196,11 +178,30 @@ std::string HDRMetadata::ToString() const {
   if (extended_range) {
     ss << "extended_range:" << extended_range->ToString() << ", ";
   }
-  if (agtm) {
-    ss << "agtm:" << agtm->ToString() << ", ";
+  if (agtm_) {
+    ss << "agtm:present, ";
   }
   ss << "}";
   return ss.str();
+}
+
+bool HDRMetadata::operator==(const HDRMetadata& other) const {
+  if (std::tie(smpte_st_2086, cta_861_3, ndwl, extended_range) !=
+      std::tie(other.smpte_st_2086, other.cta_861_3, other.ndwl,
+               other.extended_range)) {
+    return false;
+  }
+  return SkData::Equals(agtm_.get(), other.agtm_.get());
+}
+
+std::partial_ordering HDRMetadata::operator<=>(const HDRMetadata& other) const {
+  auto cmp = std::tie(smpte_st_2086, cta_861_3, ndwl, extended_range) <=>
+             std::tie(other.smpte_st_2086, other.cta_861_3, other.ndwl,
+                      other.extended_range);
+  if (cmp != std::partial_ordering::equivalent) {
+    return cmp;
+  }
+  return SkDataCompare(agtm_, other.agtm_);
 }
 
 }  // namespace gfx

@@ -22,6 +22,8 @@ GFX_SKIA_EXPORT base::span<uint8_t> SkPixmapToWritableSpan(
 // Returns a span to `data` owned memory.
 GFX_SKIA_EXPORT base::span<const uint8_t> SkDataToSpan(
     sk_sp<const SkData> data LIFETIME_BOUND);
+GFX_SKIA_EXPORT base::span<const uint8_t> SkDataToSpan(
+    const SkData* data LIFETIME_BOUND);
 
 // Wrapper around SkData::MakeWithCopy().
 GFX_SKIA_EXPORT sk_sp<SkData> MakeSkDataFromSpanWithCopy(

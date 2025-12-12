@@ -448,6 +448,7 @@ component("color_space") {
     "//components/viz/common/resources:shared_image_format",
     "//skia:skcms",
     "//ui/gfx:buffer_types",
+    "//ui/gfx:gfx_skia",
     "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry:geometry_skia",
   ]
