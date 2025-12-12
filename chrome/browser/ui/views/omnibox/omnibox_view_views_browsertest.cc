@@ -49,6 +49,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
