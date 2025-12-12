@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
+#include "components/subresource_filter/content/browser/ruleset_publisher.h"
 
 #include <stddef.h>
 
@@ -25,7 +25,7 @@
 #include "base/task/task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "content/public/browser/browser_thread.h"

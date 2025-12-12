@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/page_load_statistics.h"
+#include "components/subresource_filter/content/browser/page_load_statistics.h"
 
 #include <string_view>
 

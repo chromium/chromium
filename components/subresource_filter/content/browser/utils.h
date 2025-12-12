@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_UTILS_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_UTILS_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_UTILS_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_UTILS_H_
 
 namespace content {
 class NavigationHandle;
@@ -45,4 +45,4 @@ content::Page& GetSubresourceFilterRootPage(content::RenderFrameHost* rfh);
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_UTILS_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_UTILS_H_

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <map>
 #include <memory>
 #include <sstream>
@@ -40,8 +39,8 @@
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"

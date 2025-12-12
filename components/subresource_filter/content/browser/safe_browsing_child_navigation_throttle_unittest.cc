@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"

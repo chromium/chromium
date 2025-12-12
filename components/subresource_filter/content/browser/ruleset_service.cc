@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 
 #include <string_view>
 #include <utility>
@@ -27,8 +27,8 @@
 #include "base/trace_event/traced_value.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
-#include "components/subresource_filter/content/shared/browser/unindexed_ruleset_stream_generator.h"
+#include "components/subresource_filter/content/browser/ruleset_publisher.h"
+#include "components/subresource_filter/content/browser/unindexed_ruleset_stream_generator.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"

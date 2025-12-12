@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_filtering_throttle.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 
 #include <optional>
 #include <sstream>
@@ -16,7 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "components/subresource_filter/content/shared/browser/utils.h"
+#include "components/subresource_filter/content/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/time_measurements.h"

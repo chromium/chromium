@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/supports_user_data.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/shared/browser/utils.h"
+#include "components/subresource_filter/content/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/global_routing_id.h"

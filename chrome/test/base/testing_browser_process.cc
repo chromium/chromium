@@ -45,7 +45,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"

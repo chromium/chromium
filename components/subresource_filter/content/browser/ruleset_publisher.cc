@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
+#include "components/subresource_filter/content/browser/ruleset_publisher.h"
 
 #include <utility>
 
@@ -14,7 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/ruleset_config.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"

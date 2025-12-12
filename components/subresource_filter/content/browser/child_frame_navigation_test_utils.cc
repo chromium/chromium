@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_test_utils.h"
 
 #include <memory>
 #include <sstream>
@@ -14,8 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_filtering_throttle.h"
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"

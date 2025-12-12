@@ -27,8 +27,8 @@
 // Note: UnverifiedRulesetDealer is shortened to *RulesetDealer above. There is
 // also a VerifiedRulesetDealer which is used similarly on the browser side.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_RULESET_SERVICE_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_RULESET_SERVICE_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_RULESET_SERVICE_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_RULESET_SERVICE_H_
 
 #include <stdint.h>
 
@@ -44,7 +44,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
+#include "components/subresource_filter/content/browser/ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/ruleset_version.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/ruleset_config.h"
@@ -283,4 +283,4 @@ class RulesetService {
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_SHARED_BROWSER_RULESET_SERVICE_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_RULESET_SERVICE_H_

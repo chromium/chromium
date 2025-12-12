@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_filtering_throttle.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 
 #include <string>
 #include <utility>
@@ -16,7 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "child_frame_navigation_filtering_throttle.h"
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -90,7 +90,7 @@ class ChildFrameNavigationFilteringThrottleTest
         std::make_unique<content::TestNavigationThrottleInserter>(
             content::RenderViewHostTestHarness::web_contents(),
             base::BindLambdaForTesting([&](content::NavigationThrottleRegistry&
-                                        registry) -> void {
+                                               registry) -> void {
               // The |parent_filter_| is the parent frame's filter. Do not
               // register a throttle if the parent is not activated with a valid
               // filter.

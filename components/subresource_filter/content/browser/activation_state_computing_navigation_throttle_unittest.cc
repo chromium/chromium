@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/shared/browser/activation_state_computing_navigation_throttle.h"
+#include "components/subresource_filter/content/browser/activation_state_computing_navigation_throttle.h"
 
 #include <memory>
 #include <optional>
@@ -17,7 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
-#include "components/subresource_filter/content/shared/browser/utils.h"
+#include "components/subresource_filter/content/browser/utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
 #include "components/subresource_filter/core/common/constants.h"

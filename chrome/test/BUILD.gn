@@ -639,8 +639,6 @@ static_library("test_support") {
     "//components/startup_metric_utils",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/browser:test_support",
-    "//components/subresource_filter/content/shared/browser",
-    "//components/subresource_filter/content/shared/browser:test_support",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/browser",
