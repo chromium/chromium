@@ -1123,6 +1123,7 @@ void ViewTransition::ResumeRendering() {
 
 void ViewTransition::ActivateFromSnapshot() {
   CHECK(IsForNavigationOnNewDocument());
+  TRACE_EVENT0("blink", "ViewTransition::ActivateFromSnapshot");
 
   if (state_ != State::kWaitForRenderBlock)
     return;
