@@ -186,6 +186,7 @@ public class FeedSurfaceCoordinator
     // Used to handle padding adjustment when edge to edge is enabled.
     private final EdgeToEdgePadAdjuster mEdgePadAdjuster;
     private final boolean mIsNewTabPageCustomizationEnabled;
+    private final boolean mIsNewTabPageCustomizationV2Enabled;
     private @Nullable ImageButton mNtpCustomizationButton;
     private @Nullable NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private @Nullable NtpBackgroundImageCoordinator mNtpBackgroundImageCoordinator;
@@ -464,6 +465,9 @@ public class FeedSurfaceCoordinator
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mUseStaggeredLayout = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
+        mIsNewTabPageCustomizationV2Enabled =
+                mIsNewTabPageCustomizationEnabled
+                        && ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
         mDefaultBackgroundColor =
                 ContextCompat.getColor(mActivity, R.color.home_surface_background_color);
 
@@ -484,7 +488,7 @@ public class FeedSurfaceCoordinator
         FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
 
         mIsNtpCustomizationV2Enabled = ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
-        if (mIsNewTabPageCustomizationEnabled) {
+        if (mIsNewTabPageCustomizationV2Enabled) {
             mNtpBackgroundImageCoordinator =
                     new NtpBackgroundImageCoordinator(
                             mActivity, mRootView, mUiConfig, mDefaultBackgroundColor);
