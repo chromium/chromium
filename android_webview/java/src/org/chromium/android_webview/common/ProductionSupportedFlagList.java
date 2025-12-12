@@ -1124,6 +1124,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
                 "When enabled, physical keyboard autocorrect underline will display"),
+        Flag.baseFeature(
+                GpuFeatures.REMOVE_GPU_LEGACY_IPC,
+                "When enabled, gives GpuChannel/Host its own dedicated Mojo pipe instead of"
+                        + " associating with an unused IPC::Channel"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 
