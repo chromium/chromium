@@ -329,7 +329,6 @@
 <translation id="219283042927675668">Картички во група</translation>
 <translation id="2194856509914051091">Нешта што треба да се земат предвид</translation>
 <translation id="2196428379625389579">Пребарувајте на интернет</translation>
-<translation id="2198001751007276170">Заменете ги лозинките</translation>
 <translation id="2199562093267256223">Ова ќе ја избрише групата картички од сите уреди најавени на <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Нема сметки на е-пошта</translation>
 <translation id="2214453882118345682">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">Штипнете за да ја промените големината</translation>
 <translation id="3940195383040445971">Следете ги цените на картичките</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Затвори {COUNT} картичка}one{Затвори {COUNT} картичка}other{Затвори {COUNT} картички}}</translation>
+<translation id="3946483119107054883">Преземете во CSV</translation>
 <translation id="3948600256434252210">Може да повлечете надесно за да прелистувате во „Инкогнито“.</translation>
 <translation id="3949712484278252781">Разговорите со Gemini и <ph name="GOOGLE_WORKSPACE_DATA" /> нема да ги прегледуваат прегледувачи, а и нема да се користат за подобрување на моделите на генеративната AI.</translation>
 <translation id="3950479158728806902">Создајте криптографски клуч автоматски за да се најавите побрзо</translation>
@@ -1553,7 +1553,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6782531425936234573">Извези ги податоците</translation>
 <translation id="6791425686608802741">Допрете „Додајте картичка во нова група“</translation>
 <translation id="6794476726485507147">Изберете датум и време за да добиете известување со потсетник да ја отворите страницава повторно</translation>
-<translation id="6795481620482106033">Неважечки податоци</translation>
 <translation id="6797543908718012274">Вклучи Reading Mode</translation>
 <translation id="6806550742467879742">Алатки за страници</translation>
 <translation id="6807287147325542056">Лозинки во други апликации</translation>
@@ -1595,6 +1594,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="693761253105515415">Поставете код за најавување</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6950522403736391608">Скриено</translation>
+<translation id="6962809930976936328">Добивајте согледувања со Gemini</translation>
 <translation id="6964300328304469089">Тековно избрана: <ph name="NAME" />, <ph name="EMAIL" />. Изберете сметка.</translation>
 <translation id="6964760285928603117">Отстрани од групата</translation>
 <translation id="6965382102122355670">Во ред</translation>
@@ -1911,6 +1911,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8114753159095730575">Достапна е датотека за преземање. Достапни се опции на дното на екранот.</translation>
 <translation id="8123502380991596210">Скриј „Што има ново“</translation>
 <translation id="8123953306357309250">Да се откаже синхронизацијата? Може да ја исклучите синхронизацијата во „Поставки“ кога сакате.</translation>
+<translation id="8130712116203026166">Дај ми резиме од еден ред и корисни согледувања надвор од страницава. Користи концизен и опуштен тон. Ограничи на 100 збора.</translation>
 <translation id="81313319706244542">2. Допрете „Лозинки“</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8132598642024322408">Сега <ph name="PRICE" />, беше <ph name="PREVIOUS_PRICE" />.</translation>

@@ -875,6 +875,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397726367135689299">É posible que cargar a batería non sexa fiable.</translation>
 <translation id="3977512764614765090">Nivel de batería: <ph name="PERCENTAGE" /> % (cargando).</translation>
+<translation id="3978162107953847778">Insire ligazóns de sitios como o teu historial de navegación ou Google Drive. Tamén podes inserir emojis, ficheiros de imaxe e moito máis. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Queres cambiar a saída de audio?</translation>
 <translation id="3984536049089846927">Páxina seguinte</translation>
 <translation id="3986082989454912832">Responder</translation>
@@ -1025,7 +1026,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificación importante}other{# notificacións importantes}}</translation>
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
 <translation id="4451374464530248585">O atallo Alt + Frecha abaixo cambiou. Para usar a tecla Avanzar páxina, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha abaixo.</translation>
-<translation id="4453876312474547652">Podes ver o portapapeis se mantés premidas as teclas Control + V. Para desactivar este atallo, inhabilita a función experimental #clipboard-history-longpress en chrome://flags (os://flags se usas Lacros).</translation>
 <translation id="445765352722456792">Personalizar suxestións</translation>
 <translation id="4458688154122353284">Deter gravación da pantalla</translation>
 <translation id="445923051607553918">Unirse á rede wifi</translation>
@@ -1601,6 +1601,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: activando...</translation>
 <translation id="6274202259872570803">Gravación da pantalla</translation>
+<translation id="6274422179279280249">Insire ligazóns, emojis e moito máis. Tamén podes obter axuda para escribir coa IA de Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Consultar fonte da páxina</translation>
 <translation id="6285871695023807425">Engadir a Calendar</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> pode engadirse de novo máis adiante co permiso da súa nai ou do seu pai.</translation>

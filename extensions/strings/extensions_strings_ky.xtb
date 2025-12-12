@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Колдонмо көрүнүшү: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Бул кеңейтүүдө '<ph name="KEY_PATH" />' ачкыч файлы камтылган. Аны аткаргыңыз келбейт окшойт.</translation>
 <translation id="5486326529110362464">Жеке ачкычтын киргизүү мааниси болушу керек.</translation>
+<translation id="5707185214361380026">Төмөнкүдөн кеңейтүү жүктөлбөй калды:</translation>
 <translation id="5972529113578162692">Бул машинанын администратору <ph name="EXTENSION_NAME" /> орнотулушун талап кылууда. Аны орнотуудан чыгаруу мүмкүн эмес.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> дегенден белгисиз өндүрүм <ph name="PRODUCT_ID" /> (сериялык номери – <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> дегенден <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">Кеңейтүүнү жүктөөдөгү ката</translation>
 <translation id="6322279351188361895">Купуя ачкычты окуй албай койду.</translation>
 <translation id="6391538222494443604">Киргизүү каталогу чыгарылышы керек.</translation>
 <translation id="641087317769093025">Кысылган кеңейтүүнү чыгара алган жок</translation>

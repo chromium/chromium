@@ -202,6 +202,7 @@
 <translation id="3112458742631356345">このダウンロードは Chrome でブロックされました。ファイルが一般的にダウンロードされるものではなく、危害を及ぼす可能性があります</translation>
 <translation id="3114643501466072395">他のパスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chrome にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="3119573284443908657">このダウンロードは Chrome でブロックされました。アーカイブ ファイルに他のファイルが含まれており、マルウェアが隠されている可能性があります</translation>
+<translation id="3124332159330678621">Chrome をカスタマイズして、ブラウザのデザインを一新</translation>
 <translation id="3130333203120345554">新しい検索</translation>
 <translation id="3135560418014806498">Chrome プロファイルを追加</translation>
 <translation id="3137969841538672700">ドラッグして検索</translation>
@@ -267,6 +268,7 @@
 <translation id="3885770153807205175">言語選択ツール</translation>
 <translation id="3889417619312448367">Google Chrome をアンインストール</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
+<translation id="3906096710440765802">Chrome にログインすると、すべてのデバイスでパスワード、ブックマーク、その他の設定にアクセスできます</translation>
 <translation id="3941890832296813527">インストール エラー: インストーラのファイル名が無効またはサポートされていません。</translation>
 <translation id="395904275706073188">保護されたページは読み込めません。別のページをお試しください。</translation>
 <translation id="3968962723676998462">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
@@ -487,6 +489,7 @@
 <translation id="6288580400488258237">Google Chrome を既定のブラウザに設定して、タスクバーに固定する</translation>
 <translation id="6291089322031436445">Chrome Dev アプリ</translation>
 <translation id="6291549208091401781">Google Chrome は既にパソコンのすべてのユーザー対してインストールされています。</translation>
+<translation id="6311220991371174222">プロファイルを開こうとして問題が発生したため、Chrome を起動できません。Chrome を再起動してみてください。</translation>
 <translation id="6319856120645568262">Chrome にシーン認識とハンド トラッキングを許可する必要があります</translation>
 <translation id="6321592572353357376">拡張機能「<ph name="EXTENSION_NAME" />」が Chrome へのログインを求めています</translation>
 <translation id="6326175484149238433">Chrome から削除</translation>
@@ -615,9 +618,11 @@
 <translation id="7655472416356262023">Chrome からアカウントを削除</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7670287553302121848">Chrome アカウントの再認証が必要です</translation>
+<translation id="7675756456029023637">Chrome に質問</translation>
 <translation id="769538538642757151">確認の必要な項目がありましたらお知らせします</translation>
 <translation id="769906121737764913">Gemini in Chrome Beta を閉じる</translation>
 <translation id="7716950018788545737">タスクを終了しました。</translation>
+<translation id="7723388585204724670">デフォルトの Chrome にリセット</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> のシステム トレース サービスを提供します。このサービスを無効にした場合、ブラウザによって作成されるパフォーマンス トレースに、コンテキスト切り替えやスレッドの準備完了などのシステム全体のイベントは含められません。</translation>
 <translation id="7736869414036750079">組織が Chrome にログインするよう求めています</translation>
 <translation id="7747138024166251722">インストーラーの一時ディレクトリを作成できませんでした。ディスクの空き領域とソフトウェアのインストール許可があることを確認してください。</translation>

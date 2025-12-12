@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">掃描二維條碼</translation>
 <translation id="1545757265410828525">過往價格</translation>
 <translation id="1547610699249301703">分享密碼</translation>
+<translation id="1554043146674176775">關閉 AI 模式</translation>
 <translation id="1554477036522844996">開啟新視窗</translation>
 <translation id="1558391695376153246">關閉無痕式分頁</translation>
 <translation id="1565371473877914088">新無痕式分頁</translation>
@@ -329,7 +330,6 @@
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2196428379625389579">在網絡上搜尋</translation>
-<translation id="2198001751007276170">取代密碼</translation>
 <translation id="2199562093267256223">此操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="2202084845446535117">無電郵帳戶</translation>
 <translation id="2214453882118345682">使用相機購物、翻譯及識別所見內容。</translation>
@@ -458,6 +458,7 @@
 <translation id="2688535388040882469">橫額</translation>
 <translation id="2690858294534178585">正在使用相機</translation>
 <translation id="2691653761409724435">無法離線查看</translation>
+<translation id="2697530870203420261">暱稱無效</translation>
 <translation id="269819437389494246">你可查看瀏覽過的網頁，或從記錄刪除網頁</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2708051474374549906">系統會根據你向 Google 傳送的瀏覽資料，即時、主動防範危險的網站、下載內容和擴充程式</translation>
@@ -755,6 +756,7 @@
 <translation id="3934905113567851655">兩指縮放即可調整大小</translation>
 <translation id="3940195383040445971">在分頁上追蹤價格</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
+<translation id="3946483119107054883">以 CSV 格式下載</translation>
 <translation id="3948600256434252210">向右滑動即可使用無痕模式瀏覽。</translation>
 <translation id="3949712484278252781">你與 Gemini 的對話或 <ph name="GOOGLE_WORKSPACE_DATA" />都不會送交人手審查，亦不會用於改善生成式 AI 模型。</translation>
 <translation id="3950479158728806902">自動建立密鑰，加快登入速度</translation>
@@ -1553,7 +1555,6 @@
 <translation id="6782531425936234573">匯出資料</translation>
 <translation id="6791425686608802741">輕按 [將分頁加入新群組]</translation>
 <translation id="6794476726485507147">選擇要提醒自己再次瀏覽此頁的日期和時間</translation>
-<translation id="6795481620482106033">資料無效</translation>
 <translation id="6797543908718012274">開啟「閱讀模式」</translation>
 <translation id="6806550742467879742">頁面工具</translation>
 <translation id="6807287147325542056">其他應用程式中的密碼</translation>
@@ -1562,6 +1563,7 @@
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6842136130964845393">為確保您可隨時存取已儲存的密碼，請驗證您的身分</translation>
+<translation id="6844773122575789617">啟用 AI 模式</translation>
 <translation id="6851516051005285358">切換至電腦版網站</translation>
 <translation id="6857446173140146664">刪除背景</translation>
 <translation id="6858718102216837409">新增語言…</translation>
@@ -1595,6 +1597,7 @@
 <translation id="693761253105515415">設定密碼</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6950522403736391608">隱藏</translation>
+<translation id="6962809930976936328">向 Gemini 索取分析</translation>
 <translation id="6964300328304469089">目前已選取<ph name="NAME" />，<ph name="EMAIL" />。請選擇帳戶。</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
 <translation id="6965382102122355670">確定</translation>
@@ -1911,6 +1914,7 @@
 <translation id="8114753159095730575">您可以下載檔案。可用選項喺螢幕底部附近。</translation>
 <translation id="8123502380991596210">隱藏「最新資訊」</translation>
 <translation id="8123953306357309250">要取消同步功能嗎？你可隨時在設定中開啟同步功能。</translation>
+<translation id="8130712116203026166">我想要一行摘要，同埋喺呢頁以外嘅實用分析資料。語調要簡潔輕鬆，最多 100 個字。</translation>
 <translation id="81313319706244542">2. 輕按 [密碼]</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8132598642024322408">原價係 <ph name="PREVIOUS_PRICE" />，現售 <ph name="PRICE" />。</translation>

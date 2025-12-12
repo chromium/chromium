@@ -446,17 +446,6 @@ Se la policy viene disattivata o se non viene configurata, gli elementi da avvia
       Se è selezionata l'opzione "Forzato" (2), il selettore profilo non può essere eliminato dall'utente. Il selettore profilo sarà mostrato anche se c'è un solo profilo disponibile.</translation>
 <translation id="1339174690935954950">Impedisci agli utenti di inviare feedback</translation>
 <translation id="1340053691042184658">Impedisci gli accessi come ospite al browser</translation>
-<translation id="134154550994512097">Questa policy consente di stabilire se gli utenti possono attivare o meno la modalità solo HTTPS (Utilizza sempre connessioni sicure) nelle Impostazioni. La Modalità solo HTTPS esegue l'upgrade di tutte le navigazioni alle estensioni HTTPS.
-      Se questa impostazione non viene configurata o se viene impostata su allowed, gli utenti potranno attivare la Modalità solo HTTPS.
-      Se viene impostata su disallowed, gli utenti non potranno attivare la Modalità solo HTTPS.
-      Se viene impostata su force_enabled, la Modalità solo HTTPS verrà attivata con restrizioni e gli utenti non potranno disattivarla.
-      Se viene impostata su force_balanced_enabled, la Modalità solo HTTPS verrà attivata in Modalità bilanciata e gli utenti non potranno disattivarla.
-      Il valore force_enabled è supportato a partire dalla versione M112, mentre force_balanced_enabled è supportato a partire dalla versione M129.
-      Se imposti questa policy su un valore non supportato dalla versione di Chrome che lo riceve, Chrome utilizzerà l'impostazione consentita per impostazione predefinita.
-
-La policy <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separata
-può essere utilizzata per escludere determinati nomi host o pattern dei nomi host
-dall'upgrade ad HTTPS da parte di questa funzionalità.</translation>
 <translation id="1342918903685430097">Configura la versione minima di <ph name="PRODUCT_OS_NAME" /> consentita per il dispositivo.</translation>
 <translation id="1343128241903870688">Disattiva i report sulle informazioni relative alle app del dispositivo</translation>
 <translation id="1345276795096570241">Disattiva il Single Sign-On utilizzando <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> per i provider di identità elencati.
@@ -5564,21 +5553,6 @@ Se viene disattivata, all'utente non viene mostrata la promozione dell'estension
 
       Se non viene configurata, la schermata introduttiva di Gemini verrà ignorata per gli utenti gestiti a livello aziendale e mostrata per gli utenti non gestiti.</translation>
 <translation id="4783415902268741066">Consenti la visualizzazione della pagina di risultati più recente del motore di ricerca predefinito in un riquadro laterale del browser</translation>
-<translation id="4784457904946078535">Questa policy consente di controllare la condivisione dei contenuti di pagine e file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> tramite il riquadro laterale o le schede di <ph name="PRODUCT_NAME" />.
-
-Tieni presente che questa policy non influisce su <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> sul web. Controlla solo il modo in cui gli utenti possono condividere informazioni con l'azienda quando utilizzano <ph name="PRODUCT_NAME" />.
-
-0/non impostato = gli utenti possono condividere contenuti di pagine o file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
-
-1 = gli utenti non possono condividere contenuti di pagine o file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. I punti di accesso per la condivisione del contesto verranno disattivati o nascosti.
-
-Questa policy verrà ignorata quando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> non è il motore di ricerca predefinito degli utenti perché la funzionalità è disattivata.
-
-Questa policy è indipendente dalla policy <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La policy <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> controlla solo i punti di accesso nella omnibox o nella casella di ricerca della pagina Nuova scheda, mentre questa policy controlla la condivisione del contesto tramite il riquadro laterale o le schede.
-
-Questa policy non controlla l'integrazione di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere disattivata da <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4786784434769279324">Azioni da eseguire quando il computer è inattivo</translation>
 <translation id="4787763197941188108">Consente di sostituire le dimensioni della pagina di stampa predefinita.
 
@@ -6871,15 +6845,6 @@ Consulta anche https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed
 <translation id="5561811616825571914">Seleziona automaticamente i certificati client per questi siti nella schermata di accesso</translation>
 <translation id="5561893881195372931">Disabilita alto contrasto</translation>
 <translation id="5563240289883266691">Attiva la generazione di report sull'utilizzo delle app Linux</translation>
-<translation id="5564424694465792000">Questa policy consente di stabilire il comportamento di accesso del browser. Consente di specificare se l'utente può accedere a <ph name="PRODUCT_NAME" /> con il proprio account e usare i servizi correlati all'account come Sincronizzazione <ph name="PRODUCT_NAME" />.
-
-      Se la policy viene impostata su "Disattiva accesso al browser", l'utente non potrà accedere al browser e usare i servizi basati sull'account. In questo caso, le funzionalità a livello di browser come Sincronizzazione <ph name="PRODUCT_NAME" /> non potranno essere usate e non saranno disponibili. Su <ph name="IOS_NAME" />, se la policy viene impostata su "Disattivato" dopo che l'utente ha eseguito l'accesso, l'utente verrà scollegato immediatamente. Su altre piattaforme, l'utente verrà scollegato alla successiva esecuzione di <ph name="PRODUCT_NAME" />. Su tutte le piattaforme, i dati locali del profilo, come preferiti, password e così via, verranno mantenuti e potranno essere utilizzati. L'utente potrà comunque accedere e usare i web service di Google come Gmail.
-
-      Se la policy viene impostata su "Attiva accesso al browser", l'utente potrà accedere al browser. Su tutte le piattaforme, tranne su <ph name="IOS_NAME" />, l'utente accederà automaticamente al browser dopo che avrà eseguito l'accesso a web service di Google come Gmail. Se viene eseguito l'accesso al browser, i dati dell'account dell'utente verranno memorizzati dal browser, ma la funzione Sincronizzazione <ph name="PRODUCT_NAME" /> non verrà attivata per impostazione predefinita; per poter utilizzare questa funzionalità, l'utente dovrà attivarla separatamente. Se questa policy viene attivata, l'utente non potrà disattivare l'impostazione che consente l'accesso al browser. Per gestire la disponibilità della funzionalità Sincronizzazione <ph name="PRODUCT_NAME" />, usa la policy <ph name="SYNC_POLICY_NAME" />.
-
-      Se la policy viene impostata su "Forza accesso al browser", all'utente verrà mostrata una finestra di dialogo di selezione dell'account, da cui dovrà scegliere un account a cui accedere per usare il browser. Questa misura garantisce l'applicazione delle policy associate all'account nell'ambito degli account gestiti. Il valore predefinito della policy <ph name="GUEST_MODE_POLICY_NAME" /> sarà disattivato. Tieni presente che i profili esistenti a cui non viene eseguito l'accesso saranno bloccati e inaccessibili dopo l'attivazione di questa policy. Per maggiori informazioni, leggi il seguente articolo del Centro assistenza: https://support.google.com/chrome/a/answer/7572556. Questa opzione non è supportata su <ph name="LINUX_OS_NAME" /> né su <ph name="ANDROID_NAME" />, dove, se utilizzata, verrà impostata su "Attiva accesso al browser".
-
-      Se questa policy non viene configurata, l'utente potrà decidere se attivare o meno l'opzione di accesso al browser nelle impostazioni di <ph name="PRODUCT_NAME" /> e di usarla in base alle necessità.</translation>
 <translation id="5565178130821694365">Inserimento della password richiesto ogni due giorni (48 ore)</translation>
 <translation id="5566210228171064229">Consenti la stampa con e senza PIN</translation>
 <translation id="5569504149646180067">Consente di configurare l'accesso automatico degli utenti per gli account supportati da un provider di identità cloud Microsoft®.
@@ -10005,6 +9970,18 @@ Per maggiori dettagli, consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_
 
       Se la policy non viene configurata o se viene impostata su False, le suite di crittografia RC4 in TLS non verranno attivate. In caso contrario, potrebbe essere impostata su True per mantenere la compatibilità con un server obsoleto. Si tratta di una misura temporanea ed è necessario riconfigurare il server.</translation>
 <translation id="751615601677744094">Disattivato: comportamento normale per gli eventi Mutazione, il che significa che non verranno attivati dopo la data di rimozione.</translation>
+<translation id="7518736413346509172">Se questa policy viene impostata su Attivata, le richieste di <ph name="LOCAL_NETWORK_ACCESS" /> visualizzeranno solo avvisi in <ph name="CHROME_DEVTOOLS_NAME" /> a causa di controlli <ph name="LOCAL_NETWORK_ACCESS" /> non riusciti.
+
+Se questa policy viene impostata su Disattivata o se non viene configurata, le richieste
+di <ph name="LOCAL_NETWORK_ACCESS" /> useranno la gestione predefinita di queste richieste.
+
+Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Questa policy aziendale è temporanea e verrà rimossa dopo la versione M152.
+
+A lungo termine, la policy <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+può essere utilizzata per consentire i pattern URL a cui deve essere concessa automaticamente
+l'autorizzazione <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="7519218194072744342">L'URL del gestore di protocollo.</translation>
 <translation id="7519251620064708155">Consenti la generazione di chiavi su questi siti</translation>
 <translation id="7521864460386999758">Impedisci l'inserimento di codici di terze parti in Chrome</translation>
@@ -10264,7 +10241,6 @@ Se questa policy non viene impostata, il renderer del PDF viene scelto dal brows
       Nota. Vedi l'elenco di variabili che puoi utilizzare: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="7719808201797990069">Eccezioni di pattern URL per ignorare le schede</translation>
 <translation id="7721944091689270995">ID utente <ph name="PLUGIN_VM_NAME" /></translation>
-<translation id="7725010277314676939">Forza l'attivazione della Modalità solo HTTPS con restrizioni</translation>
 <translation id="7728486978686128364">Non utilizzare i metodi di richiesta in maiuscolo, tranne per DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su tutti i siti</translation>
 <translation id="7732907212083471072">Policy rimosse</translation>
@@ -10485,6 +10461,14 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7891884447851425349">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'assegnazione di un valore alla policy <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca utilizzato durante una ricerca predefinita. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7893719068404928632">Se questa policy viene impostata su Attivata, ogni volta che dovrebbe essere visualizzato
+un avviso in <ph name="CHROME_DEVTOOLS_NAME" /> a causa di controlli <ph name="LOCAL_NETWORK_ACCESS" />
+non riusciti, la richiesta principale verrà bloccata.
+
+Se questa policy viene impostata su Disattivata o se non viene configurata, le richieste
+di <ph name="LOCAL_NETWORK_ACCESS" /> useranno la gestione predefinita di queste richieste.
+
+Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="7894185046683379696">La configurazione della policy consente di specificare il periodo di tempo senza input utente in millisecondi, trascorso il quale lo schermo viene bloccato quando viene usata l'alimentazione CA o la batteria. I valori devono essere inferiori al ritardo di inattività impostato nella policy <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
       Se la policy viene impostata su zero, <ph name="PRODUCT_OS_NAME" /> non blocca lo schermo quando l'utente diventa inattivo. Se non viene configurata, viene usato un periodo di tempo predefinito.
@@ -12368,7 +12352,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Questa policy è una misura temporanea e verrà rimossa nelle future versioni di <ph name="PRODUCT_NAME" />. Dopo la rimozione della policy, <ph name="PRODUCT_NAME" /> potrà sempre eseguire query su tipi DNS aggiuntivi.</translation>
 <translation id="9167719789236691545">Disattiva Drive nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9171359005568194889">Attiva il salvataggio delle passkey in Gestore delle password</translation>
-<translation id="9172648973829444124">Forza l'attivazione della Modalità solo HTTPS in Modalità bilanciata</translation>
 <translation id="9172911925443428317">Non consentire la visualizzazione della promozione di valutazione dell'App Store</translation>
 <translation id="9173133289347070466">Sondaggi di <ph name="PRODUCT_NAME" /> all'interno del prodotto raccolgono il feedback degli utenti per il browser. Le risposte al sondaggio non sono associate agli account utente.
 Se questa policy viene attivata o se non viene configurata, i sondaggi all'interno del prodotto potrebbero essere mostrati agli utenti.
@@ -12380,7 +12363,6 @@ Questa policy non ha effetto se la policy <ph name="METRICS_REPORTING_ENABLED_PO
 <translation id="9180108183162961002">Consenti gli accessi come ospite al browser</translation>
 <translation id="9185963199234034321">Attiva l'alto contrasto nella schermata di accesso e consenti all'utente di disattivarlo temporaneamente</translation>
 <translation id="9187743794267626640">Disabilita il montaggio di una memoria esterna</translation>
-<translation id="9189737595688383533">Non consentire agli utenti di attivare la Modalità solo HTTPS</translation>
 <translation id="9190022798664427644">Attiva l'audio in formato mono</translation>
 <translation id="9190456586252617675">Questa policy consente di stabilire la modalità dell'esperienza di onboarding dell'assistente.
 

@@ -122,6 +122,7 @@
 <translation id="2216543877350048334">如要從 Chrome 中移除 Google 帳戶，請登出 Chrome</translation>
 <translation id="2236949375853147973">我的活動</translation>
 <translation id="22791603784558743">關閉 Chrome 開發人員版 Gemini</translation>
+<translation id="2284380654876659752">瀏覽網站時，Chrome 會透過私隱伺服器隱藏你的 IP 位址，再將經編碼隱匿的部分網址傳送給「<ph name="BEGIN_LINK" />Google 安全瀏覽<ph name="END_LINK" />」。如果網站有可疑行為，系統亦會傳送整個網址和部分網頁內容。</translation>
 <translation id="2290014774651636340">缺少 Google API 金鑰，系統將停用 Google Chrome 的部分功能。</translation>
 <translation id="2290095356545025170">確定要解除安裝 Google Chrome 嗎？</translation>
 <translation id="2301513536169703857">如要在你的所有裝置上取用密碼、書籤和其他資料，請登入 Chrome</translation>
@@ -206,6 +207,7 @@
 <translation id="3112458742631356345">由於此檔案不是常見的下載項目，可能含有危險內容，因此 Chrome 已禁止下載</translation>
 <translation id="3114643501466072395">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chrome<ph name="END_LINK" />。</translation>
 <translation id="3119573284443908657">此封存檔案包含可能隱藏惡意軟件的其他檔案，因此 Chrome 已禁止下載</translation>
+<translation id="3124332159330678621">自訂 Chrome 以便為瀏覽器套用新風格</translation>
 <translation id="3130333203120345554">新搜尋</translation>
 <translation id="3135560418014806498">新增 Chrome 設定檔</translation>
 <translation id="3137969841538672700">拖曳即可搜尋</translation>
@@ -271,6 +273,7 @@
 <translation id="3885770153807205175">語言選擇器</translation>
 <translation id="3889417619312448367">解除安裝 Google Chrome</translation>
 <translation id="3892148308691398805">複製文字</translation>
+<translation id="3906096710440765802">只要登入 Chrome，即可在所有裝置上取用你的密碼、書籤和其他資料</translation>
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不支援。</translation>
 <translation id="395904275706073188">無法讀取受保護的頁面，請嘗試其他頁面。</translation>
 <translation id="3968962723676998462">輸入用於在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chrome 資料的密碼短語</translation>
@@ -495,6 +498,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6288580400488258237">將 Google Chrome 設定為預設瀏覽器，並釘選到工作列</translation>
 <translation id="6291089322031436445">Chrome 開發人員應用程式</translation>
 <translation id="6291549208091401781">電腦上的所有使用者均安裝了 Google Chrome。</translation>
+<translation id="6311220991371174222">由於開啟您的設定檔時發生錯誤，因此無法啟動 Chrome。請嘗試重新啟動 Chrome。</translation>
 <translation id="6319856120645568262">Chrome 需要適當權限，才能繪製周遭環境並進行手部追蹤</translation>
 <translation id="6321592572353357376">擴充程式「<ph name="EXTENSION_NAME" />」需要你登入 Chrome</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
@@ -623,9 +627,11 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7655472416356262023">從 Chrome 移除帳戶</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670287553302121848">Chrome 帳戶需要重新驗證</translation>
+<translation id="7675756456029023637">問 Chrome</translation>
 <translation id="769538538642757151">如有任何需要審核的事項，Chrome 會通知你</translation>
 <translation id="769906121737764913">關閉 Chrome Beta 版 Gemini</translation>
 <translation id="7716950018788545737">工作已經結束。</translation>
+<translation id="7723388585204724670">重設為預設的 Chrome</translation>
 <translation id="77283119132245232">提供 <ph name="BROWSER_NAME" /> 的系統追蹤服務。如停用此服務，瀏覽器建立的成效追蹤記錄將不會包括系統層級事件，例如內容轉換和就緒執行緒事件。</translation>
 <translation id="7736869414036750079">你的機構要求你登入 Chrome</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>

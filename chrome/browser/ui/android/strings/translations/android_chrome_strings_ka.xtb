@@ -247,7 +247,6 @@
 <translation id="2063047797624276601">თქვენმა ორგანიზაციამ ჩართო გაძლიერებული Safe Browsing</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა ვერ მოხერხდა}other{# ჩამოტვირთვა ვერ მოხერხდა}}</translation>
 <translation id="2067805253194386918">ტექსტი</translation>
-<translation id="2072027001582274150">გამოუყენებელი ან დუბლირებული ჩანართები</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2082238445998314030">შედეგი <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" />-დან</translation>
 <translation id="2088833076121753253">ავტომატური შევსების დაყენების დასასრულებლად გადატვირთეთ Chrome ახლავე. თქვენი ჩანართები ავტომატურად ისევ გაიხსნება.</translation>
@@ -851,7 +850,6 @@
 <translation id="468924408576231679">დააკოპირეთ ვებგვერდის „<ph name="PAGE_TITLE" />“ ბმული. წყარო: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">მიიღეთ უკეთესი კონტენტი</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}}</translation>
-<translation id="4698061626562952596">გადახედეთ უმოქმედო ჩანართებს აქ</translation>
 <translation id="4698757800236023795">აქტიური (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">ქეშირებული სურათები და ფაილები</translation>
 <translation id="4710167854527459075">დალაგება უახლესით</translation>
@@ -966,7 +964,6 @@
 <translation id="5123685120097942451">ინკოგნიტო ჩანართი</translation>
 <translation id="5142281402488957685">ახალი ამბების გასაცნობად ჩამოსწიეთ განახლებისთვის</translation>
 <translation id="5144385790872094440">თქვენ მიერ მონახულებული ზოგიერთი გვერდი წინასწარ ჩატვირთულია. გვერდები შეიძლება წინასწარ იტვირთებოდეს Google-ის სერვერების მეშვეობით, როცა მიბმულია Google საიტთან ან აპთან.</translation>
-<translation id="5145887002054615868">დუბლირებული ან <ph name="DAYS_INACTIVE" /> დღის განმავლობაში გამოუყენებელი ჩანართები გადმოტანილია აქ <ph name="AUTODELETE_SECTION" />. ამის შესაცვლელად ნებისმიერ დროს გახსენით <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">მხარდაჭერილი აპები დაინსტალირებული არ არის</translation>
 <translation id="5161254044473106830">საჭიროა სათაური</translation>
 <translation id="5161262286013276579">წვდომის გასაღების დადასტურების ფურცელი გახსნილია</translation>

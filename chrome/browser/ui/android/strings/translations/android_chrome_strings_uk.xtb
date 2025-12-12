@@ -247,7 +247,6 @@
 <translation id="2063047797624276601">Адміністратор вашої організації ввімкнув Безпечний перегляд із розширеним захистом</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Не вдалося завантажити 1 файл}one{Не вдалося завантажити # файл}few{Не вдалося завантажити # файли}many{Не вдалося завантажити # файлів}other{Не вдалося завантажити # файлу}}</translation>
 <translation id="2067805253194386918">SMS</translation>
-<translation id="2072027001582274150">Неактивні або повторювані вкладки</translation>
 <translation id="2079545284768500474">Відмінити</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2088833076121753253">Щоб завершити налаштування автозаповнення, перезапустіть Chrome. Вкладки автоматично відкриються знову.</translation>
@@ -851,7 +850,6 @@
 <translation id="468924408576231679">Копіювати посилання на вебсторінку "<ph name="PAGE_TITLE" />". Джерело: <ph name="PAGE_URL" />.</translation>
 <translation id="469286762610133730">Отримуйте кращий контент</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="4698061626562952596">Тут можна переглянути неактивні вкладки</translation>
 <translation id="4698757800236023795">Активні (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Кешовані зображення й файли</translation>
 <translation id="4710167854527459075">Сортувати за новішими</translation>
@@ -966,7 +964,6 @@
 <translation id="5123685120097942451">Анонімна вкладка</translation>
 <translation id="5142281402488957685">Проведіть пальцем униз, щоб оновити стрічку й отримати нові статті</translation>
 <translation id="5144385790872094440">Деякі сторінки, які ви відвідуєте, попередньо завантажені. Сторінки можуть попередньо завантажуватися через сервери Google, коли вони зв’язані через сайт або додаток Google.</translation>
-<translation id="5145887002054615868">Повторювані або неактивні протягом <ph name="DAYS_INACTIVE" /> дн. вкладки переміщуються сюди <ph name="AUTODELETE_SECTION" />. Це можна будь-коли змінити в розділі "<ph name="DECLUTTER_SETTINGS_TITLE" />".</translation>
 <translation id="5152843274749979095">Немає підтримуваних додатків</translation>
 <translation id="5161254044473106830">Введіть назву</translation>
 <translation id="5161262286013276579">Екран підтвердження ключа доступу відкрито</translation>

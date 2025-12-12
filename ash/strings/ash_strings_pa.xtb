@@ -1025,7 +1025,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ਮਹੱਤਵਪੂਰਨ ਸੂਚਨਾ}one{# ਮਹੱਤਵਪੂਰਨ ਸੂਚਨਾ}other{# ਮਹੱਤਵਪੂਰਨ ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="4450893287417543264">ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="4451374464530248585">Alt + ਹੇਠਾਂ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Page Down ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਹੇਠਾਂ ਤੀਰ ਦਬਾਓ।</translation>
-<translation id="4453876312474547652">Ctrl + V ਦਬਾ ਕੇ ਰੱਖਣ 'ਤੇ ਤੁਹਾਨੂੰ ਕਲਿੱਪਬੋਰਡ ਦਿਖਾਈ ਦੇਵੇਗਾ। ਤੁਸੀਂ chrome://flags (ਜੇ Lacros ਵਰਤ ਰਹੇ ਹੋ ਤਾਂ os://flags) 'ਤੇ ਜਾ ਕੇ #clipboard-history-longpress ਫਲੈਗ ਨੂੰ ਬੰਦ ਕਰ ਕੇ ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="445765352722456792">ਸੁਝਾਅ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="4458688154122353284">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ</translation>
 <translation id="445923051607553918">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ</translation>

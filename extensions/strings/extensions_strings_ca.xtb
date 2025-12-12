@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Vista de l'aplicació: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Aquesta extensió inclou el fitxer de clau "<ph name="KEY_PATH" />". És probable que això no sigui convenient.</translation>
 <translation id="5486326529110362464">Ha d'existir el valor d'entrada de la clau privada.</translation>
+<translation id="5707185214361380026">No s'ha pogut carregar l'extensió de:</translation>
 <translation id="5972529113578162692">L'administrador d'aquest dispositiu requereix que l'extensió <ph name="EXTENSION_NAME" /> estigui instal·lada. No es pot desinstal·lar.</translation>
 <translation id="6027032947578871493">Producte desconegut <ph name="PRODUCT_ID" /> de: <ph name="VENDOR_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> del proveïdor <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Error en carregar l'extensió</translation>
 <translation id="6322279351188361895">No s'ha pogut llegir la clau privada.</translation>
 <translation id="6391538222494443604">El directori d'entrada ha d'existir.</translation>
 <translation id="641087317769093025">No s'ha pogut descomprimir l'extensió</translation>

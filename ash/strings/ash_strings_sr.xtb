@@ -342,6 +342,7 @@
 <translation id="2201071101391734388"><ph name="INDEX" />. недавна слика од <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Скупи Google задатке</translation>
 <translation id="2208323208084708176">Режим спојених радних површина</translation>
+<translation id="2210311543574621570">Привремену меморију ћете видети ако притиснете и задржите Ctrl + V. Ту пречицу можете да искључите ако онемогућите ознаку #clipboard-history-longpress у одељку chrome://flags.</translation>
 <translation id="2215920961700443347">Нема интернета. Повежите се на интернет и пробајте поново.</translation>
 <translation id="2222841058024245321">Радна површина 7</translation>
 <translation id="2223384056430485343">На подељеном екрану</translation>
@@ -1026,7 +1027,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важно обавештење}one{# важно обавештење}few{# важна обавештења}other{# важних обавештења}}</translation>
 <translation id="4450893287417543264">Не приказуј поново</translation>
 <translation id="4451374464530248585">Тастерска пречица Alt + стрелица надоле је промењена. Да бисте користили тастер Page Down, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица надоле.</translation>
-<translation id="4453876312474547652">Привремену меморију ћете видети кад притиснете и задржите Ctrl + V. Ову пречицу можете да искључите ако онемогућите ознаку #clipboard-history-longpress у одељку chrome://flags (os://flags ако користите Lacros).</translation>
 <translation id="445765352722456792">Прилагоди предлоге</translation>
 <translation id="4458688154122353284">Заустави снимање екрана</translation>
 <translation id="445923051607553918">Придружите се WiFi мрежи</translation>

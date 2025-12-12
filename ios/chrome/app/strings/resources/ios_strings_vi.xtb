@@ -329,7 +329,6 @@
 <translation id="219283042927675668">Các thẻ trong nhóm</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
 <translation id="2196428379625389579">Tìm trên web</translation>
-<translation id="2198001751007276170">Thay thế mật khẩu</translation>
 <translation id="2199562093267256223">Thao tác này sẽ xoá nhóm khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Không có tài khoản email nào</translation>
 <translation id="2214453882118345682">Mua sản phẩm, dịch văn bản và nhận dạng đối tượng mà bạn nhìn thấy bằng camera.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">Chụm hai ngón tay để thay đổi kích thước</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Đóng {COUNT} thẻ}other{Đóng {COUNT} thẻ}}</translation>
+<translation id="3946483119107054883">Tải xuống dưới dạng tệp CSV</translation>
 <translation id="3948600256434252210">Bạn có thể vuốt sang phải để duyệt web ở chế độ Ẩn danh.</translation>
 <translation id="3949712484278252781">Nhân viên đánh sẽ không xem xét các cuộc trò chuyện của bạn với Gemini cũng như <ph name="GOOGLE_WORKSPACE_DATA" /> của bạn. Google cũng không sử dụng những thông tin này để cải thiện các mô hình AI tạo sinh.</translation>
 <translation id="3950479158728806902">Tự động tạo khoá truy cập để đăng nhập nhanh hơn</translation>
@@ -1553,7 +1553,6 @@
 <translation id="6782531425936234573">Xuất dữ liệu</translation>
 <translation id="6791425686608802741">Nhấn vào "Thêm thẻ vào nhóm mới"</translation>
 <translation id="6794476726485507147">Chọn ngày và giờ bạn muốn nhận thông báo nhắc nhở truy cập lại trang này</translation>
-<translation id="6795481620482106033">Dữ liệu không hợp lệ</translation>
 <translation id="6797543908718012274">Bật Chế độ đọc</translation>
 <translation id="6806550742467879742">Công cụ trang</translation>
 <translation id="6807287147325542056">Mật khẩu trong các ứng dụng khác</translation>
@@ -1595,6 +1594,7 @@
 <translation id="693761253105515415">Đặt mật mã</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6950522403736391608">Đã ẩn</translation>
+<translation id="6962809930976936328">Khám phá thông tin chi tiết cùng Gemini</translation>
 <translation id="6964300328304469089">Bạn hiện đang chọn <ph name="NAME" />, <ph name="EMAIL" />. Chọn một tài khoản.</translation>
 <translation id="6964760285928603117">Xóa khỏi nhóm</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1911,6 +1911,7 @@
 <translation id="8114753159095730575">Hiện đã có tệp tải xuống. Bạn có thể sử dụng các tùy chọn ở gần cuối màn hình.</translation>
 <translation id="8123502380991596210">Ẩn tuỳ chọn Tính năng mới</translation>
 <translation id="8123953306357309250">Bạn muốn huỷ đồng bộ hoá? Bạn có thể bật tính năng đồng bộ hoá bất cứ lúc nào trong phần cài đặt.</translation>
+<translation id="8130712116203026166">Tóm tắt trang này trong một dòng và cung cấp thông tin chi tiết hữu ích mà trang này chưa đề cập. Hãy dùng giọng điệu súc tích, thoải mái và không được vượt quá 100 từ.</translation>
 <translation id="81313319706244542">2. Nhấn vào Mật khẩu</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8132598642024322408">Giá mới: <ph name="PRICE" />, giá cũ: <ph name="PREVIOUS_PRICE" />.</translation>

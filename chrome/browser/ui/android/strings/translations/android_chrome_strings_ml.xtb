@@ -247,7 +247,6 @@
 <translation id="2063047797624276601">മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗ് നിങ്ങളുടെ സ്ഥാപനം ഓണാക്കി</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് പരാജയപ്പെട്ടു}other{# ഡൗൺലോഡുകൾ പരാജയപ്പെട്ടു}}</translation>
 <translation id="2067805253194386918">ടെക്‌സ്‌റ്റ്</translation>
-<translation id="2072027001582274150">ഉപയോഗിക്കാത്തതോ ഡ്യൂപ്ലിക്കേറ്റോ ആയ ടാബുകൾ</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /> ഫലം</translation>
 <translation id="2088833076121753253">സ്വയമേവ പൂരിപ്പിക്കൽ സജ്ജീകരിക്കുന്നത് പൂർത്തിയാക്കാൻ, ഇപ്പോൾ Chrome റീസ്റ്റാർട്ട് ചെയ്യുക. നിങ്ങളുടെ ടാബുകൾ സ്വയമേവ വീണ്ടും തുറക്കും.</translation>
@@ -851,7 +850,6 @@
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> എന്ന വെബ്പേജിലേക്കുള്ള ലിങ്ക് പകർത്തുക. ഉറവിടം: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">കൂടുതൽ മെച്ചപ്പെട്ട ഉള്ളടക്കം നേടുക</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
-<translation id="4698061626562952596">നിങ്ങളുടെ നിഷ്‌ക്രിയമായ ടാബുകൾ ഇവിടെ അവലോകനം ചെയ്യുക</translation>
 <translation id="4698757800236023795">സജീവമായവ (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">കാഷെ ചെയ്‌ത ചിത്രങ്ങളും ഫയലുകളും</translation>
 <translation id="4710167854527459075">ഏറ്റവും പുതിയത് ആദ്യം</translation>
@@ -966,7 +964,6 @@
 <translation id="5123685120097942451">അദൃശ്യ ടാബ്</translation>
 <translation id="5142281402488957685">പുതിയ സ്റ്റോറികൾക്ക്, റീഫ്രഷ് ചെയ്യാൻ താഴേക്ക് വലിക്കുക</translation>
 <translation id="5144385790872094440">നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്തവയാണ്. Google സൈറ്റ് അല്ലെങ്കിൽ ആപ്പിൽ നിന്ന് ലിങ്ക് ചെയ്യുമ്പോൾ, Google സെർവറുകൾ മുഖേന പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്തേക്കാം.</translation>
-<translation id="5145887002054615868">ഡ്യൂപ്ലിക്കേറ്റ് ടാബുകളോ <ph name="DAYS_INACTIVE" /> ദിവസമായി ഉപയോഗിക്കാത്ത ടാബുകളോ ഇവിടേക്ക് നീക്കുന്നു<ph name="AUTODELETE_SECTION" />. നിങ്ങൾക്ക് <ph name="DECLUTTER_SETTINGS_TITLE" /> എന്നതിൽ ഏതുസമയത്തും ഇത് മാറ്റാം.</translation>
 <translation id="5152843274749979095">ഉപയോഗിക്കാനാവുന്ന ആപ്‌സൊന്നും ഇൻസ്റ്റാൾ ചെയ്തിട്ടില്ല</translation>
 <translation id="5161254044473106830">പേര് ആവശ്യമാണ്</translation>
 <translation id="5161262286013276579">പാസ്‌കീ സ്ഥിരീകരിക്കൽ ഷീറ്റ് തുറന്നു</translation>

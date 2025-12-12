@@ -874,6 +874,7 @@
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="397726367135689299">正在充电的电池可能会变得不稳定。</translation>
 <translation id="3977512764614765090">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。</translation>
+<translation id="3978162107953847778">插入指向浏览记录和 Google 云端硬盘等位置的链接。您还可以插入表情符号、图片文件等内容。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">要切换音频输出设备吗？</translation>
 <translation id="3984536049089846927">下一页</translation>
 <translation id="3986082989454912832">接听</translation>
@@ -1023,7 +1024,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 条重要通知}other{# 条重要通知}}</translation>
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="4451374464530248585">键盘快捷键“Alt + 向下键”已更改。若要使用 Page Down 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向下键。</translation>
-<translation id="4453876312474547652">按住 Ctrl + V 即可查看剪贴板。若要停用此快捷键，您可前往 chrome://flags（如果使用 Lacros，则前往 os://flags）停用 #clipboard-history-longpress flag。</translation>
 <translation id="445765352722456792">自定义建议</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
 <translation id="445923051607553918">加入Wi-Fi网络</translation>
@@ -1598,6 +1598,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />。<ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />：正在激活…</translation>
 <translation id="6274202259872570803">抓屏</translation>
+<translation id="6274422179279280249">插入链接、表情符号等内容。您还可以借助 Google AI 进行写作。<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">查看网页源代码</translation>
 <translation id="6285871695023807425">添加到日历</translation>
 <translation id="6288235558961782912">日后在获得家长允许的情况下可以重新添加 <ph name="USER_EMAIL_ADDRESS" />。</translation>

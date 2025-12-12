@@ -875,6 +875,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
 <translation id="397726367135689299">Aku laadimine võib olla ebausaldusväärne.</translation>
 <translation id="3977512764614765090">Aku laetuse tase on <ph name="PERCENTAGE" />% ja seda laetakse.</translation>
+<translation id="3978162107953847778">Sisestage linke näiteks oma sirvimisajaloost ja Google Drive'ist. Samuti saate sisestada emotikone, pildifaile ja muud. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Kas vahetada heliväljundit?</translation>
 <translation id="3984536049089846927">Järgmine leht</translation>
 <translation id="3986082989454912832">Vasta</translation>
@@ -1025,7 +1026,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 tähtis märguanne}other{# tähtsat märguannet}}</translation>
 <translation id="4450893287417543264">Ära kuva uuesti</translation>
 <translation id="4451374464530248585">Klaviatuuri otseteed Alt + allanool on muudetud. Lehe võrra alla klahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + allanoolt.</translation>
-<translation id="4453876312474547652">Näete lõikelauda kui vajutate ja hoiate all klahvikombinatsiooni Ctrl + V. Saate selle otsetee välja lülitada, kui keelate failis chrome://flags (Lacrosi kasutamisel os://flags) lipu #clipboard-history-longpress.</translation>
 <translation id="445765352722456792">Kohanda soovitusi</translation>
 <translation id="4458688154122353284">Peata ekraani salvestamine</translation>
 <translation id="445923051607553918">WiFi-võrguga ühinemine</translation>
@@ -1601,6 +1601,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktiveerimine ...</translation>
 <translation id="6274202259872570803">Ekraaniülekanne</translation>
+<translation id="6274422179279280249">Sisestage linke, emotikone ja muud. Samuti võite kirjutamisel Google'i AI abi kasutada. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Lehe allika kuvamine</translation>
 <translation id="6285871695023807425">Lisa kalendrisse</translation>
 <translation id="6288235558961782912">Aadressi <ph name="USER_EMAIL_ADDRESS" /> saab hiljem vanema loaga uuesti lisada.</translation>

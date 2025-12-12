@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Акно праграмы: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Гэта пашырэнне змяшчае файл ключа "<ph name="KEY_PATH" />". Магчыма, вам не варта гэтага рабіць.</translation>
 <translation id="5486326529110362464">Для закрытага ключа павінна існаваць значэнне ўводу.</translation>
+<translation id="5707185214361380026">Не ўдалося загрузіць пашырэнне з наступнай крыніцы:</translation>
 <translation id="5972529113578162692">Адміністратар гэтай прылады патрабуе, каб пашырэнне "<ph name="EXTENSION_NAME" />" было ўсталявана. Выдаліць яго нельга.</translation>
 <translation id="6027032947578871493">Невядомы прадукт <ph name="PRODUCT_ID" /> ад пастаўшчыка <ph name="VENDOR_NAME" /> (серыйны нумар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> ад пастаўшчыка <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Памылка загрузкі пашырэння</translation>
 <translation id="6322279351188361895">Не ўдалося прачытаць закрыты ключ.</translation>
 <translation id="6391538222494443604">Павінен існаваць уваходны каталог.</translation>
 <translation id="641087317769093025">Не ўдалося распакаваць пашырэнне</translation>

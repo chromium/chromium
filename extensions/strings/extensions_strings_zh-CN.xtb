@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">应用视图：<ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">此扩展程序包含密钥文件“<ph name="KEY_PATH" />”，您最好不要执行此操作。</translation>
 <translation id="5486326529110362464">请输入私有密钥值。</translation>
+<translation id="5707185214361380026">无法加载以下来源的扩展程序：</translation>
 <translation id="5972529113578162692">此设备的管理员要求安装“<ph name="EXTENSION_NAME" />”，因此不能卸载该扩展程序。</translation>
 <translation id="6027032947578871493">来自<ph name="VENDOR_NAME" />的未知产品 <ph name="PRODUCT_ID" />（序列号为 <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="6068932090455285721">来自供应商 <ph name="VENDOR_ID" /> 的<ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">加载扩展程序时出错</translation>
 <translation id="6322279351188361895">无法读取私有密钥。</translation>
 <translation id="6391538222494443604">必须存在输入目录。</translation>
 <translation id="641087317769093025">无法解压缩扩展程序</translation>

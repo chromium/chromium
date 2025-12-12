@@ -874,6 +874,7 @@
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="397726367135689299">ব্যাটারি চার্জ করার জায়গাটি নির্ভরযোগ্য নাও হতে পারে।</translation>
 <translation id="3977512764614765090">ব্যাটারি <ph name="PERCENTAGE" /> শতাংশ চার্জ করা হয়েছে এবং এখনও চার্জ করা চলছে।</translation>
+<translation id="3978162107953847778">আপনার অ্যাকাউন্টের ব্রাউজিং ইতিহাস ও Google Drive-এর মতো জায়গা থেকে লিঙ্ক যোগ করুন। এছাড়াও আপনি ইমোজি, ছবির ফাইল ও আরও অনেক কিছু ইনসার্ট করতে পারবেন। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">অডিও আউটপুট পরিবর্তন করতে চান?</translation>
 <translation id="3984536049089846927">পরের পৃষ্ঠা</translation>
 <translation id="3986082989454912832">উত্তর</translation>
@@ -1024,7 +1025,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{১টি গুরুত্বপূর্ণ বিজ্ঞপ্তি}one{#টি গুরুত্বপূর্ণ বিজ্ঞপ্তি}other{#টি গুরুত্বপূর্ণ বিজ্ঞপ্তি}}</translation>
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="4451374464530248585">Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Down কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Down Arrow কী প্রেস করুন।</translation>
-<translation id="4453876312474547652">Ctrl + V প্রেস করে ধরে থাকলে আপনি ক্লিপবোর্ড দেখতে পাবেন। এই শর্টকাট বন্ধ করতে পারবেন chrome://flags (Lacros ব্যবহার করলে os://flags)-এ থাকা #clipboard-history-longpress ফ্ল্যাগ বন্ধ করে দিলে।</translation>
 <translation id="445765352722456792">সাজেশন কাস্টমাইজ করুন</translation>
 <translation id="4458688154122353284">স্ক্রিন রেকর্ডিং বন্ধ করুন</translation>
 <translation id="445923051607553918">ওয়াই-ফাই  নেটওয়ার্কে যোগ দিন</translation>
@@ -1600,6 +1600,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />। <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: সক্রিয় করা হচ্ছে...</translation>
 <translation id="6274202259872570803">স্ক্রিনকাস্ট</translation>
+<translation id="6274422179279280249">লিঙ্ক, ইমোজি ও আরও অনেক কিছু যোগ করুন। এছাড়াও Google AI-এর সাহায্যে কন্টেন্ট লিখুন। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">পৃষ্ঠার সূত্র দেখুন</translation>
 <translation id="6285871695023807425">Calendar-এ যোগ করুন</translation>
 <translation id="6288235558961782912">পরে অভিভাবকের অনুমতি সহ <ph name="USER_EMAIL_ADDRESS" /> আবার যোগ করা যেতে পারে।</translation>

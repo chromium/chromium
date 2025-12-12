@@ -874,6 +874,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="397105322502079400">Skaičiuojama...</translation>
 <translation id="397726367135689299">Akumuliatoriaus įkrovimas gali būti nepatikimas.</translation>
 <translation id="3977512764614765090">Aumuliatoriaus įkrova <ph name="PERCENTAGE" /> % ir jis įkraunamas.</translation>
+<translation id="3978162107953847778">Įterpkite nuorodų iš tokių vietų kaip naršymo istorija ir „Google“ diskas. Be to, galite įterpti jaustukų, vaizdų failų ir kt. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Perjungti garso išvestį?</translation>
 <translation id="3984536049089846927">Kitas puslapis</translation>
 <translation id="3986082989454912832">Atsakyti</translation>
@@ -1024,7 +1025,6 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 svarbus pranešimas}one{# svarbus pranešimas}few{# svarbūs pranešimai}many{# svarbaus pranešimo}other{# svarbių pranešimų}}</translation>
 <translation id="4450893287417543264">Daugiau neberodyti</translation>
 <translation id="4451374464530248585">Pakeistas spartusis klavišas „Alt“ + rodyklė žemyn. Jei norite naudoti klavišą „Page Down“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę žemyn.</translation>
-<translation id="4453876312474547652">Paspaudus ir palaikius „Ctrl“ + V bus rodoma iškarpinė. Šį spartųjį klavišą galite išjungti išjungdami žymą #clipboard-history-longpress adresu chrome://flags (os://flags, jei naudojate „Lacros“).</translation>
 <translation id="445765352722456792">Tinkinti pasiūlymus</translation>
 <translation id="4458688154122353284">Sustabdyti ekrano įrašymą</translation>
 <translation id="445923051607553918">Prisijungti prie „Wi-Fi“ tinklo</translation>
@@ -1600,6 +1600,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6260038345397266744">„<ph name="TITLE" />“. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271">„<ph name="NAME" />“: aktyvinama...</translation>
 <translation id="6274202259872570803">Ekrano vaizdo įrašas</translation>
+<translation id="6274422179279280249">Įterpkite nuorodų, jaustukų ir kt. Be to, galite gauti pagalbos rašydami su „Google“ DI. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Peržiūrėti puslapio šaltinį</translation>
 <translation id="6285871695023807425">Pridėti prie Kalendoriaus</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> galima pridėti iš naujo vėliau, gavus tėvų leidimą.</translation>

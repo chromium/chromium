@@ -329,7 +329,6 @@
 <translation id="219283042927675668">Pestanyes al grup</translation>
 <translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
 <translation id="2196428379625389579">Cerca al web</translation>
-<translation id="2198001751007276170">Substitueix les contrasenyes</translation>
 <translation id="2199562093267256223">Aquesta acció suprimirà el grup de tots els dispositius amb què s'hagi iniciat la sessió a <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Cap compte de correu electrònic</translation>
 <translation id="2214453882118345682">Compra, tradueix i identifica el que veus amb la càmera.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">Pinça per canviar la mida</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Tanca {COUNT} pestanya}other{Tanca {COUNT} pestanyes}}</translation>
+<translation id="3946483119107054883">Baixa com a CSV</translation>
 <translation id="3948600256434252210">Pots lliscar cap a la dreta per navegar d'incògnit.</translation>
 <translation id="3949712484278252781">Els revisors humans no revisaran ni les teves converses amb Gemini ni les teves <ph name="GOOGLE_WORKSPACE_DATA" />, i aquestes dades tampoc no es faran servir per millorar els models d'IA generativa.</translation>
 <translation id="3950479158728806902">Crea una clau d'accés automàticament per iniciar la sessió més ràpidament</translation>
@@ -1553,7 +1553,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6782531425936234573">Exporta dades</translation>
 <translation id="6791425686608802741">Toca Afegeix una pestanya al grup nou</translation>
 <translation id="6794476726485507147">Tria la data i l'hora en què vols rebre una notificació de recordatori per tornar a visitar aquesta pàgina</translation>
-<translation id="6795481620482106033">Dades no vàlides</translation>
 <translation id="6797543908718012274">Activa el mode de lectura</translation>
 <translation id="6806550742467879742">Eines de pàgina</translation>
 <translation id="6807287147325542056">Contrasenyes en altres aplicacions</translation>
@@ -1595,6 +1594,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="693761253105515415">Estableix una contrasenya</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6950522403736391608">Amagades</translation>
+<translation id="6962809930976936328">Obtén informació detallada amb Gemini</translation>
 <translation id="6964300328304469089">Selecció actual: <ph name="NAME" />, <ph name="EMAIL" />. Tria un compte.</translation>
 <translation id="6964760285928603117">Suprimeix del grup</translation>
 <translation id="6965382102122355670">D'acord</translation>
@@ -1911,6 +1911,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8114753159095730575">La baixada de fitxers està disponible. Opcions disponibles a la part inferior de la pantalla.</translation>
 <translation id="8123502380991596210">Amaga l'opció Novetats</translation>
 <translation id="8123953306357309250">Vols cancel·lar la sincronització? Pots activar-la en qualsevol moment des de la configuració.</translation>
+<translation id="8130712116203026166">Fes-me un resum d'una línia i proporciona'm informació detallada útil que no s'inclogui en aquesta pàgina. Utilitza un to concís i informal. 100 paraules com a màxim.</translation>
 <translation id="81313319706244542">2. Toca Contrasenyes</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8132598642024322408">Ara val <ph name="PRICE" />, abans valia <ph name="PREVIOUS_PRICE" />.</translation>

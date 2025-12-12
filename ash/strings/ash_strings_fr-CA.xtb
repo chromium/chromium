@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Photo récente : <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Réduire Google Tâches</translation>
 <translation id="2208323208084708176">Mode Bureau unifié</translation>
+<translation id="2210311543574621570">Vous verrez le presse-papiers lorsque vous maintenez les touches Ctrl + V enfoncées. Vous pouvez désactiver ce raccourci en désactivant l'indicateur #clipboard-history-longpress dans chrome://flags.</translation>
 <translation id="2215920961700443347">Aucune connexion à Internet. Connectez-vous à Internet et réessayez.</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
 <translation id="2223384056430485343">Sur un écran divisé</translation>
@@ -1024,7 +1025,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notification importante}one{# notification importante}other{# notifications importantes}}</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
 <translation id="4451374464530248585">Le raccourci-clavier Alt+flèche vers le bas a changé. Pour utiliser la touche Page suivante, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers le bas.</translation>
-<translation id="4453876312474547652">Vous verrez le presse-papiers lorsque vous maintenez enfoncées les touches Ctrl + V. Vous pouvez désactiver ce raccourci en désactivant l'indicateur #clipboard-history-longpress dans chrome://flags (os://flags si vous utilisez Lacros).</translation>
 <translation id="445765352722456792">Personnaliser les suggestions</translation>
 <translation id="4458688154122353284">Arrêter l'enregistrement de l'écran</translation>
 <translation id="445923051607553918">Connexion à un réseau Wi-Fi</translation>

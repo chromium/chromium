@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">รูปภาพล่าสุด <ph name="INDEX" /> จาก <ph name="TOTAL_COUNT" /></translation>
 <translation id="2201687081523799384">ยุบ Google Tasks</translation>
 <translation id="2208323208084708176">โหมดเดสก์ท็อปแบบรวม</translation>
+<translation id="2210311543574621570">คุณจะเห็นคลิปบอร์ดเมื่อกด Ctrl + V ค้างไว้ ทั้งนี้คุณปิดแป้นพิมพ์ลัดนี้ได้ด้วยการปิดใช้ Flag #clipboard-history-longpress ใน chrome://flags</translation>
 <translation id="2215920961700443347">ไม่มีอินเทอร์เน็ต เชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
 <translation id="2222841058024245321">เดสก์ 7</translation>
 <translation id="2223384056430485343">ในโหมดแยกหน้าจอ</translation>
@@ -1020,7 +1021,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{การแจ้งเตือนสำคัญ 1 รายการ}other{การแจ้งเตือนสำคัญ # รายการ}}</translation>
 <translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
 <translation id="4451374464530248585">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรลง หากต้องการใช้แป้น Page Down ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรลง</translation>
-<translation id="4453876312474547652">คุณจะเห็นคลิปบอร์ดเมื่อกด Ctrl + V ค้างไว้ ทั้งนี้คุณปิดแป้นพิมพ์ลัดนี้ได้ด้วยการปิดใช้ Flag #clipboard-history-longpress ใน chrome://flags (os://flags หากใช้ Lacros)</translation>
 <translation id="445765352722456792">ปรับแต่งคำแนะนำ</translation>
 <translation id="4458688154122353284">หยุดการอัดหน้าจอ</translation>
 <translation id="445923051607553918">เข้าร่วมเครือข่าย Wi-Fi</translation>

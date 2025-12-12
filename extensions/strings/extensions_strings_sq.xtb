@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Pamja e aplikacionit: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Kjo shtesë përfshin skedarin e çelësit "<ph name="KEY_PATH" />". Nuk mendoj se dëshiron ta bësh këtë.</translation>
 <translation id="5486326529110362464">Duhet të ekzistojë një vlerë hyrëse për çelësin privat.</translation>
+<translation id="5707185214361380026">Dështoi në ngarkimin e shtesës nga:</translation>
 <translation id="5972529113578162692">Administratori i kësaj makinerie kërkon instalimin e <ph name="EXTENSION_NAME" /> dhe ajo nuk mund të çinstalohet.</translation>
 <translation id="6027032947578871493">Produkt i panjohur <ph name="PRODUCT_ID" /> nga <ph name="VENDOR_NAME" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> nga shitësi <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Gabim në ngarkimin e shtesës</translation>
 <translation id="6322279351188361895">Dështoi në leximin e çelësit privat.</translation>
 <translation id="6391538222494443604">Duhet të ekzistojë një direktori e hyrjes.</translation>
 <translation id="641087317769093025">Nuk mundi të shpaketonte shtesën</translation>

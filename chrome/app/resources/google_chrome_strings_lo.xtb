@@ -122,6 +122,7 @@
 <translation id="2216543877350048334">ເພື່ອລຶບບັນຊີ Google ຂອງທ່ານອອກຈາກ Chrome, ໃຫ້ອອກຈາກລະບົບ</translation>
 <translation id="2236949375853147973">ການເຄື່ອນໄຫວຂອງຂ້ອຍ</translation>
 <translation id="22791603784558743">ປິດ Gemini ໃນ Chrome Dev</translation>
+<translation id="2284380654876659752">ເມື່ອທ່ານເຂົ້າເບິ່ງເວັບໄຊ, Chrome ຈະສົ່ງສະເພາະບາງສ່ວນຂອງ URL ທີ່ຖືກເຂົ້າລະຫັດໄປໃຫ້ <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> ຜ່ານເຊີບເວີຄວາມເປັນສ່ວນຕົວທີ່ເຊື່ອງທີ່ຢູ່ IP ຂອງທ່ານ. ຫາກເວັບໄຊເຮັດສິ່ງທີ່ໜ້າສົງໄສ, ລະບົບຈະສົ່ງ URL ແບບເຕັມ ແລະ ເນື້ອຫາຂອງໜ້າເວັບບາງສ່ວນນຳ.</translation>
 <translation id="2290014774651636340">ລະຫັດ Google API ຫາຍໄປ. ການເຮັດໜ້າທີ່ບາງອັນຂອງ  Google Chrom ຈະປິດໃຊ້ງານ.</translation>
 <translation id="2290095356545025170">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການຖອນຕິດຕັ້ງ Google Chrome?</translation>
 <translation id="2301513536169703857">ເພື່ອເຂົ້າເຖິງລະຫັດຜ່ານ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
@@ -206,6 +207,7 @@
 <translation id="3112458742631356345">Chrome ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ບໍ່ໄດ້ມີການດາວໂຫຼດໂດຍທົ່ວໄປ ແລະ ອາດເປັນອັນຕະລາຍ</translation>
 <translation id="3114643501466072395">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານອື່ນຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome ບລັອກການດາວໂຫຼດນີ້ເພາະວ່າໄຟລ໌ທີ່ເກັບໄວ້ໃນແຟ້ມມີໄຟລ໌ອື່ນໆທີ່ອາດຈະເຊື່ອງເມົາແວໄວ້</translation>
+<translation id="3124332159330678621">ປັບແຕ່ງ Chrome ເພື່ອໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານມີຮູບລັກໃໝ່</translation>
 <translation id="3130333203120345554">ຊອກຫາໃໝ່</translation>
 <translation id="3135560418014806498">ເພີ່ມໂປຣໄຟລ໌ Chrome</translation>
 <translation id="3137969841538672700">ລາກເພື່ອຊອກຫາ</translation>
@@ -272,6 +274,7 @@
 <translation id="3885770153807205175">ຕົວເລືອກພາສາ</translation>
 <translation id="3889417619312448367">ຖອນຕິດຕັ້ງ Google Chrome</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
+<translation id="3906096710440765802">ເຂົ້າສູ່ລະບົບ Chrome ເພື່ອຮັບລະຫັດຜ່ານ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ.</translation>
 <translation id="3941890832296813527">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ຊື່ໄຟລ໌ຂອງຕົວຕິດຕັ້ງບໍ່ຖືກຕ້ອງ ຫຼື ລະບົບບໍ່ຮອງຮັບ.</translation>
 <translation id="395904275706073188">ບໍ່ສາມາດອ່ານໜ້າທີ່ມີການປ້ອງກັນໄດ້. ລອງໃຊ້ໜ້າອື່ນ.</translation>
 <translation id="3968962723676998462">ໃສ່ລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -496,6 +499,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6288580400488258237">ຕັ້ງ Google Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ ແລະ ປັກໝຸດມັນໃສ່ແຖບໜ້າວຽກຂອງທ່ານ</translation>
 <translation id="6291089322031436445">ແອັບ Chrome Dev</translation>
 <translation id="6291549208091401781">ຕິດຕັ້ງ Google Chrome ສຳລັບຜູ້ໃຊ້ທຸກຄົນໃນຄອມພິວເຕີຂອງທ່ານແລ້ວ.</translation>
+<translation id="6311220991371174222">ບໍ່ສາມາດເລີ່ມ Chrome ໄດ້ເພາະວ່າມີບາງຢ່າງຜິດພາດໃນເວລາເປີດໂປຣໄຟລ໌ຂອງທ່ານ. ກະລຸນາລອງປິດເປີດ Chrome ຄືນໃໝ່.</translation>
 <translation id="6319856120645568262">Chrome ຕ້ອງໄດ້ຮັບການອະນຸຍາດເພື່ອສ້າງແຜນທີ່ພື້ນທີ່ອ້ອມຂ້າງຂອງທ່ານ ແລະ ຕິດຕາມການເຄື່ອນໄຫວຂອງມືທ່ານ</translation>
 <translation id="6321592572353357376">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6326175484149238433">ເອົາ​ອອກ​ໄປຈາກ Chrome</translation>
@@ -624,9 +628,11 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7655472416356262023">ລຶບບັນຊີອອກຈາກ Chrome</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7670287553302121848">ບັນຊີ Chrome ຕ້ອງມີການພິສູດຢືນຢັນຄືນໃໝ່</translation>
+<translation id="7675756456029023637">ຖາມ Chrome</translation>
 <translation id="769538538642757151">Chrome ຈະແຈ້ງໃຫ້ທ່ານຮູ້ຫາກມີສິ່ງໃດທີ່ທ່ານຕ້ອງກວດສອບ</translation>
 <translation id="769906121737764913">ປິດ Gemini ໃນ Chrome Beta</translation>
 <translation id="7716950018788545737">ໜ້າວຽກສິ້ນສຸດແລ້ວ.</translation>
+<translation id="7723388585204724670">ຣີເຊັດເປັນ Chrome ແບບຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="77283119132245232">ໃຫ້ບໍລິການຕິດຕາມລະບົບສຳລັບ <ph name="BROWSER_NAME" />. ຫາກປິດການນຳໃຊ້ບໍລິການນີ້, ການຕິດຕາມປະສິດທິພາບທີ່ສ້າງຂຶ້ນໂດຍໂປຣແກຣມທ່ອງເວັບຈະບໍ່ຮວມກິດຈະກຳທົ່ວລະບົບ ເຊັ່ນ: ກິດຈະກຳປ່ຽນບໍລິບົດ ແລະ ກິດຈະກຳຫົວຂໍ້ທີ່ພ້ອມນຳໃຊ້.</translation>
 <translation id="7736869414036750079">ອົງກອນຂອງທ່ານກຳນົດໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="7747138024166251722">ຕົວຕິດຕັ້ງບໍ່ສາມາດສ້າງໄດເຣັກຕໍຣີຊົ່ວຄາວໄດ້. ກະລຸນາກວດເບິ່ງບ່ອນ​ວ່າງດິສກ໌ ແລະການອະນຸຍາດ ເພື່ອຕິດຕັ້ງຊອບແວ.</translation>

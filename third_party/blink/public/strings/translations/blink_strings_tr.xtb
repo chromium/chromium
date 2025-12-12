@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">Lütfen bu metni <ph name="MAX_CHARACTERS" /> veya daha az karakter olacak şekilde kısaltın (şu anda <ph name="CURRENT_LENGTH" /> karakter kullanıyorsunuz).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hafta, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. parça</translation>
+<translation id="2500270406326775625">Veri URL'si</translation>
 <translation id="2507943997699731163">Lütfen bu alanı doldurun.</translation>
 <translation id="2613802280814924224">Lütfen geçerli bir değer girin. En yakın geçerli değer şudur: <ph name="VALID_VALUE" /></translation>
 <translation id="2653659639078652383">Gönder</translation>

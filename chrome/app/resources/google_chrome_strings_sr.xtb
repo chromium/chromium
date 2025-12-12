@@ -122,6 +122,7 @@
 <translation id="2216543877350048334">Да бисте уклонили Google налог из Chrome-а, одјавите се</translation>
 <translation id="2236949375853147973">Моје активности</translation>
 <translation id="22791603784558743">Затворите Gemini у Chrome Dev-у</translation>
+<translation id="2284380654876659752">Када одете на сајт, Chrome шаље маскирани део URL-а <ph name="BEGIN_LINK" />Google безбедном прегледању<ph name="END_LINK" /> преко сервера за приватност који крије IP адресу. Ако сајт ради нешто сумњиво, шаљу се и комплетни URL-ови и делови садржаја странице.</translation>
 <translation id="2290014774651636340">Недостају шифре за Google API. Неке функције Google Chrome-а ће бити онемогућене.</translation>
 <translation id="2290095356545025170">Да ли стварно желите да деинсталирате Google Chrome?</translation>
 <translation id="2301513536169703857">Да би вам лозинке, обележивачи и други садржај били доступни на свим уређајима, пријавите се у Chrome</translation>
@@ -206,6 +207,7 @@
 <translation id="3112458742631356345">Chrome је блокирао ово преузимање јер се овај фајл не преузима често и може да буде опасан</translation>
 <translation id="3114643501466072395">Да бисте проверили да ли су остале лозинке безбедне од упада у податке и других безбедносних проблема, <ph name="BEGIN_LINK" />пријавите се у Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome је блокирао ово преузимање јер фајл архиве садржи друге фајлове који могу да крију малвер</translation>
+<translation id="3124332159330678621">Прилагодите Chrome да бисте прешли на нов изглед прегледача</translation>
 <translation id="3130333203120345554">Нова претрага</translation>
 <translation id="3135560418014806498">Додај Chrome профил</translation>
 <translation id="3137969841538672700">Превуците да бисте претражили</translation>
@@ -272,6 +274,7 @@
 <translation id="3885770153807205175">Бирач језика</translation>
 <translation id="3889417619312448367">Деинсталирај Google Chrome</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
+<translation id="3906096710440765802">Пријавите се у Chrome да би вам лозинке, обележивачи и други садржај били доступни на свим уређајима</translation>
 <translation id="3941890832296813527">Грешка при инсталацији: Назив фајла програма за инсталацију је неважећи или није подржан.</translation>
 <translation id="395904275706073188">Заштићене странице не могу да се читају. Пробајте са другом страницом.</translation>
 <translation id="3968962723676998462">Унесите приступну фразу да бисте користили и сачували Chrome податке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -496,6 +499,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6288580400488258237">Подесите Google Chrome као подразумевани прегледач и закачите га на траку задатака</translation>
 <translation id="6291089322031436445">Chrome апликације за програмерски канал</translation>
 <translation id="6291549208091401781">Google Chrome је већ инсталиран за све кориснике на рачунару.</translation>
+<translation id="6311220991371174222">Не можемо да покренемо Chrome јер је дошло до проблема при отварању профила. Пробајте поново да покренете Chrome.</translation>
 <translation id="6319856120645568262">Chrome-у треба дозвола за мапирање окружења и праћење руку</translation>
 <translation id="6321592572353357376">Додатак <ph name="EXTENSION_NAME" /> жели да се пријавите у Chrome</translation>
 <translation id="6326175484149238433">Уклони из Chrome-а</translation>
@@ -624,9 +628,11 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7655472416356262023">Уклони налог из Chrome-а</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7670287553302121848">Chrome налог захтева поновну потврду идентитета</translation>
+<translation id="7675756456029023637">Питај Chrome</translation>
 <translation id="769538538642757151">Chrome ће вас обавестити ако треба да прегледате нешто</translation>
 <translation id="769906121737764913">Затворите Gemini у Chrome бета верзији</translation>
 <translation id="7716950018788545737">Задаци су завршени.</translation>
+<translation id="7723388585204724670">Ресетуј на подразумевани Chrome</translation>
 <translation id="77283119132245232">Пружа услуге праћења система за <ph name="BROWSER_NAME" />. Ако је ова услуга онемогућена, трагови учинка које направи прегледач неће садржати догађаје у целом систему, попут промене контекста и припремљених догађаја са нитима.</translation>
 <translation id="7736869414036750079">Организација захтева да се пријавите у Chrome</translation>
 <translation id="7747138024166251722">Програм за инсталацију није могао да направи привремени директоријум. Проверите да ли имате слободног простора на диску, као и дозволу да инсталирате софтвер.</translation>

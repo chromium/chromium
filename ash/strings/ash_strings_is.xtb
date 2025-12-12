@@ -874,6 +874,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="397105322502079400">Reiknar...</translation>
 <translation id="397726367135689299">Hleðsla rafhlöðu kann að vera óstöðug.</translation>
 <translation id="3977512764614765090">Rafhlaða í <ph name="PERCENTAGE" />% og í hleðslu.</translation>
+<translation id="3978162107953847778">Settu inn tengla frá stöðum eins og vafraferlinum þínum og Google Drive. Þú getur einnig sett inn emoji, myndskrár og fleira. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Viltu skipta um hljóðúttak?</translation>
 <translation id="3984536049089846927">Næsta síða</translation>
 <translation id="3986082989454912832">Svara</translation>
@@ -1024,7 +1025,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 mikilvæg tilkynning}one{# mikilvæg tilkynning}other{# mikilvægar tilkynningar}}</translation>
 <translation id="4450893287417543264">Ekki sýna þetta aftur</translation>
 <translation id="4451374464530248585">Flýtilyklinum „Alt + ör niður“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" /> + ör niður til að nota Page Down-lykilinn.</translation>
-<translation id="4453876312474547652">Klippiborð birtist þegar þú heldur inni Ctrl + V. Þú getur slökkt á þessari flýtileið með því að slökkva á flagginu #clipboard-history-longpress í chrome://flags (os://flags ef þú notar Lacros).</translation>
 <translation id="445765352722456792">Sérsníða tillögur</translation>
 <translation id="4458688154122353284">Stöðva skjáupptöku</translation>
 <translation id="445923051607553918">Tengjast Wi-Fi neti</translation>
@@ -1600,6 +1600,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Virkjar...</translation>
 <translation id="6274202259872570803">Skjáupptaka</translation>
+<translation id="6274422179279280249">Settu inn tengla, emoji og fleira. Þú getur líka fengið hjálp frá gervigreind Google við að skrifa. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Skoða frumkóða síðu</translation>
 <translation id="6285871695023807425">Bæta við dagatal</translation>
 <translation id="6288235558961782912">Hægt er að bæta <ph name="USER_EMAIL_ADDRESS" /> við aftur síðar með leyfi foreldris.</translation>

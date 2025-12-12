@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">এই এক্সটেনশ্বনত ব্যক্তিগত চাবি অন্তর্ভুক্ত '<ph name="KEY_PATH" />' আছে। আপুনি হয়তো সেয়া কৰিবলৈ নোখোজে।</translation>
 <translation id="5486326529110362464">ব্যক্তিগত কীৰ বাবে ইনপুট মান থাকিবই লাগিব।</translation>
+<translation id="5707185214361380026">এইটোৰ পৰা এক্সটেনশ্বন ল’ড কৰিব পৰা নগ’ল:</translation>
 <translation id="5972529113578162692">এই মেচিনটোৰ প্ৰশাসকৰ বাবে <ph name="EXTENSION_NAME" /> ইনষ্টল হৈ থকাটো আৱশ্যক। ইয়াক আনইনষ্টল কৰিব নোৱাৰি।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" />ৰ অজ্ঞাত প্ৰডাক্ট <ph name="PRODUCT_ID" /> (ক্ৰমিক নম্বৰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> বিক্ৰেতাৰ <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">এক্সটেনশ্বন ল’ড কৰোতে আসোঁৱাহ হৈছে</translation>
 <translation id="6322279351188361895">ব্যক্তিগত চাবিটো পঢ়িব পৰা নগ’ল।</translation>
 <translation id="6391538222494443604">ইনপুট ডাইৰেক্টৰী থাকিবই লাগিব৷</translation>
 <translation id="641087317769093025">এক্সটেনশ্বন আনজিপ কৰিব পৰা নগ'ল</translation>

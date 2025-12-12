@@ -218,6 +218,7 @@
 <translation id="3313189106987092621">Chromium ће вас упозорити пре учитавања било ког сајта помоћу небезбедне везе</translation>
 <translation id="3316771292331273802">Бићете одјављени са већине сајтова када затворите све Chromium прозоре, осим са Google налога ако сте пријављени у Chromium. Да бисте дозволили сајтовима да вас памте, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">Подразумевани претраживач је промењен изван Chromium-а. Chromium га је ресетовао ради ваше заштите.</translation>
+<translation id="3331557257666250900">Пријавите се у Chromium да би вам лозинке, обележивачи и други подаци били доступни на свим уређајима</translation>
 <translation id="3352986031709923790">горњи десни угао области претраге: удесно <ph name="RIGHT" />%, нагоре <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">Chromium подаци на налогу</translation>
 <translation id="3369405342922656244">Претражите ову страницу помоћу претраге слика</translation>
@@ -269,6 +270,7 @@
 <translation id="3971865010372729242">Када уносите текст у траку за адресу или у оквир за претрагу, Chromium шаље оно што уносите у алатке за претрагу, вештачку интелигенцију и агента организације да бисте добијали предлоге.</translation>
 <translation id="3975724895399328945">О верзији Google Chrome for Testing</translation>
 <translation id="3997429360543082038">О Chromium ОС-у</translation>
+<translation id="4010059961270896984">Када одете на сајт, Chromium шаље маскирани део URL-а <ph name="BEGIN_LINK" />Google безбедном прегледању<ph name="END_LINK" /> преко сервера за приватност који крије IP адресу. Ако сајт ради нешто сумњиво, шаљу се и комплетни URL-ови и делови садржаја странице.</translation>
 <translation id="4019629340646866719">Chromium ОС је омогућен захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />, као што је <ph name="BEGIN_LINK_LINUX_OSS" />Linux окружење за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Преведи екран</translation>
 <translation id="4023601594785368013">Изворни језик: <ph name="LANGUAGE" /></translation>
@@ -340,6 +342,7 @@
 <translation id="4724676981607797757">Инсталација није успела због неподржане грешке протокола.</translation>
 <translation id="4746050847053251315">Желите ли ипак да затворите Chromium?</translation>
 <translation id="4748217263233248895">Посебно безбедносно ажурирање за Chromium је управо примењено. Рестартујте га и вратићемо вам картице.</translation>
+<translation id="4759645701210484457">Питај Chromium</translation>
 <translation id="4771701986670315895">Нисте скоро посећивали сајт. Chromium је уклонио дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Chromium не може да вам проверава лозинке. Пробајте поново после 24 сата или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Користи исту проверу правописа као Google претрага. Текст који унесете у прегледач се шаље Google-у. То увек можете да промените у подешавањима.</translation>
@@ -587,6 +590,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="77283119132245232">Пружа услуге праћења система за <ph name="BROWSER_NAME" />. Ако је ова услуга онемогућена, трагови учинка које направи прегледач неће садржати догађаје у целом систему, попут промене контекста и припремљених догађаја са нитима.</translation>
 <translation id="7745317241717453663">Овим ћете избрисати податке прегледања са овог уређаја. Да бисте касније вратили податке, пријавите се у Chromium као <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Програм за инсталацију није могао да направи привремени директоријум. Проверите да ли имате слободног простора на диску, као и дозволу да инсталирате софтвер.</translation>
+<translation id="7750130090210923118">Ресетуј на подразумевани Chromium</translation>
 <translation id="7786760609782648049">Убрзајте Chromium</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Отежајте онима који имају приступ вашем интернет саобраћају да виде које сајтове посећујете. Chromium користи безбедну везу да би тражио IP адресу сајта у DNS-у (систему имена домена).</translation>
@@ -687,6 +691,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8907580949721785412">Chromium покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="8941642502866065432">Не можете да ажурирате Chromium</translation>
 <translation id="897581876605952338">Логотип Chromium-а за предузећа</translation>
+<translation id="8981150672034878610">Не можете да покренете Chromium јер је дошло до грешке при отварању профила. Пробајте да рестартујете Chromium.</translation>
 <translation id="8988036198400390003">Управљај Chromium профилима</translation>
 <translation id="9019929317751753759">Да бисмо учинили Chromium безбеднијим, онемогућили смо следећи додатак који <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи и који је можда додат без вашег знања.</translation>
 <translation id="904366664621834601">Chromium је блокирао ово преузимање јер фајл архиве садржи друге фајлове који могу да крију малвер</translation>

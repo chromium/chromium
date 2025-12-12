@@ -80,6 +80,7 @@
 <translation id="1843347690926158494">Cerca in questa scheda con Google Lens</translation>
 <translation id="1849248141818021764">Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai <ph name="BEGIN_LINK" />eliminare i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
+<translation id="1867503717113754604">Accedi a Chrome con il tuo Account Google per usare <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="1873233029667955273">Google Chrome non è il browser predefinito</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
@@ -170,6 +171,7 @@
 <translation id="286025080868315611">Scopri perché Chrome blocca alcuni download</translation>
 <translation id="2861074815332034794">Aggiornamento di Chrome in corso… (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Hai eseguito l'accesso a Chrome.</translation>
+<translation id="2875053229394024379">Se accedi a Chrome con il tuo Account Google, puoi usare il tuo profilo Chrome con Gemini. <ph name="BEGIN_LINK" />Scopri come accedere a Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">Scopri di più su <ph name="BEGIN_LINK" />come Chrome mantiene privati i tuoi dati<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2888126860611144412">Informazioni su Chrome</translation>
@@ -200,6 +202,7 @@
 <translation id="3112458742631356345">Chrome ha bloccato questo download perché il file non viene scaricato comunemente e potrebbe essere pericoloso</translation>
 <translation id="3114643501466072395">Per controllare che le tue altre password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome ha bloccato questo download perché il file di archivio include altri file che potrebbero nascondere malware</translation>
+<translation id="3124332159330678621">Personalizza Chrome per dare un nuovo look al tuo browser</translation>
 <translation id="3130333203120345554">Nuova ricerca</translation>
 <translation id="3135560418014806498">Aggiungi profilo Chrome</translation>
 <translation id="3137969841538672700">Trascina per cercare</translation>
@@ -219,6 +222,7 @@
 <translation id="3352986031709923790">angolo in alto a destra dell'area di ricerca: destra <ph name="RIGHT" />%, in alto <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Supporto Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verrà riavviato ora}=1{Chrome verrà riavviato tra 1 secondo}other{Chrome verrà riavviato tra # secondi}}</translation>
+<translation id="3380249972812870825">Per aprire Gemini in Chrome, premi <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Durante l'installazione si è verificato un errore del sistema operativo. Scarica nuovamente Google Chrome.</translation>
 <translation id="3428747202529429621">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso</translation>
 <translation id="3434246496373299699">Chrome può controllare le tue password quando accedi con il tuo Account Google</translation>
@@ -264,6 +268,7 @@
 <translation id="3885770153807205175">Selettore lingua</translation>
 <translation id="3889417619312448367">Disinstalla Google Chrome</translation>
 <translation id="3892148308691398805">Copia testo</translation>
+<translation id="3906096710440765802">Accedi a Chrome per trovare le password, i preferiti e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="3941890832296813527">Errore di installazione: il nome file del programma di installazione non è valido o non è supportato.</translation>
 <translation id="395904275706073188">Le pagine protette non possono essere lette. Prova con un'altra pagina.</translation>
 <translation id="3968962723676998462">Inserisci la tua passphrase per utilizzare e salvare i dati di Chrome nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -347,6 +352,7 @@
 <translation id="4891791193823137474">Lascia Google Chrome in esecuzione in background</translation>
 <translation id="4895437082222824641">Apri link in una nuova &amp;scheda di Chrome</translation>
 <translation id="4918844574251943176">Immagine copiata</translation>
+<translation id="4926882258455737990">Per usare un altro Account Google con Gemini in Chrome, <ph name="BEGIN_LINK" />crea un nuovo profilo<ph name="END_LINK" /> e accedi con l'account che preferisci</translation>
 <translation id="492720062778050435">Chrome consiglia di esaminare questa estensione</translation>
 <translation id="4946912144186040233">Chrome comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido. Questa impostazione non è attiva.</translation>
 <translation id="4953650215774548573">Imposta Google Chrome come browser predefinito</translation>
@@ -370,6 +376,7 @@
 <translation id="5170938038195470297">Non è possibile utilizzare il tuo profilo perché è associato a una versione di Google Chrome più recente. Alcune funzioni potrebbero non essere disponibili. Specifica una directory del profilo diversa o utilizza una versione di Chrome più recente.</translation>
 <translation id="5174969993834422967">Di solito blocchi le notifiche. Per ricevere notifiche da questo sito, fai clic sull'icona delle notifiche nell'angolo destro della barra degli indirizzi.</translation>
 <translation id="5174983315706567306">Spazio su disco insufficiente.</translation>
+<translation id="5179933070463113976">Per usare Gemini in Chrome, devi aver eseguito l'accesso a Chrome con il tuo Account Google</translation>
 <translation id="5190467473654176081">Personalizza Chrome per dargli un nuovo aspetto</translation>
 <translation id="5201744974236816379">Aggiornamento di Chrome</translation>
 <translation id="521447420733633466">Se condividi un dispositivo, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chrome in base alle proprie esigenze</translation>
@@ -389,6 +396,7 @@
 <translation id="5394833366792865639">Condividi una scheda di Chrome</translation>
 <translation id="5402307365844630024">Attiva/disattiva Gemini in Chrome Beta</translation>
 <translation id="5430073640787465221">Il file delle preferenze è danneggiato o non valido. Google Chrome non è in grado di recuperare le impostazioni.</translation>
+<translation id="5465210843490471889">Scegli un profilo Chrome da utilizzare con <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Per contribuire a migliorare queste funzionalità, Chrome invia le tue interazioni a Google. Questi dati potrebbero essere letti, elaborati e annotati da revisori.</translation>
 <translation id="5510398294750420479">Scarica Chrome sul tuo smartphone per aggiungere un ulteriore livello di protezione ovunque ti trovi</translation>
 <translation id="5524890928877629608">angolo in alto a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in alto <ph name="TOP" />%</translation>
@@ -481,6 +489,7 @@
 <translation id="6288580400488258237">Imposta Google Chrome come browser predefinito e aggancialelo alla barra delle applicazioni</translation>
 <translation id="6291089322031436445">App di Chrome Dev</translation>
 <translation id="6291549208091401781">Google Chrome è già installato per tutti gli utenti sul computer.</translation>
+<translation id="6311220991371174222">Impossibile avviare Chrome perché si è verificato un errore durante l'apertura del profilo. Prova a riavviare il browser.</translation>
 <translation id="6319856120645568262">Chrome deve avere l'autorizzazione per mappare l'ambiente circostante e monitorare le tue mani</translation>
 <translation id="6321592572353357376">L'estensione "<ph name="EXTENSION_NAME" />" richiede l'accesso a Chrome</translation>
 <translation id="6326175484149238433">Rimuovi da Chrome</translation>
@@ -609,9 +618,11 @@
 <translation id="7655472416356262023">Rimuovi account da Chrome</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7670287553302121848">L'account Chrome richiede la ri-autenticazione</translation>
+<translation id="7675756456029023637">Chiedi a Chrome</translation>
 <translation id="769538538642757151">Chrome ti avviserà qualora fosse necessario un controllo da parte tua</translation>
 <translation id="769906121737764913">Chiudi Gemini in Chrome Beta</translation>
 <translation id="7716950018788545737">Attività terminate.</translation>
+<translation id="7723388585204724670">Reimposta tema predefinito di Chrome</translation>
 <translation id="77283119132245232">Fornisce servizi di tracciamento del sistema per <ph name="BROWSER_NAME" />. Se questo servizio viene disattivato, le tracce delle prestazioni create dal browser non includeranno eventi a livello di sistema, ad esempio eventi di commutazione di contesto e di thread pronti.</translation>
 <translation id="7736869414036750079">La tua organizzazione richiede l'accesso a Chrome</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>

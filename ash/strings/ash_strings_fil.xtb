@@ -874,6 +874,7 @@ Isaksak ang iyong device.</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="397726367135689299">Posibleng hindi maaasahan ang pag-charge ng baterya.</translation>
 <translation id="3977512764614765090">Nasa <ph name="PERCENTAGE" />% ang baterya at nagcha-charge.</translation>
+<translation id="3978162107953847778">Maglagay ng mga link mula sa mga lugar tulad ng iyong history ng pag-browse at Google Drive. Puwede ka ring maglagay ng mga emoji, image file, at higit pa. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Palitan ang audio output?</translation>
 <translation id="3984536049089846927">Susunod na page</translation>
 <translation id="3986082989454912832">Sagutin</translation>
@@ -1024,7 +1025,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 mahalagang notification}one{# mahalagang notification}other{# na mahalagang notification}}</translation>
 <translation id="4450893287417543264">Huwag ipakitang muli</translation>
 <translation id="4451374464530248585">Nagbago ang keyboard shortcut na Alt + Pababang Arrow. Para magamit ang Page Down key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pababang Arrow.</translation>
-<translation id="4453876312474547652">Makikita mo ang clipboard kapag pinindot mo nang matagal ang Ctrl + V. Puwede mong i-off ang shortcut na ito sa pamamagitan ng pag-disable sa flag ng #clipboard-history-longpress sa chrome://flags (os://flags kung gumagamit ng Lacros).</translation>
 <translation id="445765352722456792">Mag-customize ng mga suhestyon</translation>
 <translation id="4458688154122353284">Ihinto ang pag-record ng screen</translation>
 <translation id="445923051607553918">Sumali sa network ng Wi-Fi</translation>
@@ -1600,6 +1600,7 @@ Walang nakakonektang device.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Ina-activate...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6274422179279280249">Maglagay ng mga link, emoji, at higit pa. Puwede ka ring makatanggap ng tulong sa pagsusulat gamit ang Google AI. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Tingnan ang source ng page</translation>
 <translation id="6285871695023807425">Idagdag sa Calendar</translation>
 <translation id="6288235558961782912">Puwedeng idagdag ulit ang <ph name="USER_EMAIL_ADDRESS" /> kung may pahintulot ng magulang.</translation>

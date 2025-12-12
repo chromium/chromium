@@ -1025,7 +1025,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{ការជូនដំណឹងសំខាន់ 1}other{ការជូនដំណឹង​សំខាន់ #}}</translation>
 <translation id="4450893287417543264">កុំបង្ហាញម្ដងទៀត</translation>
 <translation id="4451374464530248585">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុច Alt + ព្រួញចុះក្រោម។ ដើម្បីប្រើគ្រាប់ចុច Page Down សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + ព្រួញចុះក្រោម។</translation>
-<translation id="4453876312474547652">អ្នក​នឹងឃើញ​ឃ្លីបបត នៅពេលអ្នក​ចុច Ctrl + V ឱ្យជាប់។ អ្នកអាចបិទ​ផ្លូវកាត់នេះបាន​ដោយបិទ​ទង់ #clipboard-history-longpress នៅក្នុង chrome://flags (os://flags ប្រសិនបើ​ប្រើ Lacros)។</translation>
 <translation id="445765352722456792">ប្ដូរ​ការណែនាំតាម​បំណង</translation>
 <translation id="4458688154122353284">បញ្ឈប់​ការថត​អេក្រង់</translation>
 <translation id="445923051607553918">ចូលរួមបណ្តាញ Wi-Fi</translation>

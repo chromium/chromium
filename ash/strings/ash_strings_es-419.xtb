@@ -875,6 +875,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397726367135689299">Es posible que la carga de la batería no sea confiable.</translation>
 <translation id="3977512764614765090">Nivel de la batería: <ph name="PERCENTAGE" />% y cargando</translation>
+<translation id="3978162107953847778">Inserta vínculos desde ubicaciones como tu historial de navegación y Google Drive. También puedes insertar emojis, archivos de imagen y más. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">¿Quieres cambiar la salida de audio?</translation>
 <translation id="3984536049089846927">Página siguiente</translation>
 <translation id="3986082989454912832">Responder</translation>
@@ -1025,7 +1026,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificación importante}other{# notificaciones importantes}}</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
 <translation id="4451374464530248585">Se modificó la combinación de teclas Alt + flecha hacia abajo. Para usar la tecla Av Pág, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia abajo.</translation>
-<translation id="4453876312474547652">Verás el portapapeles cuando mantengas presionadas las teclas Ctrl + V. Para desactivar esta combinación de teclas, inhabilita la función experimental #clipboard-history-longpress en chrome://flags (os://flags si usas Lacros).</translation>
 <translation id="445765352722456792">Personalizar sugerencias</translation>
 <translation id="4458688154122353284">Detener la grabación de pantalla</translation>
 <translation id="445923051607553918">Únete a la red Wi-Fi</translation>
@@ -1601,6 +1601,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Activando...</translation>
 <translation id="6274202259872570803">Presentación en pantalla</translation>
+<translation id="6274422179279280249">Inserta vínculos, emojis y más. También puedes obtener ayuda para escribir con la IA de Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Ver el código fuente de la página</translation>
 <translation id="6285871695023807425">Agregar al Calendario</translation>
 <translation id="6288235558961782912">Puedes volver a agregar a <ph name="USER_EMAIL_ADDRESS" /> más tarde con el permiso de tu madre o padre.</translation>

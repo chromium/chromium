@@ -44,6 +44,7 @@
 <translation id="1026655690966755180">ポートを追加</translation>
 <translation id="1026822031284433028">画像を読み込む</translation>
 <translation id="1026959648338730078">Windows Hello または外部セキュリティ キー</translation>
+<translation id="1027354089593440000">ポリシーの読み込み</translation>
 <translation id="1028700151766901954">理由: LBS は引き続きデフォルトのブラウザとして <ph name="DEFAULT_OPEN_BROWSER" /> を使用します。</translation>
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1029317248976101138">ズーム</translation>
@@ -196,7 +197,6 @@
 <translation id="1125371304736839151">ブラウザの上部に Gemini を表示する</translation>
 <translation id="1125550662859510761">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" />（ネイティブ）</translation>
 <translation id="1125921926864945797">壁紙とスタイル</translation>
-<translation id="1128090040635299943">Linux を設定しています。設定には数分かかります。</translation>
 <translation id="1128591060186966949">検索エンジンの編集</translation>
 <translation id="1129348283834595293">サイバーパンク</translation>
 <translation id="1129420403709586868">スマートフォンの写真とメディアを表示します</translation>
@@ -256,6 +256,7 @@
 <translation id="1166457390969131095">Google アカウントのパスワードとパスキーを使用、保存する</translation>
 <translation id="1166583374608765787">新しい名前を確認</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> はデスク <ph name="DESK_TITLE" /> に含まれています</translation>
+<translation id="1167008614036441342">最近使用していないため、カードを削除しました</translation>
 <translation id="1168020859489941584">後 <ph name="TIME_REMAINING" />でファイルが開きます...</translation>
 <translation id="1168704243733734901">最近の AI テーマ <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" />、ムード: <ph name="MOOD" />。</translation>
 <translation id="1168799042879144934">前のページについて Google に質問する</translation>
@@ -1345,6 +1346,7 @@
 <translation id="1901303067676059328">すべて選択(&amp;A)</translation>
 <translation id="1901760057081700494">タイムゾーンは現在 <ph name="TIME_ZONE_ENTRY" /> に設定されています。タイムゾーンを自動的に更新するには、<ph name="BEGIN_LINK" />システムの位置情報へのアクセスをオンにしてください<ph name="END_LINK" />。</translation>
 <translation id="1904580727789512086">アクセスした URL は Google アカウントに保存されます</translation>
+<translation id="190530012637606145">非公開のイントラネットを含む、すべての安全でない接続について警告します</translation>
 <translation id="1906181697255754968">通常、作業内容を自動的に保存したりするため、サイトがデバイスのファイルやフォルダにアクセスする場合があります</translation>
 <translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />では他にもさまざまな拡張機能やテーマを入手できます</translation>
 <translation id="1907044622262489040">音声で入力できます。音声入力を開始するには、検索+D キーを使用します。</translation>
@@ -1535,6 +1537,7 @@
 <translation id="202500043506723828">EID</translation>
 <translation id="2025123106058020990">精密クリック</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> がクラッシュしました。このバルーンをクリックして再起動してください。</translation>
+<translation id="2026367923222947564">フルページ</translation>
 <translation id="2026377162111110983">エリア音声</translation>
 <translation id="2028449514182362831">モーション センサーを必要とする機能は動作しなくなります</translation>
 <translation id="2028479214883337535">MacOS からインポート</translation>
@@ -1642,6 +1645,7 @@
 <translation id="2096716221239095980">すべてのデータを削除</translation>
 <translation id="2097950021134740304">登録の削除をキャンセル</translation>
 <translation id="2098805196501063469">他のパスワードを確認</translation>
+<translation id="2099466547073823024">日付: <ph name="DATE_RANGE" /></translation>
 <translation id="2099883893520019102">過去 15 分間</translation>
 <translation id="2101225219012730419">バージョン:</translation>
 <translation id="2102396546234652240">サイトにマイクの使用を許可しない</translation>
@@ -2304,6 +2308,7 @@
 <translation id="2541400104619216245">商品の絞り込みに役立つ比較情報が提案されます</translation>
 <translation id="2541706104884128042">お休み時間が変更されました</translation>
 <translation id="2542050502251273923">ff_debug を使用して、ネットワーク接続マネージャーと他のサービスのデバッグレベルを設定します。</translation>
+<translation id="254274314549093389">更新の結果: <ph name="OUTCOMES" /></translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」に許可した権限は、このアプリにも適用されます。<ph name="MANAGE_LINK" />}other{「<ph name="APP_NAME" />」に許可した権限は、これらのアプリにも適用されます。<ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">このタブ</translation>
 <translation id="2545743249923338554">新しいタブ</translation>
@@ -2434,6 +2439,7 @@
 <translation id="2643064289437760082">閲覧データを消去することで、ユーザーは広告効果の測定データをいつでも削除できます</translation>
 <translation id="2643379881528582459">一般に報告されているデータ侵害でパスワードが検出された場合、ログイン時にパスワードの変更を促すメッセージを表示します</translation>
 <translation id="2643698698624765890">[ウィンドウ] メニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
+<translation id="2643967675101729581">終了日:</translation>
 <translation id="2645047101481282803">このデバイスは <ph name="PROFILE_NAME" /> によって管理されています。</translation>
 <translation id="2645388244376970260">このタブを <ph name="DEVICE_NAME" /> にキャストしています</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -2672,7 +2678,6 @@
 <translation id="2795716239552913152">多くのサイトは、ローカル ニュースや近くのお店の情報などを取得するためにユーザーの位置情報を使用します。</translation>
 <translation id="2797712124653482791"><ph name="DISMISS_DAYS" /> 日間表示しない</translation>
 <translation id="2798347533012571708">常に更新</translation>
-<translation id="2799162042226656283">Chrome</translation>
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2800760947029405028">画像をアップロード</translation>
 <translation id="2800996978423439835">すべてのデバイスでブックマーク、その他の設定にアクセス</translation>
@@ -2997,6 +3002,7 @@
 <translation id="3019023222666709803">矢印ツール</translation>
 <translation id="3019285239893817657">サブページのボタン</translation>
 <translation id="3019595674945299805">VPN サービス</translation>
+<translation id="3020084146084145424">開始日:</translation>
 <translation id="3020101754533552167">ログインを確認しています...</translation>
 <translation id="3020183492814296499">ショートカット</translation>
 <translation id="3020990233660977256">シリアル番号: <ph name="SERIAL_NUMBER" /></translation>
@@ -3080,6 +3086,7 @@
 <translation id="3076977359333237641">ログインデータが削除されました</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3080933187214341848">このネットワークはアカウントに同期されていません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="3082077944141570429">アプリの名前または ID</translation>
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">拡張機能</translation>
 <translation id="308268297242056490">URI</translation>
@@ -3403,6 +3410,7 @@
 <translation id="3319863571062685443">住所を保存しました</translation>
 <translation id="3320271870899888245">OneDrive に接続できません。もう一度お試しください。</translation>
 <translation id="3320630259304269485">セーフ ブラウジング（危険なサイトからの保護機能）などのセキュリティ設定</translation>
+<translation id="3320851950558287493">可能な場合に接続を HTTPS にアップグレードして、安全でない接続を行う前に警告します</translation>
 <translation id="3320957378743864387">文章作成サポートを表示しないサイト</translation>
 <translation id="3321460131042519426">ワードラップを有効にする</translation>
 <translation id="3321494112580110651">お使いのプリンタが表示されない場合</translation>
@@ -3437,6 +3445,7 @@
 <translation id="3347086966102161372">画像アドレスをコピー(&amp;C)</translation>
 <translation id="3348038390189153836">リムーバブル デバイスが検出されました</translation>
 <translation id="3348973040180736882">解凍中</translation>
+<translation id="3349610303043713601">AI を活用してブラウジング</translation>
 <translation id="3349933790966648062">メモリ使用量</translation>
 <translation id="3350450887151703713">10 秒巻き戻し</translation>
 <translation id="3351472127384196879">ペンのボタンを追加または指定する</translation>
@@ -3721,6 +3730,7 @@
 <translation id="354060433403403521">AC アダプター</translation>
 <translation id="354068948465830244">サイトデータの読み取りと変更を行います</translation>
 <translation id="3541823293333232175">割り当て済み</translation>
+<translation id="3543298914473315872">アップデータの処理</translation>
 <translation id="3543393733900874979">更新できませんでした（エラー: <ph name="ERROR_NUMBER" />）</translation>
 <translation id="3543597750097719865">X9.62 ECDSA 署名（SHA-512）</translation>
 <translation id="3544058026430919413">企業は、Cookie を使用してグループ内のアクティビティを共有できるサイトのグループを定義できます。シークレット モードの場合、この設定はオフになっています。</translation>
@@ -4299,7 +4309,6 @@
 <translation id="3904326018476041253">位置情報サービス</translation>
 <translation id="3904572359926093799">分割ビューのサイズ変更ハンドル（ドラッグ可能）</translation>
 <translation id="3905761538810670789">アプリを修復</translation>
-<translation id="3906096710440765802">Chrome にログインすると、すべてのデバイスでパスワード、ブックマーク、その他の設定にアクセスできます</translation>
 <translation id="3908501907586732282">拡張機能を有効にする</translation>
 <translation id="3909456989251621103">サーバー証明書を削除すると、その証明書は Chrome によるサーバーの識別に使用されなくなります。</translation>
 <translation id="3909701002594999354">すべてのコントロールを表示(&amp;C)</translation>
@@ -4557,7 +4566,6 @@
 <translation id="4084682180776658562">ブックマーク</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> を閉じる</translation>
 <translation id="4085298594534903246">このページの JavaScript はブロックされました。</translation>
-<translation id="4085566053793776107">テーマをカスタマイズできます</translation>
 <translation id="4085620044235559093"><ph name="FILE_TYPE" /> ファイルを開くアプリを選択してください</translation>
 <translation id="4086565736678483233">[お支払い方法] からアクセスできます</translation>
 <translation id="4087089424473531098">拡張機能を作成しました:
@@ -4715,13 +4723,13 @@
 <translation id="4203065553461038553">ファイルの名前または場所を示すパスが長すぎます</translation>
 <translation id="4203769790323223880">カメラは許可されていません</translation>
 <translation id="4204415812590935863">現在、テーマを作成できません。</translation>
-<translation id="4205157409548006256">Linux の設定中にエラーが発生しました。</translation>
 <translation id="4206144641569145248">エイリアン</translation>
 <translation id="4206323443866416204">ご意見の報告</translation>
 <translation id="4206585797409671301">リクエストの表示を許可するウェブサイト</translation>
 <translation id="4207932031282227921">権限がリクエストされました。対応するには、F6 キーを押してください</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> を検索</translation>
 <translation id="4209092469652827314">大</translation>
+<translation id="4209247656298167054">更新なし</translation>
 <translation id="4209251085232852247">オフになっています</translation>
 <translation id="4210048056321123003">仮想マシンをダウンロードしています</translation>
 <translation id="4210380525132844778">理由: <ph name="RULE" /> が「<ph name="LIST_NAME" />」のリストに含まれています。</translation>
@@ -4913,6 +4921,7 @@
 <translation id="4334768748331667190"><ph name="MODULE_NAME" /> は今後表示されません</translation>
 <translation id="4335835283689002019">セーフ ブラウジングはオフになっています</translation>
 <translation id="4336967529148557673">Chromium でこのタスクを完了するには、ログインする必要があります</translation>
+<translation id="433776600277609450">フィルタを追加</translation>
 <translation id="4338363401382232853">分割画面のウィンドウ候補</translation>
 <translation id="4339203724549370495">アプリをアンインストール</translation>
 <translation id="4340125850502689798">ユーザー名が無効です</translation>
@@ -4996,6 +5005,7 @@
 <translation id="4393102500004843976">検索+Shift+<ph name="TOP_ROW_KEY" /></translation>
 <translation id="4393713825278446281">「<ph name="PRIMARY_EMAIL" />」に保存されているファスト ペアリング デバイス</translation>
 <translation id="4394049700291259645">無効にする</translation>
+<translation id="4395129973926795186"><ph name="START_DATE" />～<ph name="END_DATE" /></translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{すべてを開く(&amp;O)}=1{ブックマークを開く(&amp;O)}other{すべて（{COUNT} 個）を開く(&amp;O)}}</translation>
 <translation id="4397372003838952832">このパスワードを覚えておく必要はありません。<ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
 <translation id="4397844455100743910">アクセス リクエストの詳細。</translation>
@@ -5069,6 +5079,7 @@
 <translation id="4434611816075088065">他に確認の必要な項目はありません</translation>
 <translation id="4435020454241191356">プロファイルの名前またはラベルを追加してください</translation>
 <translation id="443503224864902151">ほとんどのサイトからログアウトします。ただし、同期データを削除できるように Google アカウントへのログイン状態は維持されます。</translation>
+<translation id="443719869834432257">イベントの種類: <ph name="EVENT_TYPES" /></translation>
 <translation id="4437879751057074691">パスワードとパスキーを保存するか確認する</translation>
 <translation id="4437947179446780764">カスタム DNS サービス プロバイダを追加</translation>
 <translation id="4438043733494739848">透明</translation>
@@ -5364,7 +5375,6 @@
 <translation id="4652921642122345344">音声の速度 <ph name="RATE" /> 倍</translation>
 <translation id="4652935475563630866">カメラの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
 <translation id="4653116291358041820">小さいシャドウ</translation>
-<translation id="4653405415038586100">Linux の設定中にエラーが発生しました</translation>
 <translation id="4654236001025007561">近くの Chromebook や Android デバイスとファイルを共有できます</translation>
 <translation id="4654801841330730814">すべて</translation>
 <translation id="4657810666108475055">タブ検索</translation>
@@ -5562,6 +5572,7 @@
 <translation id="4797314204379834752">オンライン ショッピングなど、タスクの整理にタブグループを使用できます</translation>
 <translation id="479863874072008121">デバイスを管理</translation>
 <translation id="479989351350248267">検索</translation>
+<translation id="4800709549856064659"><ph name="START_DATE" />より後</translation>
 <translation id="4800839971935185386">新しい名前とアイコンを確認</translation>
 <translation id="4801448226354548035">アカウントを非表示にする</translation>
 <translation id="4801512016965057443">モバイル データ ローミングを許可する</translation>
@@ -5827,6 +5838,7 @@
 <translation id="4972737347717125191">サイトがバーチャル リアリティ デバイスとデータの使用を要求できるようにする</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{サイトをミュート}other{サイトをミュート}}</translation>
 <translation id="497403230787583386">セキュリティ チェックが完了しました。ドキュメントが印刷されます。</translation>
+<translation id="4974442344472293753">更新の結果</translation>
 <translation id="4975543297921324897">等幅フォント</translation>
 <translation id="4975771730019223894">アプリのバッジ</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" /> / <ph name="CHARACTER_LIMIT" /></translation>
@@ -6313,7 +6325,6 @@
 <translation id="5319712128756744240">新しいデバイスとペア設定</translation>
 <translation id="5320135788267874712">新しいデバイス名</translation>
 <translation id="532247166573571973">サーバーへのアクセスに問題が起こっている可能性があります。しばらくしてからもう一度お試しください。</translation>
-<translation id="5323328004379641163">Chrome とこのページの外観をカスタマイズできます</translation>
 <translation id="5323501626199324454">Google アカウントで情報を管理する</translation>
 <translation id="5324300749339591280">アプリのリスト</translation>
 <translation id="5324780743567488672">ユーザーの現在地情報を使用して自動的にタイムゾーンを設定する</translation>
@@ -6828,7 +6839,6 @@
 <translation id="5679785611070310751"><ph name="MONTH_AND_YEAR" /> 以降、この Chromebook ではセキュリティ アップデートが提供されなくなります。最新のセキュリティとソフトウェアにアップグレードしましょう。特典の利用規約が適用されます。</translation>
 <translation id="5680050361008726776">「<ph name="ESIM_PROFILE_NAME" />」を削除しますか？</translation>
 <translation id="5681586175480958839">ファイルはすでに開かれています</translation>
-<translation id="5682010570533120226">Chrome のデータを削除しました。Chrome を改善するため、ご意見をお聞かせください。</translation>
 <translation id="5684181005476681636">Wi-Fi の詳細</translation>
 <translation id="5684661240348539843">アセット ID</translation>
 <translation id="5684950556880280580">パスワードが更新されました</translation>
@@ -6863,7 +6873,6 @@
 <translation id="5704875434923668958">同期しています:</translation>
 <translation id="5705005699929844214">ユーザー補助オプションを常に表示</translation>
 <translation id="5705882733397021510">戻る</translation>
-<translation id="5707185214361380026">次の場所から拡張機能を読み込むことができませんでした:</translation>
 <translation id="5707674184620508665">組織（<ph name="ACCOUNT_MANAGER" />）は、既存のデータを確認または管理することはできません。このデータは既存のプロフィールに残ります。</translation>
 <translation id="5708171344853220004">Microsoft プリンシパル名</translation>
 <translation id="5711010025974903573">サービスログ</translation>
@@ -6910,6 +6919,7 @@
 <translation id="5747785204778348146">Dev - 不安定</translation>
 <translation id="5747809636523347288">貼り付けて <ph name="URL" /> に移動</translation>
 <translation id="5747876413503288066">リビングルーム</translation>
+<translation id="5748344957796317869">すべてのフィルタをクリア</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" /> として共有</translation>
 <translation id="5749214722697335450">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK1" />統計情報の詳細<ph name="BEGIN_LINK1_END" />詳細<ph name="END_LINK1" /></translation>
 <translation id="5750288053043553775">0</translation>
@@ -6924,6 +6934,7 @@
 <translation id="5760318332127300368">閲覧履歴データ（<ph name="URL" />）も削除します。これにより、Google.com からログアウトします。<ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">Google アカウントの情報を入力</translation>
 <translation id="576283132499202180">保護者の方が指定した設定でインターネットをより安全に利用するには、ご自身の <ph name="USER_EMAIL" /> のプロフィールにログインしてください</translation>
+<translation id="5763175484528521679">更新エラー</translation>
 <translation id="5763751966069581670">USB デバイスが見つかりませんでした</translation>
 <translation id="5764483294734785780">名前を付けてオーディオを保存(&amp;V)...</translation>
 <translation id="57646104491463491">更新日</translation>
@@ -6966,6 +6977,7 @@
 <translation id="5789581866075720267">このデバイスの <ph name="BRAND" /> にパスワードをインポートするには、CSV ファイルを選択してください。</translation>
 <translation id="5790085346892983794">完了</translation>
 <translation id="5790651917470750848">ポート転送はすでに設定されています</translation>
+<translation id="5792076233957036027">すべての接続でオンにする</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> に対するその他の操作</translation>
 <translation id="5792728279623964091">電源ボタンをタップしてください</translation>
 <translation id="5792874008054171483"><ph name="SITE_NAME" /> に対するその他の操作</translation>
@@ -7064,6 +7076,7 @@
 <translation id="5852112051279473187">エラー: このデバイスの登録中に問題が発生しました。もう一度お試しいただくか、サポート担当者にお問い合わせください。</translation>
 <translation id="5852137567692933493">再起動して Powerwash を実行する</translation>
 <translation id="5853487241227591972">ステップ 4/4: 診断データのエクスポート</translation>
+<translation id="5853489528507718113">一般</translation>
 <translation id="5854066326260337683">LBS は現在無効になっています。LBS を有効にするには、<ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" /> ポリシーを設定します。</translation>
 <translation id="5854912040170951372">スライス</translation>
 <translation id="5855267860608268405">既知の Wi-Fi ネットワーク</translation>
@@ -7590,7 +7603,6 @@
 <translation id="6216696360484424239">自動ログイン</translation>
 <translation id="6217806119082621377">共有フォルダは <ph name="BASE_DIR" /> の <ph name="SPECIFIC_NAME" /> にあります。</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> はオフラインです。インターネットに接続してもう一度お試しください。</translation>
-<translation id="6220413761270491930">拡張機能の読み込みエラー</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{<ph name="CLOUD_PROVIDER" /> にファイルをコピーできません}other{<ph name="CLOUD_PROVIDER" /> にファイルをコピーできません}}</translation>
 <translation id="62229737360959019">チャットまたは共有タブから開いたタブも Gemini と共有されます。Live モードでは、デフォルトで現在のタブのみが共有されます。</translation>
 <translation id="6224481128663248237">フォーマットが完了しました。</translation>
@@ -7613,7 +7625,6 @@
 <translation id="6234108445915742946">Chrome の利用規約が 3 月 31 日に更新されます</translation>
 <translation id="6234474535228214774">インストールを準備しています</translation>
 <translation id="6235208551686043831">デバイスのカメラはオンです。eSIM の QR コードをカメラの前にかざしてください。</translation>
-<translation id="6237256594069101884">URL の更新内容を確認</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> グループ「<ph name="GROUP_NAME" />」 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">タッチペンのメモアプリ</translation>
 <translation id="6237481151388361546">インターネット接続を変更して、[再試行] または [基本エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
@@ -7734,7 +7745,6 @@
 <translation id="6309510305002439352">マイクがオフになっています</translation>
 <translation id="6310141306111263820">eSIM プロファイルをインストールできませんでした。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="6310767550430673871">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{1 件の拡張機能と、このデバイスに保存されている拡張機能のデータを削除する}other{{ACCOUNT_EXTENSIONS_COUNT} 件の拡張機能と、このデバイスに保存されている拡張機能のデータを削除する}}</translation>
-<translation id="6311220991371174222">プロファイルを開こうとして問題が発生したため、Chrome を起動できません。Chrome を再起動してみてください。</translation>
 <translation id="6313950457058510656">インスタント テザリングをオフにする</translation>
 <translation id="6314819609899340042">この <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスでデバッグ機能が有効になりました。</translation>
 <translation id="6315170314923504164">音声</translation>
@@ -8150,6 +8160,7 @@
 <translation id="6610064275805055636">独立したウェブアプリを管理する</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> 個のタブ</translation>
 <translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
+<translation id="6613231539539868591">永続データ</translation>
 <translation id="6613267708691765962">マルウェアをスキャンしています...</translation>
 <translation id="6615455863669487791">表示</translation>
 <translation id="6618013221808317456">サイトで JavaScript 最適化の使用を許可しない</translation>
@@ -8285,6 +8296,7 @@
 <translation id="6710172959248731469">Google サービスの設定</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6710394144992407503">ウェブページにテキストを入力するときにスペルミスがないか確認する</translation>
+<translation id="6711236403841768371"><ph name="END_DATE" />より前</translation>
 <translation id="6712943853047024245">このユーザー名で <ph name="WEBSITE" /> のパスワードはすでに保存されています</translation>
 <translation id="6713233729292711163">仕事用プロファイルを追加</translation>
 <translation id="6713441551032149301">ファンクション キーとシステムの最上段のキーを切り替えるには、ランチャーキーを長押しします</translation>
@@ -8294,7 +8306,6 @@
 <translation id="6715803357256707211">Linux アプリケーションのインストール中にエラーが発生しました。詳細を確認するには通知をクリックしてください。</translation>
 <translation id="6716049856796700977">位置情報の利用を許可されているアプリやウェブサイトはありません。ただし、IP アドレスを通じて位置情報がアプリやウェブサイトに公開される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">ネットワーク接続が切断されました。ネットワーク接続を確認するか、別の Wi-Fi ネットワークをお試しください。</translation>
-<translation id="6718849325281682232">ダークモードかライトモードかにかかわらず、すべての人が快適に作業できるように Chrome のテーマの色を一新しました</translation>
 <translation id="671928215901716392">画面をロック</translation>
 <translation id="6719839880830057298">ファイルのアップロードが完了しました</translation>
 <translation id="6721744718589119342">Google から追加情報や最新情報についてメールを受け取る</translation>
@@ -8413,6 +8424,7 @@
 <translation id="6795884519221689054">パンダ</translation>
 <translation id="6796509790850723820">レンダリング</translation>
 <translation id="6797493596609571643">エラーが発生しました。</translation>
+<translation id="6797877165704994393">フィルタを削除</translation>
 <translation id="6798420440063423019">PIN の入力間違いが許容回数を超えたため、セキュリティ キーがロックされています。セキュリティ キーをリセットする必要があります。</translation>
 <translation id="679845623837196966">リーディング リストを表示</translation>
 <translation id="6798578729981748444">インポートを完了するには、すべての Firefox ウィンドウを閉じてください。</translation>
@@ -8485,6 +8497,7 @@
 <translation id="6840155290835956714">送信する前に確認する</translation>
 <translation id="6840184929775541289">認証局ではない</translation>
 <translation id="6840214587087739194">住所を削除しました</translation>
+<translation id="6840654149771416419">オープンなインターネット接続でオンにする</translation>
 <translation id="6841076158433142214">画面の録画に次のアプリが使用される場合は通知されません。</translation>
 <translation id="6841143363521180029">暗号化されています</translation>
 <translation id="6841186874966388268">エラー</translation>
@@ -8646,6 +8659,7 @@
 <translation id="6955893174999506273">スイッチを 1 つ追加で割り当てる</translation>
 <translation id="6957044667612803194">このセキュリティ キーでは PIN がサポートされていません</translation>
 <translation id="695817292005698051">ジェスチャー検出のしきい値</translation>
+<translation id="6959882218873172284">POST リクエスト</translation>
 <translation id="6960133692707095572">チケットなしでアクセス</translation>
 <translation id="6960408801933394526">編集するには、タブグループを選択してコンテキスト メニューを開きます</translation>
 <translation id="6960507406838246615">Linux の更新が必要です</translation>
@@ -8968,6 +8982,7 @@
 <translation id="7186303001964993981">システム ファイルが含まれているため、<ph name="ORIGIN" /> はこのフォルダを開くことができません</translation>
 <translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理する</translation>
 <translation id="7186903260115204164">新しい図形描画ツールで、手書きの図形描画、署名、ハイライトを追加できます</translation>
+<translation id="7186935534137027449">アプリのコマンド</translation>
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
 <translation id="7189234443051076392">デバイスに十分な空き容量があることを確認してください</translation>
 <translation id="7189451821249468368">このデバイスの登録に必要なアップグレード ライセンスを持っていません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>
@@ -9429,6 +9444,7 @@
 <translation id="7502220299952823578">常にアクティブにするサイトのリストに追加</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> へのタブのキャストを一時停止する</translation>
 <translation id="7502804472671406749">共有タブのスクロールとズームが許可されています</translation>
+<translation id="750314150962284310">行のフォーカス</translation>
 <translation id="7503191893372251637">Netscape 証明書タイプ</translation>
 <translation id="7503259455663961898">自動で変更</translation>
 <translation id="7503985202154027481">このサイトへのアクセスの記録がセキュリティ キーに保存されます。</translation>
@@ -9762,7 +9778,6 @@
 <translation id="7721237513035801311"><ph name="SWITCH" />（<ph name="DEVICE_TYPE" />）</translation>
 <translation id="7721258531237831532">組織がプロフィールの作成を求めています</translation>
 <translation id="7722040605881499779">更新に必要な空き容量: <ph name="NECESSARY_SPACE" /></translation>
-<translation id="7723388585204724670">デフォルトの Chrome にリセット</translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7724711098786238351">デモモードは 18 歳以上のユーザーを対象としており、Google の利用規約とプライバシー ポリシーが適用されます。このデバイスに入力されたデータは、定期的なワイプが実行されるまでの間に、他のユーザーに閲覧される可能性があります。</translation>
 <translation id="7726288096350730168">このデバイスから削除</translation>
@@ -9809,6 +9824,7 @@
 <translation id="7760176388948986635">位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、このデバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。</translation>
 <translation id="7762024824096060040">このアカウントを使用することはできません</translation>
 <translation id="776324966908034528">ブラウザのプロキシ設定は複数のソースによって制御されています</translation>
+<translation id="7763851799685371158">アプリ: <ph name="APPS" /></translation>
 <translation id="7764225426217299476">住所を追加</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />（<ph name="DOWNLOAD_DOMAIN" /> から）</translation>
 <translation id="7764527477537408401">新しいウィンドウでグループを開く</translation>
@@ -11375,6 +11391,7 @@
 <translation id="8811862054141704416">Crostini のマイクへのアクセス</translation>
 <translation id="8811923271770626905">この拡張機能はバックグラウンドで実行可能です</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}other{{PASSWORD_COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。保存時に重複する項目は整理されます。}}</translation>
+<translation id="8812858346663083102">適格性の確認</translation>
 <translation id="8813199641941291474">MIDI デバイスの操作と再プログラムがブロックされています</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> にログインできません</translation>
 <translation id="8813872945700551674">保護者の方に「<ph name="EXTENSION_NAME" />」を承認してもらいましょう</translation>
@@ -11755,6 +11772,7 @@
 <translation id="9052404922357793350">引き続きブロックする</translation>
 <translation id="90528604757378587">バックグラウンド アクティビティや一部の視覚効果（スムーズ スクロールなど）が制限されることがあります。</translation>
 <translation id="9053563360605707198">両面に印刷する</translation>
+<translation id="9055842392047502565">イベントの種類</translation>
 <translation id="9056788090206401048">別のデバイスでパスキーを使用するには、Bluetooth をオンにする必要があります。これは設定でいつでも管理できます。</translation>
 <translation id="9056810968620647706">一致する項目が見つかりません。</translation>
 <translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> さんが次のコンテンツへのアクセスをリクエストしています:</translation>
@@ -11801,7 +11819,6 @@
 <translation id="9085776959277692427">「<ph name="LANGUAGE" />」は選択されていません。選択するには検索+Space キーを押してください。</translation>
 <translation id="9087949559523851360">制限付きユーザーの追加</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> は会社のポリシーによってブロックされています</translation>
-<translation id="9088446193279799727">Linux を設定できませんでした。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="90885733430013283">Wi-Fi の SSID</translation>
 <translation id="9088858349441302494"><ph name="VALUE" /> によって管理されています</translation>
 <translation id="9089416786594320554">入力方法</translation>
@@ -11889,7 +11906,6 @@
 <translation id="9137157311132182254">優先する検索エンジン</translation>
 <translation id="9137916601698928395"><ph name="USER" /> としてリンクを開く</translation>
 <translation id="9138978632494473300">ショートカットを次の場所に追加:</translation>
-<translation id="9139988741193276691">Linux は設定中です</translation>
 <translation id="9140050311673642960">新しいことを深く掘り下げます</translation>
 <translation id="9140067245205650184">サポートされていない機能フラグ <ph name="BAD_FLAG" /> が使用されています。これにより、安全性とセキュリティが損なわれます。</translation>
 <translation id="914031120300235526">プロフィールのロックを解除できません</translation>

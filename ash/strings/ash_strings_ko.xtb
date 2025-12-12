@@ -874,6 +874,7 @@
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="397726367135689299">배터리 충전 상태가 불안정한 것 같습니다.</translation>
 <translation id="3977512764614765090">배터리가 <ph name="PERCENTAGE" />%이며 현재 충전 중입니다.</translation>
+<translation id="3978162107953847778">방문 기록 및 Google Drive 등의 위치에 대한 링크를 삽입하세요. 이모티콘, 이미지 파일 등의 콘텐츠도 삽입할 수 있습니다.<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">오디오 출력을 전환할까요?</translation>
 <translation id="3984536049089846927">다음 페이지</translation>
 <translation id="3986082989454912832">답변</translation>
@@ -1024,7 +1025,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{중요 알림 1개}other{중요 알림 #개}}</translation>
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
 <translation id="4451374464530248585">Alt + 아래쪽 화살표 단축키가 변경되었습니다. Page Down 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 아래쪽 화살표 키를 누르세요.</translation>
-<translation id="4453876312474547652">Ctrl + V를 길게 누르면 클립보드가 표시됩니다. chrome://flags(Lacros를 사용하는 경우 os://flags)에서 #clipboard-history-longpress 플래그를 사용 중지하여 이 바로가기를 사용 중지할 수 있습니다.</translation>
 <translation id="445765352722456792">추천 맞춤설정</translation>
 <translation id="4458688154122353284">화면 녹화 중지</translation>
 <translation id="445923051607553918">WiFi 네트워크 연결</translation>
@@ -1600,6 +1600,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: 활성화 중...</translation>
 <translation id="6274202259872570803">스크린캐스트</translation>
+<translation id="6274422179279280249">링크, 이모티콘 등 다양한 콘텐츠를 삽입하세요. Google AI의 도움을 받아 글을 작성할 수도 있습니다.<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">페이지 소스 보기</translation>
 <translation id="6285871695023807425">Calendar에 추가</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" />은(는) 나중에 부모님의 허락을 받아 다시 추가할 수 있습니다.</translation>

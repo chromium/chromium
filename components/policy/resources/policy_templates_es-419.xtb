@@ -450,17 +450,6 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
       Si la fuerzas (2), el usuario no podrá suprimir el selector de perfiles. Se mostrará el selector de perfiles incluso si hay solo un perfil disponible.</translation>
 <translation id="1339174690935954950">No permitir que los usuarios envíen comentarios</translation>
 <translation id="1340053691042184658">No permitir los accesos con la navegación como invitado</translation>
-<translation id="134154550994512097">Esta política controla si los usuarios pueden habilitar el Modo solo HTTPS (Usar siempre conexiones seguras) en la Configuración. El Modo solo HTTPS actualiza todas las navegaciones a páginas HTTPS.
-      Si no estableces este parámetro de configuración o lo habilitas, los usuarios podrán habilitar el Modo solo HTTPS.
-      Si inhabilitas este parámetro de configuración, los usuarios no podrán habilitar el Modo solo HTTPS.
-      Si estableces este parámetro de configuración como force_enabled, se habilitará el Modo solo HTTPS en el modo estricto y los usuarios no podrán inhabilitarlo.
-      Si estableces este parámetro de configuración como force_balanced_enabled, se habilitará el Modo solo HTTPS en el modo equilibrado y los usuarios no podrán inhabilitarlo.
-      force_enabled es compatible a partir de la versión M112 y force_balanced_enabled, a partir de la versión M129.
-      Si estableces esta política en un valor que no admite la versión de Chrome que la recibe, Chrome usará el parámetro de configuración permitido de forma predeterminada.
-
-Se puede usar la política <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> independiente
-para que esta función no actualice a HTTPS
-los nombres de host o patrones de nombre de host específicos.</translation>
 <translation id="1342918903685430097">Configurar la versión mínima permitida de <ph name="PRODUCT_OS_NAME" /> para el dispositivo.</translation>
 <translation id="1343128241903870688">Inhabilitar los informes de apps del dispositivo</translation>
 <translation id="1345276795096570241">Inhabilita el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los proveedores de identidad que se muestran.
@@ -5675,21 +5664,6 @@ Si la inhabilitas, no se le mostrará la promoción para la extensión del Prove
 
       Si no la estableces, se omitirá la pantalla de presentación de Gemini para los usuarios administrados por empresas y se mostrará a los usuarios no administrados.</translation>
 <translation id="4783415902268741066">Permitir que se muestre la página de resultados más reciente del motor de búsqueda predeterminado en el panel lateral de un navegador</translation>
-<translation id="4784457904946078535">Esta política controla el uso compartido del contenido de páginas y archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> a través del panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
-
-Ten en cuenta que esta política no afecta a <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo los usuarios pueden compartir información cuando usan <ph name="PRODUCT_NAME" />.
-
-0 o sin establecer = los usuarios pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
-
-1 = los usuarios no pueden compartir contenido de páginas o archivos con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Se inhabilitarán o se ocultarán los puntos de entrada para compartir contexto.
-
-Esta política se ignorará cuando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el motor de búsqueda predeterminado de los usuarios, ya que la función estará inhabilitada.
-
-Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el cuadro de búsqueda de la omnibox o de la NTP, mientras que esta política controla el uso compartido de contexto a través del panel lateral o las pestañas.
-
-Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que puede inhabilitar <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Para obtener más información sobre el manejo de datos de las funciones potenciadas por IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="4786784434769279324">Respuestas para ejecutar cuando la computadora está inactiva</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado para la página de impresión.
 
@@ -7018,15 +6992,6 @@ También consulta https://wiki.samba.org/index.php/Samba_4.6_Features_added/chan
 <translation id="5561811616825571914">Seleccionar automáticamente certificados de cliente para estos sitios en la pantalla de acceso</translation>
 <translation id="5561893881195372931">Inhabilitar el contraste alto</translation>
 <translation id="5563240289883266691">Habilitar los informes de uso de las apps de Linux</translation>
-<translation id="5564424694465792000">Esta política controla el comportamiento de acceso del navegador. Te permite especificar si el usuario puede acceder a <ph name="PRODUCT_NAME" /> con su cuenta y usar servicios relacionados con la cuenta, como la Sincronización de <ph name="PRODUCT_NAME" />.
-
-      Si estableces la política con el valor "Inhabilitar el acceso en el navegador", el usuario no podrá acceder al navegador ni usar los servicios basados en su cuenta. Es este caso, las funciones del nivel del navegador, como la Sincronización de <ph name="PRODUCT_NAME" />, no se podrán usar y dejarán de estar disponibles. En <ph name="IOS_NAME" />, si el usuario accedió y se inhabilita la política, se saldrá de la cuenta de forma inmediata. En otras plataformas, se saldrá de la cuenta la siguiente vez que se ejecute <ph name="PRODUCT_NAME" />. En todas las plataformas, se preservarán los datos de perfil locales, como los favoritos, las contraseñas, etc., y seguirán siendo utilizables. El usuario aún podrá acceder a los servicios web de Google, como Gmail, y usarlos.
-
-      Si estableces la política con el valor "Habilitar el acceso en el navegador", el usuario podrá acceder al navegador. En todas las plataformas excepto <ph name="IOS_NAME" />, el usuario accederá al navegador de forma automática cuando acceda a un servicio web de Google, como Gmail. Si el usuario accedió a su cuenta en el navegador, la información de la cuenta se conservará allí. Sin embargo, esto no implica que la sincronización de <ph name="PRODUCT_NAME" /> se activará de forma predeterminada; el usuario deberá habilitarla por separado. Si habilitas esta política, el usuario no podrá desactivar la configuración que permite el acceso al navegador. Para controlar la disponibilidad de la Sincronización de <ph name="PRODUCT_NAME" />, usa la política <ph name="SYNC_POLICY_NAME" />.
-
-      Si estableces la política para que se fuerce el acceso al navegador, el usuario verá un diálogo de selección de cuenta; deberá elegir una cuenta y acceder a ella para usar el navegador. Esto asegura que se aplicarán las políticas asociadas a la cuenta para las cuentas administradas. Se inhabilitará el valor predeterminado de <ph name="GUEST_MODE_POLICY_NAME" />. Ten en cuenta que se bloquearán los perfiles a los que no se haya accedido y no se podrá acceder a ellos luego de que se habilite esta política. Para obtener más información, consulta este artículo del Centro de ayuda: https://support.google.com/chrome/a/answer/7572556. Esta opción no es compatible con <ph name="LINUX_OS_NAME" /> ni <ph name="ANDROID_NAME" />, donde se asignará el valor "Habilitar el acceso en el navegador" si se la usa.
-
-      Si no estableces esta política, el usuario podrá decidir si habilitar el acceso al navegador desde la configuración de <ph name="PRODUCT_NAME" /> y usarlo según su criterio.</translation>
 <translation id="5565178130821694365">Se requiere el ingreso de la contraseña cada dos días (48 horas)</translation>
 <translation id="5566210228171064229">Permite la impresión con y sin PIN</translation>
 <translation id="5569504149646180067">Configura el acceso automático para los usuarios cuyas cuentas están respaldadas por un proveedor de identidad en la nube de Microsoft®.
@@ -10262,6 +10227,19 @@ Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIR
 
       Si no se establece la política o se establece como falsa, no se habilitarán los conjuntos de algoritmos de cifrado RC4 en TLS. De lo contrario, puede establecerse como verdadera para asegurar la compatibilidad con un servidor desactualizado. Esta es una medida provisoria; deberás volver a configurar el servidor.</translation>
 <translation id="751615601677744094">Inhabilitada: Comportamiento normal de los eventos de mutación, lo que implica que no se activen después de la fecha de eliminación.</translation>
+<translation id="7518736413346509172">Si habilitas esta política, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" />
+solo mostrarán advertencias en <ph name="CHROME_DEVTOOLS_NAME" /> debido a errores en las verificaciones de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si la inhabilitas o no la estableces, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" /> usarán el
+manejo predeterminado de estas solicitudes.
+
+Para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />, consulta https://wicg.github.io/local-network-access/.
+
+Esta política empresarial es temporal y se quitará después de la versión M152.
+
+A largo plazo, la política <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />
+se puede usar para crear una lista de entidades permitidas de patrones de URL a los que se les debe otorgar automáticamente
+el permiso <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="7519218194072744342">La URL del controlador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir la generación de claves en estos sitios</translation>
 <translation id="7521864460386999758">Impedir que se inserte código de terceros en Chrome</translation>
@@ -10524,7 +10502,6 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
       Nota: Consulta la lista de las variables que puedes utilizar (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="7719808201797990069">Excepciones de patrones de URL para descartar pestañas</translation>
 <translation id="7721944091689270995">ID de usuario de <ph name="PLUGIN_VM_NAME" /></translation>
-<translation id="7725010277314676939">Forzar la habilitación el Modo solo HTTPS en el modo estricto</translation>
 <translation id="7728486978686128364">No usar mayúsculas en los métodos de solicitud, excepto DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Revertir el comportamiento de las cookies en todos los sitios conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="7732907212083471072">Políticas que se quitaron</translation>
@@ -10746,6 +10723,14 @@ Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /
 <translation id="7891884447851425349">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> especificará la URL del motor de búsqueda utilizado en una búsqueda predeterminada. La URL debe incluir la string <ph name="SEARCH_TERM_MARKER" />, que se reemplazará en la búsqueda por los términos del usuario.
 
       Puedes especificar la URL de búsqueda de Google de la siguiente manera: <ph name="GOOGLE_SEARCH_URL" />.</translation>
+<translation id="7893719068404928632">Si habilitas esta política, cada vez que se deba mostrar
+una advertencia en <ph name="CHROME_DEVTOOLS_NAME" /> debido a errores en las verificaciones de <ph name="LOCAL_NETWORK_ACCESS" />, se
+bloqueará la solicitud principal.
+
+Si la inhabilitas o no la estableces, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" /> usarán el
+manejo predeterminado de estas solicitudes.
+
+Para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />, consulta https://wicg.github.io/local-network-access/.</translation>
 <translation id="7894185046683379696">Si estableces la política, se especificará el período (en milisegundos) sin intervención del usuario después del cual se bloqueará la pantalla cuando el dispositivo esté funcionando con CA o batería. En <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />, se establecerán los valores de modo que sean inferiores al tiempo de espera de inactividad.
 
       Si se establece el valor cero, <ph name="PRODUCT_OS_NAME" /> no bloqueará la pantalla cuando el usuario esté inactivo. Si no se establece, se utilizará un período predeterminado.
@@ -12699,7 +12684,6 @@ Para obtener más información sobre contextos seguros, consulta https://www.w3.
       Esta política es una medida temporal y se eliminará en las futuras versiones de <ph name="PRODUCT_NAME" />. Después de que se elimine la política, <ph name="PRODUCT_NAME" /> podrá seguir haciendo consultas sobre los tipos de DNS adicionales.</translation>
 <translation id="9167719789236691545">Inhabilitar Drive en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9171359005568194889">Habilitar el guardado de llaves de acceso en el administrador de contraseñas</translation>
-<translation id="9172648973829444124">Forzar la habilitación el Modo solo HTTPS en el modo equilibrado</translation>
 <translation id="9172911925443428317">No permitir que se muestre la promoción para calificar en la App Store</translation>
 <translation id="9173133289347070466">Las encuestas dentro del producto <ph name="PRODUCT_NAME" /> recopilan los comentarios de los usuarios sobre el navegador. Las respuestas de la encuesta no están asociadas con las cuentas de usuario.
 Si habilitas esta política o no la estableces, es posible que se muestren a los usuarios las encuestas dentro del producto.
@@ -12711,7 +12695,6 @@ Esta política no tendrá efecto si inhabilitas <ph name="METRICS_REPORTING_ENAB
 <translation id="9180108183162961002">Permitir los accesos con la navegación como invitado</translation>
 <translation id="9185963199234034321">Habilitar el contraste alto en la pantalla de acceso y permitir que el usuario lo inhabilite temporalmente</translation>
 <translation id="9187743794267626640">Inhabilitar la activación del almacenamiento externo</translation>
-<translation id="9189737595688383533">No permitir que los usuarios habiliten los Modos solo HTTPS</translation>
 <translation id="9190022798664427644">Habilitar el audio mono</translation>
 <translation id="9190456586252617675">Esta política controla el modo de la experiencia de integración del Asistente.
 
@@ -12770,7 +12753,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="966425658642788645">Aplicar el comportamiento predeterminado</translation>
 <translation id="971677226939413180">La opción Imprimir como imagen no está disponible para el usuario</translation>
 <translation id="974349541138387272">Especifica la plantilla de URI del agente de resolución de DNS sobre HTTPS</translation>
-<translation id="975005959611437646">Si se habilita, las APIs de cuota de almacenamiento devolverán un valor estático igual al uso + min (10 GiB, espacio del disco redondeado al 1 GiB más cercano).
+<translation id="975005959611437646">Si se habilita, las APIs de cuota de almacenamiento devolverán un valor estático igual al uso + min(10 GiB, espacio del disco redondeado al próximo GiB entero).
 Cuando se inhabilita, las APIs de cuota de almacenamiento generalmente devuelven un valor dinámico proporcional al espacio total disponible en el dispositivo, independientemente del uso.
 Si no se establece, las APIs de cuota de almacenamiento usarán el comportamiento predeterminado de Chrome.
 Esta configuración no afecta a los sitios con permisos de almacenamiento ilimitado. La cuota forzosa tampoco se verá afectada.</translation>

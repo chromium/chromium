@@ -874,6 +874,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
 <translation id="397726367135689299">Huenda betri haichaji ipasavyo.</translation>
 <translation id="3977512764614765090">Chaji ya betri ni <ph name="PERCENTAGE" />% na inaendelea kuchaji.</translation>
+<translation id="3978162107953847778">Weka viungo kutoka sehemu kama vile Hifadhi ya Google na historia yako ya kuvinjari. Unaweza pia kuweka emoji, faili za picha na zaidi. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Ungependa kubadilisha kifaa cha kutoa sauti?</translation>
 <translation id="3984536049089846927">Ukurasa unaofuata</translation>
 <translation id="3986082989454912832">Jibu</translation>
@@ -1024,7 +1025,6 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{Arifa moja muhimu}other{Arifa # muhimu}}</translation>
 <translation id="4450893287417543264">Usionyeshe tena</translation>
 <translation id="4451374464530248585">Mikato ya kibodi ya Alt + Kishale cha Chini imebadilika. Ili utumie kitufe cha Page Down, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Chini.</translation>
-<translation id="4453876312474547652">Utaona ubao wa kunakili unapobonyeza na kushikilia Ctrl + V. Unaweza kuzima mipangilio ya njia hii ya mkato kwa kuzima #clipboard-history-longpress flag in chrome://flags (os://flags iwapo unatumia Lacros).</translation>
 <translation id="445765352722456792">Weka mapendeleo ya mapendekezo</translation>
 <translation id="4458688154122353284">Acha kunasa skrini</translation>
 <translation id="445923051607553918">Jiunge kwenye mtandao wa Wi-Fi</translation>
@@ -1600,6 +1600,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Inaanza kutumia...</translation>
 <translation id="6274202259872570803">Kionyesha skrini</translation>
+<translation id="6274422179279280249">Weka viungo, emoji na zaidi. Unaweza pia kupata usaidizi wa kuandika ukitumia Google AI. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Tazama chanzo cha ukurasa</translation>
 <translation id="6285871695023807425">Weka kwenye Kalenda</translation>
 <translation id="6288235558961782912">Unaweza kuweka tena <ph name="USER_EMAIL_ADDRESS" /> baadaye kupitia ruhusa ya mzazi.</translation>

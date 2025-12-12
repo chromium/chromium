@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">이 텍스트를 <ph name="MAX_CHARACTERS" />자 이하로 줄이세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />, <ph name="WEEKNUMBER" />번째 주</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />번 트랙</translation>
+<translation id="2500270406326775625">데이터 URL</translation>
 <translation id="2507943997699731163">이 입력란을 작성하세요.</translation>
 <translation id="2613802280814924224">유효한 값을 입력해 주세요. 가장 근접한 유효 값은 <ph name="VALID_VALUE" />입니다.</translation>
 <translation id="2653659639078652383">제출</translation>

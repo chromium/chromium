@@ -872,6 +872,7 @@
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="397726367135689299">قد لا يكون شحن البطارية مفيدًا.</translation>
 <translation id="3977512764614765090">مستوى البطارية عند <ph name="PERCENTAGE" />% ويجري شحنها.</translation>
+<translation id="3978162107953847778">‏يمكنك إدراج الروابط من مواضع، مثل سجلّ التصفُّح وGoogle Drive، وكذلك إدراج رموز الإيموجي وملفات الصور وغير ذلك. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">هل تريد تبديل مصدر إخراج الصوت؟</translation>
 <translation id="3984536049089846927">الصفحة التالية</translation>
 <translation id="3986082989454912832">ردّ</translation>
@@ -1022,7 +1023,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد مُهمّ}zero{# إشعار مُهمّ}two{إشعاران مُهمّان}few{# إشعارات مُهمّة}many{# إشعارًا مُهمًّا}other{# إشعار مُهمّ}}</translation>
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
 <translation id="4451374464530248585">‏تم تغيير اختصارات لوحة المفاتيح "Alt + السهم المتّجه للأسفل". لاستخدام مفتاح Page Down، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه للأسفل".</translation>
-<translation id="4453876312474547652">‏ستظهر لك الحافظة عند الضغط مع الاستمرار على ‎Ctrl + V. يمكنك إيقاف هذا الاختصار عن طريق إيقاف الميزة التجريبية ‎#clipboard-history-longpress في ‎chrome://flags (أو ‎os://flags في حال استخدام متصفِّح Lacros).</translation>
 <translation id="445765352722456792">تخصيص الاقتراحات</translation>
 <translation id="4458688154122353284">إيقاف تسجيل الشاشة</translation>
 <translation id="445923051607553918">‏الانضمام إلى شبكة Wi-Fi</translation>
@@ -1598,6 +1598,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: جارٍ التفعيل...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6274422179279280249">‏يمكنك إدراج الروابط ورموز الإيموجي وغير ذلك، وتلقّي مساعدة في الكتابة أيضًا باستخدام ذكاء Google الاصطناعي. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">عرض مصدر الصفحة</translation>
 <translation id="6285871695023807425">‏إضافة إلى "تقويم Google"</translation>
 <translation id="6288235558961782912">يمكن إعادة إضافة <ph name="USER_EMAIL_ADDRESS" /> لاحقًا بإذنٍ من أحد الوالدَين.</translation>

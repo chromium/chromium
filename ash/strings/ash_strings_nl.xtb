@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Recente foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks samenvouwen</translation>
 <translation id="2208323208084708176">Samengestelde desktopmodus</translation>
+<translation id="2210311543574621570">Je ziet het klembord als je Ctrl + V ingedrukt houdt. Je kunt deze sneltoets uitzetten door de flag #clipboard-history-longpress uit te zetten in chrome://flags.</translation>
 <translation id="2215920961700443347">Geen internet. Maak verbinding met internet en probeer het opnieuw.</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
 <translation id="2223384056430485343">In een gesplitst scherm</translation>
@@ -1025,7 +1026,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 belangrijke melding}other{# belangrijke meldingen}}</translation>
 <translation id="4450893287417543264">Niet meer bekijken</translation>
 <translation id="4451374464530248585">De sneltoets Alt + pijl-omlaag is veranderd. Als je de toets Page Down wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omlaag.</translation>
-<translation id="4453876312474547652">Je ziet het klembord als je Ctrl + V ingedrukt houdt. Je kunt deze sneltoets uitzetten door de flag #clipboard-history-longpress uit te zetten in chrome://flags (os://flags als je Lacros gebruikt).</translation>
 <translation id="445765352722456792">Suggesties aanpassen</translation>
 <translation id="4458688154122353284">Schermopname stoppen</translation>
 <translation id="445923051607553918">Aanmelden bij wifi-netwerk</translation>

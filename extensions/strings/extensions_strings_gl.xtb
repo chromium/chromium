@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Vista da aplicación: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Esta extensión inclúe o ficheiro de clave "<ph name="KEY_PATH" />". É probable que non queiras realizar esta acción.</translation>
 <translation id="5486326529110362464">Debe existir o valor de entrada da clave privada.</translation>
+<translation id="5707185214361380026">Erro ao cargar a extensión de:</translation>
 <translation id="5972529113578162692">O administrador deste equipo necesita que se instale <ph name="EXTENSION_NAME" />. Non se pode instalar.</translation>
 <translation id="6027032947578871493">Produto descoñecido <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /> (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> do provedor <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Erro ao cargar a extensión</translation>
 <translation id="6322279351188361895">Non se puido ler a clave privada.</translation>
 <translation id="6391538222494443604">Debe existir o directorio de entrada.</translation>
 <translation id="641087317769093025">Erro ao descomprimir a extensión</translation>

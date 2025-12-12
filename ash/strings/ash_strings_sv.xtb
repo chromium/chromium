@@ -874,6 +874,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
 <translation id="397726367135689299">Batteriladdningen kan vara instabil.</translation>
 <translation id="3977512764614765090">Batterinivån är på <ph name="PERCENTAGE" /> % och batteriet laddas.</translation>
+<translation id="3978162107953847778">Infoga länkar från ställen som webbhistoriken och Google Drive. Du kan även infoga emojis, bildfiler och mycket annat. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Vill du byta ljudutgång?</translation>
 <translation id="3984536049089846927">Nästa sida</translation>
 <translation id="3986082989454912832">Svara</translation>
@@ -1024,7 +1025,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 viktig avisering}other{# viktiga aviseringar}}</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="4451374464530248585">Kortkommandot Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + nedåtpil för att använda Page Down-tangenten.</translation>
-<translation id="4453876312474547652">Urklipp visas när du trycker länge på Ctrl + V. Du kan inaktivera kortkommandot genom att inaktivera flaggan #clipboard-history-longpress i chrome://flags (eller os://flags om du använder Lacros).</translation>
 <translation id="445765352722456792">Anpassa förslag</translation>
 <translation id="4458688154122353284">Stoppa skärminspelningen</translation>
 <translation id="445923051607553918">Anslut till wifi-nätverk</translation>
@@ -1600,6 +1600,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiverar ...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6274422179279280249">Infoga länkar, emojis och mycket annat. Du kan även få hjälp att skriva med Google AI. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Visa sidkälla</translation>
 <translation id="6285871695023807425">Lägg till i Kalender</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan läggas till igen senare med en förälders tillstånd.</translation>

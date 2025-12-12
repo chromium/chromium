@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Esta extensión incluye el archivo de clave "<ph name="KEY_PATH" />". Probablemente no quieras incluir este archivo.</translation>
 <translation id="5486326529110362464">Debe existir un valor de entrada para la clave privada.</translation>
+<translation id="5707185214361380026">Error al cargar la extensión desde:</translation>
 <translation id="5972529113578162692"><ph name="EXTENSION_NAME" /> no se puede desinstalar porque el administrador de este ordenador requiere que esté instalado.</translation>
 <translation id="6027032947578871493">Producto <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /> desconocido (número de serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> del proveedor <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Error al cargar extensión</translation>
 <translation id="6322279351188361895">Se ha producido un error al leer la clave privada.</translation>
 <translation id="6391538222494443604">Debe existir el directorio de entrada.</translation>
 <translation id="641087317769093025">No se ha podido descomprimir la extensión.</translation>

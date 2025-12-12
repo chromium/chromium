@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Sambungan ini merangkumi fail utama ' <ph name="KEY_PATH" /> '. Anda mungkin tidak mahu melakukannya.</translation>
 <translation id="5486326529110362464">Nilai input untuk kekunci peribadi  mesti wujud.</translation>
+<translation id="5707185214361380026">Gagal memuatkan sambungan daripada:</translation>
 <translation id="5972529113578162692">Pentadbir mesin ini memerlukan <ph name="EXTENSION_NAME" /> dipasang. Sambungan ini tidak boleh dinyahpasang.</translation>
 <translation id="6027032947578871493">Produk <ph name="PRODUCT_ID" /> daripada <ph name="VENDOR_NAME" /> tidak diketahui (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> daripada vendor <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Ralat Memuatkan Sambungan</translation>
 <translation id="6322279351188361895">Gagal untuk membaca kunci persendirian.</translation>
 <translation id="6391538222494443604">Direktori input mesti wujud.</translation>
 <translation id="641087317769093025">Tidak boleh menyahzip sambungan</translation>

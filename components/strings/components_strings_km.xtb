@@ -856,6 +856,7 @@
 <translation id="2359629602545592467">ច្រើន</translation>
 <translation id="2359808026110333948">បន្ត</translation>
 <translation id="236000571258713023">យានជំនិះ</translation>
+<translation id="2360131275005204317">ក្រុមហ៊ុន​អាកាសចរណ៍</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">ប្ដូរទំហំ​ម៉ឺនុយ​បិទ/បើក</translation>
 <translation id="2365355378251437925">បញ្ចូល <ph name="FIELD" /></translation>
@@ -1250,6 +1251,7 @@
 <translation id="301521992641321250">បាន​ទប់ស្កាត់ដោយ​ស្វ័យ​ប្រវត្តិ</translation>
 <translation id="3016780570757425217">ដឹងពីទីតាំងរបស់អ្នក</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, ចុច "Tab" រួចចុច "Enter" ដើម្បី​លុបការណែនាំ។</translation>
+<translation id="3019738915977809060">រក្សាទុក​សំបុត្រ​ឡើង​យន្តហោះ​ទៅ Wallet</translation>
 <translation id="3022959067768579802">បន្ត​សរសេរ</translation>
 <translation id="3023165109041533893">ការផ្សាយពាណិជ្ជកម្ម​ដែល​​ណែនាំដោយ​គេហទំព័រ​ជួយការ​ពារ​ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​ និង​អត្តសញ្ញាណ​របស់​អ្នក ព្រមទាំងអាចឱ្យ​គេហទំព័រ​បង្ហាញ​ការផ្សាយ​ពាណិជ្ជកម្ម​ដែល​ពាក់ព័ន្ធ​ដល់​អ្នក។ ផ្អែក​លើ​សកម្មភាព​របស់​អ្នក គេហទំព័រ​ដែលអ្នក​បាន​ចូលមើល​អាច​ណែនាំ​ការ​ផ្សាយពាណិជ្ជកម្ម​ដែល​ពាក់ព័ន្ធ​នៅ​ពេល​អ្នក​បន្ត​រុករក។ អ្នក​អាច​មើល​បញ្ជី​គេហទំព័រ​ទាំង​នេះ និងទប់ស្កាត់គេហទំព័រ​ដែល​អ្នក​មិន​ចង់​បាន​នៅ​ក្នុង​ការកំណត់។</translation>
 <translation id="3024663005179499861">ប្រភេទគោលការណ៍ខុស</translation>
@@ -2311,7 +2313,6 @@
 <translation id="4732860731866514038">កំពុង​ទាញយក​កញ្ចប់​ភាសា<ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ចង់ប្រើ​ទីតាំង​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="473414950835101501">ប្រើកាមេរ៉ារបស់អ្នក</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />លំនាំដើម​បច្ចុប្បន្ន<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">ចាប់ផ្តើម Chromium ឡើងវិញ</translation>
 <translation id="4736934858538408121">កាតនិម្មិត</translation>
 <translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
@@ -2520,6 +2521,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, ចុច tab ដើម្បី​ទទួលបាន​ផ្លូវកាត់​ការស្វែងរក​ច្រើនទៀត​ដែលអាច​ប្រើបាន បន្ទាប់ពី​ការណែនាំ​ការស្វែងរកនេះ</translation>
 <translation id="5052517576853118371">ប្រធានបទសកម្ម</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ដើម្បីផ្ញើឯកសារនេះដោយប្រើការ​ចែករំលែកនៅ​ជិត សូមបង្កើនទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើឧបករណ៍របស់អ្នក}other{ដើម្បីផ្ញើឯកសារទាំងនេះដោយប្រើការ​ចែករំលែកនៅ​ជិត សូមបង្កើនទំហំផ្ទុក (<ph name="DISK_SPACE_SIZE" />) នៅលើឧបករណ៍របស់អ្នក}}</translation>
+<translation id="5056587122125565772">បង្កើត​រូបភាព</translation>
 <translation id="505757197798929356">ផ្ដល់​មូលហេតុ​នៃការបើក (តម្រូវ)</translation>
 <translation id="5058282932481719070">ស្វែងយល់​បន្ថែម​អំពី​ការបំពេញ​ស្វ័យប្រវត្តិ​ដែលបាន​ធ្វើឱ្យ​ប្រសើរឡើង​នៅក្នុង​ការកំណត់</translation>
 <translation id="5060419232449737386">ការកំណត់​អក្សររត់</translation>
@@ -4054,7 +4056,6 @@
 <translation id="7525804896095537619">ឈ្មោះ​មិនអាច​ទទេ​ឡើយ</translation>
 <translation id="7526934274050461096">ការតភ្ជាប់​របស់អ្នក​ទៅ​ទំព័រនេះ​មិនមែន​ជាលក្ខណៈ​ឯកជន​ទេ</translation>
 <translation id="7529884293139707752">ការអប់រំ​នៅផ្ទះ</translation>
-<translation id="7530215951451994972">បង្កើត​រូបភាព</translation>
 <translation id="7531464389616946220">ស្កេនកាត</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Enter ដើម្បី​ស្វែងរក​ចំណាំ</translation>
 <translation id="7534987659046836932">ស្រោមសំបុត្រ C7</translation>

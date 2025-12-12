@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Scan QR-kode</translation>
 <translation id="1545757265410828525">Prishistorik</translation>
 <translation id="1547610699249301703">Del adgangskoder</translation>
+<translation id="1554043146674176775">Deaktiver AI-tilstand</translation>
 <translation id="1554477036522844996">Nyt vindue</translation>
 <translation id="1558391695376153246">Luk inkognitofaner</translation>
 <translation id="1565371473877914088">Ny inkognitofane</translation>
@@ -329,7 +330,6 @@
 <translation id="219283042927675668">Faner i gruppe</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2196428379625389579">Søg på nettet</translation>
-<translation id="2198001751007276170">Erstat adgangskoder</translation>
 <translation id="2199562093267256223">Dette sletter gruppen fra alle enheder, der er logget ind på <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Ingen mailkonti</translation>
 <translation id="2214453882118345682">Køb, oversæt og identificer det, du ser, ved hjælp af dit kamera.</translation>
@@ -458,6 +458,7 @@
 <translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Kameraet er i brug</translation>
 <translation id="2691653761409724435">Ikke tilgængelig offline</translation>
+<translation id="2697530870203420261">Ugyldigt kaldenavn</translation>
 <translation id="269819437389494246">Du kan se de sider, du har besøgt, eller slette dem fra din historik</translation>
 <translation id="2704606927547763573">Kopieret</translation>
 <translation id="2708051474374549906">Proaktiv beskyttelse i realtid mod skadelige websites, downloads og udvidelser i realtid, der er baseret på dine browserdata, som sendes til Google</translation>
@@ -755,6 +756,7 @@
 <translation id="3934905113567851655">Knib fingrene sammen for at tilpasse størrelse</translation>
 <translation id="3940195383040445971">Følg prisudvikling på faner</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Luk {COUNT} fane}one{Luk {COUNT} fane}other{Luk {COUNT} faner}}</translation>
+<translation id="3946483119107054883">Download som CSV</translation>
 <translation id="3948600256434252210">Du kan stryge til højre for at browse i inkognitotilstand.</translation>
 <translation id="3949712484278252781">Hverken dine samtaler med Gemini eller dine <ph name="GOOGLE_WORKSPACE_DATA" /> vil blive gennemgået af menneskelige kontrollanter eller anvendt til at forbedre generativ AI-modeller.</translation>
 <translation id="3950479158728806902">Opret automatisk en adgangsnøgle for at logge ind hurtigere</translation>
@@ -1553,7 +1555,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6782531425936234573">Eksportér data</translation>
 <translation id="6791425686608802741">Tryk på "Føj fane til ny gruppe"</translation>
 <translation id="6794476726485507147">Vælg en dato og et tidspunkt for at få en notifikation med en påmindelse om at vende tilbage til denne side</translation>
-<translation id="6795481620482106033">Ugyldige data</translation>
 <translation id="6797543908718012274">Aktivér Læsetilstand</translation>
 <translation id="6806550742467879742">Sideværktøjer</translation>
 <translation id="6807287147325542056">Adgangskoder i andre apps</translation>
@@ -1562,6 +1563,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6830728435402077660">Ikke sikker</translation>
 <translation id="6831043979455480757">Oversæt</translation>
 <translation id="6842136130964845393">Verificer din identitet for at sikre, at du altid har adgang til dine gemte adgangskoder</translation>
+<translation id="6844773122575789617">Aktivér AI-tilstand</translation>
 <translation id="6851516051005285358">Vis computerversion</translation>
 <translation id="6857446173140146664">Slet baggrund</translation>
 <translation id="6858718102216837409">Tilføj sprog…</translation>
@@ -1595,6 +1597,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="693761253105515415">Angiv en adgangskode</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6950522403736391608">Skjult</translation>
+<translation id="6962809930976936328">Få indsigt med Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> er valgt i øjeblikket. Vælg en konto.</translation>
 <translation id="6964760285928603117">Fjern fra gruppe</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1911,6 +1914,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8114753159095730575">Filer kan downloades. Se valgmulighederne nederst på skærmen.</translation>
 <translation id="8123502380991596210">Skjul Nyheder</translation>
 <translation id="8123953306357309250">Vil du annullere synkroniseringen? Du kan til enhver tid aktivere synkronisering i indstillingerne.</translation>
+<translation id="8130712116203026166">Giv mig en opsummering på én linje og nyttig indsigt, der går ud over denne side. Brug en kortfattet og afslappet tone. Begræns til 100 ord.</translation>
 <translation id="81313319706244542">2. Tryk på Adgangskoder</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8132598642024322408">Koster nu <ph name="PRICE" />. Førprisen var <ph name="PREVIOUS_PRICE" />.</translation>

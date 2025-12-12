@@ -247,7 +247,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2063047797624276601">तपाईंको सङ्गठनले "परिष्कृत सुरक्षित ब्राउजिङ" अन गरेको छ</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{१ वटा डाउनलोड गर्न सकिएन}other{# वटा डाउनलोडहरू गर्न सकिएन}}</translation>
 <translation id="2067805253194386918">पाठ</translation>
-<translation id="2072027001582274150">प्रयोग नगरिएका वा दोहोरिएका ट्याबहरू</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2088833076121753253">अटोफिल सेवा सेटअप गर्ने कार्य पूरा गर्न अहिले नै Chrome रिस्टार्ट गर्नुहोस्। तपाईंका ट्याबहरू स्वतः खुल्ने छन्।</translation>
@@ -850,7 +849,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="468924408576231679">बेवपेज <ph name="PAGE_TITLE" /> को लिंक सेयर गर्नुहोस्। स्रोत: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">अझ उत्कृष्ट सामग्री प्राप्त गर्नुहोस्</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
-<translation id="4698061626562952596">यहाँ गई आफ्ना निष्क्रिय ट्याबहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="4698757800236023795"><ph name="ITEM_COUNT" /> वटा ट्याब सक्रिय अवस्थामा छन्</translation>
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4710167854527459075">सबैभन्दा नयाँ सुरुमा आउने गरी क्रमबद्ध गर्नुहोस्</translation>
@@ -965,7 +963,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5142281402488957685">नयाँ समाचार रिफ्रेस गर्न तलतिर तान्नुहोस्</translation>
 <translation id="5144385790872094440">तपाईंले खोल्ने केही पेजहरू प्रिलोड गरिएका छन्। Google का सर्भर र Google को साइट वा एप लिंक गरेपछि पेजहरू ती सर्भरमार्फत प्रिलोड गरिन सक्छन्।</translation>
-<translation id="5145887002054615868"><ph name="DAYS_INACTIVE" /> दिनदेखि प्रयोग नगरिएका वा दोहोरिएका ट्याबहरू सारेर यहाँ लगिन्छन्<ph name="AUTODELETE_SECTION" />। तपाईं जुनसुकै बेला <ph name="DECLUTTER_SETTINGS_TITLE" /> मा गई यसलाई परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="5152843274749979095">समर्थन गरिने कुनै एप स्थापना गरिएको छैन</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
 <translation id="5161262286013276579">पासकी पुष्टि गर्ने पाना खोलिएको छ</translation>

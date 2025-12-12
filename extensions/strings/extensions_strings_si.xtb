@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">යෙදුම්දසුන: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">මෙම දිගුවේ මූලික ගොනුව '<ph name="KEY_PATH" />' අඩංගුවේ. ඔබට සමහරවිට එය කිරීමට අවශ්‍ය නැත.</translation>
 <translation id="5486326529110362464">පුද්ගලික යතුරු සඳහා වන ඇතුළු කිරීමේ අගය පැවතිය යුතුය.</translation>
+<translation id="5707185214361380026">මෙතැනින් දිගුව ලබාගත නොහැක:</translation>
 <translation id="5972529113578162692">මෙම යන්ත්‍රයේ පාලකයාට <ph name="EXTENSION_NAME" /> ස්ථාපනය කිරීමට අවශ්‍යයි. එය අස්ථාපනය කළ නොහැක.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> වෙතින් නොදන්නා නිෂ්පාදනය <ph name="PRODUCT_ID" /> (අනුක්‍රමික අංකය <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> වෙතින් <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">දිගුව ප්‍රවේශනය කිරීමේ දෝෂය</translation>
 <translation id="6322279351188361895">පුද්ගලික යතුර කියවීම අසාර්ථක විය.</translation>
 <translation id="6391538222494443604">ආදාන නාමාවලිය පැවතිය යුතුය.</translation>
 <translation id="641087317769093025">දිගුව දිගහැරිය නොහැක</translation>

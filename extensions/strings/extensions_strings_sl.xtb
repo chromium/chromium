@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Komponenta appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Ta razširitev vključuje datoteko s ključem »<ph name="KEY_PATH" />«. Verjetno ne želite narediti tega.</translation>
 <translation id="5486326529110362464">Obstajati mora vrednost vnosa za zasebni ključ.</translation>
+<translation id="5707185214361380026">Ni bilo mogoče naložiti razširitve z mesta:</translation>
 <translation id="5972529113578162692">Skrbnik te naprave zahteva, da je nameščena razširitev <ph name="EXTENSION_NAME" />. Odstranitev ni mogoča.</translation>
 <translation id="6027032947578871493">Neznan izdelek <ph name="PRODUCT_ID" /> dobavitelja <ph name="VENDOR_NAME" /> (serijska številka <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> dobavitelja <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Napaka pri nalaganju razširitve</translation>
 <translation id="6322279351188361895">Zasebnega ključa ni bilo mogoče prebrati.</translation>
 <translation id="6391538222494443604">Obstajati mora imenik vnosa.</translation>
 <translation id="641087317769093025">Razširitve ni bilo mogoče odpakirati</translation>

@@ -120,7 +120,7 @@
 <translation id="22791603784558743">关闭 Chrome 开发者版中的 Gemini</translation>
 <translation id="2290014774651636340">缺少 Google API 密钥，因此 Google Chrome 的部分功能将无法使用。</translation>
 <translation id="2290095356545025170">确定要卸载 Google Chrome 浏览器吗？</translation>
-<translation id="2301513536169703857">如需在您的所有设备上获取密码、书签等信息，请登录 Chrome</translation>
+<translation id="2301513536169703857">登录 Chrome，在您的所有设备上同步密码、书签等信息</translation>
 <translation id="2307973900865360088">保留在程序坞中</translation>
 <translation id="2309047409763057870">这是 Google Chrome 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="2345992953227471816">Chrome 发现这些扩展程序包含恶意软件：</translation>
@@ -187,7 +187,7 @@
 <translation id="3003694935412297923">所有任务</translation>
 <translation id="3018957014024118866">同时删除 Chrome 中的数据 (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">重新启动以更新 &amp;ChromeOS Flex</translation>
-<translation id="3037517125981011456">显示让用户登录 Chrome 的提示</translation>
+<translation id="3037517125981011456">显示 Chrome 登录提示</translation>
 <translation id="3037838751736561277">Google Chrome处于后台运行模式。</translation>
 <translation id="3038232873781883849">正在等待安装…</translation>
 <translation id="3045032126857188731">译文语言：<ph name="LANGUAGE" /></translation>
@@ -202,6 +202,7 @@
 <translation id="3112458742631356345">Chrome 阻止了此项下载操作，因为这不是常下载的文件，可能具有危险性</translation>
 <translation id="3114643501466072395">若要检查您的其他密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chrome<ph name="END_LINK" />。</translation>
 <translation id="3119573284443908657">Chrome 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>
+<translation id="3124332159330678621">自定义您的 Chrome 浏览器，为它换上全新外观</translation>
 <translation id="3130333203120345554">新搜索</translation>
 <translation id="3135560418014806498">添加 Chrome 个人资料</translation>
 <translation id="3137969841538672700">拖动即可搜索</translation>
@@ -267,6 +268,7 @@
 <translation id="3885770153807205175">语言选择器</translation>
 <translation id="3889417619312448367">卸载 Google Chrome</translation>
 <translation id="3892148308691398805">复制文字</translation>
+<translation id="3906096710440765802">登录 Chrome 即可在所有设备上获取密码、书签等信息</translation>
 <translation id="3941890832296813527">安装时出错：安装程序文件名无效或不受支持。</translation>
 <translation id="395904275706073188">无法读取受保护的页面，请尝试其他页面。</translation>
 <translation id="3968962723676998462">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
@@ -487,6 +489,7 @@
 <translation id="6288580400488258237">将 Google Chrome 设为默认浏览器，并将其固定到任务栏</translation>
 <translation id="6291089322031436445">Chrome 开发者版应用</translation>
 <translation id="6291549208091401781">已为您计算机上的所有用户安装 Google Chrome。</translation>
+<translation id="6311220991371174222">打开您的个人资料时出了点问题，无法启动 Chrome。请尝试重新启动 Chrome。</translation>
 <translation id="6319856120645568262">Chrome 需要获得权限，才能绘制您周边环境的地图并跟踪您的双手</translation>
 <translation id="6321592572353357376">“<ph name="EXTENSION_NAME" />”扩展程序需要您登录 Chrome</translation>
 <translation id="6326175484149238433">从 Chrome 中移除</translation>
@@ -615,9 +618,11 @@
 <translation id="7655472416356262023">从 Chrome 中移除账号</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670287553302121848">Chrome 账号需要重新验证身份</translation>
+<translation id="7675756456029023637">问问 Chrome</translation>
 <translation id="769538538642757151">如有任何事项需要您审核，Chrome 会通知您</translation>
 <translation id="769906121737764913">关闭 Chrome Beta 版中的 Gemini</translation>
 <translation id="7716950018788545737">任务已结束。</translation>
+<translation id="7723388585204724670">重置为默认 Chrome</translation>
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7736869414036750079">您的组织要求您登录 Chrome</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>

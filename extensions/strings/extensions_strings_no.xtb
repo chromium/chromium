@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appvisning: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Denne utvidelsen inneholder nøkkelfilen «<ph name="KEY_PATH" />». Du ønsker sannsynligvis ikke å gjøre dette.</translation>
 <translation id="5486326529110362464">Inndataverdien for privatnøkkelen må eksistere.</translation>
+<translation id="5707185214361380026">Kunne ikke laste inn utvidelse fra:</translation>
 <translation id="5972529113578162692">Administratoren for denne maskinen krever at <ph name="EXTENSION_NAME" /> installeres. Denne utvidelsen kan ikke avinstalleres.</translation>
 <translation id="6027032947578871493">Ukjent produkt, <ph name="PRODUCT_ID" />, fra <ph name="VENDOR_NAME" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> fra leverandøren <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Det oppsto en feil under innlastingen av utvidelsen</translation>
 <translation id="6322279351188361895">Kan ikke lese privatnøkkelen.</translation>
 <translation id="6391538222494443604">Inndatakatalogen må eksistere.</translation>
 <translation id="641087317769093025">Kunne ikke pakke ut utvidelsen</translation>

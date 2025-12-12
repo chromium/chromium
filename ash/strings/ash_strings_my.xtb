@@ -1025,7 +1025,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{အရေးကြီးသော အကြောင်းကြားချက် 1 ခု}other{အရေးကြီးသော အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
 <translation id="4451374464530248585">‘Alt + အောက်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘စာမျက်နှာ အောက်သို့’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘အောက်ညွှန်မြား’ နှိပ်ပါ။</translation>
-<translation id="4453876312474547652">Ctrl + V ကို နှိပ်ထားပါက ကလစ်ဘုတ်ကို မြင်ရပါမည်။ chrome://flags (Lacros သုံးပါက os://flags) တွင် #clipboard-history-longpress အလံပြခြင်းကို ပိတ်ခြင်းဖြင့် ဤဖြတ်လမ်းလင့်ခ်ကို ပိတ်နိုင်သည်။</translation>
 <translation id="445765352722456792">အကြံပြုချက်များ စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="4458688154122353284">ဖန်သားပြင်ရိုက်ကူးမှု ရပ်ရန်</translation>
 <translation id="445923051607553918">Wi-Fi ကွန်ရက် ချိတ်ဆည်</translation>

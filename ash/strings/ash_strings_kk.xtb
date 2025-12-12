@@ -874,6 +874,7 @@
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="397726367135689299">Батарея дұрыс зарядталмауы мүмкін.</translation>
 <translation id="3977512764614765090">Батарея қуаты – <ph name="PERCENTAGE" />%. Зарядталып жатыр.</translation>
+<translation id="3978162107953847778">Браузерді қолдану тарихы және Google Drive сияқты орындардан алынған сілтемелерді енгізіңіз. Сондай-ақ эмоджилерді, сурет файлдарын және т.б. енгізуіңізге болады. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Аудио шығысын ауыстыру қажет пе?</translation>
 <translation id="3984536049089846927">Келесі бет</translation>
 <translation id="3986082989454912832">Жауап беру</translation>
@@ -1024,7 +1025,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 маңызды хабарландыру}other{# маңызды хабарландыру}}</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
 <translation id="4451374464530248585">Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. Page Down пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + төменге бағыттауыш перне тіркесімін басыңыз.</translation>
-<translation id="4453876312474547652">Ctrl + V тіркесімін басып тұрған кезде буферді көресіз. chrome://flags (Lacros жобасы пайдаланылса, os://flags) ішінде #clipboard-history-longpress жалаушасын өшіру арқылы осы таңбашаны өшіруге болады.</translation>
 <translation id="445765352722456792">Ұсыныстарды бейімдеу</translation>
 <translation id="4458688154122353284">Экран жазуды тоқтату</translation>
 <translation id="445923051607553918">Wi-Fi желісіне қосылу</translation>
@@ -1600,6 +1600,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: белсендірілуде…</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6274422179279280249">Сілтемелерді, эмоджилерді және т.б. енгізіңіз. Сондай-ақ Google AI-мен жазу бойынша көмек алуыңызға болады. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Бет дереккөзін көру</translation>
 <translation id="6285871695023807425">Calendar-ға қосу</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> аккаунты ата-ананың рұқсатымен кейінірек қайта енгізіледі.</translation>

@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">Tento text musíte skrátiť na <ph name="MAX_CHARACTERS" /> znakov alebo menej (súčasný počet znakov: <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. týždeň, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Skladba <ph name="NUMBER" /></translation>
+<translation id="2500270406326775625">Webová adresa s údajmi</translation>
 <translation id="2507943997699731163">Vyplňte toto pole.</translation>
 <translation id="2613802280814924224">Zadajte platnú hodnotu. Najbližšia platná hodnota je <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Odoslať</translation>

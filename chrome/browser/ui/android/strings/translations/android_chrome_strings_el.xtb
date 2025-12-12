@@ -247,7 +247,6 @@
 <translation id="2063047797624276601">Ο οργανισμός σας ενεργοποίησε τη Βελτιωμένη Ασφαλή περιήγηση</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 λήψη απέτυχε}other{# λήψεις απέτυχαν}}</translation>
 <translation id="2067805253194386918">κείμενο</translation>
-<translation id="2072027001582274150">Μη χρησιμοποιούμενες ή διπλότυπες καρτέλες</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2082238445998314030">Αποτέλεσμα <ph name="RESULT_NUMBER" /> από <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2088833076121753253">Για να ολοκληρώσετε τη ρύθμιση της αυτόματης συμπλήρωσης, επανεκκινήστε τώρα το Chrome. Οι καρτέλες σας θα ανοίξουν ξανά αυτόματα.</translation>
@@ -851,7 +850,6 @@
 <translation id="468924408576231679">Αντιγραφή συνδέσμου προς την ιστοσελίδα <ph name="PAGE_TITLE" />. Πηγή: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">Λήψη καλύτερου περιεχομένου</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
-<translation id="4698061626562952596">Ελέγξτε τις ανενεργές καρτέλες σας εδώ</translation>
 <translation id="4698757800236023795">Ενεργά στοιχεία (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="4710167854527459075">Ταξινόμηση κατά νεότερο</translation>
@@ -966,7 +964,6 @@
 <translation id="5123685120097942451">Καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="5142281402488957685">Για νέες ειδήσεις, σύρετε προς τα κάτω για ανανέωση</translation>
 <translation id="5144385790872094440">Ορισμένες από τις σελίδες που επισκέπτεστε έχουν προφορτωθεί. Οι σελίδες μπορεί να προφορτώνονται μέσω των διακομιστών της Google, όταν συνδέονται από έναν ιστότοπο ή μια εφαρμογή Google.</translation>
-<translation id="5145887002054615868">Οι διπλότυπες καρτέλες ή οι καρτέλες που δεν χρησιμοποιούνται για <ph name="DAYS_INACTIVE" /> ημέρες μετακινούνται εδώ<ph name="AUTODELETE_SECTION" />. Μπορείτε να αλλάξετε αυτή τη ρύθμιση ανά πάσα στιγμή στην ενότητα <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Δεν έχουν εγκατασταθεί υποστηριζόμενες εφαρμογές</translation>
 <translation id="5161254044473106830">Απαιτείται τίτλος</translation>
 <translation id="5161262286013276579">Το φύλλο επιβεβαίωσης κλειδιού πρόσβασης άνοιξε</translation>

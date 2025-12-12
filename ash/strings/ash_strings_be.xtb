@@ -874,6 +874,7 @@
 <translation id="397105322502079400">Ідзе разлік...</translation>
 <translation id="397726367135689299">Пры зарадцы могуць узнікаць праблемы.</translation>
 <translation id="3977512764614765090">Акумулятар зараджаецца, узровень зараду – <ph name="PERCENTAGE" /> %.</translation>
+<translation id="3978162107953847778">Устаўляйце спасылкі, напрыклад з гісторыі прагляду сайтаў і Google Дыска. Вы таксама можаце ўстаўляць эмодзі, графічныя файлы і іншае змесціва. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Пераключыць аўдыявыхад?</translation>
 <translation id="3984536049089846927">Наступная старонка</translation>
 <translation id="3986082989454912832">Адказаць</translation>
@@ -1024,7 +1025,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важнае апавяшчэнне}one{# важнае апавяшчэнне}few{# важныя апавяшчэнні}many{# важных апавяшчэнняў}other{# важнага апавяшчэння}}</translation>
 <translation id="4450893287417543264">Больш не паказваць</translation>
 <translation id="4451374464530248585">Змянілася прызначэнне спалучэння клавіш Alt + стрэлка ўніз. Каб выканаць дзеянне клавішы Page Down, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўніз.</translation>
-<translation id="4453876312474547652">Каб адкрыць гісторыю буфера абмену, націсніце і ўтрымлівайце кнопкі Ctrl + V. Вы можаце адключыць гэтае спалучэнне клавіш, адключыўшы эксперыментальны параметр #буферабмену-гісторыя-доўгінаціск у chrome://flags (os://flags пры выкарыстанні Lacros).</translation>
 <translation id="445765352722456792">Наладзіць прапановы</translation>
 <translation id="4458688154122353284">Спыніць запіс экрана</translation>
 <translation id="445923051607553918">Далучыцца да сеткі Wi-Fi</translation>
@@ -1600,6 +1600,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: ідзе актывацыя...</translation>
 <translation id="6274202259872570803">Скрынкаст</translation>
+<translation id="6274422179279280249">Устаўляйце спасылкі, эмодзі і іншае змесціва, а таксама пішыце тэксты з дапамогай AI ад Google. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Прагледзець зыходны тэкст старонкі</translation>
 <translation id="6285871695023807425">Дадаць у каляндар</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> можна дадаць пазней з дазволу бацькоў.</translation>

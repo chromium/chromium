@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">პროგრამის ხედი: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">ეს გაფართოება შეიცავს მთვარ ფაილს „<ph name="KEY_PATH" />“. თქვენ ალბათ არ გსურთ ამის გაკეთება.</translation>
 <translation id="5486326529110362464">უნდა არსებობდეს შეყვანის მნიშვნელობა პირადი გასაღებისთვის.</translation>
+<translation id="5707185214361380026">გაფართოება ვერ ჩაიტვირთა:</translation>
 <translation id="5972529113578162692">ამ მოწყობილობის ადმინისტრირებისთვის საჭიროა <ph name="EXTENSION_NAME" />-ის ინსტალაცია. მისი წაშლა დაუშვებელია.</translation>
 <translation id="6027032947578871493">უცნობი პროდუქტი – <ph name="PRODUCT_ID" /> მომწოდებლისგან: <ph name="VENDOR_NAME" /> (სერიული ნომერი: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> მომწოდებლისგან: <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">გაფართოვების ჩატვირთვის ხარვეზი</translation>
 <translation id="6322279351188361895">პირადი კლავიშის წაკითხვის შეცდომა.</translation>
 <translation id="6391538222494443604">შეყვანის დირექტორია უნდა არსებობდეს.</translation>
 <translation id="641087317769093025">გაფართოების არქივიდან ამოღება ვერ მოხერხდა</translation>

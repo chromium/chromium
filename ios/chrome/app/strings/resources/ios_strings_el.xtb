@@ -329,7 +329,6 @@
 <translation id="219283042927675668">Καρτέλες στην ομάδα</translation>
 <translation id="2194856509914051091">Λάβετε υπόψη τα εξής</translation>
 <translation id="2196428379625389579">Αναζήτηση στον ιστό</translation>
-<translation id="2198001751007276170">Αντικατάσταση κωδικών πρόσβασης</translation>
 <translation id="2199562093267256223">Αυτή η ενέργεια θα διαγράψει την ομάδα από όλες τις συσκευές που είναι συνδεδεμένες στον λογαριασμό <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Κανένας λογαρ. email</translation>
 <translation id="2214453882118345682">Αγοράστε, μεταφράστε και αναγνωρίστε ό,τι βλέπετε με την κάμερά σας.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">Πλησιάστε για αλλαγή μεγέθους</translation>
 <translation id="3940195383040445971">Παρακολούθηση τιμών σε καρτέλες</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Κλείσιμο {COUNT} καρτέλας}other{Κλείσιμο {COUNT} καρτελών}}</translation>
+<translation id="3946483119107054883">Λήψη σε CSV</translation>
 <translation id="3948600256434252210">Μπορείτε να σύρετε προς τα δεξιά για ανώνυμη περιήγηση.</translation>
 <translation id="3949712484278252781">Οι συνομιλίες σας με το Gemini και τα <ph name="GOOGLE_WORKSPACE_DATA" /> δεν θα ελέγχονται από αναθεωρητές ούτε θα χρησιμοποιούνται για τη βελτίωση των μοντέλων παραγωγικού AI.</translation>
 <translation id="3950479158728806902">Αυτόματη δημιουργία κλειδιού πρόσβασης για ταχύτερη σύνδεση</translation>
@@ -1554,7 +1554,6 @@
 <translation id="6782531425936234573">Εξαγωγή δεδομένων</translation>
 <translation id="6791425686608802741">Πατήστε Προσθήκη καρτέλας σε νέα ομάδα</translation>
 <translation id="6794476726485507147">Επιλέξτε ημερομηνία και ώρα για να λάβετε μια ειδοποίηση υπενθύμισης για να επισκεφτείτε ξανά αυτή τη σελίδα</translation>
-<translation id="6795481620482106033">Μη έγκυρα δεδομένα</translation>
 <translation id="6797543908718012274">Ενεργοποίηση λειτουργίας Ανάγνωσης</translation>
 <translation id="6806550742467879742">Εργαλεία σελίδας</translation>
 <translation id="6807287147325542056">Κωδικοί πρόσβασης σε άλλες εφαρμογές</translation>
@@ -1596,6 +1595,7 @@
 <translation id="693761253105515415">Ορισμός κωδικού πρόσβασης</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6950522403736391608">Κρυφό</translation>
+<translation id="6962809930976936328">Λάβετε insight με το Gemini</translation>
 <translation id="6964300328304469089">Τρέχουσα επιλογή: <ph name="NAME" />, <ph name="EMAIL" />. Επιλέξτε λογαριασμό.</translation>
 <translation id="6964760285928603117">Κατάργηση από την ομάδα</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1912,6 +1912,7 @@
 <translation id="8114753159095730575">Η λήψη του αρχείου είναι διαθέσιμη. Οι διαθέσιμες επιλογές βρίσκονται κοντά στο κάτω μέρος της οθόνης.</translation>
 <translation id="8123502380991596210">Απόκρυψη της επιλογής Τι νέο υπάρχει</translation>
 <translation id="8123953306357309250">Ακύρωση συγχρονισμού; Μπορείτε να ενεργοποιήσετε τον συγχρονισμό ανά πάσα στιγμή στις ρυθμίσεις.</translation>
+<translation id="8130712116203026166">Θέλω μια σύνοψη μίας γραμμής και χρήσιμα insight πέρα από αυτή τη σελίδα. Χρησιμοποίησε συνοπτικό, απλό ύφος. Όριο 100 λέξεων.</translation>
 <translation id="81313319706244542">2. Πατήστε Κωδικοί πρόσβασης</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8132598642024322408">Τώρα <ph name="PRICE" /> από <ph name="PREVIOUS_PRICE" />.</translation>

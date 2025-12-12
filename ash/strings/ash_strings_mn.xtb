@@ -1026,7 +1026,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 чухал мэдэгдэл}other{# чухал мэдэгдэл}}</translation>
 <translation id="4450893287417543264">Дахиж бүү харуул</translation>
 <translation id="4451374464530248585">Alt + Доош сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Page Down товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Доош сумыг дарна уу.</translation>
-<translation id="4453876312474547652">Та Ctrl + V-г удаан дарах үедээ түр санах ой харна. Та энэ товчлолыг #clipboard-history-longpress flag in chrome://flags-г (Lacros ашиглаж байгаа бол os://flags) идэвхгүй болгосноор унтраах боломжтой.</translation>
 <translation id="445765352722456792">Зөвлөмжүүдийг өөрчлөх</translation>
 <translation id="4458688154122353284">Дэлгэцийн үйлдэл бичихийг зогсоох</translation>
 <translation id="445923051607553918">Wi-Fi сүлжээнд холбогдох</translation>

@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Недавнее фото <ph name="INDEX" /> из <ph name="TOTAL_COUNT" /></translation>
 <translation id="2201687081523799384">Скрыть информацию из Google Задач</translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
+<translation id="2210311543574621570">Чтобы открыть историю буфера обмена, нажмите и удерживайте клавиши Ctrl + V. Если вы не хотите использовать это сочетание клавиш, отключите экспериментальный параметр #clipboard-history-longpress на странице chrome://flags.</translation>
 <translation id="2215920961700443347">Нет доступа к интернету. Подключитесь и повторите попытку.</translation>
 <translation id="2222841058024245321">Рабочий стол 7</translation>
 <translation id="2223384056430485343">В режиме разделения экрана</translation>
@@ -1025,7 +1026,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важное уведомление}one{# важное уведомление}few{# важных уведомления}many{# важных уведомлений}other{# важного уведомления}}</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="4451374464530248585">Функция сочетания клавиш Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши Page Down, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз.</translation>
-<translation id="4453876312474547652">Чтобы открыть историю буфера обмена, нажмите и удерживайте клавиши Ctrl + V. Если вы не хотите использовать это сочетание клавиш, отключите экспериментальный параметр #clipboard-history-longpress на странице chrome://flags (os://flags для Lacros).</translation>
 <translation id="445765352722456792">Настроить подсказки</translation>
 <translation id="4458688154122353284">Остановить запись с экрана</translation>
 <translation id="445923051607553918">Подключение к сети Wi-Fi</translation>

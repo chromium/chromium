@@ -329,7 +329,6 @@
 <translation id="219283042927675668">Tab dalam grup</translation>
 <translation id="2194856509914051091">Hal-hal yang perlu dipertimbangkan</translation>
 <translation id="2196428379625389579">Telusuri di web</translation>
-<translation id="2198001751007276170">Ganti Sandi</translation>
 <translation id="2199562093267256223">Tindakan ini akan menghapus grup dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" /></translation>
 <translation id="2202084845446535117">Tidak ada akun email</translation>
 <translation id="2214453882118345682">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat dengan kamera.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">Cubit untuk mengubah ukuran</translation>
 <translation id="3940195383040445971">Pantau harga di tab</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Tutup {COUNT} tab}other{Tutup {COUNT} tab}}</translation>
+<translation id="3946483119107054883">Download ke CSV</translation>
 <translation id="3948600256434252210">Anda dapat menggeser ke kanan untuk menjelajah dalam mode Samaran.</translation>
 <translation id="3949712484278252781">Percakapan Anda dengan Gemini serta <ph name="GOOGLE_WORKSPACE_DATA" /> Anda tidak akan ditinjau oleh petugas peninjau atau digunakan untuk meningkatkan kualitas model AI generatif.</translation>
 <translation id="3950479158728806902">Buat kunci sandi secara otomatis untuk login lebih cepat</translation>
@@ -1553,7 +1553,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6782531425936234573">Ekspor data</translation>
 <translation id="6791425686608802741">Ketuk "Tambahkan Tab ke Grup Baru"</translation>
 <translation id="6794476726485507147">Pilih tanggal dan waktu untuk menerima notifikasi pengingat guna membuka kembali halaman ini</translation>
-<translation id="6795481620482106033">Data Tidak Valid</translation>
 <translation id="6797543908718012274">Aktifkan Mode Baca</translation>
 <translation id="6806550742467879742">Alat halaman</translation>
 <translation id="6807287147325542056">Sandi di aplikasi lain</translation>
@@ -1595,6 +1594,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="693761253105515415">Setel kode sandi</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6950522403736391608">Tersembunyi</translation>
+<translation id="6962809930976936328">Dapatkan insight dengan Gemini</translation>
 <translation id="6964300328304469089">Saat ini <ph name="NAME" />, <ph name="EMAIL" />, dipilih. Pilih akun.</translation>
 <translation id="6964760285928603117">Hapus dari Grup</translation>
 <translation id="6965382102122355670">Oke</translation>
@@ -1911,6 +1911,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8114753159095730575">Download file tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="8123502380991596210">Sembunyikan Yang Baru</translation>
 <translation id="8123953306357309250">Batalkan sinkronisasi? Anda dapat mengaktifkan sinkronisasi kapan saja di setelan.</translation>
+<translation id="8130712116203026166">Berikan ringkasan sebanyak satu baris dan insight bermanfaat di luar halaman ini. Gunakan gaya bahasa yang ringkas dan kasual. Maksimal 100 kata.</translation>
 <translation id="81313319706244542">2. Ketuk Sandi</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8132598642024322408">Sekarang <ph name="PRICE" />, sebelumnya <ph name="PREVIOUS_PRICE" />.</translation>

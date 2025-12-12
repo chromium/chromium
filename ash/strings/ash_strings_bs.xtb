@@ -874,6 +874,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="397105322502079400">Računanje…</translation>
 <translation id="397726367135689299">Punjenje baterije može biti nepouzdano.</translation>
 <translation id="3977512764614765090">Baterija je napunjena <ph name="PERCENTAGE" />% i puni se.</translation>
+<translation id="3978162107953847778">Umetnite linkove s mjesta kao što su historija pregledanja i Google Disk. Možete umetnuti i emodžije, fajlove slika i drugo. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Promijeniti izlaz zvuka?</translation>
 <translation id="3984536049089846927">Sljedeća stranica</translation>
 <translation id="3986082989454912832">Odgovori</translation>
@@ -1024,7 +1025,6 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 važno obavještenje}one{# važno obavještenje}few{# važna obavještenja}other{# važnih obavještenja}}</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="4451374464530248585">Prečica na tastaturi Alt + strelica nadolje je promijenjena. Da koristite tipku Page Down, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu nadolje.</translation>
-<translation id="4453876312474547652">Međumemoriju možete vidjeti ako pritisnete i zadržite Ctrl + V. Možete isključiti tu prečicu onemogućavanjem oznake #clipboard-history-longpress na chrome://flags (os://flags ako koristite Lacros).</translation>
 <translation id="445765352722456792">Prilagodite prijedloge</translation>
 <translation id="4458688154122353284">Zaustavljanje snimanja ekrana</translation>
 <translation id="445923051607553918">Spoji se s Wi-Fi mrežom</translation>
@@ -1600,6 +1600,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiviranje...</translation>
 <translation id="6274202259872570803">Emitiranje na ekranu</translation>
+<translation id="6274422179279280249">Umetnite linkove, emodžije i drugo. Također možete dobiti pomoć u pisanju putem Google AI-ja. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Prikaz izvora stranice</translation>
 <translation id="6285871695023807425">Dodaj na Kalendar</translation>
 <translation id="6288235558961782912">Adresu e-pošte <ph name="USER_EMAIL_ADDRESS" /> je moguće ponovo dodati kasnije uz odobrenje roditelja.</translation>

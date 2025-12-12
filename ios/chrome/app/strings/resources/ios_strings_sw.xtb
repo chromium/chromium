@@ -329,7 +329,6 @@
 <translation id="219283042927675668">Vichupo katika kikundi</translation>
 <translation id="2194856509914051091">Mambo ya kuzingatia</translation>
 <translation id="2196428379625389579">Kutafuta kwenye tovuti</translation>
-<translation id="2198001751007276170">Badilisha Manenosiri</translation>
 <translation id="2199562093267256223">Hatua hii itafuta kikundi kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Hakuna barua pepe ya akaunti</translation>
 <translation id="2214453882118345682">Nunua, tafsiri na utambue unachokiona ukitumia kamera yako.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">Bana ili ubadilishe ukubwa</translation>
 <translation id="3940195383040445971">Fuatilia bei kwenye vichupo</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Funga kichupo {COUNT}}other{Funga vichupo {COUNT}}}</translation>
+<translation id="3946483119107054883">Pakua ikiwa faili ya CSV</translation>
 <translation id="3948600256434252210">Unaweza kutelezesha kidole kulia ili uvinjari katika Hali ya faraghani.</translation>
 <translation id="3949712484278252781">Mazungumzo yako na Gemini wala ya <ph name="GOOGLE_WORKSPACE_DATA" /> havitahakikiwa na wanadamu wala kutumiwa kuboresha mifumo ya AI zalishi.</translation>
 <translation id="3950479158728806902">Buni ufunguo wa siri kiotomatiki ili uingie katika akaunti kwa haraka</translation>
@@ -1553,7 +1553,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6782531425936234573">Hamisha data</translation>
 <translation id="6791425686608802741">Gusa "Weka Kichupo kwenye Kikundi Kipya"</translation>
 <translation id="6794476726485507147">Chagua tarehe na muda wa kupata arifa ya kikumbusho ili utembelee tena ukurasa huu baadaye</translation>
-<translation id="6795481620482106033">Data si Sahihi</translation>
 <translation id="6797543908718012274">Washa Hali ya Kusoma</translation>
 <translation id="6806550742467879742">Zana za ukurasa</translation>
 <translation id="6807287147325542056">Manenosiri katika programu nyingine</translation>
@@ -1595,6 +1594,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="693761253105515415">Weka namba ya siri</translation>
 <translation id="6945221475159498467">Chagua</translation>
 <translation id="6950522403736391608">Zilizofichwa</translation>
+<translation id="6962809930976936328">Pata maarifa ukitumia Gemini</translation>
 <translation id="6964300328304469089">Kwa sasa umechagua <ph name="NAME" />, <ph name="EMAIL" />. Chagua akaunti.</translation>
 <translation id="6964760285928603117">Ondoa Kwenye Kikundi</translation>
 <translation id="6965382102122355670">Sawa</translation>
@@ -1911,6 +1911,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="8114753159095730575">Unaweza kupakua faili. Chaguo zinapatikana karibu na sehemu ya chini ya skrini.</translation>
 <translation id="8123502380991596210">Kuficha Sehemu ya Mambo Mapya</translation>
 <translation id="8123953306357309250">Ungependa kuacha usawazishaji? Unaweza kuwasha kipengele cha kusawazisha wakati wowote katika mipangilio.</translation>
+<translation id="8130712116203026166">Nipe muhtasari wa mstari mmoja na maarifa muhimu zaidi ya ukurasa huu. Tumia toni ndogo na ya kawaida. Weka kikomo cha maneno 100.</translation>
 <translation id="81313319706244542">2. Gusa Manenosiri</translation>
 <translation id="8131740175452115882">Thibitisha</translation>
 <translation id="8132598642024322408">Bei ya sasa ni <ph name="PRICE" />, awali ilikuwa <ph name="PREVIOUS_PRICE" />.</translation>

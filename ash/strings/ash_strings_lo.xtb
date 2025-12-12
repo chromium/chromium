@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">ຮູບຫຼ້າສຸດທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">ຫຍໍ້ Google Tasks ລົງ</translation>
 <translation id="2208323208084708176">​ໂໝດ​ໜ້າ​ຈໍ​ເຮັດ​ເຂົ້າ​ກັນ​ແລ້ວ</translation>
+<translation id="2210311543574621570">ທ່ານຈະເຫັນຄລິບບອດເມື່ອທ່ານກົດ Ctrl + V ຄ້າງໄວ້. ທ່ານສາມາດປິດທາງລັດນີ້ໄດ້ໂດຍການປິດການນຳໃຊ້ປັກທຸງ #clipboard-history-longpress ໃນ chrome://flags.</translation>
 <translation id="2215920961700443347">ບໍ່ມີອິນເຕີເນັດ. ກະລຸນາເຊື່ອມຕໍ່ອິນເຕີເນັດແລ້ວລອງໃໝ່.</translation>
 <translation id="2222841058024245321">ໂຕະ 7</translation>
 <translation id="2223384056430485343">ຢູ່ໃນໂໝດແບ່ງໜ້າຈໍ</translation>
@@ -1025,7 +1026,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{ການແຈ້ງເຕືອນສຳຄັນ 1 ລາຍການ}other{ການແຈ້ງເຕືອນສຳຄັນ # ລາຍການ}}</translation>
 <translation id="4450893287417543264">ຢ່າສະແດງອີກ</translation>
 <translation id="4451374464530248585">ຄີລັດ Alt + ລູກສອນລົງຖືກປ່ຽນແປງແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Page Down, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ລູກສອນລົງ.</translation>
-<translation id="4453876312474547652">ທ່ານຈະເຫັນຄລິບບອດເມື່ອທ່ານກົດ Ctrl + V ຄ້າງໄວ້. ທ່ານສາມາດປິດທາງລັດນີ້ໄດ້ໂດຍການປິດການນຳໃຊ້ປັກທຸງ #clipboard-history-longpress ໃນ chrome://flags (os://flags ຖ້າໃຊ້ Lacros).</translation>
 <translation id="445765352722456792">ປັບແຕ່ງການແນະນຳ</translation>
 <translation id="4458688154122353284">ຢຸດການບັນທຶກໜ້າຈໍ</translation>
 <translation id="445923051607553918">ເຂົ້າຮ່ວມເຄືອຂ່າຍ Wi-Fi</translation>

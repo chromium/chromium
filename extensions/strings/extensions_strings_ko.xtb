@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">이 확장 프로그램은 키 파일 '<ph name="KEY_PATH" />'을(를) 포함합니다. 사용하지 않는 것이 좋습니다.</translation>
 <translation id="5486326529110362464">비공개 키 입력 값이 있어야 합니다.</translation>
+<translation id="5707185214361380026">다음 위치에서 확장 프로그램을 로드하지 못했습니다.</translation>
 <translation id="5972529113578162692">이 시스템의 관리자가 <ph name="EXTENSION_NAME" />의 설치를 요구합니다. 이 확장 프로그램은 제거할 수 없습니다.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" />의 알 수 없는 제품 <ph name="PRODUCT_ID" />(일련번호 <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">공급업체 <ph name="VENDOR_ID" />의 <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">확장 프로그램 로드 중 오류</translation>
 <translation id="6322279351188361895">비공개 키를 읽지 못했습니다.</translation>
 <translation id="6391538222494443604">입력 디렉터리가 있어야 합니다.</translation>
 <translation id="641087317769093025">확장 프로그램의 압축을 해제하지 못했습니다.</translation>

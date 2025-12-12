@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Это расширение содержит файл ключа <ph name="KEY_PATH" />. Вероятно, это неприемлемо.</translation>
 <translation id="5486326529110362464">Должно существовать входное значение для закрытого ключа.</translation>
+<translation id="5707185214361380026">Не удалось загрузить расширение из:</translation>
 <translation id="5972529113578162692">Удаление расширения "<ph name="EXTENSION_NAME" />" на этом компьютере запрещено администратором</translation>
 <translation id="6027032947578871493">Неизвестный продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /> (серийный номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> от поставщика <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Ошибка при загрузке расширения</translation>
 <translation id="6322279351188361895">Не удалось прочитать закрытый ключ.</translation>
 <translation id="6391538222494443604">Каталог входа должен существовать.</translation>
 <translation id="641087317769093025">Не удалось распаковать расширение</translation>

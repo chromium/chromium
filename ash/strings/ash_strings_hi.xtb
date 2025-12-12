@@ -1026,7 +1026,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ज़रूरी सूचना}one{# ज़रूरी सूचना}other{# ज़रूरी सूचनाएं}}</translation>
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
 <translation id="4451374464530248585">Alt + डाउन ऐरो कीबोर्ड शॉर्टकट बदल गया है. Page Down बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + डाउन ऐरो को दबाएं.</translation>
-<translation id="4453876312474547652">Ctrl + V को दबाकर रखने पर, आपको क्लिपबोर्ड दिखेगा. इस शॉर्टकट को बंद करने के लिए, chrome://flags में #clipboard-history-longpress फ़्लैग बंद करें. अगर Lacros का इस्तेमाल किया जा रहा है, तो os://flags में जाकर बंद करें.</translation>
 <translation id="445765352722456792">सुझावों को पसंद के मुताबिक बनाएं</translation>
 <translation id="4458688154122353284">स्क्रीन को रिकॉर्ड करना बंद करें</translation>
 <translation id="445923051607553918">वाई-फ़ाई  नेटवर्क से जुड़ें</translation>

@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">അടുത്തിടെയുള്ള <ph name="TOTAL_COUNT" /> ഫോട്ടോകളിൽ <ph name="INDEX" />-മത്തേത്.</translation>
 <translation id="2201687081523799384">Google Tasks ചുരുക്കുക</translation>
 <translation id="2208323208084708176">ഏകീകൃത ഡെസ്‌ക്‌ടോപ്പ് മോഡ്</translation>
+<translation id="2210311543574621570">നിങ്ങൾ Ctrl + V അമർത്തിപ്പിടിക്കുമ്പോൾ ക്ലിപ്പ്ബോർഡ് നിങ്ങൾക്ക് കാണാം. chrome://flags-ൽ #clipboard-history-longpress ഫ്ലാഗ് പ്രവർത്തനരഹിതമാക്കി നിങ്ങൾക്ക് ഈ കുറുക്കുവഴി ഓഫാക്കാം.</translation>
 <translation id="2215920961700443347">ഇന്റർനെറ്റ് ഇല്ല. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2222841058024245321">ഡെസ്ക് 7</translation>
 <translation id="2223384056430485343">സ്ക്രീൻ വിഭജന മോഡിൽ</translation>
@@ -874,6 +875,7 @@
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="397726367135689299">ബാറ്ററി ശരിയായി ചാർജ് ആകുന്നുണ്ടാകില്ല.</translation>
 <translation id="3977512764614765090">ബാറ്ററി <ph name="PERCENTAGE" />% ഉണ്ട്, ചാർജ് ചെയ്യുകയുമാണ്.</translation>
+<translation id="3978162107953847778">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും Google Drive-ഉം പോലുള്ള ഇടങ്ങളിൽ നിന്ന് ലിങ്കുകൾ ചേർക്കുക. നിങ്ങൾക്ക് ഇമോജികളും ചിത്ര ഫയലുകളും മറ്റും ചേർക്കുകയും ചെയ്യാം. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">ഓഡിയോ ഔട്ട്പുട്ട് മാറണോ?</translation>
 <translation id="3984536049089846927">അടുത്ത പേജ്</translation>
 <translation id="3986082989454912832">കോൾ സ്വീകരിക്കുക</translation>
@@ -1024,7 +1026,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{പ്രധാനപ്പെട്ട ഒരു അറിയിപ്പ്}other{പ്രധാനപ്പെട്ട # അറിയിപ്പുകൾ}}</translation>
 <translation id="4450893287417543264">വീണ്ടും കാണിക്കരുത്</translation>
 <translation id="4451374464530248585">'Alt + താഴേക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Page Down കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ + താഴേക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
-<translation id="4453876312474547652">നിങ്ങൾ Ctrl + V അമർത്തിപ്പിടിക്കുമ്പോൾ ക്ലിപ്പ്ബോർഡ് നിങ്ങൾക്ക് കാണാം. chrome://flags (Lacros ആണ് ഉപയോഗിക്കുന്നതെങ്കിൽ os://flags)-ൽ #clipboard-history-longpress ഫ്ലാഗ് പ്രവർത്തനരഹിതമാക്കി നിങ്ങൾക്ക് ഈ കുറുക്കുവഴി ഓഫാക്കാം.</translation>
 <translation id="445765352722456792">നിർദ്ദേശങ്ങൾ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="4458688154122353284">സ്ക്രീൻ റെക്കോർഡിംഗ് നിർത്തുക</translation>
 <translation id="445923051607553918">Wi-Fi നെറ്റ്‌വര്‍ക്കില്‍ അംഗമാകുക</translation>
@@ -1600,6 +1601,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: സജീവമാക്കുന്നു...</translation>
 <translation id="6274202259872570803">സ്ക്രീൻകാസ്റ്റ്</translation>
+<translation id="6274422179279280249">ലിങ്കുകളും ഇമോജികളും മറ്റും ചേർക്കുക. Google AI ഉപയോഗിച്ച് എഴുതാനുള്ള സഹായവും നേടാം. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">പേജ് ഉറവിടം കാണുക</translation>
 <translation id="6285871695023807425">കലണ്ടറിൽ ചേർക്കുക</translation>
 <translation id="6288235558961782912">രക്ഷിതാവിന്റെ അനുമതിയോടെ <ph name="USER_EMAIL_ADDRESS" /> എന്നത് പിന്നീട് വീണ്ടും ചേർക്കാനാവും.</translation>

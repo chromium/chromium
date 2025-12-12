@@ -240,7 +240,7 @@
 <translation id="1864266050569350424">En un sitio en el que hayas guardado una contraseña, presiona el campo de contraseña de acceso.</translation>
 <translation id="1872096359983322073">Linterna</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
-<translation id="1881621406744213161">Invita a familiares</translation>
+<translation id="1881621406744213161">Invita a miembros de tu familia</translation>
 <translation id="188237709236611317">Barra de menú con orden inteligente</translation>
 <translation id="1883255238294161206">Ocultar lista</translation>
 <translation id="1888854257756214946">Seleccionar contraseña…</translation>
@@ -329,7 +329,6 @@
 <translation id="219283042927675668">Pestañas en el grupo</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="2196428379625389579">Buscar en la Web</translation>
-<translation id="2198001751007276170">Reemplaza las contraseñas</translation>
 <translation id="2199562093267256223">Esta acción borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">No hay una cuenta de correo electrónico</translation>
 <translation id="2214453882118345682">Compra, identifica y traduce lo que ves con la cámara.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">Pellizca para cambiar el tamaño</translation>
 <translation id="3940195383040445971">Realizar seguimiento de precios en las pestañas</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Cerrar {COUNT} pestaña}other{Cerrar {COUNT} pestañas}}</translation>
+<translation id="3946483119107054883">Descargar en formato CSV</translation>
 <translation id="3948600256434252210">Puedes deslizar el dedo hacia la derecha para navegar en modo Incógnito.</translation>
 <translation id="3949712484278252781">Tus conversaciones con Gemini y tus <ph name="GOOGLE_WORKSPACE_DATA" /> no se usarán para mejorar modelos de IA generativa y ningún revisor humano los analizará.</translation>
 <translation id="3950479158728806902">Crear automáticamente una llave de acceso para acceder más rápido</translation>
@@ -953,7 +953,7 @@
 <translation id="4691892551491778176">Cuando usas esta función, el contenido de las páginas y las URLs se envían a Google, pero no se utilizarán para mejorar modelos de IA generativa. Puedes desactivar esto en la configuración en cualquier momento.</translation>
 <translation id="4697240968720007067">Obtén las mejores apps de Google con un solo toque</translation>
 <translation id="4699172675775169585">Imágenes y archivos almacenados en caché</translation>
-<translation id="4709570498586527752">Las funciones más pertinentes para ti en diferentes momentos</translation>
+<translation id="4709570498586527752">Funciones más pertinentes para ti en diferentes momentos</translation>
 <translation id="4717844083556844785">La página web está en modo Incógnito</translation>
 <translation id="4719927025381752090">Ofrecer la traducción</translation>
 <translation id="4720530280568305198">Tu selección se abrió en una pestaña nueva</translation>
@@ -1346,7 +1346,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6100676328067737810">Tus datos se guardarán en tu Cuenta de Google, <ph name="USER_EMAIL" /></translation>
 <translation id="610083648014322104">Obtén respuestas pertinentes basadas en el contenido de la página en la que te encuentras</translation>
 <translation id="6103540626693881831">Encriptación integrada en el dispositivo</translation>
-<translation id="611361228753138223">Los sitios que visitaste recientemente en este dispositivo</translation>
+<translation id="611361228753138223">Sitios visitados recientemente en este dispositivo</translation>
 <translation id="611705554202268369">Mantén presionada la pestaña para agregarla a un grupo de pestañas</translation>
 <translation id="6117260878488959646">Se produjo un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="6122191549521593678">En línea</translation>
@@ -1553,7 +1553,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6782531425936234573">Exportar datos</translation>
 <translation id="6791425686608802741">Presiona "Agregar pestaña a un grupo nuevo".</translation>
 <translation id="6794476726485507147">Elige una fecha y hora para recibir una notificación de recordatorio para volver a visitar esta página</translation>
-<translation id="6795481620482106033">Datos no válidos</translation>
 <translation id="6797543908718012274">Activar el Modo de lectura</translation>
 <translation id="6806550742467879742">Herramientas de la página</translation>
 <translation id="6807287147325542056">Contraseñas en otras apps</translation>
@@ -1595,6 +1594,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="693761253105515415">Establece una contraseña</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6950522403736391608">Ocultos</translation>
+<translation id="6962809930976936328">Obtén estadísticas con Gemini</translation>
 <translation id="6964300328304469089">Selección actual: <ph name="NAME" />, <ph name="EMAIL" />. Elige una cuenta.</translation>
 <translation id="6964760285928603117">Quitar del grupo</translation>
 <translation id="6965382102122355670">Aceptar</translation>
@@ -1911,6 +1911,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8114753159095730575">El archivo ya se puede descargar. Las opciones disponibles se muestran junto a la parte inferior de la pantalla.</translation>
 <translation id="8123502380991596210">Ocultar la opción Novedades</translation>
 <translation id="8123953306357309250">¿Quieres cancelar la sincronización? Puedes activar la sincronización en la configuración en cualquier momento.</translation>
+<translation id="8130712116203026166">Dame un resumen de una línea y estadísticas útiles más allá de esta página. Usa un tono informal y conciso. No uses más de 100 palabras.</translation>
 <translation id="81313319706244542">2. Presiona Contraseñas</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132598642024322408">El precio actual es <ph name="PRICE" />; antes costaba <ph name="PREVIOUS_PRICE" />.</translation>

@@ -204,6 +204,7 @@
 <translation id="3112458742631356345">‏حَظَر Chrome عملية التنزيل هذه لأن الملف لا يتم تنزيله عادةً، وقد يكون خطيرًا.</translation>
 <translation id="3114643501466072395">‏للتحقُّق مما إذا كانت كلمات المرور الأخرى آمنة من عمليات اختراق البيانات ومشاكل الأمان الأخرى، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول إلى متصفِّح Chrome<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">‏حَظَر Chrome عملية التنزيل هذه لأنّ ملف الأرشيف يتضمّن ملفات أخرى قد تخفي برامج ضارة</translation>
+<translation id="3124332159330678621">‏يمكنك تخصيص Chrome لإضفاء مظهر جديد على المتصفِّح.</translation>
 <translation id="3130333203120345554">بحث جديد</translation>
 <translation id="3135560418014806498">‏إضافة ملف شخصي على Chrome</translation>
 <translation id="3137969841538672700">اسحب للبحث</translation>
@@ -270,6 +271,7 @@
 <translation id="3885770153807205175">أداة اختيار اللغة</translation>
 <translation id="3889417619312448367">‏إزالة Google Chrome</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
+<translation id="3906096710440765802">‏يُرجى تسجيل الدخول إلى Chrome للوصول إلى كلمات المرور والإشارات المرجعية وغيرها على جميع أجهزتك</translation>
 <translation id="3941890832296813527">خطأ في التثبيت: اسم ملف أداة التثبيت غير صالح أو غير متوافق.</translation>
 <translation id="395904275706073188">لا يمكن قراءة الصفحات المحمية. ننصحك بتجربة الميزة على صفحة مختلفة.</translation>
 <translation id="3968962723676998462">‏يُرجى إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -492,6 +494,7 @@
 <translation id="6288580400488258237">‏ننصحك بضبط Google Chrome كمتصفّح تلقائي وتثبيته في شريط المهام</translation>
 <translation id="6291089322031436445">‏تطبيقات إصدار مطوري البرامج من Chrome</translation>
 <translation id="6291549208091401781">‏تم تثبيت Google Chrome من قبل لجميع المستخدمين على الكمبيوتر.</translation>
+<translation id="6311220991371174222">‏تعذّر بدء تشغيل Chrome بسبب حدوث خطأ ما أثناء فتح ملفك الشخصي. حاول إعادة تشغيل Chrome.</translation>
 <translation id="6319856120645568262">‏يحتاج Chrome إلى إذن لتتبُّع اليدين وإنشاء خريطة للبيئة المحيطة بك</translation>
 <translation id="6321592572353357376">‏تطلب منك الإضافة "<ph name="EXTENSION_NAME" />" تسجيل الدخول إلى Chrome</translation>
 <translation id="6326175484149238433">‏إزالة من Chrome</translation>
@@ -620,9 +623,11 @@
 <translation id="7655472416356262023">‏إزالة الحساب من Chrome</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7670287553302121848">‏يتطلب حساب Chrome إعادة المصادقة</translation>
+<translation id="7675756456029023637">‏طرح سؤال في Chrome</translation>
 <translation id="769538538642757151">‏سيُعلِمك Chrome في حال العثور على اقتراحات مطلوب مراجعتها.</translation>
 <translation id="769906121737764913">‏إغلاق Gemini في الإصدار التجريبي من Chrome</translation>
 <translation id="7716950018788545737">انتهت المهام.</translation>
+<translation id="7723388585204724670">‏إعادة الضبط على المظهر التلقائي في Chrome</translation>
 <translation id="77283119132245232">تقدِّم هذه الخدمة خدمات تتبُّع النظام لـ <ph name="BROWSER_NAME" />. وفي حال إيقاف هذه الخدمة، لن تتضمّن بيانات تتبُّع الأداء التي ينشئها المتصفّح الأحداث على مستوى النظام، مثل أحداث تبديل السياق وأحداث سلسلة التعليمات الجاهزة.</translation>
 <translation id="7736869414036750079">‏تطلُب المؤسسة منك تسجيل الدخول إلى Chrome</translation>
 <translation id="7747138024166251722">تعذر على أداة المثبِّت إنشاء دليل مؤقت. يُرجى التحقق من وجود مساحة خالية على القرص وتوفر الإذن اللازم لتثبيت البرنامج.</translation>

@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appvy: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Detta tillägg omfattar nyckelfilen <ph name="KEY_PATH" />. Du vill antagligen inte göra detta.</translation>
 <translation id="5486326529110362464">Det angivna värdet för den privata nyckeln måste finnas.</translation>
+<translation id="5707185214361380026">Det gick inte att läsa in tillägget från:</translation>
 <translation id="5972529113578162692">Administratören för den här datorn kräver att <ph name="EXTENSION_NAME" /> installeras. Det kan inte avinstalleras.</translation>
 <translation id="6027032947578871493">Okänd produkt (<ph name="PRODUCT_ID" />) från <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> från leverantören <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Ett fel uppstod när tillägg skulle läsas in</translation>
 <translation id="6322279351188361895">Det gick inte att läsa den privata nyckeln.</translation>
 <translation id="6391538222494443604">Indatakatalog måste finnas.</translation>
 <translation id="641087317769093025">Det gick inte att packa upp tillägget</translation>

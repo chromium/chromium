@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">Zkraťte prosím tento text na <ph name="MAX_CHARACTERS" /> znaků nebo méně. (Aktuálně má <ph name="CURRENT_LENGTH" /> znaků.)</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. týden, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Stopa <ph name="NUMBER" /></translation>
+<translation id="2500270406326775625">Datová adresa URL</translation>
 <translation id="2507943997699731163">Vyplňte prosím toto pole.</translation>
 <translation id="2613802280814924224">Zadejte platnou hodnotu. Nejbližší platná hodnota je <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Odeslat</translation>

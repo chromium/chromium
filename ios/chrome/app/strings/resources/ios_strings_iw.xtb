@@ -329,7 +329,6 @@
 <translation id="219283042927675668">כרטיסיות בקבוצה</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
 <translation id="2196428379625389579">חיפוש באינטרנט</translation>
-<translation id="2198001751007276170">החלפת סיסמאות</translation>
 <translation id="2199562093267256223">הפעולה הזו תמחק את הקבוצה מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>
 <translation id="2202084845446535117">אין חשבונות אימייל</translation>
 <translation id="2214453882118345682">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">כדי לשנות את הגודל, פותחים או סוגרים את האצבעות</translation>
 <translation id="3940195383040445971">מעקב אחר המחירים בכרטיסיות</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{סגירת כרטיסייה אחת ({COUNT})}one{סגירת {COUNT} כרטיסיות}two{סגירת {COUNT} כרטיסיות}other{סגירת {COUNT} כרטיסיות}}</translation>
+<translation id="3946483119107054883">‏הורדה כקובץ CSV</translation>
 <translation id="3948600256434252210">כדי לגלוש במצב פרטי, אפשר להחליק ימינה.</translation>
 <translation id="3949712484278252781">‏השיחות שלך עם Gemini ו<ph name="GOOGLE_WORKSPACE_DATA" /> לא ייבדקו על ידי בודקים אנושיים ולא ישמשו לשיפור מודלים של AI גנרטיבי.</translation>
 <translation id="3950479158728806902">יצירה אוטומטית של מפתח גישה כדי להיכנס לחשבון מהר יותר</translation>
@@ -1553,7 +1553,6 @@
 <translation id="6782531425936234573">ייצוא נתונים</translation>
 <translation id="6791425686608802741">לוחצים על "הוספת הכרטיסייה לקבוצה חדשה"</translation>
 <translation id="6794476726485507147">אפשר לבחור תאריך ושעה לתזכורת לחזור לדף הזה</translation>
-<translation id="6795481620482106033">נתונים לא תקינים</translation>
 <translation id="6797543908718012274">הפעלת מצב הקריאה</translation>
 <translation id="6806550742467879742">כלים בדף</translation>
 <translation id="6807287147325542056">סיסמאות ששמורות באפליקציות אחרות</translation>
@@ -1595,6 +1594,7 @@
 <translation id="693761253105515415">עליך להגדיר קוד גישה</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6950522403736391608">מוסתרים</translation>
+<translation id="6962809930976936328">‏תובנות מ-Gemini</translation>
 <translation id="6964300328304469089">החשבון הנוכחי: <ph name="NAME" />, <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="6964760285928603117">הסרה מהקבוצה</translation>
 <translation id="6965382102122355670">אישור</translation>
@@ -1911,6 +1911,7 @@
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>
 <translation id="8123502380991596210">הסתרת האפשרות 'מה חדש'</translation>
 <translation id="8123953306357309250">לבטל את הסנכרון? אפשר להפעיל את הסנכרון בכל זמן דרך ההגדרות.</translation>
+<translation id="8130712116203026166">אני רוצה לקבל סיכום בשורה אחת, ותובנות שימושיות לא רק מהדף הזה. טון הדיבור צריך להיות תמציתי וקליל. לא יותר מ-100 מילים.</translation>
 <translation id="81313319706244542">2. לוחצים על 'סיסמאות'</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8132598642024322408">עכשיו במחיר <ph name="PRICE" />, היה <ph name="PREVIOUS_PRICE" />.</translation>

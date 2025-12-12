@@ -329,7 +329,6 @@
 <translation id="219283042927675668">Lapok a csoportban</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
 <translation id="2196428379625389579">Keresés az interneten</translation>
-<translation id="2198001751007276170">Jelszavak cseréje</translation>
 <translation id="2199562093267256223">Ezzel törli a csoportot minden olyan eszközről, amelyen be van jelentkezve ide: <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Nincs e-mail-fiók</translation>
 <translation id="2214453882118345682">Vásárlás, fordítás és a látott dolgok azonosítása a kamera segítségével.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">Húzza össze ujjait az átméretezéshez</translation>
 <translation id="3940195383040445971">Árkövetés a megnyitott lapokon</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} lap bezárása}other{{COUNT} lap bezárása}}</translation>
+<translation id="3946483119107054883">Letöltés CSV-fájlba</translation>
 <translation id="3948600256434252210">Jobbra csúsztatva inkognitó módban böngészhet.</translation>
 <translation id="3949712484278252781">Sem a Geminivel folytatott beszélgetéseit, sem <ph name="GOOGLE_WORKSPACE_DATA" /> nem vizsgálják felül ellenőrök, és nem használjuk fel őket a generatív AI-modellek továbbfejlesztéséhez.</translation>
 <translation id="3950479158728806902">Azonosítókulcs automatikus létrehozása a gyorsabb bejelentkezéshez</translation>
@@ -1553,7 +1553,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6782531425936234573">Adatok exportálása</translation>
 <translation id="6791425686608802741">Koppintson a „Lap hozzáadása új csoporthoz” lehetőségre.</translation>
 <translation id="6794476726485507147">Válasszon ki egy dátumot és időpontot, hogy emlékeztető értesítést kapjon az oldal újbóli felkereséséhez</translation>
-<translation id="6795481620482106033">Érvénytelen adat</translation>
 <translation id="6797543908718012274">Olvasási mód bekapcsolása</translation>
 <translation id="6806550742467879742">Oldaleszközök</translation>
 <translation id="6807287147325542056">Más alkalmazásoknál használt jelszavak</translation>
@@ -1595,6 +1594,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="693761253105515415">Biztonsági kód beállítása</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6950522403736391608">Rejtett</translation>
+<translation id="6962809930976936328">Statisztikákat kérhet a Geminitől</translation>
 <translation id="6964300328304469089">Jelenleg kiválasztva: <ph name="NAME" />, <ph name="EMAIL" />. Válasszon fiókot.</translation>
 <translation id="6964760285928603117">Eltávolítás a csoportból</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1911,6 +1911,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8114753159095730575">A fájlletöltés megvalósítható. A beállításokat a képernyő alján nyithatja meg.</translation>
 <translation id="8123502380991596210">Az újdonságok elrejtése</translation>
 <translation id="8123953306357309250">Megszakítja a szinkronizálást? A szinkronizálás bármikor bekapcsolható a beállításokban.</translation>
+<translation id="8130712116203026166">Egy egysoros összefoglalót és hasznos statisztikákat kérek erről az oldalról. Használj tömör, kötetlen hangvételt. A terjedelem legfeljebb 100 szó legyen.</translation>
 <translation id="81313319706244542">2. Koppintson a Jelszavak elemre.</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8132598642024322408">Most <ph name="PRICE" />, korábban <ph name="PREVIOUS_PRICE" /> volt.</translation>

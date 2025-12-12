@@ -329,7 +329,6 @@
 <translation id="219283042927675668">Oortjies in groep</translation>
 <translation id="2194856509914051091">Dinge om in ag te neem</translation>
 <translation id="2196428379625389579">Soek op web</translation>
-<translation id="2198001751007276170">Vervang wagwoorde</translation>
 <translation id="2199562093267256223">Dit sal die groep uitvee op alle toestelle wat by <ph name="USER_EMAIL" /> aangemeld is.</translation>
 <translation id="2202084845446535117">Geen e-posrekeninge nie</translation>
 <translation id="2214453882118345682">Koop, vertaal en identifiseer wat jy sien met jou kamera.</translation>
@@ -755,6 +754,7 @@
 <translation id="3934905113567851655">Knyp om grootte te verander</translation>
 <translation id="3940195383040445971">Spoor pryse na in oortjies</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Maak {COUNT} oortjie toe}other{Maak {COUNT} oortjies toe}}</translation>
+<translation id="3946483119107054883">Laai af na CSV</translation>
 <translation id="3948600256434252210">Jy kan ook regs swiep om in Incognito te blaai.</translation>
 <translation id="3949712484278252781">Nóg jou gesprekke met Gemini, nóg jou <ph name="GOOGLE_WORKSPACE_DATA" /> sal deur menslike beoordelaars hersien word of gebruik word om generatiewe KI-modelle te verbeter.</translation>
 <translation id="3950479158728806902">Skep outomaties ’n toegangsleutel om vinniger aan te meld</translation>
@@ -1553,7 +1553,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6782531425936234573">Voer data uit</translation>
 <translation id="6791425686608802741">Tik op “Voeg oortjie by nuwe groep”</translation>
 <translation id="6794476726485507147">Kies ’n datum en tyd om ’n onthounotakennisgewing te kry om hierdie bladsy weer te besoek</translation>
-<translation id="6795481620482106033">Ongeldige data</translation>
 <translation id="6797543908718012274">Skakel Leesmodus aan</translation>
 <translation id="6806550742467879742">Bladsynutsgoed</translation>
 <translation id="6807287147325542056">Wagwoorde in ander apps</translation>
@@ -1595,6 +1594,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="693761253105515415">Stel ’n wagkode</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="6950522403736391608">Versteek</translation>
+<translation id="6962809930976936328">Kry insigte met Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> is tans gekies. Kies ’n rekening.</translation>
 <translation id="6964760285928603117">Verwyder uit groep</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1911,6 +1911,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8114753159095730575">Lêer kan afgelaai word. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="8123502380991596210">Versteek Wat is nuut</translation>
 <translation id="8123953306357309250">Kanselleer sinkronisering? Jy kan sinkronisering enige tyd in instellings aanskakel.</translation>
+<translation id="8130712116203026166">Gee my ’n opsomming van een reël en nuttige insigte buite hierdie bladsy. Gebruik ’n bondige, informele toon. Beperk tot 100 woorde.</translation>
 <translation id="81313319706244542">2. Tik op Wagwoorde</translation>
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8132598642024322408">Nou <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>

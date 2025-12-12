@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Foto baru-baru ini <ph name="INDEX" /> daripada <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Kuncupkan Google Tasks</translation>
 <translation id="2208323208084708176">Mod desktop bersatu</translation>
+<translation id="2210311543574621570">Anda akan melihat papan keratan apabila anda menekan dan menahan Ctrl + V. Anda boleh mematikan pintasan ini dengan melumpuhkan bendera #clipboard-history-longpress dalam chrome://flags.</translation>
 <translation id="2215920961700443347">Tiada Internet. Sambung kepada Internet dan cuba lagi.</translation>
 <translation id="2222841058024245321">Meja 7</translation>
 <translation id="2223384056430485343">Pada skrin pisah</translation>
@@ -1025,7 +1026,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan penting}other{# pemberitahuan penting}}</translation>
 <translation id="4450893287417543264">Jangan tunjukkan lagi</translation>
 <translation id="4451374464530248585">Pintasan papan kekunci Alt + Anak Panah ke Bawah telah berubah. Untuk menggunakan kekunci Page Down, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Bawah.</translation>
-<translation id="4453876312474547652">Anda akan melihat papan keratan apabila anda menekan dan menahan Ctrl + V. Anda boleh mematikan pintasan ini dengan melumpuhkan bendera #clipboard-history-longpress dalam chrome://flags (os://flags jika anda menggunakan Lacros).</translation>
 <translation id="445765352722456792">Sesuaikan cadangan</translation>
 <translation id="4458688154122353284">Hentikan rakaman skrin</translation>
 <translation id="445923051607553918">Sertai rangkaian Wi-Fi</translation>

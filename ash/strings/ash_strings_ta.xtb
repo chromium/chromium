@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">சமீபத்திய படம்: <ph name="TOTAL_COUNT" /> இல் <ph name="INDEX" />வது.</translation>
 <translation id="2201687081523799384">Google Tasksஸைச் சுருக்கும்</translation>
 <translation id="2208323208084708176">ஒன்றிணைந்த டெஸ்க்டாப் பயன்முறை</translation>
+<translation id="2210311543574621570">Ctrl + V பட்டன்களை அழுத்திப் பிடித்திருக்கும்போது கிளிப்போர்டு காட்டப்படும். chrome://flags தளத்தில் #clipboard-history-longpress கொடியை முடக்குவதன் மூலம் இந்த ஷார்ட்கட்டை ஆஃப் செய்யலாம்.</translation>
 <translation id="2215920961700443347">இணைய இணைப்பு இல்லை. இணையத்துடன் இணைத்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="2222841058024245321">டெஸ்க் 7</translation>
 <translation id="2223384056430485343">திரைப் பிரிப்பில்</translation>
@@ -874,6 +875,7 @@
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
 <translation id="397726367135689299">பேட்டரி சார்ஜிங் நம்பகமற்றதாக இருக்கலாம்.</translation>
 <translation id="3977512764614765090">பேட்டரி <ph name="PERCENTAGE" />% நிரம்பியுள்ளது, தொடர்ந்து சார்ஜ் ஆகிறது.</translation>
+<translation id="3978162107953847778">இதுவரை இணையத்தில் பார்த்தவை, Google Drive போன்றவற்றில் இருந்து இணைப்புகளைச் சேர்க்கலாம். ஈமோஜிக்கள், பட ஃபைல்கள் மற்றும் பலவற்றையும் சேர்க்கலாம். <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">ஆடியோ அவுட்புட்டை மாற்றவா?</translation>
 <translation id="3984536049089846927">அடுத்த பக்கம்</translation>
 <translation id="3986082989454912832">பதிலளி</translation>
@@ -1024,7 +1026,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{ஒரு முக்கியமான அறிவிப்பு}other{# முக்கியமான அறிவிப்புகள்}}</translation>
 <translation id="4450893287417543264">மீண்டும் காட்டாதே</translation>
 <translation id="4451374464530248585">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Alt + கீழ்நோக்கிய அம்புக்குறி. Page Down பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + கீழ்நோக்கிய அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
-<translation id="4453876312474547652">Ctrl + V பட்டன்களை அழுத்திப் பிடித்திருக்கும்போது கிளிப்போர்டு காட்டப்படும். chrome://flags (Lacros எனில் os://flags) தளத்தில் #clipboard-history-longpress கொடியை முடக்குவதன் மூலம் இந்த ஷார்ட்கட்டை முடக்கலாம்.</translation>
 <translation id="445765352722456792">பரிந்துரைகளைப் பிரத்தியேகமாக்கு</translation>
 <translation id="4458688154122353284">ஸ்கிரீனை ரெக்கார்டு செய்வதை நிறுத்து</translation>
 <translation id="445923051607553918">வைஃபை நெட்வொர்க்கில் சேர்</translation>
@@ -1600,6 +1601,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: செயல்படுத்துகிறது...</translation>
 <translation id="6274202259872570803">ஸ்க்ரீன்காஸ்ட்</translation>
+<translation id="6274422179279280249">இணைப்புகள், ஈமோஜிக்கள் மற்றும் பலவற்றைச் சேர்க்கலாம். Google AI மூலம் எழுதுவதற்கான உதவியையும் நீங்கள் பெறலாம். <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">பக்கத்தின் மூலத்தைக் காட்டும்</translation>
 <translation id="6285871695023807425">Calendarரில் சேர்</translation>
 <translation id="6288235558961782912">பெற்றோரின் அனுமதியுடன் <ph name="USER_EMAIL_ADDRESS" /> பயனரைப் பின்னர் மறுபடியும் சேர்க்கலாம்.</translation>

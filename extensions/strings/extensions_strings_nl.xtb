@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Deze extensie bevat het sleutelbestand '<ph name="KEY_PATH" />'. Dit is waarschijnlijk niet je bedoeling.</translation>
 <translation id="5486326529110362464">Invoerwaarde voor persoonlijke sleutel moet aanwezig zijn.</translation>
+<translation id="5707185214361380026">Laden van extensie mislukt vanuit:</translation>
 <translation id="5972529113578162692">De beheerder van deze machine vereist dat <ph name="EXTENSION_NAME" /> wordt geïnstalleerd. Deze kan niet worden verwijderd.</translation>
 <translation id="6027032947578871493">Onbekend product <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> van leverancier <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Fout bij laden van extensie</translation>
 <translation id="6322279351188361895">Lezen van persoonlijke sleutel is mislukt.</translation>
 <translation id="6391538222494443604">Er moet een invoerdirectory zijn.</translation>
 <translation id="641087317769093025">Kan extensie niet uitpakken</translation>

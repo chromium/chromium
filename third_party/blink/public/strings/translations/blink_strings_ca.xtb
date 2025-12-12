@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">Escurceu aquest text a un màxim de <ph name="MAX_CHARACTERS" /> caràcters (ara n'esteu utilitzant <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Setmana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
+<translation id="2500270406326775625">URL de dades</translation>
 <translation id="2507943997699731163">Empleneu aquest camp.</translation>
 <translation id="2613802280814924224">Introduïu un valor vàlid. El valor vàlid més proper és <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Envia</translation>

@@ -874,6 +874,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="397726367135689299">Nabíjení baterie může být nespolehlivé.</translation>
 <translation id="3977512764614765090">Baterie je nabitá na <ph name="PERCENTAGE" /> % a nabíjí se.</translation>
+<translation id="3978162107953847778">Vkládejte odkazy z míst, jako je historie prohlížení nebo Disk Google. Můžete vkládat i emodži, obrázkové soubory a podobně. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Přepnout zvukový výstup?</translation>
 <translation id="3984536049089846927">Další stránka</translation>
 <translation id="3986082989454912832">Přijmout</translation>
@@ -1024,7 +1025,6 @@ Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</trans
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 důležité oznámení}few{# důležitá oznámení}many{# důležitého oznámení}other{# důležitých oznámení}}</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
 <translation id="4451374464530248585">Klávesová zkratka Alt + šipka dolů se změnila. Pokud chcete použít klávesu Page Down, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku dolů.</translation>
-<translation id="4453876312474547652">Když podržíte Ctrl + V, zobrazí se schránka. Tuto zkratku můžete vypnout vypnutím příznaku #clipboard-history-longpress na stránce chrome://flags (os://flags, pokud používáte Lacros).</translation>
 <translation id="445765352722456792">Upravit návrhy</translation>
 <translation id="4458688154122353284">Zastavit nahrávání obrazovky</translation>
 <translation id="445923051607553918">Připojit se k síti Wi-Fi</translation>
@@ -1600,6 +1600,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Probíhá aktivace...</translation>
 <translation id="6274202259872570803">Záznam obrazovky</translation>
+<translation id="6274422179279280249">Vkládejte odkazy, emodži a podobně. Taky si můžete nechat s psaním pomoct od Google AI. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">Zobrazit zdrojový kód stránky</translation>
 <translation id="6285871695023807425">Přidat do Kalendáře</translation>
 <translation id="6288235558961782912">Adresu <ph name="USER_EMAIL_ADDRESS" /> můžete s povolením rodiče přidat později</translation>

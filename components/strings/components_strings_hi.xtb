@@ -855,6 +855,7 @@
 <translation id="2359629602545592467">एक से ज़्यादा</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="236000571258713023">वाहन</translation>
+<translation id="2360131275005204317">एयरलाइन</translation>
 <translation id="2361263712565360498">275 x 395 मि॰मी॰</translation>
 <translation id="236340516568226369">टॉगल मेन्यू का साइज़ बदलें</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> डालें</translation>
@@ -1248,6 +1249,7 @@
 <translation id="301521992641321250">ऑटोमैटिक रूप से ब्लॉक है</translation>
 <translation id="3016780570757425217">आपकी जगह की जानकारी ऐक्सेस करने की</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, सुझाव हटाने के लिए पहले Tab और फिर Enter दबाएं.</translation>
+<translation id="3019738915977809060">बोर्डिंग पास को Wallet में सेव करें</translation>
 <translation id="3022959067768579802">मैसेज लिखना जारी रखें</translation>
 <translation id="3023165109041533893">साइट की ओर से सुझाए गए विज्ञापन सेटिंग दिखाने का विकल्प चुनने पर, आपके ब्राउज़िंग इतिहास और पहचान को सुरक्षित रखने में मदद मिलती है. साथ ही, इसका इस्तेमाल साइटों पर काम के विज्ञापन दिखाने के लिए किया जाता है. ब्राउज़िंग जारी रखने पर, आपकी विज़िट की गई साइट आपको काम के विज्ञापनों का सुझाव दे सकती है. ये सुझाव, आपकी गतिविधि के आधार पर दिए जाते हैं. सेटिंग में जाकर, इन साइटों की सूची देखी जा सकती है. साथ ही, इस सूची से उन साइटों को ब्लॉक किया जा सकता है जिनके सुझाव आपको नहीं चाहिए.</translation>
 <translation id="3024663005179499861">गलत नीति प्रकार</translation>
@@ -2307,7 +2309,6 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> भाषा पैक डाउनलोड किया जा रहा है... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> वेबसाइट आपके डिवाइस के स्थान की जानकारी का इस्तेमाल करना चाहती है</translation>
 <translation id="473414950835101501">आपके कैमरे का ऐक्सेस</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />मौजूदा डिफ़ॉल्ट सर्च इंजन<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">क्रोमियम को फिर से शुरू करें</translation>
 <translation id="4736934858538408121">वर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
@@ -2516,6 +2517,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, इस खोज से जुड़े सुझाव मिलने के बाद, अन्य सर्च शॉर्टकट देखने के लिए tab दबाएं</translation>
 <translation id="5052517576853118371">दिलचस्पी के मौजूदा विषय</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इस फ़ाइल को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}one{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इस फ़ाइल को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}other{आस-पास शेयर करने की सुविधा का इस्तेमाल करके इन फ़ाइलों को भेजने के लिए, अपने डिवाइस में (<ph name="DISK_SPACE_SIZE" />) जगह खाली करें}}</translation>
+<translation id="5056587122125565772">इमेज जनरेट करें</translation>
 <translation id="505757197798929356">खोलने की वजह बताएं (ज़रूरी है)</translation>
 <translation id="5058282932481719070">सेटिंग में, ऑटोमैटिक तरीके से भरने की बेहतर सुविधा के बारे में ज़्यादा जानें</translation>
 <translation id="5060419232449737386">कैप्शन सेटिंग</translation>
@@ -4051,7 +4053,6 @@
 <translation id="7525804896095537619">नाम वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
 <translation id="7526934274050461096">इस साइट से आपका कनेक्‍शन निजी नहीं है</translation>
 <translation id="7529884293139707752">घर पर शिक्षा</translation>
-<translation id="7530215951451994972">इमेज बनाएं</translation>
 <translation id="7531464389616946220">कार्ड स्कैन करें</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />, बुकमार्क खोजने के लिए Enter दबाएं</translation>
 <translation id="7534987659046836932">C7 साइज़ का लिफ़ाफ़ा</translation>

@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Bu uzantıda '<ph name="KEY_PATH" />' anahtar dosyası var. Muhtemelen istediğiniz bu değil.</translation>
 <translation id="5486326529110362464">Özel anahtara ilişkin giriş anahtarı olmalıdır.</translation>
+<translation id="5707185214361380026">Uzantı şuradan yüklenemedi:</translation>
 <translation id="5972529113578162692">Bu makinenin yöneticisi <ph name="EXTENSION_NAME" /> adlı uzantının yüklenmesini şart koşuyor. Uzantı kaldırılamaz.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> tarafından sağlanan <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">Uzantı Yükleme Hatası</translation>
 <translation id="6322279351188361895">Özel anahtar okunamadı.</translation>
 <translation id="6391538222494443604">Giriş dizininin olması gerekir.</translation>
 <translation id="641087317769093025">Uzantı açılamadı</translation>

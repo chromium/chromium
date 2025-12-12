@@ -247,7 +247,6 @@
 <translation id="2063047797624276601">သင့်အဖွဲ့အစည်းက ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ကို ဖွင့်ထားသည်</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်၍မရပါ}other{ဒေါင်းလုဒ် # ခု လုပ်၍မရပါ}}</translation>
 <translation id="2067805253194386918">စာသား</translation>
-<translation id="2072027001582274150">အသုံးမပြုသော (သို့) ထပ်နေသော တဘ်များ</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="2082238445998314030">အဖြေ <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2088833076121753253">အော်တိုဖြည့်ခြင်း စနစ်ထည့်သွင်းမှု အပြီးသတ်ရန် Chrome ကို ယခုပြန်စပါ။ သင့်တဘ်များ အလိုအလျောက် ပြန်ပွင့်မည်။</translation>
@@ -851,7 +850,6 @@
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> ဝဘ်စာမျက်နှာသို့ လင့်ခ်ကို မိတ္တူကူးနိုင်သည်။ ရင်းမြစ်- <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">ပိုကောင်းသောအကြောင်းအရာများ ရယူခြင်း</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
-<translation id="4698061626562952596">မသုံးသောတဘ်များကို ဤနေရာတွင် ပြန်ကြည့်နိုင်သည်</translation>
 <translation id="4698757800236023795">သုံးနေသည်များ (<ph name="ITEM_COUNT" /> ခု)</translation>
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="4710167854527459075">အသစ်ဆုံးဖြင့် စီရန်</translation>
@@ -966,7 +964,6 @@
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
 <translation id="5142281402488957685">ဝဘ်ပို့စ်အသစ်များ ပြန်လည် စတင်ရန် အောက်သို့ဆွဲချပါ</translation>
 <translation id="5144385790872094440">သင်ဝင်ကြည့်သော စာမျက်နှာအချို့ကို ကြိုဖွင့်ထားသည်။ Google ဝဘ်ဆိုက် (သို့) အက်ပ်မှ လင့်ခ်ချိတ်ထားသောအခါ Google ဆာဗာများမှတစ်ဆင့် စာမျက်နှာများကို ကြိုဖွင့်ထားနိုင်သည်။</translation>
-<translation id="5145887002054615868">ထပ်နေသော တဘ်များ (သို့) <ph name="DAYS_INACTIVE" /> ရက်ကြာ အသုံးမပြုသော တဘ်များကို ဤနေရာသို့ ရွှေ့ပြီး <ph name="AUTODELETE_SECTION" />။ ၎င်းကို <ph name="DECLUTTER_SETTINGS_TITLE" /> တွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="5152843274749979095">ပံ့ပိုးသည့်အက်ပ်များကို ထည့်သွင်းမထားပါ</translation>
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
 <translation id="5161262286013276579">လျှို့ဝှက်ကီးအတည်ပြုခြင်း စာမျက်နှာကို ဖွင့်ထားသည်</translation>

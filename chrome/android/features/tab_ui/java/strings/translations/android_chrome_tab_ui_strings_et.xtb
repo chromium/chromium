@@ -112,7 +112,7 @@
 <translation id="4871719318659334896">Grupi sulgemine</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{Taastage ja avage vahelehtede rühm (<ph name="TITLE_OF_GROUP" />) <ph name="TABS_COUNT_ONE" /> vahelehega, värviga <ph name="COLOR_NAME" />.}other{Taastage ja avage vahelehtede rühm (<ph name="TITLE_OF_GROUP" />) <ph name="TABS_COUNT_MANY" /> vahelehega, värviga <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4881695831933465202">Ava</translation>
-<translation id="4894777338623123366">Vahekaardikuva jagamine</translation>
+<translation id="4894777338623123366">Vahelehekuva jagamine</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Sule vaheleht}other{Sule vahelehed}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> grupid on salvestatud (sulgeb vahelehed ja kustutab grupid)</translation>
 <translation id="492284538114688557">Märgati hinnalangust</translation>

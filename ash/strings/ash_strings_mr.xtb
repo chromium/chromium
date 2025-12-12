@@ -342,6 +342,7 @@
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> पैकी <ph name="INDEX" /> अलीकडील फोटो.</translation>
 <translation id="2201687081523799384">Google Tasks कोलॅप्स करा</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटॉप मोड</translation>
+<translation id="2210311543574621570">तुम्ही Ctrl + V प्रेस करून धरून ठेवल्यावर तुम्हाला क्लिपबोर्ड दिसेल. तुम्ही chrome://flags मधील #clipboard-history-longpress फ्लॅग बंद करून हा शॉर्टकट बंद करू शकता.</translation>
 <translation id="2215920961700443347">इंटरनेट नाही. इंटरनेटशी कनेक्ट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2222841058024245321">डेस्‍क ७</translation>
 <translation id="2223384056430485343">स्प्लिट स्क्रीनमध्ये</translation>
@@ -874,6 +875,7 @@
 <translation id="397105322502079400">गणना करत आहे...</translation>
 <translation id="397726367135689299">बॅटरी चार्जिंग बेभरवशाचे असू शकते.</translation>
 <translation id="3977512764614765090">बॅटरी <ph name="PERCENTAGE" />% वर आहे आणि चार्ज होत आहे.</translation>
+<translation id="3978162107953847778">तुमचा ब्राउझिंग इतिहास आणि Google Drive यांसारख्या ठिकाणांवरून लिंक घाला. तुम्ही इमोजी, इमेज फाइल आणि आणखी बऱ्याच गोष्टीदेखील घालू शकता. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">ऑडिओ आउटपुट स्विच करायचे आहे का?</translation>
 <translation id="3984536049089846927">पुढील पेज</translation>
 <translation id="3986082989454912832">उत्तर</translation>
@@ -1024,7 +1026,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{एक महत्त्वाची सूचना}other{# महत्त्वाच्या सूचना}}</translation>
 <translation id="4450893287417543264">पुन्हा दाखवू नका</translation>
 <translation id="4451374464530248585">Alt + Down Arrow कीबोर्ड शॉर्टकट बदलला आहे. पेज डाउन की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + डाउन अ‍ॅरो वापरा.</translation>
-<translation id="4453876312474547652">तुम्ही Ctrl + V प्रेस करून धरून ठेवल्यावर तुम्हाला क्लिपबोर्ड दिसेल. तुम्ही chrome://flags (Lacros वापरत असल्यास, os://flags) मधील #clipboard-history-longpress फ्लॅग बंद करून हा शॉर्टकट बंद करू शकता.</translation>
 <translation id="445765352722456792">सूचना कस्टमाइझ करा</translation>
 <translation id="4458688154122353284">स्क्रीन रेकॉर्डिंग थांबवा</translation>
 <translation id="445923051607553918">वाय-फाय  नेटवर्कमध्ये सामील व्हा</translation>
@@ -1600,6 +1601,7 @@
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: सक्रिय करत आहे...</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6274422179279280249">लिंक, इमोजी आणि आणखी बरेच काही घाला. तुम्ही Google AI वापरून लिहिण्यातदेखील मदत मिळवू शकता. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">पेज स्रोत पहा</translation>
 <translation id="6285871695023807425">Calendar मध्ये जोडा</translation>
 <translation id="6288235558961782912">पालकाच्या परवानगीने <ph name="USER_EMAIL_ADDRESS" /> नंतर पुन्हा जोडता येईल.</translation>

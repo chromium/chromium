@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Gwedd ap: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Mae'r estyniad hwn yn cynnwys y ffeil allwedd '<ph name="KEY_PATH" />'. Mae'n debyg nad ydych eisiau gwneud hynny.</translation>
 <translation id="5486326529110362464">Rhaid i werth mewnbwn ar gyfer allwedd breifat fodoli.</translation>
+<translation id="5707185214361380026">Wedi methu â llwytho estyniad o:</translation>
 <translation id="5972529113578162692">Mae gweinyddwr y peiriant hwn yn ei gwneud yn ofynnol i osod <ph name="EXTENSION_NAME" />. Ni ellir ei ddadosod.</translation>
 <translation id="6027032947578871493">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan <ph name="VENDOR_NAME" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> gan y gwerthwr <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Gwall Llwytho Estyniad</translation>
 <translation id="6322279351188361895">Wedi methu â darllen allwedd breifat.</translation>
 <translation id="6391538222494443604">Rhaid i'r cyfeiriadur mewnbwn fodoli.</translation>
 <translation id="641087317769093025">Nid oedd modd dadsipio'r estyniad</translation>

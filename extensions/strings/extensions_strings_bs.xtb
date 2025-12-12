@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Ova ekstenzija uključuje fajl s ključem "<ph name="KEY_PATH" />". Vjerovatno to ne želite učiniti.</translation>
 <translation id="5486326529110362464">Mora postojati ulazna vrijednost za privatni ključ.</translation>
+<translation id="5707185214361380026">Nije uspjelo učitavanje ekstenzije iz:</translation>
 <translation id="5972529113578162692">Administrator ovog uređaja traži instaliranje ekstenzije <ph name="EXTENSION_NAME" />. Nije je moguće deinstalirati.</translation>
 <translation id="6027032947578871493">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> od dobavljača <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Greška pri učitavanju ekstenzije</translation>
 <translation id="6322279351188361895">Čitanje privatnog ključa nije uspjelo.</translation>
 <translation id="6391538222494443604">Mora postojati ulazni direktorij.</translation>
 <translation id="641087317769093025">Otpakiranje ekstenzije nije uspjelo</translation>

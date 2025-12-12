@@ -1025,7 +1025,6 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важливе сповіщення}one{# важливе сповіщення}few{# важливі сповіщення}many{# важливих сповіщень}other{# важливого сповіщення}}</translation>
 <translation id="4450893287417543264">Більше не показувати</translation>
 <translation id="4451374464530248585">Комбінацію клавіш Alt + стрілка вниз змінено. Щоб скористатися клавішею Page Down, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вниз.</translation>
-<translation id="4453876312474547652">Утримуйте комбінацію клавіш Ctrl + V, щоб з’явився буфер обміну. Щоб відключити цю комбінацію клавіш, зніміть прапорець #clipboard-history-longpress на сторінці chrome://flags (або os://flags в ОС Lacros).</translation>
 <translation id="445765352722456792">Налаштувати пропозиції</translation>
 <translation id="4458688154122353284">Зупинити запис екрана</translation>
 <translation id="445923051607553918">Увійти в мережу Wi-Fi</translation>
@@ -2192,7 +2191,7 @@
 <translation id="8237964652943995219">Наступний робочий стіл: <ph name="DESK_NAME" />. Робочий стіл <ph name="DESK_INDEX" /> із <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Ознайомтеся з коротким оглядом <ph name="PRODUCT_NAME" />. Щоб почати роботу, виконайте 5 кроків.</translation>
 <translation id="8239034820133090126">Активувати робочий стіл праворуч</translation>
-<translation id="8241650983304689286">Додати вкладку на новий розділений екран</translation>
+<translation id="8241650983304689286">Додати вкладку для нового паралельного перегляду</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" /></translation>
 <translation id="825129991941217170">Показати весь контент із Google Диска</translation>
 <translation id="8257510091797044096">Налаштування пристрою</translation>

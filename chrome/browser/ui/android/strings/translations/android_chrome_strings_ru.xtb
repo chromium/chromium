@@ -247,7 +247,6 @@
 <translation id="2063047797624276601">В вашей организации включен улучшенный Безопасный просмотр</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Не удалось скачать 1 файл.}one{Не удалось скачать # файл.}few{Не удалось скачать # файла.}many{Не удалось скачать # файлов.}other{Не удалось скачать # файла.}}</translation>
 <translation id="2067805253194386918">текст</translation>
-<translation id="2072027001582274150">Неиспользуемые или одинаковые вкладки</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2088833076121753253">Чтобы завершить настройку автозаполнения, перезапустите Chrome. Ваши вкладки откроются снова автоматически.</translation>
@@ -851,7 +850,6 @@
 <translation id="468924408576231679">Скопировать ссылку на веб-страницу "<ph name="PAGE_TITLE" />". Источник: <ph name="PAGE_URL" />.</translation>
 <translation id="469286762610133730">Сделайте рекомендации интереснее</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
-<translation id="4698061626562952596">Просмотр неактивных вкладок</translation>
 <translation id="4698757800236023795">Активные (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4710167854527459075">Сначала новые</translation>
@@ -966,7 +964,6 @@
 <translation id="5123685120097942451">Вкладка инкогнито</translation>
 <translation id="5142281402488957685">Чтобы посмотреть новые истории, потяните страницу вниз.</translation>
 <translation id="5144385790872094440">Некоторые страницы, которые вы посещаете, загружаются заранее. При переходе на них с сайтов или из приложений Google предзагрузка может выполняться через серверы Google.</translation>
-<translation id="5145887002054615868">Сюда перемещаются одинаковые вкладки и вкладки, которые не использовались в течение <ph name="DAYS_INACTIVE" /> дн. <ph name="AUTODELETE_SECTION" />. Чтобы изменить этот параметр, перейдите в <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5152843274749979095">Нет поддерживаемых приложений</translation>
 <translation id="5161254044473106830">Введите название</translation>
 <translation id="5161262286013276579">Открыт экран с просьбой подтвердить создание ключа доступа</translation>
@@ -1239,7 +1236,7 @@
 <translation id="6312687380483398334">Веб-приложения (тихий режим)</translation>
 <translation id="6315386555979018699">Удалить и продолжить</translation>
 <translation id="6316139424528454185">Устаревшая версия Android</translation>
-<translation id="631839948975905034">Блокировать доступ к окнам в режиме инкогнито при закрытии Chrome</translation>
+<translation id="631839948975905034">Блокировать доступ к окнам инкогнито, когда вы не используете Chrome</translation>
 <translation id="6324916366299863871">Изменить ярлык</translation>
 <translation id="6324977638108296054">Невозможно создать ссылку на выделенный текст.</translation>
 <translation id="6333140779060797560">Отправить с помощью <ph name="APPLICATION" /></translation>

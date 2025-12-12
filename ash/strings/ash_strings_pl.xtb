@@ -1025,7 +1025,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ważne powiadomienie}few{# ważne powiadomienia}many{# ważnych powiadomień}other{# ważnego powiadomienia}}</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
 <translation id="4451374464530248585">Skrót klawiszowy Alt + strzałka w dół został zmieniony. Aby użyć klawisza Page Down, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w dół.</translation>
-<translation id="4453876312474547652">Po naciśnięciu i przytrzymaniu klawiszy Ctrl + V wyświetli się schowek. Możesz wyłączyć ten skrót, wyłączając flagę #clipboard-history-longpress na chrome://flags (os://flags, jeśli używasz Lacros).</translation>
 <translation id="445765352722456792">Dostosuj sugestie</translation>
 <translation id="4458688154122353284">Zatrzymaj nagrywanie ekranu</translation>
 <translation id="445923051607553918">Połącz się z siecią Wi-Fi</translation>

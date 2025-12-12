@@ -1026,7 +1026,6 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 belangrike kennisgewing}other{# belangrike kennisgewings}}</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
 <translation id="4451374464530248585">Die kortpadsleutel Alt + afpyl het verander. Om die Page Down-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + afpyl druk.</translation>
-<translation id="4453876312474547652">Jy sal die knipbord sien wanneer jy Ctrl + V druk en hou. Jy kan hierdie kortpad afskakel deur die vlag #clipboard-history-longpress in chrome://flags (os://flags as jy Lacros gebruik) te deaktiveer.</translation>
 <translation id="445765352722456792">Pasmaak voorstelle</translation>
 <translation id="4458688154122353284">Stop skermopname</translation>
 <translation id="445923051607553918">Sluit by Wi-Fi-netwerk aan</translation>

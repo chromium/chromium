@@ -247,7 +247,6 @@
 <translation id="2063047797624276601">உங்கள் நிறுவனம் மேம்பட்ட பாதுகாப்பு உலாவலை இயக்கியுள்ளது</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் தோல்வியடைந்தது}other{# பதிவிறக்கங்கள் தோல்வியடைந்தன}}</translation>
 <translation id="2067805253194386918">உரை</translation>
-<translation id="2072027001582274150">பயன்படுத்தப்படாத அல்லது நகல் பக்கங்கள்</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> முடிவுகளில் <ph name="RESULT_NUMBER" />வது முடிவு</translation>
 <translation id="2088833076121753253">தானாக நிரப்புதல் அமைவை நிறைவுசெய்ய Chromeமை இப்போது மீண்டும் தொடங்குங்கள். உங்கள் பக்கங்கள் தானாகவே மீண்டும் திறக்கப்படும்.</translation>
@@ -851,7 +850,6 @@
 <translation id="468924408576231679"><ph name="PAGE_TITLE" /> என்ற இணையப் பக்கத்திற்கான இணைப்பை நகலெடுக்கும். தகவல் ஆதாரம்: <ph name="PAGE_URL" /></translation>
 <translation id="469286762610133730">சிறப்பான உள்ளடக்கத்தைப் பெறுங்கள்</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பம்}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> விருப்பங்கள்}}</translation>
-<translation id="4698061626562952596">செயலில் இல்லாத பக்கங்களை இங்கே பார்க்கலாம்</translation>
 <translation id="4698757800236023795">செயலில் (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்களும் ஃபைல்களும்</translation>
 <translation id="4710167854527459075">புதியவற்றின்படி வரிசைப்படுத்து</translation>
@@ -966,7 +964,6 @@
 <translation id="5123685120097942451">மறைநிலைத் தாவல்</translation>
 <translation id="5142281402488957685">புதிய செய்திக் கட்டுரைகளைப் பார்க்க கீழே இழுக்கவும்</translation>
 <translation id="5144385790872094440">நீங்கள் பார்வையிடும் சில பக்கங்கள் முன்கூட்டியே ஏற்றப்பட்டிருக்கும். Google தளம் அல்லது ஆப்ஸில் இருந்து இணைக்கப்படும்போது Google சேவையகங்கள் மூலம் பக்கங்கள் முன்கூட்டியே ஏற்றப்படக்கூடும்.</translation>
-<translation id="5145887002054615868">நகல் பக்கங்கள் அல்லது <ph name="DAYS_INACTIVE" /> நாட்களாகப் பயன்படுத்தப்படாத பக்கங்கள் இங்கே நகர்த்தப்பட்டு <ph name="AUTODELETE_SECTION" />. <ph name="DECLUTTER_SETTINGS_TITLE" /> இல் இதை எப்போது வேண்டுமானாலும் மாற்றிக்கொள்ளலாம்.</translation>
 <translation id="5152843274749979095">ஆதரிக்கப்படும் ஆப்ஸ் நிறுவப்படவில்லை</translation>
 <translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
 <translation id="5161262286013276579">கடவுச்சாவியை உறுதிப்படுத்துவதற்கான தாள் திறக்கப்பட்டது</translation>

@@ -156,6 +156,7 @@
 <translation id="1545749641540134597">Imbas Kod QR</translation>
 <translation id="1545757265410828525">Sejarah harga</translation>
 <translation id="1547610699249301703">Kongsi kata laluan</translation>
+<translation id="1554043146674176775">Matikan AI Mode</translation>
 <translation id="1554477036522844996">Tetingkap Baharu</translation>
 <translation id="1558391695376153246">Tutup tab Inkognito</translation>
 <translation id="1565371473877914088">Tab Inkognito Baharu</translation>
@@ -329,7 +330,6 @@
 <translation id="219283042927675668">Tab dalam kumpulan</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2196428379625389579">Cari pada web</translation>
-<translation id="2198001751007276170">Gantikan Kata Laluan</translation>
 <translation id="2199562093267256223">Tindakan ini akan memadamkan kumpulan daripada semua peranti yang dilog masuk menggunakan <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Tiada akaun e-mel</translation>
 <translation id="2214453882118345682">Beli, terjemahkan dan kenal pasti perkara yang anda lihat menggunakan kamera anda.</translation>
@@ -458,6 +458,7 @@
 <translation id="2688535388040882469">Sepanduk</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia di luar talian</translation>
+<translation id="2697530870203420261">Nama panggilan tidak sah</translation>
 <translation id="269819437389494246">Anda dapat melihat halaman yang telah dilawati atau memadamkan halaman tersebut daripada sejarah anda</translation>
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="2708051474374549906">Perlindungan masa nyata dan proaktif terhadap laman, muat turun dan sambungan berbahaya yang berdasarkan data semakan imbas anda yang dihantar kepada Google</translation>
@@ -755,6 +756,7 @@
 <translation id="3934905113567851655">Cubit untuk mengubah saiz imej</translation>
 <translation id="3940195383040445971">Jejaki harga pada tab</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Tutup {COUNT} tab}other{Tutup {COUNT} tab}}</translation>
+<translation id="3946483119107054883">Muat turun kepada CSV</translation>
 <translation id="3948600256434252210">Anda boleh meleret ke kanan untuk menyemak imbas dalam Inkognito.</translation>
 <translation id="3949712484278252781">Perbualan anda dengan Gemini atau <ph name="GOOGLE_WORKSPACE_DATA" /> anda tidak akan disemak oleh jurusemak atau digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="3950479158728806902">Buat kunci laluan secara automatik untuk log masuk dengan lebih pantas</translation>
@@ -1553,7 +1555,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6782531425936234573">Eksport data</translation>
 <translation id="6791425686608802741">Ketik "Tambahkan Tab pada Kumpulan Baharu"</translation>
 <translation id="6794476726485507147">Pilih tarikh dan masa untuk menerima pemberitahuan peringatan untuk melawat semula halaman ini</translation>
-<translation id="6795481620482106033">Data Tidak Sah</translation>
 <translation id="6797543908718012274">Hidupkan Mod Membaca</translation>
 <translation id="6806550742467879742">Alatan halaman</translation>
 <translation id="6807287147325542056">Kata laluan dalam apl lain</translation>
@@ -1562,6 +1563,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6830728435402077660">Tidak selamat</translation>
 <translation id="6831043979455480757">Terjemah</translation>
 <translation id="6842136130964845393">Untuk memastikan anda dapat mengakses kata laluan anda yang disimpan pada bila-bila masa, sahkan itu anda</translation>
+<translation id="6844773122575789617">Hidupkan AI Mode</translation>
 <translation id="6851516051005285358">Minta Tapak Versi Komputer</translation>
 <translation id="6857446173140146664">Padamkan Latar</translation>
 <translation id="6858718102216837409">Tambahkan bahasa…</translation>
@@ -1595,6 +1597,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="693761253105515415">Tetapkan kod laluan</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6950522403736391608">Disembunyikan</translation>
+<translation id="6962809930976936328">Dapatkan cerapan dengan Gemini</translation>
 <translation id="6964300328304469089"><ph name="NAME" />, <ph name="EMAIL" /> dipilih pada masa ini. Pilih akaun.</translation>
 <translation id="6964760285928603117">Alih Keluar Daripada Kumpulan</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1911,6 +1914,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8114753159095730575">Muat turun fail tersedia. Pilihan tersedia di bahagian bawah skrin.</translation>
 <translation id="8123502380991596210">Sembunyikan Perkara Baharu</translation>
 <translation id="8123953306357309250">Batalkan penyegerakan? Anda boleh menghidupkan penyegerakan pada bila-bila masa dalam tetapan.</translation>
+<translation id="8130712116203026166">Beri saya ringkasan satu baris dan cerapan berguna selain halaman ini. Gunakan nada yang ringkas dan bersahaja. Hadkan kepada 100 perkataan.</translation>
 <translation id="81313319706244542">2. Ketik Kata Kaluan</translation>
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8132598642024322408">Kini <ph name="PRICE" />, sebelum ini <ph name="PREVIOUS_PRICE" />.</translation>

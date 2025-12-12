@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਵਿੱਚ ਮੁੱਖ ਫਾਈਲ '<ph name="KEY_PATH" />' ਸ਼ਾਮਲ ਹੈ। ਸੰਭਵ ਤੌਰ 'ਤੇ ਤੁਸੀਂ ਇਹ ਨਹੀਂ ਚਾਹੁੰਦੇ।</translation>
 <translation id="5486326529110362464">ਨਿੱਜੀ ਕੁੰਜੀ ਲਈ ਇਨਪੁਟ ਵੈਲਯੂ ਮੌਜੂਦ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
+<translation id="5707185214361380026">ਇਸ ਤੋਂ ਐਕਸਟੈਂਸ਼ਨ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ:</translation>
 <translation id="5972529113578162692">ਇਸ ਮਸ਼ੀਨ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ <ph name="EXTENSION_NAME" /> ਇੰਸਟੌਲ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਇਸਨੂੰ ਅਣਇੰਸਟੌਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ਤੋਂ ਅਗਿਆਤ ਉਤਪਾਦ <ph name="PRODUCT_ID" /> (ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">ਵਿਕਰੇਤਾ <ph name="VENDOR_ID" /> ਤੋਂ <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">ਐਕਸਟੈਂਸ਼ਨ ਲੋਡ ਕਰਨ ਵਿੱਚ ਗੜਬੜ</translation>
 <translation id="6322279351188361895">ਨਿੱਜੀ ਕੁੰਜੀ ਪੜ੍ਹਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="6391538222494443604">ਇਨਪੁਟ ਡਾਇਰੈਕਟਰੀ ਮੌਜੂਦ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="641087317769093025">ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਅਣਜ਼ਿਪ ਨਹੀਂ ਕਰ ਸਕਿਆ</translation>

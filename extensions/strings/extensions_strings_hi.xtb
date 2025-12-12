@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">ऐप्‍स दृश्‍य: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">एक्सटेंशन में कुंजी फ़ाइल '<ph name="KEY_PATH" />' शामिल है. संभवतः आप ऐसा नहीं करना चाहते हैं.</translation>
 <translation id="5486326529110362464">निजी कुंजी के लिए इनपुट मान मौजूद होना चाहिए.</translation>
+<translation id="5707185214361380026">इससे एक्सटेंशन लोड करने में विफल:</translation>
 <translation id="5972529113578162692">इस मशीन के व्‍यवस्‍थापक के लिए आवश्‍यक है कि <ph name="EXTENSION_NAME" /> इंस्‍टॉल किया जाए. उसे अनइंस्‍टॉल नहीं किया जा सकता.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> (क्रमांक <ph name="SERIAL_NUMBER" />) की ओर से अज्ञात <ph name="PRODUCT_ID" /> प्रॉडक्ट</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> विक्रेता की ओर से <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">एक्सटेंशन लोड करने में गड़बड़ी</translation>
 <translation id="6322279351188361895">निजी कुंजी को पढ़ने में विफल.</translation>
 <translation id="6391538222494443604">इनपुट निर्देशिका मौजूद होनी चाहिए.</translation>
 <translation id="641087317769093025">एक्सटेंशन को अनज़िप नहीं किया जा सका</translation>

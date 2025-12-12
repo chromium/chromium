@@ -855,6 +855,7 @@
 <translation id="2359629602545592467">များစွာ</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="236000571258713023">ယာဉ်များ</translation>
+<translation id="2360131275005204317">လေကြောင်းလိုင်း</translation>
 <translation id="2361263712565360498">၂၇၅ x ၃၉၅ မီလီမီတာ</translation>
 <translation id="236340516568226369">အရွယ်အစားပြင်ရန် ခလုတ်မီနူး</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> ထည့်ပါ</translation>
@@ -1252,6 +1253,7 @@
 <translation id="301521992641321250">အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="3016780570757425217">သင့်တည်နေရာအား သိလို၏</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />၊ 'တဘ်' နှိပ်ပါ၊ ထို့နောက် 'အကြံပြုချက်ဖယ်ရှားရန်' Enter နှိပ်ပါ။</translation>
+<translation id="3019738915977809060">လေယာဉ်တက်ခွင့် လက်မှတ်ကို Wallet တွင် သိမ်းခြင်း</translation>
 <translation id="3022959067768579802">ဆက်ရေးရန်</translation>
 <translation id="3023165109041533893">ဝဘ်ဆိုက်အကြံပြု ကြော်ငြာများသည် ဝဘ်ဆိုက်များက သင့်အား သက်ဆိုင်သော ကြော်ငြာများပြခွင့်ပြုနေချိန်တွင် သင့်ကြည့်ရှုမှုမှတ်တမ်းနှင့် အထောက်အထားကို ကူညီကာကွယ်ပေးသည်။ သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်သည် သင့်လုပ်ဆောင်ချက်ပေါ် အခြေခံ၍ သင်ဆက်လက်ကြည့်ရှုသည်နှင့်အမျှ ဆက်စပ်ကြော်ငြာများကို အကြံပြုနိုင်သည်။ သင်သည် ဝဘ်ဆိုက်များစာရင်းကို ကြည့်နိုင်ပြီး မလိုလားသည့် ဝဘ်ဆိုက်ကို ဆက်တင်များတွင် ပိတ်ထားနိုင်သည်။</translation>
 <translation id="3024663005179499861">မူဝါဒ ပုံစံ မှားနေ</translation>
@@ -2308,7 +2310,6 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ဘာသာစကားအတွဲကို ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> သည် သင့်စက်၏ တည်နေရာကို အသုံးပြုလိုသည်</translation>
 <translation id="473414950835101501">သင့်ကင်မရာများ သုံးရန်</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />လက်ရှိမူရင်း<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium ကို ပိတ်ပြီးပြန်ဖွင့်ပါ</translation>
 <translation id="4736934858538408121">ပကတိအသွင်ကတ်</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
@@ -2517,6 +2518,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />၊ ဤရှာဖွေမှု အကြံပြုချက်နောက်ပိုင်း ရနိုင်သော နောက်ထပ်ရှာဖွေစာလုံး ဖြတ်လမ်းများအတွက် တဘ်ကို နှိပ်ပါ</translation>
 <translation id="5052517576853118371">ဖွင့်ထားသည့် အကြောင်းအရာများ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်ကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}other{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်များကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}}</translation>
+<translation id="5056587122125565772">ပုံပြုလုပ်ရန်</translation>
 <translation id="505757197798929356">ဖွင့်ရန်အတွက် အကြောင်းရင်းပေးရန် (လိုအပ်သည်)</translation>
 <translation id="5058282932481719070">အဆင့်မြင့် အော်တိုဖြည့်အကြောင်း ဆက်တင်များတွင် ပိုလေ့လာရန်</translation>
 <translation id="5060419232449737386">ခေါင်းစီး ဆက်တင်များ</translation>
@@ -4051,7 +4053,6 @@
 <translation id="7525804896095537619">အမည်သည် အလွတ်ဖြစ်၍မရပါ</translation>
 <translation id="7526934274050461096">ဤဝဘ်ဆိုက်သို့ သင့်ချိတ်ဆက်ထားမှုသည် သီးသန့်မဟုတ်ပါ</translation>
 <translation id="7529884293139707752">အိမ်တွင်းစာသင်ကြားခြင်း</translation>
-<translation id="7530215951451994972">ပုံပြုလုပ်ရန်</translation>
 <translation id="7531464389616946220">ကတ် စကင်ဖတ်ရန်</translation>
 <translation id="7534473948927234329"><ph name="STARTER_PACK_BOOKMARKS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ လိပ်စာများကို ရှာရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="7534987659046836932">C7 စာအိတ်</translation>

@@ -118,6 +118,7 @@
 <translation id="2216543877350048334">‏برای برداشتن «حساب Google» خود از Chrome، از سیستم خارج شوید</translation>
 <translation id="2236949375853147973">فعالیت‌هایم</translation>
 <translation id="22791603784558743">‏بستن «Gemini در Chrome Dev»</translation>
+<translation id="2284380654876659752">‏وقتی‌که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حافظ حریم خصوصی‌ای که نشانی IP شما را پنهان می‌کند به <ph name="BEGIN_LINK" />مرور ایمن Google<ph name="END_LINK" /> ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شوند.</translation>
 <translation id="2290014774651636340">‏کلیدهای Google API وجود ندارد. برخی از عملکردهای Google Chrome از کار خواهد افتاد.</translation>
 <translation id="2290095356545025170">‏آیا می‌خواهید Google Chrome را غیر فعال کنید؟</translation>
 <translation id="2301513536169703857">‏برای دریافت گذرواژه‌ها، نشانک‌ها، و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
@@ -202,6 +203,7 @@
 <translation id="3112458742631356345">‏‫Chrome این بارگیری را مسدود کرد زیرا این فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد</translation>
 <translation id="3114643501466072395">‏برای بررسی اینکه از دیگر گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود یا نه، <ph name="BEGIN_LINK" />به سیستم Chrome وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">‏‫Chrome این بارگیری را مسدود کرد زیرا فایل بایگانی حاوی فایل‌های دیگری است که ممکن است بدافزار باشد</translation>
+<translation id="3124332159330678621">‏با سفارشی‌سازی Chrome، ظاهر جدیدی به مرورگرتان بدهید</translation>
 <translation id="3130333203120345554">جستجوی جدید</translation>
 <translation id="3135560418014806498">‏افزودن نمایه Chrome</translation>
 <translation id="3137969841538672700">برای جستجو، بخش موردنظر را بکشید</translation>
@@ -268,6 +270,7 @@
 <translation id="3885770153807205175">انتخاب‌گر زبان</translation>
 <translation id="3889417619312448367">‏حذف نصب Google Chrome</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
+<translation id="3906096710440765802">‏برای دریافت گذرواژه‌ها، نشانک‌ها، و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="3941890832296813527">خطای نصب: نام فایل نصب‌کننده نامعتبر است یا از آن پشتیبانی نمی‌شود.</translation>
 <translation id="395904275706073188">صفحه‌های محافظت‌شده خوانده نمی‌شوند. صفحه دیگری را امتحان کنید.</translation>
 <translation id="3968962723676998462">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
@@ -488,6 +491,7 @@
 <translation id="6288580400488258237">‏‫Google Chrome را به‌عنوان مرورگر پیش‌فرض خود تنظیم کنید و آن را به نوار وظیفه‌تان سنجاق کنید</translation>
 <translation id="6291089322031436445">‏برنامه‌های Chrome نسخه Dev</translation>
 <translation id="6291549208091401781">‏Google Chrome از قبل برای همه کاربران این رایانه نصب شده است.</translation>
+<translation id="6311220991371174222">‏راه‌اندازی Chrome ممکن نیست زیرا هنگام باز کردن نمایه‌تان مشکلی پیش آمد. Chrome را راه‌اندازی مجدد کنید.</translation>
 <translation id="6319856120645568262">‏‫Chrome برای نقشه‌برداری از محیط اطراف و ردیابی دستان شما به اجازه نیاز دارد</translation>
 <translation id="6321592572353357376">‏افزونه «<ph name="EXTENSION_NAME" />» از شما می‌خواهد به سیستم Chrome وارد شوید</translation>
 <translation id="6326175484149238433">‏حذف از Chrome</translation>
@@ -615,9 +619,11 @@
 <translation id="7655472416356262023">‏برداشتن حساب از Chrome</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7670287553302121848">‏حساب Chrome به اصالت‌سنجی مجدد نیاز دارد</translation>
+<translation id="7675756456029023637">‏پرسیدن از Chrome</translation>
 <translation id="769538538642757151">‏اگر موردی نیاز به بررسی داشته باشد، Chrome به شما اطلاع می‌دهد</translation>
 <translation id="769906121737764913">‏بستن «Gemini در Chrome نسخه بتا»</translation>
 <translation id="7716950018788545737">تکلیف(ها) پایان یافت.</translation>
+<translation id="7723388585204724670">‏بازنشانی به Chrome پیش‌فرض</translation>
 <translation id="77283119132245232">سرویس‌های ردیابی سیستم را برای <ph name="BROWSER_NAME" /> ارائه می‌دهد. اگر این سرویس غیرفعال باشد، ردیابی‌های عملکردی که مرورگر ایجاد می‌کند شامل رویدادهای در سطح سیستم مانند رویدادهای تغییر زمینه و آماده‌سازی رشته نخواهد بود.</translation>
 <translation id="7736869414036750079">‏سازمانتان شما را ملزم می‌کند به سیستم Chrome وارد شوید</translation>
 <translation id="7747138024166251722">نصب‌کننده نتوانست دایرکتوری موقت ایجاد کند. لطفاً فضای خالی دیسک و اجازه نصب نرم‌افزار را بررسی کنید.</translation>

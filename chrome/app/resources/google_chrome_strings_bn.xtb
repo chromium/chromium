@@ -82,6 +82,7 @@
 <translation id="1843347690926158494">Google Lens ব্যবহার করে এই ট্যাব সার্চ করুন</translation>
 <translation id="1849248141818021764">এমন কোনও ব্যক্তি যার কাছে আপনার পাসফ্রেজ রয়েছে, শুধুমাত্র তিনিই আপনার এনক্রিপটেড ডেটা পড়তে পারবেন। পাসফ্রেজ Google-এ পাঠানো বা তার মাধ্যমে সেভ করা হয় না। আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, আপনাকে <ph name="BEGIN_LINK" />নিজের অ্যাকাউন্ট থেকে Chrome ডেটা মুছে দিতে হবে<ph name="END_LINK" />।</translation>
 <translation id="1860536484129686729">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরায় অ্যাক্সেস দিতে হবে</translation>
+<translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ব্যবহার করতে, আপনার Google অ্যাকাউন্ট দিয়ে Chrome-এ সাইন-ইন করুন</translation>
 <translation id="1873233029667955273">Google Chrome আপনার ডিফল্ট ব্রাউজার নয়</translation>
 <translation id="1874309113135274312">Google Chrome বিটা (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome পুরানো হয়ে গেছে</translation>
@@ -172,6 +173,7 @@
 <translation id="286025080868315611">Chrome কেন কিছু ডাউনলোড ব্লক করে তা জানুন</translation>
 <translation id="2861074815332034794">Chrome আপডেট হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">আপনি Chrome এ প্রবেশ করেছেন৷</translation>
+<translation id="2875053229394024379">আপনার Google অ্যাকাউন্ট দিয়ে Chrome-এ সাইন-ইন করলে, Gemini-র সাথে Chrome প্রোফাইল ব্যবহার করতে পারবেন। <ph name="BEGIN_LINK" />Chrome-এ কীভাবে সাইন-ইন করতে হয় তা জানুন<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome কীভাবে আপনার ডেটা ব্যক্তিগত রাখে<ph name="END_LINK" /> সেই সম্পর্কে আরও জানুন</translation>
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
@@ -202,6 +204,7 @@
 <translation id="3112458742631356345">এই ফাইলটি সাধারণত ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="3114643501466072395">আপনার অন্যান্য পাসওয়ার্ড ডেটার নিরাপত্তা লঙ্ঘন এবং অন্যান্য নিরাপত্তা সংক্রান্ত সমস্যা থেকে সুরক্ষিত কিনা তা চেক করতে <ph name="BEGIN_LINK" />Chrome-এ সাইন-ইন করুন<ph name="END_LINK" />।</translation>
 <translation id="3119573284443908657">Chrome এটি ডাউনলোড করা বন্ধ করে দিয়েছে কারণ আর্কাইভ করা ফাইলে অন্যান্য এমন ফাইল রয়েছে যেটি ম্যালওয়্যার গোপন করতে পারে</translation>
+<translation id="3124332159330678621">আপনার ব্রাউজারকে একটি নতুন চেহারা দিতে Chrome কাস্টমাইজ করুন</translation>
 <translation id="3130333203120345554">নতুন সার্চ</translation>
 <translation id="3135560418014806498">Chrome প্রোফাইল যোগ করুন</translation>
 <translation id="3137969841538672700">সার্চ করতে টেনে আনুন</translation>
@@ -221,6 +224,7 @@
 <translation id="3352986031709923790">সার্চের উপরের ডানদিকের কোণা: ডানদিক থেকে <ph name="RIGHT" />%, উপরের দিকে <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome সহায়তাকারী</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome এখন আবার লঞ্চ হবে}=1{Chrome ১ সেকেন্ডের মধ্যে আবার লঞ্চ হবে}one{Chrome # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}other{Chrome # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}}</translation>
+<translation id="3380249972812870825">Chrome-এ Gemini খুলতে, <ph name="GLOBAL_HOTKEY" /> প্রেস করুন</translation>
 <translation id="3396977131400919238">ইনস্টলেশনের সময় অপারেটিং সিস্টেমে একটি ত্রুটি ঘটেছিল৷ অনুগ্রহ করে আবার Google Chrome ডাউনলোড করুন৷</translation>
 <translation id="3428747202529429621">সাইন-ইন করা অবস্থায় আপনাকে Chrome-এ নিরাপদ রাখতে এবং হয়ত অন্যান্য Google অ্যাপে নিরাপত্তা আরও ভাল করতে এই মোডটি ব্যবহার করা হয়</translation>
 <translation id="3434246496373299699">আপনি যখন নিজের Google অ্যাকাউন্টের মাধ্যমে সাইন-ইন করবেন, Chrome তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারবে</translation>
@@ -267,6 +271,7 @@
 <translation id="3885770153807205175">ভাষা বাছাইকারী</translation>
 <translation id="3889417619312448367">Google Chrome আনইনস্টল করুন</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
+<translation id="3906096710440765802">আপনার সব ডিভাইসে পাসওয়ার্ড, বুকমার্ক এবং আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3941890832296813527">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার ফাইলের নাম ভুল বা সেটি কাজ করে না।</translation>
 <translation id="395904275706073188">সুরক্ষিত পৃষ্ঠা পড়া যাবে না। অন্য কোনও পৃষ্ঠা পড়ার চেষ্টা করুন।</translation>
 <translation id="3968962723676998462">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ Chrome ডেটা ব্যবহার এবং সেভ করার জন্য পাসফ্রেজ লিখুন</translation>
@@ -350,6 +355,7 @@
 <translation id="4891791193823137474">Google Chrome-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
 <translation id="4895437082222824641">নতুন Chrome ট্যাবে লিঙ্ক খুলুন</translation>
 <translation id="4918844574251943176">ছবি কপি করা হয়েছে</translation>
+<translation id="4926882258455737990">Chrome-এ Gemini-র সাথে অন্য কোনও Google অ্যাকাউন্ট ব্যবহার করতে, <ph name="BEGIN_LINK" />নতুন প্রোফাইল তৈরি করুন<ph name="END_LINK" /> এবং আপনার পছন্দের অ্যাকাউন্ট দিয়ে সাইন-ইন করুন</translation>
 <translation id="492720062778050435">এই এক্সটেনশন পর্যালোচনা করার জন্য Chrome সাজেস্ট করে</translation>
 <translation id="4946912144186040233">Chrome ফর্ম আরও ভালো বুঝতে পারে এবং আপনার জন্য আরও দ্রুত তা অটোফিল করতে পারে। এই সেটিংস বন্ধ করা আছে।</translation>
 <translation id="4953650215774548573">আপনার ডিফল্ট ব্রাউজার হিসাবে Google Chrome-কে সেট করুন</translation>
@@ -375,6 +381,7 @@
 কিছু বৈশিষ্ট্য অনুপলভ্য হতে পারে৷ একটি ভিন্ন প্রোফাইল নির্দেশিকা সুনির্দিষ্টভাবে উল্লেখ করুন অথবা Chrome এর নতুন ভার্সন ব্যবহার করুন৷</translation>
 <translation id="5174969993834422967">আপনি সাধারণত বিজ্ঞপ্তি ব্লক করেন। এই সাইট থেকে বিজ্ঞপ্তি পেতে, আপনার লোকেশন বারের ডানদিকের কোণায় বিজ্ঞপ্তির আইকনে ক্লিক করুন।</translation>
 <translation id="5174983315706567306">ডিস্ক স্টোরেজে যথেষ্ট খালি জায়গা নেই।</translation>
+<translation id="5179933070463113976">Chrome-এ Gemini ব্যবহার করতে, আপনার Google অ্যাকাউন্ট দিয়ে Chrome-এ সাইন-ইন করতে হবে</translation>
 <translation id="5190467473654176081">Chrome-কে নতুন লুক দিতে এটি কাস্টমাইজ করুন</translation>
 <translation id="5201744974236816379">Chrome সম্পর্কিত আপডেট</translation>
 <translation id="521447420733633466">যদি আপনি কোনও ডিভাইস শেয়ার করেন, তাহলে বন্ধু ও পরিবারের লোকজন পৃথকভাবে ব্রাউজ করতে পারবেন এবং তাদের পছন্দ অনুযায়ী Chrome সেট-আপ করতে পারবেন</translation>
@@ -394,6 +401,7 @@
 <translation id="5394833366792865639">একটি Chrome ট্যাব শেয়ার করুন</translation>
 <translation id="5402307365844630024">Chrome Beta-তে Gemini টগল করুন</translation>
 <translation id="5430073640787465221">আপনার পছন্দের ফাইল ক্ষতিকর অথবা ভুল৷\n\nGoogle Chrome আপনার সেটিংস পুনরুদ্ধার করতে পারছে না৷</translation>
+<translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-র সাথে ব্যবহার করার জন্য Chrome প্রোফাইল বেছে নিন</translation>
 <translation id="5468572406162360320">এইসব ফিচার উন্নত করতে, Chrome, এগুলির সাথে আপনার ইন্ট্যার‌্যাকশন সংক্রান্ত তথ্য Google-এর কাছে পাঠায়। এই ডেটা হিউম্যান রিভিউয়ারের দ্বারা পড়া, প্রসেস করা ও অ্যানোটেট করা হতে পারে।</translation>
 <translation id="5510398294750420479">আপনার ফোনে Chrome ডাউনলোড করুন যাতে যেতে যেতেও সুরক্ষার অতিরিক্ত স্তর যোগ করতে পারেন</translation>
 <translation id="5524890928877629608">সার্চে উপরের বাঁদিকের কোণা: বাঁদিক থেকে <ph name="LEFT" />%, উপরের দিকে <ph name="TOP" />%</translation>
@@ -486,6 +494,7 @@
 <translation id="6288580400488258237">Google Chrome আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করুন এবং আপনার টাস্কবারে এটি পিন করুন</translation>
 <translation id="6291089322031436445">Chrome ডেভেলপার অ্যাপ</translation>
 <translation id="6291549208091401781">Google Chrome ইতোমধ্যে আপনার কম্পিউটারের সকল ব্যবহারকারীর জন্য ইনস্টল করা হয়েছে।</translation>
+<translation id="6311220991371174222">আপনার প্রোফাইল খোলার সময় কোনো সমস্যা হওয়ার কারণে Chrome চালু করা যাচ্ছে না। Chrome আবার চালু করার চেষ্টা করুন।</translation>
 <translation id="6319856120645568262">আপনার আশপাশ সম্পর্কে জানতে ও হাত ট্র্যাক করতে Chrome-এর অনুমতি প্রয়োজন</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" এক্সটেনশন ব্যবহার করতে Chrome-এ সাইন-ইন করতে হবে</translation>
 <translation id="6326175484149238433">Chrome থেকে সরান</translation>
@@ -614,9 +623,11 @@
 <translation id="7655472416356262023">Chrome থেকে অ্যাকাউন্ট সরান</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7670287553302121848">Chrome অ্যাকাউন্ট ব্যবহার করতে আবার যাচাই করতে হবে</translation>
+<translation id="7675756456029023637">Chrome-কে জিজ্ঞাসা করুন</translation>
 <translation id="769538538642757151">আপনাকে কোনও কিছু পর্যালোচনা করতে হবে কিনা তা Chrome আপনাকে জানাবে</translation>
 <translation id="769906121737764913">Chrome Beta-তে Gemini বন্ধ করুন</translation>
 <translation id="7716950018788545737">টাস্ক শেষ হয়েছে।</translation>
+<translation id="7723388585204724670">ডিফল্ট Chrome-এ রিসেট করুন</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" />-এর জন্য সিস্টেম ট্রেসিং পরিষেবা প্রদান করে। এই পরিষেবা বন্ধ করা থাকলে, ব্রাউজারের তৈরি করা পারফর্ম্যান্স ট্রেসে প্রসঙ্গ পরিবর্তন করা ও রেডি থ্রেড ইভেন্টের মতো সিস্টেম-ওয়াইড ইভেন্ট অন্তর্ভুক্ত করা হবে না।</translation>
 <translation id="7736869414036750079">আপনার সংস্থার প্রয়োজন অনুযায়ী আপনাকে Chrome-এ সাইন-ইন করতে হবে</translation>
 <translation id="7747138024166251722">ইনস্টলারটি অস্থায়ী ডাইরেক্টরি তৈরি করতে পারে নি৷ অনুগ্রহ করে খালি ডিস্ক স্পেশ এবং সফটওয়্যারটি ইনস্টল করার অনুমতি যাচাই করে নিন৷</translation>

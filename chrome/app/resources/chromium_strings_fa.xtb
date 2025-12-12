@@ -215,6 +215,7 @@
 <translation id="3313189106987092621">‏Chromium قبل‌از اینکه هر سایتی را ازطریق اتصال ناامن بار کند به شما هشدار می‌دهد</translation>
 <translation id="3316771292331273802">‏وقتی همه پنجره‌های Chromium را ببندید از سیستم اکثر سایت‌ها خارج خواهید شد، اما اگر به سیستم Chromium وارد شده باشید از «حساب Google» خارج نخواهید شد. برای اینکه سایت‌ها شما را به‌خاطر بسپارند، <ph name="SETTINGS_LINK" />.</translation>
 <translation id="3322413454779348750">‏موتور جستجوی پیش‌فرض شما از خارج‌از Chromium تغییر کرد. برای محافظت از شما، Chromium آن را بازنشانی کرد.</translation>
+<translation id="3331557257666250900">‏برای دریافت گذرواژه‌ها، نشانک‌ها، و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chromium وارد شوید</translation>
 <translation id="3352986031709923790">‏گوشه بالا سمت چپ ناحیه جستجو: ‎٪<ph name="RIGHT" /> سمت چپ، ‎٪<ph name="TOP" /> بالا</translation>
 <translation id="3366305173356742781">‏داده‌های Chromium در حساب شما</translation>
 <translation id="3369405342922656244">جستجوی این صفحه با «جستجوی تصویر»</translation>
@@ -266,6 +267,7 @@
 <translation id="3971865010372729242">‏وقتی در نوار نشانی یا چارگوش جستجو تایپ می‌کنید، Chromium چیزی را که تایپ می‌کنید برای دریافت پیشنهاد به ابزارهای عامل، جستجو، و هوش مصنوعی سازمانتان ارسال می‌کند.</translation>
 <translation id="3975724895399328945">‏درباره Google Chrome for Testing</translation>
 <translation id="3997429360543082038">‏درباره ChromiumOS</translation>
+<translation id="4010059961270896984">‏وقتی‌که از سایتی بازدید می‌کنید، Chromium بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حافظ حریم خصوصی‌ای که نشانی IP شما را پنهان می‌کند به <ph name="BEGIN_LINK" />مرور ایمن Google<ph name="END_LINK" /> ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شوند.</translation>
 <translation id="4019629340646866719">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مثل <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزار Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="4022972681110646219">ترجمه کردن صفحه‌نمایش</translation>
 <translation id="4023601594785368013">زبان اصلی: <ph name="LANGUAGE" /></translation>
@@ -337,6 +339,7 @@
 <translation id="4724676981607797757">نصب به‌دلیل خطای پروتکل پشتیبانی‌نشده انجام نشد.</translation>
 <translation id="4746050847053251315">‏درهرصورت از Chromium خارج می‌شوید؟</translation>
 <translation id="4748217263233248895">‏لحظاتی پیش به‌روزرسانی امنیتی ویژه‌ای برای Chromium اعمال شد. هم‌اکنون بازراه‌اندازی کنید و ما برگه‌هایتان را بازیابی خواهیم کرد.</translation>
+<translation id="4759645701210484457">‏پرسیدن از Chromium</translation>
 <translation id="4771701986670315895">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت.</translation>
 <translation id="4788777615168560705">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعد از ۲۴ ساعت دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">‏از همان غلط‌یاب املا استفاده می‌کند که در جستجوی Google استفاده می‌شود. نوشتاری که در مرورگر تایپ کرده‌اید برای Google ارسال می‌شود. هروقت بخواهید می‌توانید این رفتار را در تنظیمات تغییر دهید.</translation>
@@ -583,6 +586,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="77283119132245232">سرویس‌های ردیابی سیستم را برای <ph name="BROWSER_NAME" /> ارائه می‌دهد. اگر این سرویس غیرفعال باشد، ردیابی‌های عملکردی که مرورگر ایجاد می‌کند شامل رویدادهای در سطح سیستم مانند رویدادهای تغییر زمینه و آماده‌سازی رشته نخواهد بود.</translation>
 <translation id="7745317241717453663">‏این کار داده‌های محصول مرورتان را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
 <translation id="7747138024166251722">نصب‌کننده نتوانست دایرکتوری موقت ایجاد کند. لطفاً فضای خالی دیسک و اجازه نصب نرم‌افزار را بررسی کنید.</translation>
+<translation id="7750130090210923118">‏بازنشانی به Chromium پیش‌فرض</translation>
 <translation id="7786760609782648049">‏سرعت Chromium را افزایش دهید</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">‏شرایط را سخت‌تر کنید تا افرادی که به ترافیک اینترنت شما دسترسی دارند نتوانند سایت‌هایی را که بازدید می‌کنید ببینند. ‫Chromium برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) از اتصال ایمنی استفاده می‌کند.</translation>
@@ -683,6 +687,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8907580949721785412">‏Chromium در حال تلاش برای نشان دادن گذرواژه‌هاست. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="8941642502866065432">‏به‌روزرسانی Chromium امکان‌پذیر نیست</translation>
 <translation id="897581876605952338">‏نشان‌واره Chromium Enterprise</translation>
+<translation id="8981150672034878610">‏‫Chromium شروع نشد، زیرا هنگام باز کردن نمایه‌تان مشکلی پیش آمد. ‫Chromium را بازراه‌اندازی کنید.</translation>
 <translation id="8988036198400390003">‏مدیریت نمایه‌های Chromium</translation>
 <translation id="9019929317751753759">‏برای ایمن‌تر کردن Chromium، افزونه زیر را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده است و ممکن است بدون اطلاع شما اضافه شده باشد، غیرفعال کردیم.</translation>
 <translation id="904366664621834601">‏‫Chromium این بارگیری را مسدود کرد زیرا فایل بایگانی حاوی فایل‌های دیگری است که ممکن است بدافزار باشد</translation>
