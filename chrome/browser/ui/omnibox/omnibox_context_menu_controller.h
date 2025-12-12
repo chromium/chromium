@@ -100,10 +100,6 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   raw_ptr<OmniboxEditModel> GetEditModel();
   raw_ptr<OmniboxPopupUI> GetOmniboxPopupUI() const;
 
-  // Sets preserveContextOnClose to `preserve_context_on_close` if the AIM popup
-  // is currently open.
-  void SetPreserveContextOnCloseIfAimPopupIsOpen(bool preserve_context_on_close);
-
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   base::WeakPtr<OmniboxPopupFileSelector> file_selector_;
   base::WeakPtr<content::WebContents> web_contents_;

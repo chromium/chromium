@@ -199,3 +199,19 @@ source_set("icon_label_bubble") {
     ]
   }
 }
+
+source_set("omnibox_popup_file_selector_browsertest") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "omnibox_popup_file_selector_browsertest.cc" ]
+  deps = [
+    ":location_bar",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//ui/shell_dialogs:test_support",
+  ]
+}

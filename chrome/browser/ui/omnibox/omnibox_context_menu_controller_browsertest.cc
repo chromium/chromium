@@ -110,17 +110,29 @@ class TestOmniboxPopupFileSelector : public OmniboxPopupFileSelector {
       content::WebContents* web_contents,
       bool is_image,
       OmniboxEditModel* edit_model,
-      std::optional<lens::ImageEncodingOptions> image_encoding_options)
-      override {
+      std::optional<lens::ImageEncodingOptions> image_encoding_options,
+      bool was_ai_mode_open) override {
     open_file_upload_dialog_calls_++;
+    last_was_ai_mode_open_ = was_ai_mode_open;
+    edit_model_ = edit_model;
+  }
+
+  void FileSelectionCanceled() override {
+    if (last_was_ai_mode_open_ && edit_model_) {
+      edit_model_->OpenAiMode(false, true);
+    }
   }
 
   int open_file_upload_dialog_calls() const {
     return open_file_upload_dialog_calls_;
   }
 
+  bool last_was_ai_mode_open() const { return last_was_ai_mode_open_; }
+
  private:
   int open_file_upload_dialog_calls_ = 0;
+  bool last_was_ai_mode_open_ = false;
+  raw_ptr<OmniboxEditModel> edit_model_ = nullptr;
 };
 
 class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
@@ -305,3 +317,71 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   ASSERT_TRUE(context);
   EXPECT_EQ(context->mode, searchbox::mojom::ToolMode::kCreateImage);
 }
+
+class OmniboxContextMenuControllerBrowserTestWithCommand
+    : public OmniboxContextMenuControllerBrowserTest,
+      public testing::WithParamInterface<int> {
+ protected:
+  int GetCommandId() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(OmniboxContextMenuControllerBrowserTestWithCommand,
+                       ExecuteCommand_AiModeOpen_ReopensOnCancel) {
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
+  OmniboxContextMenuController controller(&file_selector, GetWebContents());
+
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+
+  // Start with the popup in AIM state.
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  // Executing the command should record that AIM was open.
+  controller.ExecuteCommand(GetCommandId(), 0);
+  EXPECT_TRUE(file_selector.last_was_ai_mode_open());
+  EXPECT_EQ(1, file_selector.open_file_upload_dialog_calls());
+
+  // Simulate popup closure that would happen as a result of the dialog opening.
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kNone);
+
+  // Canceling the file selection should restore the AIM state.
+  file_selector.FileSelectionCanceled();
+  EXPECT_EQ(OmniboxPopupState::kAim,
+            omnibox_controller->popup_state_manager()->popup_state());
+}
+
+IN_PROC_BROWSER_TEST_P(OmniboxContextMenuControllerBrowserTestWithCommand,
+                       ExecuteCommand_AiModeClosed_DoesNotReopenOnCancel) {
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
+  OmniboxContextMenuController controller(&file_selector, GetWebContents());
+
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+
+  // Start with the popup in Classic state.
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kClassic);
+
+  // Executing the command should record that AIM was NOT open.
+  controller.ExecuteCommand(GetCommandId(), 0);
+  EXPECT_FALSE(file_selector.last_was_ai_mode_open());
+  EXPECT_EQ(1, file_selector.open_file_upload_dialog_calls());
+
+  // Canceling the file selection should NOT switch to AIM state.
+  file_selector.FileSelectionCanceled();
+  EXPECT_EQ(OmniboxPopupState::kClassic,
+            omnibox_controller->popup_state_manager()->popup_state());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OmniboxContextMenuControllerBrowserTestWithCommand,
+                         testing::Values(IDC_OMNIBOX_CONTEXT_ADD_IMAGE,
+                                         IDC_OMNIBOX_CONTEXT_ADD_FILE));
