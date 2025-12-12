@@ -53,28 +53,27 @@ ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
 }
 
 // static
-ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+ByteSize SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   SystemMemoryInfo info;
   if (!GetSystemMemoryInfo(&info)) {
-    return ByteCount(0);
+    return ByteSize(0);
   }
   return AmountOfAvailablePhysicalMemory(info);
 }
 
 // static
-ByteCount SysInfo::AmountOfAvailablePhysicalMemory(
+ByteSize SysInfo::AmountOfAvailablePhysicalMemory(
     const SystemMemoryInfo& info) {
   // See details here:
   // https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=34e431b0ae398fc54ea69ff85ec700722c9da773
   // The fallback logic (when there is no MemAvailable) would be more precise
   // if we had info about zones watermarks (/proc/zoneinfo).
   if (info.available.is_zero()) {
-    return (info.free + info.reclaimable + info.inactive_file)
-        .AsDeprecatedByteCount();
+    return info.free + info.reclaimable + info.inactive_file;
   } else if (info.available > info.active_file) {
-    return (info.available - info.active_file).AsDeprecatedByteCount();
+    return ByteSize::FromByteSizeDelta(info.available - info.active_file);
   } else {
-    return ByteCount(0);
+    return ByteSize(0);
   }
 }
 

@@ -99,10 +99,10 @@ ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
 }
 
 // static
-ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+ByteSize SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   // TODO(crbug.com/42050649): Implement this when Fuchsia supports it.
   NOTIMPLEMENTED_LOG_ONCE();
-  return ByteCount(0);
+  return ByteSize(0);
 }
 
 // static
@@ -111,10 +111,10 @@ int SysInfo::NumberOfProcessors() {
 }
 
 // static
-ByteCount SysInfo::AmountOfVirtualMemory() {
+ByteSize SysInfo::AmountOfVirtualMemory() {
   // Fuchsia does not provide this type of information.
   // Return zero to indicate that there is unlimited available virtual memory.
-  return ByteCount(0);
+  return ByteSize(0);
 }
 
 // static

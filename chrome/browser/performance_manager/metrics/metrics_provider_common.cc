@@ -67,8 +67,7 @@ MetricsProviderCommon::MetricsProviderCommon() {
 MetricsProviderCommon::~MetricsProviderCommon() = default;
 
 void MetricsProviderCommon::RecordAvailableMemoryMetrics() {
-  auto available_bytes = base::ByteSize::FromDeprecatedByteCount(
-      base::SysInfo::AmountOfAvailablePhysicalMemory());
+  auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
   auto total_bytes = base::ByteSize::FromDeprecatedByteCount(
       base::SysInfo::AmountOfPhysicalMemory());
 

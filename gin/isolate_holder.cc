@@ -190,7 +190,7 @@ IsolateHolder::getDefaultIsolateParams() {
   params->code_event_handler = DebugImpl::GetJitCodeEventHandler();
   params->constraints.ConfigureDefaults(
       base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned(),
-      base::SysInfo::AmountOfVirtualMemory().InBytesUnsigned());
+      base::SysInfo::AmountOfVirtualMemory().InBytes());
   params->array_buffer_allocator = g_array_buffer_allocator;
   params->allow_atomics_wait = true;
   params->external_references = g_reference_table;

@@ -442,7 +442,7 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(meminfo.shmem.InKiB(), 140204);
   EXPECT_EQ(meminfo.slab.InKiB(), 54212);
 #endif
-  EXPECT_EQ(355725,
+  EXPECT_EQ(355725u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo).InKiB());
   // Simulate as if there is no MemAvailable.
   meminfo.available = ByteSize(0);

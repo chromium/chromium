@@ -35,10 +35,11 @@ MemorySaverController::MemorySaverController() {
 }
 
 void MemorySaverController::Sample() {
-  base::ByteCount available_ram =
+  const base::ByteSize available_ram =
       base::SysInfo::AmountOfAvailablePhysicalMemory();
-  if (available_ram.InMiB() <
-      features::kAvailableMemoryThresholdParamMb.Get()) {
+  if (available_ram <
+      base::MiBS(features::kAvailableMemoryThresholdParamMb.Get())
+          .AsByteSize()) {
     if (!memory_saver_enabled_) {
       SetMemorySaverModeForAllIsolates(true);
       memory_saver_enabled_ = true;

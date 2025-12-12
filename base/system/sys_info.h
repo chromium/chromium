@@ -17,6 +17,7 @@
 
 #include "base/base_export.h"
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -83,14 +84,12 @@ class BASE_EXPORT SysInfo {
   // (The amount of memory that can be allocated without any significant
   // impact on the system. It can lead to freeing inactive file-backed
   // and/or speculative file-backed memory).
-  // TODO(crbug.com/448661443): Switch to ByteSize as ByteCount is deprecated.
-  static ByteCount AmountOfAvailablePhysicalMemory();
+  static ByteSize AmountOfAvailablePhysicalMemory();
 
   // Return the number of bytes of virtual memory of this process. A return
   // value of zero means that there is no limit on the available virtual
   // memory.
-  // TODO(crbug.com/448661443): Switch to ByteSize as ByteCount is deprecated.
-  static ByteCount AmountOfVirtualMemory();
+  static ByteSize AmountOfVirtualMemory();
 
   // Return the available disk space in bytes on the volume containing |path|,
   // or nullopt on failure.
@@ -364,13 +363,13 @@ class BASE_EXPORT SysInfo {
 
   static int NumberOfEfficientProcessorsImpl();
   static ByteCount AmountOfPhysicalMemoryImpl();
-  static ByteCount AmountOfAvailablePhysicalMemoryImpl();
+  static ByteSize AmountOfAvailablePhysicalMemoryImpl();
   static bool IsLowEndDeviceImpl();
   static HardwareInfo GetHardwareInfoSync();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
-  static ByteCount AmountOfAvailablePhysicalMemory(
+  static ByteSize AmountOfAvailablePhysicalMemory(
       const SystemMemoryInfo& meminfo);
 #endif
 

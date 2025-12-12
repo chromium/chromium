@@ -2013,8 +2013,9 @@ void DeviceStatusCollector::SampleMemoryUsage() {
     return;
   }
 
-  MemoryUsage usage = {base::SysInfo::AmountOfAvailablePhysicalMemory(),
-                       base::Time::Now()};
+  MemoryUsage usage = {
+      base::SysInfo::AmountOfAvailablePhysicalMemory().AsDeprecatedByteCount(),
+      base::Time::Now()};
   memory_usage_.push_back(usage);
 
   if (memory_usage_.size() > kMaxResourceUsageSamples) {

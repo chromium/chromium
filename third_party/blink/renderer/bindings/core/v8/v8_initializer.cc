@@ -923,8 +923,7 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   ArrayBufferAllocator() : total_allocation_(0) {
     // size_t may be equivalent to uint32_t or uint64_t, cast all values to
     // uint64_t to compare.
-    uint64_t virtual_size =
-        base::SysInfo::AmountOfVirtualMemory().InBytesUnsigned();
+    uint64_t virtual_size = base::SysInfo::AmountOfVirtualMemory().InBytes();
     uint64_t size_t_max = std::numeric_limits<std::size_t>::max();
     DCHECK(virtual_size < size_t_max);
     // If AmountOfVirtualMemory() returns 0, there is no limit on virtual

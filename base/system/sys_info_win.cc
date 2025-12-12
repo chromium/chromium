@@ -116,14 +116,14 @@ std::vector<uint64_t> GetCoreProcessorMasks() {
   return processor_masks;
 }
 
-base::ByteCount AmountOfMemory(DWORDLONG MEMORYSTATUSEX::* memory_field) {
+base::ByteSize AmountOfMemory(DWORDLONG MEMORYSTATUSEX::* memory_field) {
   MEMORYSTATUSEX memory_info;
   memory_info.dwLength = sizeof(memory_info);
   if (!GlobalMemoryStatusEx(&memory_info)) {
     NOTREACHED();
   }
 
-  return base::ByteCount::FromUnsigned(memory_info.*memory_field);
+  return base::ByteSize(memory_info.*memory_field);
 }
 
 bool GetDiskSpaceInfo(const base::FilePath& path,
@@ -191,20 +191,20 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
 
 // static
 ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
-  return AmountOfMemory(&MEMORYSTATUSEX::ullTotalPhys);
+  return AmountOfMemory(&MEMORYSTATUSEX::ullTotalPhys).AsDeprecatedByteCount();
 }
 
 // static
-ByteCount SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
+ByteSize SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   SystemMemoryInfo info;
   if (!GetSystemMemoryInfo(&info)) {
-    return ByteCount(0);
+    return ByteSize(0);
   }
-  return info.avail_phys.AsDeprecatedByteCount();
+  return info.avail_phys;
 }
 
 // static
-ByteCount SysInfo::AmountOfVirtualMemory() {
+ByteSize SysInfo::AmountOfVirtualMemory() {
   return AmountOfMemory(&MEMORYSTATUSEX::ullTotalVirtual);
 }
 

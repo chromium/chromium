@@ -53,16 +53,20 @@ ByteCount SysInfo::AmountOfPhysicalMemory() {
 }
 
 // static
-ByteCount SysInfo::AmountOfAvailablePhysicalMemory() {
+ByteSize SysInfo::AmountOfAvailablePhysicalMemory() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableLowEndDeviceMode)) {
     // Estimate the available memory by subtracting our memory used estimate
     // from the fake |kLowMemoryDeviceThresholdMB| limit.
-    ByteCount memory_used =
-        AmountOfPhysicalMemoryImpl() - AmountOfAvailablePhysicalMemoryImpl();
-    ByteCount memory_limit = MiB(features::kLowMemoryDeviceThresholdMB.Get());
-    // std::min ensures no underflow, as |memory_used| can be > |memory_limit|.
-    return memory_limit - std::min(memory_used, memory_limit);
+    const ByteSize memory_used = ByteSize::FromByteSizeDelta(
+        ByteSize::FromDeprecatedByteCount(AmountOfPhysicalMemoryImpl()) -
+        AmountOfAvailablePhysicalMemoryImpl());
+    const ByteSize memory_limit =
+        MiBS(features::kLowMemoryDeviceThresholdMB.Get()).AsByteSize();
+    // |memory_used| can be > |memory_limit|.
+    const ByteSizeDelta memory_available = memory_limit - memory_used;
+    return memory_available.is_positive() ? memory_available.AsByteSize()
+                                          : ByteSize(0);
   }
 
   return AmountOfAvailablePhysicalMemoryImpl();

@@ -34,9 +34,9 @@ bool IsMemoryAvailable(size_t required_memory) {
   // This function is not implemented on FUCHSIA, yet. (crbug.com/986608)
   return true;
 #else
-  uint64_t max_allocatable = std::min(
-      base::SysInfo::AmountOfAvailablePhysicalMemory().InBytesUnsigned(),
-      static_cast<uint64_t>(partition_alloc::MaxDirectMapped()));
+  uint64_t max_allocatable =
+      std::min(base::SysInfo::AmountOfAvailablePhysicalMemory().InBytes(),
+               static_cast<uint64_t>(partition_alloc::MaxDirectMapped()));
 
   return max_allocatable >= required_memory;
 #endif
