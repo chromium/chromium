@@ -509,10 +509,6 @@ BASE_FEATURE(kNetworkQualityEstimatorWebHoldback,
 // using MPArch inner pages. See https://crbug.com/40202416
 BASE_FEATURE(kGuestViewMPArch, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// See crbug.com/359623664
-BASE_FEATURE(kIdbPrioritizeForegroundClients,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This flag unconditionally enables the SQLite backing store. Used for
 // about:flags.
 BASE_FEATURE(kIdbSqliteBackingStore, base::FEATURE_DISABLED_BY_DEFAULT);

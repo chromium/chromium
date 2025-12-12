@@ -137,10 +137,8 @@ class ConnectionCoordinator::ConnectionRequest {
             /*scope=*/{});
     state_ = RequestState::kPendingLocks;
 
-    db_->lock_manager().AcquireLocks(
-        std::move(lock_requests), lock_receiver_, std::move(next_step),
-        base::BindRepeating(&Connection::HasHigherPriorityThan,
-                            &lock_receiver_));
+    db_->lock_manager().AcquireLocks(std::move(lock_requests), lock_receiver_,
+                                     std::move(next_step));
   }
 
   RequestState state_ = RequestState::kNotStarted;

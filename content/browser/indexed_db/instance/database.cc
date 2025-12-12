@@ -312,9 +312,7 @@ void Database::RegisterAndScheduleTransaction(Transaction* transaction) {
 
   lock_manager().AcquireLocks(
       std::move(lock_requests), *transaction->mutable_locks_receiver(),
-      base::BindOnce(&Transaction::Start, transaction->AsWeakPtr()),
-      base::BindRepeating(&Connection::HasHigherPriorityThan,
-                          transaction->mutable_locks_receiver()));
+      base::BindOnce(&Transaction::Start, transaction->AsWeakPtr()));
 }
 
 Status Database::RunTasks() {

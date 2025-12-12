@@ -115,13 +115,6 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   int scheduling_priority() const { return scheduling_priority_; }
 
-  // Returns true if `this_one` should skip ahead of `other` when being added to
-  // the lock manager/scheduler. Two lock requests (which can be associated with
-  // transactions or new connection requests) will never be reordered if they
-  // come from the same client (window/worker context).
-  static bool HasHigherPriorityThan(const PartitionedLockHolder* this_one,
-                                    const PartitionedLockHolder& other);
-
   // Returns true if any of the connection's transactions is holding one of the
   // lock IDs.
   bool IsHoldingLocks(const std::vector<PartitionedLockId>& lock_ids) const;

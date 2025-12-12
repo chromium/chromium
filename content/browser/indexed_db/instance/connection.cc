@@ -822,35 +822,6 @@ Status Connection::AbortAllTransactions(const DatabaseError& error) {
   return Status::OK();
 }
 
-// static
-bool Connection::HasHigherPriorityThan(const PartitionedLockHolder* this_one,
-                                       const PartitionedLockHolder& other) {
-  if (!base::FeatureList::IsEnabled(
-          features::kIdbPrioritizeForegroundClients)) {
-    return false;
-  }
-
-  auto* this_lock_request_data = static_cast<LockRequestData*>(
-      this_one->GetUserData(LockRequestData::kKey));
-  if (!this_lock_request_data) {
-    return false;
-  }
-
-  auto* other_lock_request_data =
-      static_cast<LockRequestData*>(other.GetUserData(LockRequestData::kKey));
-  if (!other_lock_request_data) {
-    return false;
-  }
-
-  if (this_lock_request_data->client_token ==
-      other_lock_request_data->client_token) {
-    return false;
-  }
-
-  return this_lock_request_data->scheduling_priority <
-         other_lock_request_data->scheduling_priority;
-}
-
 bool Connection::IsHoldingLocks(
     const std::vector<PartitionedLockId>& lock_ids) const {
   return std::ranges::any_of(

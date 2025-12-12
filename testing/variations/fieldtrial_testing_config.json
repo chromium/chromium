@@ -14282,29 +14282,6 @@
             ]
         }
     ],
-    "IdbPrioritizeForegroundClients": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "ios",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IdbPrioritizeForegroundClients"
-                    ]
-                }
-            ]
-        }
-    ],
     "IdbSqliteBackingStoreInMemoryContexts": [
         {
             "platforms": [
