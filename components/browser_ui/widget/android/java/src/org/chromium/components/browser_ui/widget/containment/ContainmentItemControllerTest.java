@@ -9,8 +9,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 
 import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getSettingsContainerBackgroundColor;
-import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_COLOR;
-import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_MARGIN;
 import static org.chromium.components.browser_ui.widget.containment.ContainmentItemController.TRANSPARENT_BACKGROUND_COLOR;
 
 import android.content.Context;
@@ -28,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
-import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem.BackgroundStyle;
@@ -88,9 +85,6 @@ public class ContainmentItemControllerTest {
                 .getPreferenceFragment()
                 .addPreferencesFromResource(R.xml.test_settings_custom_preference_screen);
 
-        // Manually add preferences with custom margins
-        addPreferencesWithCustomMargins();
-
         mVisiblePreferences = SettingsUtils.getVisiblePreferences(mPreferenceScreen);
         mPreferenceStyles = mController.generatePreferenceStyles(mVisiblePreferences);
     }
@@ -116,9 +110,13 @@ public class ContainmentItemControllerTest {
     @Test
     @SmallTest
     public void testTextMessagePreferenceStyle() {
-        ContainerStyle textMessagePreferenceStyle = getPreferenceStyle("text_message_preference");
+ContainerStyle textMessagePreferenceStyle = getPreferenceStyle("text_message_preference");
         assertEquals(mDefaultRadius, textMessagePreferenceStyle.getTopRadius(), 0);
         assertEquals(mDefaultRadius, textMessagePreferenceStyle.getBottomRadius(), 0);
+        assertEquals(mDefaultContainerVerticalMargin, textMessagePreferenceStyle.getTopMargin());
+        assertEquals(
+                mDefaultContainerVerticalMargin + mSectionBottomMargin,
+                textMessagePreferenceStyle.getBottomMargin());
         assertEquals(TRANSPARENT_BACKGROUND_COLOR, textMessagePreferenceStyle.getBackgroundColor());
     }
 
@@ -204,56 +202,12 @@ public class ContainmentItemControllerTest {
 
     @Test
     @SmallTest
-    public void testCustomStyledPreference_WithCustomMargins() {
-        ContainerStyle customMarginPreferenceStyle =
-                getPreferenceStyle("preference_with_custom_margins");
-        assertEquals(CUSTOM_TOP_MARGIN, customMarginPreferenceStyle.getTopMargin());
-        assertEquals(CUSTOM_BOTTOM_MARGIN, customMarginPreferenceStyle.getBottomMargin());
-        assertEquals(mDefaultMargin, customMarginPreferenceStyle.getHorizontalMargin());
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomStyledPreference_WithTopMarginOnly() {
-        ContainerStyle topMarginOnlyPreferenceStyle =
-                getPreferenceStyle("preference_with_top_margin_only");
-        assertEquals(CUSTOM_TOP_MARGIN, topMarginOnlyPreferenceStyle.getTopMargin());
-        assertEquals(
-                mDefaultContainerVerticalMargin + mSectionBottomMargin,
-                topMarginOnlyPreferenceStyle.getBottomMargin());
-        assertEquals(mDefaultMargin, topMarginOnlyPreferenceStyle.getHorizontalMargin());
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomStyledPreference_WithBottomMarginOnly() {
-        ContainerStyle bottomMarginOnlyPreferenceStyle =
-                getPreferenceStyle("preference_with_bottom_margin_only");
-        assertEquals(
-                mDefaultContainerVerticalMargin, bottomMarginOnlyPreferenceStyle.getTopMargin());
-        assertEquals(CUSTOM_BOTTOM_MARGIN, bottomMarginOnlyPreferenceStyle.getBottomMargin());
-        assertEquals(mDefaultMargin, bottomMarginOnlyPreferenceStyle.getHorizontalMargin());
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomStyledPreference_WithBottomAndHorizontalMargin() {
-        ContainerStyle bottomAndHorizontalMarginsPreferenceStyle =
-                getPreferenceStyle("preference_with_bottom_and_horizontal_margins");
-        assertEquals(
-                mDefaultContainerVerticalMargin,
-                bottomAndHorizontalMarginsPreferenceStyle.getTopMargin());
-        assertEquals(
-                CUSTOM_BOTTOM_MARGIN, bottomAndHorizontalMarginsPreferenceStyle.getBottomMargin());
-        assertEquals(
-                CUSTOM_HORIZONTAL_MARGIN,
-                bottomAndHorizontalMarginsPreferenceStyle.getHorizontalMargin());
-    }
-
-    @Test
-    @SmallTest
     public void testGenerateViewStyles_Layout() {
-        List<View> views = List.of(new View(mContext), new View(mContext), new View(mContext));
+        List<View> views =
+                List.of(
+                        new CustomView(mContext, BackgroundStyle.STANDARD),
+                        new CustomView(mContext, BackgroundStyle.STANDARD),
+                        new CustomView(mContext, BackgroundStyle.STANDARD));
         ArrayList<ContainerStyle> viewStyles = mController.generateViewStyles(views);
 
         // Top view style
@@ -278,7 +232,7 @@ public class ContainmentItemControllerTest {
         List<View> views =
                 List.of(
                         new CustomView(mContext, BackgroundStyle.NONE),
-                        new View(mContext),
+                        new CustomView(mContext, BackgroundStyle.STANDARD),
                         new CustomView(mContext, BackgroundStyle.NONE));
         ArrayList<ContainerStyle> viewStyles = mController.generateViewStyles(views);
 
@@ -312,87 +266,6 @@ public class ContainmentItemControllerTest {
         assertEquals(
                 mDefaultContainerVerticalMargin + mSectionBottomMargin,
                 cardStyle.getBottomMargin());
-    }
-
-    private ChromeBasePreference createCustomPreference(
-            @BackgroundStyle int backgroundStyle,
-            int topMargin,
-            int bottomMargin,
-            int horizontalMargin,
-            int backgroundColor) {
-        return new ChromeBasePreference(mContext, null) {
-            @Override
-            public int getCustomBackgroundStyle() {
-                return backgroundStyle;
-            }
-
-            @Override
-            public int getCustomTopMargin() {
-                return topMargin;
-            }
-
-            @Override
-            public int getCustomBottomMargin() {
-                return bottomMargin;
-            }
-
-            @Override
-            public int getCustomHorizontalMargin() {
-                return horizontalMargin;
-            }
-
-            @Override
-            public int getCustomBackgroundColor() {
-                return backgroundColor;
-            }
-        };
-    }
-
-    private void addPreferencesWithCustomMargins() {
-        // Scenario 1: Custom top and bottom margins
-        ChromeBasePreference customMarginsPreference =
-                createCustomPreference(
-                        BackgroundStyle.CARD,
-                        CUSTOM_TOP_MARGIN,
-                        CUSTOM_BOTTOM_MARGIN,
-                        DEFAULT_MARGIN,
-                        DEFAULT_COLOR);
-        customMarginsPreference.setKey("preference_with_custom_margins");
-        mPreferenceScreen.addPreference(customMarginsPreference);
-
-        // Scenario 2: Custom top margin only
-        ChromeBasePreference topMarginOnlyPreference =
-                createCustomPreference(
-                        BackgroundStyle.CARD,
-                        CUSTOM_TOP_MARGIN,
-                        DEFAULT_MARGIN,
-                        DEFAULT_MARGIN,
-                        DEFAULT_COLOR);
-        topMarginOnlyPreference.setKey("preference_with_top_margin_only");
-        mPreferenceScreen.addPreference(topMarginOnlyPreference);
-
-        // Scenario 3: Custom bottom margin only
-        ChromeBasePreference bottomMarginOnlyPreference =
-                createCustomPreference(
-                        BackgroundStyle.CARD,
-                        DEFAULT_MARGIN,
-                        CUSTOM_BOTTOM_MARGIN,
-                        DEFAULT_MARGIN,
-                        DEFAULT_COLOR);
-        bottomMarginOnlyPreference.setKey("preference_with_bottom_margin_only");
-        mPreferenceScreen.addPreference(bottomMarginOnlyPreference);
-
-        // Scenario 4: Custom bottom and horizontal margins
-        ChromeBasePreference bottomAndHorizontalMarginsPreference =
-                createCustomPreference(
-                        BackgroundStyle.CARD,
-                        DEFAULT_MARGIN,
-                        CUSTOM_BOTTOM_MARGIN,
-                        CUSTOM_HORIZONTAL_MARGIN,
-                        DEFAULT_COLOR);
-        bottomAndHorizontalMarginsPreference.setKey(
-                "preference_with_bottom_and_horizontal_margins");
-        mPreferenceScreen.addPreference(bottomAndHorizontalMarginsPreference);
     }
 
     private ContainerStyle getPreferenceStyle(String key) {

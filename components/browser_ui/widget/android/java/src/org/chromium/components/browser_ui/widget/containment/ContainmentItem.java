@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget.containment;
 
+import android.graphics.Color;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
@@ -14,9 +16,9 @@ import java.lang.annotation.RetentionPolicy;
 /** An interface for container that should have custom background styling applied to them. */
 @NullMarked
 public interface ContainmentItem {
-    int DEFAULT_MARGIN = -1;
-    int DEFAULT_COLOR = -1;
+    int DEFAULT_COLOR = Color.WHITE;
     float DEFAULT_RADIUS = -1f;
+    int DEFAULT_VALUE = -1;
 
     // LINT.IfChange
     @IntDef({BackgroundStyle.CARD, BackgroundStyle.NONE, BackgroundStyle.STANDARD})
@@ -39,27 +41,11 @@ public interface ContainmentItem {
     }
 
     /**
-     * @return The custom top margin for the container in pixels. If DEFAULT_MARGIN, the default
-     *     margin will be used.
+     * @return The custom minimum height for the container in pixels. If DEFAULT_VALUE the default
+     *     height will be used.
      */
-    default int getCustomTopMargin() {
-        return DEFAULT_MARGIN;
-    }
-
-    /**
-     * @return The custom bottom margin for the container in pixels. If DEFAULT_MARGIN, the default
-     *     margin will be used.
-     */
-    default int getCustomBottomMargin() {
-        return DEFAULT_MARGIN;
-    }
-
-    /**
-     * @return The custom horizontal margin for the container in pixels. If DEFAULT_MARGIN, the
-     *     default margin will be used.
-     */
-    default int getCustomHorizontalMargin() {
-        return DEFAULT_MARGIN;
+    default int getCustomMinHeight() {
+        return DEFAULT_VALUE;
     }
 
     /**
