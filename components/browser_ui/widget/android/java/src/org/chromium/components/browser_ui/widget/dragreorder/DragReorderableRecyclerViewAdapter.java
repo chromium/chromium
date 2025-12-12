@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -206,11 +208,16 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
         super(modelList);
 
         Resources resources = context.getResources();
-        // Set the alpha to 90% when dragging which is 230/255
-        mDraggedBackgroundColor =
-                ColorUtils.setAlphaComponent(
-                        SemanticColorUtils.getColorSurfaceContainerHigh(context),
-                        resources.getInteger(R.integer.list_item_dragged_alpha));
+        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+            mDraggedBackgroundColor = Color.TRANSPARENT;
+        } else {
+            // Set the alpha to 90% when dragging which is 230/255
+            mDraggedBackgroundColor =
+                    ColorUtils.setAlphaComponent(
+                            SemanticColorUtils.getColorSurfaceContainerHigh(context),
+                            resources.getInteger(R.integer.list_item_dragged_alpha));
+        }
+
         mDraggedElevation = resources.getDimension(R.dimen.list_item_dragged_elevation);
     }
 
