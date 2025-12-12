@@ -2529,26 +2529,6 @@ const FeatureEntry::FeatureVariation kSidePanelRelativeAlignmentVariants[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kMiniToolbarHiddenOnActiveView[] = {
-    {"mini_toolbar_active_config", "hide"}};
-const FeatureEntry::FeatureParam kMiniToolbarWithMenuOnActiveView[] = {
-    {"mini_toolbar_active_config", "showmenu"}};
-const FeatureEntry::FeatureParam kMiniToolbarWithCloseOnActiveView[] = {
-    {"mini_toolbar_active_config", "showclose"}};
-
-const FeatureEntry::FeatureVariation kSideBySideVariations[] = {
-    {" - hide mini toolbar on active view", kMiniToolbarHiddenOnActiveView,
-     std::size(kMiniToolbarHiddenOnActiveView)},
-    {" - show mini toolbar with menu button on active view",
-     kMiniToolbarWithMenuOnActiveView,
-     std::size(kMiniToolbarWithMenuOnActiveView)},
-    {" - show mini toolbar with close button on active view",
-     kMiniToolbarWithCloseOnActiveView,
-     std::size(kMiniToolbarWithCloseOnActiveView)},
-};
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kNtpCalendarModuleFakeData[] = {
     {ntp_features::kNtpCalendarModuleDataParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpCalendarModuleVariations[] = {
@@ -12338,12 +12318,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"side-by-side", flag_descriptions::kSideBySideName,
-     flag_descriptions::kSideBySideDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSideBySide,
-                                    kSideBySideVariations,
-                                    "SideBySide")},
-
     {"open-dragged-links-same-tab",
      flag_descriptions::kOpenDraggedLinksSameTabName,
      flag_descriptions::kOpenDraggedLinksSameTabDescription, kOsDesktop,

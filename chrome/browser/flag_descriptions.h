@@ -3939,11 +3939,6 @@ inline constexpr char kFeedbackIncludeVariationsName[] =
 inline constexpr char kFeedbackIncludeVariationsDescription[] =
     "In Chrome feedback report, include commandline variations.";
 
-inline constexpr char kSideBySideName[] = "Split View";
-inline constexpr char kSideBySideDescription[] =
-    "Allows users to view two tabs "
-    "simultaneously in a split view.";
-
 inline constexpr char kOpenDraggedLinksSameTabName[] =
     "Open Dragged Links in the Same Tab";
 inline constexpr char kOpenDraggedLinksSameTabDescription[] =
