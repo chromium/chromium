@@ -111,12 +111,6 @@ public class SemanticColorUtils {
         return ContextCompat.getColor(context, R.color.divider_color);
     }
 
-    // TODO(crbug.com/465898786): Remove this method once the downstream caller is updated.
-    /** Returns the semantic color value that corresponds to divider_line_bg_color. */
-    public static @ColorInt int getDividerLineBgColor(Context context) {
-        return getDividerColor(context);
-    }
-
     /** Returns the semantic color value that corresponds to bottom_system_nav_color. */
     public static @ColorInt int getBottomSystemNavColor(Context context) {
         return getDefaultBgColor(context);
