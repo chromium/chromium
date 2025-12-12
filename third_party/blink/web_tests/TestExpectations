@@ -9963,3 +9963,6 @@ crbug.com/466134898 http/tests/devtools/sources/debugger-pause/debugger-eval-on-
 # Gardener 2025-12-09
 crbug.com/467244850 [ Linux ] external/wpt/css/css-contain/content-visibility/content-visibility-animation-with-scroll-timeline-in-auto-subtree.html [ Crash Failure Pass ]
 crbug.com/356930166 [ Mac ] external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.html [ Failure Pass Skip Timeout ]
+
+# Gardener 2025-12-12
+crbug.com/468374864 http/tests/inspector-protocol/target/auto-attach-wait-for-debugger-2-sessions-worker.js [ Failure Pass ]
