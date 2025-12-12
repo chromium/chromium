@@ -143,9 +143,12 @@ bool ArePositionsEqual(const ui::AXNodePosition::AXPositionInstance& position,
 ui::AXNode* GetAnchorNode(
     const ui::AXNodePosition::AXPositionInstance& position) {
   // For editable text fields, we want to read the text inside, even if it's
-  // technically a child of a leaf.
+  // technically a child of a leaf. However, this shouldn't be done for links
+  // if the lowest platform anchor is also text to avoid speaking duplicate
+  // text.
   if (position->GetAnchor()->HasState(ax::mojom::State::kEditable) &&
-      position->GetAnchor()->IsText()) {
+      position->GetAnchor()->IsText() &&
+      !position->GetAnchor()->GetLowestPlatformAncestor()->IsText()) {
     return position->GetAnchor();
   }
   bool is_leaf = position->GetAnchor()->IsChildOfLeaf();

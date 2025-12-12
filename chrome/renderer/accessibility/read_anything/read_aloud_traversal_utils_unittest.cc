@@ -85,6 +85,64 @@ TEST_F(ReadAnythingReadAloudTraversalUtilsTest, GetAnchorNode_OnEditableText) {
 }
 
 TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
+       GetAnchorNode_OnLinkWithEditableText) {
+  ui::AXTreeUpdate update;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  ui::AXNodeData text_field;
+  text_field.id = 2;
+  text_field.role = ax::mojom::Role::kStaticText;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.child_ids = {3};
+
+  ui::AXNodeData link;
+  link.id = 3;
+  link.role = ax::mojom::Role::kLink;
+  link.SetName("some text");
+  link.child_ids = {4};
+
+  ui::AXNodeData editable_static_text;
+  editable_static_text.id = 4;
+  editable_static_text.role = ax::mojom::Role::kStaticText;
+  editable_static_text.AddState(ax::mojom::State::kEditable);
+  editable_static_text.SetName("some text");
+
+  update.root_id = root.id;
+  update.nodes = {root, text_field, link, editable_static_text};
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.has_tree_data = true;
+  update.tree_data = tree_data;
+
+  std::unique_ptr<ui::AXSerializableTree> tree =
+      std::make_unique<ui::AXSerializableTree>();
+  tree->Unserialize(update);
+  std::unique_ptr<ui::AXTreeManager> manager =
+      std::make_unique<ui::AXTreeManager>(std::move(tree));
+
+  ui::AXNode* lowest_platform_ancestor = manager->GetNode(2);
+  ui::AXNode* link_node = manager->GetNode(3);
+  ui::AXNode* editable_static_text_node = manager->GetNode(4);
+
+  ASSERT_NE(lowest_platform_ancestor, nullptr);
+  ASSERT_NE(link_node, nullptr);
+  ASSERT_NE(editable_static_text_node, nullptr);
+
+  ASSERT_TRUE(editable_static_text_node->IsChildOfLeaf());
+
+  ui::AXNodePosition::AXPositionInstance position =
+      ui::AXNodePosition::CreateTextPosition(
+          *editable_static_text_node, 0, ax::mojom::TextAffinity::kDownstream);
+
+  // The anchor node should be the link node, not the editable static text,
+  // because the lowest platform ancestor (the link) is text.
+  EXPECT_EQ(GetAnchorNode(position), lowest_platform_ancestor);
+}
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
        GetNextSentence_ReturnsCorrectIndex) {
   const std::u16string first_sentence = u"This is a normal sentence. ";
   const std::u16string second_sentence = u"This is a second sentence.";
