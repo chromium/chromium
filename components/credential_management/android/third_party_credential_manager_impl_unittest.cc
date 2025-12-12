@@ -108,6 +108,46 @@ TEST_F(ThirdPartyCredentialManagerImplTest, TestDoesntStoreEmptyCredentials) {
       /*icon=*/GURL(),
       /*password=*/u"",
       /*federation=*/url::SchemeHostPort(GURL()));
+  base::MockCallback<StoreCallback> mock_store_callback;
+  EXPECT_CALL(mock_store_callback, Run());
+
+  // The callback should be called immediately with an empty credential that
+  // won't be stored.
+  credential_manager()->Store(info, mock_store_callback.Get());
+}
+
+TEST_F(ThirdPartyCredentialManagerImplTest, TestDoesntStoreEmptyPasswords) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kTestOrigin));
+
+  EXPECT_CALL(*mock_bridge(), Store(_, _, kTestOrigin, _)).Times(0);
+  password_manager::CredentialInfo info = password_manager::CredentialInfo(
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
+      /*id=*/kTestUsername,
+      /*name=*/kTestUsername,
+      /*icon=*/GURL(),
+      /*password=*/u"",
+      /*federation=*/url::SchemeHostPort(GURL()));
+  base::MockCallback<StoreCallback> mock_store_callback;
+  EXPECT_CALL(mock_store_callback, Run());
+
+  // The callback should be called immediately with an empty password that won't
+  // be stored.
+  credential_manager()->Store(info, mock_store_callback.Get());
+}
+
+TEST_F(ThirdPartyCredentialManagerImplTest, TestStoresEmptyUsernames) {
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kTestOrigin));
+
+  EXPECT_CALL(*mock_bridge(), Store(_, _, kTestOrigin, _));
+  password_manager::CredentialInfo info = password_manager::CredentialInfo(
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
+      /*id=*/u"",
+      /*name=*/u"",
+      /*icon=*/GURL(),
+      /*password=*/kTestPassword,
+      /*federation=*/url::SchemeHostPort(GURL()));
 
   credential_manager()->Store(info, StoreCallback());
 }
