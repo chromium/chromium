@@ -26,7 +26,7 @@ class RegisteredMockMemoryPressureListener : public MockMemoryPressureListener {
   ~RegisteredMockMemoryPressureListener() override;
 
  private:
-  SyncMemoryPressureListenerRegistration registration_;
+  MemoryPressureListenerRegistration registration_;
 };
 
 // Async version of RegisteredMockMemoryPressureListener.

@@ -194,7 +194,7 @@ void PlayerCompositorDelegate::InitializeInternal(
                      weak_factory_.GetWeakPtr()));
 
   memory_pressure_listener_registration_ =
-      std::make_unique<base::SyncMemoryPressureListenerRegistration>(
+      std::make_unique<base::MemoryPressureListenerRegistration>(
           base::MemoryPressureListenerTag::kPlayerCompositorDelegate, this);
   if (!timeout_duration.is_inf() && !timeout_duration.is_zero()) {
     timeout_.Reset(

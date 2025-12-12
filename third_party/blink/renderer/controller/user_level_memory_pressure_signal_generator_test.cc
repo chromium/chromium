@@ -30,7 +30,7 @@ class UserLevelMemoryPressureSignalGeneratorTest
 
   void SetUp() override {
     memory_pressure_listener_registration_ =
-        std::make_unique<base::SyncMemoryPressureListenerRegistration>(
+        std::make_unique<base::MemoryPressureListenerRegistration>(
             base::MemoryPressureListenerTag::kTest, this);
     base::MemoryPressureListener::SetNotificationsSuppressed(false);
   }
@@ -57,7 +57,7 @@ class UserLevelMemoryPressureSignalGeneratorTest
  protected:
   blink::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<base::SyncMemoryPressureListenerRegistration>
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
 };
 

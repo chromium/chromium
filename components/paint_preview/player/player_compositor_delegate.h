@@ -183,7 +183,7 @@ class PlayerCompositorDelegate : public base::MemoryPressureListener {
   raw_ptr<PaintPreviewBaseService> paint_preview_service_{nullptr};
   DirectoryKey key_;
   bool compress_on_close_{true};
-  std::unique_ptr<base::SyncMemoryPressureListenerRegistration>
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
 
   std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>

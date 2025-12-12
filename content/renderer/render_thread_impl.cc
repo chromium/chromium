@@ -594,7 +594,7 @@ void RenderThreadImpl::Init() {
   if (base::SingleThreadTaskRunner::GetMainThreadDefault()
           ->BelongsToCurrentThread()) {
     memory_pressure_listener_registration_ =
-        std::make_unique<base::SyncMemoryPressureListenerRegistration>(
+        std::make_unique<base::MemoryPressureListenerRegistration>(
             base::MemoryPressureListenerTag::kRenderThreadImpl, this);
   }
 

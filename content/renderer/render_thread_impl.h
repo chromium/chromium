@@ -529,7 +529,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
   HistogramCustomizer histogram_customizer_;
 
-  std::unique_ptr<base::SyncMemoryPressureListenerRegistration>
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
 
   MemoryReclaimerPressureListener memory_reclaimer_pressure_listener_;

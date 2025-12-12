@@ -7,7 +7,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/task/sequenced_task_runner.h"
@@ -19,34 +18,6 @@
 #include "base/tracing_buildflags.h"
 
 namespace base {
-
-namespace {
-
-// Controls whether or no MemoryPressureListeners are notified synchronously or,
-// in the disabled state, asynchronously. This is only suitable for a listener
-// that only lives on the main thread.
-BASE_FEATURE(kMakeMemoryPressureListenerSync, base::FEATURE_ENABLED_BY_DEFAULT);
-
-std::variant<SyncMemoryPressureListenerRegistration,
-             AsyncMemoryPressureListenerRegistration>
-CreateMemoryPressureListenerRegistrationImpl(
-    const Location& creation_location,
-    MemoryPressureListenerTag tag,
-    MemoryPressureListener* memory_pressure_listener) {
-  using ListenerVariant = std::variant<SyncMemoryPressureListenerRegistration,
-                                       AsyncMemoryPressureListenerRegistration>;
-  if (FeatureList::IsEnabled(kMakeMemoryPressureListenerSync)) {
-    return ListenerVariant(
-        std::in_place_type<SyncMemoryPressureListenerRegistration>, tag,
-        memory_pressure_listener);
-  } else {
-    return ListenerVariant(
-        std::in_place_type<AsyncMemoryPressureListenerRegistration>,
-        creation_location, tag, memory_pressure_listener);
-  }
-}
-
-}  // namespace
 
 // MemoryPressureListener ------------------------------------------------------
 
@@ -81,27 +52,32 @@ void MemoryPressureListener::SimulatePressureNotificationAsync(
       memory_pressure_level, std::move(on_notification_sent_callback));
 }
 
-// SyncMemoryPressureListenerRegistration --------------------------------------
+// MemoryPressureListenerRegistration --------------------------------------
 
-SyncMemoryPressureListenerRegistration::SyncMemoryPressureListenerRegistration(
+MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
     MemoryPressureListenerTag tag,
     MemoryPressureListener* memory_pressure_listener)
     : tag_(tag), memory_pressure_listener_(memory_pressure_listener) {
   MemoryPressureListenerRegistry::Get().AddObserver(this);
 }
 
-SyncMemoryPressureListenerRegistration::
-    ~SyncMemoryPressureListenerRegistration() {
+MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
+    const base::Location& creation_location,
+    MemoryPressureListenerTag tag,
+    MemoryPressureListener* memory_pressure_listener)
+    : MemoryPressureListenerRegistration(tag, memory_pressure_listener) {}
+
+MemoryPressureListenerRegistration::~MemoryPressureListenerRegistration() {
   MemoryPressureListenerRegistry::Get().RemoveObserver(this);
 }
 
-void SyncMemoryPressureListenerRegistration::Notify(
+void MemoryPressureListenerRegistration::Notify(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   memory_pressure_listener_->OnMemoryPressure(memory_pressure_level);
 }
 
-// AsyncMainThread -------------------------
+// AsyncMemoryPressureListenerRegistration::MainThread -------------------------
 
 class AsyncMemoryPressureListenerRegistration::MainThread
     : public MemoryPressureListener {
@@ -135,7 +111,7 @@ class AsyncMemoryPressureListenerRegistration::MainThread
       GUARDED_BY_CONTEXT(thread_checker_);
 
   // The actual sync listener that lives on the main thread.
-  std::optional<SyncMemoryPressureListenerRegistration> listener_
+  std::optional<MemoryPressureListenerRegistration> listener_
       GUARDED_BY_CONTEXT(thread_checker_);
 
   THREAD_CHECKER(thread_checker_);
@@ -193,19 +169,5 @@ void AsyncMemoryPressureListenerRegistration::Notify(
       });
   memory_pressure_listener_->OnMemoryPressure(memory_pressure_level);
 }
-
-// MemoryPressureListenerRegistration ------------------------------------------
-
-MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
-    const Location& creation_location,
-    MemoryPressureListenerTag tag,
-    MemoryPressureListener* memory_pressure_listener)
-    : listener_(CreateMemoryPressureListenerRegistrationImpl(
-          creation_location,
-          tag,
-          memory_pressure_listener)) {}
-
-MemoryPressureListenerRegistration::~MemoryPressureListenerRegistration() =
-    default;
 
 }  // namespace base

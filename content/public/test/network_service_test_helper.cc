@@ -836,7 +836,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;
   std::unique_ptr<net::ScopedTransportSecurityStateSource>
       transport_security_state_source_;
-  std::optional<base::SyncMemoryPressureListenerRegistration>
+  std::optional<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
   base::MemoryPressureLevel latest_memory_pressure_level_ =
       base::MEMORY_PRESSURE_LEVEL_NONE;
