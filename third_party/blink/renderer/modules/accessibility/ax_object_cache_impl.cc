@@ -6435,8 +6435,14 @@ void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
 }
 
 void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {
-  if (!anchor_node)
+  if (!anchor_node) {
     return;
+  }
+
+  if (!lifecycle_.StateAllowsDeferTreeUpdates()) {
+    // TODO(crbug.com/467491112): root cause needs investigation.
+    return;
+  }
 
   DeferTreeUpdate(TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor,
                   const_cast<Node*>(anchor_node),
