@@ -355,6 +355,7 @@ source_set("interactive_ui_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/ui:ui_features",
       "//components/history_clusters/core",
       "//components/password_manager/content/common",
