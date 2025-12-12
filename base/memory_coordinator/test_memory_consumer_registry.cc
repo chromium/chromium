@@ -27,7 +27,7 @@ void TestMemoryConsumerRegistry::OnMemoryConsumerAdded(
     std::string_view consumer_id,
     MemoryConsumerTraits traits,
     RegisteredMemoryConsumer consumer) {
-  CHECK(!base::Contains(memory_consumers_, consumer));
+  CHECK(!Contains(memory_consumers_, consumer));
   memory_consumers_.push_back(consumer);
 }
 

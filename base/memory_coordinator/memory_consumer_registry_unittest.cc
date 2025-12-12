@@ -26,7 +26,7 @@ class MockMemoryConsumerRegistry : public MemoryConsumerRegistry {
   MOCK_METHOD(void,
               OnMemoryConsumerAdded,
               (std::string_view observer_id,
-               base::MemoryConsumerTraits traits,
+               MemoryConsumerTraits traits,
                RegisteredMemoryConsumer consumer),
               (override));
   MOCK_METHOD(void,

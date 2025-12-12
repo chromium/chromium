@@ -61,7 +61,7 @@ TEST_F(MemoryPressureListenerTest, NotifyMemoryPressure) {
 }
 
 TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
-  base::test::SingleThreadTaskEnvironment task_env;
+  test::SingleThreadTaskEnvironment task_env;
 
   auto listener_to_be_deleted =
       std::make_unique<RegisteredMockAsyncMemoryPressureListener>();

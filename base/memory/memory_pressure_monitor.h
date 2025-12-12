@@ -40,8 +40,7 @@ enum class MemoryPressureMonitorTag {
 // all MemoryPressureListener instances via a callback.
 class BASE_EXPORT MemoryPressureMonitor {
  public:
-  using DispatchCallback =
-      base::RepeatingCallback<void(MemoryPressureLevel level)>;
+  using DispatchCallback = RepeatingCallback<void(MemoryPressureLevel level)>;
 
   MemoryPressureMonitor(const MemoryPressureMonitor&) = delete;
   MemoryPressureMonitor& operator=(const MemoryPressureMonitor&) = delete;
@@ -53,7 +52,7 @@ class BASE_EXPORT MemoryPressureMonitor {
 
   // Returns the currently observed memory pressure.
   virtual MemoryPressureLevel GetCurrentPressureLevel(
-      base::MemoryPressureMonitorTag tag) const = 0;
+      MemoryPressureMonitorTag tag) const = 0;
 
  protected:
   MemoryPressureMonitor();

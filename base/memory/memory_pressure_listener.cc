@@ -62,7 +62,7 @@ MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
 }
 
 MemoryPressureListenerRegistration::MemoryPressureListenerRegistration(
-    const base::Location& creation_location,
+    const Location& creation_location,
     MemoryPressureListenerTag tag,
     MemoryPressureListener* memory_pressure_listener)
     : MemoryPressureListenerRegistration(tag, memory_pressure_listener) {}
@@ -97,9 +97,8 @@ class AsyncMemoryPressureListenerRegistration::MainThread
   void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     listener_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AsyncMemoryPressureListenerRegistration::Notify,
-                       parent_, memory_pressure_level));
+        FROM_HERE, BindOnce(&AsyncMemoryPressureListenerRegistration::Notify,
+                            parent_, memory_pressure_level));
   }
 
   // The task runner on which the listener lives.
@@ -121,7 +120,7 @@ class AsyncMemoryPressureListenerRegistration::MainThread
 
 AsyncMemoryPressureListenerRegistration::
     AsyncMemoryPressureListenerRegistration(
-        const base::Location& creation_location,
+        const Location& creation_location,
         MemoryPressureListenerTag tag,
         MemoryPressureListener* memory_pressure_listener)
     : memory_pressure_listener_(memory_pressure_listener),
@@ -164,8 +163,7 @@ void AsyncMemoryPressureListenerRegistration::Notify(
         data->set_level(
             trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
         data->set_creation_location_iid(
-            base::trace_event::InternedSourceLocation::Get(&ctx,
-                                                           creation_location_));
+            trace_event::InternedSourceLocation::Get(&ctx, creation_location_));
       });
   memory_pressure_listener_->OnMemoryPressure(memory_pressure_level);
 }

@@ -166,7 +166,7 @@ class BASE_EXPORT MemoryPressureListenerRegistration {
   // to avoid a mass-refactoring. This class will eventually be deleted in favor
   // of the memory coordinator API (base::MemoryConsumer).
   MemoryPressureListenerRegistration(
-      const base::Location& creation_location,
+      const Location& creation_location,
       MemoryPressureListenerTag,
       MemoryPressureListener* memory_pressure_listener);
 
@@ -195,7 +195,7 @@ class BASE_EXPORT MemoryPressureListenerRegistration {
 class BASE_EXPORT AsyncMemoryPressureListenerRegistration {
  public:
   AsyncMemoryPressureListenerRegistration(
-      const base::Location& creation_location,
+      const Location& creation_location,
       MemoryPressureListenerTag tag,
       MemoryPressureListener* memory_pressure_listener);
 
@@ -222,7 +222,7 @@ class BASE_EXPORT AsyncMemoryPressureListenerRegistration {
   std::unique_ptr<MainThread> main_thread_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const base::Location creation_location_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const Location creation_location_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
