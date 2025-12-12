@@ -125,6 +125,7 @@
 #include "ui/base/ime/win/tsf_input_scope.h"
 #include "ui/base/win/hidden_window.h"
 #include "ui/display/win/screen_win.h"
+#include "ui/events/win/system_event_state_lookup.h"
 #include "ui/gfx/win/gdi_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -196,9 +197,13 @@ void UpdateArabicDigitSubStateIfNecessary() {
   }
 }
 
-bool ShouldSubstituteArabicDigits() {
+bool ShouldSubstituteArabicDigits(const ui::KeyEvent& event) {
   return arabic_digit_sub_state.is_arabic_101_kl &&
-         arabic_digit_sub_state.is_digit_sub_feature_enabled;
+         arabic_digit_sub_state.is_digit_sub_feature_enabled &&
+         event.type() == ui::EventType::kKeyPressed &&
+         // Check for VKEY_0 to VKEY_9 because we should not perform
+         // substitution for numpad digits.
+         event.key_code() >= ui::VKEY_0 && event.key_code() <= ui::VKEY_9;
 }
 #endif  // BUILDFLAG(IS_WIN)
 }  // namespace
@@ -1515,29 +1520,26 @@ void RenderWidgetHostViewAura::InsertChar(const ui::KeyEvent& event) {
   // Ignore character messages for VKEY_RETURN sent on CTRL+M. crbug.com/315547
   if (event_handler_->accept_return_character() ||
       event.GetCharacter() != ui::VKEY_RETURN) {
-    bool should_substitute_digit = false;
 #if BUILDFLAG(IS_WIN)
     // Arabic keyboard layouts on Windows do not natively support Arabic-Indic
     // digit input. We can work around this for web page input
     // scenarios by converting ASCII digits to Arabic-Indic here before
-    // they are sent to the renderer.
+    // they are sent to the renderer. We do this when Ctrl+Alt or Right Alt are
+    // held and a top row digit key is pressed. This simulates the behavior
+    // of an AltGr key.
     // This is only done for Arabic 101. Arabic 102 and Arabic 102 AZERTY
     // already have defined AltGr behavior in the top-row digit keys and AZERTY
     // is primarily used in locales that do not often use Arabic-Indic digits.
-    should_substitute_digit = ShouldSubstituteArabicDigits() &&
-                              base::IsAsciiDigit(event.GetCharacter());
+    if (ShouldSubstituteArabicDigits(event) && ui::win::IsAltRightPressed()) {
+      ForwardArabicIndicCharEventWithLatencyInfo(event, event.GetCharacter());
+    } else
 #endif  // BUILDFLAG(IS_WIN)
-    const char16_t character =
-        should_substitute_digit
-            // To get the Arabic-Indic codepoint, subtract '0' from character
-            // to get offset, then add the codepoint for Arabic-Indic zero.
-            ? event.GetCharacter() - u'0' + kArabicIndicZero
-            : event.GetCharacter();
-
-    // Send a blink::WebInputEvent::Char event to |host_|.
-    ForwardKeyboardEventWithLatencyInfo(
-        input::NativeWebKeyboardEvent(event, character), *event.latency(),
-        nullptr);
+    {
+      // Send a blink::WebInputEvent::Char event to |host_|.
+      ForwardKeyboardEventWithLatencyInfo(
+          input::NativeWebKeyboardEvent(event, event.GetCharacter()),
+          *event.latency(), nullptr);
+    }
   }
 }
 
@@ -2345,6 +2347,20 @@ bool RenderWidgetHostViewAura::RequiresDoubleTapGestureEvents() const {
 void RenderWidgetHostViewAura::OnKeyEvent(ui::KeyEvent* event) {
   last_pointer_type_ = ui::EventPointerType::kUnknown;
   event_handler_->OnKeyEvent(event);
+
+#if BUILDFLAG(IS_WIN)
+  // When inputting Ctrl+Alt+Top Row Digit, Windows does not generate a WM_CHAR
+  // or WM_SYSCHAR. So we synthesize an Arabic-Indic char event here and
+  // forward it to the renderer. When inputting RightAlt+Top Row Digit, Windows
+  // generates a WM_SYSCHAR so that is handled in InsertChar.
+  constexpr ui::EventFlags kCtrlAndAltPressed =
+      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
+  if (ShouldSubstituteArabicDigits(*event) &&
+      ((event->flags() & kCtrlAndAltPressed) == kCtrlAndAltPressed)) {
+    const char16_t ascii_digit_char = event->key_code() - ui::VKEY_0 + u'0';
+    ForwardArabicIndicCharEventWithLatencyInfo(*event, ascii_digit_char);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void RenderWidgetHostViewAura::OnMouseEvent(ui::MouseEvent* event) {
@@ -3486,5 +3502,22 @@ ui::Compositor* RenderWidgetHostViewAura::GetCompositor() {
 
   return window_->GetHost()->compositor();
 }
+
+#if BUILDFLAG(IS_WIN)
+void RenderWidgetHostViewAura::ForwardArabicIndicCharEventWithLatencyInfo(
+    const ui::KeyEvent& event,
+    char16_t ascii_char) {
+  const char16_t arabic_indic_digit_char = ascii_char - u'0' + kArabicIndicZero;
+  const int sys_stripped_flags =
+      event.flags() & (~ui::EF_ALT_DOWN & ~ui::EF_CONTROL_DOWN);
+  ui::KeyEvent arabic_indic_digit_event = ui::KeyEvent::FromCharacter(
+      arabic_indic_digit_char, event.key_code(), ui::DomCode::NONE,
+      sys_stripped_flags, event.time_stamp());
+  ForwardKeyboardEventWithLatencyInfo(
+      input::NativeWebKeyboardEvent(arabic_indic_digit_event,
+                                    arabic_indic_digit_char),
+      *event.latency(), nullptr);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

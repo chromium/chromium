@@ -740,6 +740,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnFocusHandwritingTarget(
       const gfx::Rect& focus_screen_rect_in_dips,
       const gfx::Size& tolerance_screen_distance_in_dips);
+
+  void ForwardArabicIndicCharEventWithLatencyInfo(const ui::KeyEvent& event,
+                                                  char16_t ascii_char);
 #endif  // BUILDFLAG(IS_WIN)
 
   raw_ptr<aura::Window> window_;

@@ -5176,7 +5176,47 @@ TEST_F(RenderWidgetHostViewAuraTest, KeyEventsHandled) {
 // forwarding NativeWebKeyboardEvents with Arabic-Indic digit in InsertChar
 // upon receipt of a KeyEvent containing an ASCII digit.
 // This test verifies that behavior.
-TEST_F(RenderWidgetHostViewAuraTest, InsertCharArabicDigitSubstitution) {
+TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitSubstitutionRightAlt) {
+  ResetArabicDigitSubStateForTesting();
+
+  InitViewForFrame(nullptr);
+  view_->Show();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kArabicDigitSubstitution);
+  ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ARABIC);
+
+  // Calling ActivateKeyboardLayout does not trigger
+  // TSFTextStore::OnLanguageChanged nor does it generate a WM_INPUTLANGCHANGE
+  // message. So for testing purposes call OnInputMethodChanged directly.
+  view_->OnInputMethodChanged();
+
+  constexpr BYTE kKeyDown = 0x80;
+  constexpr BYTE kKeyUp = 0x00;
+  constexpr int kKeyboardStateArraySize = 256;
+  BYTE keyboard_state[kKeyboardStateArraySize] = {};
+  ASSERT_TRUE(GetKeyboardState(keyboard_state));
+  keyboard_state[VK_RMENU] = kKeyDown;
+  ASSERT_TRUE(SetKeyboardState(keyboard_state));
+  for (int i = 0; i < 10; ++i) {
+    ui::KeyEvent key_event = ui::KeyEvent::FromCharacter(
+        i + u'0', static_cast<ui::KeyboardCode>(ui::VKEY_0 + i),
+        ui::DomCode::NONE, ui::EF_ALT_DOWN);
+    view_->InsertChar(key_event);
+    const input::NativeWebKeyboardEvent* event =
+        delegates_.back()->last_event();
+    ASSERT_TRUE(event);
+
+    char16_t expected = static_cast<char16_t>(i + kArabicIndicZero);
+    EXPECT_EQ(expected, event->windows_key_code) << "Digit index: " << i;
+    EXPECT_EQ(expected, event->text[0]) << "Digit index: " << i;
+    EXPECT_EQ(expected, event->unmodified_text[0]) << "Digit index: " << i;
+  }
+  keyboard_state[VK_RMENU] = kKeyUp;
+  ASSERT_TRUE(SetKeyboardState(keyboard_state));
+}
+
+TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitSubstitutionCtrlAndAlt) {
   ResetArabicDigitSubStateForTesting();
 
   InitViewForFrame(nullptr);
@@ -5194,8 +5234,9 @@ TEST_F(RenderWidgetHostViewAuraTest, InsertCharArabicDigitSubstitution) {
   for (int i = 0; i < 10; ++i) {
     ui::KeyEvent key_event(ui::EventType::kKeyPressed,
                            static_cast<ui::KeyboardCode>(ui::VKEY_0 + i),
-                           ui::DomCode::NONE, ui::EF_NONE);
-    view_->InsertChar(key_event);
+                           ui::DomCode::NONE,
+                           (ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN));
+    view_->OnKeyEvent(&key_event);
     const input::NativeWebKeyboardEvent* event =
         delegates_.back()->last_event();
     ASSERT_TRUE(event);
