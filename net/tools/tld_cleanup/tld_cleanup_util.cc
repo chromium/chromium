@@ -203,8 +203,7 @@ NormalizeResult NormalizeFile(const base::FilePath& in_filename,
   std::string data;
   if (!base::ReadFileToString(in_filename, &data)) {
     LOG(ERROR) << "Unable to read file";
-    // We return success since we've already reported the error.
-    return NormalizeResult::kSuccess;
+    return NormalizeResult::kError;
   }
 
   const auto [result, rules] = NormalizeDataToRuleMap(data);
