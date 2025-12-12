@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/frame_pointer_unwinder.h"
 
 #include "base/check_op.h"
@@ -43,7 +38,7 @@ uintptr_t DecodeFrame(uintptr_t frame_pointer, uintptr_t* return_address) {
   MSAN_UNPOISON(fp, sizeof(uintptr_t) * 2);
 
   uintptr_t next_frame = *fp;
-  *return_address = *(fp + 1);
+  *return_address = *(UNSAFE_TODO(fp + 1));
   return next_frame;
 }
 

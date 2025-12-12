@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/stack_sampler.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <numeric>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -89,10 +85,10 @@ class TestStackCopier : public StackCopier {
                  TimeTicks* timestamp,
                  RegisterContext* thread_context,
                  Delegate* delegate) override {
-    std::memcpy(stack_buffer->buffer(), &(*fake_stack_)[0],
-                fake_stack_->size() * sizeof((*fake_stack_)[0]));
-    *stack_top = reinterpret_cast<uintptr_t>(stack_buffer->buffer() +
-                                             fake_stack_->size());
+    UNSAFE_TODO(std::memcpy(stack_buffer->buffer(), &(*fake_stack_)[0],
+                            fake_stack_->size() * sizeof((*fake_stack_)[0])));
+    *stack_top = reinterpret_cast<uintptr_t>(
+        UNSAFE_TODO(stack_buffer->buffer() + fake_stack_->size()));
     // Set the stack pointer to be consistent with the copied stack.
     *thread_context = {};
     RegisterContextStackPointer(thread_context) =
@@ -126,8 +122,8 @@ class DelegateInvokingStackCopier : public StackCopier {
                  RegisterContext* thread_context,
                  Delegate* delegate) override {
     // Returning true means the various out params should be populated.
-    *stack_top = reinterpret_cast<uintptr_t>(stack_buffer->buffer() +
-                                             stack_buffer->size());
+    *stack_top = reinterpret_cast<uintptr_t>(
+        UNSAFE_TODO(stack_buffer->buffer() + stack_buffer->size()));
     // Set the stack pointer to be consistent with the copied stack.
     *thread_context = {};
     RegisterContextStackPointer(thread_context) =
@@ -204,7 +200,8 @@ class CallRecordingUnwinder : public Unwinder {
 std::vector<std::unique_ptr<const ModuleCache::Module>> ToModuleVector(
     std::unique_ptr<const ModuleCache::Module> module) {
   return std::vector<std::unique_ptr<const ModuleCache::Module>>(
-      std::make_move_iterator(&module), std::make_move_iterator(&module + 1));
+      std::make_move_iterator(&module),
+      std::make_move_iterator(UNSAFE_TODO(&module + 1)));
 }
 
 // Injects a fake module covering the initial instruction pointer value, to
