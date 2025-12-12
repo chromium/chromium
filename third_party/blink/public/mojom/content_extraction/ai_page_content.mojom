@@ -298,7 +298,7 @@ struct AIPageContentImageInfo {
 };
 
 struct AIPageContentSVGData {
-  // Provides the concatenated string for the text inside an SVG node.
+  // Provides the concatenated string for the text inside an SVG tree.
   string? inner_text;
 };
 

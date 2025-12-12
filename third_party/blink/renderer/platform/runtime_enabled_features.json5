@@ -331,6 +331,10 @@
       status: "test"
     },
     {
+      name: "AIPageContentIncludeSVGSubtree",
+      status: "test"
+    },
+    {
       name: "AIPageContentPaidContentAnnotation",
       status: "stable"
     },

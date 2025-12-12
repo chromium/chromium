@@ -3631,7 +3631,10 @@ TEST_F(AIPageContentAgentTest, LabelWithForDescendant) {
   CheckTextNode(*label.children_nodes[1], "Check me!");
 }
 
-TEST_F(AIPageContentAgentTest, SVG) {
+TEST_F(AIPageContentAgentTest, SVGWithText) {
+  ScopedAIPageContentIncludeSVGSubtreeForTest scoped_feature(
+      /*enabled=*/true);
+
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
@@ -3650,6 +3653,12 @@ TEST_F(AIPageContentAgentTest, SVG) {
             mojom::blink::AIPageContentAttributeType::kSVG);
   ASSERT_TRUE(svg.content_attributes->svg_data);
   EXPECT_EQ(svg.content_attributes->svg_data->inner_text, "Hello SVG Text!");
+
+  const auto& text_child = *svg.children_nodes[0];
+  EXPECT_EQ(text_child.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kText);
+  // Note that whitespace is kept.
+  CheckTextNode(text_child, "      Hello SVG Text!    ");
 }
 
 TEST_F(AIPageContentAgentTest, SVGWithNoText) {
@@ -3671,6 +3680,69 @@ TEST_F(AIPageContentAgentTest, SVGWithNoText) {
             mojom::blink::AIPageContentAttributeType::kSVG);
   ASSERT_TRUE(svg.content_attributes->svg_data);
   EXPECT_FALSE(svg.content_attributes->svg_data->inner_text);
+
+  // Only visible text nodes are extracted.
+  EXPECT_EQ(svg.children_nodes.size(), 0u);
+}
+
+TEST_F(AIPageContentAgentTest, SVGSubtreeContainersAreKept) {
+  ScopedAIPageContentIncludeSVGSubtreeForTest scoped_feature(
+      /*enabled=*/true);
+
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <svg width='400' height='200'>"
+      "    <a href='example.html'>"
+      "      <image/>"
+      "      <rect width='10%' height='10%' fill='red'/>"
+      "      <text x='50%' y='50/%' font-size='24'>"
+      "        Hello SVG Text!"
+      "      </text>"
+      "    </a>"
+      "  </svg>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  document.getElementsByTagName(AtomicString("image"))
+      ->item(0)
+      ->setAttribute(html_names::kSrcAttr, AtomicString(kSmallImage));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& svg = *ContentRootNode().children_nodes[0];
+  EXPECT_EQ(svg.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kSVG);
+  ASSERT_TRUE(svg.content_attributes->svg_data);
+  EXPECT_EQ(svg.content_attributes->svg_data->inner_text, "Hello SVG Text!");
+
+  ASSERT_EQ(svg.children_nodes.size(), 1u);
+  const auto& a_child = *svg.children_nodes[0];
+  EXPECT_EQ(a_child.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  ASSERT_TRUE(a_child.content_attributes->node_interaction_info);
+  EXPECT_FALSE(a_child.content_attributes->node_interaction_info
+                   ->clickability_reasons.empty());
+
+  ASSERT_EQ(a_child.children_nodes.size(), 3u);
+
+  const auto& image_child = *a_child.children_nodes[0];
+  EXPECT_EQ(image_child.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kImage);
+
+  // Non-text, non-image elements are processed as generic containers.
+  const auto& rect_child = *a_child.children_nodes[1];
+  EXPECT_EQ(rect_child.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+
+  const auto& text_child = *a_child.children_nodes[2];
+  EXPECT_EQ(text_child.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kText);
+  // Note that whitespace is kept.
+  CheckTextNode(text_child, "        Hello SVG Text!      ");
+  ASSERT_TRUE(text_child.content_attributes->node_interaction_info);
+  EXPECT_TRUE(text_child.content_attributes->node_interaction_info
+                  ->clickability_reasons.empty());
 }
 
 TEST_F(AIPageContentAgentTest, Canvas) {

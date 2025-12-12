@@ -533,10 +533,11 @@ bool ShouldSkipDescendants(
     return true;
   }
 
-  // We don't capture the SVG layout internally so there's no need to
-  // walk their tree.
+  // If the feature is disabled, we don't capture the SVG layout internally so
+  // there's no need to walk their tree.
   if (content_node->content_attributes->attribute_type ==
-      mojom::blink::AIPageContentAttributeType::kSVG) {
+          mojom::blink::AIPageContentAttributeType::kSVG &&
+      !RuntimeEnabledFeatures::AIPageContentIncludeSVGSubtreeEnabled()) {
     return true;
   }
 
@@ -576,10 +577,12 @@ void ProcessTextNode(const LayoutText& layout_text,
   attributes.text_info = std::move(text_info);
 }
 
-void ProcessImageNode(const LayoutImage& layout_image,
+void ProcessImageNode(const LayoutObject& layout_image,
                       mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kImage;
   CHECK(IsVisible(layout_image));
+  CHECK(layout_image.IsImage() || layout_image.IsSVGImage());
+
   // LayoutImage is a superclass of LayoutMedia, which is a superclass of
   // LayoutVideo and LayoutAudio. We only want to process images here, so
   // we enforce that the object is not a media object.
@@ -587,6 +590,7 @@ void ProcessImageNode(const LayoutImage& layout_image,
 
   auto image_info = mojom::blink::AIPageContentImageInfo::New();
 
+  // TODO(b/468126774): Set caption for SVG <images> based on <title> elements.
   if (auto* image_element =
           DynamicTo<HTMLImageElement>(layout_image.GetNode())) {
     // TODO(crbug.com/383127202): A11y stack generates alt text using image
@@ -598,7 +602,7 @@ void ProcessImageNode(const LayoutImage& layout_image,
   attributes.image_info = std::move(image_info);
 }
 
-void ProcessSVGNode(const LayoutSVGRoot& layout_svg,
+void ProcessSVGRoot(const LayoutSVGRoot& layout_svg,
                     mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kSVG;
   CHECK(IsVisible(layout_svg));
@@ -609,6 +613,8 @@ void ProcessSVGNode(const LayoutSVGRoot& layout_svg,
   }
 
   auto svg_data = mojom::blink::AIPageContentSVGData::New();
+  // TODO(b/452908424): Consider removing this given that the inner text is
+  // available in the text nodes.
   svg_data->inner_text = element->GetInnerTextWithoutUpdate();
   attributes.svg_data = std::move(svg_data);
 }
@@ -1475,20 +1481,20 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     }
     ProcessTextNode(To<LayoutText>(object), attributes,
                     recursion_data.document_style);
-  } else if (object.IsImage()) {
+  } else if (object.IsImage() || object.IsSVGImage()) {
     // Since image is a leaf node, do not create a content node if should skip
     // content.
     if (!IsVisible(object)) {
       return nullptr;
     }
-    ProcessImageNode(To<LayoutImage>(object), attributes);
+    ProcessImageNode(object, attributes);
   } else if (object.IsSVGRoot()) {
     // Since we add the full text under SVG directly, don't add anything if the
     // SVG is hidden.
     if (!IsVisible(object)) {
       return nullptr;
     }
-    ProcessSVGNode(To<LayoutSVGRoot>(object), attributes);
+    ProcessSVGRoot(To<LayoutSVGRoot>(object), attributes);
   } else if (object.IsCanvas()) {
     // No content will be rendered if the canvas is hidden.
     if (!IsVisible(object)) {
