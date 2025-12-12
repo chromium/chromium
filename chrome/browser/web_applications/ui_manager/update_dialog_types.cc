@@ -31,10 +31,18 @@ WebAppIdentityUpdate& WebAppIdentityUpdate::operator=(
 WebAppIdentity WebAppIdentityUpdate::MakeOldIdentity() const {
   return WebAppIdentity(old_title, old_icon, old_start_url);
 }
+
 WebAppIdentity WebAppIdentityUpdate::MakeNewIdentity() const {
   return WebAppIdentity(new_title.value_or(old_title),
                         new_icon.value_or(old_icon),
                         new_start_url.value_or(old_start_url));
+}
+
+int WebAppIdentityUpdate::GetCombinationChangeIndex() const {
+  int combination_index = (new_title.has_value() ? kNameChange : 0) |
+                          (new_icon.has_value() ? kIconChange : 0) |
+                          (new_start_url.has_value() ? kUrlChange : 0);
+  return combination_index;
 }
 
 }  // namespace web_app

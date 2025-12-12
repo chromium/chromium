@@ -16,12 +16,14 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
 namespace web_app {
 
 WebAppUpdateIdentityView::WebAppUpdateIdentityView(
-    const WebAppIdentity& identity) {
+    const WebAppIdentity& identity,
+    bool url_migration_only) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -45,6 +47,9 @@ WebAppUpdateIdentityView::WebAppUpdateIdentityView(
   auto* origin_label = AddChildView(web_app::CreateOriginLabelFromStartUrl(
       identity.start_url, /*is_primary_text=*/false));
   origin_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  if (url_migration_only) {
+    origin_label->SetTextStyle(views::style::STYLE_EMPHASIZED);
+  }
 }
 
 WebAppUpdateIdentityView::~WebAppUpdateIdentityView() = default;

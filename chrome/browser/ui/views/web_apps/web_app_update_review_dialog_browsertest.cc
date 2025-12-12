@@ -132,6 +132,10 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
     if (base::Contains(name, "UrlChange")) {
       update_.new_start_url = GURL("http://other.test.com");
     }
+    if (base::Contains(name, "ForcedMigration")) {
+      update_.new_start_url = GURL("http://other.test.com");
+      update_.is_forced_migration = true;
+    }
 
     web_app::ShowWebAppReviewUpdateDialog(app_id_, update_, browser(),
                                           base::TimeTicks::Now(),
@@ -194,6 +198,24 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog, InvokeUi_UrlChange) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
+                       ForcedMigrationNoIgnoreButton) {
+  views::NamedWidgetShownWaiter update_dialog_waiter(
+      views::test::AnyWidgetTestPasskey(), "WebAppUpdateReviewDialog");
+  ShowUi("ForcedMigration");
+  views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(dialog_widget != nullptr);
+  ASSERT_FALSE(dialog_widget->IsClosed());
+
+  views::ElementTrackerViews* tracker_views =
+      views::ElementTrackerViews::GetInstance();
+  ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(dialog_widget);
+  views::Button* button = tracker_views->GetFirstMatchingViewAs<views::Button>(
+      kWebAppUpdateReviewIgnoreButton, context);
+  ASSERT_EQ(button, nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,

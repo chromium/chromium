@@ -3493,6 +3493,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_WEBAPP_UPDATE_REVIEW_IGNORE_BUTTON" desc="The text content of the ignore button for the PWA app update review dialog. Clicking on this button ignores the update and closes the dialog.">
           Ignore
         </message>
+        <message name="IDS_WEBAPP_UPDATE_REVIEW_ACCEPT_BUTTON_MIGRATION" desc="The text content of the acceptance button for the PWA app update review dialog, but for app migrations. Clicking on this button confirms the user wants to migrate to a new app, pointing to a new url.">
+          Relaunch to update
+        </message>
       </if>
 
       <!-- Bookmark app bubble -->
@@ -3584,20 +3587,23 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_LOGO" desc="The title at the top of the web app update dialog when the name and icon changed.">
           Review logo and name updates
         </message>
-        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_URL" desc="The title at the top of an web app update dialog when only the name changed.">
-          Review URL update
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_URL" desc="The title at the top of an web app update dialog when only the url of the app changed.">
+          A new version of this app is available
         </message>
-        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_URL" desc="The title at the top of the web app update dialog when only the name changed.">
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_URL" desc="The title at the top of the web app update dialog when the name and url changed.">
           Review name and URL updates
         </message>
-        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_LOGO_AND_URL" desc="The title at the top of the web app update dialog when only the icon changed.">
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_LOGO_AND_URL" desc="The title at the top of the web app update dialog when the icon and url changed.">
           Review logo and URL updates
         </message>
-        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_LOGO_AND_URL" desc="The title at the top of the web app update dialog when the name and icon changed.">
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_LOGO_AND_URL" desc="The title at the top of the web app update dialog when the name, icon and url changed.">
           Review logo, name, and URL updates
         </message>
         <message name="IDS_WEBAPP_UPDATE_NEW_EXPLANATION" desc="The text at the top of the web app update dialog, explaining what to do when an app changes its identity.">
           Apps sometimes update their branding. Review all changes to make sure you're comfortable with them before updating.
+        </message>
+        <message name="IDS_WEBAPP_UPDATE_URL_ONLY_NEW_EXPLANATION" desc="The text at the top of the web app update dialog, explaining what to do when an app changes only its url.">
+          Review the URL change to make sure you're comfortable with it before updating.
         </message>
       </if>
       <message name="IDS_WEBAPP_UPDATE_EXPLANATION" desc="The text at the top of the dialog, explaining what to do when an app changes its identity." formatter_data="android_java">

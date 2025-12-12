@@ -21,7 +21,10 @@ class WebAppUpdateIdentityView : public views::View {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNameLabelId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIconLabelId);
 
-  explicit WebAppUpdateIdentityView(const WebAppIdentity& identity);
+  // If `url_migration_only` is set, changes the style of the display url to be
+  // more prominent.
+  WebAppUpdateIdentityView(const WebAppIdentity& identity,
+                           bool url_migration_only);
 
   WebAppUpdateIdentityView(const WebAppUpdateIdentityView&) = delete;
   WebAppUpdateIdentityView& operator=(const WebAppUpdateIdentityView&) = delete;

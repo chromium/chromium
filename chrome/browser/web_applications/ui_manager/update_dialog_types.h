@@ -33,6 +33,10 @@ struct WebAppIdentity {
 
 // Represents an update to be presented to the user. Copyable for simplicity.
 struct WebAppIdentityUpdate {
+  static constexpr int kNameChange = 0b001;
+  static constexpr int kIconChange = 0b010;
+  static constexpr int kUrlChange = 0b100;
+
   WebAppIdentityUpdate();
   ~WebAppIdentityUpdate();
   WebAppIdentityUpdate(const WebAppIdentityUpdate&);
@@ -41,12 +45,27 @@ struct WebAppIdentityUpdate {
   WebAppIdentity MakeOldIdentity() const;
   WebAppIdentity MakeNewIdentity() const;
 
+  // Returns an unique combination represented by binary integers that determine
+  // exactly what changed in `WebAppIdentityUpdate` using the following
+  // guidelines:
+  // 1. Title changes only are denoted by 0b001.
+  // 2. Icon changes only are denoted by 0b010.
+  // 3. Url changes only are denoted by 0b100.
+  // 4. A combination of changes are denoted by setting each flag in their
+  // correct position accordingly.
+  int GetCombinationChangeIndex() const;
+
   std::u16string old_title;
   std::optional<std::u16string> new_title = std::nullopt;
   gfx::Image old_icon;
   std::optional<gfx::Image> new_icon = std::nullopt;
   GURL old_start_url;
   std::optional<GURL> new_start_url = std::nullopt;
+
+  // To be used for forced app migrations to ensure that the user cannot ignore
+  // this update. If this is true, `new_start_url` NEEDS to be set and be
+  // different from `old_start_url`.
+  bool is_forced_migration = false;
 };
 
 // The result of the predictable app updating dialog closing, either from an

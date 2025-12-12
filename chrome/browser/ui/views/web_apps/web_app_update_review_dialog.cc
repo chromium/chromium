@@ -70,33 +70,60 @@ const int kArrowIconSizeDp = 32;
 const int kIdentityColumnWidth = 170;
 
 int GetDialogTitleMessageId(const WebAppIdentityUpdate& update) {
-  bool title_change = update.new_title.has_value();
-  bool icon_change = update.new_icon.has_value();
-  bool url_migration = update.new_start_url.has_value();
-
-  const int kNameChange = 0b001;
-  const int kIconChange = 0b010;
-  const int kUrlChange = 0b100;
-  int combination_index = (title_change ? kNameChange : 0) |
-                          (icon_change ? kIconChange : 0) |
-                          (url_migration ? kUrlChange : 0);
-  switch (combination_index) {
+  switch (update.GetCombinationChangeIndex()) {
     case 0:
       NOTREACHED();
-    case kNameChange:
+    case WebAppIdentityUpdate::kNameChange:
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME;
-    case kIconChange:
+    case WebAppIdentityUpdate::kIconChange:
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_LOGO;
-    case kNameChange | kIconChange:
+    case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kIconChange:
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_LOGO;
-    case kUrlChange:
+    case WebAppIdentityUpdate::kUrlChange:
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_URL;
-    case kNameChange | kUrlChange:
+    case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kUrlChange:
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_URL;
-    case kIconChange | kUrlChange:
+    case WebAppIdentityUpdate::kIconChange | WebAppIdentityUpdate::kUrlChange:
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_LOGO_AND_URL;
-    case kNameChange | kIconChange | kUrlChange:
+    case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kIconChange |
+        WebAppIdentityUpdate::kUrlChange:
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_LOGO_AND_URL;
+  }
+  NOTREACHED();
+}
+
+int GetDialogDescriptionMessageId(const WebAppIdentityUpdate& update) {
+  switch (update.GetCombinationChangeIndex()) {
+    case 0:
+      NOTREACHED();
+    case WebAppIdentityUpdate::kNameChange:
+    case WebAppIdentityUpdate::kIconChange:
+    case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kIconChange:
+    case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kUrlChange:
+    case WebAppIdentityUpdate::kIconChange | WebAppIdentityUpdate::kUrlChange:
+    case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kIconChange |
+        WebAppIdentityUpdate::kUrlChange:
+      return IDS_WEBAPP_UPDATE_NEW_EXPLANATION;
+    case WebAppIdentityUpdate::kUrlChange:
+      return IDS_WEBAPP_UPDATE_URL_ONLY_NEW_EXPLANATION;
+  }
+  NOTREACHED();
+}
+
+int GetDialogAcceptMessageId(const WebAppIdentityUpdate& update) {
+  switch (update.GetCombinationChangeIndex()) {
+    case 0:
+      NOTREACHED();
+    case WebAppIdentityUpdate::kNameChange:
+    case WebAppIdentityUpdate::kIconChange:
+    case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kIconChange:
+      return IDS_WEBAPP_UPDATE_REVIEW_ACCEPT_BUTTON;
+    case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kUrlChange:
+    case WebAppIdentityUpdate::kIconChange | WebAppIdentityUpdate::kUrlChange:
+    case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kIconChange |
+        WebAppIdentityUpdate::kUrlChange:
+    case WebAppIdentityUpdate::kUrlChange:
+      return IDS_WEBAPP_UPDATE_REVIEW_ACCEPT_BUTTON_MIGRATION;
   }
   NOTREACHED();
 }
@@ -258,13 +285,18 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
     return;
   }
 
-  bool title_change = update.new_title.has_value();
-  bool icon_change = update.new_icon.has_value();
-  bool migration = update.new_start_url.has_value();
-  CHECK(title_change || icon_change || migration);
-  int title = GetDialogTitleMessageId(update);
-
+  // Some combination of changes should be existing if the update dialog needs
+  // to be triggered.
+  CHECK_GT(update.GetCombinationChangeIndex(), 0);
   CHECK(AreWebAppsEnabled(browser->profile()));
+  bool url_migration_only =
+      (update.GetCombinationChangeIndex() == WebAppIdentityUpdate::kUrlChange);
+
+  // Forced migrations can only happen for PWA migrations where the start url
+  // changes.
+  if (update.is_forced_migration) {
+    CHECK(url_migration_only);
+  }
 
   std::unique_ptr<UpdateDialogDelegate> delegate =
       std::make_unique<UpdateDialogDelegate>(app_id, std::move(callback),
@@ -275,101 +307,103 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
   const int distance_related_horizontal = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
 
-  std::unique_ptr<ui::DialogModel> dialog_model =
-      ui::DialogModel::Builder(std::move(delegate))
-          .SetInternalName("WebAppUpdateReviewDialog")
-          .SetTitle(l10n_util::GetStringUTF16(title))
-          .AddOkButton(
-              base::BindOnce(&UpdateDialogDelegate::OnAcceptButtonClicked,
-                             delegate_weak_ptr),
-              ui::DialogModel::Button::Params()
-                  .SetLabel(l10n_util::GetStringUTF16(
-                      IDS_WEBAPP_UPDATE_REVIEW_ACCEPT_BUTTON))
-                  .SetStyle(ui::ButtonStyle::kProminent)
-                  .SetId(kWebAppUpdateReviewDialogAcceptButton))
-          .AddCancelButton(
-              base::BindOnce(&UpdateDialogDelegate::OnUninstallButtonClicked,
-                             delegate_weak_ptr),
-              ui::DialogModel::Button::Params()
-                  .SetLabel(l10n_util::GetStringUTF16(
-                      IDS_WEBAPP_UPDATE_REVIEW_UNINSTALL_BUTTON))
-                  .SetId(kWebAppUpdateReviewDialogUninstallButton))
-          .AddExtraButton(
-              base::BindRepeating(&UpdateDialogDelegate::OnIgnoreButtonClicked,
+  ui::DialogModel::Builder dialog_model_builder =
+      ui::DialogModel::Builder(std::move(delegate));
+  dialog_model_builder.SetInternalName("WebAppUpdateReviewDialog")
+      .SetTitle(l10n_util::GetStringUTF16(GetDialogTitleMessageId(update)))
+      .AddOkButton(base::BindOnce(&UpdateDialogDelegate::OnAcceptButtonClicked,
                                   delegate_weak_ptr),
-              ui::DialogModel::Button::Params()
-                  .SetLabel(l10n_util::GetStringUTF16(
-                      IDS_WEBAPP_UPDATE_REVIEW_IGNORE_BUTTON))
-                  .SetId(kWebAppUpdateReviewIgnoreButton))
-          .OverrideDefaultButton(ui::mojom::DialogButton::kNone)
-          .SetInitiallyFocusedField(kWebAppUpdateReviewIgnoreButton)
-          .SetCloseActionCallback(
-              base::BindOnce(&UpdateDialogDelegate::OnClose, delegate_weak_ptr))
-          .SetDialogDestroyingCallback(base::BindOnce(
-              &UpdateDialogDelegate::OnDestroyed, delegate_weak_ptr))
-          .AddParagraph(ui::DialogModelLabel(
-              l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_NEW_EXPLANATION)))
+                   ui::DialogModel::Button::Params()
+                       .SetLabel(l10n_util::GetStringUTF16(
+                           GetDialogAcceptMessageId(update)))
+                       .SetStyle(ui::ButtonStyle::kProminent)
+                       .SetId(kWebAppUpdateReviewDialogAcceptButton))
+      .AddCancelButton(
+          base::BindOnce(&UpdateDialogDelegate::OnUninstallButtonClicked,
+                         delegate_weak_ptr),
+          ui::DialogModel::Button::Params()
+              .SetLabel(l10n_util::GetStringUTF16(
+                  IDS_WEBAPP_UPDATE_REVIEW_UNINSTALL_BUTTON))
+              .SetId(kWebAppUpdateReviewDialogUninstallButton))
+      .OverrideDefaultButton(ui::mojom::DialogButton::kNone)
+      .SetCloseActionCallback(
+          base::BindOnce(&UpdateDialogDelegate::OnClose, delegate_weak_ptr))
+      .SetDialogDestroyingCallback(
+          base::BindOnce(&UpdateDialogDelegate::OnDestroyed, delegate_weak_ptr))
+      .AddParagraph(ui::DialogModelLabel(
+          l10n_util::GetStringUTF16(GetDialogDescriptionMessageId(update))))
+      .AddCustomField(
+          std::make_unique<views::BubbleDialogModelHost::CustomView>(
+              views::Builder<views::TableLayoutView>()
+                  // Left padding.
+                  .AddPaddingColumn(/*horizontal_resize=*/1, /*width=*/0)
+                  // The 'before' column
+                  .AddColumn(views::LayoutAlignment::kCenter,
+                             views::LayoutAlignment::kStart,
+                             views::TableLayout::kFixedSize,
+                             views::TableLayout::ColumnSize::kFixed,
+                             /*fixed_width=*/kIdentityColumnWidth,
+                             /*min_width=*/0)
+                  // Padding between the 'before' and the 'arrow' column.
+                  .AddPaddingColumn(views::TableLayout::kFixedSize,
+                                    /*width=*/distance_related_horizontal)
+                  // The 'arrow' column.
+                  .AddColumn(views::LayoutAlignment::kStretch,
+                             views::LayoutAlignment::kCenter,
+                             views::TableLayout::kFixedSize,
+                             views::TableLayout::ColumnSize::kUsePreferred,
+                             /*fixed_width=*/0, /*min_width=*/0)
+                  // Padding between the 'arrow' and the 'after' column.
+                  .AddPaddingColumn(views::TableLayout::kFixedSize,
+                                    /*width=*/distance_related_horizontal)
+                  // The 'after' column.
+                  .AddColumn(views::LayoutAlignment::kCenter,
+                             views::LayoutAlignment::kStart,
+                             views::TableLayout::kFixedSize,
+                             views::TableLayout::ColumnSize::kFixed,
+                             /*fixed_width=*/kIdentityColumnWidth,
+                             /*min_width=*/0)
+                  // Padding at the right of the dialog.
+                  .AddPaddingColumn(/*horizontal_resize=*/1, /*width=*/0)
+                  .AddRows(
+                      /*n=*/1,
+                      /*vertical_resize=*/views::TableLayout::kFixedSize,
+                      /*height=*/0)
+                  // Using AddChildren() here leads to the evaluation order
+                  // reversed on Windows, making it harder to test
+                  // consistently.
+                  .AddChild(views::Builder<WebAppUpdateIdentityView>(
+                      std::make_unique<WebAppUpdateIdentityView>(
+                          update.MakeOldIdentity(), url_migration_only)))
+                  .AddChild(views::Builder<views::ImageView>().SetImage(
+                      ui::ImageModel::FromVectorIcon(
+                          vector_icons::kForwardArrowIcon, ui::kColorIcon,
+                          kArrowIconSizeDp)))
+                  .AddChild(views::Builder<WebAppUpdateIdentityView>(
+                      std::make_unique<WebAppUpdateIdentityView>(
+                          update.MakeNewIdentity(), url_migration_only)))
+                  .SetMinimumSize(gfx::Size(
+                      layout_provider->GetDistanceMetric(
+                          views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH),
+                      /*height=*/200))
+                  .Build(),
+              views::BubbleDialogModelHost::FieldType::kText));
 
-          .AddCustomField(
-              std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                  views::Builder<views::TableLayoutView>()
-                      // Left padding.
-                      .AddPaddingColumn(/*horizontal_resize=*/1, /*width=*/0)
-                      // The 'before' column
-                      .AddColumn(views::LayoutAlignment::kCenter,
-                                 views::LayoutAlignment::kStart,
-                                 views::TableLayout::kFixedSize,
-                                 views::TableLayout::ColumnSize::kFixed,
-                                 /*fixed_width=*/kIdentityColumnWidth,
-                                 /*min_width=*/0)
-                      // Padding between the 'before' and the 'arrow' column.
-                      .AddPaddingColumn(views::TableLayout::kFixedSize,
-                                        /*width=*/distance_related_horizontal)
-                      // The 'arrow' column.
-                      .AddColumn(views::LayoutAlignment::kStretch,
-                                 views::LayoutAlignment::kCenter,
-                                 views::TableLayout::kFixedSize,
-                                 views::TableLayout::ColumnSize::kUsePreferred,
-                                 /*fixed_width=*/0, /*min_width=*/0)
-                      // Padding between the 'arrow' and the 'after' column.
-                      .AddPaddingColumn(views::TableLayout::kFixedSize,
-                                        /*width=*/distance_related_horizontal)
-                      // The 'after' column.
-                      .AddColumn(views::LayoutAlignment::kCenter,
-                                 views::LayoutAlignment::kStart,
-                                 views::TableLayout::kFixedSize,
-                                 views::TableLayout::ColumnSize::kFixed,
-                                 /*fixed_width=*/kIdentityColumnWidth,
-                                 /*min_width=*/0)
-                      // Padding at the right of the dialog.
-                      .AddPaddingColumn(/*horizontal_resize=*/1, /*width=*/0)
-                      .AddRows(
-                          /*n=*/1,
-                          /*vertical_resize=*/views::TableLayout::kFixedSize,
-                          /*height=*/0)
-                      // Using AddChildren() here leads to the evaluation order
-                      // reversed on Windows, making it harder to test
-                      // consistently.
-                      .AddChild(views::Builder<WebAppUpdateIdentityView>(
-                          std::make_unique<WebAppUpdateIdentityView>(
-                              update.MakeOldIdentity())))
-                      .AddChild(views::Builder<views::ImageView>().SetImage(
-                          ui::ImageModel::FromVectorIcon(
-                              vector_icons::kForwardArrowIcon, ui::kColorIcon,
-                              kArrowIconSizeDp)))
-                      .AddChild(views::Builder<WebAppUpdateIdentityView>(
-                          std::make_unique<WebAppUpdateIdentityView>(
-                              update.MakeNewIdentity())))
-                      .SetMinimumSize(gfx::Size(
-                          layout_provider->GetDistanceMetric(
-                              views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH),
-                          /*height=*/200))
-                      .Build(),
-                  views::BubbleDialogModelHost::FieldType::kText))
-          .Build();
+  // Add the `ignore` button only if the migration is not forced.
+  if (!update.is_forced_migration) {
+    dialog_model_builder
+        .AddExtraButton(
+            base::BindRepeating(&UpdateDialogDelegate::OnIgnoreButtonClicked,
+                                delegate_weak_ptr),
+            ui::DialogModel::Button::Params()
+                .SetLabel(l10n_util::GetStringUTF16(
+                    IDS_WEBAPP_UPDATE_REVIEW_IGNORE_BUTTON))
+                .SetId(kWebAppUpdateReviewIgnoreButton))
+        .SetInitiallyFocusedField(kWebAppUpdateReviewIgnoreButton);
+  }
 
   views::Widget* widget = constrained_window::ShowBrowserModal(
-      std::move(dialog_model), browser->window()->GetNativeWindow());
+      dialog_model_builder.Build(), browser->window()->GetNativeWindow());
   delegate_weak_ptr->OnWidgetShownStartTracking(widget);
 
   base::UmaHistogramTimes("WebApp.UpdateReviewDialog.TriggerToShowTime",
