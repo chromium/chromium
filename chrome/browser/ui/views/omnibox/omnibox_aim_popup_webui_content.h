@@ -44,7 +44,7 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   void CloseUI() override;
   void ShowUI() override;
 
-  // Can return null.
+  // Returns the WebUI Handler. Can return null.
   OmniboxPopupAimHandler* popup_aim_handler();
 };
 

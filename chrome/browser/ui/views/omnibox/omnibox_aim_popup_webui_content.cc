@@ -81,11 +81,7 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
 
 OmniboxPopupAimHandler* OmniboxAimPopupWebUIContent::popup_aim_handler() {
   auto* webui_controller = contents_wrapper()->GetWebUIController();
-  if (!webui_controller) {
-    return nullptr;
-  }
-  auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
-  return omnibox_popup_ui ? omnibox_popup_ui->popup_aim_handler() : nullptr;
+  return webui_controller ? webui_controller->popup_aim_handler() : nullptr;
 }
 
 BEGIN_METADATA(OmniboxAimPopupWebUIContent)
