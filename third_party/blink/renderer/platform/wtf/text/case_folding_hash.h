@@ -156,7 +156,10 @@ class CaseFoldingHash {
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
+// HashTraits for Unicode case-insensitive strings.
 // T can be String, StringImpl*, scoped_refptr<StringImpl> and AtomicString.
+//
+// See IgnoringAsciiCaseHashTraits for ASCII cases-insensitive strings.
 template <typename T>
 struct CaseFoldingHashTraits : HashTraits<T>, CaseFoldingHash {
   using CaseFoldingHash::Equal;
