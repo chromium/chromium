@@ -6,13 +6,21 @@ source_set("proto_utils") {
   sources = [
     "generate_content_response_utils.cc",
     "generate_content_response_utils.h",
+    "google_rpc_code.cc",
+    "google_rpc_code.h",
   ]
-  deps = [ "//components/legion:proto" ]
+  deps = [
+    "//base",
+    "//components/legion:proto",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "generate_content_response_utils_unittest.cc" ]
+  sources = [
+    "generate_content_response_utils_unittest.cc",
+    "google_rpc_code_unittest.cc",
+  ]
   deps = [
     ":proto_utils",
     "//components/legion:proto",

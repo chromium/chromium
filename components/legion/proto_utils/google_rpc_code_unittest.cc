@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/google_rpc_code.h"
+#include "components/legion/proto_utils/google_rpc_code.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -12,7 +12,8 @@ namespace {
 TEST(ParseGoogleRpcCodeTest, ValidErrorCode) {
   const std::string reason =
       "[ORIGINAL ERROR] generic::unavailable: Fail to do something";
-  EXPECT_EQ(ParseGoogleRpcCode(reason), legion::rpc::GoogleRpcCode::UNAVAILABLE);
+  EXPECT_EQ(ParseGoogleRpcCode(reason),
+            legion::rpc::GoogleRpcCode::UNAVAILABLE);
 }
 
 TEST(ParseGoogleRpcCodeTest, NoGenericPrefix) {
@@ -52,7 +53,8 @@ TEST(ParseGoogleRpcCodeTest, Utf8String) {
   // encoded string.
   const std::string reason =
       "エラー generic::unavailable: ネットワークに接続できません";
-  EXPECT_EQ(ParseGoogleRpcCode(reason), legion::rpc::GoogleRpcCode::UNAVAILABLE);
+  EXPECT_EQ(ParseGoogleRpcCode(reason),
+            legion::rpc::GoogleRpcCode::UNAVAILABLE);
 }
 
 }  // namespace

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LEGION_GOOGLE_RPC_CODE_H_
-#define COMPONENTS_LEGION_GOOGLE_RPC_CODE_H_
+#ifndef COMPONENTS_LEGION_PROTO_UTILS_GOOGLE_RPC_CODE_H_
+#define COMPONENTS_LEGION_PROTO_UTILS_GOOGLE_RPC_CODE_H_
 
 #include <string>
 
@@ -17,4 +17,4 @@ legion::rpc::GoogleRpcCode ParseGoogleRpcCode(const std::string& reason);
 
 }  // namespace legion
 
-#endif  // COMPONENTS_LEGION_GOOGLE_RPC_CODE_H_
+#endif  // COMPONENTS_LEGION_PROTO_UTILS_GOOGLE_RPC_CODE_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/google_rpc_code.h"
+#include "components/legion/proto_utils/google_rpc_code.h"
 
 #include <map>
 #include <string>

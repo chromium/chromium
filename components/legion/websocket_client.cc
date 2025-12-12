@@ -15,7 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "components/legion/google_rpc_code.h"
+#include "components/legion/proto_utils/google_rpc_code.h"
 #include "net/http/http_request_headers.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -282,10 +282,10 @@ void WebSocketClient::OnDropChannel(bool was_clean,
 
   // If there is a reason, it indicates an error from the server.
   if (!reason.empty()) {
-    base::UmaHistogramEnumeration(
-        "Legion.Client.ServerErrorCode", ParseGoogleRpcCode(reason),
-        static_cast<legion::rpc::GoogleRpcCode>(
-            legion::rpc::GoogleRpcCode_MAX + 1));
+    base::UmaHistogramEnumeration("Legion.Client.ServerErrorCode",
+                                  ParseGoogleRpcCode(reason),
+                                  static_cast<legion::rpc::GoogleRpcCode>(
+                                      legion::rpc::GoogleRpcCode_MAX + 1));
   }
   ClosePipe(TransportError::kSocketClosed);
 }
