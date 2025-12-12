@@ -133,7 +133,11 @@ public class AllPasswordsBottomSheetIntegrationTest {
                 });
         waitForState(mBottomSheetController, SheetState.FULL);
 
-        pollUiThread(() -> getCredentialNameAt(0) != null);
+        pollUiThread(
+                () -> {
+                    ChipView credentialName = getCredentialNameAt(0);
+                    return credentialName != null && credentialName.hasOnClickListeners();
+                });
         TouchCommon.singleClickView(getCredentialNameAt(0));
 
         waitForState(mBottomSheetController, SheetState.HIDDEN);
