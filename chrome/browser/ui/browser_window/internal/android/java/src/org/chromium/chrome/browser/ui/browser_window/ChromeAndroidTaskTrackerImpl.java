@@ -252,6 +252,13 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         }
     }
 
+    /** Count of tasks. */
+    int countOfTasks() {
+        synchronized (mTasksLock) {
+            return getAllTasksLocked().size();
+        }
+    }
+
     /**
      * Removes all {@link ChromeAndroidTask}s.
      *

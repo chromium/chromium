@@ -266,6 +266,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void setActivityScopedObjects_fromPendingState_setsIdAndState() {
         int taskId = 2;
+        int unusedTaskId = 3;
+
+        // Arrange: Creating a pending task requires an existing task.
+        createChromeAndroidTaskWithMockDeps(unusedTaskId);
 
         // Arrange.
         var chromeAndroidTaskWithMockDeps =
@@ -1277,14 +1281,22 @@ public class ChromeAndroidTaskImplUnitTest {
     public void showInactive_whenPendingUpdate_isActiveReturnsFalse() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        // Ensure there are at least 2 tasks.
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var secondChromeAndroidTask =
+                (ChromeAndroidTaskImpl)
+                        createChromeAndroidTaskWithMockDeps(/* taskId= */ 2).mChromeAndroidTask;
         var mockWindowAndroid =
                 chromeAndroidTaskWithMockDeps
                         .mActivityWindowAndroidMocks
                         .mMockActivityWindowAndroid;
         when(mockWindowAndroid.isTopResumedActivity()).thenReturn(true);
         Assert.assertTrue("Set up task to be active", chromeAndroidTask.isActive());
+        // All tasks must have been active before.
+        secondChromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        secondChromeAndroidTask.onTopResumedActivityChangedWithNative(false);
 
         // Act.
         chromeAndroidTask.showInactive();
@@ -1425,14 +1437,22 @@ public class ChromeAndroidTaskImplUnitTest {
     public void deactivate_whenPendingUpdate_isActiveReturnsFalse() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        // Ensure there are at least 2 tasks.
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var secondChromeAndroidTask =
+                (ChromeAndroidTaskImpl)
+                        createChromeAndroidTaskWithMockDeps(/* taskId= */ 2).mChromeAndroidTask;
         var mockWindowAndroid =
                 chromeAndroidTaskWithMockDeps
                         .mActivityWindowAndroidMocks
                         .mMockActivityWindowAndroid;
         when(mockWindowAndroid.isTopResumedActivity()).thenReturn(true);
         Assert.assertTrue("Set up task to be active", chromeAndroidTask.isActive());
+        // All tasks must have been active before.
+        secondChromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        secondChromeAndroidTask.onTopResumedActivityChangedWithNative(false);
 
         // Act.
         chromeAndroidTask.deactivate();
@@ -1453,6 +1473,56 @@ public class ChromeAndroidTaskImplUnitTest {
                         .getPendingActionManagerForTesting()
                         .isActiveFuture(chromeAndroidTask.getState()));
         assertFalse(chromeAndroidTask.isActive());
+    }
+
+    @Test
+    public void deactivate_alreadyUnfocusedAndOnlyOneTask_shouldDoNothing() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
+        Assert.assertFalse("Set up task to be inactive", chromeAndroidTask.isActive());
+
+        // Act.
+        chromeAndroidTask.deactivate();
+
+        // Assert
+        assertNull(
+                "Future state of isActive() should be null when nothing is pending",
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isActiveFuture(chromeAndroidTask.getState()));
+        assertFalse("isActive should still be false", chromeAndroidTask.isActive());
+    }
+
+    @Test
+    public void deactivate_focusedButOnlyOneTask_shouldDoNothing() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(true);
+        Assert.assertTrue("Set up task to be active", chromeAndroidTask.isActive());
+
+        // Act.
+        chromeAndroidTask.deactivate();
+
+        // Assert
+        assertNull(
+                "Future state of isActive() should be null when nothing is pending",
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isActiveFuture(chromeAndroidTask.getState()));
+        assertTrue("isActive should still be true", chromeAndroidTask.isActive());
     }
 
     @Test
@@ -2021,7 +2091,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void setActivityScopedObjects_fromPendingState_NoPendingShowToDispatch() {
         int taskId = 2;
+        int unusedTaskId = 3;
 
+        // Arrange: Creating a pending task requires an existing task.
+        createChromeAndroidTaskWithMockDeps(unusedTaskId);
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(taskId, /* isPendingTask= */ true);
@@ -2048,7 +2121,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void setActivityScopedObjects_fromPendingState_dispatchesPendingClose() {
         int taskId = 2;
+        int unusedTaskId = 3;
 
+        // Arrange: Creating a pending task requires an existing task.
+        createChromeAndroidTaskWithMockDeps(unusedTaskId);
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(taskId, /* isPendingTask= */ true);
@@ -2072,7 +2148,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void setActivityScopedObjects_fromPendingState_NoPendingActivateToDispatch() {
         int taskId = 2;
+        int unusedTaskId = 3;
 
+        // Arrange: Creating a pending task requires an existing task.
+        createChromeAndroidTaskWithMockDeps(unusedTaskId);
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(taskId, /* isPendingTask= */ true);
@@ -2097,6 +2176,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void setActivityScopedObjects_fromPendingState_dispatchesPendingMaximize() {
+        int unusedTaskId = 3;
+
+        // Arrange: Creating a pending task requires an existing task.
+        createChromeAndroidTaskWithMockDeps(unusedTaskId);
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);
@@ -2119,6 +2202,10 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void setActivityScopedObjects_fromPendingState_dispatchesPendingMinimize() {
+        int unusedTaskId = 3;
+
+        // Arrange: Creating a pending task requires an existing task.
+        createChromeAndroidTaskWithMockDeps(unusedTaskId);
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);
@@ -2142,6 +2229,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void
             setActivityScopedObjects_fromPendingState_withNonEmptyPendingBounds_dispatchesPendingRestore() {
+        int unusedTaskId = 3;
+
+        // Arrange: Creating a pending task requires an existing task.
+        createChromeAndroidTaskWithMockDeps(unusedTaskId);
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);
@@ -2174,6 +2265,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void
             setActivityScopedObjects_fromPendingState_withEmptyPendingBounds_ignoresPendingRestore() {
+        int unusedTaskId = 3;
+
+        // Arrange: Creating a pending task requires an existing task.
+        createChromeAndroidTaskWithMockDeps(unusedTaskId);
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);
@@ -2193,6 +2288,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void setActivityScopedObjects_fromPendingState_dispatchesPendingSetBounds() {
+        int unusedTaskId = 3;
+
+        // Arrange: Creating a pending task requires an existing task.
+        createChromeAndroidTaskWithMockDeps(unusedTaskId);
         // Arrange: Create pending task.
         var chromeAndroidTaskWithMockDeps =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1, /* isPendingTask= */ true);

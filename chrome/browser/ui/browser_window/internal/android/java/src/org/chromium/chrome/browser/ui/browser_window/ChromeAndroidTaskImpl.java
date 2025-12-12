@@ -591,6 +591,11 @@ final class ChromeAndroidTaskImpl
                             return null;
                         }
 
+                        // Do nothing is there is only one task left.
+                        if (ChromeAndroidTaskTrackerImpl.getInstance().countOfTasks() <= 1) {
+                            return null;
+                        }
+
                         mPendingActionManager.requestAction(PendingAction.SHOW_INACTIVE);
                         mState.set(State.PENDING_UPDATE);
                         ChromeAndroidTaskTrackerImpl.getInstance()
@@ -692,6 +697,11 @@ final class ChromeAndroidTaskImpl
                     @GuardedBy("mActivityScopedObjectsLock")
                     public Void use(Activity unused, ActivityWindowAndroid activityWindowAndroid) {
                         if (!isActiveInternalLocked(activityWindowAndroid)) {
+                            return null;
+                        }
+
+                        // Do nothing if there is only one task left.
+                        if (ChromeAndroidTaskTrackerImpl.getInstance().countOfTasks() <= 1) {
                             return null;
                         }
 
