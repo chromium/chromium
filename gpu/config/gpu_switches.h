@@ -49,6 +49,7 @@ GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawn[];
 GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnD3D11[];
 GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnD3D12[];
 GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnMetal[];
+GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnOpenGLES[];
 GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnSwiftshader[];
 GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendDawnVulkan[];
 GPU_CONFIG_EXPORT extern const char kSkiaGraphiteBackendMetal[];

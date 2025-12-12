@@ -57,6 +57,10 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#include "third_party/dawn/include/dawn/native/OpenGLBackend.h"
+#include "ui/gl/gl_surface_egl.h"
+#endif
 
 namespace gpu {
 namespace {
@@ -369,12 +373,12 @@ const char* BackendTypeToString(wgpu::BackendType backend_type) {
       return "D3D12";
     case wgpu::BackendType::Metal:
       return "Metal";
-    case wgpu::BackendType::Vulkan:
-      return "Vulkan";
     case wgpu::BackendType::OpenGL:
       return "OpenGL";
     case wgpu::BackendType::OpenGLES:
       return "OpenGLES";
+    case wgpu::BackendType::Vulkan:
+      return "Vulkan";
     default:
       CHECK(false);
   }
@@ -393,6 +397,8 @@ wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
     return wgpu::BackendType::D3D12;
   } else if (switch_value == switches::kSkiaGraphiteBackendDawnMetal) {
     return wgpu::BackendType::Metal;
+  } else if (switch_value == switches::kSkiaGraphiteBackendDawnOpenGLES) {
+    return wgpu::BackendType::OpenGLES;
   } else if (switch_value == switches::kSkiaGraphiteBackendDawnSwiftshader ||
              switch_value == switches::kSkiaGraphiteBackendDawnVulkan) {
     return wgpu::BackendType::Vulkan;
@@ -809,6 +815,22 @@ bool DawnSharedContext::Initialize(
     adapter_options.nextInChain = &adapter_options_d3d11_device;
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  dawn::native::opengl::RequestAdapterOptionsGetGLProc
+      adapter_options_get_gl_proc = {};
+  if (adapter_options.backendType == wgpu::BackendType::OpenGLES) {
+    adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
+    gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+    if (gl_display) {
+      adapter_options_get_gl_proc.display = gl_display->GetDisplay();
+    } else {
+      adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
+    }
+    adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
+    adapter_options.nextInChain = &adapter_options_get_gl_proc;
+  }
+#endif
 
   adapter_options.featureLevel = wgpu::FeatureLevel::Core;
   std::vector<dawn::native::Adapter> adapters =

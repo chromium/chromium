@@ -143,6 +143,7 @@ const char kSkiaGraphiteBackendDawn[] = "dawn";
 const char kSkiaGraphiteBackendDawnD3D11[] = "dawn-d3d11";
 const char kSkiaGraphiteBackendDawnD3D12[] = "dawn-d3d12";
 const char kSkiaGraphiteBackendDawnMetal[] = "dawn-metal";
+const char kSkiaGraphiteBackendDawnOpenGLES[] = "dawn-opengles";
 const char kSkiaGraphiteBackendDawnSwiftshader[] = "dawn-swiftshader";
 const char kSkiaGraphiteBackendDawnVulkan[] = "dawn-vulkan";
 const char kSkiaGraphiteBackendMetal[] = "metal";
