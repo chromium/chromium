@@ -2444,12 +2444,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     /**
-     * Called by the system when the activity changes from fullscreen mode to multi-window mode
-     * and visa-versa.
+     * Called by the system when the activity changes from fullscreen mode to multi-window mode and
+     * visa-versa.
+     *
      * @param isInMultiWindowMode True if the activity is in multi-window mode.
      */
     @Override
-    public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
+    public void handleMultiWindowModeChanged(boolean isInMultiWindowMode) {
         // If native is not initialized, the multi-window user action will be recorded in
         // #onDeferredStartupForMultiWindowMode() and CachedFeatureFlags#setIsInMultiWindowMode()
         // will be called in #onResumeWithNative(). Both of these methods require native to be
@@ -2474,7 +2475,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         MultiWindowUtils.getInstance().isInMultiWindowMode(this));
             }
         }
-        super.onMultiWindowModeChanged(isInMultiWindowMode);
+        super.handleMultiWindowModeChanged(isInMultiWindowMode);
     }
 
     /**

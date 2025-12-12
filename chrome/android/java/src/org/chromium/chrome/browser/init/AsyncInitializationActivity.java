@@ -677,8 +677,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public void performOnConfigurationChanged(Configuration newConfig) {}
 
     @Override
-    public void onMultiWindowModeChanged(boolean inMultiWindowMode) {
-        super.onMultiWindowModeChanged(inMultiWindowMode);
+    public void handleMultiWindowModeChanged(boolean inMultiWindowMode) {
+        super.handleMultiWindowModeChanged(inMultiWindowMode);
         mMultiWindowModeStateDispatcher.dispatchMultiWindowModeChanged(inMultiWindowMode);
     }
 

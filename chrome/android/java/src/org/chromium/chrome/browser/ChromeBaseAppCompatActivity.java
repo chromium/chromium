@@ -40,6 +40,7 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -140,6 +141,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     private @Nullable EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
     private @Nullable EdgeToEdgeControllerCreator mEdgeToEdgeControllerCreator;
     private NtpThemeStateProvider.@Nullable Observer mNtpThemeStateObserver;
+    private boolean mInMultiWindowMode;
 
     private static boolean sIsTabletDeterminationMismatchRecord;
 
@@ -202,6 +204,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         BundleUtils.restoreLoadedSplits(savedInstanceState);
+        mInMultiWindowMode = isInMultiWindowMode();
 
         mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(getWindow());
 
@@ -380,10 +383,26 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMultiWindowModeChanged(boolean inMultiWindowMode, Configuration configuration) {
+    public final void onMultiWindowModeChanged(
+            boolean inMultiWindowMode, Configuration configuration) {
         super.onMultiWindowModeChanged(inMultiWindowMode, configuration);
         onMultiWindowModeChanged(inMultiWindowMode);
     }
+
+    @Override
+    public final void onMultiWindowModeChanged(boolean inMultiWindowMode) {
+        // Some OEMs double-notify about multi-window mode changes (eg. Samsung tablets).
+        if (FeatureList.isNativeInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.AVOID_DOUBLE_MULTIWINDOW_CHANGES)
+                && mInMultiWindowMode == inMultiWindowMode) {
+            return;
+        }
+        mInMultiWindowMode = inMultiWindowMode;
+        handleMultiWindowModeChanged(inMultiWindowMode);
+        super.onMultiWindowModeChanged(inMultiWindowMode);
+    }
+
+    public void handleMultiWindowModeChanged(boolean inMultiWindowMode) {}
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

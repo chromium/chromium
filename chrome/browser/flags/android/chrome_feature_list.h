@@ -75,6 +75,7 @@ BASE_DECLARE_FEATURE(kAsyncNotificationManagerForDownload);
 BASE_DECLARE_FEATURE(kAutomotiveBackButtonBarStreamline);
 BASE_DECLARE_FEATURE(kAuxiliarySearchDonation);
 BASE_DECLARE_FEATURE(kAuxiliarySearchHistoryDonation);
+BASE_DECLARE_FEATURE(kAvoidDoubleMultiwindowChanges);
 BASE_DECLARE_FEATURE(kAvoidRelayoutDuringFocusAnimation);
 BASE_DECLARE_FEATURE(kBackgroundThreadPool);
 BASE_DECLARE_FEATURE(kBlockIntentsWhileLocked);
