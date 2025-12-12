@@ -11245,6 +11245,7 @@ from previous Chrome versions.
   <int value="-1087409065" label="RoundedDisplay:enabled"/>
   <int value="-1087269659" label="UseAndroidBufferedInputDispatch:enabled"/>
   <int value="-1087109069" label="SafetyCheckNotificationPermissions:enabled"/>
+  <int value="-1087008314" label="AutofillEnableWalletBranding:disabled"/>
   <int value="-1086987072" label="NearbySharingSelfShareAutoAccept:enabled"/>
   <int value="-1086728979" label="kids-management-url-classification:enabled"/>
   <int value="-1086656172"
@@ -16065,6 +16066,7 @@ from previous Chrome versions.
   <int value="610239808" label="UnexportableKeyDeletion:disabled"/>
   <int value="610513921" label="RobustWindowManagement:disabled"/>
   <int value="610545308" label="enable-potentially-annoying-security-features"/>
+  <int value="611600841" label="AutofillEnableWalletBranding:enabled"/>
   <int value="612509325" label="AndroidWindowManagementWebApi:enabled"/>
   <int value="613578742" label="CdmStorageDatabaseMigration:enabled"/>
   <int value="613629912" label="LookalikeUrlNavigationSuggestions:enabled"/>

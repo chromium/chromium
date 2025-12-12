@@ -236,6 +236,10 @@ BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
 BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, certain strings and logos referencing Google Account, Google
+// Payments, and Google Pay will instead reference Google Wallet.
+BASE_FEATURE(kAutofillEnableWalletBranding, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, save card bottomsheet will be shown to save the card locally
 // when the user has not previously rejected the offer to save the card.

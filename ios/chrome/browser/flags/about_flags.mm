@@ -2900,6 +2900,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"close-other-tabs", flag_descriptions::kCloseOtherTabsName,
      flag_descriptions::kCloseOtherTabsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kCloseOtherTabs)},
+    {"autofill-enable-wallet-branding",
+     flag_descriptions::kAutofillEnableWalletBrandingName,
+     flag_descriptions::kAutofillEnableWalletBrandingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletBranding)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

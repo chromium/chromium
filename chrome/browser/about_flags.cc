@@ -7773,25 +7773,25 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpFeatureOptimizationModuleRemovalDescription,
      kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-        ntp_features::kNtpFeatureOptimizationModuleRemoval,
-        kNtpFeatureOptimizationModuleRemovalVariations,
-        "NtpFeatureOptimizationModuleRemoval")},
+         ntp_features::kNtpFeatureOptimizationModuleRemoval,
+         kNtpFeatureOptimizationModuleRemovalVariations,
+         "NtpFeatureOptimizationModuleRemoval")},
 
     {"ntp-feature-optimization-shortcuts-removal",
      flag_descriptions::kNtpFeatureOptimizationShortcutsRemovalName,
      flag_descriptions::kNtpFeatureOptimizationShortcutsRemovalDescription,
      kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-        ntp_features::kNtpFeatureOptimizationShortcutsRemoval,
-        kNtpFeatureOptimizationShortcutsRemovalVariations,
-        "NtpFeatureOptimizationShortcutsRemoval")},
+         ntp_features::kNtpFeatureOptimizationShortcutsRemoval,
+         kNtpFeatureOptimizationShortcutsRemovalVariations,
+         "NtpFeatureOptimizationShortcutsRemoval")},
 
     {"ntp-feature-optimization-dismiss-modules-removal",
      flag_descriptions::kNtpFeatureOptimizationDismissModulesRemovalName,
      flag_descriptions::kNtpFeatureOptimizationDismissModulesRemovalDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(
-        ntp_features::kNtpFeatureOptimizationDismissModulesRemoval)},
+         ntp_features::kNtpFeatureOptimizationDismissModulesRemoval)},
 
     {"ntp-footer", flag_descriptions::kNtpFooterName,
      flag_descriptions::kNtpFooterDescription, kOsDesktop,
@@ -13548,6 +13548,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOktaSSODescription, kOsMac,
      FEATURE_VALUE_TYPE(enterprise_auth::kOktaSSO)},
 #endif
+
+    {"autofill-enable-wallet-branding",
+     flag_descriptions::kAutofillEnableWalletBrandingName,
+     flag_descriptions::kAutofillEnableWalletBrandingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletBranding)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

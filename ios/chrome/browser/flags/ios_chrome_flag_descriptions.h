@@ -106,6 +106,9 @@ extern const char kAutofillEnableSupportForHomeAndWorkDescription[];
 extern const char kAutofillEnableSupportForNameAndEmailName[];
 extern const char kAutofillEnableSupportForNameAndEmailDescription[];
 
+extern const char kAutofillEnableWalletBrandingName[];
+extern const char kAutofillEnableWalletBrandingDescription[];
+
 extern const char kAutofillIsolatedWorldForJavascriptIOSName[];
 extern const char kAutofillIsolatedWorldForJavascriptIOSDescription[];
 
