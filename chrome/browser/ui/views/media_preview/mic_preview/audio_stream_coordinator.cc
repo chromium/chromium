@@ -76,7 +76,7 @@ void AudioStreamCoordinator::OnAudioCaptured(
     audio_bus_received_callback_for_test_.Run();
   }
 
-  float max_audio_value = std::ranges::max(audio_bus->channel_span(0));
+  float max_audio_value = std::ranges::max(audio_bus->channel(0));
   last_audio_level_ = GetRolledAverageValue(max_audio_value, last_audio_level_);
 
   if (auto* view = GetAudioStreamView(); view) {
