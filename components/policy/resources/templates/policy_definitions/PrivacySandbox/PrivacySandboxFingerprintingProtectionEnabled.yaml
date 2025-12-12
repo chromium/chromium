@@ -1,4 +1,6 @@
+# This policy is deprecated and should be removed in M146 (crbug.com/454935785).
 caption: Choose whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Fingerprinting Protection feature is to be enabled in Incognito mode.
+deprecated: true
 default: null
 desc: |-
   A policy to control whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Fingerprinting Protection setting is to be enabled in Incognito mode or disabled for your users.
@@ -11,9 +13,9 @@ features:
   dynamic_refresh: true
   per_profile: true
 supported_on:
- - android:140-
- - chrome.*:140-
- - chrome_os:140-
+- android:140-145
+- chrome.*:140-145
+- chrome_os:140-145
 items:
 - caption: Enable the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Fingerprinting Protection feature in Incognito mode.
   value: true
@@ -25,6 +27,7 @@ owners:
 - aabeshouse@google.com
 - johnykim@google.com
 - rizvis@google.com
+- thesalsa@google.com
 - file://components/privacy_sandbox/OWNERS
 schema:
   type: boolean
