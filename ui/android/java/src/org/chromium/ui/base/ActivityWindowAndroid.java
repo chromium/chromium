@@ -11,7 +11,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.insets.InsetObserver;
@@ -128,7 +128,7 @@ public class ActivityWindowAndroid extends WindowAndroid
                             if (insetObserver == null) {
                                 // An InsetObserver can no longer be created. Stub this out so
                                 // calls continue to succeed.
-                                return new ObservableSupplierImpl<>();
+                                return ObservableSuppliers.alwaysNull();
                             }
                             return insetObserver.getSupplierForKeyboardInset();
                         }));

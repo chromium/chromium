@@ -20,6 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -453,7 +454,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         private final View mViewToPad;
         private final int mDefaultBottomPadding;
         private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-        private final ObservableSupplier<Integer> mKeyboardInsetSupplier;
+        private final NonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
         private @Nullable EdgeToEdgeController mEdgeToEdgeController;
         private final Callback<EdgeToEdgeController> mControllerChangedCallback =
                 this::updateEdgeToEdgeController;
@@ -465,7 +466,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
         EdgeToEdgePadObserver(
                 View view,
                 ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-                ObservableSupplier<Integer> keyboardInsetSupplier) {
+                NonNullObservableSupplier<Integer> keyboardInsetSupplier) {
             mViewToPad = view;
             mDefaultBottomPadding = mViewToPad.getPaddingBottom();
             mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;

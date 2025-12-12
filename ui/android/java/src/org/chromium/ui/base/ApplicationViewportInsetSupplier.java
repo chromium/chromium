@@ -6,6 +6,7 @@ package org.chromium.ui.base;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -48,7 +49,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<ViewportInsets>
         implements Destroyable {
     /** Keyboard related suppliers */
-    private @Nullable ObservableSupplier<Integer> mKeyboardInsetSupplier;
+    private @Nullable NonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
 
     private @Nullable ObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
 
@@ -110,9 +111,10 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
     /**
      * Sets the inset supplier for the soft keyboard itself.
      *
-     * Pass null to unset the current supplier.
+     * <p>Pass null to unset the current supplier.
      */
-    public void setKeyboardInsetSupplier(@Nullable ObservableSupplier<Integer> insetSupplier) {
+    public void setKeyboardInsetSupplier(
+            @Nullable NonNullObservableSupplier<Integer> insetSupplier) {
         boolean didRemove = false;
 
         if (mKeyboardInsetSupplier != null) {

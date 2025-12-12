@@ -155,7 +155,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private int mTopInset;
 
     private final SettableNonNullObservableSupplier<Integer> mCurrentPosition;
-    private final ObservableSupplier<Integer> mKeyboardHeightSupplier;
+    private final NonNullObservableSupplier<Integer> mKeyboardHeightSupplier;
     private final WindowAndroid mWindowAndroid;
     private final int mHairlineHeight;
 
@@ -209,7 +209,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             Context context,
             SettableNonNullObservableSupplier<Integer> controlsPosition,
             ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Integer> keyboardHeightSupplier,
+            NonNullObservableSupplier<Integer> keyboardHeightSupplier,
             WindowAndroid windowAndroid) {
         mBrowserControlsSizer = browserControlsSizer;
         mIsNtpWithFakeboxShowingSupplier = isNtpWithFakeboxShowingSupplier;
