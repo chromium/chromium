@@ -4300,6 +4300,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"RenderTest"})
     @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    @DisabledTest(message = "crbug.com/468373452")
     public void renderRwsSingleWebsiteSettings() throws Exception {
         createStorageAccessExceptions();
         final SettingsActivity settingsActivity =
