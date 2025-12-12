@@ -3619,6 +3619,8 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
   if (aria_marker_type) {
     AXRange range = AXRange::RangeOfContents(*this);
     marker_types.push_back(ToAXMarkerType(aria_marker_type.value()));
+    highlight_types.push_back(
+        static_cast<int32_t>(ax::mojom::blink::HighlightType::kNone));
     marker_starts.push_back(range.Start().TextOffset());
     marker_ends.push_back(range.End().TextOffset());
   }
@@ -3651,7 +3653,7 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
     }
 
     marker_types.push_back(ToAXMarkerType(marker->GetType()));
-    highlight_types.push_back(static_cast<int32_t>(highlight_type));
+    highlight_types.push_back(highlight_type);
     auto start_pos = AXPosition::FromPosition(
         start_position, AXObjectCache(), TextAffinity::kDownstream,
         AXPositionAdjustmentBehavior::kMoveLeft);
@@ -3661,6 +3663,10 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
     marker_starts.push_back(start_pos.TextOffset());
     marker_ends.push_back(end_pos.TextOffset());
   }
+
+  DCHECK_EQ(marker_types.size(), highlight_types.size());
+  DCHECK_EQ(marker_types.size(), marker_starts.size());
+  DCHECK_EQ(marker_types.size(), marker_ends.size());
 
   if (marker_types.empty())
     return;

@@ -2488,10 +2488,14 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   // The name "lnk" is misspelled.
   std::vector<int32_t> marker_types{
       static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)};
+  std::vector<int32_t> highlight_types{
+      static_cast<int32_t>(ax::mojom::HighlightType::kNone)};
   std::vector<int32_t> marker_starts{0};
   std::vector<int32_t> marker_ends{3};
   link_text.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
                                 marker_types);
+  link_text.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
+                                highlight_types);
   link_text.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
                                 marker_starts);
   link_text.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
@@ -2723,12 +2727,17 @@ TEST_F(BrowserAccessibilityWinTest,
   std::vector<int32_t> marker_types;
   marker_types.push_back(
       static_cast<int32_t>(ax::mojom::MarkerType::kSpelling));
+  std::vector<int32_t> highlight_types;
+  highlight_types.push_back(
+      static_cast<int32_t>(ax::mojom::HighlightType::kNone));
   std::vector<int32_t> marker_starts;
   marker_starts.push_back(0);
   std::vector<int32_t> marker_ends;
   marker_ends.push_back(4);
   static_text2.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
                                    marker_types);
+  static_text2.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
+                                   highlight_types);
   static_text2.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
                                    marker_starts);
   static_text2.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
@@ -2873,10 +2882,14 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
   // Add the spelling markers on "helo".
   std::vector<int32_t> marker_types{
       static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)};
+  std::vector<int32_t> highlight_types{
+      static_cast<int32_t>(ax::mojom::HighlightType::kNone)};
   std::vector<int32_t> marker_starts{0};
   std::vector<int32_t> marker_ends{4};
   static_text2.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
                                    marker_types);
+  static_text2.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
+                                   highlight_types);
   static_text2.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
                                    marker_starts);
   static_text2.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,

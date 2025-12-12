@@ -2010,6 +2010,7 @@ TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes() const {
     const std::vector<int>& marker_ends =
         GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
 
+    CHECK_EQ(marker_types.size(), highlight_types.size());
     CHECK_EQ(marker_types.size(), marker_starts.size());
     CHECK_EQ(marker_types.size(), marker_ends.size());
 

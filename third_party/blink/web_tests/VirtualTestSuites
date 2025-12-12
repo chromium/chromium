@@ -1359,6 +1359,7 @@
       "accessibility/slot-poison.html",
       "accessibility/createAttributeNS06-crash.html",
       "external/wpt/accessibility/",
+      "external/wpt/css/css-highlight-api/crashtests/highlight-overlap-with-aria-invalid-crash.html",
       "external/wpt/dom/ranges/Range-deleteContents.html",
       "external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-initially-empty-is-updated.html",
       "external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html",
