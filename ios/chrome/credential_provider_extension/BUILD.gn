@@ -33,12 +33,12 @@ source_set("credential_provider") {
   deps = [
     ":account_verification_provider",
     ":font_provider",
+    ":generated_strings",
     ":metrics_util",
     ":passkey_request_details",
     ":passkey_util",
     ":passkey_welcome_screen_util",
     ":reauthentication_handler",
-    ":system_strings",
     "//base",
     "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/common/app_group",
@@ -75,6 +75,14 @@ generate_localizable_strings("system_strings") {
   deps = [ _packed_resources_target ]
 }
 
+source_set("generated_strings") {
+  sources = [
+    "generated_localized_strings.h",
+    "generated_localized_strings.mm",
+  ]
+  deps = [ ":system_strings" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -86,13 +94,13 @@ source_set("unit_tests") {
   ]
   deps = [
     ":credential_provider",
+    ":generated_strings",
     ":metrics_util",
     ":passkey_request_details",
     ":passkey_request_details_testing",
     ":passkey_util",
     ":passkey_util_swift",
     ":passkey_welcome_screen_util",
-    ":system_strings",
     "//base",
     "//base/test:test_support",
     "//components/cbor",
