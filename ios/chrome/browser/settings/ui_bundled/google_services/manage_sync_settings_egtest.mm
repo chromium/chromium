@@ -1206,7 +1206,9 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests that bulk upload moves the following data types to account:
 // - Bookmarks
 // - Reading List
-- (void)testBulkUploadForBookmarksAndReadingList {
+//
+// TODO(crbug.com/468296957): This test is flaky.
+- (void)FLAKY_testBulkUploadForBookmarksAndReadingList {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
