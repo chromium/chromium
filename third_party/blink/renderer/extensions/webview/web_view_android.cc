@@ -25,6 +25,8 @@ const char kInvalidContext[] = "Invalid context";
 
 namespace blink {
 
+const char WebViewAndroid::kSupplementName[] = "WebView";
+
 WebViewAndroid& WebViewAndroid::From(ExecutionContext& execution_context) {
   auto* supplement =
       Supplement<ExecutionContext>::From<WebViewAndroid>(execution_context);

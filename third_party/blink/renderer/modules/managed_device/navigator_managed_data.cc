@@ -54,8 +54,7 @@ bool AreDeviceAttributesAllowedByPermissionsPolicy(ExecutionContext* context) {
 
 }  // namespace
 
-const unsigned NavigatorManagedData::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kNavigatorManagedData);
+const char NavigatorManagedData::kSupplementName[] = "NavigatorManagedData";
 
 NavigatorManagedData* NavigatorManagedData::managed(Navigator& navigator) {
   if (!navigator.DomWindow())

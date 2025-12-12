@@ -119,9 +119,8 @@ void ServiceWorkerRegistrationNotifications::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-const unsigned ServiceWorkerRegistrationNotifications::kSupplementIndex =
-    static_cast<unsigned>(ServiceWorkerRegistration::Supplements::
-                              kServiceWorkerRegistrationNotifications);
+const char ServiceWorkerRegistrationNotifications::kSupplementName[] =
+    "ServiceWorkerRegistrationNotifications";
 
 ServiceWorkerRegistrationNotifications&
 ServiceWorkerRegistrationNotifications::From(

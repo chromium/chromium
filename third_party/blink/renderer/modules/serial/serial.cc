@@ -96,8 +96,7 @@ bool ShouldBlockSerialServiceCall(LocalDOMWindow* window,
 
 }  // namespace
 
-const unsigned Serial::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kSerial);
+const char Serial::kSupplementName[] = "Serial";
 
 Serial* Serial::serial(NavigatorBase& navigator) {
   Serial* serial = Supplement<NavigatorBase>::From<Serial>(navigator);

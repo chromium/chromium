@@ -19,8 +19,7 @@ class MODULES_EXPORT CSSAnimationWorklet final
       public Supplement<LocalDOMWindow>,
       public ExecutionContextLifecycleObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kCSSAnimationWorklet;
+  static const char kSupplementName[];
 
   static AnimationWorklet* animationWorklet(ScriptState*);
 

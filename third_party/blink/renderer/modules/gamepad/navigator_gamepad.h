@@ -46,7 +46,7 @@ namespace device {
 template <class T>
 class GamepadImpl;
 using Gamepad = GamepadImpl<void>;
-}  // namespace device
+}
 
 namespace blink {
 
@@ -63,7 +63,7 @@ class MODULES_EXPORT NavigatorGamepad final
       public LocalDOMWindow::EventListenerObserver,
       public Gamepad::Client {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static NavigatorGamepad& From(Navigator&);
 

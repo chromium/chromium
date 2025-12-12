@@ -9,6 +9,10 @@
 namespace blink {
 
 // static
+const char RTCPeerConnectionController::kSupplementName[] =
+    "RTCPeerConnectionController";
+
+// static
 RTCPeerConnectionController& RTCPeerConnectionController::From(
     Document& document) {
   RTCPeerConnectionController* supplement =

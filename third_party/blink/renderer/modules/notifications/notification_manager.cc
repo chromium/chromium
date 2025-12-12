@@ -46,6 +46,9 @@ NotificationManager* NotificationManager::From(ExecutionContext* context) {
   return manager;
 }
 
+// static
+const char NotificationManager::kSupplementName[] = "NotificationManager";
+
 NotificationManager::NotificationManager(ExecutionContext& context)
     : Supplement<ExecutionContext>(context),
       notification_service_(&context),

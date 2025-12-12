@@ -23,7 +23,7 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static Clipboard* clipboard(Navigator&);
   explicit Clipboard(Navigator&);
 

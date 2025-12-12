@@ -30,14 +30,9 @@ class RejectedPromises;
 // While an WindowAgentFactory is shared across a group of reachable frames,
 // Agent is shared across a group of reachable and same-site frames.
 class CORE_EXPORT Agent : public GarbageCollected<Agent>,
-                          public Supplementable<Agent, 2>,
+                          public Supplementable<Agent>,
                           public scheduler::EventLoop::Delegate {
  public:
-  enum class Supplements {
-    kCustomElementReactionStack = 0,
-    kMutationObserverAgentData = 1,
-  };
-
   // Do not create the instance directly.
   // Use MakeGarbageCollected<Agent>() or
   // WindowAgentFactory::GetAgentForOrigin().

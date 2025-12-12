@@ -14,8 +14,7 @@
 
 namespace blink {
 
-const unsigned AudioGraphTracer::kSupplementIndex =
-    static_cast<unsigned>(Page::Supplements::kAudioGraphTracer);
+const char AudioGraphTracer::kSupplementName[] = "AudioGraphTracer";
 
 void AudioGraphTracer::ProvideAudioGraphTracerTo(Page& page) {
   page.ProvideSupplement(MakeGarbageCollected<AudioGraphTracer>(page));
@@ -117,37 +116,38 @@ void AudioGraphTracer::DidConnectNodes(AudioNode* source_node,
                                        unsigned destination_input_index) {
   if (inspector_agent_) {
     inspector_agent_->DidConnectNodes(source_node, destination_node,
-                                      source_output_index,
-                                      destination_input_index);
+        source_output_index, destination_input_index);
   }
 }
 
-void AudioGraphTracer::DidDisconnectNodes(AudioNode* source_node,
-                                          AudioNode* destination_node,
-                                          unsigned source_output_index,
-                                          unsigned destination_input_index) {
+void AudioGraphTracer::DidDisconnectNodes(
+    AudioNode* source_node,
+    AudioNode* destination_node,
+    unsigned source_output_index,
+    unsigned destination_input_index) {
   if (inspector_agent_) {
     inspector_agent_->DidDisconnectNodes(source_node, destination_node,
-                                         source_output_index,
-                                         destination_input_index);
+        source_output_index, destination_input_index);
   }
 }
 
-void AudioGraphTracer::DidConnectNodeParam(AudioNode* source_node,
-                                           AudioParam* destination_param,
-                                           unsigned source_output_index) {
+void AudioGraphTracer::DidConnectNodeParam(
+    AudioNode* source_node,
+    AudioParam* destination_param,
+    unsigned source_output_index) {
   if (inspector_agent_) {
     inspector_agent_->DidConnectNodeParam(source_node, destination_param,
-                                          source_output_index);
+        source_output_index);
   }
 }
 
-void AudioGraphTracer::DidDisconnectNodeParam(AudioNode* source_node,
-                                              AudioParam* destination_param,
-                                              unsigned source_output_index) {
+void AudioGraphTracer::DidDisconnectNodeParam(
+    AudioNode* source_node,
+    AudioParam* destination_param,
+    unsigned source_output_index) {
   if (inspector_agent_) {
     inspector_agent_->DidDisconnectNodeParam(source_node, destination_param,
-                                             source_output_index);
+        source_output_index);
   }
 }
 

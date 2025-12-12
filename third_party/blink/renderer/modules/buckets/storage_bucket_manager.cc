@@ -81,8 +81,7 @@ mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
 
 }  // namespace
 
-const unsigned StorageBucketManager::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kStorageBucketManager);
+const char StorageBucketManager::kSupplementName[] = "StorageBucketManager";
 
 StorageBucketManager::StorageBucketManager(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),

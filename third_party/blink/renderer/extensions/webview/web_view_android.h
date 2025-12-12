@@ -24,8 +24,7 @@ class EXTENSIONS_WEBVIEW_EXPORT WebViewAndroid
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kWebViewAndroid;
+  static const char kSupplementName[];
 
   static WebViewAndroid& From(ExecutionContext&);
 

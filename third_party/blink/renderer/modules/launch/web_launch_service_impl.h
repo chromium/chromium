@@ -30,7 +30,7 @@ class MODULES_EXPORT WebLaunchServiceImpl final
       public mojom::blink::WebLaunchService,
       public Supplement<LocalDOMWindow> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static WebLaunchServiceImpl* From(LocalDOMWindow&);
   static void BindReceiver(
       LocalFrame* frame,

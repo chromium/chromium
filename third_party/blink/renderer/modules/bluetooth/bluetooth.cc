@@ -628,8 +628,7 @@ void Bluetooth::Trace(Visitor* visitor) const {
 }
 
 // static
-const unsigned Bluetooth::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kBluetooth);
+const char Bluetooth::kSupplementName[] = "Bluetooth";
 
 Bluetooth* Bluetooth::bluetooth(Navigator& navigator) {
   if (!navigator.DomWindow())

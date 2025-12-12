@@ -27,8 +27,7 @@ bool IsOutermostDocument(LocalDOMWindow* window) {
 }  // namespace
 
 // static
-const unsigned Presentation::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kPresentation);
+const char Presentation::kSupplementName[] = "Presentation";
 
 // static
 Presentation* Presentation::presentation(Navigator& navigator) {

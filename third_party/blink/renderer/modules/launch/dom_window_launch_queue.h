@@ -24,7 +24,7 @@ class DOMWindowLaunchQueue final
     : public GarbageCollected<DOMWindowLaunchQueue>,
       public Supplement<LocalDOMWindow> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   explicit DOMWindowLaunchQueue(LocalDOMWindow& window);
 

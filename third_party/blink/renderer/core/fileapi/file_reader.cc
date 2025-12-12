@@ -77,8 +77,7 @@ class FileReader::ThrottlingController final
     : public GarbageCollected<FileReader::ThrottlingController>,
       public Supplement<ExecutionContext> {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kThrottlingController;
+  static const char kSupplementName[];
 
   static ThrottlingController* From(ExecutionContext* context) {
     if (!context)
@@ -191,6 +190,10 @@ class FileReader::ThrottlingController final
   FileReaderDeque pending_readers_;
   FileReaderHashSet running_readers_;
 };
+
+// static
+const char FileReader::ThrottlingController::kSupplementName[] =
+    "FileReaderThrottlingController";
 
 FileReader* FileReader::Create(ExecutionContext* context) {
   return MakeGarbageCollected<FileReader>(context);

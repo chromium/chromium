@@ -34,7 +34,7 @@ class FileSystemDispatcher : public GarbageCollected<FileSystemDispatcher>,
   using WriteCallback =
       base::RepeatingCallback<void(int64_t bytes, bool complete)>;
 
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static FileSystemDispatcher& From(ExecutionContext* context);
 

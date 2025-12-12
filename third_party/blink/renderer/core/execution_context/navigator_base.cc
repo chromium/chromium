@@ -76,7 +76,7 @@ void NavigatorBase::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   NavigatorLanguage::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
-  Supplementable::Trace(visitor);
+  Supplementable<NavigatorBase>::Trace(visitor);
 }
 
 unsigned int NavigatorBase::hardwareConcurrency() const {

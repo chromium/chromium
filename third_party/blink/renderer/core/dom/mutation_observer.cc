@@ -66,8 +66,7 @@ class MutationObserverAgentData
     : public GarbageCollected<MutationObserverAgentData>,
       public Supplement<Agent> {
  public:
-  static constexpr auto kSupplementIndex =
-      Agent::Supplements::kMutationObserverAgentData;
+  constexpr static const char kSupplementName[] = "MutationObserverAgentData";
 
   explicit MutationObserverAgentData(Agent& agent) : Supplement<Agent>(agent) {}
 

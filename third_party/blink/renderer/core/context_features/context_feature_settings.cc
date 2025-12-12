@@ -13,6 +13,9 @@ namespace blink {
 ContextFeatureSettings::ContextFeatureSettings(ExecutionContext& context)
     : Supplement<ExecutionContext>(context) {}
 
+// static
+const char ContextFeatureSettings::kSupplementName[] = "ContextFeatureSettings";
+
 DEFINE_PROTECTED_DATA base::ProtectedMemory<bool>
     ContextFeatureSettings::mojo_js_allowed_;
 

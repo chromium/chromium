@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -50,6 +51,7 @@ class V8UnionTrustedScriptURLOrUSVString;
 
 class CORE_EXPORT SharedWorker final
     : public AbstractWorker,
+      public Supplementable<SharedWorker>,
       public ActiveScriptWrappable<SharedWorker> {
   DEFINE_WRAPPERTYPEINFO();
 

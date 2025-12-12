@@ -741,8 +741,7 @@ const char MediaCapabilities::kWebrtcEncodeSmoothIfPowerEfficientParamName[] =
     "webrtc_encode_smooth_if_power_efficient";
 
 // static
-const unsigned MediaCapabilities::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kMediaCapabilities);
+const char MediaCapabilities::kSupplementName[] = "MediaCapabilities";
 
 MediaCapabilities* MediaCapabilities::mediaCapabilities(
     NavigatorBase& navigator) {

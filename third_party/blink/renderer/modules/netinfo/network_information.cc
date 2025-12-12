@@ -290,8 +290,7 @@ void NetworkInformation::StopObserving() {
   }
 }
 
-const unsigned NetworkInformation::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kNetworkInformation);
+const char NetworkInformation::kSupplementName[] = "NetworkInformation";
 
 NetworkInformation* NetworkInformation::connection(NavigatorBase& navigator) {
   if (!navigator.GetExecutionContext())

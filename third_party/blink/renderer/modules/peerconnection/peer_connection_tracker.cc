@@ -473,6 +473,9 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
   CrossThreadOnceFunction<void(int, base::Value::List)> completion_callback_;
 };
 
+// static
+const char PeerConnectionTracker::kSupplementName[] = "PeerConnectionTracker";
+
 PeerConnectionTracker& PeerConnectionTracker::From(LocalDOMWindow& window) {
   PeerConnectionTracker* tracker =
       Supplement<LocalDOMWindow>::From<PeerConnectionTracker>(window);

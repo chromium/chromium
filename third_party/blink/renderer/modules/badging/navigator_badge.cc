@@ -18,6 +18,8 @@
 
 namespace blink {
 
+const char NavigatorBadge::kSupplementName[] = "NavigatorBadge";
+
 // static
 NavigatorBadge& NavigatorBadge::From(ScriptState* script_state) {
   DCHECK(IsAllowed(script_state));

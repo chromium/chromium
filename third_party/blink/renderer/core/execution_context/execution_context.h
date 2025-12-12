@@ -126,49 +126,11 @@ enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
 // script written by a web author and an "isolated world" content script written
 // by an extension developer, but these share an ExecutionContext (the window)
 // in common.
-class CORE_EXPORT ExecutionContext
-    : public Supplementable<ExecutionContext, 34>,
-      public MojoBindingContext,
-      public UseCounterAndConsoleLogger,
-      public FeatureContext {
+class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
+                                     public MojoBindingContext,
+                                     public UseCounterAndConsoleLogger,
+                                     public FeatureContext {
  public:
-  enum class Supplements {
-    kCodecPressureManagerProvider = 0,
-    kBarcodeDetectorStatics = 1,
-    kRtcTransportDependencies = 2,
-    kServiceWorkerContainer = 3,
-    kPeerConnectionDependencyFactory = 4,
-    kBackgroundReadback = 5,
-    kWebPrintingManager = 6,
-    kWebCodecsLogger = 7,
-    kFileSystemDispatcher = 8,
-    kNotificationManager = 9,
-    kLocalFileSystem = 10,
-    kAIInterfaceProxy = 11,
-    kFileSystemAccessManager = 12,
-    kWebViewAndroid = 13,
-    kPressureObserverManager = 14,
-    kFileSystemObservationCollection = 15,
-    kIdleManager = 16,
-    kImageBitmapFactories = 17,
-    kNavigatorBadge = 18,
-    kCrosKiosk = 19,
-    kDOMScheduler = 20,
-    kScriptedIdleTaskController = 21,
-    kMediaInspectorContextImpl = 22,
-    kReportingContext = 23,
-    kAbortSignalRegistry = 24,
-    kFileBackedBlobFactoryDispatcher = 25,
-    kContextFeatureSettings = 26,
-    kParsedFeaturePolicies = 27,
-    kThrottlingController = 28,
-    kDOMTimerCoordinator = 29,
-    kGlobalIndexedDBImpl = 30,
-    kExecutionContextClipboardEventState = 31,
-    kCachedVideoFramePool = 32,
-    kCanvasResourceProviderCache = 33
-  };
-
   ExecutionContext(const ExecutionContext&) = delete;
   ExecutionContext& operator=(const ExecutionContext&) = delete;
 

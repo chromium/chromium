@@ -18,7 +18,7 @@ class ScriptState;
 class CredentialMetrics : public GarbageCollected<CredentialMetrics>,
                           public Supplement<Document> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static CredentialMetrics& From(ScriptState* script_state);
 
   explicit CredentialMetrics(Document& frame);

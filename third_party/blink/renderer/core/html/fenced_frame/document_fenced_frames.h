@@ -18,7 +18,7 @@ class DocumentFencedFrames final
     : public GarbageCollected<DocumentFencedFrames>,
       public Supplement<Document> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   // Returns the supplement that stores the fenced frame elements
   // that are associated with the document. Returns nullptr if

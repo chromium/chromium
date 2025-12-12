@@ -24,9 +24,6 @@ class CORE_EXPORT CustomElementReactionStack final
       public NameClient,
       public Supplement<Agent> {
  public:
-  static constexpr auto kSupplementIndex =
-      Agent::Supplements::kCustomElementReactionStack;
-
   explicit CustomElementReactionStack(Agent& agent);
   CustomElementReactionStack(const CustomElementReactionStack&) = delete;
   CustomElementReactionStack& operator=(const CustomElementReactionStack&) =
@@ -46,6 +43,7 @@ class CORE_EXPORT CustomElementReactionStack final
   void ClearQueue(Element&);
 
   static CustomElementReactionStack& From(Agent& agent);
+  static const char kSupplementName[];
 
  private:
   friend class ResetCustomElementReactionStackForTest;

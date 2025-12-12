@@ -36,8 +36,7 @@ class CORE_EXPORT FileBackedBlobFactoryDispatcher
   // GC
   void Trace(Visitor* visitor) const override;
 
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kFileBackedBlobFactoryDispatcher;
+  static const char kSupplementName[];
 
  private:
   friend class FileBackedBlobFactoryTestHelper;

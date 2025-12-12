@@ -65,8 +65,7 @@ DevToolsFrontendImpl* DevToolsFrontendImpl::From(LocalFrame* local_frame) {
 }
 
 // static
-const unsigned DevToolsFrontendImpl::kSupplementIndex =
-    static_cast<unsigned>(LocalFrame::Supplements::kDevToolsFrontendImpl);
+const char DevToolsFrontendImpl::kSupplementName[] = "DevToolsFrontendImpl";
 
 DevToolsFrontendImpl::DevToolsFrontendImpl(
     LocalFrame& frame,

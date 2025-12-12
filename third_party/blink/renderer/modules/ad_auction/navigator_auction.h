@@ -45,8 +45,7 @@ class MODULES_EXPORT NavigatorAuction final
       public Supplement<Navigator> {
  public:
   class AuctionHandle;
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kNavigatorAuction;
+  static const char kSupplementName[];
 
   explicit NavigatorAuction(Navigator&);
 

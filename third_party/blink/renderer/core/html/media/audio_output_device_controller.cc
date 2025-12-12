@@ -7,6 +7,10 @@
 namespace blink {
 
 // static
+const char AudioOutputDeviceController::kSupplementName[] =
+    "AudioOutputDeviceController";
+
+// static
 AudioOutputDeviceController* AudioOutputDeviceController::From(
     HTMLMediaElement& element) {
   return Supplement<HTMLMediaElement>::From<AudioOutputDeviceController>(

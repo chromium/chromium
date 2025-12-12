@@ -28,7 +28,7 @@ class MODULES_EXPORT NavigatorShare final
     : public GarbageCollected<NavigatorShare>,
       public Supplement<Navigator> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   NavigatorShare(Navigator& navigator) : Supplement(navigator) {}
   ~NavigatorShare() = default;

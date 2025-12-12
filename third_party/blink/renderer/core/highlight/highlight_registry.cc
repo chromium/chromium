@@ -38,8 +38,7 @@ HighlightRegistry::HighlightRegistry(LocalDOMWindow& window)
 
 HighlightRegistry::~HighlightRegistry() = default;
 
-const unsigned HighlightRegistry::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kHighlightRegistry);
+const char HighlightRegistry::kSupplementName[] = "HighlightRegistry";
 
 void HighlightRegistry::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlights_);
@@ -55,8 +54,7 @@ HighlightRegistry* HighlightRegistry::GetHighlightRegistry(const Node* node) {
   }
   return node->GetDocument()
       .domWindow()
-      ->Supplementable<LocalDOMWindow,
-                       48>::RequireSupplement<HighlightRegistry>();
+      ->Supplementable<LocalDOMWindow>::RequireSupplement<HighlightRegistry>();
 }
 
 bool HighlightRegistry::IsAbstractRangePaintable(AbstractRange* abstract_range,

@@ -40,6 +40,9 @@ void DeviceOrientationController::DidUpdateData() {
   DispatchDeviceEvent(LastEvent());
 }
 
+const char DeviceOrientationController::kSupplementName[] =
+    "DeviceOrientationController";
+
 DeviceOrientationController& DeviceOrientationController::From(
     LocalDOMWindow& window) {
   DeviceOrientationController* controller =
@@ -94,10 +97,11 @@ void DeviceOrientationController::DidAddEventListener(
 }
 
 DeviceOrientationData* DeviceOrientationController::LastData() const {
-  return override_orientation_data_ ? override_orientation_data_.Get()
-         : orientation_event_pump_
-             ? orientation_event_pump_->LatestDeviceOrientationData()
-             : nullptr;
+  return override_orientation_data_
+             ? override_orientation_data_.Get()
+             : orientation_event_pump_
+                   ? orientation_event_pump_->LatestDeviceOrientationData()
+                   : nullptr;
 }
 
 bool DeviceOrientationController::HasLastData() {

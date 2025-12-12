@@ -35,8 +35,7 @@ LayoutWorklet::LayoutWorklet(LocalDOMWindow& window)
 
 LayoutWorklet::~LayoutWorklet() = default;
 
-const unsigned LayoutWorklet::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kLayoutWorklet);
+const char LayoutWorklet::kSupplementName[] = "LayoutWorklet";
 
 void LayoutWorklet::AddPendingLayout(const AtomicString& name, Node* node) {
   pending_layout_registry_->AddPendingLayout(name, node);

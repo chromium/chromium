@@ -40,7 +40,7 @@ class CORE_EXPORT MediaInspectorContextImpl final
       public Supplement<ExecutionContext>,
       public MediaInspectorContext {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static MediaInspectorContextImpl* From(ExecutionContext&);
 

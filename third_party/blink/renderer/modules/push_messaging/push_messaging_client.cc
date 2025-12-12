@@ -29,8 +29,7 @@
 namespace blink {
 
 // static
-const unsigned PushMessagingClient::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kPushMessagingClient);
+const char PushMessagingClient::kSupplementName[] = "PushMessagingClient";
 
 PushMessagingClient::PushMessagingClient(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window), push_messaging_manager_(&window) {

@@ -33,7 +33,7 @@ class MODULES_EXPORT PresentationController
       public Supplement<LocalDOMWindow>,
       public mojom::blink::PresentationController {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   explicit PresentationController(LocalDOMWindow&);
 

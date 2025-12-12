@@ -360,7 +360,7 @@ void DataObject::NotifyItemListChanged() const {
 void DataObject::Trace(Visitor* visitor) const {
   visitor->Trace(item_list_);
   visitor->Trace(observers_);
-  Supplementable::Trace(visitor);
+  Supplementable<DataObject>::Trace(visitor);
 }
 
 // static
@@ -370,59 +370,59 @@ DataObject* DataObject::Create(ExecutionContext* context,
   bool has_file_system = false;
 
   for (const WebDragData::Item& item : data.Items()) {
-    std::visit(absl::Overload{
-                   [&](const WebDragData::StringItem& item) {
-                     if (String(item.type) == ui::kMimeTypeUriList) {
-                       data_object->SetURLAndTitle(item.data, item.title);
-                     } else if (String(item.type) == ui::kMimeTypeHtml) {
-                       data_object->SetHTMLAndBaseURL(item.data, item.base_url);
-                     } else {
-                       data_object->SetData(item.type, item.data);
-                     }
-                   },
-                   [&](const WebDragData::FilenameItem& item) {
-                     has_file_system = true;
-                     data_object->AddFilename(
-                         context, item.filename, item.display_name,
-                         data.FilesystemId(), item.file_system_access_entry);
-                   },
-                   [&](const WebDragData::BinaryDataItem& item) {
-                     data_object->AddFileSharedBuffer(
-                         item.data, item.image_accessible, item.source_url,
-                         item.filename_extension, item.content_disposition);
-                   },
-                   [&](const WebDragData::FileSystemFileItem& item) {
-                     // TODO(http://crbug.com/429077): The file system URL may
-                     // refer a user visible file.
-                     scoped_refptr<BlobDataHandle> blob_data_handle =
-                         item.blob_info.GetBlobHandle();
+    std::visit(
+        absl::Overload{
+            [&](const WebDragData::StringItem& item) {
+              if (String(item.type) == ui::kMimeTypeUriList) {
+                data_object->SetURLAndTitle(item.data, item.title);
+              } else if (String(item.type) == ui::kMimeTypeHtml) {
+                data_object->SetHTMLAndBaseURL(item.data, item.base_url);
+              } else {
+                data_object->SetData(item.type, item.data);
+              }
+            },
+            [&](const WebDragData::FilenameItem& item) {
+              has_file_system = true;
+              data_object->AddFilename(context, item.filename,
+                                       item.display_name, data.FilesystemId(),
+                                       item.file_system_access_entry);
+            },
+            [&](const WebDragData::BinaryDataItem& item) {
+              data_object->AddFileSharedBuffer(
+                  item.data, item.image_accessible, item.source_url,
+                  item.filename_extension, item.content_disposition);
+            },
+            [&](const WebDragData::FileSystemFileItem& item) {
+              // TODO(http://crbug.com/429077): The file system URL may refer a
+              // user visible file.
+              scoped_refptr<BlobDataHandle> blob_data_handle =
+                  item.blob_info.GetBlobHandle();
 
-                     // If the browser process has provided a BlobDataHandle to
-                     // use for building the File object (as a result of a drop
-                     // operation being performed) then use it to create the
-                     // file here (instead of creating a File object without one
-                     // and requiring a call to BlobRegistry::Register in the
-                     // browser process to hook up the Blob remote/receiver
-                     // pair). If no BlobDataHandle was provided, create a
-                     // BlobDataHandle to an empty blob since the File object
-                     // contents won't be needed (for example, because this
-                     // DataObject will be used for the DragEnter case where the
-                     // spec only indicates that basic file metadata should be
-                     // retrievable via the corresponding DataTransferItem).
-                     if (!blob_data_handle) {
-                       blob_data_handle = BlobDataHandle::Create();
-                     }
-                     has_file_system = true;
-                     FileMetadata file_metadata;
-                     file_metadata.length = item.size;
-                     data_object->Add(
-                         File::CreateForFileSystemFile(
-                             item.url, file_metadata, File::kIsNotUserVisible,
-                             std::move(blob_data_handle)),
-                         item.file_system_id);
-                   },
-               },
-               item);
+              // If the browser process has provided a BlobDataHandle to use for
+              // building the File object (as a result of a drop operation being
+              // performed) then use it to create the file here (instead of
+              // creating a File object without one and requiring a call to
+              // BlobRegistry::Register in the browser process to hook up the
+              // Blob remote/receiver pair). If no BlobDataHandle was provided,
+              // create a BlobDataHandle to an empty blob since the File object
+              // contents won't be needed (for example, because this DataObject
+              // will be used for the DragEnter case where the spec only
+              // indicates that basic file metadata should be retrievable via
+              // the corresponding DataTransferItem).
+              if (!blob_data_handle) {
+                blob_data_handle = BlobDataHandle::Create();
+              }
+              has_file_system = true;
+              FileMetadata file_metadata;
+              file_metadata.length = item.size;
+              data_object->Add(
+                  File::CreateForFileSystemFile(item.url, file_metadata,
+                                                File::kIsNotUserVisible,
+                                                std::move(blob_data_handle)),
+                  item.file_system_id);
+            },
+        },
+        item);
   }
 
   data_object->SetFilesystemId(data.FilesystemId());

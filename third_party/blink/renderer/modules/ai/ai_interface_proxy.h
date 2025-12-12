@@ -24,8 +24,7 @@ namespace blink {
 class AIInterfaceProxy final : public GarbageCollected<AIInterfaceProxy>,
                                public Supplement<ExecutionContext> {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kAIInterfaceProxy;
+  static const char kSupplementName[];
 
   using GetLanguageDetectionModelStatusCallback = base::OnceCallback<void(
       language_detection::mojom::blink::LanguageDetectionModelStatus)>;

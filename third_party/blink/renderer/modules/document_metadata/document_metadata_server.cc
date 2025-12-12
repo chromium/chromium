@@ -11,8 +11,7 @@
 namespace blink {
 
 // static
-const unsigned DocumentMetadataServer::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kDocumentMetadataServer);
+const char DocumentMetadataServer::kSupplementName[] = "DocumentMetadataServer";
 
 // static
 DocumentMetadataServer* DocumentMetadataServer::From(Document& document) {

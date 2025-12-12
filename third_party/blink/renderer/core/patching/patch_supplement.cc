@@ -34,6 +34,9 @@
 
 namespace blink {
 
+// static
+const char PatchSupplement::kSupplementName[] = "Patch";
+
 namespace {
 
 std::variant<String, base::span<uint8_t>, std::monostate>

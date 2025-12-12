@@ -16,8 +16,7 @@ class MojoJSInterfaceBrokerWrapper final
     : public GarbageCollected<MojoJSInterfaceBrokerWrapper>,
       public Supplement<MojoBindingContext> {
  public:
-  static constexpr auto kSupplementIndex =
-      MojoBindingContext::Supplements::kMojoJSInterfaceBrokerWrapper;
+  static constexpr char kSupplementName[] = "MojoJSInterfaceBrokerWrapper";
 
   explicit MojoJSInterfaceBrokerWrapper(MojoBindingContext& context)
       : Supplement(context), impl_(&context) {}

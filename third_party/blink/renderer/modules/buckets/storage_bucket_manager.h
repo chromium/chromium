@@ -27,7 +27,7 @@ class MODULES_EXPORT StorageBucketManager final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   // Web-exposed as navigator.storageBuckets
   static StorageBucketManager* storageBuckets(NavigatorBase& navigator);

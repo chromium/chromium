@@ -52,7 +52,7 @@ class MODULES_EXPORT SpeechSynthesis final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static SpeechSynthesisBase* Create(LocalDOMWindow&);
   static SpeechSynthesis* speechSynthesis(LocalDOMWindow&);

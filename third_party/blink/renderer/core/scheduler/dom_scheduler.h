@@ -66,8 +66,7 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kDOMScheduler;
+  static const char kSupplementName[];
 
   static DOMScheduler* scheduler(ExecutionContext&);
 
@@ -84,7 +83,8 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
                                  SchedulerPostTaskOptions*,
                                  ExceptionState&);
 
-  ScriptPromise<IDLUndefined> yield(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> yield(ScriptState*,
+                                    ExceptionState&);
 
   scheduler::TaskAttributionIdType taskId(v8::Isolate*);
   void setTaskId(v8::Isolate*, scheduler::TaskAttributionIdType);

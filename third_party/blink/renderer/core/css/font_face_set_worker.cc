@@ -23,6 +23,9 @@
 
 namespace blink {
 
+// static
+const char FontFaceSetWorker::kSupplementName[] = "FontFaceSetWorker";
+
 FontFaceSetWorker::FontFaceSetWorker(WorkerGlobalScope& worker)
     : FontFaceSet(worker), Supplement<WorkerGlobalScope>(worker) {}
 

@@ -14,8 +14,7 @@
 
 namespace blink {
 // static
-const unsigned WebLaunchServiceImpl::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kWebLaunchServiceImpl);
+const char WebLaunchServiceImpl::kSupplementName[] = "WebLaunchServiceImpl";
 
 // static
 WebLaunchServiceImpl* WebLaunchServiceImpl::From(LocalDOMWindow& window) {

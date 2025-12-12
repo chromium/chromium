@@ -23,6 +23,8 @@ namespace blink {
 
 using PassKey = base::PassKey<P2PSocketDispatcher>;
 
+const char P2PSocketDispatcher::kSupplementName[] = "P2PSocketDispatcher";
+
 // static
 P2PSocketDispatcher& P2PSocketDispatcher::From(MojoBindingContext& context) {
   auto* supplement =

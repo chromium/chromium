@@ -286,8 +286,7 @@ ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
                                           exception_state);
 }
 
-const unsigned ImageBitmapFactories::kSupplementIndex =
-    static_cast<unsigned>(ExecutionContext::Supplements::kImageBitmapFactories);
+const char ImageBitmapFactories::kSupplementName[] = "ImageBitmapFactories";
 
 ImageBitmapFactories& ImageBitmapFactories::From(ExecutionContext& context) {
   ImageBitmapFactories* supplement =

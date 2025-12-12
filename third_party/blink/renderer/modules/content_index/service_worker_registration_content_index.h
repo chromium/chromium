@@ -17,8 +17,7 @@ class ServiceWorkerRegistrationContentIndex final
     : public GarbageCollected<ServiceWorkerRegistrationContentIndex>,
       public Supplement<ServiceWorkerRegistration> {
  public:
-  static constexpr auto kSupplementIndex = ServiceWorkerRegistration::
-      Supplements::kServiceWorkerRegistrationContentIndex;
+  static const char kSupplementName[];
 
   explicit ServiceWorkerRegistrationContentIndex(
       ServiceWorkerRegistration* registration);

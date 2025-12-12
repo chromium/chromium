@@ -17,8 +17,7 @@
 namespace blink {
 
 // static
-const unsigned RemoteObjectGatewayImpl::kSupplementIndex =
-    static_cast<unsigned>(LocalFrame::Supplements::kRemoteObjectGatewayImpl);
+const char RemoteObjectGatewayImpl::kSupplementName[] = "RemoteObjectGateway";
 
 // static
 RemoteObjectGatewayImpl* RemoteObjectGatewayImpl::From(LocalFrame& frame) {
@@ -148,9 +147,8 @@ RemoteObject* RemoteObjectGatewayImpl::GetRemoteObject(v8::Isolate* isolate,
 }
 
 // static
-const unsigned RemoteObjectGatewayFactoryImpl::kSupplementIndex =
-    static_cast<unsigned>(
-        LocalFrame::Supplements::kRemoteObjectGatewayFactoryImpl);
+const char RemoteObjectGatewayFactoryImpl::kSupplementName[] =
+    "RemoteObjectGatewayFactoryImpl";
 
 // static
 RemoteObjectGatewayFactoryImpl* RemoteObjectGatewayFactoryImpl::From(

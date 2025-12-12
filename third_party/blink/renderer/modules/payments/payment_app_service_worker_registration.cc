@@ -65,8 +65,7 @@ PaymentManager* PaymentAppServiceWorkerRegistration::paymentManager(
   if (!AllowedToUsePaymentFeatures(script_state)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "Must be in a top-level browsing context or an iframe needs to specify "
-        "allow=\"payment\" "
+        "Must be in a top-level browsing context or an iframe needs to specify allow=\"payment\" "
         "explicitly");
     return nullptr;
   }
@@ -88,8 +87,7 @@ PaymentAppServiceWorkerRegistration::PaymentAppServiceWorkerRegistration(
     : Supplement(*registration) {}
 
 // static
-const unsigned PaymentAppServiceWorkerRegistration::kSupplementIndex =
-    static_cast<unsigned>(ServiceWorkerRegistration::Supplements::
-                              kPaymentAppServiceWorkerRegistration);
+const char PaymentAppServiceWorkerRegistration::kSupplementName[] =
+    "PaymentAppServiceWorkerRegistration";
 
 }  // namespace blink

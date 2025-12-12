@@ -30,8 +30,8 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -44,14 +44,13 @@ namespace blink {
 // Supplementable allows a garbage-collected object to be extended with
 // additional data.
 //
-// This is almost the same as adding a member to that class, except that
-// it can also be used in cases that would otherwise be layering violation.
-// For example, it is common for features implemented in modules/ to
-// supplement classes in core/. In other cases, you probably should not
-// use it, as it is less clear, allows for type confusion between subclasses,
-// reduces inlining opportunities and requires your object to have a vtable.
-// (It used to have different memory characteristics, which is why there's
-// more use around than one would expect.)
+// Most commonly, this is used to attach data to a central object, such as
+// LocalFrame, so that it can be easily accessed. This is similar to adding a
+// member to that class (e.g. it is kept alive while the supplementable is),
+// except that a Supplement is constructed lazily and therefore occupies less
+// memory if not used. It can also be used in cases that would otherwise be
+// layering violation. For example, it is common for features implemented in
+// modules/ to supplement classes in core/.
 //
 // Supplementable and Supplement instances are meant to be thread local. They
 // should only be accessed from within the thread that created them. The
@@ -61,35 +60,30 @@ namespace blink {
 //
 // What you should know about the Supplement keys
 // ==============================================
-// The Supplementable is expected to provide an enum class Supplements, that
-// holds keys to distinguish each of the supplements. The Supplement is expected
-// to use the same enum as its key (kSupplementIndex; this needs to be static
-// const, or ideally static constexpr). The Supplementable's SupplementMap
-// will use the index of the enum into the array. The Supplements template also
-// needs to have a kNumSupplements parameter to rightsize the array.
+// The Supplement is expected to use the same const char* string instance
+// as its key. The Supplementable's SupplementMap will use the address of the
+// string as the key and not the characters themselves. Hence, 2 strings with
+// the same characters will be treated as 2 different keys.
+//
+// In practice, this is mostly hidden. Each Supplement must expose a static
+// const char array which provides a human-readable key. Access to supplements
+// requires passing the Supplement type, so these cannot collide for unequal
+// types.
 //
 // Use extreme caution when deriving a supplementable class, as misuse can cause
 // type confusion.
 //
 // Typical use is expected to look like this:
 //
-//     class Navigator : public Supplementable<Navigator, 2> {
-//      public:
-//       enum class Supplements {
-//         kFoo = 0,
-//         kBar = 1
-//       };
-//
-//       ...
-//     };
-//
 //     class NavigatorFoo : public Supplement<Navigator> {
 //      public:
-//       static constexpr auto kSupplementIndex =
-//           Navigator::Supplements::kFoo;
+//       static const char kSupplementName[];
 //
 //       static NavigatorFoo& From(Navigator&);
 //     }
+//
+//     // static
+//     const char NavigatorFoo::kSupplementName[] = "NavigatorFoo";
 //
 //     NavigatorFoo& NavigatorFoo::From(Navigator& navigator)
 //     {
@@ -102,10 +96,8 @@ namespace blink {
 //       return *supplement;
 //     }
 //
-// The map index will automatically be determined from the supplement type
-// used. Out-of-bounds indexes will be detected (with a CHECK, most likely
-// also complaining at compile time), but too large arrays or unused indexes
-// will not.
+// The hash map key will automatically be determined from the supplement type
+// used.
 //
 // What you should know about thread checks
 // ========================================
@@ -122,7 +114,7 @@ namespace blink {
 //
 // Note that reattachThread() does nothing if assertion is not enabled.
 
-template <typename T, unsigned kNumSupplements>
+template <typename T>
 class Supplementable;
 
 template <typename T>
@@ -139,21 +131,19 @@ class Supplement : public GarbageCollectedMixin {
   // the default constructor is completely removed).
   T* GetSupplementable() const { return supplementable_.Get(); }
 
-  template <typename SupplementType, unsigned kNumSupplements>
-  static void ProvideTo(Supplementable<T, kNumSupplements>& supplementable,
+  template <typename SupplementType>
+  static void ProvideTo(Supplementable<T>& supplementable,
                         SupplementType* supplement) {
     supplementable.ProvideSupplement(supplement);
   }
 
-  template <typename SupplementType, unsigned kNumSupplements>
-  static SupplementType* From(
-      const Supplementable<T, kNumSupplements>& supplementable) {
+  template <typename SupplementType>
+  static SupplementType* From(const Supplementable<T>& supplementable) {
     return supplementable.template RequireSupplement<SupplementType>();
   }
 
-  template <typename SupplementType, unsigned kNumSupplements>
-  static SupplementType* From(
-      const Supplementable<T, kNumSupplements>* supplementable) {
+  template <typename SupplementType>
+  static SupplementType* From(const Supplementable<T>* supplementable) {
     return supplementable
                ? supplementable->template RequireSupplement<SupplementType>()
                : nullptr;
@@ -167,7 +157,7 @@ class Supplement : public GarbageCollectedMixin {
   Member<T> supplementable_;
 };
 
-template <typename T, unsigned kNumSupplements>
+template <typename T>
 class Supplementable : public GarbageCollectedMixin {
  public:
   Supplementable(const Supplementable&) = delete;
@@ -178,7 +168,11 @@ class Supplementable : public GarbageCollectedMixin {
 #if DCHECK_IS_ON()
     DCHECK_EQ(creation_thread_id_, CurrentThread());
 #endif
-    this->supplements_[GetIndex<SupplementType>()] = supplement;
+    static_assert(
+        std::is_array<decltype(SupplementType::kSupplementName)>::value,
+        "Declare a const char array kSupplementName. See Supplementable.h for "
+        "details.");
+    this->supplements_.Set(SupplementType::kSupplementName, supplement);
   }
 
   template <typename SupplementType>
@@ -186,7 +180,11 @@ class Supplementable : public GarbageCollectedMixin {
 #if DCHECK_IS_ON()
     DCHECK_EQ(creation_thread_id_, CurrentThread());
 #endif
-    this->supplements_[GetIndex<SupplementType>()] = nullptr;
+    static_assert(
+        std::is_array<decltype(SupplementType::kSupplementName)>::value,
+        "Declare a const char array kSupplementName. See Supplementable.h for "
+        "details.");
+    this->supplements_.erase(SupplementType::kSupplementName);
   }
 
   template <typename SupplementType>
@@ -194,8 +192,14 @@ class Supplementable : public GarbageCollectedMixin {
 #if DCHECK_IS_ON()
     DCHECK_EQ(attached_thread_id_, CurrentThread());
 #endif
-    return static_cast<SupplementType*>(
-        this->supplements_[GetIndex<SupplementType>()].Get());
+    static_assert(
+        std::is_array<decltype(SupplementType::kSupplementName)>::value,
+        "Declare a const char array kSupplementName. See Supplementable.h for "
+        "details.");
+    const auto it = this->supplements_.find(SupplementType::kSupplementName);
+    if (it == this->supplements_.end())
+      return nullptr;
+    return static_cast<SupplementType*>(it->value.Get());
   }
 
   void ReattachThread() {
@@ -204,12 +208,10 @@ class Supplementable : public GarbageCollectedMixin {
 #endif
   }
 
-  void Trace(Visitor* visitor) const override {
-    visitor->TraceMultiple(supplements_.data(), supplements_.size());
-  }
+  void Trace(Visitor* visitor) const override { visitor->Trace(supplements_); }
 
  protected:
-  using SupplementMap = std::array<Member<Supplement<T>>, kNumSupplements>;
+  using SupplementMap = HeapHashMap<const char*, Member<Supplement<T>>>;
   SupplementMap supplements_;
 
   Supplementable()
@@ -220,25 +222,8 @@ class Supplementable : public GarbageCollectedMixin {
   {
   }
 
- private:
-  template <typename SupplementType>
-  unsigned GetIndex() const {
-    static_assert(
-        std::is_integral_v<decltype(SupplementType::kSupplementIndex)> ||
-            std::is_enum_v<decltype(SupplementType::kSupplementIndex)>,
-        "Declare a kSupplementIndex. See Supplementable.h for details.");
-    if constexpr (__builtin_constant_p(SupplementType::kSupplementIndex)) {
-      // Check compile-time if we can; if someone uses an out-of-bounds index,
-      // it is better to know when compiling than when running the test.
-      static_assert(static_cast<unsigned>(SupplementType::kSupplementIndex) <
-                    kNumSupplements);
-    }
-    unsigned idx = static_cast<unsigned>(SupplementType::kSupplementIndex);
-    CHECK_LT(idx, kNumSupplements);  // Should almost always be optimized away.
-    return idx;
-  }
-
 #if DCHECK_IS_ON()
+ private:
   base::PlatformThreadId attached_thread_id_;
   base::PlatformThreadId creation_thread_id_;
 #endif
@@ -249,8 +234,8 @@ struct ThreadingTrait<Supplement<T>> {
   static const ThreadAffinity kAffinity = ThreadingTrait<T>::kAffinity;
 };
 
-template <typename T, unsigned kNumSupplements>
-struct ThreadingTrait<Supplementable<T, kNumSupplements>> {
+template <typename T>
+struct ThreadingTrait<Supplementable<T>> {
   static const ThreadAffinity kAffinity = ThreadingTrait<T>::Affinity;
 };
 

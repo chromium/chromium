@@ -26,7 +26,7 @@ class WindowScreenDetails final : public GarbageCollected<WindowScreenDetails>,
                                   public ExecutionContextLifecycleObserver,
                                   public Supplement<LocalDOMWindow> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   explicit WindowScreenDetails(LocalDOMWindow* window);
 

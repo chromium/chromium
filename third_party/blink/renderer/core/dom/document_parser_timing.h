@@ -18,8 +18,7 @@ class DocumentParserTiming final
     : public GarbageCollected<DocumentParserTiming>,
       public Supplement<Document> {
  public:
-  static constexpr auto kSupplementIndex =
-      Document::Supplements::kDocumentParserTiming;
+  static const char kSupplementName[];
 
   explicit DocumentParserTiming(Document&);
   DocumentParserTiming(const DocumentParserTiming&) = delete;

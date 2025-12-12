@@ -48,8 +48,7 @@ class MODULES_EXPORT PeerConnectionTracker
       public Supplement<LocalDOMWindow>,
       public blink::mojom::blink::PeerConnectionManager {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kPeerConnectionTracker;
+  static const char kSupplementName[];
 
   static PeerConnectionTracker& From(LocalDOMWindow& window);
   static PeerConnectionTracker* From(LocalFrame& frame);

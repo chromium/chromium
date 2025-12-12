@@ -16,8 +16,7 @@ class CrosKiosk : public ScriptWrappable, public Supplement<ExecutionContext> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kCrosKiosk;
+  static const char kSupplementName[];
 
   static CrosKiosk& From(ExecutionContext&);
 

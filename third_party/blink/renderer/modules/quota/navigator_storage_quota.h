@@ -45,7 +45,7 @@ class NavigatorStorageQuota final
     : public GarbageCollected<NavigatorStorageQuota>,
       public Supplement<NavigatorBase> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   // Web-exposed on window only.
   static DeprecatedStorageQuota* webkitTemporaryStorage(Navigator&);

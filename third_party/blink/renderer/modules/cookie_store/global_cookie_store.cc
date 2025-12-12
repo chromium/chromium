@@ -27,8 +27,7 @@ class GlobalCookieStoreImpl final
     : public GarbageCollected<GlobalCookieStoreImpl<T>>,
       public Supplement<T> {
  public:
-  static constexpr auto kSupplementIndex =
-      T::Supplements::kGlobalCookieStoreImpl;
+  static const char kSupplementName[];
 
   static GlobalCookieStoreImpl& From(T& supplementable) {
     GlobalCookieStoreImpl* supplement =
@@ -70,6 +69,11 @@ class GlobalCookieStoreImpl final
  private:
   Member<CookieStore> cookie_store_;
 };
+
+// static
+template <typename T>
+const char GlobalCookieStoreImpl<T>::kSupplementName[] =
+    "GlobalCookieStoreImpl";
 
 }  // namespace
 

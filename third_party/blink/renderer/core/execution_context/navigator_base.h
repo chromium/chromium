@@ -45,27 +45,8 @@ class CORE_EXPORT NavigatorBase : public ScriptWrappable,
                                   public NavigatorOnLine,
                                   public NavigatorUA,
                                   public ExecutionContextClient,
-                                  public Supplementable<NavigatorBase, 16> {
+                                  public Supplementable<NavigatorBase> {
  public:
-  enum class Supplements {
-    kLockManager = 0,
-    kNetworkInformation = 1,
-    kMediaCapabilities = 2,
-    kNavigatorStorageQuota = 3,
-    kPermissions = 4,
-    kWakeLock = 5,
-    kUSB = 6,
-    kHID = 7,
-    kGPU = 8,
-    kLockedMode = 9,
-    kSmartCardResourceManager = 10,
-    kStorageBucketManager = 11,
-    kNavigatorML = 12,
-    kSerial = 13,
-    kGeolocation = 14,
-    kGlobalFetchImpl = 15
-  };
-
   explicit NavigatorBase(ExecutionContext* context);
 
   // NavigatorID override

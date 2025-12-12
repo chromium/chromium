@@ -9,6 +9,9 @@
 
 namespace blink {
 
+const char NavigatorUserActivation::kSupplementName[] =
+    "NavigatorUserActivation";
+
 NavigatorUserActivation& NavigatorUserActivation::From(Navigator& navigator) {
   NavigatorUserActivation* supplement =
       Supplement<Navigator>::From<NavigatorUserActivation>(navigator);

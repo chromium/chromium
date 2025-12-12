@@ -2376,11 +2376,10 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
         continue;
     }
 
-    DCHECK(ShouldThrottleRendering() ||
-           Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
-    if (ShouldThrottleRendering() || !run_more_lifecycle_phases) {
-      return;
-    }
+      DCHECK(ShouldThrottleRendering() ||
+             Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
+      if (ShouldThrottleRendering() || !run_more_lifecycle_phases)
+        return;
 
     // Some features may require several passes over style and layout
     // within the same lifecycle update.
@@ -2674,7 +2673,7 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
       // and then painted during this lifecycle.
       if (LocalDOMWindow* window = frame_view.GetFrame().DomWindow()) {
         if (HighlightRegistry* highlight_registry =
-                window->Supplementable<LocalDOMWindow, 48>::RequireSupplement<
+                window->Supplementable<LocalDOMWindow>::RequireSupplement<
                     HighlightRegistry>()) {
           highlight_registry->ValidateHighlightMarkers();
         }
@@ -2792,34 +2791,35 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   }
 
   size_t total_animations_count = 0;
-  ForAllNonThrottledLocalFrameViews([this, needed_full_update,
-                                     &total_animations_count](
-                                        LocalFrameView& frame_view) {
-    if (auto* scrollable_area = frame_view.GetScrollableArea()) {
-      scrollable_area->UpdateCompositorScrollAnimations();
-    }
-    for (PaintLayerScrollableArea* area :
-         frame_view.animating_scrollable_areas_) {
-      area->UpdateCompositorScrollAnimations();
-    }
-    frame_view.GetPage()->GetLinkHighlight().UpdateAfterPaint(
-        paint_artifact_compositor_.Get());
-    Document& document = frame_view.GetLayoutView()->GetDocument();
-    // Attach the compositor timeline during the commit as it blocks on
-    // the previous commit completion.
-    document.AttachCompositorTimeline(document.Timeline().CompositorTimeline());
-    {
-      // Updating animations can notify ready promises which could mutate
-      // the DOM. We should delay these until we have finished the lifecycle
-      // update. https://crbug.com/1196781
-      ScriptForbiddenScope forbid_script;
-      document.GetDocumentAnimations().UpdateAnimations(
-          DocumentLifecycle::kPaintClean, paint_artifact_compositor_.Get(),
-          needed_full_update);
-    }
-    total_animations_count +=
-        document.GetDocumentAnimations().GetAnimationsCount();
-  });
+  ForAllNonThrottledLocalFrameViews(
+      [this, needed_full_update,
+       &total_animations_count](LocalFrameView& frame_view) {
+        if (auto* scrollable_area = frame_view.GetScrollableArea()) {
+          scrollable_area->UpdateCompositorScrollAnimations();
+        }
+        for (PaintLayerScrollableArea* area :
+             frame_view.animating_scrollable_areas_) {
+          area->UpdateCompositorScrollAnimations();
+        }
+        frame_view.GetPage()->GetLinkHighlight().UpdateAfterPaint(
+            paint_artifact_compositor_.Get());
+        Document& document = frame_view.GetLayoutView()->GetDocument();
+        // Attach the compositor timeline during the commit as it blocks on
+        // the previous commit completion.
+        document.AttachCompositorTimeline(
+            document.Timeline().CompositorTimeline());
+        {
+          // Updating animations can notify ready promises which could mutate
+          // the DOM. We should delay these until we have finished the lifecycle
+          // update. https://crbug.com/1196781
+          ScriptForbiddenScope forbid_script;
+          document.GetDocumentAnimations().UpdateAnimations(
+              DocumentLifecycle::kPaintClean, paint_artifact_compositor_.Get(),
+              needed_full_update);
+        }
+        total_animations_count +=
+            document.GetDocumentAnimations().GetAnimationsCount();
+      });
 
   // If this is a throttled local root, then we shouldn't run animation steps
   // below, because the cc animation data structures might not even exist.

@@ -13,6 +13,10 @@ namespace blink {
 using PassKey = base::PassKey<GlobalStorageAccessHandle>;
 
 // static
+const char GlobalStorageAccessHandle::kSupplementName[] =
+    "GlobalStorageAccessHandle";
+
+// static
 GlobalStorageAccessHandle& GlobalStorageAccessHandle::From(
     LocalDOMWindow& window) {
   GlobalStorageAccessHandle* supplement =

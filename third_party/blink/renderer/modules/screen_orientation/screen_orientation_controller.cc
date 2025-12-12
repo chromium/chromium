@@ -23,9 +23,8 @@ namespace blink {
 
 ScreenOrientationController::~ScreenOrientationController() = default;
 
-const unsigned ScreenOrientationController::kSupplementIndex =
-    static_cast<unsigned>(
-        LocalDOMWindow::Supplements::kScreenOrientationController);
+const char ScreenOrientationController::kSupplementName[] =
+    "ScreenOrientationController";
 
 ScreenOrientationController* ScreenOrientationController::From(
     LocalDOMWindow& window) {

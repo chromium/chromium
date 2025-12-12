@@ -42,7 +42,7 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
                               public GlobalFetch::ScopedFetcher,
                               public Supplement<T> {
  public:
-  static constexpr auto kSupplementIndex = T::Supplements::kGlobalFetchImpl;
+  static const char kSupplementName[];
 
   static ScopedFetcher* From(T& supplementable,
                              ExecutionContext* execution_context) {
@@ -178,6 +178,10 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
   Member<FetchLaterManager> fetch_later_manager_;
   uint32_t fetch_count_ = 0;
 };
+
+// static
+template <typename T>
+const char GlobalFetchImpl<T>::kSupplementName[] = "GlobalFetchImpl";
 
 }  // namespace
 

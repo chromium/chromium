@@ -96,8 +96,7 @@ TypeConverter<blink::ContactInfo*, blink::mojom::blink::ContactInfoPtr>::
 namespace blink {
 
 // static
-const unsigned ContactsManager::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kContactsManager);
+const char ContactsManager::kSupplementName[] = "ContactsManager";
 
 // static
 ContactsManager* ContactsManager::contacts(Navigator& navigator) {

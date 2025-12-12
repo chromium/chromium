@@ -85,4 +85,7 @@ void WebCodecsLogger::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
 }
 
+// static
+const char WebCodecsLogger::kSupplementName[] = "WebCodecsLogger";
+
 }  // namespace blink

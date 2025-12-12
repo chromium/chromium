@@ -46,6 +46,8 @@
 
 namespace blink {
 
+const char NavigatorContentUtils::kSupplementName[] = "NavigatorContentUtils";
+
 namespace {
 
 constexpr char kIsolatedAppError[] =

@@ -658,6 +658,10 @@ void WaitForEncoderSupportReady(
 
 }  // namespace
 
+// static
+const char PeerConnectionDependencyFactory::kSupplementName[] =
+    "PeerConnectionDependencyFactory";
+
 PeerConnectionDependencyFactory& PeerConnectionDependencyFactory::From(
     ExecutionContext& context) {
   CHECK(!context.IsContextDestroyed());

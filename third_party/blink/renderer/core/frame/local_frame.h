@@ -192,16 +192,8 @@ class CORE_EXPORT LocalFrame final
     : public Frame,
       public FrameScheduler::Delegate,
       public BackForwardCacheLoaderHelperImpl::Delegate,
-      public Supplementable<LocalFrame, 5> {
+      public Supplementable<LocalFrame> {
  public:
-  enum class Supplements {
-    kRemoteObjectGatewayImpl = 0,
-    kRemoteObjectGatewayFactoryImpl = 1,
-    kImageDownloaderImpl = 2,
-    kTextSuggestionBackendImpl = 3,
-    kDevToolsFrontendImpl = 4
-  };
-
   // Returns the LocalFrame instance for the given |frame_token|.
   static LocalFrame* FromFrameToken(const LocalFrameToken& frame_token);
 

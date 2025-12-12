@@ -48,6 +48,8 @@ PushMessagingBridge::PushMessagingBridge(
 
 PushMessagingBridge::~PushMessagingBridge() = default;
 
+const char PushMessagingBridge::kSupplementName[] = "PushMessagingBridge";
+
 ScriptPromise<V8PermissionState> PushMessagingBridge::GetPermissionState(
     ScriptState* script_state,
     const PushSubscriptionOptionsInit* options) {

@@ -20,6 +20,10 @@ void DOMWindowStorageController::Trace(Visitor* visitor) const {
 }
 
 // static
+const char DOMWindowStorageController::kSupplementName[] =
+    "DOMWindowStorageController";
+
+// static
 DOMWindowStorageController& DOMWindowStorageController::From(
     LocalDOMWindow& window) {
   DOMWindowStorageController* controller =

@@ -91,6 +91,9 @@ IdleTask::~IdleTask() {
   CHECK(!delayed_task_handle_.IsValid());
 }
 
+const char ScriptedIdleTaskController::kSupplementName[] =
+    "ScriptedIdleTaskController";
+
 // static
 ScriptedIdleTaskController& ScriptedIdleTaskController::From(
     ExecutionContext& context) {

@@ -12,8 +12,7 @@
 namespace blink {
 
 // static
-const unsigned AbortSignalRegistry::kSupplementIndex =
-    static_cast<unsigned>(ExecutionContext::Supplements::kAbortSignalRegistry);
+const char AbortSignalRegistry::kSupplementName[] = "AbortSignalRegistry";
 
 // static
 AbortSignalRegistry* AbortSignalRegistry::From(ExecutionContext& context) {

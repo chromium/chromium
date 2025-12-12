@@ -36,10 +36,8 @@ namespace blink {
 
 class HTMLMediaElement;
 
-class CORE_EXPORT TrackBase : public Supplementable<TrackBase, 1> {
+class CORE_EXPORT TrackBase : public Supplementable<TrackBase> {
  public:
-  enum class Supplements { kSourceBufferTrackBaseSupplement = 0 };
-
   // Subclasses of TrackBase including AudioTrack and VideoTrack allow changing
   // whether a track is enabled or selected. There are three sources where this
   // change can come from:

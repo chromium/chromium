@@ -37,8 +37,7 @@ class MODULES_EXPORT BackgroundReadback
                               ExecutionContext& context);
   virtual ~BackgroundReadback();
 
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kBackgroundReadback;
+  static const char kSupplementName[];
   static BackgroundReadback* From(ExecutionContext& context);
 
   void ReadbackTextureBackedFrameToMemoryFrame(

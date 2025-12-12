@@ -23,8 +23,7 @@ class PatchSupplement : public GarbageCollected<PatchSupplement>,
  public:
   explicit PatchSupplement(Document& document)
       : Supplement<Document>(document) {}
-  static constexpr auto kSupplementIndex =
-      Document::Supplements::kPatchSupplement;
+  static const char kSupplementName[];
 
   // Supplement functionality.
   static PatchSupplement* From(Document&);

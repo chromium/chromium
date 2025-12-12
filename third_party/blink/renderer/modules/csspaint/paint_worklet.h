@@ -25,7 +25,7 @@ class CSSPaintImageGeneratorImpl;
 class MODULES_EXPORT PaintWorklet : public Worklet,
                                     public Supplement<LocalDOMWindow> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   // At this moment, paint worklet allows at most two global scopes at any time.
   static const wtf_size_t kNumGlobalScopesPerThread;

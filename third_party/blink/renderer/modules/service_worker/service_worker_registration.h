@@ -31,25 +31,12 @@ class ServiceWorkerRegistration final
     : public EventTarget,
       public ActiveScriptWrappable<ServiceWorkerRegistration>,
       public ExecutionContextLifecycleObserver,
-      public Supplementable<ServiceWorkerRegistration, 10>,
+      public Supplementable<ServiceWorkerRegistration>,
       public mojom::blink::ServiceWorkerRegistrationObject {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(ServiceWorkerRegistration, Dispose);
 
  public:
-  enum Supplements {
-    kServiceWorkerRegistrationContentIndex = 0,
-    kServiceWorkerRegistrationSync = 1,
-    kServiceWorkerRegistrationNotifications = 2,
-    kServiceWorkerRegistrationPush = 3,
-    kPushProvider = 4,
-    kPushMessagingBridge = 5,
-    kServiceWorkerRegistrationBackgroundFetch = 6,
-    kPaymentAppServiceWorkerRegistration = 7,
-    kBackgroundFetchBridge = 8,
-    kCookieStoreManager = 9
-  };
-
   ServiceWorkerRegistration(ExecutionContext*,
                             WebServiceWorkerRegistrationObjectInfo);
 

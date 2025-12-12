@@ -23,7 +23,7 @@ class DocumentStorageAccess final
     : public GarbageCollected<DocumentStorageAccess>,
       public Supplement<Document> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static const char kNoAccessRequested[];
   static DocumentStorageAccess& From(Document& document);
   static ScriptPromise<IDLBoolean> hasStorageAccess(ScriptState* script_state,

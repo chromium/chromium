@@ -10,6 +10,10 @@
 namespace blink {
 
 // static
+const char CodecPressureManagerProvider::kSupplementName[] =
+    "CodecPressureManagerProvider";
+
+// static
 CodecPressureManagerProvider& CodecPressureManagerProvider::From(
     ExecutionContext& context) {
   CHECK(!context.IsContextDestroyed());

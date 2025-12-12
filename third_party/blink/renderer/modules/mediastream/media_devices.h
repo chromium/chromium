@@ -101,7 +101,7 @@ class MODULES_EXPORT MediaDevices final
  public:
   using SubCaptureTargetType = media::mojom::blink::SubCaptureTargetType;
 
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static MediaDevices* mediaDevices(Navigator&);
   explicit MediaDevices(Navigator&);
   ~MediaDevices() override;

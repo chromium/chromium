@@ -18,8 +18,7 @@
 namespace blink {
 
 // static
-const unsigned WindowScreenDetails::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kWindowScreenDetails);
+const char WindowScreenDetails::kSupplementName[] = "WindowScreenDetails";
 
 WindowScreenDetails::WindowScreenDetails(LocalDOMWindow* window)
     : ExecutionContextLifecycleObserver(window),

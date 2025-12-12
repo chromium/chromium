@@ -10,6 +10,8 @@
 
 namespace blink {
 
+const char MojoFileSystemAccess::kSupplementName[] = "MojoFileSystemAccess";
+
 MojoFileSystemAccess::MojoFileSystemAccess(Mojo& mojo)
     : Supplement<Mojo>(mojo) {}
 

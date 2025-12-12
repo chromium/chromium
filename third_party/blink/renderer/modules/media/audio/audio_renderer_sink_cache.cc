@@ -34,8 +34,7 @@ class AudioRendererSinkCache::WindowObserver final
       public Supplement<LocalDOMWindow>,
       public ExecutionContextLifecycleObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kAudioRendererSinkCache;
+  static const char kSupplementName[];
 
   explicit WindowObserver(LocalDOMWindow& window)
       : Supplement<LocalDOMWindow>(window),
@@ -57,6 +56,9 @@ class AudioRendererSinkCache::WindowObserver final
       cache_instance->DropSinksForFrame(DomWindow()->GetLocalFrameToken());
   }
 };
+
+const char AudioRendererSinkCache::WindowObserver::kSupplementName[] =
+    "AudioRendererSinkCache::WindowObserver";
 
 namespace {
 

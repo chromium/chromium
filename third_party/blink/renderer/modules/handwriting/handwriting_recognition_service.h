@@ -24,8 +24,7 @@ class HandwritingRecognitionService final
     : public GarbageCollected<HandwritingRecognitionService>,
       public Supplement<Navigator> {
  public:
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kHandwritingRecognitionService;
+  static const char kSupplementName[];
 
   explicit HandwritingRecognitionService(Navigator&);
 

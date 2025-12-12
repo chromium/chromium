@@ -27,8 +27,7 @@ namespace blink {
 using mojom::blink::PermissionService;
 
 // static
-const unsigned WakeLock::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kWakeLock);
+const char WakeLock::kSupplementName[] = "WakeLock";
 
 // static
 WakeLock* WakeLock::wakeLock(NavigatorBase& navigator) {

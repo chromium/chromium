@@ -30,46 +30,10 @@
 namespace blink {
 
 class CORE_EXPORT Navigator final : public NavigatorBase,
-                                    public Supplementable<Navigator, 33> {
+                                    public Supplementable<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum class Supplements {
-    kWindowControlsOverlay = 0,
-    kNavigatorShare = 1,
-    kVibrationController = 2,
-    kPresentation = 3,
-    kVirtualKeyboard = 4,
-    kXRSystem = 5,
-    kNavigatorWebMIDI = 6,
-    kNavigatorWebInstall = 7,
-    kMediaSession = 8,
-    kNavigatorContentUtils = 9,
-    kNavigatorManagedData = 10,
-    kHandwritingRecognitionService = 11,
-    kMediaDevices = 12,
-    kContactsManager = 13,
-    kGeolocation = 14,
-    kSubApps = 15,
-    kNavigatorKeyboard = 16,
-    kNavigatorLogin = 17,
-    kNavigatorBeacon = 18,
-    kInk = 19,
-    kClipboard = 20,
-    kCookieDeprecationLabel = 21,
-    kNavigatorPlugins = 22,
-    kBluetooth = 23,
-    kNavigatorGamepad = 24,
-    kNavigatorDevicePosture = 25,
-    kNavigatorAuction = 26,
-    kAuthenticationCredentialsContainer = 27,
-    kBatteryManager = 28,
-    kModelContextSupplement = 29,
-    kNavigatorPreferences = 30,
-    kScheduling = 31,
-    kNavigatorUserActivation = 32
-  };
-
   explicit Navigator(ExecutionContext*);
 
   // NavigatorCookies

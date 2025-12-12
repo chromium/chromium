@@ -34,7 +34,7 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   struct ParseResult final {
     // TODO(crbug.com/436805487): Error reporting needs to be specced.

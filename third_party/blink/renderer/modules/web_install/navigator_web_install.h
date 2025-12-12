@@ -25,8 +25,7 @@ class MODULES_EXPORT NavigatorWebInstall final
     : public GarbageCollected<NavigatorWebInstall>,
       public Supplement<Navigator> {
  public:
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kNavigatorWebInstall;
+  static const char kSupplementName[];
 
   explicit NavigatorWebInstall(Navigator& navigator);
   ~NavigatorWebInstall() = default;

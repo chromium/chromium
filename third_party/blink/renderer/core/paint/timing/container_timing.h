@@ -23,8 +23,7 @@ class CORE_EXPORT ContainerTiming final
     : public GarbageCollected<ContainerTiming>,
       public Supplement<LocalDOMWindow> {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kContainerTiming;
+  static constexpr const char kSupplementName[] = "ContainerTiming";
 
   explicit ContainerTiming(LocalDOMWindow&);
   ContainerTiming(const ContainerTiming&) = delete;

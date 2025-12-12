@@ -60,6 +60,10 @@ DOMFileSystem* DraggedIsolatedFileSystemImpl::GetDOMFileSystem(
       .stored_value->value;
 }
 
+// static
+const char DraggedIsolatedFileSystemImpl::kSupplementName[] =
+    "DraggedIsolatedFileSystemImpl";
+
 DraggedIsolatedFileSystemImpl* DraggedIsolatedFileSystemImpl::From(
     DataObject* data_object) {
   DCHECK(IsMainThread());

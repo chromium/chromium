@@ -12,6 +12,8 @@
 
 namespace blink {
 
+const char CrosKiosk::kSupplementName[] = "CrosKiosk";
+
 CrosKiosk& CrosKiosk::From(ExecutionContext& execution_context) {
   CHECK(!execution_context.IsContextDestroyed());
   CrosKiosk* supplement =

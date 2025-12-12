@@ -51,6 +51,9 @@
 
 namespace blink {
 
+// static
+const char FontFaceSetDocument::kSupplementName[] = "FontFaceSetDocument";
+
 FontFaceSetDocument::FontFaceSetDocument(Document& document)
     : FontFaceSet(*document.GetExecutionContext()),
       Supplement<Document>(document),

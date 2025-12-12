@@ -62,11 +62,14 @@ V8TaskPriority::Enum V8TaskEnumFromWebSchedulingPriority(
 }
 }  // namespace
 
+const char DOMScheduler::kSupplementName[] = "DOMScheduler";
+
 DOMScheduler* DOMScheduler::scheduler(ExecutionContext& context) {
-  DOMScheduler* scheduler = Supplement::From<DOMScheduler>(context);
+  DOMScheduler* scheduler =
+      Supplement<ExecutionContext>::From<DOMScheduler>(context);
   if (!scheduler) {
     scheduler = MakeGarbageCollected<DOMScheduler>(&context);
-    Supplement::ProvideTo(context, scheduler);
+    Supplement<ExecutionContext>::ProvideTo(context, scheduler);
   }
   return scheduler;
 }

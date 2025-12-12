@@ -46,7 +46,7 @@ class MODULES_EXPORT ScreenOrientationController final
   void unlock();
   bool MaybeHasActiveLock() const;
 
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static ScreenOrientationController* From(LocalDOMWindow&);
   static ScreenOrientationController* FromIfExists(LocalDOMWindow&);
 

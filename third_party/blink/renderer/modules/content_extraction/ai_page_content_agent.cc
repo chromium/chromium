@@ -882,8 +882,7 @@ void OffsetNodeGeometry(mojom::blink::AIPageContentNode& node,
 }  // namespace
 
 // static
-const unsigned AIPageContentAgent::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kAIPageContentAgent);
+const char AIPageContentAgent::kSupplementName[] = "AIPageContentAgent";
 
 // static
 AIPageContentAgent* AIPageContentAgent::From(Document& document) {

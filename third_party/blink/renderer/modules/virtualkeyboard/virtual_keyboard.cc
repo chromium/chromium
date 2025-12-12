@@ -33,8 +33,7 @@ BASE_FEATURE(kShowKeyboardIfLastPageHadGesture,
 }  // namespace
 
 // static
-const unsigned VirtualKeyboard::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kVirtualKeyboard);
+const char VirtualKeyboard::kSupplementName[] = "VirtualKeyboard";
 
 // static
 VirtualKeyboard* VirtualKeyboard::virtualKeyboard(Navigator& navigator) {

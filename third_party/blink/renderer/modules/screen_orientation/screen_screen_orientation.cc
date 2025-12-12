@@ -35,8 +35,8 @@ ScreenOrientation* ScreenScreenOrientation::orientation(Screen& screen) {
   return self.orientation_.Get();
 }
 
-const unsigned ScreenScreenOrientation::kSupplementIndex =
-    static_cast<unsigned>(Screen::Supplements::kScreenScreenOrientation);
+const char ScreenScreenOrientation::kSupplementName[] =
+    "ScreenScreenOrientation";
 
 ScreenScreenOrientation::ScreenScreenOrientation(Screen& screen)
     : Supplement(screen) {}

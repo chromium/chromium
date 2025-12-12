@@ -38,8 +38,7 @@ class MODULES_EXPORT CredentialManagerProxy
     : public GarbageCollected<CredentialManagerProxy>,
       public Supplement<LocalDOMWindow> {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kCredentialManagerProxy;
+  static const char kSupplementName[];
 
   explicit CredentialManagerProxy(LocalDOMWindow&);
   virtual ~CredentialManagerProxy();

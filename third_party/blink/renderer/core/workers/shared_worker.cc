@@ -264,6 +264,7 @@ void SharedWorker::ContextLifecycleStateChanged(
 void SharedWorker::Trace(Visitor* visitor) const {
   visitor->Trace(port_);
   AbstractWorker::Trace(visitor);
+  Supplementable<SharedWorker>::Trace(visitor);
 }
 
 }  // namespace blink

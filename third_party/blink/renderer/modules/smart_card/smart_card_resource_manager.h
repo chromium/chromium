@@ -32,7 +32,7 @@ class MODULES_EXPORT SmartCardResourceManager final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   // Getter for navigator.smartCard
   static SmartCardResourceManager* smartCard(NavigatorBase&);

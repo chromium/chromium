@@ -19,7 +19,7 @@ class CORE_EXPORT ModelContextSupplement final
     : public GarbageCollected<ModelContextSupplement>,
       public Supplement<Navigator> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static ModelContextSupplement& From(Navigator&);
   static ModelContext* GetIfExists(Navigator&);

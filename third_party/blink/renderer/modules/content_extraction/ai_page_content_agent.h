@@ -36,7 +36,7 @@ class MODULES_EXPORT AIPageContentAgent final
       public Supplement<Document>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static AIPageContentAgent* From(Document&);
   static void BindReceiver(
       LocalFrame* frame,

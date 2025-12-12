@@ -67,7 +67,7 @@ class MODULES_EXPORT ServiceWorkerContainer final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static ServiceWorkerContainer* From(ExecutionContext&);
 

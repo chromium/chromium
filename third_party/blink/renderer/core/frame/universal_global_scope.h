@@ -18,7 +18,8 @@ class StructuredSerializeOptions;
 class ScriptState;
 class ScriptValue;
 
-class CORE_EXPORT UniversalGlobalScope {
+class CORE_EXPORT UniversalGlobalScope
+    : public Supplementable<UniversalGlobalScope> {
  public:
   String btoa(const String& string_to_encode, ExceptionState&);
   String atob(const String& encoded_string, ExceptionState&);
@@ -33,6 +34,8 @@ class CORE_EXPORT UniversalGlobalScope {
   void reportError(ScriptState*, const ScriptValue&);
 
   bool isSecureContextForBindings(ScriptState* script_state) const;
+
+  void Trace(Visitor*) const override;
 
  protected:
   virtual ExecutionContext* GetExecutionContext() const = 0;

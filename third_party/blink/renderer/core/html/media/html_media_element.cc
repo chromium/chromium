@@ -4565,7 +4565,7 @@ void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(media_player_receiver_set_);
   visitor->Trace(opener_document_);
   visitor->Trace(opener_context_observer_);
-  Supplementable::Trace(visitor);
+  Supplementable<HTMLMediaElement>::Trace(visitor);
   HTMLElement::Trace(visitor);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }

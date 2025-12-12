@@ -19,8 +19,7 @@ class ServiceWorkerRegistrationSync final
     : public GarbageCollected<ServiceWorkerRegistrationSync>,
       public Supplement<ServiceWorkerRegistration> {
  public:
-  static constexpr auto kSupplementIndex =
-      ServiceWorkerRegistration::Supplements::kServiceWorkerRegistrationSync;
+  static const char kSupplementName[];
 
   static ServiceWorkerRegistrationSync& From(
       ServiceWorkerRegistration& registration);

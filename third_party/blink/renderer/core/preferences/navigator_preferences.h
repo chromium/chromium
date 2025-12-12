@@ -20,8 +20,7 @@ class CORE_EXPORT NavigatorPreferences final
     : public GarbageCollected<NavigatorPreferences>,
       public Supplement<Navigator> {
  public:
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kNavigatorPreferences;
+  static const char kSupplementName[];
 
   static PreferenceManager* preferences(Navigator& navigator);
   PreferenceManager* preferences();

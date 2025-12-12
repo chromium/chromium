@@ -26,8 +26,7 @@ class PushSubscriptionOptions;
 class PushProvider final : public GarbageCollected<PushProvider>,
                            public Supplement<ServiceWorkerRegistration> {
  public:
-  static constexpr auto kSupplementIndex =
-      ServiceWorkerRegistration::Supplements::kPushProvider;
+  static const char kSupplementName[];
 
   explicit PushProvider(ServiceWorkerRegistration& registration);
 

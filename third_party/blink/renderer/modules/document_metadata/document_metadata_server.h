@@ -23,7 +23,7 @@ class DocumentMetadataServer final
       public mojom::blink::DocumentMetadata,
       public Supplement<Document> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static DocumentMetadataServer* From(Document&);
   static void BindReceiver(
       LocalFrame*,

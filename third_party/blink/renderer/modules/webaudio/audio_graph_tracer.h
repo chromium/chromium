@@ -26,7 +26,7 @@ class MODULES_EXPORT AudioGraphTracer final
     : public GarbageCollected<AudioGraphTracer>,
       public Supplement<Page> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static void ProvideAudioGraphTracerTo(Page&);
 

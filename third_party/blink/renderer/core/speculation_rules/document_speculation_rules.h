@@ -27,8 +27,7 @@ class CORE_EXPORT DocumentSpeculationRules
     : public GarbageCollected<DocumentSpeculationRules>,
       public Supplement<Document> {
  public:
-  static constexpr auto kSupplementIndex =
-      Document::Supplements::kDocumentSpeculationRules;
+  static const char kSupplementName[];
 
   static DocumentSpeculationRules& From(Document&);
   static DocumentSpeculationRules* FromIfExists(Document&);

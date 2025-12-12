@@ -40,7 +40,7 @@ class MODULES_EXPORT UserMediaClient
       public Supplement<LocalDOMWindow>,
       public ExecutionContextLifecycleObserver {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   // TODO(guidou): Make all constructors private and replace with Create methods
   // that return a std::unique_ptr. This class is intended for instantiation on

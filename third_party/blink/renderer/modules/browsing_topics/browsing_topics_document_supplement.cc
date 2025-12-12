@@ -38,6 +38,10 @@ void RecordInvalidRequestingContextUkmMetrics(Document& document) {
 }  // namespace
 
 // static
+const char BrowsingTopicsDocumentSupplement::kSupplementName[] =
+    "BrowsingTopicsDocumentSupplement";
+
+// static
 BrowsingTopicsDocumentSupplement* BrowsingTopicsDocumentSupplement::From(
     Document& document) {
   auto* supplement =

@@ -166,8 +166,7 @@ bool ShouldBlockUsbServiceCall(LocalDOMWindow* window,
 
 }  // namespace
 
-const unsigned USB::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kUSB);
+const char USB::kSupplementName[] = "USB";
 
 USB* USB::usb(NavigatorBase& navigator) {
   USB* usb = Supplement<NavigatorBase>::From<USB>(navigator);

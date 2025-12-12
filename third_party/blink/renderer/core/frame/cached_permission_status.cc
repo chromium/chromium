@@ -18,8 +18,7 @@ using mojom::blink::PermissionService;
 using mojom::blink::PermissionStatus;
 
 // static
-const unsigned CachedPermissionStatus::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kCachedPermissionStatus);
+const char CachedPermissionStatus::kSupplementName[] = "CachedPermissionStatus";
 
 // static
 CachedPermissionStatus* CachedPermissionStatus::From(LocalDOMWindow* window) {

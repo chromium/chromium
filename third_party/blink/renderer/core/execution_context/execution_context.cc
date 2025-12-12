@@ -546,7 +546,7 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(runtime_feature_state_override_context_);
   MojoBindingContext::Trace(visitor);
   ConsoleLogger::Trace(visitor);
-  Supplementable<ExecutionContext, 34>::Trace(visitor);
+  Supplementable<ExecutionContext>::Trace(visitor);
 }
 
 bool ExecutionContext::IsSameAgentCluster(

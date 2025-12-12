@@ -28,8 +28,7 @@ void OnSetIdpSigninStatus(ScriptPromiseResolver<IDLUndefined>* resolver) {
 }
 }  // namespace
 
-const unsigned NavigatorLogin::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kNavigatorLogin);
+const char NavigatorLogin::kSupplementName[] = "NavigatorLogin";
 
 NavigatorLogin* NavigatorLogin::login(Navigator& navigator) {
   NavigatorLogin* supplement =

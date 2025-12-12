@@ -28,6 +28,8 @@ DeviceMotionController::DeviceMotionController(LocalDOMWindow& window)
 
 DeviceMotionController::~DeviceMotionController() = default;
 
+const char DeviceMotionController::kSupplementName[] = "DeviceMotionController";
+
 DeviceMotionController& DeviceMotionController::From(LocalDOMWindow& window) {
   DeviceMotionController* controller =
       Supplement<LocalDOMWindow>::From<DeviceMotionController>(window);

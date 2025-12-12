@@ -61,7 +61,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
       public AnchorElementViewportPositionTracker::Observer,
       public Supplement<Document> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   using AnchorId = uint32_t;
 

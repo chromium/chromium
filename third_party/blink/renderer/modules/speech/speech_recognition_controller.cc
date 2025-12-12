@@ -40,9 +40,8 @@
 
 namespace blink {
 
-const unsigned SpeechRecognitionController::kSupplementIndex =
-    static_cast<unsigned>(
-        LocalDOMWindow::Supplements::kSpeechRecognitionController);
+const char SpeechRecognitionController::kSupplementName[] =
+    "SpeechRecognitionController";
 
 SpeechRecognitionController* SpeechRecognitionController::From(
     LocalDOMWindow& window) {

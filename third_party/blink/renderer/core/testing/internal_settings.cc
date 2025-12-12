@@ -38,7 +38,7 @@ using mojom::blink::HoverType;
 using mojom::blink::PointerType;
 
 InternalSettings* InternalSettings::From(Page& page) {
-  InternalSettings* supplement = Supplement::From<InternalSettings>(page);
+  InternalSettings* supplement = Supplement<Page>::From<InternalSettings>(page);
   if (!supplement) {
     supplement = MakeGarbageCollected<InternalSettings>(page);
     ProvideTo(page, supplement);

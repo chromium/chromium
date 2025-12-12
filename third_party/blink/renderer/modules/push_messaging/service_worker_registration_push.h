@@ -18,7 +18,7 @@ class ServiceWorkerRegistrationPush final
     : public GarbageCollected<ServiceWorkerRegistrationPush>,
       public Supplement<ServiceWorkerRegistration> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   explicit ServiceWorkerRegistrationPush(
       ServiceWorkerRegistration* registration);

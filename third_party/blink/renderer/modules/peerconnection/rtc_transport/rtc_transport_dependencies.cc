@@ -104,6 +104,10 @@ RtcTransportProcessWideDeps& ProcessWideDeps() {
 }
 
 // static
+const char RtcTransportDependencies::kSupplementName[] =
+    "RtcTransportDependencies";
+
+// static
 scoped_refptr<base::SingleThreadTaskRunner>
 RtcTransportDependencies::NetworkTaskRunner() {
   return ProcessWideDeps().GetNetworkThread().task_runner();
@@ -115,7 +119,7 @@ void RtcTransportDependencies::GetInitialized(
     base::OnceCallback<void(RtcTransportDependencies*)> callback) {
   CHECK(!context.IsContextDestroyed());
   RtcTransportDependencies* supplement =
-      Supplement::From<RtcTransportDependencies>(context);
+      Supplement<ExecutionContext>::From<RtcTransportDependencies>(context);
   if (!supplement) {
     supplement =
         MakeGarbageCollected<RtcTransportDependencies>(context, PassKey());
@@ -231,7 +235,7 @@ void RtcTransportDependencies::ContextDestroyed() {
 }
 
 void RtcTransportDependencies::Trace(Visitor* visitor) const {
-  Supplement::Trace(visitor);
+  Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(p2p_socket_dispatcher_);
 }

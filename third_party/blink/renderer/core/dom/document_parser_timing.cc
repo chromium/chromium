@@ -10,6 +10,9 @@
 
 namespace blink {
 
+// static
+const char DocumentParserTiming::kSupplementName[] = "DocumentParserTiming";
+
 DocumentParserTiming& DocumentParserTiming::From(Document& document) {
   DocumentParserTiming* timing =
       Supplement<Document>::From<DocumentParserTiming>(document);

@@ -31,9 +31,8 @@ PressureSource V8PressureSourceToPressureSource(V8PressureSource::Enum source) {
 }  // namespace
 
 // static
-const unsigned PressureObserverManager::kSupplementIndex =
-    static_cast<unsigned>(
-        ExecutionContext::Supplements::kPressureObserverManager);
+const char PressureObserverManager::kSupplementName[] =
+    "PressureObserverManager";
 
 // static
 PressureObserverManager* PressureObserverManager::From(

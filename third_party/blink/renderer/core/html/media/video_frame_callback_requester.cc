@@ -24,8 +24,7 @@ void VideoFrameCallbackRequester::Trace(Visitor* visitor) const {
 }
 
 // static
-const unsigned VideoFrameCallbackRequester::kSupplementIndex =
-    static_cast<unsigned>(
-        HTMLVideoElement::Supplements::kVideoFrameCallbackRequester);
+const char VideoFrameCallbackRequester::kSupplementName[] =
+    "VideoFrameCallbackRequester";
 
 }  // namespace blink

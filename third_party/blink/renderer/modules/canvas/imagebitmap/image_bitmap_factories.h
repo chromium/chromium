@@ -66,7 +66,7 @@ class MODULES_EXPORT ImageBitmapFactories final
       public Supplement<ExecutionContext>,
       public NameClient {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   explicit ImageBitmapFactories(ExecutionContext& context);
 

@@ -140,8 +140,7 @@ PositionOptions* OverrideAccuracyHint(const PositionOptions* options) {
 }  // namespace
 
 // static
-const unsigned Geolocation::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kGeolocation);
+const char Geolocation::kSupplementName[] = "Geolocation";
 
 // static
 Geolocation* Geolocation::geolocation(Navigator& navigator) {
@@ -246,6 +245,7 @@ void Geolocation::getCurrentPositionForBindings(
 
   if (!GetFrame())
     return;
+
 
   probe::BreakableLocation(GetExecutionContext(),
                            "Geolocation.getCurrentPosition");

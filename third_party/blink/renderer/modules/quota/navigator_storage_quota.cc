@@ -43,8 +43,7 @@ namespace blink {
 NavigatorStorageQuota::NavigatorStorageQuota(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator) {}
 
-const unsigned NavigatorStorageQuota::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kNavigatorStorageQuota);
+const char NavigatorStorageQuota::kSupplementName[] = "NavigatorStorageQuota";
 
 NavigatorStorageQuota& NavigatorStorageQuota::From(NavigatorBase& navigator) {
   NavigatorStorageQuota* supplement =

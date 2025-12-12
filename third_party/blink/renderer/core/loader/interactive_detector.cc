@@ -55,8 +55,7 @@ const char kHistogramTimeToNextPaint[] =
     "PageLoad.InteractiveTiming.TimeToNextPaint";
 
 // static
-const unsigned InteractiveDetector::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kInteractiveDetector);
+const char InteractiveDetector::kSupplementName[] = "InteractiveDetector";
 
 InteractiveDetector* InteractiveDetector::From(Document& document) {
   InteractiveDetector* detector =
@@ -302,6 +301,7 @@ void InteractiveDetector::HandleForInputDelay(
   UMA_HISTOGRAM_CUSTOM_TIMES(kHistogramInputTimestamp,
                              event_timestamp - page_event_times_.nav_start,
                              base::Milliseconds(10), base::Minutes(10), 100);
+
 
   if (GetSupplementable()->Loader() && interactive_timing_metrics_changed) {
     GetSupplementable()->Loader()->DidChangePerformanceTiming();

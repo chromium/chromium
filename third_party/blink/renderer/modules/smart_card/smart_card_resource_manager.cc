@@ -47,9 +47,8 @@ bool ShouldBlockSmartCardServiceCall(ExecutionContext* context,
 
 }  // namespace
 
-const unsigned SmartCardResourceManager::kSupplementIndex =
-    static_cast<unsigned>(
-        NavigatorBase::Supplements::kSmartCardResourceManager);
+const char SmartCardResourceManager::kSupplementName[] =
+    "SmartCardResourceManager";
 
 SmartCardResourceManager* SmartCardResourceManager::smartCard(
     NavigatorBase& navigator) {

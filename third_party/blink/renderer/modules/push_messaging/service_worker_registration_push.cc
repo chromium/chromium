@@ -16,9 +16,8 @@ ServiceWorkerRegistrationPush::ServiceWorkerRegistrationPush(
 
 ServiceWorkerRegistrationPush::~ServiceWorkerRegistrationPush() = default;
 
-const unsigned ServiceWorkerRegistrationPush::kSupplementIndex =
-    static_cast<unsigned>(
-        ServiceWorkerRegistration::Supplements::kServiceWorkerRegistrationPush);
+const char ServiceWorkerRegistrationPush::kSupplementName[] =
+    "ServiceWorkerRegistrationPush";
 
 ServiceWorkerRegistrationPush& ServiceWorkerRegistrationPush::From(
     ServiceWorkerRegistration& registration) {

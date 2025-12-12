@@ -50,12 +50,10 @@ class CORE_EXPORT HTMLVideoElement final
     : public HTMLMediaElement,
       public CanvasImageSource,
       public ImageBitmapSource,
-      public Supplementable<HTMLVideoElement, 1> {
+      public Supplementable<HTMLVideoElement> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum class Supplements { kVideoFrameCallbackRequester = 0 };
-
   static const int kNoAlreadyUploadedFrame = -1;
 
   explicit HTMLVideoElement(Document&);

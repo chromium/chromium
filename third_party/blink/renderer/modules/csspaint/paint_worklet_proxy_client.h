@@ -39,8 +39,7 @@ class MODULES_EXPORT PaintWorkletProxyClient
  public:
   // blink::Supplement hook to retrieve the PaintWorkletProxyClient for a given
   // WorkerClients.
-  static constexpr auto kSupplementIndex =
-      WorkerClients::Supplements::kPaintWorkletProxyClient;
+  static const char kSupplementName[];
   static PaintWorkletProxyClient* From(WorkerClients*);
 
   // Create the PaintWorkletProxyClient for a given PaintWorklet, represented by

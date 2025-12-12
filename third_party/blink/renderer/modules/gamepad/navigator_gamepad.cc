@@ -70,8 +70,7 @@ bool HasInputChangedEventListeners(LocalDOMWindow* window) {
 }  // namespace
 
 // static
-const unsigned NavigatorGamepad::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kNavigatorGamepad);
+const char NavigatorGamepad::kSupplementName[] = "NavigatorGamepad";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"gamepad\" is disallowed by permissions policy.";
 

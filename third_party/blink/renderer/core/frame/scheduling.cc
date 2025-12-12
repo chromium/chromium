@@ -15,8 +15,7 @@
 
 namespace blink {
 
-const unsigned Scheduling::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kScheduling);
+const char Scheduling::kSupplementName[] = "Scheduling";
 
 Scheduling* Scheduling::scheduling(Navigator& navigator) {
   Scheduling* supplement = Supplement<Navigator>::From<Scheduling>(navigator);

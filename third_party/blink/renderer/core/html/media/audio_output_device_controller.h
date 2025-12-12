@@ -14,8 +14,7 @@ namespace blink {
 class CORE_EXPORT AudioOutputDeviceController
     : public Supplement<HTMLMediaElement> {
  public:
-  static constexpr auto kSupplementIndex =
-      HTMLMediaElement::Supplements::kAudioOutputDeviceController;
+  static const char kSupplementName[];
 
   static AudioOutputDeviceController* From(HTMLMediaElement&);
 

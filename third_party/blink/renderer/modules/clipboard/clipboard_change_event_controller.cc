@@ -21,10 +21,10 @@ namespace blink {
 ClipboardChangeEventController::ClipboardChangeEventController(
     Navigator& navigator,
     EventTarget* event_target)
-    : PlatformEventController(*navigator.DomWindow()),
+    : Supplement<Navigator>(navigator),
+      PlatformEventController(*navigator.DomWindow()),
       FocusChangedObserver(navigator.DomWindow()->GetFrame()->GetPage()),
-      event_target_(event_target),
-      navigator_(&navigator) {}
+      event_target_(event_target) {}
 
 void ClipboardChangeEventController::FocusedFrameChanged() {
   ExecutionContext* context = GetExecutionContext();
@@ -42,7 +42,7 @@ void ClipboardChangeEventController::FocusedFrameChanged() {
 }
 
 ExecutionContext* ClipboardChangeEventController::GetExecutionContext() const {
-  return navigator_->DomWindow();
+  return GetSupplementable()->DomWindow();
 }
 
 void ClipboardChangeEventController::DidUpdateData() {
@@ -56,7 +56,7 @@ bool ClipboardChangeEventController::HasLastData() {
 void ClipboardChangeEventController::RegisterWithDispatcher() {
   SystemClipboard* clipboard = GetSystemClipboard();
   if (clipboard) {
-    clipboard->AddController(this, navigator_->DomWindow());
+    clipboard->AddController(this, GetSupplementable()->DomWindow());
   }
 }
 
@@ -77,9 +77,9 @@ SystemClipboard* ClipboardChangeEventController::GetSystemClipboard() const {
 }
 
 void ClipboardChangeEventController::Trace(Visitor* visitor) const {
+  Supplement<Navigator>::Trace(visitor);
   PlatformEventController::Trace(visitor);
   FocusChangedObserver::Trace(visitor);
-  visitor->Trace(navigator_);
   visitor->Trace(event_target_);
 }
 

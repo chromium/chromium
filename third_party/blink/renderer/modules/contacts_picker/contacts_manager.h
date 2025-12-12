@@ -30,7 +30,7 @@ class ContactsManager final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   // Web Exposed as navigator.contacts
   static ContactsManager* contacts(Navigator& navigator);
 

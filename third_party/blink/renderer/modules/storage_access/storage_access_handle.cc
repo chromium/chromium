@@ -21,6 +21,9 @@ namespace blink {
 using PassKey = base::PassKey<StorageAccessHandle>;
 
 // static
+const char StorageAccessHandle::kSupplementName[] = "StorageAccessHandle";
+
+// static
 const char StorageAccessHandle::kSessionStorageNotRequested[] =
     "Session storage not requested when storage access handle was initialized.";
 
@@ -102,7 +105,8 @@ void EstimateImplAfterRemoteEstimate(
 StorageAccessHandle::StorageAccessHandle(
     LocalDOMWindow& window,
     const StorageAccessTypes* storage_access_types)
-    : local_dom_window_(window), storage_access_types_(storage_access_types) {
+    : Supplement<LocalDOMWindow>(window),
+      storage_access_types_(storage_access_types) {
   window.CountUse(
       WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies);
   if (storage_access_types_->all()) {
@@ -209,9 +213,9 @@ StorageAccessHandle::StorageAccessHandle(
 }
 
 void StorageAccessHandle::Trace(Visitor* visitor) const {
-  visitor->Trace(local_dom_window_);
   visitor->Trace(storage_access_types_);
   ScriptWrappable::Trace(visitor);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 StorageArea* StorageAccessHandle::sessionStorage(
@@ -221,7 +225,7 @@ StorageArea* StorageAccessHandle::sessionStorage(
     exception_state.ThrowSecurityError(kSessionStorageNotRequested);
     return nullptr;
   }
-  LocalDOMWindow* window = local_dom_window_;
+  LocalDOMWindow* window = GetSupplementable();
   window->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use);
@@ -246,7 +250,7 @@ StorageArea* StorageAccessHandle::localStorage(
     exception_state.ThrowSecurityError(kLocalStorageNotRequested);
     return nullptr;
   }
-  LocalDOMWindow* window = local_dom_window_;
+  LocalDOMWindow* window = GetSupplementable();
   window->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use);
@@ -271,10 +275,10 @@ IDBFactory* StorageAccessHandle::indexedDB(
     exception_state.ThrowSecurityError(kIndexedDBNotRequested);
     return nullptr;
   }
-  local_dom_window_->CountUse(
+  GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use);
-  return GlobalStorageAccessHandle::From(*local_dom_window_).GetIDBFactory();
+  return GlobalStorageAccessHandle::From(*GetSupplementable()).GetIDBFactory();
 }
 
 LockManager* StorageAccessHandle::locks(ExceptionState& exception_state) const {
@@ -282,10 +286,10 @@ LockManager* StorageAccessHandle::locks(ExceptionState& exception_state) const {
     exception_state.ThrowSecurityError(kLocksNotRequested);
     return nullptr;
   }
-  local_dom_window_->CountUse(
+  GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use);
-  return GlobalStorageAccessHandle::From(*local_dom_window_).GetLockManager();
+  return GlobalStorageAccessHandle::From(*GetSupplementable()).GetLockManager();
 }
 
 CacheStorage* StorageAccessHandle::caches(
@@ -294,10 +298,11 @@ CacheStorage* StorageAccessHandle::caches(
     exception_state.ThrowSecurityError(kCachesNotRequested);
     return nullptr;
   }
-  local_dom_window_->CountUse(
+  GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use);
-  return GlobalStorageAccessHandle::From(*local_dom_window_).GetCacheStorage();
+  return GlobalStorageAccessHandle::From(*GetSupplementable())
+      .GetCacheStorage();
 }
 
 ScriptPromise<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
@@ -312,7 +317,7 @@ ScriptPromise<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
                                       kGetDirectoryNotRequested);
     return promise;
   }
-  local_dom_window_->CountUse(
+  GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use);
   return StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
@@ -324,7 +329,7 @@ ScriptPromise<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
 void StorageAccessHandle::GetDirectoryImpl(
     ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver) const {
   HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote =
-      GlobalStorageAccessHandle::From(*local_dom_window_).GetRemote();
+      GlobalStorageAccessHandle::From(*GetSupplementable()).GetRemote();
   if (!remote) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError));
@@ -346,11 +351,11 @@ ScriptPromise<StorageEstimate> StorageAccessHandle::estimate(
                                       kEstimateNotRequested);
     return promise;
   }
-  local_dom_window_->CountUse(
+  GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_estimate_Use);
   HeapMojoRemote<mojom::blink::StorageAccessHandle>& remote =
-      GlobalStorageAccessHandle::From(*local_dom_window_).GetRemote();
+      GlobalStorageAccessHandle::From(*GetSupplementable()).GetRemote();
   if (!remote) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError));
@@ -370,14 +375,15 @@ String StorageAccessHandle::createObjectURL(
     return "";
   }
   PublicURLManager* public_url_manager =
-      GlobalStorageAccessHandle::From(*local_dom_window_).GetPublicURLManager();
+      GlobalStorageAccessHandle::From(*GetSupplementable())
+          .GetPublicURLManager();
   if (!public_url_manager) {
     return "";
   }
-  local_dom_window_->CountUse(
+  GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_createObjectURL_Use);
-  local_dom_window_->CountUse(WebFeature::kCreateObjectURLBlob);
+  GetSupplementable()->CountUse(WebFeature::kCreateObjectURLBlob);
   CHECK(blob);
   return public_url_manager->RegisterURL(blob);
 }
@@ -391,15 +397,16 @@ void StorageAccessHandle::revokeObjectURL(
     return;
   }
   PublicURLManager* public_url_manager =
-      GlobalStorageAccessHandle::From(*local_dom_window_).GetPublicURLManager();
+      GlobalStorageAccessHandle::From(*GetSupplementable())
+          .GetPublicURLManager();
   if (!public_url_manager) {
     return;
   }
-  local_dom_window_->CountUse(
+  GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_revokeObjectURL_Use);
   KURL resolved_url(NullURL(), url);
-  local_dom_window_->GetExecutionContext()->RemoveURLFromMemoryCache(
+  GetSupplementable()->GetExecutionContext()->RemoveURLFromMemoryCache(
       resolved_url);
   public_url_manager->Revoke(resolved_url);
 }
@@ -415,12 +422,12 @@ BroadcastChannel* StorageAccessHandle::BroadcastChannel(
   }
   HeapMojoAssociatedRemote<mojom::blink::BroadcastChannelProvider>&
       broadcast_channel_provider =
-          GlobalStorageAccessHandle::From(*local_dom_window_)
+          GlobalStorageAccessHandle::From(*GetSupplementable())
               .GetBroadcastChannelProvider();
   if (!broadcast_channel_provider) {
     return nullptr;
   }
-  local_dom_window_->CountUse(
+  GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_BroadcastChannel_Use);
   return MakeGarbageCollected<blink::BroadcastChannel>(
@@ -444,17 +451,18 @@ blink::SharedWorker* StorageAccessHandle::SharedWorker(
     return nullptr;
   }
   HeapMojoRemote<mojom::blink::SharedWorkerConnector>& shared_worker_connector =
-      GlobalStorageAccessHandle::From(*local_dom_window_)
+      GlobalStorageAccessHandle::From(*GetSupplementable())
           .GetSharedWorkerConnector();
   if (!shared_worker_connector) {
     return nullptr;
   }
   PublicURLManager* public_url_manager =
-      GlobalStorageAccessHandle::From(*local_dom_window_).GetPublicURLManager();
+      GlobalStorageAccessHandle::From(*GetSupplementable())
+          .GetPublicURLManager();
   if (!public_url_manager) {
     return nullptr;
   }
-  local_dom_window_->CountUse(
+  GetSupplementable()->CountUse(
       WebFeature::
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_SharedWorker_Use);
   return SharedWorker::Create(PassKey(), context, compliant_url,
@@ -466,7 +474,7 @@ namespace bindings {
 
 ExecutionContext* ExecutionContextFromV8Wrappable(
     const StorageAccessHandle* storage_access_handle) {
-  return storage_access_handle->GetLocalDOMWindow();
+  return storage_access_handle->GetSupplementable();
 }
 
 }  // namespace bindings

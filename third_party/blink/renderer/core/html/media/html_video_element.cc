@@ -124,7 +124,7 @@ void HTMLVideoElement::Trace(Visitor* visitor) const {
   visitor->Trace(remoting_interstitial_);
   visitor->Trace(picture_in_picture_interstitial_);
   visitor->Trace(cache_deleting_timer_);
-  Supplementable<HTMLVideoElement, 1>::Trace(visitor);
+  Supplementable<HTMLVideoElement>::Trace(visitor);
   HTMLMediaElement::Trace(visitor);
 }
 

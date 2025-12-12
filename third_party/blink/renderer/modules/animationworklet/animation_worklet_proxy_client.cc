@@ -29,6 +29,10 @@ static const wtf_size_t kMaxMutateCountToSwitch = 10u;
 }  // end namespace
 
 /* static */
+const char AnimationWorkletProxyClient::kSupplementName[] =
+    "AnimationWorkletProxyClient";
+
+/* static */
 const int8_t AnimationWorkletProxyClient::kNumStatelessGlobalScopes = 2;
 
 AnimationWorkletProxyClient::AnimationWorkletProxyClient(

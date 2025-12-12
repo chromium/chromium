@@ -141,8 +141,7 @@ scoped_refptr<Image> PaintWorklet::Paint(const String& name,
 }
 
 // static
-const unsigned PaintWorklet::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kPaintWorklet);
+const char PaintWorklet::kSupplementName[] = "PaintWorklet";
 
 void PaintWorklet::Trace(Visitor* visitor) const {
   visitor->Trace(pending_generator_registry_);

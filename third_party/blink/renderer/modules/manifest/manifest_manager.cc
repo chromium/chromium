@@ -51,8 +51,7 @@ void ManifestManager::Result::SetManifest(mojom::blink::ManifestPtr manifest) {
 }
 
 // static
-const unsigned ManifestManager::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kManifestManager);
+const char ManifestManager::kSupplementName[] = "ManifestManager";
 
 // static
 void WebManifestManager::RequestManifestForTesting(WebLocalFrame* web_frame,

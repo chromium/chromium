@@ -39,8 +39,7 @@ namespace blink {
 DOMWindowCrypto::DOMWindowCrypto(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
 
-const unsigned DOMWindowCrypto::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kDOMWindowCrypto);
+const char DOMWindowCrypto::kSupplementName[] = "DOMWindowCrypto";
 
 DOMWindowCrypto& DOMWindowCrypto::From(LocalDOMWindow& window) {
   DOMWindowCrypto* supplement =

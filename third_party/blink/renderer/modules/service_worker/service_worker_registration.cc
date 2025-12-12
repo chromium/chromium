@@ -354,7 +354,7 @@ void ServiceWorkerRegistration::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  Supplementable::Trace(visitor);
+  Supplementable<ServiceWorkerRegistration>::Trace(visitor);
 }
 
 void ServiceWorkerRegistration::ContextDestroyed() {

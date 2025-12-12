@@ -27,7 +27,7 @@ class CORE_EXPORT AbortSignalRegistry
       public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleObserver {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static AbortSignalRegistry* From(ExecutionContext&);
 

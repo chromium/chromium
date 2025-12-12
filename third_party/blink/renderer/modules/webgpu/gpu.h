@@ -60,7 +60,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   // Getter for navigator.gpu
   static GPU* gpu(NavigatorBase&);

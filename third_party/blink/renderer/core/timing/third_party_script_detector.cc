@@ -109,9 +109,8 @@ ThirdPartyScriptDetector::Technology GetTechnologyFromGroupIndex(int index) {
 }  // namespace
 
 // static
-const unsigned ThirdPartyScriptDetector::kSupplementIndex =
-    static_cast<unsigned>(
-        LocalDOMWindow::Supplements::kThirdPartyScriptDetector);
+const char ThirdPartyScriptDetector::kSupplementName[] =
+    "ThirdPartyScriptDetector";
 
 // static
 ThirdPartyScriptDetector& ThirdPartyScriptDetector::From(

@@ -22,8 +22,7 @@ class FileSystemObservationCollection final
     : public GarbageCollected<FileSystemObservationCollection>,
       public Supplement<ExecutionContext> {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kFileSystemObservationCollection;
+  static const char kSupplementName[];
   static FileSystemObservationCollection* From(ExecutionContext* context);
   explicit FileSystemObservationCollection(ExecutionContext& context);
   ~FileSystemObservationCollection() = default;

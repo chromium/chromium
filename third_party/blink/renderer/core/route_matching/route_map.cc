@@ -45,8 +45,7 @@ Route* RouteMap::get(const String& route_name) {
 
 // BEGIN Supplement support:
 
-const unsigned RouteMap::kSupplementIndex =
-    static_cast<unsigned>(Document::Supplements::kRouteMap);
+const char RouteMap::kSupplementName[] = "RouteMap";
 
 const RouteMap* RouteMap::Get(const Document* document) {
   if (!document) {

@@ -19,7 +19,7 @@ class GlobalIndexedDBImpl final
     : public GarbageCollected<GlobalIndexedDBImpl<T>>,
       public Supplement<T> {
  public:
-  static constexpr auto kSupplementIndex = T::Supplements::kGlobalIndexedDBImpl;
+  static const char kSupplementName[];
 
   static GlobalIndexedDBImpl& From(T& supplementable) {
     GlobalIndexedDBImpl* supplement =
@@ -48,6 +48,10 @@ class GlobalIndexedDBImpl final
  private:
   Member<IDBFactory> idb_factory_;
 };
+
+// static
+template <typename T>
+const char GlobalIndexedDBImpl<T>::kSupplementName[] = "GlobalIndexedDBImpl";
 
 }  // namespace
 

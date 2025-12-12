@@ -46,7 +46,7 @@ class Navigator;
 class NavigatorWebMIDI final : public GarbageCollected<NavigatorWebMIDI>,
                                public Supplement<Navigator> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static NavigatorWebMIDI& From(Navigator&);
   static ScriptPromise<MIDIAccess> requestMIDIAccess(

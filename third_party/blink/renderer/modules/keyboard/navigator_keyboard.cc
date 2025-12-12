@@ -11,6 +11,9 @@
 
 namespace blink {
 
+// static
+const char NavigatorKeyboard::kSupplementName[] = "NavigatorKeyboard";
+
 NavigatorKeyboard::NavigatorKeyboard(Navigator& navigator)
     : Supplement<Navigator>(navigator),
       keyboard_(

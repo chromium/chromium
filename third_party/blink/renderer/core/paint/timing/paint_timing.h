@@ -48,7 +48,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
           kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>;
 
  public:
-  static constexpr auto kSupplementIndex = Document::Supplements::kPaintTiming;
+  static const char kSupplementName[];
 
   struct PaintTimingInfo {
     // https://w3c.github.io/paint-timing/#paint-timing-info-rendering-update-end-time

@@ -22,8 +22,7 @@ class MODULES_EXPORT InstalledAppController final
     : public GarbageCollected<InstalledAppController>,
       public Supplement<LocalDOMWindow> {
  public:
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kInstalledAppController;
+  static const char kSupplementName[];
 
   explicit InstalledAppController(LocalDOMWindow&);
 

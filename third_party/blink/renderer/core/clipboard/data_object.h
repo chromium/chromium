@@ -55,10 +55,8 @@ enum class PasteMode;
 // during a drag-n-drop operation. This is the data that WebCore is aware
 // of and is not specific to a platform.
 class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
-                               public Supplementable<DataObject, 1> {
+                               public Supplementable<DataObject> {
  public:
-  enum class Supplements { kDraggedIsolatedFileSystemImpl = 0 };
-
   struct CORE_EXPORT Observer : public GarbageCollectedMixin {
     // Called whenever |item_list_| is modified. Note it can be called multiple
     // times for a single mutation. For example, DataObject::SetData() calls

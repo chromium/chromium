@@ -22,6 +22,9 @@
 
 namespace blink {
 
+// static
+const char PushProvider::kSupplementName[] = "PushProvider";
+
 PushProvider::PushProvider(ServiceWorkerRegistration& registration)
     : Supplement<ServiceWorkerRegistration>(registration),
       push_messaging_manager_(registration.GetExecutionContext()) {}

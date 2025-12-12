@@ -14,8 +14,7 @@
 
 namespace blink {
 
-const unsigned Ink::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kInk);
+const char Ink::kSupplementName[] = "Ink";
 
 Ink* Ink::ink(Navigator& navigator) {
   Ink* ink = Supplement<Navigator>::From<Ink>(navigator);

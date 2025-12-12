@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
-#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/content_extraction/paid_content.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -29,6 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/core/html_names.h"
 
 namespace blink {
 
@@ -92,6 +92,8 @@ class FrameMetadataObserverRegistry::PaidContentAttributeObserver final
   Member<FrameMetadataObserverRegistry> registry_;
 };
 
+
+
 class FrameMetadataObserverRegistry::MetaTagAttributeObserver final
     : public MutationObserver::Delegate {
  public:
@@ -121,6 +123,10 @@ FrameMetadataObserverRegistry::PaidContentAttributeObserver::
 FrameMetadataObserverRegistry::MetaTagAttributeObserver::
     MetaTagAttributeObserver(FrameMetadataObserverRegistry* registry)
     : registry_(registry) {}
+
+// static
+const char FrameMetadataObserverRegistry::kSupplementName[] =
+    "FrameMetadataObserverRegistry";
 
 // static
 FrameMetadataObserverRegistry* FrameMetadataObserverRegistry::From(
@@ -285,8 +291,8 @@ void FrameMetadataObserverRegistry::ObserveMetaTagAttributes(
 
   MutationObserverInit* init = MutationObserverInit::Create();
   init->setAttributes(true);
-  init->setAttributeFilter({html_names::kNameAttr.LocalName(),
-                            html_names::kContentAttr.LocalName()});
+  init->setAttributeFilter(
+      {html_names::kNameAttr.LocalName(), html_names::kContentAttr.LocalName()});
   DummyExceptionStateForTesting exception_state;
   attribute_observer->observe(meta, init, exception_state);
   DCHECK(!exception_state.HadException());

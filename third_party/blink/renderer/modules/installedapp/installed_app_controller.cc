@@ -47,8 +47,11 @@ InstalledAppController* InstalledAppController::From(LocalDOMWindow& window) {
   return controller;
 }
 
+const char InstalledAppController::kSupplementName[] = "InstalledAppController";
+
 InstalledAppController::InstalledAppController(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window), provider_(&window) {}
+    : Supplement<LocalDOMWindow>(window),
+      provider_(&window) {}
 
 void InstalledAppController::OnGetManifestForRelatedApps(
     ScriptPromiseResolver<IDLSequence<RelatedApplication>>* resolver,

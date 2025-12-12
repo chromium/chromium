@@ -106,7 +106,7 @@ class V8TextTrackKind;
 
 class CORE_EXPORT HTMLMediaElement
     : public HTMLElement,
-      public Supplementable<HTMLMediaElement, 3>,
+      public Supplementable<HTMLMediaElement>,
       public ActiveScriptWrappable<HTMLMediaElement>,
       public ExecutionContextLifecycleStateObserver,
       public media::mojom::blink::MediaPlayer,
@@ -116,12 +116,6 @@ class CORE_EXPORT HTMLMediaElement
   USING_PRE_FINALIZER(HTMLMediaElement, Dispose);
 
  public:
-  enum class Supplements {
-    kHTMLMediaElementEncryptedMedia = 0,
-    kAudioOutputDeviceController = 1,
-    kRemotePlaybackController = 2
-  };
-
   // Limits the range of media playback rate.
   static constexpr double kMinPlaybackRate = 0.0625;
   static constexpr double kMaxPlaybackRate = 16.0;

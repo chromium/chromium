@@ -18,7 +18,7 @@ class ScreenScreenOrientation final
     : public GarbageCollected<ScreenScreenOrientation>,
       public Supplement<Screen> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static ScreenScreenOrientation& From(Screen&);
 

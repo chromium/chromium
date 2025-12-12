@@ -21,8 +21,7 @@ class MODULES_EXPORT CodecPressureManagerProvider
     : public GarbageCollected<CodecPressureManagerProvider>,
       public Supplement<ExecutionContext> {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kCodecPressureManagerProvider;
+  static const char kSupplementName[];
 
   // Gets or creates the CodecPressureManagerProvider.
   static CodecPressureManagerProvider& From(ExecutionContext&);

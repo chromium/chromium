@@ -110,66 +110,15 @@ enum PageTransitionEventPersistence {
 
 // Note: if you're thinking of returning something DOM-related by reference,
 // please ping dcheng@chromium.org first. You probably don't want to do that.
-class CORE_EXPORT LocalDOMWindow final
-    : public DOMWindow,
-      public ExecutionContext,
-      public WindowOrWorkerGlobalScope,
-      public UniversalGlobalScope,
-      public WindowEventHandlers,
-      public Supplementable<LocalDOMWindow, 48> {
+class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
+                                         public ExecutionContext,
+                                         public WindowOrWorkerGlobalScope,
+                                         public UniversalGlobalScope,
+                                         public WindowEventHandlers,
+                                         public Supplementable<LocalDOMWindow> {
   USING_PRE_FINALIZER(LocalDOMWindow, Dispose);
 
  public:
-  enum class Supplements {
-    kCachedPermissionStatus = 0,
-    kFullscreen = 2,
-    kHighlightRegistry = 3,
-    kLayoutWorklet = 4,
-    kContainerTiming = 5,
-    kImageElementTiming = 6,
-    kTextElementTiming = 7,
-    kResizeObserverController = 8,
-    kThirdPartyScriptDetector = 9,
-    kSharedWorkerClientHolder = 10,
-    kCSSAnimationWorklet = 11,
-    kAppBannerController = 12,
-    kCredentialManagerProxy = 13,
-    kDOMWindowCrypto = 14,
-    kPaintWorklet = 15,
-    kDeviceMotionController = 16,
-    kDeviceOrientationController = 17,
-    kDeviceOrientationAbsoluteController = 18,
-    kDocumentPictureInPicture = 19,
-    kFontAccess = 20,
-    kInstallationServiceImpl = 21,
-    kInstalledAppController = 22,
-    kDOMWindowLaunchQueue = 23,
-    kWebLaunchServiceImpl = 24,
-    kManifestManager = 25,
-    kUserMediaClient = 26,
-    kNFCProxy = 27,
-    kDOMWindowDigitalGoods = 28,
-    kPeerConnectionTracker = 29,
-    kPresentationController = 30,
-    kPushMessagingClient = 31,
-    kWindowScreenDetails = 32,
-    kScreenOrientationController = 33,
-    kSensorProviderProxy = 34,
-    kSharedStorageWindowSupplement = 35,
-    kSpeechRecognitionController = 36,
-    kSpeechSynthesis = 37,
-    kGlobalStorageAccessHandle = 38,
-    kGlobalFetchImpl = 39,
-    kDOMWindowStorageController = 40,
-    kDOMWindowStorage = 41,
-    kWindowSharedStorageImpl = 42,
-    kGlobalIndexedDBImpl = 43,
-    kGlobalCacheStorageImpl = 44,
-    kGlobalPerformanceImpl = 45,
-    kGlobalCookieStoreImpl = 46,
-    kAudioRendererSinkCache = 47
-  };
-
   class CORE_EXPORT EventListenerObserver : public GarbageCollectedMixin {
    public:
     virtual void DidAddEventListener(LocalDOMWindow*, const AtomicString&) = 0;

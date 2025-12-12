@@ -18,8 +18,7 @@ class CORE_EXPORT NavigatorUserActivation final
     : public GarbageCollected<NavigatorUserActivation>,
       public Supplement<Navigator> {
  public:
-  static constexpr auto kSupplementIndex =
-      Navigator::Supplements::kNavigatorUserActivation;
+  static const char kSupplementName[];
 
   static UserActivation* userActivation(Navigator& navigator);
   UserActivation* userActivation();

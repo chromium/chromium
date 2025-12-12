@@ -30,9 +30,6 @@ namespace blink {
 class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
                                        public Supplement<ExecutionContext> {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kWebCodecsLogger;
-
   // Class that reports when blink::VideoFrames have been garbage collected
   // without having close() called on them. This is a web page application
   // error which can cause a web page to stall.
@@ -50,6 +47,8 @@ class MODULES_EXPORT WebCodecsLogger : public GarbageCollected<WebCodecsLogger>,
 
     bool were_frames_not_closed_ = false;
   };
+
+  static const char kSupplementName[];
 
   static WebCodecsLogger& From(ExecutionContext&);
 

@@ -30,11 +30,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element_sandbox.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 class DOMFeaturePolicy;
 
-class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase {
+class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
+                                      public Supplementable<HTMLIFrameElement> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

@@ -13,9 +13,7 @@ namespace blink {
 class MODULES_EXPORT DeviceOrientationAbsoluteController final
     : public DeviceOrientationController {
  public:
-  // NOTE: This shadows kSupplementIndex in the parent.
-  static constexpr auto kSupplementIndex =
-      LocalDOMWindow::Supplements::kDeviceOrientationAbsoluteController;
+  static const char kSupplementName[];
 
   explicit DeviceOrientationAbsoluteController(LocalDOMWindow&);
   ~DeviceOrientationAbsoluteController() override;

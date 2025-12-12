@@ -47,12 +47,10 @@ class LocalDOMWindow;
 
 class CORE_EXPORT Screen : public EventTarget,
                            public ExecutionContextClient,
-                           public Supplementable<Screen, 1> {
+                           public Supplementable<Screen> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum class Supplements { kScreenScreenOrientation = 0 };
-
   Screen(LocalDOMWindow*, int64_t display_id);
 
   static bool AreWebExposedScreenPropertiesEqual(

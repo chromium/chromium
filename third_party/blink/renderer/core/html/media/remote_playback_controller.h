@@ -19,8 +19,7 @@ class RemotePlaybackObserver;
 class CORE_EXPORT RemotePlaybackController
     : public Supplement<HTMLMediaElement> {
  public:
-  static constexpr auto kSupplementIndex =
-      HTMLMediaElement::Supplements::kRemotePlaybackController;
+  static const char kSupplementName[];
 
   static RemotePlaybackController* From(HTMLMediaElement&);
 

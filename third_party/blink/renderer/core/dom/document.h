@@ -360,40 +360,10 @@ class CORE_EXPORT Document : public ContainerNode,
                              public TreeScope,
                              public UseCounter,
                              public WidgetCreationObserver,
-                             public Supplementable<Document, 27> {
+                             public Supplementable<Document> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum class Supplements {
-    kAnnotationAgentContainerImpl = 0,
-    kBrowsingTopicsDocumentSupplement = 1,
-    kRouteMap = 2,
-    kRenderBlockingMetricsReporter = 3,
-    kPatchSupplement = 4,
-    kDocumentMetadataServer = 5,
-    kPaintTiming = 6,
-    kPictureInPictureController = 7,
-    kAnchorElementMetricsSender = 8,
-    kAnchorElementViewportPositionTracker = 9,
-    kDocumentParserTiming = 10,
-    kDisabledAccelerationCounterSupplement = 11,
-    kTransferToGPUTextureInvokedSupplement = 12,
-    kDocumentFencedFrames = 13,
-    kCSSSelectorWatch = 14,
-    kFontFaceSetDocument = 15,
-    kDocumentStorageAccess = 16,
-    kInteractiveDetector = 17,
-    kRTCPeerConnectionController = 18,
-    kDocumentXSLT = 19,
-    kAIPageContentAgent = 20,
-    kInnerHtmlAgent = 21,
-    kFrameMetadataObserverRegistry = 22,
-    kDocumentXPathEvaluator = 23,
-    kCredentialMetrics = 24,
-    kInnerTextAgent = 25,
-    kDocumentSpeculationRules = 26
-  };
-
   // Factory for web-exposed Document constructor. The argument document must be
   // a document instance representing window.document, and it works as the
   // source of ExecutionContext and security origin of the new document.

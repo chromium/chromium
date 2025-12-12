@@ -64,8 +64,7 @@ void NavigatorWebMIDI::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
 }
 
-const unsigned NavigatorWebMIDI::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kNavigatorWebMIDI);
+const char NavigatorWebMIDI::kSupplementName[] = "NavigatorWebMIDI";
 
 NavigatorWebMIDI& NavigatorWebMIDI::From(Navigator& navigator) {
   NavigatorWebMIDI* supplement =

@@ -26,7 +26,7 @@ class BarcodeDetectorStatics final
     : public GarbageCollected<BarcodeDetectorStatics>,
       public Supplement<ExecutionContext> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static BarcodeDetectorStatics* From(ExecutionContext*);
 

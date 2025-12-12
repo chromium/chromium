@@ -230,8 +230,7 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
                              public Supplement<ExecutionContext>,
                              public ExecutionContextLifecycleStateObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kCachedVideoFramePool;
+  static const char kSupplementName[];
 
   static CachedVideoFramePool& From(ExecutionContext& context) {
     CachedVideoFramePool* supplement =
@@ -318,6 +317,7 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
 };
 
 // static -- defined out of line to satisfy link time requirements.
+const char CachedVideoFramePool::kSupplementName[] = "CachedVideoFramePool";
 const base::TimeDelta CachedVideoFramePool::kIdleTimeout = base::Seconds(10);
 
 class CanvasResourceProviderCache
@@ -325,8 +325,7 @@ class CanvasResourceProviderCache
       public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleStateObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kCanvasResourceProviderCache;
+  static const char kSupplementName[];
 
   static CanvasResourceProviderCache& From(ExecutionContext& context) {
     CanvasResourceProviderCache* supplement =
@@ -428,6 +427,8 @@ class CanvasResourceProviderCache
 };
 
 // static -- defined out of line to satisfy link time requirements.
+const char CanvasResourceProviderCache::kSupplementName[] =
+    "CanvasResourceProviderCache";
 const base::TimeDelta CanvasResourceProviderCache::kIdleTimeout =
     base::Seconds(10);
 

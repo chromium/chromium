@@ -535,7 +535,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(frame_visibility_observers_);
   visitor->Trace(window_controls_overlay_changed_delegate_);
   Frame::Trace(visitor);
-  Supplementable::Trace(visitor);
+  Supplementable<LocalFrame>::Trace(visitor);
 }
 
 bool LocalFrame::IsLocalRoot() const {
@@ -816,7 +816,7 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   probe::FrameDetachedFromParent(this, type);
 
-  std::fill(supplements_.begin(), supplements_.end(), nullptr);
+  supplements_.clear();
   frame_scheduler_.reset();
   mojo_handler_->DidDetachFrame();
   WeakIdentifierMap<LocalFrame>::NotifyObjectDestroyed(this);
@@ -1770,8 +1770,8 @@ void LocalFrame::ViewportSegmentsChanged(
   // "horizontal-viewport-segments" and "vertical-viewport-segments" features).
   MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange::kOther);
 
-  // Fullscreen element has its own document and uses the viewport media
-  // queries, so we need to make sure the media queries are re-evaluated.
+  // Fullscreen element has its own document and uses the viewport media queries,
+  // so we need to make sure the media queries are re-evaluated.
   if (Element* fullscreen = Fullscreen::FullscreenElementFrom(*GetDocument())) {
     GetDocument()->GetStyleEngine().MarkAllElementsForStyleRecalc(
         StyleChangeReasonForTracing::Create(style_change_reason::kFullscreen));
@@ -2288,7 +2288,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
     if (!target_domain.empty() && !destination_domain.empty() &&
         target_domain == destination_domain &&
         (target_frame.GetSecurityContext()->GetSecurityOrigin()->Protocol() ==
-         destination_url.Protocol())) {
+             destination_url.Protocol())) {
       return true;
     }
 
@@ -3094,6 +3094,7 @@ bool LocalFrame::SwapIn() {
   // Swap in `this`, which is a provisional frame to an existing frame.
   Frame* provisional_owner_frame = GetProvisionalOwnerFrame();
 
+
   // First, check if there's a previous main frame to be used for a main frame
   // LocalFrame <-> LocalFrame swap.
   Frame* previous_local_main_frame =
@@ -3223,8 +3224,7 @@ void LocalFrame::RequestExecuteScript(
 
   ScriptState* script_state = ToScriptState(this, *world);
   // TODO(https://crbug.com/435149285): Remove this block and revert back to
-  // CHECK(script_state) once the crash associated with the crbug above is
-  // resolved.
+  // CHECK(script_state) once the crash associated with the crbug above is resolved.
   if (!script_state) {
     SCOPED_CRASH_KEY_STRING256(
         "Blink", "request_execute_script_script",

@@ -9,8 +9,7 @@
 
 namespace blink {
 
-const unsigned LockedMode::kSupplementIndex =
-    static_cast<unsigned>(NavigatorBase::Supplements::kLockedMode);
+const char LockedMode::kSupplementName[] = "LockedMode";
 
 // static
 LockedMode* LockedMode::lockedMode(NavigatorBase& navigator) {

@@ -44,7 +44,7 @@ class MODULES_EXPORT DocumentPictureInPicture
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(enter, kEnter)
 
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   void Trace(Visitor*) const override;
 

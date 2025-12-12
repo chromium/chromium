@@ -23,12 +23,10 @@ class ScriptState;
 class V8MojoScope;
 
 class CORE_EXPORT Mojo final : public ScriptWrappable,
-                               public Supplementable<Mojo, 1> {
+                               public Supplementable<Mojo> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum class Supplements { kMojoFileSystemAccess = 0 };
-
   Mojo() = default;
   Mojo(const Mojo&) = delete;
   Mojo& operator=(const Mojo&) = delete;
@@ -70,7 +68,7 @@ class CORE_EXPORT Mojo final : public ScriptWrappable,
 
   void Trace(Visitor* visitor) const override {
     ScriptWrappable::Trace(visitor);
-    Supplementable::Trace(visitor);
+    Supplementable<Mojo>::Trace(visitor);
   }
 };
 

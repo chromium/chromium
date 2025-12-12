@@ -68,6 +68,9 @@ bool NeededForTiming(const LayoutObject& layout_object) {
 
 }  // namespace internal
 
+// static
+const char ImageElementTiming::kSupplementName[] = "ImageElementTiming";
+
 AtomicString ImagePaintString() {
   DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint, ("image-paint"));
   return kImagePaint;

@@ -263,8 +263,7 @@ class ServiceWorkerContainer::DomContentLoadedListener final
   }
 };
 
-const unsigned ServiceWorkerContainer::kSupplementIndex = static_cast<unsigned>(
-    ExecutionContext::Supplements::kServiceWorkerContainer);
+const char ServiceWorkerContainer::kSupplementName[] = "ServiceWorkerContainer";
 
 ServiceWorkerContainer* ServiceWorkerContainer::From(
     ExecutionContext& execution_context) {

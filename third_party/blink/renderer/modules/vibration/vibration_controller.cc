@@ -92,8 +92,7 @@ VibrationController& VibrationController::From(Navigator& navigator) {
 }
 
 // static
-const unsigned VibrationController::kSupplementIndex =
-    static_cast<unsigned>(Navigator::Supplements::kVibrationController);
+const char VibrationController::kSupplementName[] = "VibrationController";
 
 // static
 bool VibrationController::vibrate(Navigator& navigator, unsigned time) {

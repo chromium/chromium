@@ -89,6 +89,7 @@ BackgroundReadback::~BackgroundReadback() {
   worker_task_runner_->ReleaseSoon(FROM_HERE, std::move(sync_readback_impl_));
 }
 
+const char BackgroundReadback::kSupplementName[] = "BackgroundReadback";
 // static
 BackgroundReadback* BackgroundReadback::From(ExecutionContext& context) {
   BackgroundReadback* supplement =

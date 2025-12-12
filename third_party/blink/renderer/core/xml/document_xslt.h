@@ -16,7 +16,7 @@ class ProcessingInstruction;
 class DocumentXSLT final : public GarbageCollected<DocumentXSLT>,
                            public Supplement<Document> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static void SetHasTransformSource(Document&);
 

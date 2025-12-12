@@ -45,8 +45,7 @@ class CORE_EXPORT NoStatePrefetchClient
     : public GarbageCollected<NoStatePrefetchClient>,
       public Supplement<Page> {
  public:
-  static constexpr auto kSupplementIndex =
-      Page::Supplements::kNoStatePrefetchClient;
+  static const char kSupplementName[];
 
   NoStatePrefetchClient(Page&, WebNoStatePrefetchClient*);
   NoStatePrefetchClient(const NoStatePrefetchClient&) = delete;

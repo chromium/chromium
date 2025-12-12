@@ -51,13 +51,12 @@ bool CheckContextAndPermissions(ScriptState* script_state,
 
 }  // namespace
 
-const unsigned WebPrintingManager::kSupplementIndex =
-    static_cast<unsigned>(ExecutionContext::Supplements::kWebPrintingManager);
+const char WebPrintingManager::kSupplementName[] = "PrintingManager";
 
 WebPrintingManager* WebPrintingManager::GetWebPrintingManager(
     ExecutionContext& execution_context) {
   WebPrintingManager* printing_manager =
-      Supplement::From<WebPrintingManager>(execution_context);
+      Supplement<ExecutionContext>::From<WebPrintingManager>(execution_context);
   if (!printing_manager) {
     printing_manager =
         MakeGarbageCollected<WebPrintingManager>(&execution_context);
@@ -67,7 +66,8 @@ WebPrintingManager* WebPrintingManager::GetWebPrintingManager(
 }
 
 WebPrintingManager::WebPrintingManager(ExecutionContext* execution_context)
-    : Supplement(*execution_context), printing_service_(execution_context) {}
+    : Supplement<ExecutionContext>(*execution_context),
+      printing_service_(execution_context) {}
 
 ScriptPromise<IDLSequence<WebPrinter>> WebPrintingManager::getPrinters(
     ScriptState* script_state,
@@ -94,7 +94,7 @@ ScriptPromise<IDLSequence<WebPrinter>> WebPrintingManager::getPrinters(
 void WebPrintingManager::Trace(Visitor* visitor) const {
   visitor->Trace(printing_service_);
   ScriptWrappable::Trace(visitor);
-  Supplement::Trace(visitor);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 mojom::blink::WebPrintingService* WebPrintingManager::GetPrintingService() {

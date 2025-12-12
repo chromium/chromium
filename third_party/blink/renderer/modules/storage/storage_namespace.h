@@ -67,7 +67,7 @@ class MODULES_EXPORT StorageNamespace final
   // a third-party context. For more see:
   // third_party/blink/renderer/modules/storage_access/README.md
   enum class StorageContext { kStandard, kStorageAccessAPI };
-  static constexpr auto kSupplementIndex = Page::Supplements::kStorageNamespace;
+  static const char kSupplementName[];
 
   static void ProvideSessionStorageNamespaceTo(
       Page&,

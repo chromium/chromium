@@ -27,7 +27,7 @@ class ServiceWorkerRegistration;
 class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
                                   public Supplement<LocalDOMWindow> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   explicit PushMessagingClient(LocalDOMWindow&);
 

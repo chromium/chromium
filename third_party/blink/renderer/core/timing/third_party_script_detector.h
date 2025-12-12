@@ -18,7 +18,7 @@ class ThirdPartyScriptDetector final
     : public GarbageCollected<ThirdPartyScriptDetector>,
       public Supplement<LocalDOMWindow> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   static ThirdPartyScriptDetector& From(LocalDOMWindow&);
 

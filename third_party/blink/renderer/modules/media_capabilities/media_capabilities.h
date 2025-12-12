@@ -46,7 +46,7 @@ class MODULES_EXPORT MediaCapabilities final
   static const char kWebrtcDecodeSmoothIfPowerEfficientParamName[];
   static const char kWebrtcEncodeSmoothIfPowerEfficientParamName[];
 
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   // Getter for navigator.mediaCapabilities
   static MediaCapabilities* mediaCapabilities(NavigatorBase&);

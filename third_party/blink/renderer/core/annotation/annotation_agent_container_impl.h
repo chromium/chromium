@@ -42,8 +42,7 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
  public:
   using PassKey = base::PassKey<AnnotationAgentContainerImpl>;
 
-  static constexpr auto kSupplementIndex =
-      Document::Supplements::kAnnotationAgentContainerImpl;
+  static const char kSupplementName[];
 
   class Observer : public GarbageCollectedMixin {
    public:

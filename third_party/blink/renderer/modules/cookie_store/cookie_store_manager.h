@@ -28,8 +28,7 @@ class CookieStoreManager final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static constexpr auto kSupplementIndex =
-      ServiceWorkerRegistration::Supplements::kCookieStoreManager;
+  static const char kSupplementName[];
   // Web Exposed as registration.cookies
   static CookieStoreManager* cookies(ServiceWorkerRegistration& registration);
 

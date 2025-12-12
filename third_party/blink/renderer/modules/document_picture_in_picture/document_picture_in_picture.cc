@@ -11,9 +11,8 @@
 namespace blink {
 
 // static
-const unsigned DocumentPictureInPicture::kSupplementIndex =
-    static_cast<unsigned>(
-        LocalDOMWindow::Supplements::kDocumentPictureInPicture);
+const char DocumentPictureInPicture::kSupplementName[] =
+    "DocumentPictureInPicture";
 
 DocumentPictureInPicture::DocumentPictureInPicture(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}

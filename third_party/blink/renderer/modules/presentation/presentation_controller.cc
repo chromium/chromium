@@ -24,8 +24,7 @@ PresentationController::PresentationController(LocalDOMWindow& window)
 PresentationController::~PresentationController() = default;
 
 // static
-const unsigned PresentationController::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kPresentationController);
+const char PresentationController::kSupplementName[] = "PresentationController";
 
 // static
 PresentationController* PresentationController::From(LocalDOMWindow& window) {

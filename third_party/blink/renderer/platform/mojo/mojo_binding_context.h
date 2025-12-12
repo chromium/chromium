@@ -33,13 +33,8 @@ class BrowserInterfaceBroker;
 // context in which they are intended to be used.
 class PLATFORM_EXPORT MojoBindingContext
     : public ContextLifecycleNotifier,
-      public Supplementable<MojoBindingContext, 2> {
+      public Supplementable<MojoBindingContext> {
  public:
-  enum class Supplements {
-    kMojoJSInterfaceBrokerWrapper = 0,
-    kP2PSocketDispatcher = 1
-  };
-
   virtual const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
       const = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(

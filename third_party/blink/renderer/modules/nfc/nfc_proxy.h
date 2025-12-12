@@ -32,7 +32,7 @@ class MODULES_EXPORT NFCProxy final : public GarbageCollected<NFCProxy>,
                                       public Supplement<LocalDOMWindow>,
                                       public NFCClientType {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static NFCProxy* From(LocalDOMWindow&);
 
   explicit NFCProxy(LocalDOMWindow&);
@@ -45,7 +45,8 @@ class MODULES_EXPORT NFCProxy final : public GarbageCollected<NFCProxy>,
   // collected.
   void AddWriter(NDEFReader*);
 
-  void StartReading(NDEFReader*, device::mojom::blink::NFC::WatchCallback);
+  void StartReading(NDEFReader*,
+                    device::mojom::blink::NFC::WatchCallback);
   void StopReading(NDEFReader*);
   bool IsReading(const NDEFReader*);
   void Push(device::mojom::blink::NDEFMessagePtr,

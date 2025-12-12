@@ -12,14 +12,17 @@
 #include "third_party/blink/renderer/core/page/focus_changed_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class MODULES_EXPORT ClipboardChangeEventController final
     : public GarbageCollected<ClipboardChangeEventController>,
+      public Supplement<Navigator>,
       public PlatformEventController,
       public FocusChangedObserver {
  public:
+  static const char kSupplementName[];
   explicit ClipboardChangeEventController(Navigator& navigator,
                                           EventTarget* eventTarget);
 
@@ -50,7 +53,6 @@ class MODULES_EXPORT ClipboardChangeEventController final
 
   bool fire_clipboardchange_on_focus_ = false;
   Member<EventTarget> event_target_;
-  Member<Navigator> navigator_;
 };
 
 }  // namespace blink

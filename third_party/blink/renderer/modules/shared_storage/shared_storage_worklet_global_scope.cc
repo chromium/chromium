@@ -459,6 +459,7 @@ void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(operation_definition_map_);
   visitor->Trace(client_);
   WorkletGlobalScope::Trace(visitor);
+  Supplementable<SharedStorageWorkletGlobalScope>::Trace(visitor);
 }
 
 void SharedStorageWorkletGlobalScope::Initialize(

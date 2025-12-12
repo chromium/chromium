@@ -41,21 +41,15 @@ namespace blink {
 // attached to WorkerOrWorkletGlobalScope when it is created.
 // This class can be used to provide "client" implementations to workers or
 // worklets.
-class CORE_EXPORT WorkerClients final
-    : public GarbageCollected<WorkerClients>,
-      public Supplementable<WorkerClients, 2> {
+class CORE_EXPORT WorkerClients final : public GarbageCollected<WorkerClients>,
+                                        public Supplementable<WorkerClients> {
  public:
-  enum class Supplements {
-    kPaintWorkletProxyClient = 0,
-    kAnimationWorkletProxyClient = 1,
-  };
-
   WorkerClients() = default;
   WorkerClients(const WorkerClients&) = delete;
   WorkerClients& operator=(const WorkerClients&) = delete;
 
   void Trace(Visitor* visitor) const override {
-    Supplementable::Trace(visitor);
+    Supplementable<WorkerClients>::Trace(visitor);
   }
 };
 

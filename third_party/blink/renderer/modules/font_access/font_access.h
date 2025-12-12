@@ -24,7 +24,7 @@ class ScriptState;
 class FontAccess final : public GarbageCollected<FontAccess>,
                          public Supplement<LocalDOMWindow> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
 
   explicit FontAccess(LocalDOMWindow* window);
 

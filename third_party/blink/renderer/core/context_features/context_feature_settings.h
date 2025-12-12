@@ -21,8 +21,7 @@ class CORE_EXPORT ContextFeatureSettings final
     : public GarbageCollected<ContextFeatureSettings>,
       public Supplement<ExecutionContext> {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kContextFeatureSettings;
+  static const char kSupplementName[];
 
   enum class CreationMode { kCreateIfNotExists, kDontCreateIfNotExists };
 

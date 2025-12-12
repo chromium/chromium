@@ -8,6 +8,8 @@
 
 namespace blink {
 
+const char NavigatorPreferences::kSupplementName[] = "NavigatorPreferences";
+
 NavigatorPreferences& NavigatorPreferences::From(Navigator& navigator) {
   NavigatorPreferences* supplement =
       Supplement<Navigator>::From<NavigatorPreferences>(navigator);

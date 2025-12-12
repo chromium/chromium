@@ -24,8 +24,7 @@ class MODULES_EXPORT RtcTransportDependencies
       public Supplement<ExecutionContext>,
       public ExecutionContextLifecycleObserver {
  public:
-  static constexpr auto kSupplementIndex =
-      ExecutionContext::Supplements::kRtcTransportDependencies;
+  static const char kSupplementName[];
 
   static scoped_refptr<base::SingleThreadTaskRunner> NetworkTaskRunner();
   // Gets from, invoking callback once initialized and ready.

@@ -23,7 +23,7 @@ class InnerHtmlAgent final : public GarbageCollected<InnerHtmlAgent>,
                              public mojom::blink::InnerHtmlAgent,
                              public Supplement<Document> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static InnerHtmlAgent* From(Document&);
   static void BindReceiver(
       LocalFrame* frame,

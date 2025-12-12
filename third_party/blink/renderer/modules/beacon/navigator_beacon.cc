@@ -30,6 +30,8 @@ void NavigatorBeacon::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
 }
 
+const char NavigatorBeacon::kSupplementName[] = "NavigatorBeacon";
+
 NavigatorBeacon& NavigatorBeacon::From(Navigator& navigator) {
   NavigatorBeacon* supplement =
       Supplement<Navigator>::From<NavigatorBeacon>(navigator);

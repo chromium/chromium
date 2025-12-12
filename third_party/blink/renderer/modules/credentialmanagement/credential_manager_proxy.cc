@@ -156,4 +156,7 @@ void CredentialManagerProxy::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
+// static
+const char CredentialManagerProxy::kSupplementName[] = "CredentialManagerProxy";
+
 }  // namespace blink

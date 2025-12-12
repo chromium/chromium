@@ -34,7 +34,7 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
     : public CredentialsContainer,
       public Supplement<Navigator> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static CredentialsContainer* credentials(Navigator&);
   explicit AuthenticationCredentialsContainer(Navigator&);
 

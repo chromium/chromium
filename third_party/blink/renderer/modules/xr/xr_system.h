@@ -77,7 +77,7 @@ class XRSystem final : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static XRSystem* From(Document&);
   static XRSystem* FromIfExists(Document&);
 

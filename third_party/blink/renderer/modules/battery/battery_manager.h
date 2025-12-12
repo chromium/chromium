@@ -28,7 +28,7 @@ class BatteryManager final : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static ScriptPromise<BatteryManager> getBattery(ScriptState*, Navigator&);
   explicit BatteryManager(Navigator&);
   ~BatteryManager() override;

@@ -21,6 +21,9 @@ SharedStorageWindowSupplement* SharedStorageWindowSupplement::From(
   return supplement;
 }
 
+const char SharedStorageWindowSupplement::kSupplementName[] =
+    "SharedStorageWindowSupplement";
+
 void SharedStorageWindowSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(shared_storage_document_service_);
   Supplement<LocalDOMWindow>::Trace(visitor);

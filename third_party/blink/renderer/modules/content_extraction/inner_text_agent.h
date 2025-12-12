@@ -23,7 +23,7 @@ class InnerTextAgent final : public GarbageCollected<InnerTextAgent>,
                              public mojom::blink::InnerTextAgent,
                              public Supplement<Document> {
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static InnerTextAgent* From(Document&);
   static void BindReceiver(
       LocalFrame* frame,

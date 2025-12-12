@@ -19,7 +19,7 @@ class Ink : public ScriptWrappable, public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const unsigned kSupplementIndex;
+  static const char kSupplementName[];
   static Ink* ink(Navigator& navigator);
 
   explicit Ink(Navigator&);

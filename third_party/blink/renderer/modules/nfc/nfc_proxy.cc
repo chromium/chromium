@@ -19,8 +19,7 @@
 namespace blink {
 
 // static
-const unsigned NFCProxy::kSupplementIndex =
-    static_cast<unsigned>(LocalDOMWindow::Supplements::kNFCProxy);
+const char NFCProxy::kSupplementName[] = "NFCProxy";
 
 // static
 NFCProxy* NFCProxy::From(LocalDOMWindow& window) {
