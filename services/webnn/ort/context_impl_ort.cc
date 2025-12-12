@@ -164,7 +164,8 @@ ContextProperties ContextImplOrt::GetContextProperties(
        /*conv_transpose2d_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cumulative_sum_input=*/{kFloat16To32Int32To64, kMaxNonScalarRank},
-       /*dequantize_linear_input=*/{kInts4To8Int32, kMaxRank},
+       /*dequantize_linear_input=*/
+       {DataTypeConstraint::kInts4ToInts8, kMaxRank},
        /*dequantize_linear_scale=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*dequantize_linear_zero_point=*/{kInts4To8Int32, kMaxRank},
        /*add_input=*/
