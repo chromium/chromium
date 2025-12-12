@@ -379,4 +379,60 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         mCoordinator.initializeBottomSheetContent();
         assertFalse(dailyUpdateSwitch.isChecked());
     }
+
+    @Test
+    public void testDestroy_recordsDailyRefreshTurnOnMetric() {
+        MaterialSwitchWithText dailyUpdateSwitch =
+                mBottomSheetView.findViewById(R.id.daily_update_switch_button);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Customization.Theme.ThemeCollection.DailyRefresh.TurnOn",
+                        TEST_COLLECTION_HASH_1);
+
+        dailyUpdateSwitch.setChecked(true);
+        mCoordinator.destroy();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDestroy_recordsDailyRefreshTurnOffMetric() {
+        MaterialSwitchWithText dailyUpdateSwitch =
+                mBottomSheetView.findViewById(R.id.daily_update_switch_button);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Customization.Theme.ThemeCollection.DailyRefresh.TurnOff",
+                        TEST_COLLECTION_HASH_1);
+
+        // Toggle on and then off to make sure mIsDailyRefreshToggled is true.
+        dailyUpdateSwitch.setChecked(true);
+        dailyUpdateSwitch.setChecked(false);
+        mCoordinator.destroy();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testDestroy_recordsCorrectHashAfterUpdate() {
+        mCoordinator.updateThemeCollection(
+                NEW_TEST_COLLECTION_ID,
+                NEW_TEST_COLLECTION_TITLE,
+                TEST_COLLECTION_HASH_2,
+                SheetState.FULL);
+
+        MaterialSwitchWithText dailyUpdateSwitch =
+                mBottomSheetView.findViewById(R.id.daily_update_switch_button);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Customization.Theme.ThemeCollection.DailyRefresh.TurnOn",
+                        TEST_COLLECTION_HASH_2);
+
+        dailyUpdateSwitch.setChecked(true);
+        mCoordinator.destroy();
+
+        histogramWatcher.assertExpected();
+    }
 }

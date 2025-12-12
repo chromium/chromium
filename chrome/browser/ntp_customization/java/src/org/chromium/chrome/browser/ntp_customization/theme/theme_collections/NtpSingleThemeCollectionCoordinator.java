@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -41,9 +42,6 @@ public class NtpSingleThemeCollectionCoordinator {
             "https://support.google.com/chrome/?p=new_tab";
     private static final int RECYCLE_VIEW_SPAN_COUNT = 3;
 
-    private String mThemeCollectionId;
-    private String mThemeCollectionTitle;
-    private int mThemeCollectionHash;
     private final List<CollectionImage> mThemeCollectionImageList = new ArrayList<>();
     private final Context mContext;
     private final View mNtpSingleThemeCollectionBottomSheetView;
@@ -60,9 +58,17 @@ public class NtpSingleThemeCollectionCoordinator {
     private final int mItemMaxWidth;
     private final int mSpacing;
     private final Runnable mOnDailyRefreshCancelledCallback;
+    private String mThemeCollectionId;
+    private String mThemeCollectionTitle;
+    private int mThemeCollectionHash;
     private boolean mHasDisplayedBefore;
     private int mScreenWidth;
+    // This variable is only used to record metrics.
     private boolean mIsThemeCollectionSelected;
+    // This variable is only used to record metrics.
+    private int mDailyRefreshThemeCollectionHash;
+    // This variable is only used to record metrics.
+    private @Nullable Boolean mIsDailyRefreshEnabled;
 
     /**
      * Constructor for the single theme collection coordinator.
@@ -184,6 +190,11 @@ public class NtpSingleThemeCollectionCoordinator {
         if (mNtpThemeCollectionsAdapter != null) {
             mNtpThemeCollectionsAdapter.clearOnClickListeners();
         }
+
+        if (mIsDailyRefreshEnabled != null) {
+            NtpCustomizationMetricsUtils.recordThemeCollectionDailyRefresh(
+                    mDailyRefreshThemeCollectionHash, mIsDailyRefreshEnabled);
+        }
     }
 
     /**
@@ -258,6 +269,8 @@ public class NtpSingleThemeCollectionCoordinator {
 
     /** Handles clicks on the daily refresh switch. */
     private void handleDailyRefreshClick(View view, Boolean isChecked) {
+        mIsDailyRefreshEnabled = isChecked;
+        mDailyRefreshThemeCollectionHash = mThemeCollectionHash;
         if (isChecked) {
             mNtpThemeCollectionManager.setThemeCollectionDailyRefreshed(mThemeCollectionId);
         } else {
