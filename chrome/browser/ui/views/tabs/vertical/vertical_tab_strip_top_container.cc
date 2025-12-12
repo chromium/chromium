@@ -86,29 +86,38 @@ VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
 views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
-  // TODO(crbug.com/465857622): Implement smarter reflow around caption buttons.
-  const int exclusion_height = exclusion_width_ > 0 ? toolbar_height_ : 0;
-  layout.host_size =
+  gfx::Size host_size =
       gfx::Size(size_bounds.width().is_bounded() ? size_bounds.width().value()
                                                  : parent()->width(),
-                kTopButtonContainerHeight + exclusion_height);
+                kTopButtonContainerHeight);
 
   CHECK(tab_search_button_);
   CHECK(collapse_button_);
 
   const gfx::Size tab_search_button_pref_size =
-      tab_search_button_->GetPreferredSize(views::SizeBounds(layout.host_size));
+      tab_search_button_->GetPreferredSize();
   const gfx::Size collapse_button_pref_size =
-      collapse_button_->GetPreferredSize(views::SizeBounds(layout.host_size));
+      collapse_button_->GetPreferredSize();
 
-  int current_x = layout.host_size.width();
-  int current_y = layout.host_size.height() - exclusion_height;
+  // If there is not enough space for the buttons on a single line with caption
+  // buttons, shift them below.
+  if (exclusion_width_ > 0 &&
+      exclusion_width_ + tab_search_button_pref_size.width() +
+              kTopButtonPadding + collapse_button_pref_size.width() >
+          host_size.width()) {
+    host_size.Enlarge(0, toolbar_height_);
+  }
+
+  int current_x = host_size.width();
+  int current_y = host_size.height();
 
   // Calculate bounds to right-align the button horizontally and center it
   // vertically within the available space.
   gfx::Rect tab_search_button_bounds(
       current_x - tab_search_button_pref_size.width(),
-      (current_y - tab_search_button_pref_size.height()) / 2 + exclusion_height,
+      current_y -
+          (kTopButtonContainerHeight + tab_search_button_pref_size.height()) /
+              2,
       tab_search_button_pref_size.width(),
       tab_search_button_pref_size.height());
   layout.child_layouts.emplace_back(
@@ -120,12 +129,14 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   // Re-calculate bounds based on new x value, offset by the tab search button.
   gfx::Rect collapse_button_bounds(
       current_x - collapse_button_pref_size.width(),
-      (current_y - collapse_button_pref_size.height()) / 2 + exclusion_height,
+      current_y -
+          (kTopButtonContainerHeight + collapse_button_pref_size.height()) / 2,
       collapse_button_pref_size.width(), collapse_button_pref_size.height());
   layout.child_layouts.emplace_back(
       collapse_button_.get(), collapse_button_->GetVisible(),
       collapse_button_bounds, views::SizeBounds(collapse_button_pref_size));
 
+  layout.host_size = host_size;
   return layout;
 }
 

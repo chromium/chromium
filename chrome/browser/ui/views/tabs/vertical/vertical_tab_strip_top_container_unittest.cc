@@ -142,3 +142,24 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithFullWidthExclusionZone) {
   EXPECT_EQ(collapse_bounds.right_center().y(),
             initial_collapse_bounds.right_center().y() + kExclusionHeight);
 }
+
+TEST_F(VerticalTabStripTopContainerTest, LayoutWithPartialWidthExclusionZone) {
+  top_container()->SetExclusionWidthForLayout(50);
+  top_container()->SetToolbarHeightForLayout(50);
+  LayoutView();
+
+  const gfx::Rect container_bounds = top_container()->bounds();
+  const gfx::Rect search_bounds = tab_search_button()->bounds();
+  const gfx::Rect collapse_bounds = collapse_button()->bounds();
+
+  // The tab search button should be right aligned to the container and
+  // vertically centered. Due to rounding, there is an off-by-one error
+  // with the vertical centering of the button.
+  EXPECT_EQ(search_bounds.top_right().x(), container_bounds.top_right().x());
+  EXPECT_NEAR(search_bounds.right_center().y(),
+              container_bounds.right_center().y(), 1);
+
+  // The collapse button should be to the left of the tab search button.
+  EXPECT_LT(collapse_bounds.CenterPoint().x(), search_bounds.CenterPoint().x());
+  EXPECT_EQ(collapse_bounds.CenterPoint().y(), search_bounds.CenterPoint().y());
+}
