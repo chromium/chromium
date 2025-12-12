@@ -157,6 +157,10 @@ float FrameQuadScaleDeltaFromIdeal(const viz::CompositorFrame& frame) {
   return frame_scale;
 }
 
+bool TreesInViz() {
+  return base::FeatureList::IsEnabled(features::kTreesInViz);
+}
+
 using LayerTreeHostTest = LayerTreeTest;
 
 class LayerTreeHostTestHasImplThreadTest : public LayerTreeHostTest {
@@ -3187,9 +3191,14 @@ class LayerTreeHostTestDamageWithScale : public LayerTreeHostTest {
     // add tiling, it will be gone by the time we draw because of aggressive
     // cleanup. AddTilingUntilNextDraw ensures that it remains there during
     // damage calculation.
+    // In TreesInViz mode, we query viz before deleting a tiling, so its
+    // removal is delayed comparing with non TreesInViz mode and there is
+    // no need to add it again in the next frame.
     FakePictureLayerImpl* child_layer_impl = static_cast<FakePictureLayerImpl*>(
         host_impl->active_tree()->LayerById(child_layer_->id()));
-    child_layer_impl->AddTilingUntilNextDraw(1.3f);
+    if (!TreesInViz() || host_impl->active_tree()->source_frame_number() == 0) {
+      child_layer_impl->AddTilingUntilNextDraw(1.3f);
+    }
   }
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
@@ -3216,10 +3225,16 @@ class LayerTreeHostTestDamageWithScale : public LayerTreeHostTest {
         FakePictureLayerImpl* child_layer_impl =
             static_cast<FakePictureLayerImpl*>(
                 host_impl->active_tree()->LayerById(child_layer_->id()));
-        // We remove tilings pretty aggressively if they are not ideal. Add this
-        // back in so that we can compare
-        // child_layer_impl->GetEnclosingVisibleRectInTargetSpace to the damage.
-        child_layer_impl->AddTilingUntilNextDraw(1.3f);
+        if (!TreesInViz()) {
+          // We remove tilings pretty aggressively if they are not ideal.
+          // Add this back in so that we can compare
+          // child_layer_impl->GetEnclosingVisibleRectInTargetSpace to the
+          // damage.
+          // In TreesInViz mode, we query viz before deleting a tiling, so its
+          // removal is delayed comparing with non TreesInViz mode and there is
+          // no need to add it again in the next frame.
+          child_layer_impl->AddTilingUntilNextDraw(1.3f);
+        }
 
         EXPECT_EQ(gfx::Rect(26, 26), root_damage_rect);
         EXPECT_EQ(child_layer_impl->GetEnclosingVisibleRectInTargetSpace(),
@@ -4470,10 +4485,6 @@ class LayerTreeHostTestUIResource : public LayerTreeHostTest {
   void CreateResource() {
     ui_resources_[num_ui_resources_++] =
         FakeScopedUIResource::Create(layer_tree_host()->GetUIResourceManager());
-  }
-
-  bool TreesInViz() {
-    return base::FeatureList::IsEnabled(features::kTreesInViz);
   }
 
   std::array<std::unique_ptr<FakeScopedUIResource>, 5> ui_resources_;

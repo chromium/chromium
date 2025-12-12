@@ -18,6 +18,10 @@
 namespace cc {
 namespace {
 
+bool TreesInViz() {
+  return base::FeatureList::IsEnabled(features::kTreesInViz);
+}
+
 // These tests deal with picture layers.
 class LayerTreeHostPictureTest : public LayerTreeTest {
  protected:
@@ -640,14 +644,25 @@ class LayerTreeHostPictureTestForceRecalculateScales
         break;
       case 1:
         // On 2nd commit after scaling up to 2, the normal layer will adjust its
-        // scale and the will change layer should not (as it is will change.
+        // scale and the will change layer should not (as it is will change).
         ASSERT_EQ(1u, will_change_layer->tilings()->num_tilings());
         EXPECT_EQ(
             gfx::AxisTransform2d(),
             will_change_layer->tilings()->tiling_at(0)->raster_transform());
-        ASSERT_EQ(1u, normal_layer->tilings()->num_tilings());
-        EXPECT_EQ(gfx::AxisTransform2d(2.f, gfx::Vector2dF()),
-                  normal_layer->tilings()->tiling_at(0)->raster_transform());
+        if (TreesInViz()) {
+          // In TreesInViz mode, we query viz before deleting a tiling, so its
+          // removal is delayed comparing with non TreesInViz mode and there is
+          // no need to add it again in the next frame.
+          ASSERT_EQ(2u, normal_layer->tilings()->num_tilings());
+          EXPECT_EQ(gfx::AxisTransform2d(2.f, gfx::Vector2dF()),
+                    normal_layer->tilings()->tiling_at(0)->raster_transform());
+          EXPECT_EQ(gfx::AxisTransform2d(),
+                    normal_layer->tilings()->tiling_at(1)->raster_transform());
+        } else {
+          ASSERT_EQ(1u, normal_layer->tilings()->num_tilings());
+          EXPECT_EQ(gfx::AxisTransform2d(2.f, gfx::Vector2dF()),
+                    normal_layer->tilings()->tiling_at(0)->raster_transform());
+        }
 
         MainThreadTaskRunner()->PostTask(
             FROM_HERE,
@@ -658,13 +673,36 @@ class LayerTreeHostPictureTestForceRecalculateScales
       case 2:
         // On 3rd commit, both layers should adjust scales due to forced
         // recalculating.
-        ASSERT_EQ(1u, will_change_layer->tilings()->num_tilings());
-        EXPECT_EQ(
-            gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
-            will_change_layer->tilings()->tiling_at(0)->raster_transform());
-        ASSERT_EQ(1u, normal_layer->tilings()->num_tilings());
-        EXPECT_EQ(gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
-                  normal_layer->tilings()->tiling_at(0)->raster_transform());
+        if (TreesInViz()) {
+          // In TreesInViz mode, we query viz before deleting a tiling, so its
+          // removal is delayed comparing with non TreesInViz mode and there is
+          // no need to add it again in the next frame.
+          ASSERT_EQ(2u, will_change_layer->tilings()->num_tilings());
+          EXPECT_EQ(
+              gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
+              will_change_layer->tilings()->tiling_at(0)->raster_transform());
+          EXPECT_EQ(
+              gfx::AxisTransform2d(),
+              will_change_layer->tilings()->tiling_at(1)->raster_transform());
+
+          ASSERT_EQ(3u, normal_layer->tilings()->num_tilings());
+          EXPECT_EQ(gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
+                    normal_layer->tilings()->tiling_at(0)->raster_transform());
+          EXPECT_EQ(gfx::AxisTransform2d(2.f, gfx::Vector2dF()),
+                    normal_layer->tilings()->tiling_at(1)->raster_transform());
+          EXPECT_EQ(gfx::AxisTransform2d(),
+                    normal_layer->tilings()->tiling_at(2)->raster_transform());
+        } else {
+          ASSERT_EQ(1u, will_change_layer->tilings()->num_tilings());
+          EXPECT_EQ(
+              gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
+              will_change_layer->tilings()->tiling_at(0)->raster_transform());
+
+          ASSERT_EQ(1u, normal_layer->tilings()->num_tilings());
+          EXPECT_EQ(gfx::AxisTransform2d(4.f, gfx::Vector2dF()),
+                    normal_layer->tilings()->tiling_at(0)->raster_transform());
+        }
+
         EndTest();
         break;
     }
