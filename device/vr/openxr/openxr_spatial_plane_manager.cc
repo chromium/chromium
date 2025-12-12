@@ -28,6 +28,23 @@ mojom::XRPlaneOrientation ToMojomPlaneOrientation(
   }
 }
 
+mojom::XRSemanticLabel ToMojomSemanticLabel(
+    const XrSpatialPlaneSemanticLabelEXT& label) {
+  switch (label) {
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_FLOOR_EXT:
+      return mojom::XRSemanticLabel::kFloor;
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_WALL_EXT:
+      return mojom::XRSemanticLabel::kWall;
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_CEILING_EXT:
+      return mojom::XRSemanticLabel::kCeiling;
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_TABLE_EXT:
+      return mojom::XRSemanticLabel::kTable;
+    case XR_SPATIAL_PLANE_SEMANTIC_LABEL_UNCATEGORIZED_EXT:
+    default:
+      return mojom::XRSemanticLabel::kOther;
+  }
+}
+
 std::vector<XrSpatialComponentTypeEXT> GetAttachableComponentTypes(
     const OpenXrExtensionMethods& extension_methods,
     XrInstance instance,
@@ -90,6 +107,14 @@ OpenXrSpatialPlaneManager::OpenXrSpatialPlaneManager(
               .xrEnumerateSpatialCapabilityComponentTypesEXT,
           instance, system, XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT);
 
+  semantic_label_enabled_ =
+      base::Contains(plane_tracking_components,
+                     XR_SPATIAL_COMPONENT_TYPE_PLANE_SEMANTIC_LABEL_EXT);
+  if (semantic_label_enabled_) {
+    enabled_components_.insert(
+        XR_SPATIAL_COMPONENT_TYPE_PLANE_SEMANTIC_LABEL_EXT);
+  }
+
   std::vector<XrSpatialComponentTypeEXT> attachable_components =
       GetAttachableComponentTypes(extension_helper_->ExtensionMethods(),
                                   instance, system);
@@ -148,6 +173,12 @@ void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
   std::vector<XrSpatialComponentTypeEXT> component_types = {
       XR_SPATIAL_COMPONENT_TYPE_BOUNDED_2D_EXT,
       XR_SPATIAL_COMPONENT_TYPE_PLANE_ALIGNMENT_EXT};
+
+  if (semantic_label_enabled_) {
+    component_types.push_back(
+        XR_SPATIAL_COMPONENT_TYPE_PLANE_SEMANTIC_LABEL_EXT);
+  }
+
   query_condition.componentTypeCount = component_types.size();
   query_condition.componentTypes = component_types.data();
 
@@ -187,6 +218,18 @@ void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
       .bounds = bounded_2d_data.data()};
   query_result.next = &bounded_2d_list;
 
+  std::vector<XrSpatialPlaneSemanticLabelEXT> semantic_labels;
+  XrSpatialComponentPlaneSemanticLabelListEXT semantic_label_list{
+      XR_TYPE_SPATIAL_COMPONENT_PLANE_SEMANTIC_LABEL_LIST_EXT};
+  if (semantic_label_enabled_) {
+    semantic_labels.resize(query_result.entityIdCountOutput);
+    semantic_label_list.semanticLabelCount =
+        static_cast<uint32_t>(semantic_labels.size());
+    semantic_label_list.semanticLabels = semantic_labels.data();
+    semantic_label_list.next = query_result.next;
+    query_result.next = &semantic_label_list;
+  }
+
   if (XR_FAILED(
           extension_helper_->ExtensionMethods().xrQuerySpatialComponentDataEXT(
               snapshot, &query_condition, &query_result))) {
@@ -225,6 +268,10 @@ void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
     // Can't use `GetPlaneId` until our entity_id is in the map.
     plane_data->id = GetPlaneId(entity_id);
     plane_data->orientation = ToMojomPlaneOrientation(plane_alignments[i]);
+
+    if (semantic_label_enabled_) {
+      plane_data->semantic_label = ToMojomSemanticLabel(semantic_labels[i]);
+    }
 
     // The incoming pose has the Z axis as the normal, but WebXR expects the Y
     // axis to be the normal.

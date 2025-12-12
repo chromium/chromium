@@ -262,14 +262,14 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
       updated_planes.push_back(mojom::XRPlaneData::New(
           plane_id,
           mojo::ConvertTo<device::mojom::XRPlaneOrientation>(plane_type), pose,
-          std::move(vertices)));
+          std::nullopt, std::move(vertices)));
     } else {
       DVLOG(3) << __func__ << ": plane_id: " << plane_id.GetUnsafeValue()
                << ", position=untracked, orientation=untracked";
 
       updated_planes.push_back(mojom::XRPlaneData::New(
           plane_id, device::mojom::XRPlaneOrientation::UNKNOWN, std::nullopt,
-          std::vector<mojom::XRPlanePointDataPtr>{}));
+          std::nullopt, std::vector<mojom::XRPlanePointDataPtr>{}));
     }
   }
 

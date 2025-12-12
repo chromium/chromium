@@ -14,6 +14,30 @@
 
 namespace blink {
 
+namespace {
+
+String SemanticLabelToString(
+    const std::optional<device::mojom::blink::XRSemanticLabel>& label) {
+  if (!label) {
+    return String();
+  }
+
+  switch (*label) {
+    case device::mojom::blink::XRSemanticLabel::kOther:
+      return "other";
+    case device::mojom::blink::XRSemanticLabel::kFloor:
+      return "floor";
+    case device::mojom::blink::XRSemanticLabel::kWall:
+      return "wall";
+    case device::mojom::blink::XRSemanticLabel::kCeiling:
+      return "ceiling";
+    case device::mojom::blink::XRSemanticLabel::kTable:
+      return "table";
+  }
+}
+
+}  // namespace
+
 XRPlane::XRPlane(device::PlaneId id,
                  XRSession* session,
                  const device::mojom::blink::XRPlaneData& plane_data,
@@ -25,6 +49,7 @@ XRPlane::XRPlane(device::PlaneId id,
               mojo::ConvertTo<HeapVector<Member<DOMPointReadOnly>>>(
                   plane_data.polygon),
               plane_data.mojo_from_plane,
+              SemanticLabelToString(plane_data.semantic_label),
               timestamp) {}
 
 XRPlane::XRPlane(device::PlaneId id,
@@ -32,12 +57,14 @@ XRPlane::XRPlane(device::PlaneId id,
                  const std::optional<Orientation>& orientation,
                  HeapVector<Member<DOMPointReadOnly>> polygon,
                  const std::optional<device::Pose>& mojo_from_plane,
+                 const String& semantic_label,
                  double timestamp)
     : id_(id),
       polygon_(MakeGarbageCollected<FrozenArray<DOMPointReadOnly>>(
           std::move(polygon))),
       orientation_(orientation),
       mojo_from_plane_(mojo_from_plane),
+      semantic_label_(semantic_label),
       session_(session),
       last_changed_time_(timestamp) {
   DVLOG(3) << __func__;
@@ -82,7 +109,7 @@ std::optional<V8XRPlaneOrientation> XRPlane::orientation() const {
 }
 
 String XRPlane::semanticLabel() const {
-  return String();
+  return semantic_label_;
 }
 
 double XRPlane::lastChangedTime() const {
@@ -103,6 +130,8 @@ void XRPlane::Update(const device::mojom::blink::XRPlaneData& plane_data,
       plane_data.orientation);
 
   mojo_from_plane_ = plane_data.mojo_from_plane;
+
+  semantic_label_ = SemanticLabelToString(plane_data.semantic_label);
 
   polygon_ = MakeGarbageCollected<FrozenArray<DOMPointReadOnly>>(
       mojo::ConvertTo<HeapVector<Member<DOMPointReadOnly>>>(

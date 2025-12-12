@@ -291,7 +291,7 @@ mojom::XRPlaneDetectionDataPtr FakeArCore::GetDetectedPlanesData() {
 
   result.push_back(
       mojom::XRPlaneData::New(PlaneId(1), mojom::XRPlaneOrientation::HORIZONTAL,
-                              pose, std::move(vertices)));
+                              pose, std::nullopt, std::move(vertices)));
 
   return mojom::XRPlaneDetectionData::New(std::vector<PlaneId>{PlaneId(1)},
                                           std::move(result));

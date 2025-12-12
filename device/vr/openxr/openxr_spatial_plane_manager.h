@@ -80,6 +80,7 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
 
   // Both of these components are guaranteed to be supported for the
   absl::flat_hash_set<XrSpatialComponentTypeEXT> enabled_components_;
+  bool semantic_label_enabled_ = false;
 
   base::WeakPtrFactory<OpenXrSpatialPlaneManager> weak_ptr_factory_{this};
 };

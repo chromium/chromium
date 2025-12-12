@@ -496,6 +496,14 @@ struct XRPlanePointData {
   float z;
 };
 
+enum XRSemanticLabel {
+  kOther = 0,
+  kFloor = 1,
+  kWall = 2,
+  kCeiling = 3,
+  kTable = 4,
+};
+
 // Struct containing plane-related information. A plane describes a flat surface
 // detected in the real world by the underlying system.
 struct XRPlaneData {
@@ -511,6 +519,11 @@ struct XRPlaneData {
   // Null if the device does not know where the plane is located in the world
   // space (tracking loss), but the tracking can still be recovered.
   Pose? mojo_from_plane;
+
+  // A description of what the runtime has determined the plane may actually
+  // represent. Null if the runtime does not support this, or does not know what
+  // the given plane may represent.
+  XRSemanticLabel? semantic_label;
 
   // Vertices of 2D convex polygon approximating the plane.
   array<XRPlanePointData> polygon;
