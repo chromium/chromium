@@ -34,6 +34,10 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserWindowInterface;
@@ -62,11 +66,13 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-namespace extensions {
-
-namespace api::windows {
-enum class WindowState;
+#if !BUILDFLAG(IS_ANDROID)
+namespace web_app {
+class IsolatedWebAppUrlInfo;
 }
+#endif
+
+namespace extensions {
 
 // This namespace includes a collection of conceptually-internal helper methods
 // and constants that are currently here because they are used by both
@@ -194,11 +200,14 @@ class WindowsGetAllFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("windows.getAll", WINDOWS_GETALL)
 };
 class WindowsCreateFunction : public ExtensionFunction {
-  ~WindowsCreateFunction() override = default;
+ public:
+  WindowsCreateFunction();
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.create", WINDOWS_CREATE)
 
  private:
+  ~WindowsCreateFunction() override;
+
   // Ensures the tab for the window is valid. Returns an error string, or the
   // empty string if the tab is valid.
   static std::string ValidateTab(WindowController* source_window,
@@ -214,9 +223,32 @@ class WindowsCreateFunction : public ExtensionFunction {
       const api::windows::Create::Params::CreateData& create_data,
       gfx::Rect& window_bounds);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Handles post-creation window initialization. `new_window` is the newly-
+  // created browser window. `source_window` and `tab_index` indicate an
+  // existing tab to move to the new window, if any.
+  // Returns the response to pass back to the extension.
+  // TODO(crbug.com/431004500): Remove `source_window` and `tab_index` here;
+  // they won't work to be passed in on desktop android.
+  ResponseValue OnBrowserWindowCreated(BrowserWindowInterface* new_window,
+                                       WindowController* source_window,
+                                       int tab_index);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
-  void OnWindowCreatedAsynchronously(const SessionID& session_id);
+  void OnBocaWindowCreatedAsynchronously(const SessionID& session_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // The info for an isolated web app to open, if any.
+  std::optional<web_app::IsolatedWebAppUrlInfo> isolated_web_app_url_info_;
+#endif
+
+  // The creation data parameters supplied by the extension.
+  std::optional<api::windows::Create::Params::CreateData> create_data_;
+
+  // The set of parsed URLs to open in the newly-created window.
+  std::vector<GURL> urls_;
 };
 class WindowsUpdateFunction : public ExtensionFunction {
   ~WindowsUpdateFunction() override = default;
