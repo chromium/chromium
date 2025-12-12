@@ -198,11 +198,21 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
   if (all_loyalty_cards.empty()) {
     return;
   }
+  std::vector<LoyaltyCard> affiliated_cards;
+  std::copy_if(all_loyalty_cards.begin(), all_loyalty_cards.end(),
+               std::back_inserter(affiliated_cards),
+               [&](const LoyaltyCard& card) {
+                 return card.GetAffiliationCategory(url) ==
+                        LoyaltyCard::AffiliationCategory::kAffiliated;
+               });
+  if (affiliated_cards.empty()) {
+    return;
+  }
 #if BUILDFLAG(IS_ANDROID)
   // No submenu on Android. Loyalty card suggestions are listed right after
   // email suggestions.
   std::vector<Suggestion> loyalty_card_suggestions =
-      CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
+      CreateSuggestionsFromLoyaltyCards(affiliated_cards, valuables_manager);
   email_suggestions.insert(
       email_suggestions.end(),
       std::make_move_iterator(loyalty_card_suggestions.begin()),
@@ -216,13 +226,8 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   submenu_suggestion.icon = Suggestion::Icon::kGoogleWalletMonochrome;
 #endif
-  std::ranges::stable_partition(
-      all_loyalty_cards, [&](const LoyaltyCard& card) {
-        return card.GetAffiliationCategory(url) ==
-               LoyaltyCard::AffiliationCategory::kAffiliated;
-      });
   submenu_suggestion.children =
-      CreateSuggestionsFromLoyaltyCards(all_loyalty_cards, valuables_manager);
+      CreateSuggestionsFromLoyaltyCards(affiliated_cards, valuables_manager);
   submenu_suggestion.children.emplace_back(SuggestionType::kSeparator);
   submenu_suggestion.children.emplace_back(
       CreateManageLoyaltyCardsSuggestion());
@@ -351,18 +356,23 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
   // SAFETY: Bounds information contained in vector iterators.
   UNSAFE_BUFFERS(std::vector<LoyaltyCard> affiliated_cards(
       all_loyalty_cards.begin(), non_affiliated_cards.begin()));
-  // If no submenu is needed.
 
+  // Show suggestions only in case there is a card that matches current domain.
+  if (affiliated_cards.empty()) {
+    callback({FillingProduct::kLoyaltyCard, {}});
+    return;
+  }
+
+  // If no submenu is needed.
 #if BUILDFLAG(IS_ANDROID)
   const bool generate_flat_suggestions = true;
 #else
-  const bool generate_flat_suggestions =
-      affiliated_cards.empty() || non_affiliated_cards.empty();
+  const bool generate_flat_suggestions = non_affiliated_cards.empty();
 #endif
 
   if (generate_flat_suggestions) {
     std::vector<Suggestion> suggestions = CreateSuggestionsFromLoyaltyCards(
-        all_loyalty_cards, *client.GetValuablesDataManager());
+        affiliated_cards, *client.GetValuablesDataManager());
     std::ranges::move(
         GetLoyaltyCardsFooterSuggestions(trigger_field.is_autofilled()),
         std::back_inserter(suggestions));
