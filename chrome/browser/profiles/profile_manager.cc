@@ -1341,7 +1341,13 @@ bool ProfileManager::AddKeepAlive(Profile* profile,
             << "The keepalive was not added. This may cause a crash during "
             << "teardown. (except in unit tests, where Profiles may not be "
             << "registered with the ProfileManager)";
-    return false;
+    if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+      return false;
+    }
+    // On platforms where we don't destroy profiles on close (e.g. ChromeOS),
+    // we can treat a missing refcount as success because the profile stays
+    // alive anyway.
+    return true;
   }
 
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {

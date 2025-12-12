@@ -194,10 +194,9 @@ void CrxInstaller::InstallCrx(const base::FilePath& source_file) {
 }
 
 void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
-  if (!profile_ || browser_terminating_) {
+  if (!AcquireKeepAlive()) {
     return;
   }
-
   NotifyCrxInstallBegin();
 
   source_file_ = source_file.path;
@@ -216,10 +215,9 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
 void CrxInstaller::InstallUnpackedCrx(const ExtensionId& extension_id,
                                       const std::string& public_key,
                                       const base::FilePath& unpacked_dir) {
-  if (!profile_ || browser_terminating_) {
+  if (!AcquireKeepAlive()) {
     return;
   }
-
   NotifyCrxInstallBegin();
 
   source_file_ = unpacked_dir;
@@ -240,6 +238,9 @@ void CrxInstaller::InstallUserScript(const base::FilePath& source_file,
                                      const GURL& download_url) {
   DCHECK(!download_url.is_empty());
 
+  if (!AcquireKeepAlive()) {
+    return;
+  }
   NotifyCrxInstallBegin();
 
   source_file_ = source_file;
@@ -1080,10 +1081,25 @@ void CrxInstaller::ReportInstallationStage(InstallationStage stage) {
   install_stage_tracker->ReportCRXInstallationStage(expected_id_, stage);
 }
 
-void CrxInstaller::NotifyCrxInstallBegin() {
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+bool CrxInstaller::AcquireKeepAlive() {
+  if (!profile_ || browser_terminating_) {
+    return false;
+  }
+
+  profile_keep_alive_ = ScopedProfileKeepAlive::TryAcquire(
       profile_, ProfileKeepAliveOrigin::kCrxInstaller);
 
+  if (!profile_keep_alive_) {
+    RunInstallerCallbacks(
+        CrxInstallError(CrxInstallErrorType::OTHER,
+                        CrxInstallErrorDetail::PROFILE_SHUTTING_DOWN,
+                        u"Profile is shutting down."));
+    return false;
+  }
+  return true;
+}
+
+void CrxInstaller::NotifyCrxInstallBegin() {
   InstallTrackerFactory::GetForBrowserContext(profile())->OnBeginCrxInstall(
       expected_id_);
 }

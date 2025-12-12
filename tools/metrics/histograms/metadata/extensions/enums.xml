@@ -2901,6 +2901,7 @@ Called by update_extension_histograms.py.-->
   <int value="22" label="USER_CANCELED"/>
   <int value="23" label="USER_ABORTED"/>
   <int value="24" label="UPDATE_NON_EXISTING_EXTENSION"/>
+  <int value="25" label="PROFILE_SHUTTING_DOWN"/>
 </enum>
 
 <enum name="ExtensionInstallationDownloadingCacheStatus">

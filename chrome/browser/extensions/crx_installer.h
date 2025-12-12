@@ -355,6 +355,8 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   void ReportSuccessFromUIThread();
   // Always report from the UI thread.
   void ReportInstallationStage(InstallationStage stage);
+  // Returns false if it cannot acquire resources.
+  bool AcquireKeepAlive();
   void NotifyCrxInstallBegin();
   void NotifyCrxInstallComplete(const std::optional<CrxInstallError>& error);
 

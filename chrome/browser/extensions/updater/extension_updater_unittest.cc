@@ -2927,6 +2927,7 @@ TEST_F(ExtensionUpdaterTest, TestExtensionPriority) {
   TestSingleExtensionDownloadingPriority(DownloadFetchPriority::kForeground);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ExtensionUpdaterTest, TestProfileDestruction) {
   ExtensionUpdater updater(profile());
   // Create an active ProfileManager, and do NOT make it the owner of profile().
@@ -2946,6 +2947,7 @@ TEST_F(ExtensionUpdaterTest, TestProfileDestruction) {
   updater.CheckNow(ExtensionUpdater::CheckParams());
   base::RunLoop().RunUntilIdle();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class CanUseUpdateServiceTest : public ExtensionUpdaterTest {
  public:

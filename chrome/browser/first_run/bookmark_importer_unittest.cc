@@ -192,7 +192,7 @@ TEST_F(BookmarkDictImporterTest, FailsIfBookmarkModelIsMissing) {
       "FirstRun.ImportBookmarksDict",
       FirstRunImportBookmarksResult::kInvalidProfile, 1);
 }
-
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(BookmarkDictImporterTest, FailsIfProfileIsDestroyed) {
   base::Value::Dict bookmarks_dict = ParseJSONIfValid(
       R"(
@@ -232,6 +232,7 @@ TEST_F(BookmarkDictImporterTest, FailsIfProfileIsDestroyed) {
 
   EXPECT_FALSE(did_import);
 }
+#endif  // !BUILLDFLAG(IS_CHROMEOS)
 
 TEST_F(BookmarkDictImporterTest, SucceedsWithSomeMalformedNodes) {
   base::Value::Dict bookmarks_dict = ParseJSONIfValid(

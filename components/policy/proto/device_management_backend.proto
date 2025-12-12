@@ -3957,6 +3957,7 @@ message ExtensionInstallReportLogEvent {
     USER_CANCELED = 22;
     USER_ABORTED = 23;
     UPDATE_NON_EXISTING_EXTENSION = 24;
+    PROFILE_SHUTTING_DOWN = 25;
   }
 
   // Timestamp, in microseconds since epoch. Set for all log

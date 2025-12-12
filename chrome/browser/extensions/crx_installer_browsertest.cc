@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -38,7 +39,11 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -52,6 +57,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -1158,6 +1164,68 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallDuringShutdown) {
   // Exit the test while the installer is still running. No crash.
 }
 #endif  // !defined(LEAK_SANITIZER)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
+                       InstallFailsDuringProfileShutdown) {
+  // Setup: artificially trigger the async destruction path in ProfileDestroyer
+  // by creating a "dangling" RPH.
+  // - Set ProfileDestroyer's timeout to 60s instead of the normal 1s, to avoid
+  //   an accidental timeout.
+  // - Create a second Profile & Browser to delay BrowserProcess shutdown.
+  // - Create an RPH for the main Profile.
+  // - Close the main window so Profile is handed off to ProfileDestroyer.
+  // - Observe that InstallCrx fails with PROFILE_SHUTTING_DOWN.
+  ProfileDestroyer::SetDestroyProfileTimeoutForTesting(base::Seconds(60));
+
+  base::test::TestFuture<Profile*> future;
+  g_browser_process->profile_manager()->CreateMultiProfileAsync(
+      u"Test Profile 2", /*icon_index=*/0, /*is_hidden=*/false,
+      future.GetCallback());
+  Profile* second_profile = future.Get();
+  ASSERT_TRUE(second_profile);
+  CreateBrowser(second_profile);
+
+  Profile* target_profile = profile();
+  base::FilePath profile_path = target_profile->GetPath();
+  base::WeakPtr<Profile> weak_profile = target_profile->GetWeakPtr();
+
+  ASSERT_TRUE(
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path));
+
+  auto dangling_rph =
+      std::make_unique<content::MockRenderProcessHost>(target_profile);
+
+  CloseBrowserSynchronously(browser());
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_FALSE(
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path));
+  ASSERT_FALSE(g_browser_process->IsShuttingDown());
+  ASSERT_TRUE(weak_profile);
+
+  scoped_refptr<CrxInstaller> installer(
+      CrxInstaller::CreateSilent(target_profile));
+  installer->set_allow_silent_install(true);
+
+  base::test::TestFuture<std::optional<CrxInstallError>> install_result_future;
+  installer->AddInstallerCallback(
+      install_result_future
+          .GetCallback<const std::optional<CrxInstallError>&>());
+  installer->InstallCrx(test_data_dir_.AppendASCII("good.crx"));
+
+  std::optional<CrxInstallError> error = install_result_future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ(CrxInstallErrorType::OTHER, error->type());
+  EXPECT_EQ(CrxInstallErrorDetail::PROFILE_SHUTTING_DOWN, error->detail());
+
+  installer.reset();
+  dangling_rph.reset();
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_FALSE(weak_profile);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the Extensions.ExtensionInstalled.NewFromWebstore histogram is
 // only emitted when a new extension from the webstore is installed. If any

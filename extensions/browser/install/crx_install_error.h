@@ -60,10 +60,11 @@ enum class CrxInstallErrorDetail {
   USER_CANCELED,                            // 22
   USER_ABORTED,                             // 23
   UPDATE_NON_EXISTING_EXTENSION,            // 24
+  PROFILE_SHUTTING_DOWN,                    // 25
 
   // Magic constant used by the histogram macros.
   // Always update it to the max value.
-  kMaxValue = UPDATE_NON_EXISTING_EXTENSION,
+  kMaxValue = PROFILE_SHUTTING_DOWN,
 };
 
 // Simple error class for CrxInstaller.
