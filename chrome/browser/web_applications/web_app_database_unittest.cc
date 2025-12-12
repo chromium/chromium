@@ -117,10 +117,11 @@ class WebAppDatabaseTest : public WebAppTest {
     auto write_batch = database_factory().GetStore()->CreateWriteBatch();
 
     for (uint32_t i = 0; i < num_apps; ++i) {
-      std::unique_ptr<WebApp> app =
-          test::CreateRandomWebApp({.seed = i,
-                                    .only_non_external_management_types =
-                                        only_non_external_management_types});
+      test::CreateRandomWebAppParams params;
+      params.seed = i;
+      params.only_non_external_management_types =
+          only_non_external_management_types;
+      std::unique_ptr<WebApp> app = test::CreateRandomWebApp(params);
       std::unique_ptr<proto::WebApp> proto = WebAppToProto(*app);
       const webapps::AppId app_id = app->app_id();
 
@@ -176,13 +177,16 @@ TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
 
   const uint32_t num_apps = 1000;
 
-  std::unique_ptr<WebApp> app = test::CreateRandomWebApp({.seed = 0});
+  test::CreateRandomWebAppParams params;
+  params.seed = 0;
+  std::unique_ptr<WebApp> app = test::CreateRandomWebApp(params);
   webapps::AppId app_id = app->app_id();
   RegisterApp(std::move(app));
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
 
   for (uint32_t i = 1; i <= num_apps; ++i) {
-    std::unique_ptr<WebApp> extra_app = test::CreateRandomWebApp({.seed = i});
+    params.seed = i;
+    std::unique_ptr<WebApp> extra_app = test::CreateRandomWebApp(params);
     RegisterApp(std::move(extra_app));
   }
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
@@ -211,13 +215,14 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 #endif
 
   for (uint32_t i = 0; i < num_apps; ++i) {
-    std::unique_ptr<WebApp> app = test::CreateRandomWebApp(
-        {.seed = i, .allow_system_source = allow_system_source});
+    test::CreateRandomWebAppParams params;
+    params.seed = i;
+    params.allow_system_source = allow_system_source;
+    std::unique_ptr<WebApp> app = test::CreateRandomWebApp(params);
     apps_to_delete.push_back(app->app_id());
     apps_to_create.push_back(std::move(app));
 
-    std::unique_ptr<WebApp> expected_app = test::CreateRandomWebApp(
-        {.seed = i, .allow_system_source = allow_system_source});
+    std::unique_ptr<WebApp> expected_app = test::CreateRandomWebApp(params);
     expected_registry.emplace(expected_app->app_id(), std::move(expected_app));
   }
 
@@ -286,7 +291,10 @@ TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
 
 // Tests handling crashes fixed in crbug.com/1417955.
 TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
-  std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
+  test::CreateRandomWebAppParams params;
+  std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp(params);
+  // Ensure we are not a sub app.
+  base_app->SetParentAppId(std::nullopt);
   WebAppShortcutsMenuItemInfo shortcut_item_info{};
   shortcut_item_info.name = u"shortcut";
   shortcut_item_info.url = GURL("http://example.com/shortcut");
@@ -294,6 +302,7 @@ TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
   shortcut_item_info.downloaded_icon_sizes.maskable = {24};
   shortcut_item_info.downloaded_icon_sizes.monochrome = {123};
   base_app->SetShortcutsMenuInfo({shortcut_item_info});
+  webapps::AppId app_id = base_app->app_id();
 
   std::unique_ptr<proto::WebApp> base_proto = WebAppToProto(*base_app);
 

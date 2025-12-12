@@ -153,8 +153,9 @@ IsolatedWebAppIntegrityBlockData CreateIntegrityBlockData() {
 }  // namespace
 
 TEST(WebAppTest, HasAnySources) {
-  WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                           GURL("https://example.com"))};
+  GURL start_url("https://example.com");
+  WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+             start_url.GetWithoutFilename());
 
   EXPECT_FALSE(app.HasAnySources());
   for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
@@ -170,8 +171,9 @@ TEST(WebAppTest, HasAnySources) {
 }
 
 TEST(WebAppTest, HasOnlySource) {
-  WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                           GURL("https://example.com"))};
+  GURL start_url("https://example.com");
+  WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+             start_url.GetWithoutFilename());
 
   for (WebAppManagement::Type source : WebAppManagementTypes::All()) {
     app.AddSource(source);
@@ -209,8 +211,9 @@ TEST(WebAppTest, HasOnlySource) {
 }
 
 TEST(WebAppTest, WasInstalledByUser) {
-  WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                           GURL("https://example.com"))};
+  GURL start_url("https://example.com");
+  WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+             start_url.GetWithoutFilename());
 
   app.AddSource(WebAppManagement::kSync);
   EXPECT_TRUE(app.WasInstalledByUser());
@@ -262,8 +265,9 @@ TEST(WebAppTest, WasInstalledByUser) {
 }
 
 TEST(WebAppTest, CanUserUninstallWebApp) {
-  WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                           GURL("https://example.com"))};
+  GURL start_url("https://example.com");
+  WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+             start_url.GetWithoutFilename());
 
   app.AddSource(WebAppManagement::kDefault);
   EXPECT_TRUE(app.IsPreinstalledApp());
@@ -338,8 +342,11 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
 TEST(WebAppTest, SampleAppAsDebugValue) {
   const base::FilePath path_to_test_file =
       GetPathToTestFile("sample_web_app.json");
-  const base::Value web_app_debug_value = WebAppToPlatformAgnosticDebugValue(
-      test::CreateRandomWebApp({.seed = 1234, .non_zero = true}));
+  test::CreateRandomWebAppParams params;
+  params.seed = 1234;
+  params.non_zero = true;
+  const base::Value web_app_debug_value =
+      WebAppToPlatformAgnosticDebugValue(test::CreateRandomWebApp(params));
 
   if (IsRebaseline()) {
     LOG(INFO) << "Generating expectations sample web app unit test in "
@@ -357,8 +364,10 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
 
 TEST(WebAppTest, RandomAppAsDebugValue_NoCrash) {
   for (uint32_t seed = 0; seed < 1000; ++seed) {
+    test::CreateRandomWebAppParams params;
+    params.seed = seed;
     const base::Value web_app_debug_value =
-        test::CreateRandomWebApp({.seed = seed})->AsDebugValue();
+        test::CreateRandomWebApp(params)->AsDebugValue();
 
     EXPECT_TRUE(web_app_debug_value.is_dict());
     EXPECT_TRUE(base::ToString(web_app_debug_value).length() > 10);
@@ -481,8 +490,9 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
 }
 
 TEST(WebAppTest, PermissionsPolicyDebugValue) {
-  WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
-                           GURL("https://example.com"))};
+  GURL start_url("https://example.com");
+  WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+             start_url.GetWithoutFilename());
   app.SetPermissionsPolicy({
       {network::mojom::PermissionsPolicyFeature::kGyroscope,
        /*allowed_origins=*/{},

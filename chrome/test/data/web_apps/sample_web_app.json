@@ -5,7 +5,7 @@
    "allowed_launch_protocols": [ "web+test_1234_0", "web+test_1234_1", "web+test_1234_2" ],
    "always_show_toolbar_in_fullscreen": true,
    "app_service_icon_url": "chrome://app-icon/ejhkbejlajgoplgondfmjmplbdjaofok/32",
-   "app_size_in_bytes": "1450270097",
+   "app_size_in_bytes": "382722586",
    "background_color": "rgba(151,34,83,1)",
    "borderless_url_patterns": [  ],
    "current_os_integration_states": {
@@ -35,23 +35,23 @@
          "description": "Description1234",
          "icon_data_any": [ {
             "icon_size": 32,
-            "timestamp": "1925042743"
+            "timestamp": "2431456532"
          } ],
          "title": "Name1234"
       },
       "shortcut_menus": {
          "shortcut_menu_info": [ {
             "icon_data_any": [ {
-               "icon_size": 48,
-               "timestamp": "1977240764"
+               "icon_size": 32,
+               "timestamp": "2161309441"
             } ],
             "icon_data_maskable": [ {
-               "icon_size": 16,
-               "timestamp": "1440847613"
+               "icon_size": 48,
+               "timestamp": "2375088870"
             } ],
             "icon_data_monochrome": [ {
                "icon_size": 32,
-               "timestamp": "3062766558"
+               "timestamp": "3652777183"
             } ],
             "shortcut_launch_url": "https://example.com/scope1234/0",
             "shortcut_name": "shortcut_name0"
@@ -64,7 +64,7 @@
    },
    "dark_mode_background_color": "rgba(61,127,69,1)",
    "dark_mode_theme_color": "rgba(77,188,194,1)",
-   "data_size_in_bytes": "4162102550",
+   "data_size_in_bytes": "1450270097",
    "description": "Description1234",
    "disallowed_launch_protocols": [ "web+disallowed_1234_0", "web+disallowed_1234_1", "web+disallowed_1234_2", "web+disallowed_1234_3", "web+disallowed_1234_4", "web+disallowed_1234_5", "web+disallowed_1234_6" ],
    "display_mode": "minimal-ui",
@@ -179,10 +179,10 @@
    } ],
    "first_install_time": "1970-01-02 14:58:07.045000 UTC",
    "generated_icon_fix": {
-      "attempt_count": "41",
-      "last_attempt_time": "2716591902",
+      "attempt_count": "69",
+      "last_attempt_time": "2943622033",
       "source": "GENERATED_ICON_FIX_SOURCE_RETROACTIVE",
-      "window_start_time": "2749657237"
+      "window_start_time": "363425051"
    },
    "install_state": "1",
    "installed_by": [ {
@@ -200,7 +200,7 @@
    "last_badging_time": "1970-01-28 05:07:28.623000 UTC",
    "last_launch_time": "1970-01-27 09:52:51.713000 UTC",
    "latest_install_source": "api custom tab",
-   "latest_install_time": "1970-01-12 14:45:59.744000 UTC",
+   "latest_install_time": "1970-02-02 18:30:20.433000 UTC",
    "launch_handler": {
       "client_mode": "kAuto",
       "client_mode_valid_and_specified": false
@@ -262,37 +262,26 @@
    "manifest_update_time": "1970-02-08 16:35:29.543000 UTC",
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "https://example.com/scope1234/new_note1308772041",
-   "parent_app_id": "463354209",
+   "parent_app_id": null,
    "pending_update_info": {
       "downloaded_manifest_icons": [ {
          "icon_sizes": [ 512 ],
          "purpose": "ANY"
       }, {
-         "icon_sizes": [ 128, 48, 48, 1024 ],
+         "icon_sizes": [ 48, 48, 1024 ],
          "purpose": "MASKABLE"
       }, {
          "icon_sizes": [ 64, 128 ],
          "purpose": "MONOCHROME"
       } ],
       "downloaded_trusted_icons": [ {
-         "icon_sizes": [ 128 ],
-         "purpose": "ANY"
-      }, {
-         "icon_sizes": [ 96, 1024 ],
+         "icon_sizes": [ 64 ],
          "purpose": "MASKABLE"
       }, {
-         "icon_sizes": [ 512 ],
+         "icon_sizes": [ 64 ],
          "purpose": "MONOCHROME"
       } ],
       "manifest_icons": [ {
-         "purpose": "MASKABLE",
-         "size_in_px": 128,
-         "url": "https://example.com/icons2588856730"
-      }, {
-         "purpose": "ANY",
-         "size_in_px": 512,
-         "url": "https://example.com/icons4285246002"
-      }, {
          "purpose": "MONOCHROME",
          "size_in_px": 64,
          "url": "https://example.com/icons10760248"
@@ -312,29 +301,25 @@
          "purpose": "MASKABLE",
          "size_in_px": 1024,
          "url": "https://example.com/icons443139040"
+      }, {
+         "purpose": "ANY",
+         "size_in_px": 512,
+         "url": "https://example.com/icons406255832"
       } ],
       "name": "Name1234",
       "trusted_icons": [ {
          "purpose": "MASKABLE",
-         "size_in_px": 96,
-         "url": "https://example.com/icons2572177745"
-      }, {
-         "purpose": "ANY",
-         "size_in_px": 128,
-         "url": "https://example.com/icons3502924369"
-      }, {
-         "purpose": "MASKABLE",
-         "size_in_px": 1024,
-         "url": "https://example.com/icons476349338"
+         "size_in_px": 64,
+         "url": "https://example.com/icons2593187726"
       }, {
          "purpose": "MONOCHROME",
-         "size_in_px": 512,
-         "url": "https://example.com/icons3978233549"
+         "size_in_px": 64,
+         "url": "https://example.com/icons1394185133"
       } ],
       "was_ignored": true
    },
    "permissions_policy": [ {
-      "allowed_origins": [ "https://app-15481569330.com" ],
+      "allowed_origins": [ "https://app-10575970360.com" ],
       "feature": "accelerometer",
       "matches_all_origins": true,
       "matches_opaque_src": true
@@ -357,7 +342,7 @@
    } ],
    "related_applications": [ {
       "id": "id3",
-      "platform": "amazon",
+      "platform": "play",
       "url": "https://example.com/3"
    }, {
       "id": "id2",
@@ -365,11 +350,11 @@
       "url": "https://example.com/2"
    }, {
       "id": "id1",
-      "platform": "play",
+      "platform": "webapp",
       "url": "https://example.com/1"
    }, {
       "id": "id0",
-      "platform": "play",
+      "platform": "webapp",
       "url": "https://example.com/0"
    } ],
    "run_on_os_login_mode": "windowed",
@@ -506,8 +491,8 @@
       "ANY": [ 64 ],
       "MASKABLE": [ 48 ]
    },
-   "supported_links_offer_dismiss_count": -1919878426,
-   "supported_links_offer_ignore_count": -1324773009,
+   "supported_links_offer_dismiss_count": -1211954529,
+   "supported_links_offer_ignore_count": -1319474860,
    "sync_proto": {
       "icon_infos": [ {
          "purpose": "MONOCHROME",
@@ -532,40 +517,41 @@
       "home_tab": {
          "icons": [ {
             "purpose": [ "Maskable", "Monochrome" ],
-            "sizes": [ "44x148", "133x87" ],
-            "src": "https://example.com/image2.webp",
+            "sizes": [ "486x66", "148x266", "87x39" ],
+            "src": "https://example.com/image3.webp",
             "type": "image/webp"
          }, {
             "purpose": [ "Maskable", "Monochrome" ],
-            "sizes": [ "64x58", "35x76" ],
+            "sizes": [ "58x70", "76x106" ],
+            "src": "https://example.com/image2.svg",
+            "type": "image/svg+xml"
+         }, {
+            "purpose": [ "Monochrome", "Maskable", "Any" ],
+            "sizes": [ "189x78", "320x270", "110x132" ],
             "src": "https://example.com/image1.webp",
             "type": "image/webp"
          }, {
             "purpose": [ "Monochrome", "Maskable" ],
-            "sizes": [ "156x189", "52x320", "135x110" ],
+            "sizes": [ "196x166", "72x134" ],
             "src": "https://example.com/image0.svg",
             "type": "image/svg+xml"
          } ],
          "scope_patterns": [ {
-            "pathname": "{prefix2:name2(.*)suffix2}+{prefix1:name1\\suffix1}?{prefix0:name0\\suffix0}?"
+            "pathname": "{prefix3:name3\\suffix3}{prefix2:name2(.*)suffix2}?{prefix1:name1(.*)suffix1}?{prefix0:name0(.*)suffix0}?"
          }, {
-            "pathname": "{prefix4:name4(.*)suffix4}+{prefix3:name3(.*)suffix3}{prefix2:name2(.*)suffix2}?{prefix1:name1(.*)suffix1}?{prefix0:name0\\suffix0}?"
+            "pathname": "{prefix4:name4(.*)suffix4}?{prefix3:name3(.*)suffix3}+{prefix2:name2(.*)suffix2}+{prefix1:name1\\suffix1}+{prefix0:name0(.*)suffix0}?"
          }, {
-            "pathname": "{prefix2:name2(.*)suffix2}?{prefix1:name1(.*)suffix1}?{prefix0:name0(.*)suffix0}?"
+            "pathname": "{prefix2:name2(.*)suffix2}?{prefix1:name1\\suffix1}?{prefix0:name0(.*)suffix0}?"
          }, {
-            "pathname": "{prefix3:name3\\suffix3}+{prefix2:name2(.*)suffix2}?{prefix1:name1(.*)suffix1}?{prefix0:name0(.*)suffix0}"
+            "pathname": "{prefix3:name3(.*)suffix3}{prefix2:name2\\suffix2}?{prefix1:name1\\suffix1}+{prefix0:name0(.*)suffix0}+"
          } ]
       },
       "new_tab_button": {
-         "url": "https://example.com/scope1234/new_tab_button_url1242854796"
+         "url": "https://example.com/scope1234/new_tab_button_url428675460"
       }
    },
    "theme_color": "rgba(220,247,174,1)",
    "trusted_icons": [ {
-      "purpose": "kAny",
-      "square_size_px": 96,
-      "url": "https://example.com/icons3570247854"
-   }, {
       "purpose": "kMaskable",
       "square_size_px": 64,
       "url": "https://example.com/icons554811270"

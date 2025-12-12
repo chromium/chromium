@@ -67,8 +67,10 @@ TEST_F(WebAppDatabaseSerializationTest, RandomWebApps) {
   // proto representation. The random web app generation should ensure that all
   // fields in all relevant combinations are tested.
   for (int i = 0; i < 1000; ++i) {
-    std::unique_ptr<WebApp> app = test::CreateRandomWebApp(
-        {.seed = static_cast<uint32_t>(i), .non_zero = i == 0});
+    test::CreateRandomWebAppParams params;
+    params.seed = i;
+    params.non_zero = i != 0;
+    std::unique_ptr<WebApp> app = test::CreateRandomWebApp(params);
     std::unique_ptr<proto::WebApp> proto = WebAppToProto(*app);
     std::unique_ptr<WebApp> parsed_app = ParseWebAppProto(*proto);
     ASSERT_THAT(parsed_app, NotNull());

@@ -142,7 +142,7 @@ namespace {
 
 class RandomHelper {
  public:
-  explicit RandomHelper(const uint32_t seed, bool non_zero)
+  explicit RandomHelper(int seed, bool non_zero)
       :  // Seed of 0 and 1 generate the same sequence, so skip 0.
         generator_(seed + 1),
         distribution_(0u, UINT32_MAX),
@@ -699,11 +699,9 @@ std::vector<apps::IconInfo> CreateRandomIconMetadata(RandomHelper& random,
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
                                      WebAppManagement::Type source_type) {
-  auto web_app =
-      std::make_unique<WebApp>(GenerateManifestIdFromStartUrlOnly(start_url),
-                               start_url, start_url.GetWithoutFilename());
-  web_app->SetStartUrl(start_url);
-  web_app->SetScope(start_url.GetWithoutFilename());
+  auto web_app = std::make_unique<WebApp>(
+      GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+      /*scope=*/start_url.GetWithoutFilename());
   web_app->AddSource(source_type);
   web_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
@@ -719,7 +717,15 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   return web_app;
 }
 
-std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
+CreateRandomWebAppParams::CreateRandomWebAppParams() = default;
+CreateRandomWebAppParams::CreateRandomWebAppParams(
+    const CreateRandomWebAppParams& other) = default;
+CreateRandomWebAppParams& CreateRandomWebAppParams::operator=(
+    const CreateRandomWebAppParams& other) = default;
+CreateRandomWebAppParams::~CreateRandomWebAppParams() = default;
+
+std::unique_ptr<WebApp> CreateRandomWebApp(
+    const CreateRandomWebAppParams& params) {
   RandomHelper random(params.seed, params.non_zero);
 
   const bool is_iwa = !random.next_bool();
@@ -852,8 +858,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     app->SetManifestId(
         GenerateManifestId(relative_manifest_id.value(), start_url));
   }
-  app->SetStartUrl(GURL(start_url));
-  app->SetScope(GURL(scope));
 
   if (random.next_bool()) {
     app->SetThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
@@ -1053,9 +1057,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   app->SetManifestUpdateTime(random.next_time());
 
-  if (random.next_bool()) {
-    app->SetParentAppId(base::NumberToString(random.next_uint()));
-  }
 
   if (random.next_bool()) {
     app->SetPermissionsPolicy(CreateRandomPermissionsPolicy(random));

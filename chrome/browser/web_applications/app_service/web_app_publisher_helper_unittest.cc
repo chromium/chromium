@@ -153,9 +153,10 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
 }
 
 TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
-  for (uint32_t seed = 0; seed < 100; ++seed) {
-    std::unique_ptr<WebApp> random_app =
-        test::CreateRandomWebApp({.seed = seed});
+  for (int seed = 0; seed < 100; ++seed) {
+    test::CreateRandomWebAppParams params;
+    params.seed = seed;
+    std::unique_ptr<WebApp> random_app = test::CreateRandomWebApp(params);
 
     auto info = std::make_unique<WebAppInstallInfo>(random_app->manifest_id(),
                                                     random_app->start_url());
@@ -271,7 +272,6 @@ TEST_F(WebAppPublisherHelperTest,
     auto new_app = test::CreateWebApp();
     app = new_app.get();
     DCHECK(new_app->start_url().is_valid());
-    new_app->SetScope(new_app->start_url().GetWithoutFilename());
     // TODO(https://crbug.com/411126942): Stop using CreateApp.
     update->CreateApp(std::move(new_app));
   }
@@ -333,7 +333,6 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
     auto new_app = test::CreateWebApp();
     app = new_app.get();
     DCHECK(new_app->start_url().is_valid());
-    new_app->SetScope(new_app->start_url().GetWithoutFilename());
 
     apps::FileHandler::AcceptEntry accept_entry;
     proto::os_state::WebAppOsIntegration test_state;
@@ -398,7 +397,6 @@ TEST_F(WebAppPublisherHelperTest, LaunchWithFiles_AllowWithNoPrompt) {
     auto new_app = test::CreateWebApp(app_url);
     app = new_app.get();
     DCHECK(new_app->start_url().is_valid());
-    new_app->SetScope(new_app->start_url().GetWithoutFilename());
 
     apps::FileHandler::AcceptEntry accept_entry;
     proto::os_state::WebAppOsIntegration test_state;
