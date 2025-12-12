@@ -92,13 +92,48 @@ TEST_F(CachingContextualCueingServiceTest,
   TestContextualCueingService contextual_cueing_service;
   auto cache =
       CreateCachingZeroStateSuggestionsManager(&contextual_cueing_service);
+  contextual_cueing_service.will_generate_pinned_tab_suggestions_ = true;
   auto focus = CreateWebContentsAt(GURL("https://www.google.com"));
   base::test::TestFuture<std::vector<std::string>> result;
-  cache->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-      {focus.get()}, true, std::nullopt, focus.get(), result.GetCallback());
+  EXPECT_TRUE(cache->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+      {focus.get()}, true, std::nullopt, focus.get(), result.GetCallback()));
 
   std::move(contextual_cueing_service.last_callback_).Run({"S1"});
   EXPECT_THAT(result.Get(), testing::ElementsAre("S1"));
+}
+
+TEST_F(CachingContextualCueingServiceTest,
+       PinnedTabRequestRequestIsPassedThroughContextualNotGenerated) {
+  TestContextualCueingService contextual_cueing_service;
+  auto cache =
+      CreateCachingZeroStateSuggestionsManager(&contextual_cueing_service);
+  contextual_cueing_service.will_generate_pinned_tab_suggestions_ = false;
+  auto focus = CreateWebContentsAt(GURL("https://www.google.com"));
+  base::test::TestFuture<std::vector<std::string>> result;
+  EXPECT_FALSE(cache->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+      {focus.get()}, true, std::nullopt, focus.get(), result.GetCallback()));
+
+  std::move(contextual_cueing_service.last_callback_).Run({});
+  EXPECT_THAT(result.Get(), testing::ElementsAre());
+}
+
+TEST_F(CachingContextualCueingServiceTest,
+       PinnedTabRequestRequestForSameSetOfTabs) {
+  TestContextualCueingService contextual_cueing_service;
+  auto cache =
+      CreateCachingZeroStateSuggestionsManager(&contextual_cueing_service);
+  contextual_cueing_service.will_generate_pinned_tab_suggestions_ = true;
+  auto focus = CreateWebContentsAt(GURL("https://www.google.com"));
+  base::test::TestFuture<std::vector<std::string>> result;
+  EXPECT_TRUE(cache->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+      {focus.get()}, true, std::nullopt, focus.get(), result.GetCallback()));
+  base::test::TestFuture<std::vector<std::string>> result2;
+  EXPECT_FALSE(cache->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+      {focus.get()}, true, std::nullopt, focus.get(), result2.GetCallback()));
+
+  std::move(contextual_cueing_service.last_callback_).Run({"S1"});
+  EXPECT_THAT(result.Get(), testing::ElementsAre("S1"));
+  EXPECT_THAT(result2.Get(), testing::ElementsAre("S1"));
 }
 
 TEST_F(CachingContextualCueingServiceTest, CachedResultIsReturned) {

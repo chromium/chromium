@@ -32,7 +32,9 @@ class CachingZeroStateSuggestionsManager {
       std::optional<std::vector<std::string>> supported_tools,
       GlicSuggestionsCallback callback) = 0;
 
-  virtual void GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+  // Returns whether a new request for contextual suggestions are pending for
+  // pinned tabs.
+  virtual bool GetContextualGlicZeroStateSuggestionsForPinnedTabs(
       std::vector<content::WebContents*> pinned_web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,

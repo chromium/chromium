@@ -155,25 +155,21 @@ void GlicZeroStateSuggestionsManager::
       }
     }
 
-    // Notify host that suggestions are pending in case there were suggestions
-    // and we are posting an invalid state.
-    host().NotifyZeroStateSuggestion(
-        MakePendingSuggestionsPtr(),
-        mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
-
+    bool suggestions_pending = false;
     if (caching_zero_state_manager_) {
-      caching_zero_state_manager_
-          ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-              contents_for_request, is_first_run, supported_tools,
-              base::FeatureList::IsEnabled(
-                  kRefreshZeroStateSuggestionsOnFocusedTabChange)
-                  ? active_web_contents
-                  : nullptr,
-              base::BindOnce(&GlicZeroStateSuggestionsManager::
-                                 OnZeroStateSuggestionsNotify,
-                             GetWeakPtr(), is_first_run, supported_tools));
+      suggestions_pending =
+          caching_zero_state_manager_
+              ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+                  contents_for_request, is_first_run, supported_tools,
+                  base::FeatureList::IsEnabled(
+                      kRefreshZeroStateSuggestionsOnFocusedTabChange)
+                      ? active_web_contents
+                      : nullptr,
+                  base::BindOnce(&GlicZeroStateSuggestionsManager::
+                                     OnZeroStateSuggestionsNotify,
+                                 GetWeakPtr(), is_first_run, supported_tools));
     } else {
-      bool suggestions_pending =
+      suggestions_pending =
           contextual_cueing_service_
               ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
                   contents_for_request, is_first_run, supported_tools,
@@ -187,13 +183,13 @@ void GlicZeroStateSuggestionsManager::
                                      GetWeakPtr(), is_first_run,
                                      supported_tools),
                       EmptySuggestions()));
+    }
 
-      if (suggestions_pending && !caching_zero_state_manager_) {
-        // Notify host that suggestions are pending.
-        host().NotifyZeroStateSuggestion(
-            MakePendingSuggestionsPtr(),
-            mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
-      }
+    if (suggestions_pending) {
+      // Notify host that suggestions are pending.
+      host().NotifyZeroStateSuggestion(
+          MakePendingSuggestionsPtr(),
+          mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
     }
   }
 }

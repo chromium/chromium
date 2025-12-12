@@ -26,7 +26,7 @@ class CachingContextualCueingServiceImpl
  public:
   explicit CachingContextualCueingServiceImpl(
       contextual_cueing::ContextualCueingService* service)
-      : contextual_queueing_service_(service) {}
+      : contextual_cueing_service_(service) {}
 
   void GetContextualGlicZeroStateSuggestionsForFocusedTab(
       content::WebContents* focused_tab,
@@ -52,7 +52,7 @@ class CachingContextualCueingServiceImpl
       return;
     }
 
-    contextual_queueing_service_
+    contextual_cueing_service_
         ->GetContextualGlicZeroStateSuggestionsForFocusedTab(
             focused_tab, is_fre, supported_tools,
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -62,7 +62,7 @@ class CachingContextualCueingServiceImpl
                 EmptySuggestions()));
   }
 
-  void GetContextualGlicZeroStateSuggestionsForPinnedTabs(
+  bool GetContextualGlicZeroStateSuggestionsForPinnedTabs(
       std::vector<content::WebContents*> pinned_web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
@@ -70,12 +70,13 @@ class CachingContextualCueingServiceImpl
       GlicSuggestionsCallback callback) override {
     PageReference focused_page;
     std::vector<GURL> urls;
-    if (focused_tab) {
+    if (focused_tab && focused_tab->GetLastCommittedURL().is_valid()) {
       urls.push_back(focused_tab->GetLastCommittedURL());
       focused_page.page = focused_tab->GetPrimaryPage().GetWeakPtr();
     }
     for (auto* web_contents : pinned_web_contents) {
-      if (web_contents != focused_tab) {
+      if (web_contents != focused_tab &&
+          web_contents->GetLastCommittedURL().is_valid()) {
         urls.push_back(web_contents->GetLastCommittedURL());
       }
     }
@@ -90,10 +91,10 @@ class CachingContextualCueingServiceImpl
         },
         std::move(callback));
     if (!new_entry) {
-      return;
+      return false;
     }
 
-    contextual_queueing_service_
+    return contextual_cueing_service_
         ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
             pinned_web_contents, is_fre, supported_tools, focused_tab,
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -195,7 +196,7 @@ class CachingContextualCueingServiceImpl
   bool cache_disabled_ = false;
   CacheId::Generator id_generator_;
   raw_ptr<contextual_cueing::ContextualCueingService>
-      contextual_queueing_service_;
+      contextual_cueing_service_;
   std::deque<Entry> entries_;
   base::WeakPtrFactory<CachingContextualCueingServiceImpl> weak_ptr_factory_{
       this};
